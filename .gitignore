@@ -1,0 +1,5 @@
+node_modules/
+.idea/
+
+public/js/all.js
+public/js/all.js.map

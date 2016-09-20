@@ -1,0 +1,9 @@
+html(lang=lang)
+  head
+    title#dwayne-router-title
+    link#dwayne-router-icon(rel="stylesheet")
+  body
+    if NODE_ENV === 'development'
+      div#livereload
+    div#dwayne-router
+    script(type="text/javascript" src=allJS)
