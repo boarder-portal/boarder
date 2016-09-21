@@ -1,1 +1,8 @@
-div(dwayne-router-state="home")
+header.main-header
+  h1.header-caption!= headerParams.homeLink
+  span.register-link!= headerParams.registerLink
+  span.login-link!= headerParams.loginLink
+div.main-content
+  div(dwayne-router-state="home")
+  div.register-state(dwayne-router-state="register")
+  div(dwayne-router-state="games")

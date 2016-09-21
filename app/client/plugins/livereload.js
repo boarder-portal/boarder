@@ -1,9 +1,11 @@
 import io from 'socket.io-client';
 import { find, doc, Elem } from 'dwayne';
 import {
-  livereloadNsp,
+  io as ioConfig,
   assetsPath as assets
-} from '../../config/config.json';
+} from '../../config/constants.json';
+
+const { livereloadNsp } = ioConfig;
 
 const livereload = find('#livereload')
   .addClass('loaded');

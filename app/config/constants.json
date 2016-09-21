@@ -1,0 +1,7 @@
+{
+  "io": {
+    "livereloadNsp": "/livereload",
+    "hexagonNsp": "/hexagon"
+  },
+  "assetsPath": "/public"
+}

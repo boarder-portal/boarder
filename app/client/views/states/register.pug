@@ -1,0 +1,34 @@
+mixin input-container(attrs)
+  div.input-container
+    if attrs.type !== 'submit'
+      span.validate-error
+      div.input-container2
+        input&attributes(attrs)
+        span.validate-icon
+    else
+      input&attributes(attrs)
+
+div.register-block
+  span.register-caption= registerCaption
+  form.register-form
+    +input-container({
+      type: 'email',
+      name: 'email',
+      placeholder: emailCaption
+    })
+    +input-container({
+      type: 'password',
+      name: 'password',
+      placeholder: passwordCaption
+    })
+    +input-container({
+      type: 'password',
+      name: 'password-repeat',
+      placeholder: passwordRepeatCaption
+    })
+    +input-container({
+      class: 'success',
+      disabled: '',
+      type: 'submit',
+      value: registerActionCaption
+    })

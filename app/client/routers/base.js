@@ -1,7 +1,10 @@
 import { D, Router } from 'dwayne';
-import BaseState from '../views/states/base.pug';
+import BaseStateTemplate from '../views/states/base.pug';
 
 D(Router).deepAssign({
   title: 'Boarder',
-  template: BaseState
+  template: BaseStateTemplate,
+  templateParams: {
+    headerParams: {}
+  }
 });

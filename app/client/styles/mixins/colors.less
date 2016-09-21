@@ -1,0 +1,9 @@
+@import (reference) '../constants';
+
+.bg(@color) {
+  background-color: @color;
+}
+
+.rgba(@color, @tr: 0.5) {
+  .bg(rgba(red(@color), green(@color), blue(@color), @tr));
+}

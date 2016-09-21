@@ -4,10 +4,12 @@ const express = require('express');
 const sio = require('socket.io');
 const glob = require('glob');
 
+const { port } = require('../config/config.json');
 const {
-  port,
-  livereloadNsp
-} = require('../config/config.json');
+  io: {
+    livereloadNsp
+  }
+} = require('../config/constants.json');
 
 const app = express();
 const server = http.Server(app);
@@ -15,6 +17,8 @@ const io = sio(server);
 const root = path.resolve('./');
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
+
+console.log();
 
 glob
   .sync('/app/server/sockets/*.js', { root })
@@ -35,6 +39,8 @@ glob
 
     require(absolutePath)(app);
   });
+
+console.log();
 
 if (development) {
   process.on('message', (message) => {

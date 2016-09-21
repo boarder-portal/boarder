@@ -1,0 +1,31 @@
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col {
+  .flex();
+
+  flex-direction: column;
+}
+
+.flex-stretch {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.flex-col-stretch {
+  .flex-stretch();
+
+  flex-direction: column;
+}
+
+.flx(@size: auto) {
+  flex: 1 1 @size;
+}
+
+.flx2(@size: auto) {
+  flex: 0 0 @size;
+}

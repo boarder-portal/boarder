@@ -3,6 +3,7 @@ const path = require('path');
 const gulp = require('gulp');
 const less = require('gulp-less');
 const rename = require('gulp-rename');
+const run = require('gulp-run');
 const sourcemaps = require('gulp-sourcemaps');
 const Autoprefixer = require('less-plugin-autoprefix');
 const rollup = require('rollup');
@@ -13,7 +14,19 @@ const rollupDevConfig = require('./rollup.dev.config');
 
 let child;
 
-gulp.task('default', ['server:dev', 'watch:server', 'less', 'watch:less', 'client:dev']);
+gulp.task('default', ['server:dev', 'watch:server', 'copy:fonts', 'less', 'watch:less', 'client:dev']);
+
+gulp.task('db:migration:create', () => (
+  run('sequelize migration:create').exec()
+));
+
+gulp.task('db:migrate', () => (
+  run('sequelize db:migrate').exec()
+));
+
+gulp.task('db:migrate:undo', () => (
+  run('sequelize db:migrate:undo').exec()
+));
 
 gulp.task('server:dev', () => {
   let promise = Promise.resolve();
@@ -79,7 +92,7 @@ gulp.task('less', () => (
 ));
 
 gulp.task('watch:less', () => (
-  gulp.watch('./app/client/styles/**/*.less', ['less'])
+  gulp.watch('./app/client/styles/**/*.less', ['toreload', 'less', 'reload'])
 ));
 
 gulp.task('watch:server', () => (
@@ -87,4 +100,17 @@ gulp.task('watch:server', () => (
     './app/server/**/*.!(pug)',
     './app/config/**/*'
   ], ['server:dev'])
+));
+
+gulp.task('copy:fonts', () => (
+  gulp.src('./node_modules/font-awesome/fonts/*')
+    .pipe(gulp.dest('./public/fonts/font-awesome'))
+));
+
+gulp.task('toreload', () => (
+  child.send('toreload')
+));
+
+gulp.task('reload', () => (
+  child.send('reload')
 ));

@@ -1,0 +1,39 @@
+@import (reference) '../constants';
+
+.center {
+  text-align: center;
+}
+
+.bordered(@color: black, @size: 1px) {
+  border: @size solid @color;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.tr(@what: all) {
+  transition: @what 0.2s ease-out;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.hidden {
+  display: none;
+}
+
+.overflow-text {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

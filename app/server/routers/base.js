@@ -5,12 +5,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-const { assetsPath } = require('../../config/config.json');
+const { assetsPath } = require('../../config/constants.json');
 const viewsDir = path.resolve('./app/server/views');
 const { NODE_ENV } = process.env;
 
 module.exports = (app) => {
-  app.use('/public', express.static(path.resolve('./public')));
+  app.use(assetsPath, express.static(path.resolve('./public')));
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());

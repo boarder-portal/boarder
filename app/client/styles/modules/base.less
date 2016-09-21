@@ -1,0 +1,47 @@
+@import (reference) '../mixins';
+
+html {
+  height: 100%;
+
+  * {
+    .reset();
+  }
+}
+
+body {
+  .bg(@gray-very-light);
+
+  height: 100%;
+}
+
+#dwayne-router {
+  .flex-col-stretch();
+
+  min-height: 100%;
+}
+
+.main-header {
+  .flex();
+  height: @h2;
+
+  .header-caption {
+    .flx(80%);
+
+    padding-left: @w2;
+  }
+
+  .register-link,
+  .login-link {
+    .center();
+    .flx(10%);
+  }
+}
+
+.main-content {
+  .flex-col-stretch();
+  .flx();
+
+  & > [dwayne-router-state] {
+    .flx(auto);
+  }
+}
