@@ -1,17 +1,12 @@
 import io from 'socket.io-client';
 import { find, doc, Elem } from 'dwayne';
 import {
-  livereloadPort,
+  livereloadNsp,
   assetsPath as assets
 } from '../../config/config.json';
-import '../styles/livereload.less';
 
 const livereload = find('#livereload')
   .addClass('loaded');
-const {
-  hostname,
-  protocol
-} = location;
 
 const ready = doc
   .img('.image')
@@ -26,7 +21,7 @@ new Elem([ready, loading])
     livereload.child(ready);
   });
 
-const socket = io(`${ protocol }//${ hostname }:${ livereloadPort }`);
+const socket = io(livereloadNsp);
 
 socket.on('connect', () => {
   console.log('%c%s', colored('green'), 'livereload enabled');

@@ -7,7 +7,6 @@ const eslint = require('rollup-plugin-eslint');
 const babel = require('rollup-plugin-babel');
 const inject = require('rollup-plugin-inject');
 const pug = require('rollup-plugin-pug');
-const less = require('rollup-plugin-less');
 
 module.exports = {
   entry: [
@@ -31,22 +30,15 @@ module.exports = {
       include: './**/*.pug',
       inlineFunctions: true
     }),
-    less({
-      include: './**/*.less',
-      insert: true
-    }),
     cjs({
       include: 'node_modules/**',
       exclude: 'node_modules/rollup-plugin-node-builtins/**'
     }),
     eslint({
-      include: './**/*.js'
+      include: './app/**/*.js'
     }),
     babel({
-      presets: ['es2015-rollup', 'stage-0'],
-      include: './**/*.js',
-      plugins: ['transform-class-properties'],
-      babelrc: false
+      include: './app/**/*.js'
     }),
     inject({
       exclude: './node_modules/dwayne/lib/constants/global.js',

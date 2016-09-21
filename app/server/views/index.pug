@@ -1,9 +1,20 @@
 html(lang=lang)
   head
+    link(
+      type="text/css"
+      rel="stylesheet"
+      href=allCSS
+    )
     title#dwayne-router-title
-    link#dwayne-router-icon(rel="stylesheet")
+    link#dwayne-router-icon(
+      type="image/png"
+      rel="shortcut icon"
+    )
   body
     if NODE_ENV === 'development'
       div#livereload
     div#dwayne-router
-    script(type="text/javascript" src=allJS)
+    script(
+      type="text/javascript"
+      src=allJS
+    )

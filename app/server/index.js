@@ -4,52 +4,61 @@ const express = require('express');
 const sio = require('socket.io');
 const glob = require('glob');
 
-module.exports = (mode) => {
-  const app = express();
-  const server = http.Server(app);
-  const io = sio(server);
-  const root = path.resolve('./');
+const {
+  port,
+  livereloadNsp
+} = require('../config/config.json');
 
-  if (!mode) {
-    glob
-      .sync('/app/server/sockets/*.js', { root })
-      .forEach((absolutePath) => {
-        const relativePath = path.relative(path.join(__dirname, 'sockets'), absolutePath);
+const app = express();
+const server = http.Server(app);
+const io = sio(server);
+const root = path.resolve('./');
+const { NODE_ENV } = process.env;
+const development = NODE_ENV === 'development';
 
-        console.log('Requiring as sockets: %s...', relativePath);
+glob
+  .sync('/app/server/sockets/*.js', { root })
+  .forEach((absolutePath) => {
+    const relativePath = path.relative(path.join(__dirname, 'sockets'), absolutePath);
 
-        require(absolutePath)(io);
-      });
+    console.log('Requiring as sockets: %s...', relativePath);
 
-    glob
-      .sync('/app/server/routers/*.js', { root })
-      .forEach((absolutePath) => {
-        const relativePath = path.relative(path.join(__dirname, 'routers'), absolutePath);
+    require(absolutePath)(io);
+  });
 
-        console.log('Requiring as routers: %s...', relativePath);
+glob
+  .sync('/app/server/routers/*.js', { root })
+  .forEach((absolutePath) => {
+    const relativePath = path.relative(path.join(__dirname, 'routers'), absolutePath);
 
-        require(absolutePath)(app);
-      });
+    console.log('Requiring as routers: %s...', relativePath);
+
+    require(absolutePath)(app);
+  });
+
+if (development) {
+  process.on('message', (message) => {
+    io.of(livereloadNsp).emit(message);
+  });
+}
+
+server.listen(port, (error) => {
+  if (error) {
+    if (development) {
+      process.send('listen-error');
+    }
+
+    console.error(error);
+  } else {
+    if (development) {
+      io.of(livereloadNsp).emit('toreload');
+      process.send('listen-success');
+
+      setTimeout(() => {
+        io.of(livereloadNsp).emit('reload');
+      }, 500);
+    }
+
+    console.info('Listening on port %s...', port);
   }
-
-  return {
-    listen(port) {
-      return new Promise((resolve, reject) => {
-        port = port || 3333;
-
-        server.listen(port, (error) => {
-          if (error) {
-            console.error(error);
-
-            reject(error);
-          } else {
-            console.info('Listening on port %s...', port);
-
-            resolve();
-          }
-        });
-      });
-    },
-    io
-  };
-};
+});
