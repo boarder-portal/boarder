@@ -10,7 +10,7 @@
   .bg(@green-very-light);
 
   width: @w8;
-  height: @h13;
+  height: @h15;
   padding: @h1 @w1;
 
   .register-caption {
@@ -19,15 +19,24 @@
     .bold();
 
     font-size: 24px;
-    margin-bottom: @h1;
   }
 
   .register-form {
     .flex-col-stretch();
     .flx();
 
+    & > :first-child {
+      .flex();
+
+      height: @h1;
+
+      .register-spinner {
+        height: 100%;
+      }
+    }
+
     .input-container {
-      &:not(:last-child) {
+      &:not(:last-child):not(:first-child) {
         .flex-col-stretch();
 
         margin-bottom: 2 * @hs;
@@ -45,10 +54,12 @@
         margin: 0 0 3px 3px;
         font-size: 12px;
         height: 12px;
+        line-height: 0.9;
         color: @red;
       }
 
       .input-container2 {
+        .flex();
         .relative();
 
         width: 100%;
@@ -57,12 +68,28 @@
           padding-right: @h1;
         }
 
-        .validate-icon {
+        .validate-icon-container {
           .absolute();
+          .flex();
 
           right: 0;
           width: @h1;
           height: @h1;
+
+          .register-input-spinner {
+            width: @h05;
+            height: @h05;
+          }
+
+          .fa {
+            &.fa-close {
+              color: @red;
+            }
+
+            &.fa-check {
+              color: @green;
+            }
+          }
         }
       }
 

@@ -1,9 +1,8 @@
 const http = require('http');
-const path = require('path');
 const express = require('express');
 const sio = require('socket.io');
-const glob = require('glob');
 
+const { requireAndExecute } = require('./helpers/require-glob');
 const { port } = require('../config/config.json');
 const {
   io: {
@@ -14,31 +13,17 @@ const {
 const app = express();
 const server = http.Server(app);
 const io = sio(server);
-const root = path.resolve('./');
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
 
 console.log();
 
-glob
-  .sync('/app/server/sockets/*.js', { root })
-  .forEach((absolutePath) => {
-    const relativePath = path.relative(path.join(__dirname, 'sockets'), absolutePath);
-
-    console.log('Requiring as sockets: %s...', relativePath);
-
-    require(absolutePath)(io);
-  });
-
-glob
-  .sync('/app/server/routers/*.js', { root })
-  .forEach((absolutePath) => {
-    const relativePath = path.relative(path.join(__dirname, 'routers'), absolutePath);
-
-    console.log('Requiring as routers: %s...', relativePath);
-
-    require(absolutePath)(app);
-  });
+requireAndExecute('/app/server/sockets/*.js', io);
+requireAndExecute([
+  '/app/server/routers/base.js',
+  '/app/server/routers/!(base|render).js',
+  '/app/server/routers/render.js'
+], app);
 
 console.log();
 

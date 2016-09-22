@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { find, doc, Elem } from 'dwayne';
+import { D, find, doc, Elem } from 'dwayne';
 import {
   io as ioConfig,
   assetsPath as assets
@@ -24,6 +24,8 @@ new Elem([ready, loading])
   });
 
 const socket = io(livereloadNsp);
+
+window.D = D;
 
 socket.on('connect', () => {
   console.log('%c%s', colored('green'), 'livereload enabled');

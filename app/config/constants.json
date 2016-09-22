@@ -3,5 +3,27 @@
     "livereloadNsp": "/livereload",
     "hexagonNsp": "/hexagon"
   },
-  "assetsPath": "/public"
+  "assetsPath": "/public",
+  "endpoints": {
+    "base": "/api",
+    "users": {
+      "base": "/users",
+      "checkLogin": {
+        "base": "/check-login",
+        "method": "get"
+      },
+      "checkEmail": {
+        "base": "/check-email",
+        "method": "get"
+      },
+      "register": {
+        "base": "/register",
+        "method": "post"
+      },
+      "login": {
+        "base": "/login",
+        "method": "post"
+      }
+    }
+  }
 }

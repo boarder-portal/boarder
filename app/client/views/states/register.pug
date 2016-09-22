@@ -4,31 +4,41 @@ mixin input-container(attrs)
       span.validate-error
       div.input-container2
         input&attributes(attrs)
-        span.validate-icon
+        div.validate-icon-container
+          i.fa
     else
       input&attributes(attrs)
 
 div.register-block
   span.register-caption= registerCaption
   form.register-form
+    div.register-spinner-container
+    +input-container({
+      type: 'login',
+      name: 'login',
+      placeholder: loginCaption,
+      required: ''
+    })
     +input-container({
       type: 'email',
       name: 'email',
-      placeholder: emailCaption
+      placeholder: emailCaption,
+      required: ''
     })
     +input-container({
       type: 'password',
       name: 'password',
-      placeholder: passwordCaption
+      placeholder: passwordCaption,
+      required: ''
     })
     +input-container({
       type: 'password',
       name: 'password-repeat',
-      placeholder: passwordRepeatCaption
+      placeholder: passwordRepeatCaption,
+      required: ''
     })
     +input-container({
       class: 'success',
-      disabled: '',
       type: 'submit',
       value: registerActionCaption
     })

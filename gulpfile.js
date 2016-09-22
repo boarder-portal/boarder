@@ -28,6 +28,28 @@ gulp.task('db:migrate:undo', () => (
   run('sequelize db:migrate:undo').exec()
 ));
 
+gulp.task('db:migrate:undo:all', () => (
+  run('sequelize db:migrate:undo').exec()
+));
+
+gulp.task('db:seed:create', () => (
+  run('sequelize seed:create').exec()
+));
+
+gulp.task('db:seed', () => (
+  run('sequelize db:seed').exec()
+));
+
+gulp.task('db:seed:rerun', ['db:seed:undo:all', 'db:seed']);
+
+gulp.task('db:seed:undo', () => (
+  run('sequelize db:seed:undo').exec()
+));
+
+gulp.task('db:seed:undo:all', () => (
+  run('sequelize db:seed:undo:all').exec()
+));
+
 gulp.task('server:dev', () => {
   let promise = Promise.resolve();
 

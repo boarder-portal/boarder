@@ -1,0 +1,52 @@
+const Sequelize = require('sequelize');
+const hashPassword = require('../../helpers/hash-password');
+const db = require('../');
+
+const User = db.define('user', {
+  id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  login: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      notEmpty: true
+    }
+  },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
+  },
+  password: {
+    type: Sequelize.STRING,
+    validate: {
+      notEmpty: true
+    }
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    field: 'created_at',
+    allowNull: false
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    field: 'updated_at',
+    allowNull: false
+  }
+}, {
+  hooks: {
+    beforeCreate(user) {
+      user.password = hashPassword(user.password);
+    }
+  }
+});
+
+module.exports = User;

@@ -9,6 +9,7 @@
     "stage-0"
   ],
   "plugins": [
+    "transform-object-rest-spread",
     "transform-class-properties",
     "external-helpers"
   ]
