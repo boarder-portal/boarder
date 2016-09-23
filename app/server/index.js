@@ -21,7 +21,9 @@ console.log();
 requireAndExecute('/app/server/sockets/*.js', io);
 requireAndExecute([
   '/app/server/routers/base.js',
-  '/app/server/routers/!(base|render).js',
+  '/app/server/routers/auth.js',
+  '/app/server/routers/!(api|auth|base|render).js',
+  '/app/server/routers/api.js',
   '/app/server/routers/render.js'
 ], app);
 

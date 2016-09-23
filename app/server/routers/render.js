@@ -38,6 +38,7 @@ module.exports = (app) => {
       lang: 'en',
       allJS: `${ assetsPath }/js/all.js`,
       allCSS: `${ assetsPath }/css/all.css`,
+      user: JSON.stringify(req.user),
       NODE_ENV: process.env.NODE_ENV
     });
   });

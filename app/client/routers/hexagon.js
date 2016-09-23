@@ -4,15 +4,20 @@ import GamesState from './games';
 import HexagonStateTemplate from '../views/states/hexagon.pug';
 import { io as ioConfig } from '../../config/constants.json';
 
-const { hexagonNsp } = ioConfig;
+const { hexagonLobbyNsp } = ioConfig;
+const stateName = 'hexagon';
 
 class HexagonState extends GamesState {
-  static stateName = 'hexagon';
+  static stateName = stateName;
   static path = '/hexagon';
   static template = HexagonStateTemplate;
 
   onLoad() {
-    const socket = this.socket = io(hexagonNsp);
+    if (this.name !== stateName) {
+      return;
+    }
+
+    const socket = this.socket = io(hexagonLobbyNsp);
 
     socket.on('connect', () => {
       console.log('connected');

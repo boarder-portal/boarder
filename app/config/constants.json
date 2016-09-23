@@ -1,7 +1,12 @@
 {
+  "cookie": {
+    "name": "boarder_email_cookie"
+  },
   "io": {
     "livereloadNsp": "/livereload",
-    "hexagonNsp": "/hexagon"
+    "hexagonNsp": "/hexagon",
+    "hexagonLobbyNsp": "/hexagon/lobby",
+    "hexagonRoomNsp": "/hexagon/room"
   },
   "assetsPath": "/public",
   "endpoints": {

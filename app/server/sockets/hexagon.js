@@ -1,15 +1,19 @@
 const {
-  io: { hexagonNsp }
+  io: {
+    hexagonLobbyNsp
+  }
 } = require('../../config/constants.json');
 
 module.exports = (io) => {
-  const nsp = io.of(hexagonNsp);
+  const lobby = io.of(hexagonLobbyNsp);
 
-  nsp.on('connection', (socket) => {
-    console.log('connected');
+  lobby.on('connection', (socket) => {
+    console.log('connected to hexagon lobby');
+
+    console.log(lobby.adapter.rooms);
 
     socket.on('disconnect', () => {
-      console.log('disconnected');
+      console.log('disconnected from hexagon lobby');
     });
   });
 };

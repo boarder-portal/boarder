@@ -1,5 +1,7 @@
 import { Router } from 'dwayne';
 
+import './plugins/get-user-from-string';
+
 import './modules/base';
 import './modules/home';
 import './modules/register';

@@ -14,6 +14,8 @@ html(lang=lang)
     if NODE_ENV === 'development'
       div#livereload
     div#dwayne-router
+    script.
+      window.boarderUser = '#{ user }';
     script(
       type="text/javascript"
       src=allJS

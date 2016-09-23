@@ -3,6 +3,11 @@ const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
 const { secret } = require('../../config/config.json');
+const {
+  cookie: {
+    name: cookieName
+  }
+} = require('../../config/constants.json');
 
 module.exports = {
   checkLogin(req, res, next) {
@@ -83,8 +88,6 @@ module.exports = {
       ? { email: login, password }
       : { login, password };
 
-      console.log(where);
-
     User
       .findOne({ where })
       .then((user) => {
@@ -97,7 +100,7 @@ module.exports = {
             return next(err);
           }
 
-          res.cookie('boarder_email_cookie', token, {
+          res.cookie(cookieName, token, {
             httpOnly: true
           });
           res.json(user);
@@ -106,5 +109,33 @@ module.exports = {
       .catch((err) => {
         console.log(err);
       });
+  },
+
+  auth(req, res, next) {
+    const cookie = req.cookies[cookieName];
+
+    if (!cookie) {
+      return next();
+    }
+
+    try {
+      jwt.verify(cookie, secret, (err, email) => {
+        User.findOne({
+          where: { email }
+        })
+          .then((user) => {
+            req.user = user;
+
+            next();
+          })
+          .catch(() => {
+            next();
+          });
+      });
+    } catch (err) {
+      console.log(err);
+
+      next();
+    }
   }
 };
