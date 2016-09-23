@@ -1,5 +1,7 @@
 @import (reference) '../mixins';
 
+@header-line-width: 2px;
+
 html {
   height: 100%;
 
@@ -21,25 +23,59 @@ body {
 }
 
 .main-header {
-  .flex();
+  .flex-stretch();
+  .relative();
+
   height: @h2;
 
+  &:after {
+    .pseudo();
+    .absolute();
+    .block();
+    .bg(#000);
+
+    bottom: -@header-line-width;
+    left: 0;
+    width: 100%;
+    height: @header-line-width;
+  }
+
   .header-caption {
-    .flx(80%);
+    .flex-col();
+    .flx(70%);
+
+    align-items: flex-start;
 
     padding-left: @w2;
   }
 
   .register-link,
   .login-link {
-    .center();
-    .flx(10%);
+    .relative();
+    .flex();
+    .flx(15%);
+
+    height: 100%;
+
+    &:before {
+      .pseudo();
+      .absolute();
+      .block();
+      .bg(#000);
+
+      top: 10%;
+      left: 0;
+      height: 80%;
+      width: @header-line-width;
+    }
   }
 }
 
 .main-content {
   .flex-col-stretch();
   .flx();
+
+  margin-top: @header-line-width;
 
   & > [dwayne-router-state] {
     .flx(auto);

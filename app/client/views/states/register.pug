@@ -3,8 +3,8 @@ mixin input-container(attrs)
     if attrs.type !== 'submit'
       span.validate-error
       div.input-container2
-        input&attributes(attrs)
-        div.validate-icon-container
+        input.boarder-input&attributes(attrs)
+        label.validate-icon-container(for=attrs.id)
           i.fa
     else
       input&attributes(attrs)
@@ -14,24 +14,28 @@ div.register-block
   form.register-form
     div.register-spinner-container
     +input-container({
+      id: 'login',
       type: 'login',
       name: 'login',
       placeholder: loginCaption,
       required: ''
     })
     +input-container({
+      id: 'email',
       type: 'email',
       name: 'email',
       placeholder: emailCaption,
       required: ''
     })
     +input-container({
+      id: 'password',
       type: 'password',
       name: 'password',
       placeholder: passwordCaption,
       required: ''
     })
     +input-container({
+      id: 'password-repeat',
       type: 'password',
       name: 'password-repeat',
       placeholder: passwordRepeatCaption,
@@ -42,3 +46,4 @@ div.register-block
       type: 'submit',
       value: registerActionCaption
     })
+  div.register-success-caption.hidden= registerSuccessCaption
