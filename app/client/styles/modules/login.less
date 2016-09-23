@@ -1,0 +1,24 @@
+@import (reference) '../mixins';
+
+.login-block {
+  height: @h10;
+}
+
+.login-form {
+  .check-credentials-caption {
+    font-size: 14px;
+    color: @red;
+  }
+
+  input[name] {
+    margin-top: @h05;
+  }
+
+  input[type='submit'] {
+    margin-top: @h05 + @h1;
+  }
+}
+
+.login-success-caption {
+  margin-bottom: @h3;
+}

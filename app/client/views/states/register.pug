@@ -9,13 +9,13 @@ mixin input-container(attrs)
     else
       input&attributes(attrs)
 
-div.register-block
-  span.register-caption= registerCaption
-  form.register-form
-    div.register-spinner-container
+div.auth-block.register-block
+  span.auth-header= registerHeaderCaption
+  form.auth-form.register-form(autocomplete='off')
+    div.auth-spinner-container
     +input-container({
       id: 'login',
-      type: 'login',
+      type: 'text',
       name: 'login',
       placeholder: loginCaption,
       required: ''
@@ -46,4 +46,4 @@ div.register-block
       type: 'submit',
       value: registerActionCaption
     })
-  div.register-success-caption.hidden= registerSuccessCaption
+  div.auth-success-caption.register-success-caption.hidden= registerSuccessCaption

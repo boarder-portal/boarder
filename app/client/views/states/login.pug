@@ -1,1 +1,26 @@
-h1 Login
+mixin input-container(attrs)
+  input.boarder-input&attributes(attrs)
+
+div.auth-block.login-block
+  span.auth-header= loginHeaderCaption
+  form.auth-form.login-form(autocomplete='off')
+    div.auth-spinner-container
+      div.check-credentials-caption.hidden= checkCredentialsCaption
+    +input-container({
+      id: 'login',
+      type: 'text',
+      name: 'login',
+      placeholder: loginOrEmailCaption
+    })
+    +input-container({
+      id: 'password',
+      type: 'password',
+      name: 'password',
+      placeholder: passwordCaption
+    })
+    +input-container({
+      class: 'success',
+      type: 'submit',
+      value: loginActionCaption
+    })
+  div.auth-success-caption.login-success-caption.hidden= loginSuccessCaption

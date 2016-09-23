@@ -1,0 +1,47 @@
+@import (reference) '../mixins';
+
+.auth-state {
+  .flex();
+}
+
+.auth-block {
+  .flex-col-stretch();
+  .bordered();
+  .bg(@green-very-light);
+
+  width: @w8;
+  padding: @h1 @w1;
+
+  .auth-header {
+    .center();
+    .flx2(24px);
+    .bold();
+
+    font-size: 24px;
+  }
+
+  .auth-form {
+    .flex-col-stretch();
+    .flx();
+
+    & > :first-child {
+      .flex();
+
+      height: @h1;
+
+      .auth-spinner {
+        height: 100%;
+      }
+    }
+  }
+
+  .auth-success-caption {
+    .flex();
+    .flx();
+    .bold();
+
+    font-size: 45px;
+    color: @green;
+    letter-spacing: 2px;
+  }
+}

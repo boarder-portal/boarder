@@ -37,10 +37,12 @@ gulp.task('db:seed:create', () => (
 ));
 
 gulp.task('db:seed', () => (
-  run('sequelize db:seed').exec()
+  run('sequelize db:seed:all').exec()
 ));
 
-gulp.task('db:seed:rerun', ['db:seed:undo:all', 'db:seed']);
+gulp.task('db:seed:rerun', ['db:seed:undo:all'], () => (
+  run('sequelize db:seed:all').exec()
+));
 
 gulp.task('db:seed:undo', () => (
   run('sequelize db:seed:undo').exec()

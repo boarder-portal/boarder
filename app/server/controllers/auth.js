@@ -15,7 +15,7 @@ module.exports = {
         where: { login }
       })
       .then((user) => {
-        res.json(!!user);
+        res.json({ error: user && 'Login must be unique' });
       })
       .catch(next);
   },
@@ -25,12 +25,18 @@ module.exports = {
       email = ''
     } = req.query;
 
+    if (!isEmail(email)) {
+      return res.json({ error: 'Validation isEmail failed' });
+    }
+
     User
       .findOne({
         where: { email }
       })
       .then((user) => {
-        res.json(!!user || !isEmail(email));
+        res.json({
+          error: user && 'Email must be unique'
+        });
       })
       .catch(next);
   },
@@ -77,11 +83,13 @@ module.exports = {
       ? { email: login, password }
       : { login, password };
 
+      console.log(where);
+
     User
       .findOne({ where })
       .then((user) => {
         if (!user) {
-          return res.json(false);
+          return res.json(null);
         }
 
         jwt.sign(user.email, secret, { algorithm: 'HS256' }, (err, token) => {

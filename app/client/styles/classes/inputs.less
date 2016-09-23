@@ -1,0 +1,44 @@
+@import (reference) '../mixins';
+
+.boarder-input {
+  .bordered(rgba(0,0,0,0));
+
+  height: @h1;
+  padding: 0 @ws;
+
+  &[invalid] {
+    border-color: @red;
+  }
+
+  &[type='submit'] {
+    .tr(background-color);
+
+    border: 0;
+
+    &:not([disabled]) {
+      .pointer();
+    }
+
+    &.success {
+      .bg(@green-light);
+
+      &:hover {
+        .bg(@green);
+      }
+
+      &:active {
+        .bg(@green-dark);
+
+        transition-duration: 0s;
+      }
+    }
+
+    &[disabled] {
+      .bg(@gray-lighter);
+    }
+  }
+
+  &::placeholder {
+    color: @gray-light;
+  }
+}

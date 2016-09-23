@@ -1,113 +1,89 @@
 @import (reference) '../mixins';
 
-.register-state {
-  .flex();
+.register-block {
+  height: @h15;
 }
 
-.register-block {
+.register-form {
   .flex-col-stretch();
-  .bordered();
-  .bg(@green-very-light);
+  .flx();
 
-  width: @w8;
-  height: @h15;
-  padding: @h1 @w1;
+  & > :first-child {
+    .flex();
 
-  .register-caption {
-    .center();
-    .flx2(24px);
-    .bold();
+    height: @h1;
 
-    font-size: 24px;
+    .register-spinner {
+      height: 100%;
+    }
   }
 
-  .register-form {
-    .flex-col-stretch();
-    .flx();
+  .input-container {
+    &:not(:last-child):not(:first-child) {
+      .flex-col-stretch();
 
-    & > :first-child {
+      margin-bottom: 2 * @hs;
+    }
+
+    &:last-child {
       .flex();
 
-      height: @h1;
-
-      .register-spinner {
-        height: 100%;
-      }
+      margin-top: 4 * @hs;
     }
 
-    .input-container {
-      &:not(:last-child):not(:first-child) {
-        .flex-col-stretch();
+    .validate-error {
+      .overflow-text();
 
-        margin-bottom: 2 * @hs;
-      }
+      margin: 0 0 3px 3px;
+      font-size: 12px;
+      height: 12px;
+      line-height: 0.9;
+      color: @red;
+    }
 
-      &:last-child {
-        .flex();
+    .input-container2 {
+      .flex();
+      .relative();
 
-        margin-top: 4 * @hs;
-      }
-
-      .validate-error {
-        .overflow-text();
-
-        margin: 0 0 3px 3px;
-        font-size: 12px;
-        height: 12px;
-        line-height: 0.9;
-        color: @red;
-      }
-
-      .input-container2 {
-        .flex();
-        .relative();
-
-        width: 100%;
-
-        input {
-          padding-right: @h1;
-        }
-
-        .validate-icon-container {
-          .absolute();
-          .flex();
-
-          right: 0;
-          width: @h1;
-          height: @h1;
-          cursor: text;
-
-          .register-input-spinner {
-            width: @h05;
-            height: @h05;
-          }
-
-          .fa {
-            &.fa-close {
-              color: @red;
-            }
-
-            &.fa-check {
-              color: @green;
-            }
-          }
-        }
-      }
+      width: 100%;
 
       input {
-        .boarder-input();
-        .flx(100%);
+        padding-right: @h1;
+      }
+
+      .validate-icon-container {
+        .absolute();
+        .flex();
+
+        right: 0;
+        width: @h1;
+        height: @h1;
+        cursor: text;
+
+        .register-input-spinner {
+          width: @h05;
+          height: @h05;
+        }
+
+        .fa {
+          &.fa-close {
+            color: @red;
+          }
+
+          &.fa-check {
+            color: @green;
+          }
+        }
       }
     }
-  }
 
-  .register-success-caption {
-    .flex();
-    .flx();
-    .bold();
-
-    font-size: 45px;
-    margin-bottom: @h5;
-    color: @green;
+    input {
+      .boarder-input();
+      .flx(100%);
+    }
   }
+}
+
+.register-success-caption {
+  margin-bottom: @h5;
 }

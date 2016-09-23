@@ -8,7 +8,7 @@ class RegisterState extends Router {
   static path = '/register';
   static template = RegisterStateTemplate;
   static templateParams = {
-    registerCaption: 'Registration',
+    registerHeaderCaption: 'Registration',
     registerSuccessCaption: 'Success!',
     loginCaption: 'Login',
     emailCaption: 'Email',
@@ -16,6 +16,12 @@ class RegisterState extends Router {
     passwordRepeatCaption: 'Repeat password',
     registerActionCaption: 'Register'
   };
+
+  passwordRepeatValidator(value) {
+    if (value !== this.passwordInput.prop('value')) {
+      throw new Error('Passwords do not match');
+    }
+  }
 
   findIcon(input) {
     return input
@@ -30,46 +36,27 @@ class RegisterState extends Router {
       .toggleClass('fa-close', wrong);
   }
 
-  findErrorCaption(input) {
-    return input
-      .up()
-      .prev();
-  }
-
-  validate(input) {
-    const errors = input.validate();
-    const name = input.attr('name');
-
-    if (this.validated) {
-      this.findErrorCaption(input)
-        .text(
-          errors
-            ? errors[name].message
-            : ''
-        );
-    }
-
-    this.showIcon(input, errors);
-
-    return errors;
-  }
-
   showErrors(input, message) {
+    input.toggleAttr('invalid', message);
     input
       .up()
       .prev()
-      .text(message);
+      .text(message || '');
   }
 
   register() {
     const {
       form,
-      spinner
+      spinner,
+      loginInput,
+      emailInput,
+      passwordInput,
+      successCaption
     } = this;
     const data = {
-      login: this.loginInput.prop('value'),
-      email: this.emailInput.prop('value'),
-      password: this.passwordInput.prop('value')
+      login: loginInput.prop('value'),
+      email: emailInput.prop('value'),
+      password: passwordInput.prop('value')
     };
 
     fetch.register({ data })
@@ -80,7 +67,7 @@ class RegisterState extends Router {
 
         if (!errors) {
           form.hide();
-          this.successCaption.removeClass('hidden');
+          successCaption.removeClass('hidden');
 
           return;
         }
@@ -101,102 +88,101 @@ class RegisterState extends Router {
       });
   }
 
-  onPasswordRepeatValidate(value) {
-    if (value !== this.passwordInput.prop('value')) {
-      throw new Error('Passwords do not match');
+  onInputChange({ target }) {
+    D(target).validate();
+  }
+
+  onFormValidate({ target, valid }) {
+    const {
+      form,
+      spinner
+    } = this;
+
+    if (target === form.$[0]) {
+      this.validated = true;
+
+      if (valid) {
+        this.registering = true;
+
+        spinner.show();
+        this.register();
+      }
+    }
+  }
+
+  onInputValidate({ target, error }) {
+    target = D(target);
+
+    const name = target.attr('name');
+
+    if (name === 'password' && this.repeatValidated) {
+      this.passwordRepeatInput.validate();
+    }
+
+    if (name === 'password-repeat') {
+      this.repeatValidated = true;
+    }
+
+    if (this.validated) {
+      this.showErrors(target, error && error.message);
+    }
+
+    this.showIcon(target, error);
+
+    if (name === 'login' || name === 'email') {
+      const fetcher = this.fetchers[name];
+
+      fetcher.timeout.abort();
+
+      const spinner = target
+        .next()
+        .find('.register-input-spinner');
+
+      if (error || this.registering) {
+        spinner.hide();
+
+        return;
+      }
+
+      const timeout = fetcher.timeout = D(500).timeout();
+
+      this.findIcon(target).hide();
+      this.showErrors(target, '');
+      spinner.show();
+
+      timeout.then(() => {
+        const fetch = fetcher.timeout = fetcher.get({
+          query: {
+            [target.attr('name')]: target.prop('value')
+          }
+        });
+
+        fetch
+          .then(({ json: { error } }) => {
+            this.showIcon(target, error);
+
+            if (this.validated) {
+              this.showErrors(target, error || '');
+            }
+          })
+          .catch((err) => {
+            if (err.message === 'Request was aborted') {
+              throw err;
+            }
+
+            console.log(err);
+          })
+          .then(() => {
+            spinner.hide();
+          }, () => {});
+      }, () => {});
     }
   }
 
   onPreSubmit(e) {
     e.preventDefault();
 
-    const {
-      form,
-      spinner
-    } = this;
-
-    this.validated = true;
-
-    const errors = form.validate();
-
-    if (!errors) {
-      spinner.show();
-
-      return this.register();
-    }
-
-    this.inputs.forEach((input) => {
-      input = D(input);
-
-      if (errors[input.attr('name')]) {
-        this.validate(input);
-      }
-    });
-  }
-
-  onPasswordInputsChange({ target }) {
-    target = D(target);
-
-    const name = target.attr('name');
-
-    this.validate(target);
-
-    if (name === 'password' && this.repeatValidated) {
-      this.validate(this.passwordRepeatInput);
-    }
-
-    if (name === 'password-repeat') {
-      this.repeatValidated = true;
-    }
-  }
-
-  onLoadedInputChange({ target }) {
-    target = D(target);
-
-    const onInput = target.prop('onInput');
-
-    onInput.timeout.abort();
-
-    const spinner = target
-      .next()
-      .find('.register-input-spinner');
-    const errors = this.validate(target);
-
-    if (errors) {
-      spinner.hide();
-
-      return;
-    }
-
-    const timeout = onInput.timeout = D(500).timeout();
-
-    timeout.catch(() => {});
-    this.findIcon(target).hide();
-    this.findErrorCaption(target).html('');
-    spinner.show();
-
-    timeout.then(() => {
-      const fetch = onInput.timeout = onInput.get({
-        query: {
-          [target.attr('name')]: target.prop('value')
-        }
-      });
-
-      fetch
-        .then(({ json: wrong }) => {
-          this.showIcon(target, wrong);
-        })
-        .catch((err) => {
-          if (err.message === 'Request was aborted') {
-            throw err;
-          }
-
-          console.log(err);
-        })
-        .then(() => {
-          spinner.hide();
-        }, () => {});
-    }, () => {});
+    this.form.validate();
   }
 
   onRender() {
@@ -207,30 +193,30 @@ class RegisterState extends Router {
     const passwordInput = form.find('[name="password"]');
     const passwordRepeatInput = form.find('[name="password-repeat"]');
     const submitInput = form.find('[type="submit"]');
+    const inputs = form.find('input[name]');
     const loaded = new Elem([loginInput, emailInput]);
-    const passwords = new Elem([passwordInput, passwordRepeatInput]);
 
     D(this).assign({
       form,
       loginInput,
       emailInput,
-      passwordInput: form.find('[name="password"]'),
-      passwordRepeatInput: form.find('[name="password-repeat"]'),
-      inputs: form.find('input[name]'),
-      spinner: form.find('.register-spinner-container')
+      passwordInput,
+      passwordRepeatInput,
+      spinner: form.find('.auth-spinner-container')
         .child(images.loading)
-        .addClass('register-spinner')
+        .addClass('auth-spinner')
         .hide(),
-      successCaption: base.find('.register-success-caption')
-    });
-
-    loginInput.prop('onInput', {
-      get: fetch.checkLogin,
-      timeout: D(500).timeout()
-    });
-    emailInput.prop('onInput', {
-      get: fetch.checkEmail,
-      timeout: D(500).timeout()
+      successCaption: base.find('.auth-success-caption'),
+      fetchers: {
+        login: {
+          get: fetch.checkLogin,
+          timeout: D(500).timeout()
+        },
+        email: {
+          get: fetch.checkEmail,
+          timeout: D(500).timeout()
+        }
+      }
     });
 
     loaded
@@ -242,10 +228,13 @@ class RegisterState extends Router {
           .hide();
       });
 
-    passwordRepeatInput.validate(this.onPasswordRepeatValidate.bind(this));
+    passwordRepeatInput.validate(this.passwordRepeatValidator.bind(this));
+    form.on('validate', this.onFormValidate.bind(this));
     submitInput.on('click', this.onPreSubmit.bind(this));
-    loaded.on('input', this.onLoadedInputChange.bind(this));
-    passwords.on('input', this.onPasswordInputsChange.bind(this));
+    inputs.on({
+      input: this.onInputChange.bind(this),
+      validate: this.onInputValidate.bind(this)
+    });
   }
 }
 
