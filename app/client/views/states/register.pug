@@ -7,7 +7,7 @@ mixin input-container(attrs)
         label.validate-icon-container(for=attrs.id)
           i.fa
     else
-      input&attributes(attrs)
+      input.boarder-input&attributes(attrs)
 
 div.auth-block.register-block
   span.auth-header= registerHeaderCaption

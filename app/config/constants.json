@@ -6,7 +6,7 @@
     "livereloadNsp": "/livereload",
     "hexagonNsp": "/hexagon",
     "hexagonLobbyNsp": "/hexagon/lobby",
-    "hexagonRoomNsp": "/hexagon/room"
+    "hexagonRoomNsp": "/hexagon/room/$roomId"
   },
   "assetsPath": "/public",
   "endpoints": {

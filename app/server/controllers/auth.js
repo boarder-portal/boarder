@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
@@ -8,6 +9,8 @@ const {
     name: cookieName
   }
 } = require('../../config/constants.json');
+
+const notAuthorizedError = new Error('Not authorized');
 
 module.exports = {
   checkLogin(req, res, next) {
@@ -111,31 +114,72 @@ module.exports = {
       });
   },
 
-  auth(req, res, next) {
-    const cookie = req.cookies[cookieName];
+  auth,
 
-    if (!cookie) {
-      return next();
-    }
+  socketParseCookies() {
+    const parser = cookieParser();
 
-    try {
-      jwt.verify(cookie, secret, (err, email) => {
-        User.findOne({
-          where: { email }
-        })
-          .then((user) => {
-            req.user = user;
+    return (socket, next) => {
+      const { request: req } = socket;
 
-            next();
-          })
-          .catch(() => {
-            next();
-          });
+      parser(req, req.res, next);
+    };
+  },
+
+  socketAuth() {
+    const parser = cookieParser();
+
+    return (socket, next) => {
+      const {
+        request: req,
+        request: { res }
+      } = socket;
+
+      parser(req, res, (err) => {
+        console.log(req.cookies);
+
+        if (err) {
+          return next(notAuthorizedError);
+        }
+
+        auth(req, res, (err) => {
+          if (err || !req.user) {
+            return next(notAuthorizedError);
+          }
+
+          socket.user = req.user;
+
+          next();
+        });
       });
-    } catch (err) {
-      console.log(err);
-
-      next();
-    }
+    };
   }
 };
+
+function auth(req, res, next) {
+  const cookie = req.cookies[cookieName];
+
+  if (!cookie) {
+    return next();
+  }
+
+  try {
+    jwt.verify(cookie, secret, (err, email) => {
+      User.findOne({
+        where: { email }
+      })
+        .then((user) => {
+          req.user = user;
+
+          next();
+        })
+        .catch(() => {
+          next();
+        });
+    });
+  } catch (err) {
+    console.log(err);
+
+    next();
+  }
+}

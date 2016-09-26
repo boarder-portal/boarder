@@ -7,10 +7,14 @@ const eslint = require('rollup-plugin-eslint');
 const babel = require('rollup-plugin-babel');
 const inject = require('rollup-plugin-inject');
 const pug = require('rollup-plugin-pug');
+const glob = require('glob');
+
+const modules = glob.sync('./app/client/modules/!(base).js', { root: path.resolve('./') });
 
 module.exports = {
   entry: [
-    './app/client/index.js',
+    ...modules,
+    './app/client/modules/base.js',
     './app/client/plugins/livereload.js'
   ],
   dest: './public/js/all.js',

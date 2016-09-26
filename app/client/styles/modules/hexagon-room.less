@@ -1,0 +1,17 @@
+@import (reference) '../mixins';
+
+.hexagon-room-state {
+  justify-content: flex-start !important;
+
+  &.game {
+    flex-direction: row;
+
+    .field {
+      .flx();
+    }
+
+    .players {
+      .flx(@w3);
+    }
+  }
+}

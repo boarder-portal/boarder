@@ -1,0 +1,12 @@
+tr(
+  id=`room-${ id }`
+  data-room-id=`${ id }`
+  class=['room', `${ prefix }-room`]
+)
+  each col in room
+    - const { name, value } = col;
+
+    td(class=`room-${ name }`)= value
+  td
+    a(href=link)
+      i.fa.fa-sign-in.enter-room
