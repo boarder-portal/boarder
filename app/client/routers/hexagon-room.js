@@ -11,7 +11,9 @@ class HexagonRoomState extends HexagonState {
   static stateName = 'hexagon-room';
   static path = '/:roomId';
   static template = HexagonRoomStateTemplate;
-  static templateParams = {};
+  static templateParams = {
+    observerCaption: 'You can only observe the game'
+  };
 
   onBeforeLoad(e) {
     const {
@@ -20,6 +22,8 @@ class HexagonRoomState extends HexagonState {
 
     const socket = this.socket = io(hexagonRoomNsp.replace(/\$roomId/, roomId));
 
+    window.socket = socket;
+
     socket.on('connect', () => {
       e.continue();
 
@@ -27,13 +31,17 @@ class HexagonRoomState extends HexagonState {
     });
 
     socket.on('error', (err) => {
+      console.log(err);
+
       e.stop();
+
+      if (err === 'Invalid namespace') {
+        return;
+      }
 
       D(0)
         .timeout()
         .then(() => LoginState.go());
-
-      console.log(err);
     });
 
     socket.on('disconnect', () => {
@@ -43,8 +51,17 @@ class HexagonRoomState extends HexagonState {
     e.pause();
   }
 
-  onRender() {
+  onEnterRoom(roomData) {
+    console.log(roomData);
+  }
 
+  onRender() {
+    const {
+      // base,
+      socket
+    } = this;
+
+    socket.on('room/enter', this.onEnterRoom.bind(this));
   }
 
   onLeave() {

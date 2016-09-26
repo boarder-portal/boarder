@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
 const sio = require('socket.io');
+const redis = require('socket.io-redis');
 
 const { requireAndExecute } = require('./helpers/require-glob');
 const { port } = require('../config/config.json');
@@ -15,6 +16,8 @@ const server = http.Server(app);
 const io = sio(server);
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
+
+io.adapter(redis('redis://localhost:6379'));
 
 console.log();
 

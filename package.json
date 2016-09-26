@@ -10,10 +10,12 @@
     "babel-preset-es2015-rollup": "^1.2.0",
     "babel-preset-stage-0": "^6.5.0",
     "body-parser": "^1.15.2",
+    "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
     "dwayne": "git://github.com/droooney/dwayne.git#v1.1.0",
     "eslint": "^3.5.0",
     "express": "^4.14.0",
+    "express-session": "^1.14.1",
     "font-awesome": "^4.6.3",
     "glob": "^7.0.6",
     "gulp": "^3.9.1",
@@ -26,7 +28,6 @@
     "pg": "^6.1.0",
     "pug": "^2.0.0-beta6",
     "pug-runtime": "^2.0.2",
-    "require-glob": "^3.1.1",
     "rollup": "^0.36.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.4",
@@ -40,6 +41,7 @@
     "sequelize": "^3.24.3",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
+    "socket.io-redis": "^1.1.0",
     "validator": "^5.7.0"
   }
 }

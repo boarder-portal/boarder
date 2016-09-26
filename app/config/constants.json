@@ -30,5 +30,17 @@
         "method": "post"
       }
     }
+  },
+  "games": {
+    "hexagon": {
+      "roomStatuses": {
+        "NOT_PLAYING": 0,
+        "PLAYING": 1
+      },
+      "playerStatuses": {
+        "PLAYER": 0,
+        "OBSERVER": 1
+      }
+    }
   }
 }

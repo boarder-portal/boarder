@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, Router, doc } from 'dwayne';
+import { D, Router, doc, isNull } from 'dwayne';
 import HexagonState from './hexagon';
 import HexagonRoomState from './hexagon-room';
 import LoginState from './login';
@@ -17,6 +17,16 @@ class HexagonLobbyState extends HexagonState {
     createRoomCaption: 'Create room'
   };
 
+  constructor(props) {
+    super(props);
+    D(this).assign({
+      roomsToRender: {},
+      roomsToAdd: [],
+      roomsToUpdate: [],
+      roomsToDelete: []
+    });
+  }
+
   onBeforeLoad(e) {
     const socket = this.socket = io(hexagonLobbyNsp);
 
@@ -24,6 +34,11 @@ class HexagonLobbyState extends HexagonState {
       e.continue();
 
       console.log('connected');
+
+      socket.on('rooms/list', this.onListReceived.bind(this));
+      socket.on('room/new', this.onNewRoom.bind(this));
+      socket.on('room/update', this.onUpdateRoom.bind(this));
+      socket.on('room/delete', this.onDeleteRoom.bind(this));
     });
 
     socket.on('error', (err) => {
@@ -57,10 +72,43 @@ class HexagonLobbyState extends HexagonState {
     socket.emit('room/enter', row.data('roomId'));
   }
 
-  renderRoomsList(rooms) {
-    D(rooms).forEach((room) => {
-      this.addRoom(room);
+  onListReceived(rooms) {
+    this.listReceived = true;
+    this.roomsToRender = rooms;
+
+    this.renderRoomsList();
+  }
+
+  renderRoomsList() {
+    const {
+      rendered,
+      listReceived,
+      listRendered,
+      roomsToRender,
+      roomsToAdd,
+      roomsToUpdate,
+      roomsToDelete
+    } = this;
+
+    if (!listReceived || !rendered || listRendered) {
+      return;
+    }
+
+    D(roomsToRender)
+      .assign(roomsToAdd)
+      .forEach((room) => {
+        this.addRoom(room);
+      });
+
+    D(roomsToUpdate).forEach((room) => {
+      this.onUpdateRoom(room);
     });
+
+    D(roomsToDelete).forEach((id) => {
+      this.onDeleteRoom(id);
+    });
+
+    this.listRendered = true;
   }
 
   findRoom(id) {
@@ -84,7 +132,7 @@ class HexagonLobbyState extends HexagonState {
           },
           {
             name: 'players',
-            value: room.players.length
+            value: room.playersCount - D(room.players).sum(isNull)
           }
         ],
         link: HexagonRoomState.buildURL({
@@ -102,38 +150,47 @@ class HexagonLobbyState extends HexagonState {
   }
 
   onNewRoom(room) {
+    if (!this.listRendered) {
+      this.roomsToAdd[room.id] = room;
+
+      return;
+    }
+
     this.addRoom(room);
   }
 
   onUpdateRoom(room) {
+    if (!this.listRendered) {
+      return this.roomsToUpdate.push(room);
+    }
+
     this.findRoom(room.id)
       .replace(this.getRow(room));
   }
 
   onDeleteRoom(id) {
+    if (!this.listRendered) {
+      return this.roomsToDelete.push(id);
+    }
+
     this.findRoom(id)
       .remove();
   }
 
   onRender() {
-    const {
-      base,
-      socket
-    } = this;
+    const { base } = this;
     const createRoomBtn = base.find('.create-room-btn');
     const rooms = base.find('.hexagon-rooms');
 
     D(this).assign({
-      rooms
+      rooms,
+      rendered: true
     });
 
     createRoomBtn.on('click', this.onCreateRoomClick.bind(this));
     rooms.on('click', '.enter-room', this.onEnterRoom.bind(this));
 
-    socket.on('rooms/list', this.renderRoomsList.bind(this));
-    socket.on('room/new', this.onNewRoom.bind(this));
-    socket.on('room/update', this.onUpdateRoom.bind(this));
-    socket.on('room/delete', this.onDeleteRoom.bind(this));
+    this.renderRoomsList({});
   }
 
   onLeave() {

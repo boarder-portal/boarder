@@ -2,6 +2,10 @@ const { store } = require('./');
 
 store.hexagon = {
   rooms: {},
-  timeouts: {},
-  roomDestructionDelay: 10000
+  ROOM_DESTRUCTION_DELAY: 10000,
+  states: {
+    BEFORE_PLAYING: 1,
+    PLAYING: 2,
+    RESULTS: 3
+  }
 };

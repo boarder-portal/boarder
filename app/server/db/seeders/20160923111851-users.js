@@ -20,6 +20,27 @@ const users = [
     password: '123',
     created_at: new Date(),
     updated_at: new Date()
+  },
+  {
+    login: '1',
+    email: 'a1@a.com',
+    password: '123',
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    login: '2',
+    email: 'a2@a.com',
+    password: '123',
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    login: '3',
+    email: 'a3@a.com',
+    password: '123',
+    created_at: new Date(),
+    updated_at: new Date()
   }
 ];
 

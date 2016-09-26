@@ -9,11 +9,12 @@ const inject = require('rollup-plugin-inject');
 const pug = require('rollup-plugin-pug');
 const glob = require('glob');
 
-const modules = glob.sync('./app/client/modules/!(base).js', { root: path.resolve('./') });
+const modules = glob.sync('./app/client/modules/!(base|404).js', { root: path.resolve('./') });
 
 module.exports = {
   entry: [
     ...modules,
+    './app/client/modules/404.js',
     './app/client/modules/base.js',
     './app/client/plugins/livereload.js'
   ],

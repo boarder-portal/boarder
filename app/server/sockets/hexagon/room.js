@@ -1,66 +1,124 @@
 const D = require('dwayne');
+const { socketAuth } = require('../../controllers/auth');
 const {
-  io: {
-    hexagonLobbyNsp,
-    hexagonRoomNsp
-  }
-} = require('../../../config/constants.json');
+  onDisconnect
+} = require('../../handlers/hexagon/room');
 const {
   store: {
     hexagon: {
       rooms,
-      timeouts,
-      roomDestructionDelay
+      ROOM_DESTRUCTION_DELAY,
+      states: { BEFORE_PLAYING }
     }
   }
 } = require('../../constants');
+const {
+  io: {
+    hexagonLobbyNsp,
+    hexagonRoomNsp
+  },
+  games: {
+    hexagon: {
+      roomStatuses: { NOT_PLAYING },
+      playerStatuses: {
+        PLAYER,
+        OBSERVER
+      }
+    }
+  }
+} = require('../../../config/constants.json');
 
-module.exports = (io, roomId) => {
+const {
+  now,
+  method,
+  array,
+  isNull
+} = D;
+const disconnect = method('disconnect');
+
+module.exports = (io) => {
+  const roomId = now();
   const lobby = io.of(hexagonLobbyNsp);
   const room = io.of(hexagonRoomNsp.replace(/\$roomId/, roomId));
-  const {
-    [roomId]: roomData,
-    [roomId]: {
-      players
-    }
-  } = rooms;
-  const timeout = timeouts[roomId];
+  const name = `room-${ roomId }`;
+  const playersCount = 3;
+  const players = array(playersCount, () => null);
+  const observers = [];
+  const deleteRoom = () => onDeleteRoom(io, roomId);
+  const timeout = {
+    timeout: D(ROOM_DESTRUCTION_DELAY)
+      .timeout(),
+    deleteRoom
+  };
+  const roomData = {
+    id: roomId,
+    name,
+    status: NOT_PLAYING,
+    playersCount,
+    players,
+    timeout,
+    observers
+  };
 
-  room.roomId = roomId;
+  rooms[roomId] = roomData;
 
+  timeout.timeout.then(deleteRoom, () => {});
+
+  room.lobby = lobby;
+  room.roomData = roomData;
+
+  room.use(socketAuth);
   room.on('connection', (socket) => {
     console.log('connected to hexagon room');
 
-    const { user } = socket;
+    const {
+      session,
+      session: { user }
+    } = socket;
+    const { key } = D(players).find(isNull) || {};
 
     timeout.timeout.abort();
 
-    players.push(user);
+    user.status = BEFORE_PLAYING;
 
-    updateRoom();
+    if (isNull(key)) {
+      user.status = OBSERVER;
+      observers.push(session);
+    } else {
+      user.status = PLAYER;
+      user.playerId = key;
+      players[key] = session;
+    }
 
-    socket.on('disconnect', () => {
-      const index = players.indexOf(user);
+    session.save();
 
-      if (index !== -1) {
-        players.splice(index, 1);
-
-        updateRoom();
-      }
-
-      if (!players.length) {
-        const newTimeout = D(roomDestructionDelay)
-          .timeout();
-
-        timeout.timeout = newTimeout;
-
-        newTimeout.then(timeout.onDeleteRoom, () => {});
-      }
-    });
-  });
-
-  function updateRoom() {
     lobby.emit('room/update', roomData);
     room.emit('room/update', roomData);
-  }
+    socket.emit('room/enter', roomData);
+
+    socket.on('disconnect', onDisconnect);
+  });
+
+  return roomData;
 };
+
+function onDeleteRoom(io, roomId) {
+  const lobby = io.of(hexagonLobbyNsp);
+  const nsp = hexagonRoomNsp.replace(/\$roomId/, roomId);
+  const room = io.of(nsp);
+  const { connected } = room;
+  const sockets = D(connected);
+
+  room.removeAllListeners();
+
+  while (connected.length) {
+    sockets.forEach(disconnect);
+  }
+
+  delete rooms[roomId];
+  delete io.nsps[nsp];
+
+  lobby.emit('room/delete', roomId);
+
+  console.log('deleting room');
+}

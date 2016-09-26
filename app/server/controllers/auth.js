@@ -1,9 +1,6 @@
-const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
-const { secret } = require('../../config/config.json');
 const {
   cookie: {
     name: cookieName
@@ -83,9 +80,12 @@ module.exports = {
 
   login(req, res, next) {
     const {
-      login = '',
-      password: origPassword = ''
-    } = req.body;
+      body: {
+        login = '',
+        password: origPassword = ''
+      },
+      session
+    } = req;
     const password = hashPassword(origPassword);
     const where = isEmail(login)
       ? { email: login, password }
@@ -98,88 +98,55 @@ module.exports = {
           return res.json(null);
         }
 
-        jwt.sign(user.email, secret, { algorithm: 'HS256' }, (err, token) => {
-          if (err) {
-            return next(err);
-          }
+        session.user = user;
+        session.save();
 
-          res.cookie(cookieName, token, {
-            httpOnly: true
-          });
-          res.json(user);
-        });
+        res.json(user);
       })
+      .catch(next);
+  },
+
+  auth(req, res, next) {
+    const {
+      cookies,
+      session
+    } = req;
+
+    const cookie = cookies[cookieName];
+
+    if (!cookie) {
+      return next();
+    }
+
+    User.findOne({
+      where: { email }
+    })
       .catch((err) => {
         console.log(err);
-      });
-  },
 
-  auth,
-
-  socketParseCookies() {
-    const parser = cookieParser();
-
-    return (socket, next) => {
-      const { request: req } = socket;
-
-      parser(req, req.res, next);
-    };
-  },
-
-  socketAuth() {
-    const parser = cookieParser();
-
-    return (socket, next) => {
-      const {
-        request: req,
-        request: { res }
-      } = socket;
-
-      parser(req, res, (err) => {
-        console.log(req.cookies);
-
-        if (err) {
-          return next(notAuthorizedError);
-        }
-
-        auth(req, res, (err) => {
-          if (err || !req.user) {
-            return next(notAuthorizedError);
-          }
-
-          socket.user = req.user;
-
-          next();
-        });
-      });
-    };
-  }
-};
-
-function auth(req, res, next) {
-  const cookie = req.cookies[cookieName];
-
-  if (!cookie) {
-    return next();
-  }
-
-  try {
-    jwt.verify(cookie, secret, (err, email) => {
-      User.findOne({
-        where: { email }
+        return null;
       })
-        .then((user) => {
-          req.user = user;
+      .then((user) => {
+        session.user = user;
+        session.save();
+      });
+  },
 
-          next();
-        })
-        .catch(() => {
-          next();
-        });
-    });
-  } catch (err) {
-    console.log(err);
+  socketAuth(socket, next) {
+    const {
+      request: { session }
+    } = socket;
+
+    if (!session.user) {
+      return next(notAuthorizedError);
+    }
+
+    session.hexagon = {
+      rooms: {}
+    };
+
+    socket.session = session;
 
     next();
   }
-}
+};
