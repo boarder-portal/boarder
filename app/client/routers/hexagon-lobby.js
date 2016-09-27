@@ -5,9 +5,11 @@ import HexagonRoomState from './hexagon-room';
 import LoginState from './login';
 import HexagonLobbyStateTemplate from '../views/states/hexagon-lobby.pug';
 import RoomRowTemplate from '../views/partials/room-row.pug';
-import { io as ioConfig } from '../../config/constants.json';
+import { games as gamesConfig } from '../../config/constants.json';
 
-const { hexagonLobbyNsp } = ioConfig;
+const {
+  hexagon: { lobbyNsp }
+} = gamesConfig;
 
 class HexagonLobbyState extends HexagonState {
   static stateName = 'hexagon-lobby';
@@ -28,7 +30,7 @@ class HexagonLobbyState extends HexagonState {
   }
 
   onBeforeLoad(e) {
-    const socket = this.socket = io(hexagonLobbyNsp);
+    const socket = this.socket = io(lobbyNsp);
 
     socket.on('connect', () => {
       e.continue();

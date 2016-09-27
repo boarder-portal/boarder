@@ -58,3 +58,9 @@ server.listen(port, (error) => {
     console.info('Listening on port %s...', port);
   }
 });
+
+module.exports = {
+  app,
+  server,
+  io
+};

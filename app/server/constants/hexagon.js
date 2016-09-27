@@ -1,8 +1,13 @@
-const { store } = require('./');
+const {
+  constants,
+  store
+} = require('./');
 
 store.hexagon = {
-  rooms: {},
-  ROOM_DESTRUCTION_DELAY: 10000,
+  rooms: {}
+};
+
+constants.hexagon = {
   states: {
     BEFORE_PLAYING: 1,
     PLAYING: 2,

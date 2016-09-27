@@ -1,3 +1,4 @@
+const D = require('dwayne');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
@@ -134,18 +135,16 @@ module.exports = {
 
   socketAuth(socket, next) {
     const {
-      request: { session }
+      request: {
+        session: { user }
+      }
     } = socket;
 
-    if (!session.user) {
+    if (!user) {
       return next(notAuthorizedError);
     }
 
-    session.hexagon = {
-      rooms: {}
-    };
-
-    socket.session = session;
+    socket.user = user;
 
     next();
   }

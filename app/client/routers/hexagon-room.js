@@ -3,9 +3,11 @@ import { D } from 'dwayne';
 import HexagonState from './hexagon';
 import LoginState from './login';
 import HexagonRoomStateTemplate from '../views/states/hexagon-room.pug';
-import { io as ioConfig } from '../../config/constants.json';
+import { games as gamesConfig } from '../../config/constants.json';
 
-const { hexagonRoomNsp } = ioConfig;
+const {
+  hexagon: { roomNsp }
+} = gamesConfig;
 
 class HexagonRoomState extends HexagonState {
   static stateName = 'hexagon-room';
@@ -20,7 +22,7 @@ class HexagonRoomState extends HexagonState {
       params: { roomId }
     } = this;
 
-    const socket = this.socket = io(hexagonRoomNsp.replace(/\$roomId/, roomId));
+    const socket = this.socket = io(roomNsp.replace(/\$roomId/, roomId));
 
     window.socket = socket;
 

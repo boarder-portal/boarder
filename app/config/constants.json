@@ -1,7 +1,4 @@
 {
-  "cookie": {
-    "name": "boarder_email_cookie"
-  },
   "io": {
     "livereloadNsp": "/livereload",
     "hexagonNsp": "/hexagon",
@@ -32,7 +29,7 @@
     }
   },
   "games": {
-    "hexagon": {
+    "global": {
       "roomStatuses": {
         "NOT_PLAYING": 0,
         "PLAYING": 1
@@ -40,7 +37,19 @@
       "playerStatuses": {
         "PLAYER": 0,
         "OBSERVER": 1
+      },
+      "events": {
+        "lobby": {
+          "GET_LIST": "list/get",
+          "NEW_ROOM": "room/new",
+          "UPDATE_ROOM": "room/update",
+          "DELETE_ROOM": "room/delete"
+        }
       }
+    },
+    "hexagon": {
+      "lobbyNsp": "/hexagon/lobby",
+      "roomNsp": "hexagon/room/$roomId"
     }
   }
 }

@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const Store = redis(session);
 const { assetsPath } = require('../../config/constants.json');
-const { secret } = require('../../config/config.json');
+const { sessionExpires } = require('../../config/config.json');
 
 module.exports = (app) => {
   app.use(assetsPath, express.static(path.resolve('./public')));
@@ -21,7 +21,7 @@ module.exports = (app) => {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60000
+      maxAge: sessionExpires
     }
   }));
   app.use(bodyParser.urlencoded({ extended: false }));
