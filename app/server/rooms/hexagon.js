@@ -1,15 +1,12 @@
 const D = require('dwayne');
 const Room = require('./');
+const Player = require('../players/hexagon');
+const Game = require('../games/hexagon');
 const {
   games: {
-    hexagon: { roomNsp }
+    hexagon: { ROOM_NSP }
   }
 } = require('../../config/constants.json');
-const {
-  store: {
-    hexagon: { rooms }
-  }
-} = require('../constants');
 
 /**
  * @class HexagonRoom
@@ -22,8 +19,9 @@ class HexagonRoom extends Room {
 }
 
 D(HexagonRoom.prototype).assign({
-  _roomNsp: roomNsp,
-  rooms
+  _roomNsp: ROOM_NSP,
+  Player,
+  Game
 });
 
 module.exports = HexagonRoom;

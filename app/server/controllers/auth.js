@@ -1,12 +1,7 @@
-const D = require('dwayne');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
-const {
-  cookie: {
-    name: cookieName
-  }
-} = require('../../config/constants.json');
+const { session } = require('./session');
 
 const notAuthorizedError = new Error('Not authorized');
 
@@ -107,30 +102,12 @@ module.exports = {
       .catch(next);
   },
 
-  auth(req, res, next) {
+  socketSession(socket, next) {
     const {
-      cookies,
-      session
-    } = req;
+      request: req
+    } = socket;
 
-    const cookie = cookies[cookieName];
-
-    if (!cookie) {
-      return next();
-    }
-
-    User.findOne({
-      where: { email }
-    })
-      .catch((err) => {
-        console.log(err);
-
-        return null;
-      })
-      .then((user) => {
-        session.user = user;
-        session.save();
-      });
+    session(req, req.res, next);
   },
 
   socketAuth(socket, next) {

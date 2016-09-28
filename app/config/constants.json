@@ -1,11 +1,6 @@
 {
-  "io": {
-    "livereloadNsp": "/livereload",
-    "hexagonNsp": "/hexagon",
-    "hexagonLobbyNsp": "/hexagon/lobby",
-    "hexagonRoomNsp": "/hexagon/room/$roomId"
-  },
-  "assetsPath": "/public",
+  "LIVERELOAD_NSP": "/livereload",
+  "ASSETS_PATH": "/public",
   "endpoints": {
     "base": "/api",
     "users": {
@@ -34,9 +29,13 @@
         "NOT_PLAYING": 0,
         "PLAYING": 1
       },
+      "playerRoles": {
+        "OBSERVER": 0,
+        "PLAYER": 1
+      },
       "playerStatuses": {
-        "PLAYER": 0,
-        "OBSERVER": 1
+        "NOT_READY": 0,
+        "READY": 1
       },
       "events": {
         "lobby": {
@@ -44,12 +43,21 @@
           "NEW_ROOM": "room/new",
           "UPDATE_ROOM": "room/update",
           "DELETE_ROOM": "room/delete"
+        },
+        "room": {
+          "ENTER_ROOM": "room/enter",
+          "UPDATE_ROOM": "room/update",
+          "TOGGLE_PLAYER_STATUS": "player/toggle-status"
+        },
+        "game": {
+          "PREPARING_GAME": "game/preparing",
+          "GAME_STARTED": "game/started"
         }
       }
     },
     "hexagon": {
-      "lobbyNsp": "/hexagon/lobby",
-      "roomNsp": "hexagon/room/$roomId"
+      "LOBBY_NSP": "/hexagon/lobby",
+      "ROOM_NSP": "/hexagon/room/$roomId"
     }
   }
 }

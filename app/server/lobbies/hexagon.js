@@ -4,7 +4,7 @@ const Lobby = require('./');
 const Room = require('../rooms/hexagon');
 const {
   games: {
-    hexagon: { lobbyNsp }
+    hexagon: { LOBBY_NSP }
   }
 } = require('../../config/constants.json');
 const {
@@ -18,9 +18,9 @@ class HexagonLobby extends Lobby {
 }
 
 D(HexagonLobby.prototype).assign({
-  lobby: io.of(lobbyNsp),
+  lobby: io.of(LOBBY_NSP),
   Room,
-  _rooms: rooms
+  rooms
 });
 
 module.exports = HexagonLobby;

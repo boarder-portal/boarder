@@ -2,7 +2,7 @@ const path = require('path');
 const glob = require('glob');
 const pug = require('pug');
 
-const { assetsPath } = require('../../config/constants.json');
+const { ASSETS_PATH } = require('../../config/constants.json');
 const viewsDir = path.resolve('./app/server/views');
 const root = path.resolve('./');
 const { NODE_ENV } = process.env;
@@ -36,9 +36,9 @@ module.exports = (app) => {
   app.use(/.*/, (req, res) => {
     res.render('index', {
       lang: 'en',
-      allJS: `${ assetsPath }/js/all.js`,
-      allCSS: `${ assetsPath }/css/all.css`,
-      user: JSON.stringify(req.user || null),
+      allJS: `${ ASSETS_PATH }/js/all.js`,
+      allCSS: `${ ASSETS_PATH }/css/all.css`,
+      user: JSON.stringify(req.session.user || null),
       NODE_ENV: process.env.NODE_ENV
     });
   });

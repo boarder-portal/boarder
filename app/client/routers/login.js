@@ -47,6 +47,7 @@ class LoginState extends Router {
           return;
         }
 
+        Router.prototype._forceNew = true;
         store.user = user;
 
         form.hide();

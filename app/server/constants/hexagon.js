@@ -4,7 +4,7 @@ const {
 } = require('./');
 
 store.hexagon = {
-  rooms: {}
+  rooms: []
 };
 
 constants.hexagon = {

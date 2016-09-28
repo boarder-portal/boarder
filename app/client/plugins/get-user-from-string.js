@@ -1,11 +1,12 @@
-import { doc } from 'dwayne';
+import { doc, parseJSON } from 'dwayne';
 import { store } from '../constants';
 
-store.user = JSON.parse(
+store.user = parseJSON(
   doc
     .div()
     .html(window.boarderUser || null)
-    .text()
-);
+    .text(),
+  { dates: true }
+).$;
 
 console.log(store);

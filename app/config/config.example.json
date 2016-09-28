@@ -1,5 +1,6 @@
 {
   "port": 3333,
+  "cookieName": "boarder.sid",
   "sessionExpires": 2592000000,
   "secret": "secret"
 }

@@ -8,7 +8,17 @@ import RoomRowTemplate from '../views/partials/room-row.pug';
 import { games as gamesConfig } from '../../config/constants.json';
 
 const {
-  hexagon: { lobbyNsp }
+  global: {
+    events: {
+      lobby: {
+        GET_LIST,
+        NEW_ROOM,
+        UPDATE_ROOM,
+        DELETE_ROOM
+      }
+    }
+  },
+  hexagon: { LOBBY_NSP }
 } = gamesConfig;
 
 class HexagonLobbyState extends HexagonState {
@@ -22,7 +32,7 @@ class HexagonLobbyState extends HexagonState {
   constructor(props) {
     super(props);
     D(this).assign({
-      roomsToRender: {},
+      roomsToRender: [],
       roomsToAdd: [],
       roomsToUpdate: [],
       roomsToDelete: []
@@ -30,19 +40,21 @@ class HexagonLobbyState extends HexagonState {
   }
 
   onBeforeLoad(e) {
-    const socket = this.socket = io(lobbyNsp);
+    const { forceNew } = this;
 
+    const socket = this.socket = io(LOBBY_NSP, {
+      forceNew
+    });
+
+    socket.on(GET_LIST, this.onListReceived.bind(this));
+    socket.on(NEW_ROOM, this.onNewRoom.bind(this));
+    socket.on(UPDATE_ROOM, this.onUpdateRoom.bind(this));
+    socket.on(DELETE_ROOM, this.onDeleteRoom.bind(this));
     socket.on('connect', () => {
       e.continue();
 
       console.log('connected');
-
-      socket.on('rooms/list', this.onListReceived.bind(this));
-      socket.on('room/new', this.onNewRoom.bind(this));
-      socket.on('room/update', this.onUpdateRoom.bind(this));
-      socket.on('room/delete', this.onDeleteRoom.bind(this));
     });
-
     socket.on('error', (err) => {
       e.stop();
 
@@ -52,7 +64,6 @@ class HexagonLobbyState extends HexagonState {
 
       console.log(err);
     });
-
     socket.on('disconnect', () => {
       console.log('disconnected');
     });
@@ -97,7 +108,7 @@ class HexagonLobbyState extends HexagonState {
     }
 
     D(roomsToRender)
-      .assign(roomsToAdd)
+      .concat(roomsToAdd)
       .forEach((room) => {
         this.addRoom(room);
       });
@@ -137,8 +148,12 @@ class HexagonLobbyState extends HexagonState {
             value: room.playersCount - D(room.players).sum(isNull)
           }
         ],
-        link: HexagonRoomState.buildURL({
+        playLink: HexagonRoomState.buildURL({
           params: { roomId: room.id }
+        }),
+        observeLink: HexagonRoomState.buildURL({
+          params: { roomId: room.id },
+          query: { observe: true }
         })
       }))
       .children();

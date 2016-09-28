@@ -1,21 +1,19 @@
 import io from 'socket.io-client';
 import { D, find, doc, Elem } from 'dwayne';
 import {
-  io as ioConfig,
-  assetsPath as assets
+  LIVERELOAD_NSP,
+  ASSETS_PATH
 } from '../../config/constants.json';
-
-const { livereloadNsp } = ioConfig;
 
 const livereload = find('#livereload')
   .addClass('loaded');
 
 const ready = doc
   .img('.image')
-  .ref(`${ assets }/images/checkmark.png`);
+  .ref(`${ ASSETS_PATH }/images/checkmark.png`);
 const loading = doc
   .img('.image')
-  .ref(`${ assets }/images/loading.gif`);
+  .ref(`${ ASSETS_PATH }/images/loading.gif`);
 
 new Elem([ready, loading])
   .load()
@@ -23,7 +21,7 @@ new Elem([ready, loading])
     livereload.child(ready);
   });
 
-const socket = io(livereloadNsp);
+const socket = io(LIVERELOAD_NSP);
 
 window.D = D;
 

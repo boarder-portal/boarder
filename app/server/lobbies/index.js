@@ -1,12 +1,15 @@
 const D = require('dwayne');
 const { io } = require('../');
-const { socketAuth } = require('../controllers/auth');
+const {
+  socketSession,
+  socketAuth
+} = require('../controllers/auth');
 const {
   games: {
     global: {
       events: {
         lobby: {
-          LIST_GET,
+          GET_LIST,
           NEW_ROOM,
           UPDATE_ROOM,
           DELETE_ROOM
@@ -15,6 +18,12 @@ const {
     }
   }
 } = require('../../config/constants.json');
+
+const {
+  now,
+  alphabet: Alphabet
+} = D;
+const alphabet = Alphabet('a-zA-Z');
 
 /**
  * @class Lobby
@@ -41,6 +50,7 @@ class Lobby {
   constructor() {
     const { lobby } = this;
 
+    lobby.use(socketSession);
     lobby.use(socketAuth);
     lobby.on('connection', this.userEnter.bind(this));
   }
@@ -48,18 +58,60 @@ class Lobby {
   /**
    * @method Lobby#createRoom
    * @public
+   * @param {*} data
    */
   createRoom() {
     const {
       Room,
       lobby,
-      _rooms
+      rooms
     } = this;
-    const room = new Room();
 
-    _rooms[room.id] = room;
+    let roomId = alphabet.token(15);
+
+    while (rooms.some(({ id }) => roomId === id)) {
+      roomId = alphabet.token(15);
+    }
+
+    const roomData = {
+      id: roomId,
+      lobby: this,
+      playersCount: 3,
+      name: `room-${ now() }`
+    };
+    const room = new Room(roomData);
+
+    rooms.push(room);
 
     lobby.emit(NEW_ROOM, room);
+
+    console.log(`creating room #${ room.id }`);
+  }
+
+  /**
+   * @method Lobby#deleteRoom
+   * @public
+   * @param {Room} room
+   */
+  deleteRoom(room) {
+    const {
+      lobby,
+      rooms
+    } = this;
+    const {
+      id,
+      room: { name }
+    } = room;
+    const roomIndex = rooms.indexOf(room);
+
+    if (roomIndex !== -1) {
+      rooms.splice(roomIndex, 1);
+    }
+
+    delete io.nsps[name];
+
+    lobby.emit(DELETE_ROOM, id);
+    console.log(`deleting room #${ room.id }`);
   }
 
   /**
@@ -74,31 +126,14 @@ class Lobby {
   }
 
   /**
-   * @method Lobby#deleteRoom
-   * @public
-   * @param {Room} room
-   */
-  deleteRoom(room) {
-    const {
-      lobby,
-      _rooms
-    } = this;
-
-    delete _rooms[id];
-    delete io.nsps[nsp];
-
-    lobby.emit(DELETE_ROOM, room);
-  }
-
-  /**
    * @method Lobby#userEnter
    * @public
    * @param {Socket} socket
    */
   userEnter(socket) {
-    console.log(`connected to ${ this.name } lobby`);
+    console.log('connected to lobby');
 
-    socket.emit(LIST_GET, this.rooms);
+    socket.emit(GET_LIST, this.rooms);
 
     socket.on(NEW_ROOM, this.createRoom.bind(this));
     socket.on('disconnect', () => this.userLeave(socket));
@@ -110,7 +145,7 @@ class Lobby {
    * @param {Socket} socket
    */
   userLeave() {
-    console.log(`disconnected from ${ this.name } lobby`);
+    console.log('disconnected from lobby');
   }
 }
 

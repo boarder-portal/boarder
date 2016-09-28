@@ -6,7 +6,14 @@ import HexagonRoomStateTemplate from '../views/states/hexagon-room.pug';
 import { games as gamesConfig } from '../../config/constants.json';
 
 const {
-  hexagon: { roomNsp }
+  global: {
+    events: {
+      room: {
+        ENTER_ROOM
+      }
+    }
+  },
+  hexagon: { ROOM_NSP }
 } = gamesConfig;
 
 class HexagonRoomState extends HexagonState {
@@ -19,19 +26,22 @@ class HexagonRoomState extends HexagonState {
 
   onBeforeLoad(e) {
     const {
-      params: { roomId }
+      params: { roomId },
+      query: { observe },
+      forceNew
     } = this;
 
-    const socket = this.socket = io(roomNsp.replace(/\$roomId/, roomId));
+    const socket = this.socket = io(ROOM_NSP.replace(/\$roomId/, roomId), {
+      forceNew,
+      query: { role: observe ? 'observer' : '' }
+    });
 
-    window.socket = socket;
-
+    socket.on(ENTER_ROOM, this.onEnterRoom.bind(this));
     socket.on('connect', () => {
       e.continue();
 
       console.log('connected');
     });
-
     socket.on('error', (err) => {
       console.log(err);
 
@@ -45,7 +55,6 @@ class HexagonRoomState extends HexagonState {
         .timeout()
         .then(() => LoginState.go());
     });
-
     socket.on('disconnect', () => {
       console.log('disconnected');
     });
@@ -57,13 +66,12 @@ class HexagonRoomState extends HexagonState {
     console.log(roomData);
   }
 
-  onRender() {
-    const {
-      // base,
-      socket
-    } = this;
+  renderRoom() {
 
-    socket.on('room/enter', this.onEnterRoom.bind(this));
+  }
+
+  onRender() {
+
   }
 
   onLeave() {

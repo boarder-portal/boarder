@@ -1,15 +1,21 @@
-/* eslint eqeqeq: 0 */
 const D = require('dwayne');
-const { socketAuth } = require('../controllers/auth');
+const {
+  socketSession,
+  socketAuth
+} = require('../controllers/auth');
 const { io } = require('../index');
 const {
   games: {
     global: {
-      roomStatuses: {
-        NOT_PLAYING,
-        PLAYING
+      events: {
+        room: {
+          ENTER_ROOM,
+          UPDATE_ROOM,
+          TOGGLE_PLAYER_STATUS
+        }
       },
-      playerStatuses: {
+      roomStatuses: { NOT_PLAYING },
+      playerRoles: {
         PLAYER,
         OBSERVER
       }
@@ -23,14 +29,12 @@ const {
 } = require('../constants/index');
 
 const {
-  alphabet: Alphabet,
   array,
   isNull,
-  method,
-  now
+  method
 } = D;
 const disconnect = method('disconnect');
-const alphabet = Alphabet('a-z');
+const isReady = method('isReady');
 
 /**
  * @class Room
@@ -66,6 +70,10 @@ class Room {
    * @public
    */
   /**
+   * @member {Number} Room#_expires
+   * @protected
+   */
+  /**
    * @member {Promise} Room#_timeout
    * @protected
    */
@@ -76,112 +84,39 @@ class Room {
 
   constructor(props) {
     const { _roomNsp } = this;
-    const { expires = ROOM_DESTRUCTION_DELAY } = props;
-    const roomId = `${ alphabet.token(7) }-${ now() }`;
-    const room = io.of(_roomNsp.replace(/\$roomId/, roomId));
+    const {
+      id,
+      playersCount,
+      _expires = ROOM_DESTRUCTION_DELAY
+    } = props;
+    const room = io.of(_roomNsp.replace(/\$roomId/, id));
+    const timeout = D(0).timeout();
 
-    D(this)
-      .assign({
-        id: roomId,
-        name: 'default',
-        status: NOT_PLAYING,
-        players: array(props.playersCount, () => null),
-        observers: [],
-        room,
-        _timeout: D(0).timeout()
-      }, props);
+    timeout.catch(() => {});
 
-    this.expires(expires);
+    D(this).assign({
+      status: NOT_PLAYING,
+      players: array(playersCount, () => null).$,
+      observers: [],
+      room,
+      _timeout: timeout
+    }, props, {
+      _expires
+    });
 
+    this.expires(_expires);
+
+    room.use(socketSession);
     room.use(socketAuth);
     room.on('connection', this.userEnter.bind(this));
   }
 
   /**
-   * @method Room#expires
+   * @method Room#delete
    * @public
-   * @param {Number} time
    */
-  expires(time) {
-    this._timeout.abort();
-
-    time = time === Infinity ? Math.pow(10, 20) : time;
-
-    this._timeout = D(time)
-      .timeout()
-      .then(() => this.delete())
-      .catch(() => {});
-  }
-
-  /**
-   * @method Room#userEnter
-   * @param {Socket} socket
-   */
-  userEnter(socket) {
-    console.log(`connected to ${ this.name } room`);
-
-    this.expires(Infinity);
-
-    const {
-      request: {
-        query: { role }
-      },
-      session: { user }
-    } = socket;
-
-    socket.role = role == OBSERVER ? role : PLAYER;
-
-    const {
-      players,
-      observers,
-      lobby,
-      room
-    } = this;
-
-    const existentPlayer = D(players).find((player) => player.login === user.login);
-
-    if (existentPlayer) {
-      socket.player = existentPlayer;
-
-      return;
-    }
-
-    const player = {
-      login: user.login
-    };
-    const { key } = D(players).find(isNull) || {};
-
-    if (isNull(key)) {
-      player.status = OBSERVER;
-      observers.push(player);
-    } else {
-      player.status = PLAYER;
-      player.playerId = key;
-      players[key] = player;
-    }
-
-    socket.player = player;
-
-    lobby.updateRoom(this);
-
-    room.emit('player/enter', this);
-    socket.emit('room/enter', this);
-
-    socket.on('disconnect', () => this.userLeave(socket));
-  }
-
-  /**
-   * @method Room#userLeave
-   * @public
-   * @param {Socket} socket
-   */
-  userLeave(socket) {
-
-  }
-
   delete() {
     const {
-      id,
       lobby,
       room
     } = this;
@@ -195,11 +130,206 @@ class Room {
       sockets.forEach(disconnect);
     }
 
-    console.log(room);
+    lobby.deleteRoom(this);
+  }
 
-    lobby.deleteRoom(id);
+  /**
+   * @method Room#expires
+   * @public
+   * @param {Number} time
+   */
+  expires(time) {
+    this._timeout.abort();
 
-    console.log('deleting room');
+    if (time === Infinity) {
+      return;
+    }
+
+    const timeout = this._timeout = D(time)
+      .timeout();
+
+    timeout
+      .then(() => this.delete(), () => {})
+      .catch(() => {});
+  }
+
+  /**
+   * @method Room#isRequiredPlayers
+   * @public
+   * @returns {Boolean}
+   */
+  isRequiredPlayers() {
+    const { players } = this;
+
+    return players.sum((player) => !isNull(player)) > 1;
+  }
+
+  /**
+   * @method Room#update
+   * @public
+   * @param {Socket} [socket]
+   */
+  update(socket) {
+    const {
+      lobby,
+      room
+    } = this;
+    const channel = socket ? socket.broadcast : room;
+
+    lobby.updateRoom(this);
+    channel.emit(UPDATE_ROOM, this);
+  }
+
+  /**
+   * @method Room#userEnter
+   * @param {Socket} socket
+   */
+  userEnter(socket) {
+    console.log(`entering room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
+
+    if (socket.player) {
+      return;
+    }
+
+    this.expires(Infinity);
+
+    socket.room = this;
+    socket.on('disconnect', () => this.userLeave(socket));
+
+    const {
+      handshake: {
+        query: { role }
+      },
+      user
+    } = socket;
+    const {
+      players,
+      observers,
+      Player,
+      game
+    } = this;
+    const eventualRole = role === 'observer' || game ? OBSERVER : PLAYER;
+    const isPlayer = eventualRole === PLAYER;
+
+    socket.role = eventualRole;
+
+    let player = players.find((player) => player && player.login === user.login);
+
+    if (!player) {
+      const { key } = D(players).find(isNull) || {};
+      const willBePlayer = !isNull(key) && isPlayer;
+
+      player = new Player({
+        login: user.login,
+        room: this
+      });
+
+      if (willBePlayer) {
+        players[key] = player;
+      } else {
+        observers.push(player);
+      }
+
+      this.update(socket);
+    }
+
+    player.sockets.push(socket.id);
+
+    socket.player = player;
+    socket.emit(ENTER_ROOM, {
+      role: eventualRole,
+      room: this
+    });
+
+    if (isPlayer) {
+      socket.on(TOGGLE_PLAYER_STATUS, () => this.toggleUserStatus(player));
+    }
+  }
+
+  /**
+   * @method Room#toogleUserStatus
+   * @public
+   * @param {Player} player
+   */
+  toggleUserStatus(player) {
+    const {
+      players,
+      room,
+      Game
+    } = this;
+
+    player.toggleStatus();
+
+    if (players.every(isReady) && this.isRequiredPlayers()) {
+      this.game = new Game({
+        game: room,
+        players
+      });
+    }
+  }
+
+  /**
+   * @method Room#userLeave
+   * @public
+   * @param {Socket} socket
+   */
+  userLeave(socket) {
+    const {
+      room: {
+        status,
+        players,
+        observers
+      },
+      player
+    } = socket;
+
+    const playerIndex = players.indexOf(player);
+    const observerIndex = observers.indexOf(player);
+
+    if (playerIndex !== -1 && status === NOT_PLAYING) {
+      const { sockets } = player;
+      const existentSocketIndex = sockets.indexOf(socket.id);
+
+      if (existentSocketIndex !== -1) {
+        sockets.splice(existentSocketIndex, 1);
+      }
+
+      if (!sockets.length) {
+        players[playerIndex] = null;
+
+        this.update();
+      }
+    } else if (observerIndex !== -1) {
+      observers.splice(observerIndex, 1);
+
+      this.update();
+    }
+
+    if (players.every(isNull) && !observers.length) {
+      this.expires(this._expires);
+    }
+
+    console.log(`leaving  room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
+  }
+
+  toJSON() {
+    const {
+      id,
+      name,
+      playersCount,
+      status,
+      players,
+      observers
+    } = this;
+
+    return {
+      id,
+      name,
+      playersCount,
+      status,
+      players,
+      observers: observers.length
+    };
   }
 }
 
