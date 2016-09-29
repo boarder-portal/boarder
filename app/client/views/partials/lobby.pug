@@ -1,0 +1,10 @@
+div
+  input.boarder-input.success.create-room-btn(
+  type='submit'
+  value=createRoomCaption
+  )
+table.rooms-table(class=`${ gameName }-rooms-table`)
+  thead
+    each colName in colNames
+      th= colName
+  tbody.rooms(class=`${ gameName }-rooms`)

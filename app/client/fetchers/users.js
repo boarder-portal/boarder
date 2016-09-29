@@ -1,4 +1,4 @@
-import constructFetchers from '../helpers/construct-fetchers';
+import { constructFetchers } from '../helpers';
 import { fetcher, baseURL } from './';
 import { endpoints } from '../../config/constants.json';
 

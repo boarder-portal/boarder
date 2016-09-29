@@ -1,5 +1,7 @@
 const cp = require('child_process');
 const path = require('path');
+const fs = require('fs');
+const D = require('dwayne');
 const gulp = require('gulp');
 const less = require('gulp-less');
 const rename = require('gulp-rename');
@@ -8,13 +10,19 @@ const sourcemaps = require('gulp-sourcemaps');
 const Autoprefixer = require('less-plugin-autoprefix');
 const rollup = require('rollup');
 const watch = require('rollup-watch');
+const glob = require('glob');
 
+const root = path.resolve('./');
 const { port } = require('./app/config/config.json');
 const rollupDevConfig = require('./rollup.dev.config');
+const LOCALES_ROOT = './app/server/locales';
+const LOCALES = `${ LOCALES_ROOT }/**/*.json`;
+const LESS_ROOT = './app/client/styles/index.less';
+const PUBLIC_PATH = path.resolve('./public');
 
 let child;
 
-gulp.task('default', ['server:dev', 'watch:server', 'copy:fonts', 'less', 'watch:less', 'client:dev']);
+gulp.task('default', ['watch:server', 'copy:fonts', 'watch:less', 'client:dev', 'watch:locales']);
 
 gulp.task('db:migration:create', () => (
   run('sequelize migration:create').exec()
@@ -101,7 +109,7 @@ gulp.task('client:dev', () => {
 });
 
 gulp.task('less', () => (
-  gulp.src('./app/client/styles/index.less')
+  gulp.src(LESS_ROOT)
     .pipe(sourcemaps.init())
     .pipe(less({
       plugins: [
@@ -115,11 +123,56 @@ gulp.task('less', () => (
     .pipe(gulp.dest('./public/css'))
 ));
 
-gulp.task('watch:less', () => (
+gulp.task('build:locales', (done) => {
+  const locales = {};
+
+  fs.stat(`${ PUBLIC_PATH }/i18n`, (err) => {
+    if (err) {
+      fs.mkdirSync(`${ PUBLIC_PATH }/i18n`);
+    }
+
+    glob(LOCALES, { root }, (err, filenames) => {
+      if (err) {
+        return done(err);
+      }
+
+      filenames.forEach((filename) => {
+        const absoluteFilename = path.resolve(root, filename);
+        const relativeFilename = path.relative(LOCALES_ROOT, filename);
+        const modules = relativeFilename.split(path.sep);
+        const locale = modules.pop().split('.')[0];
+        const translations = locales[locale] = locales[locale] || {};
+
+        modules.push(1);
+
+        modules.reduce((localTranslations, module, index) => {
+          if (index === modules.length - 1) {
+            return D(localTranslations).deepAssign(JSON.parse(fs.readFileSync(absoluteFilename)));
+          }
+
+          /* eslint no-return-assign: 0 */
+          return localTranslations[module] = localTranslations[module] || {};
+        }, translations);
+      });
+
+      D(locales).forEach((translations, locale) => {
+        fs.writeFileSync(`${ PUBLIC_PATH }/i18n/${ locale }.json`, D(translations).json());
+      });
+
+      done();
+    });
+  });
+});
+
+gulp.task('watch:locales', ['build:locales'], () => (
+  gulp.watch(LOCALES, ['build:locales'])
+));
+
+gulp.task('watch:less', ['less'], () => (
   gulp.watch('./app/client/styles/**/*.less', ['toreload', 'less', 'reload'])
 ));
 
-gulp.task('watch:server', () => (
+gulp.task('watch:server', ['server:dev'], () => (
   gulp.watch([
     './app/server/**/*.!(pug)',
     './app/config/**/*'
