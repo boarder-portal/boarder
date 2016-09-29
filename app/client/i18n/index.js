@@ -6,7 +6,7 @@ const i18n = new I18n(
   parseJSON(
     doc
       .div()
-      .html(window.boarderI18n || {})
+      .html(window.boarderI18n || '{}')
       .text()
   ).$
 );
