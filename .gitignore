@@ -2,7 +2,7 @@ node_modules/
 .idea/
 
 app/server/db/config.json
-app/server/i18n
+app/server/i18n/
 app/config/config.json
 
 public/js/all.js
@@ -10,4 +10,4 @@ public/js/all.js.map
 public/css/all.css
 public/css/all.css.map
 public/fonts/font-awesome/
-public/i18n/*.js
+public/i18n/
