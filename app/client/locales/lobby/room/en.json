@@ -1,0 +1,6 @@
+{
+  "statuses": {
+    "not_playing": "Not playing",
+    "playing": "Playing"
+  }
+}

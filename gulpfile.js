@@ -1,7 +1,5 @@
 const cp = require('child_process');
 const path = require('path');
-const fs = require('fs');
-const D = require('dwayne');
 const gulp = require('gulp');
 const less = require('gulp-less');
 const rename = require('gulp-rename');
@@ -10,15 +8,25 @@ const sourcemaps = require('gulp-sourcemaps');
 const Autoprefixer = require('less-plugin-autoprefix');
 const rollup = require('rollup');
 const watch = require('rollup-watch');
-const glob = require('glob');
 
-const root = path.resolve('./');
 const { port } = require('./app/config/config.json');
 const rollupDevConfig = require('./rollup.dev.config');
-const LOCALES_ROOT = './app/server/locales';
-const LOCALES = `${ LOCALES_ROOT }/**/*.json`;
-const LESS_ROOT = './app/client/styles/index.less';
+const sendEmail = require('./app/server/helpers/send-email');
+const buildLocales = require('./app/server/helpers/build-locales');
+const {
+  en,
+  ru
+} = require('./app/server/helpers/i18n');
+
+const root = path.resolve('.');
 const PUBLIC_PATH = path.resolve('./public');
+const PUBLIC_I18N = `${ PUBLIC_PATH }/i18n`;
+const SERVER_I18N = `${ root }/app/server/i18n`;
+const CLIENT_LOCALES_ROOT = './app/client/locales';
+const SERVER_LOCALES_ROOT = './app/server/locales';
+const CLIENT_LOCALES = `${ CLIENT_LOCALES_ROOT }/**/*.json`;
+const SERVER_LOCALES = `${ SERVER_LOCALES_ROOT }/*.json`;
+const LESS_ROOT = './app/client/styles/index.less';
 
 let child;
 
@@ -123,49 +131,43 @@ gulp.task('less', () => (
     .pipe(gulp.dest('./public/css'))
 ));
 
-gulp.task('build:locales', (done) => {
-  const locales = {};
+gulp.task('build:server:locales', () => (
+  buildLocales(SERVER_LOCALES_ROOT, SERVER_I18N)
+));
 
-  fs.stat(`${ PUBLIC_PATH }/i18n`, (err) => {
-    if (err) {
-      fs.mkdirSync(`${ PUBLIC_PATH }/i18n`);
+gulp.task('build:client:locales', () => (
+  buildLocales(CLIENT_LOCALES_ROOT, PUBLIC_I18N, true)
+));
+
+gulp.task('build:locales', ['build:server:locales', 'build:client:locales']);
+
+gulp.task('email:send', () => (
+  sendEmail({
+    from: {
+      name: 'John Doe',
+      email: 'noreply@boarder.tk'
+    },
+    to: 'oklix16@mail.ru',
+    subject: 'Test',
+    viewPath: 'email/register',
+    locals: {
+      login: 'droooney',
+      hello: en.t('email.register.hello'),
+      welcomeCaption: en.t('email.register.welcome_caption'),
+      confirmLink: 'http://localhost:3333/confirm_register?token=iuh7986tf768g6g'
+        .link('http://localhost:3333/confirm_register?token=iuh7986tf768g6g')
     }
+  })
+));
 
-    glob(LOCALES, { root }, (err, filenames) => {
-      if (err) {
-        return done(err);
-      }
+gulp.task('watch:locales', ['watch:server:locales', 'watch:client:locales']);
 
-      filenames.forEach((filename) => {
-        const absoluteFilename = path.resolve(root, filename);
-        const relativeFilename = path.relative(LOCALES_ROOT, filename);
-        const modules = relativeFilename.split(path.sep);
-        const locale = modules.pop().split('.')[0];
-        const translations = locales[locale] = locales[locale] || {};
+gulp.task('watch:server:locales', ['build:server:locales'], () => (
+  gulp.watch(SERVER_LOCALES, ['build:server:locales'])
+));
 
-        modules.push(1);
-
-        modules.reduce((localTranslations, module, index) => {
-          if (index === modules.length - 1) {
-            return D(localTranslations).deepAssign(JSON.parse(fs.readFileSync(absoluteFilename)));
-          }
-
-          /* eslint no-return-assign: 0 */
-          return localTranslations[module] = localTranslations[module] || {};
-        }, translations);
-      });
-
-      D(locales).forEach((translations, locale) => {
-        fs.writeFileSync(`${ PUBLIC_PATH }/i18n/${ locale }.json`, D(translations).json());
-      });
-
-      done();
-    });
-  });
-});
-
-gulp.task('watch:locales', ['build:locales'], () => (
-  gulp.watch(LOCALES, ['build:locales'])
+gulp.task('watch:client:locales', ['build:client:locales'], () => (
+  gulp.watch(CLIENT_LOCALES, ['build:client:locales'])
 ));
 
 gulp.task('watch:less', ['less'], () => (

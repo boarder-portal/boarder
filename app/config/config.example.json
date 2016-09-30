@@ -1,6 +1,21 @@
 {
   "port": 3333,
-  "cookieName": "boarder.sid",
-  "sessionExpires": 2592000000,
+  "cookieName": "cookie",
+  "mail": {
+    "auth": {
+      "user": "mail@example.com",
+      "pass": "password"
+    },
+    "emails": {
+      "register": {
+        "from": {
+          "name": "name",
+          "email": "email"
+        },
+        "subject": "subject"
+      }
+    }
+  },
+  "sessionExpires": 60000,
   "secret": "secret"
 }

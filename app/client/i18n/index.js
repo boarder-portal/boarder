@@ -1,5 +1,5 @@
 import { doc, html, parseJSON } from 'dwayne';
-import I18n from './i18n';
+import I18n from '../../shared/i18n';
 
 const i18n = new I18n(
   html.attr('lang') || 'en',

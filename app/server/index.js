@@ -27,7 +27,7 @@ console.log();
 requireAndExecute('/app/server/sockets/*.js', io);
 requireAndExecute([
   '/app/server/routers/base.js',
-  '/app/server/routers/!(api|base|render).js',
+  '/app/server/routers/locale.js',
   '/app/server/routers/api.js',
   '/app/server/routers/render.js'
 ], app);

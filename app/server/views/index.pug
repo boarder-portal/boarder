@@ -16,7 +16,10 @@ html(lang=lang)
     div#dwayne-router
     script.
       window.boarderUser = '#{ user }';
-      window.boarderI18n = '#{ i18n }';
+    script(
+      type="text/javascript"
+      src=i18n
+    )
     script(
       type="text/javascript"
       src=allJS

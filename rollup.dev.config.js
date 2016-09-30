@@ -36,14 +36,17 @@ module.exports = {
       inlineFunctions: true
     }),
     cjs({
-      include: 'node_modules/**',
-      exclude: 'node_modules/rollup-plugin-node-builtins/**'
+      include: [
+        './node_modules/**/*.js',
+        './app/shared/**/*.js'
+      ],
+      exclude: './node_modules/rollup-plugin-node-builtins/**/*.js'
     }),
     eslint({
       include: './app/**/*.js'
     }),
     babel({
-      include: './app/**/*.js'
+      include: './app/**/*.@(js|pug)'
     }),
     inject({
       exclude: './node_modules/dwayne/lib/constants/global.js',
