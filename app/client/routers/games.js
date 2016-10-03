@@ -1,9 +1,9 @@
-import { D, Router } from 'dwayne';
+import BaseState from './base';
 import LoginState from './login';
 import GamesStateTemplate from '../views/states/games.pug';
 import { store } from '../constants';
 
-class GamesState extends Router {
+class GamesState extends BaseState {
   static abstract = true;
   static stateName = 'games';
   static path = '/games';
@@ -11,11 +11,7 @@ class GamesState extends Router {
 
   onBeforeLoad(e) {
     if (!store.user) {
-      e.stop();
-
-      D(0)
-        .timeout()
-        .then(() => LoginState.go());
+      e.go(LoginState.buildURL());
     }
   }
 }

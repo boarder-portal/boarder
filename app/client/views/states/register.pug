@@ -10,40 +10,36 @@ mixin input-container(attrs)
       input.boarder-input&attributes(attrs)
 
 div.auth-block.register-block
-  span.auth-header= registerHeaderCaption
+  span.auth-header= i18n.t('register.header')
   form.auth-form.register-form(autocomplete='off')
     div.auth-spinner-container
     +input-container({
       id: 'login',
       type: 'text',
       name: 'login',
-      placeholder: loginCaption,
-      required: ''
+      placeholder: i18n.t('register.fields.login')
     })
     +input-container({
       id: 'email',
-      type: 'email',
+      type: 'text',
       name: 'email',
-      placeholder: emailCaption,
-      required: ''
+      placeholder: i18n.t('register.fields.email')
     })
     +input-container({
       id: 'password',
       type: 'password',
       name: 'password',
-      placeholder: passwordCaption,
-      required: ''
+      placeholder: i18n.t('register.fields.password')
     })
     +input-container({
       id: 'password-repeat',
       type: 'password',
       name: 'password-repeat',
-      placeholder: passwordRepeatCaption,
-      required: ''
+      placeholder: i18n.t('register.fields.password_repeat')
     })
     +input-container({
       class: 'success',
       type: 'submit',
-      value: registerActionCaption
+      value: i18n.t('register.action')
     })
-  div.auth-success-caption.register-success-caption.hidden= registerSuccessCaption
+  div.auth-success-caption.register-success-caption.hidden= i18n.t('register.success')

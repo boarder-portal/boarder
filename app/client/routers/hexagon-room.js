@@ -20,9 +20,6 @@ class HexagonRoomState extends HexagonState {
   static stateName = 'hexagon-room';
   static path = '/:roomId';
   static template = HexagonRoomStateTemplate;
-  static templateParams = {
-    observerCaption: 'You can only observe the game'
-  };
 
   onBeforeLoad(e) {
     const {

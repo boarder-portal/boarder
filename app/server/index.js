@@ -4,7 +4,13 @@ const sio = require('socket.io');
 const redis = require('socket.io-redis');
 
 const { requireAndExecute } = require('./helpers/require-glob');
-const { port } = require('../config/config.json');
+const {
+  port,
+  redis: {
+    host: redisHost,
+    port: redisPort
+  }
+} = require('../config/config.json');
 const { LIVERELOAD_NSP } = require('../config/constants.json');
 
 const app = express();
@@ -14,7 +20,7 @@ const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
 let livereload;
 
-io.adapter(redis('redis://localhost:6379'));
+io.adapter(redis(`redis://${ redisHost }:${ redisPort }`));
 
 module.exports = {
   app,

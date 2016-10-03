@@ -85,11 +85,7 @@ class Lobby {
       console.log('connected');
     });
     socket.on('error', (err) => {
-      e.stop();
-
-      D(0)
-        .timeout()
-        .then(() => LoginState.go());
+      e.go(LoginState.buildURL());
 
       console.log(err);
     });

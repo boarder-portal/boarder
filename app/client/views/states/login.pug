@@ -2,25 +2,25 @@ mixin input-container(attrs)
   input.boarder-input&attributes(attrs)
 
 div.auth-block.login-block
-  span.auth-header= loginHeaderCaption
+  span.auth-header= i18n.t('login.header')
   form.auth-form.login-form(autocomplete='off')
     div.auth-spinner-container
-      div.check-credentials-caption.hidden= checkCredentialsCaption
+      div.check-credentials-caption.hidden= i18n.t('login.try_again')
     +input-container({
       id: 'login',
       type: 'text',
       name: 'login',
-      placeholder: loginOrEmailCaption
+      placeholder: i18n.t('login.fields.login')
     })
     +input-container({
       id: 'password',
       type: 'password',
       name: 'password',
-      placeholder: passwordCaption
+      placeholder: i18n.t('login.fields.password')
     })
     +input-container({
       class: 'success',
       type: 'submit',
-      value: loginActionCaption
+      value: i18n.t('login.action')
     })
-  div.auth-success-caption.login-success-caption.hidden= loginSuccessCaption
+  div.auth-success-caption.login-success-caption.hidden= i18n.t('login.success')

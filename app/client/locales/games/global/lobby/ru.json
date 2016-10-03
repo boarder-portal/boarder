@@ -1,5 +1,6 @@
 {
-  "statuses": {
+  "create_room": "Создать комнату",
+  "room_statuses": {
     "not_playing": "Игра еще не началась",
     "playing": "Идет игра"
   }

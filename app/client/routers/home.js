@@ -1,33 +1,17 @@
 import { D, Router } from 'dwayne';
+import BaseState from './base';
 import HomeStateTemplate from '../views/states/home.pug';
 
-class HomeState extends Router {
+class HomeState extends BaseState {
   static stateName = 'home';
   static path = '/';
   static template = HomeStateTemplate;
-
-  constructor(props) {
-    super(props);
-
-    const { templateParams } = this;
-
-    D(templateParams).deepAssign({
-      links: {
-        games: 'Games'.link(templateParams.urls.games)
-      }
-    });
-  }
 }
 
 Router.on('init', () => {
-  const homeURL = HomeState.buildURL();
-
-  D(Router.templateParams).deepAssign({
-    urls: {
-      home: homeURL
-    },
+  D(BaseState.templateParams).deepAssign({
     headerParams: {
-      homeLink: 'Boarder'.link(homeURL)
+      homeLink: HomeState.buildURL()
     }
   });
 });

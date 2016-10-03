@@ -1,20 +1,13 @@
 import { D, Router } from 'dwayne';
+import BaseState from './base';
 import { fetch } from '../fetchers/users';
 import LoginStateTemplate from '../views/states/login.pug';
 import { images, store } from '../constants';
 
-class LoginState extends Router {
+class LoginState extends BaseState {
   static stateName = 'login';
   static path = '/login';
   static template = LoginStateTemplate;
-  static templateParams = {
-    loginHeaderCaption: 'Log in',
-    checkCredentialsCaption: 'Check login or password and try again',
-    loginSuccessCaption: 'Success!',
-    loginOrEmailCaption: 'Login or email',
-    passwordCaption: 'Password',
-    loginActionCaption: 'Log in'
-  };
 
   submit(e) {
     e.preventDefault();
@@ -89,14 +82,9 @@ class LoginState extends Router {
 }
 
 Router.on('init', () => {
-  const loginURL = LoginState.buildURL();
-
-  D(Router.templateParams).deepAssign({
-    urls: {
-      login: loginURL
-    },
+  D(BaseState.templateParams).deepAssign({
     headerParams: {
-      loginLink: 'Log in'.link(loginURL)
+      loginLink: LoginState.buildURL()
     }
   });
 });

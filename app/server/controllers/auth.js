@@ -1,7 +1,5 @@
 const D = require('dwayne');
-const path = require('path');
 const { isEmail } = require('validator');
-const pug = require('pug');
 const User = require('../db/models/user');
 const hashPassword = require('../helpers/hash-password');
 const sendEmail = require('../helpers/send-email');
@@ -21,10 +19,17 @@ const {
 } = require('../../config/config.json');
 
 const {
-  alphabet: Alphabet
+  method,
+  alphabet,
+  switcher
 } = D;
+const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
+const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');
-const alphabet = Alphabet('0-9a-zA-Z');
+const confirmEmailAlphabet = alphabet('0-9a-zA-Z');
+const registerValidatorSwitcher = switcher('call', null)
+  .case(method('test', [/unique/i]), FIELD_MUST_BE_UNIQUE)
+  .case(method('test', [/email/i]), VALUE_IS_NOT_EMAIL);
 
 module.exports = {
   checkLogin(req, res, next) {
@@ -37,7 +42,7 @@ module.exports = {
         where: { login }
       })
       .then((user) => {
-        res.json({ error: user && 'Login must be unique' });
+        res.json({ error: user && FIELD_MUST_BE_UNIQUE });
       })
       .catch(next);
   },
@@ -48,7 +53,7 @@ module.exports = {
     } = req.query;
 
     if (!isEmail(email)) {
-      return res.json({ error: 'Validation isEmail failed' });
+      return res.json({ error: VALUE_IS_NOT_EMAIL });
     }
 
     User
@@ -57,7 +62,7 @@ module.exports = {
       })
       .then((user) => {
         res.json({
-          error: user && 'Email must be unique'
+          error: user && FIELD_MUST_BE_UNIQUE
         });
       })
       .catch(next);
@@ -82,14 +87,12 @@ module.exports = {
         password
       })
       .then((user) => {
-        user.confirmToken = alphabet.token(40);
+        user.confirmToken = confirmEmailAlphabet.token(40);
 
         return user.save();
       })
-      .then(({ confirmToken }) => {
-        const confirmLink = `${ origin }/confirm_register?token=${ confirmToken }`;
-
-        return sendEmail({
+      .then(({ confirmToken }) => (
+        sendEmail({
           from: {
             name: registerFromName,
             email: registerFromEmail
@@ -98,23 +101,34 @@ module.exports = {
           subject: registerSubject,
           viewPath: 'email/register',
           locals: {
+            i18n,
             login,
-            welcomeCaption: i18n.t('register.welcome_caption'),
-            confirmLink: confirmLink.link(confirmLink)
+            confirmLink: `${ origin }/confirm_register?token=${ confirmToken }`
           }
-        });
-      })
+        })
+      ))
+      .then(() => res.json({ errors: null }))
       .catch((err) => {
-        const { errors } = err;
+        let { errors } = err;
 
         if (!errors) {
           throw err;
         }
 
-        res.json(errors.map(({ message, path }) => ({
-          field: path,
-          message
-        })));
+        errors = errors.reduce((errors, { message, path }) => {
+          message = registerValidatorSwitcher(message);
+
+          if (message) {
+            errors.push({
+              field: path,
+              message
+            });
+          }
+
+          return errors;
+        }, []);
+
+        res.json(errors.length ? errors : null);
       })
       .catch(next);
   },

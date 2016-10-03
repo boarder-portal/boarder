@@ -1,0 +1,10 @@
+{
+  "header": "Authentication",
+  "success": "You've been successfully logged in!",
+  "action": "Log in",
+  "fields": {
+    "login": "Login or email",
+    "password": "Password"
+  },
+  "try_again": "Check login and password and try again"
+}

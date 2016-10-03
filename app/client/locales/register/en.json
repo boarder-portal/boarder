@@ -1,0 +1,17 @@
+{
+  "header": "Register",
+  "success": "You've been successfully registered!",
+  "action": "Register",
+  "fields": {
+    "login": "Login",
+    "email": "E-mail",
+    "password": "Password",
+    "password_repeat": "Repeat password"
+  },
+  "validations": {
+    "field_must_be_unique": "Field must be unique",
+    "field_must_not_be_empty": "Field must not be empty",
+    "passwords_do_not_match": "Passwords do not match",
+    "value_is_not_email": "The value is not a valid email"
+  }
+}

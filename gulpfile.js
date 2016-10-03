@@ -151,11 +151,9 @@ gulp.task('email:send', () => (
     subject: 'Test',
     viewPath: 'email/register',
     locals: {
+      i18n: en,
       login: 'droooney',
-      hello: en.t('email.register.hello'),
-      welcomeCaption: en.t('email.register.welcome_caption'),
       confirmLink: 'http://localhost:3333/confirm_register?token=iuh7986tf768g6g'
-        .link('http://localhost:3333/confirm_register?token=iuh7986tf768g6g')
     }
   })
 ));

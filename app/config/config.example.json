@@ -16,6 +16,10 @@
       }
     }
   },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  },
   "sessionExpires": 60000,
   "secret": "secret"
 }

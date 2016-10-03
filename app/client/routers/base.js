@@ -1,20 +1,19 @@
-import { D, Router } from 'dwayne';
+import { Router } from 'dwayne';
 import BaseStateTemplate from '../views/states/base.pug';
+import i18n from '../i18n';
 
-const proto = Router.prototype;
-
-D(Router).deepAssign({
-  title: 'Boarder',
-  template: BaseStateTemplate,
-  templateParams: {
+class BaseState extends Router {
+  static title = i18n.t('header_title');
+  static template = BaseStateTemplate;
+  static templateParams = {
+    i18n,
     headerParams: {}
-  }
-});
-D(proto)
-  .deepAssign({
-    _forceNew: false
-  })
-  .get('forceNew', () => {
+  };
+
+  _forceNew = false;
+
+  get forceNew() {
+    /* eslint no-use-before-define: 0 */
     if (proto._forceNew) {
       proto._forceNew = false;
 
@@ -22,4 +21,7 @@ D(proto)
     }
 
     return false;
-  });
+  }
+}
+
+export default BaseState;

@@ -1,2 +1,6 @@
 div
-  | #{ hello }, #{ login }! #{ welcomeCaption }!{ confirmLink }
+  | #{ i18n.t('email.register.hello') },
+  | #{ login }!
+  | #{ i18n.t('email.register.welcome_caption') }!
+  | #{ i18n.t('email.register.follow_link') }:
+  a(href=confirmLink)= confirmLink

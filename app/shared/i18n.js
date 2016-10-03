@@ -1,17 +1,54 @@
-const { isString } = require('dwayne');
+const D = require('dwayne');
+
+const { isArray, isString, array } = D;
 
 class I18n {
   constructor(locale, translations) {
-    this.cache = {};
+    this.cache = {
+      phrases: {},
+      sets: {}
+    };
     this.locale = locale;
     this.translations = translations;
   }
 
-  t(phrase) {
-    const { cache } = this;
+  ta(phrase, length) {
+    const {
+      cache: { sets }
+    } = this;
 
-    if (cache[phrase]) {
-      return cache[phrase];
+    if (sets[phrase]) {
+      return sets[phrase];
+    }
+
+    const modules = phrase.split('.');
+    let translations = modules.reduce((translations, module) => (
+      translations && translations[module]
+    ), this.translations);
+
+    if (!isArray(translations)) {
+      translations = [];
+    }
+
+    /* eslint no-return-assign: 0 */
+    return sets[phrase] = array(length, (i) => translations[i] || '').$;
+  }
+
+  tc(phrase) {
+    return D(this.t(phrase)).capitilizeFirst();
+  }
+
+  tl(phrase) {
+    return D(this.t(phrase)).toLowerCase();
+  }
+
+  t(phrase) {
+    const {
+      cache: { phrases }
+    } = this;
+
+    if (phrases[phrase]) {
+      return phrases[phrase];
     }
 
     const modules = phrase.split('.');
@@ -20,7 +57,7 @@ class I18n {
     ), this.translations);
 
     /* eslint no-return-assign: 0 */
-    return cache[phrase] = isString(translation) ? translation : '';
+    return phrases[phrase] = isString(translation) ? translation : '';
   }
 }
 

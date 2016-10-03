@@ -1,25 +1,33 @@
-import { D, Elem, Router } from 'dwayne';
+import { D, Elem, Router, doc } from 'dwayne';
+import BaseState from './base';
 import { fetch } from '../fetchers/users';
 import RegisterStateTemplate from '../views/states/register.pug';
 import { images } from '../constants';
 
-class RegisterState extends Router {
+class RegisterState extends BaseState {
   static stateName = 'register';
   static path = '/register';
   static template = RegisterStateTemplate;
-  static templateParams = {
-    registerHeaderCaption: 'Registration',
-    registerSuccessCaption: 'Success!',
-    loginCaption: 'Login',
-    emailCaption: 'Email',
-    passwordCaption: 'Password',
-    passwordRepeatCaption: 'Repeat password',
-    registerActionCaption: 'Register'
-  };
+
+  requiredValidator(value) {
+    if (!value) {
+      throw new Error('field_must_not_be_empty');
+    }
+  }
+
+  emailValidator(value) {
+    const { testEmailInput } = this;
+
+    testEmailInput.prop('value', value);
+
+    if (testEmailInput.validate()) {
+      throw new Error('value_is_not_email');
+    }
+  }
 
   passwordRepeatValidator(value) {
     if (value !== this.passwordInput.prop('value')) {
-      throw new Error('Passwords do not match');
+      throw new Error('passwords_do_not_match');
     }
   }
 
@@ -29,19 +37,19 @@ class RegisterState extends Router {
       .find('.fa');
   }
 
-  showIcon(input, wrong) {
-    this.findIcon(input)
-      .show()
-      .toggleClass('fa-check', !wrong)
-      .toggleClass('fa-close', wrong);
-  }
-
   showErrors(input, message) {
     input.toggleAttr('invalid', message);
     input
       .up()
       .prev()
-      .text(message || '');
+      .text(this.i18n.t(`register.validations.${ message }`));
+  }
+
+  showIcon(input, wrong) {
+    this.findIcon(input)
+      .show()
+      .toggleClass('fa-check', !wrong)
+      .toggleClass('fa-close', wrong);
   }
 
   register() {
@@ -195,9 +203,11 @@ class RegisterState extends Router {
     const submitInput = form.find('[type="submit"]');
     const inputs = form.find('input[name]');
     const loaded = new Elem([loginInput, emailInput]);
+    const testEmailInput = doc.input('$type(email)');
 
     D(this).assign({
       form,
+      testEmailInput,
       loginInput,
       emailInput,
       passwordInput,
@@ -229,6 +239,8 @@ class RegisterState extends Router {
       });
 
     passwordRepeatInput.validate(this.passwordRepeatValidator.bind(this));
+    inputs.validate(this.requiredValidator.bind(this));
+    emailInput.validate(this.emailValidator.bind(this));
     form.on('validate', this.onFormValidate.bind(this));
     submitInput.on('click', this.onPreSubmit.bind(this));
     inputs.on({
@@ -239,14 +251,9 @@ class RegisterState extends Router {
 }
 
 Router.on('init', () => {
-  const registerURL = RegisterState.buildURL();
-
-  D(Router.templateParams).deepAssign({
-    urls: {
-      register: registerURL
-    },
+  D(BaseState.templateParams).deepAssign({
     headerParams: {
-      registerLink: 'Register'.link(registerURL)
+      registerLink: RegisterState.buildURL()
     }
   });
 });

@@ -1,4 +1,5 @@
 import { D, Router, isNull } from 'dwayne';
+import GamesListState from './games-list';
 import HexagonState from './hexagon';
 import HexagonRoomState from './hexagon-room';
 import Lobby from '../classes/lobby';
@@ -13,12 +14,7 @@ class HexagonLobbyState extends HexagonState {
   static stateName = 'hexagon-lobby';
   static path = '/';
   static templateParams = {
-    colNames: [
-      'Name',
-      'Status',
-      'Players',
-      'Actions'
-    ],
+    colCount: 4,
     gameName: 'hexagon'
   };
 
@@ -46,8 +42,8 @@ class HexagonLobbyState extends HexagonState {
 extend(HexagonState, Lobby);
 
 Router.on('init', () => {
-  D(Router.templateParams).deepAssign({
-    urls: {
+  D(GamesListState.templateParams).deepAssign({
+    gamesLinks: {
       hexagon: HexagonLobbyState.buildURL()
     }
   });

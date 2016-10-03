@@ -1,7 +1,10 @@
 header.main-header
-  h1.header-caption!= headerParams.homeLink
-  span.register-link!= headerParams.registerLink
-  span.login-link!= headerParams.loginLink
+  h1.header-caption
+    a(href=headerParams.homeLink)= i18n.t('header.home_link')
+  span.register-link
+    a(href=headerParams.registerLink)= i18n.t('header.register_link')
+  span.login-link
+    a(href=headerParams.loginLink)= i18n.t('header.login_link')
 div.main-content
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
