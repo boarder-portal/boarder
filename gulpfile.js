@@ -161,11 +161,11 @@ gulp.task('email:send', () => (
 gulp.task('watch:locales', ['watch:server:locales', 'watch:client:locales']);
 
 gulp.task('watch:server:locales', ['build:server:locales'], () => (
-  gulp.watch(SERVER_LOCALES, ['build:server:locales'])
+  gulp.watch(SERVER_LOCALES, ['toreload', 'build:server:locales', 'reload'])
 ));
 
 gulp.task('watch:client:locales', ['build:client:locales'], () => (
-  gulp.watch(CLIENT_LOCALES, ['build:client:locales'])
+  gulp.watch(CLIENT_LOCALES, ['toreload', 'build:client:locales', 'reload'])
 ));
 
 gulp.task('watch:less', ['less'], () => (

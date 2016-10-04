@@ -1,6 +1,6 @@
 @import (reference) '../mixins';
 
-@header-line-width: 2px;
+@border-line-width: 2px;
 
 html {
   height: 100%;
@@ -19,6 +19,15 @@ body {
 #dwayne-router {
   .flex-col-stretch();
 
+  height: 100%;
+
+  [dwayne-router-state] {
+    .flex-col-stretch();
+    .flx();
+  }
+}
+
+.base-state {
   min-height: 100%;
 }
 
@@ -34,10 +43,10 @@ body {
     .block();
     .bg(#000);
 
-    bottom: -@header-line-width;
+    bottom: -@border-line-width;
     left: 0;
     width: 100%;
-    height: @header-line-width;
+    height: @border-line-width;
   }
 
   .header-caption {
@@ -66,7 +75,7 @@ body {
       top: 10%;
       left: 0;
       height: 80%;
-      width: @header-line-width;
+      width: @border-line-width;
     }
   }
 }
@@ -75,10 +84,52 @@ body {
   .flex-col-stretch();
   .flx();
 
-  margin-top: @header-line-width;
+  margin-top: @border-line-width;
+  margin-bottom: @border-line-width;
+}
 
-  [dwayne-router-state] {
-    .flex-col-stretch();
-    .flx();
+.main-footer {
+  .flex-col-stretch();
+  .relative();
+
+  height: @h2;
+
+  &:before {
+    .pseudo();
+    .absolute();
+    .block();
+    .bg(#000);
+
+    top: -@border-line-width;
+    left: 0;
+    width: 100%;
+    height: @border-line-width;
+  }
+
+  .languages {
+    .flex();
+
+    a {
+      .relative();
+
+      &:visited {
+        .unvisit();
+      }
+
+      &.empty {
+        margin: 0 @h05;
+
+        &:before {
+          .pseudo();
+          .absolute();
+          .block();
+          .bg(#000);
+
+          left: @border-line-width/2;
+          height: 100%;
+          width: @border-line-width;
+        }
+      }
+    }
   }
 }

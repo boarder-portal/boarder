@@ -1,6 +1,6 @@
 import { D } from 'dwayne';
 
-export function extend(subCls, cls) {
+function extend(subCls, cls) {
   extendObject(subCls, cls);
   extendObject(subCls.prototype, cls.prototype);
 }
@@ -16,3 +16,5 @@ function extendObject(o1, o2) {
     }
   });
 }
+
+export { extend };

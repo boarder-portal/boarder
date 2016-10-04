@@ -34,14 +34,15 @@ module.exports = (sourceDir, buildDir, client) => {
       D(locales).forEach((translations, locale) => {
         translations = D(translations).json();
 
+        const path = `${ buildDir }/${ locale }.${ client ? 'js' : 'json' }`;
+
         if (client) {
-          translations = `window.boarderI18n = '${ translations }';`;
+          translations = `window.boarderI18n = '${ translations.replace(/'/g, '\\\'') }';`;
         }
 
-        fs.writeFileSync(
-          `${ buildDir }/${ locale }.${ client ? 'js' : 'json' }`,
-          translations
-        );
+        console.log(`locale built: ${ path }`);
+
+        fs.writeFileSync(path, translations);
       });
 
       resolve();

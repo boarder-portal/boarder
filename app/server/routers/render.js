@@ -20,14 +20,19 @@ module.exports = (app) => {
   }
 
   app.use(/.*/, (req, res) => {
-    const { locale } = req;
+    const {
+      session: {
+        locale,
+        user = null
+      }
+    } = req;
 
     res.render('index', {
       lang: locale,
       allJS: `${ ASSETS_PATH }/js/all.js`,
       allCSS: `${ ASSETS_PATH }/css/all.css`,
       i18n: `${ ASSETS_PATH }/i18n/${ locale }.js`,
-      user: JSON.stringify(req.session.user || null),
+      user: JSON.stringify(user),
       NODE_ENV: process.env.NODE_ENV
     });
   });

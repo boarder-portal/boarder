@@ -1,9 +1,11 @@
-import { Router } from 'dwayne';
+import { D, Router } from 'dwayne';
 import BaseStateTemplate from '../views/states/base.pug';
-import i18n from '../i18n';
+import { i18n, changeLanguage } from '../i18n';
 
 class BaseState extends Router {
-  static title = i18n.t('header_title');
+  static stateName = 'base';
+  static path = '/';
+  static title = i18n.t('header.title');
   static template = BaseStateTemplate;
   static templateParams = {
     i18n,
@@ -21,6 +23,27 @@ class BaseState extends Router {
     }
 
     return false;
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.i18n = i18n;
+  }
+
+  onLanguageClick({ target }) {
+    target = D(target);
+
+    const lang = target.data('lang');
+
+    changeLanguage(lang);
+  }
+
+  onRender() {
+    const { base } = this;
+    const languages = base.find('.main-footer .languages');
+
+    languages.on('click', '.language', this.onLanguageClick.bind(this));
   }
 }
 

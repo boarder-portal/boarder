@@ -35,15 +35,15 @@ module.exports = {
       include: './**/*.pug',
       inlineFunctions: true
     }),
+    eslint({
+      include: './app/**/*.js'
+    }),
     cjs({
       include: [
         './node_modules/**/*.js',
         './app/shared/**/*.js'
       ],
       exclude: './node_modules/rollup-plugin-node-builtins/**/*.js'
-    }),
-    eslint({
-      include: './app/**/*.js'
     }),
     babel({
       include: './app/**/*.@(js|pug)'

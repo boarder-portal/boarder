@@ -5,9 +5,22 @@ header.main-header
     a(href=headerParams.registerLink)= i18n.t('header.register_link')
   span.login-link
     a(href=headerParams.loginLink)= i18n.t('header.login_link')
+
 div.main-content
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
   div(dwayne-router-state="register").auth-state
   div(dwayne-router-state="login").auth-state
   div(dwayne-router-state="games")
+
+footer.main-footer
+  div.languages
+    a(
+      href=""
+      data-lang="en"
+    ).language English
+    a.empty!= '&nbsp;'
+    a(
+      href=""
+      data-lang="ru"
+    ).language Русский
