@@ -1,6 +1,6 @@
 {
   "header": "Register",
-  "success": "You've been successfully registered!",
+  "success": "Confirmation link has been sent to",
   "action": "Register",
   "fields": {
     "login": "Login",

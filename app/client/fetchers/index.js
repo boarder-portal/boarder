@@ -1,12 +1,4 @@
-import { parseJSON, Fetch } from 'dwayne';
-import { endpoints } from '../../config/constants.json';
+import { constructFetchers } from '../helpers';
 
-export const baseURL = endpoints.base;
-
-export const fetcher = new Fetch({
-  baseURL
-});
-
-fetcher.after((res) => {
-  res.json = parseJSON(res.data, { dates: true }).$;
-});
+export const usersFetch = constructFetchers('users');
+export const langFetch = constructFetchers('lang');

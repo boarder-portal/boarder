@@ -31,6 +31,17 @@ const User = db.define('user', {
       notEmpty: true
     }
   },
+  confirmed: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  },
+  confirmToken: {
+    type: Sequelize.STRING,
+    field: 'confirm_token',
+    defaultValue: null,
+    allowNull: true
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',

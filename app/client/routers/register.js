@@ -1,6 +1,6 @@
 import { D, Elem, Router, doc } from 'dwayne';
 import BaseState from './base';
-import { fetch } from '../fetchers/users';
+import { usersFetch } from '../fetchers';
 import RegisterStateTemplate from '../views/states/register.pug';
 import { images } from '../constants';
 
@@ -59,23 +59,27 @@ class RegisterState extends BaseState {
       loginInput,
       emailInput,
       passwordInput,
-      successCaption
+      submitInput,
+      successCaption,
+      sendToEmail
     } = this;
+    const email = emailInput.prop('value');
     const data = {
       login: loginInput.prop('value'),
-      email: emailInput.prop('value'),
+      email,
       password: passwordInput.prop('value')
     };
 
-    fetch.register({ data })
-      .then((res) => {
-        const {
-          errors
-        } = res.json;
+    submitInput.attr('disabled', '');
+
+    usersFetch.register({ data })
+      .then(({ json }) => {
+        const { errors } = json;
 
         if (!errors) {
           form.hide();
           successCaption.removeClass('hidden');
+          sendToEmail.text(email);
 
           return;
         }
@@ -88,10 +92,11 @@ class RegisterState extends BaseState {
             .text(D(message).capitalizeFirst());
         });
       })
-      .catch((res) => {
-        console.log(res);
+      .catch((err) => {
+        console.log(err);
       })
       .then(() => {
+        submitInput.removeAttr('disabled');
         spinner.hide();
       });
   }
@@ -201,6 +206,7 @@ class RegisterState extends BaseState {
     const passwordInput = form.find('[name="password"]');
     const passwordRepeatInput = form.find('[name="password-repeat"]');
     const submitInput = form.find('[type="submit"]');
+    const sendToEmail = base.find('.send-to-email');
     const inputs = form.find('input[name]');
     const loaded = new Elem([loginInput, emailInput]);
     const testEmailInput = doc.input('$type(email)');
@@ -208,10 +214,12 @@ class RegisterState extends BaseState {
     D(this).assign({
       form,
       testEmailInput,
+      sendToEmail,
       loginInput,
       emailInput,
       passwordInput,
       passwordRepeatInput,
+      submitInput,
       spinner: form.find('.auth-spinner-container')
         .child(images.loading)
         .addClass('auth-spinner')
@@ -219,11 +227,11 @@ class RegisterState extends BaseState {
       successCaption: base.find('.auth-success-caption'),
       fetchers: {
         login: {
-          get: fetch.checkLogin,
+          get: usersFetch.checkLogin,
           timeout: D(500).timeout()
         },
         email: {
-          get: fetch.checkEmail,
+          get: usersFetch.checkEmail,
           timeout: D(500).timeout()
         }
       }

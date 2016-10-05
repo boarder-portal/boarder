@@ -31,9 +31,11 @@ class BaseState extends Router {
     this.i18n = i18n;
   }
 
-  onLanguageClick({ target }) {
-    target = D(target);
+  onLanguageClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
+    const target = D(e.target);
     const lang = target.data('lang');
 
     changeLanguage(lang);

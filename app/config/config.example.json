@@ -11,8 +11,7 @@
         "from": {
           "name": "name",
           "email": "email"
-        },
-        "subject": "subject"
+        }
       }
     }
   },

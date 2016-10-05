@@ -37,7 +37,7 @@
   }
 
   .auth-success-caption {
-    .flex();
+    .flex-col();
     .flx();
     .bold();
     .center();
@@ -46,5 +46,9 @@
     color: @green;
     letter-spacing: 2px;
     margin-top: -@h2;
+
+    .send-to-email {
+      color: @red;
+    }
   }
 }

@@ -1,10 +1,11 @@
 const D = require('dwayne');
 
 const { isArray, isString, array } = D;
+const cache = {};
 
 class I18n {
   constructor(locale, translations) {
-    this.cache = {
+    this.cache = cache[locale] = cache[locale] || {
       phrases: {},
       sets: {}
     };

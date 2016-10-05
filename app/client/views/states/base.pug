@@ -1,3 +1,23 @@
+-
+  const languages = [
+    {
+      lang: 'en',
+      caption: 'English'
+    },
+    {
+      lang: 'ru',
+      caption: 'Русский'
+    }
+  ];
+  const lastLang = languages.pop();
+
+mixin langLink(params)
+  -
+    const { lang, caption } = params;
+    const attrs = lang === i18n.locale ? {} : { href: '' };
+
+  a(data-lang=lang).language&attributes(attrs)= caption
+
 header.main-header
   h1.header-caption
     a(href=headerParams.homeLink)= i18n.t('header.home_link')
@@ -15,12 +35,7 @@ div.main-content
 
 footer.main-footer
   div.languages
-    a(
-      href=""
-      data-lang="en"
-    ).language English
-    a.empty!= '&nbsp;'
-    a(
-      href=""
-      data-lang="ru"
-    ).language Русский
+    each params in languages
+      +langLink(params)
+      a.empty!= '&nbsp;'
+    +langLink(lastLang)

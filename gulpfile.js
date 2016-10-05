@@ -25,7 +25,7 @@ const SERVER_I18N = `${ root }/app/server/i18n`;
 const CLIENT_LOCALES_ROOT = './app/client/locales';
 const SERVER_LOCALES_ROOT = './app/server/locales';
 const CLIENT_LOCALES = `${ CLIENT_LOCALES_ROOT }/**/*.json`;
-const SERVER_LOCALES = `${ SERVER_LOCALES_ROOT }/*.json`;
+const SERVER_LOCALES = `${ SERVER_LOCALES_ROOT }/**/*.json`;
 const LESS_ROOT = './app/client/styles/index.less';
 
 let child;
@@ -174,7 +174,7 @@ gulp.task('watch:less', ['less'], () => (
 
 gulp.task('watch:server', ['server:dev'], () => (
   gulp.watch([
-    './app/server/**/*.!(pug)',
+    './app/server/**/*',
     './app/config/**/*'
   ], ['server:dev'])
 ));

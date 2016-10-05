@@ -42,4 +42,7 @@ div.auth-block.register-block
       type: 'submit',
       value: i18n.t('register.action')
     })
-  div.auth-success-caption.hidden= i18n.t('register.success')
+  div.auth-success-caption.hidden
+    span= i18n.t('register.success')
+    span= ' '
+    b.send-to-email

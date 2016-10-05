@@ -1,6 +1,6 @@
 import { D, Router } from 'dwayne';
 import BaseState from './base';
-import { fetch } from '../fetchers/users';
+import { usersFetch } from '../fetchers';
 import LoginStateTemplate from '../views/states/login.pug';
 import { images, store } from '../constants';
 
@@ -29,7 +29,7 @@ class LoginState extends BaseState {
     checkCredentialsCaption.hide();
     spinner.show();
 
-    fetch.login({ data })
+    usersFetch.login({ data })
       .then((res) => {
         const user = res.json;
 

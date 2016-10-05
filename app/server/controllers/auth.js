@@ -5,21 +5,30 @@ const hashPassword = require('../helpers/hash-password');
 const sendEmail = require('../helpers/send-email');
 const { session } = require('./session');
 const {
+  endpoints: {
+    base: apiBase,
+    users: {
+      base: usersBase,
+      confirmRegister: {
+        base: confirmRegisterBase
+      }
+    }
+  }
+} = require('../../config/constants.json');
+const {
   mail: {
     emails: {
       register: {
         from: {
           name: registerFromName,
           email: registerFromEmail
-        },
-        subject: registerSubject
+        }
       }
     }
   }
 } = require('../../config/config.json');
 
 const {
-  method,
   alphabet,
   switcher
 } = D;
@@ -28,8 +37,8 @@ const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');
 const confirmEmailAlphabet = alphabet('0-9a-zA-Z');
 const registerValidatorSwitcher = switcher('call', null)
-  .case(method('test', [/unique/i]), FIELD_MUST_BE_UNIQUE)
-  .case(method('test', [/email/i]), VALUE_IS_NOT_EMAIL);
+  .case((message) => /unique/i.test(message), FIELD_MUST_BE_UNIQUE)
+  .case((message) => /email/i.test(message), VALUE_IS_NOT_EMAIL);
 
 module.exports = {
   checkLogin(req, res, next) {
@@ -46,7 +55,6 @@ module.exports = {
       })
       .catch(next);
   },
-
   checkEmail(req, res, next) {
     const {
       email = ''
@@ -67,7 +75,6 @@ module.exports = {
       })
       .catch(next);
   },
-
   register(req, res, next) {
     const {
       i18n,
@@ -78,7 +85,7 @@ module.exports = {
       },
       protocol
     } = req;
-    const origin = `${ protocol }://${  req.get('host') }`;
+    const base = `${ protocol }://${ req.get('host') + apiBase + usersBase + confirmRegisterBase }`;
 
     User
       .create({
@@ -91,22 +98,22 @@ module.exports = {
 
         return user.save();
       })
-      .then(({ confirmToken }) => (
+      .then(({ confirmToken }) => {
         sendEmail({
           from: {
             name: registerFromName,
             email: registerFromEmail
           },
           to: email,
-          subject: registerSubject,
+          subject: i18n.t('email.register.subject'),
           viewPath: 'email/register',
           locals: {
             i18n,
             login,
-            confirmLink: `${ origin }/confirm_register?token=${ confirmToken }`
+            confirmLink: `${ base }?login=${ login }&token=${ confirmToken }`
           }
-        })
-      ))
+        });
+      })
       .then(() => res.json({ errors: null }))
       .catch((err) => {
         let { errors } = err;
@@ -128,11 +135,36 @@ module.exports = {
           return errors;
         }, []);
 
-        res.json(errors.length ? errors : null);
+        res.json({ errors: errors.length ? errors : null });
       })
       .catch(next);
   },
+  confirmRegister(req, res) {
+    const {
+      query: {
+        login,
+        token
+      }
+    } = req;
 
+    User
+      .findOne({
+        where: {
+          login,
+          confirmToken: token
+        }
+      })
+      .then((user) => {
+        if (user) {
+          user.confirmed = true;
+          user.confirmToken = null;
+
+          return user.save();
+        }
+      })
+      .catch(() => {})
+      .then(() => res.redirect('/'));
+  },
   login(req, res, next) {
     const {
       body: {
@@ -160,7 +192,6 @@ module.exports = {
       })
       .catch(next);
   },
-
   socketSession(socket, next) {
     const {
       request: req
@@ -168,7 +199,6 @@ module.exports = {
 
     session(req, req.res, next);
   },
-
   socketAuth(socket, next) {
     const {
       request: {

@@ -20,6 +20,17 @@
       "login": {
         "base": "/login",
         "method": "post"
+      },
+      "confirmRegister": {
+        "base": "/confirm-register",
+        "method": "get"
+      }
+    },
+    "lang": {
+      "base": "/lang",
+      "change": {
+        "base": "/change",
+        "method": "put"
       }
     }
   },
