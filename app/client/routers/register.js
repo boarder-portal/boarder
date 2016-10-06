@@ -8,6 +8,21 @@ class RegisterState extends BaseState {
   static stateName = 'register';
   static path = '/register';
   static template = RegisterStateTemplate;
+  static elements = {
+    form: {
+      $: '.register-form',
+
+      inputs: 'input[name]',
+      loginInput: '[name="login"]',
+      emailInput: '[name="email"]',
+      passwordInput: '[name="password"]',
+      passwordRepeatInput: '[name="password-repeat"]',
+      submitInput: '[type="submit"]',
+      spinnerContainer: '.auth-spinner-container'
+    },
+    sendToEmail: '.send-to-email',
+    successCaption: '.auth-success-caption'
+  };
 
   requiredValidator(value) {
     if (!value) {
@@ -199,32 +214,25 @@ class RegisterState extends BaseState {
   }
 
   onRender() {
-    const { base } = this;
-    const form = base.find('.register-form');
-    const loginInput = form.find('[name="login"]');
-    const emailInput = form.find('[name="email"]');
-    const passwordInput = form.find('[name="password"]');
-    const passwordRepeatInput = form.find('[name="password-repeat"]');
-    const submitInput = form.find('[type="submit"]');
-    const sendToEmail = base.find('.send-to-email');
-    const inputs = form.find('input[name]');
+    const {
+      form,
+      inputs,
+      loginInput,
+      emailInput,
+      passwordRepeatInput,
+      submitInput,
+      spinnerContainer
+    } = this;
     const loaded = new Elem([loginInput, emailInput]);
     const testEmailInput = doc.input('$type(email)');
 
     D(this).assign({
-      form,
       testEmailInput,
-      sendToEmail,
-      loginInput,
-      emailInput,
-      passwordInput,
-      passwordRepeatInput,
       submitInput,
-      spinner: form.find('.auth-spinner-container')
+      spinner: spinnerContainer
         .child(images.loading)
         .addClass('auth-spinner')
         .hide(),
-      successCaption: base.find('.auth-success-caption'),
       fetchers: {
         login: {
           get: usersFetch.checkLogin,

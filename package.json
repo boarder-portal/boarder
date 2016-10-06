@@ -12,7 +12,7 @@
     "body-parser": "^1.15.2",
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
-    "dwayne": "git://github.com/droooney/dwayne.git",
+    "dwayne": "git://github.com/droooney/dwayne.git#v1.1.1-dev",
     "eslint": "^3.5.0",
     "express": "^4.14.0",
     "express-request-language": "^1.1.7",

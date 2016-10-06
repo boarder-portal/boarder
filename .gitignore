@@ -1,5 +1,6 @@
 node_modules/
 .idea/
+*.log
 
 app/server/db/config.json
 app/server/i18n/

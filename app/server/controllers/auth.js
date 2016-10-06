@@ -32,6 +32,7 @@ const {
   alphabet,
   switcher
 } = D;
+const registerConfirmationPath = apiBase + usersBase + confirmRegisterBase;
 const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
 const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');
@@ -82,10 +83,8 @@ module.exports = {
         email = '',
         login = '',
         password = ''
-      },
-      protocol
+      }
     } = req;
-    const base = `${ protocol }://${ req.get('host') + apiBase + usersBase + confirmRegisterBase }`;
 
     User
       .create({
@@ -110,7 +109,7 @@ module.exports = {
           locals: {
             i18n,
             login,
-            confirmLink: `${ base }?login=${ login }&token=${ confirmToken }`
+            confirmLink: buildRegisterConfirmationLink(req, login, confirmToken)
           }
         });
       })
@@ -215,3 +214,7 @@ module.exports = {
     next();
   }
 };
+
+function buildRegisterConfirmationLink(req, login, token) {
+  return `${ req.protocol }://${ req.get('host') + registerConfirmationPath }?login=${ login }&token=${ token }`;
+}

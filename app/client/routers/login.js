@@ -8,6 +8,17 @@ class LoginState extends BaseState {
   static stateName = 'login';
   static path = '/login';
   static template = LoginStateTemplate;
+  static elements = {
+    form: {
+      $: '.login-form',
+
+      loginInput: '[name="login"]',
+      passwordInput: '[name="password"]'
+    },
+    checkCredentialsCaption: '.check-credentials-caption',
+    successCaption: '.auth-success-caption',
+    spinnerContainer: '.auth-spinner-container'
+  };
 
   submit(e) {
     e.preventDefault();
@@ -55,22 +66,17 @@ class LoginState extends BaseState {
   }
 
   onRender() {
-    const { base } = this;
-    const form = base.find('.login-form');
-    const loginInput = form.find('[name="login"]');
-    const passwordInput = form.find('[name="password"]');
-    const checkCredentialsCaption = base.find('.check-credentials-caption');
+    const {
+      form,
+      checkCredentialsCaption,
+      spinnerContainer
+    } = this;
 
     D(this).assign({
-      form,
-      loginInput,
-      passwordInput,
-      spinner: form.find('.auth-spinner-container')
+      spinner: spinnerContainer
         .child(images.loading)
         .addClass('auth-spinner')
-        .hide(),
-      successCaption: base.find('.auth-success-caption'),
-      checkCredentialsCaption
+        .hide()
     });
 
     checkCredentialsCaption
