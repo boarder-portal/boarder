@@ -1,5 +1,5 @@
 const accept = require('express-request-language');
-const i18n = require('../helpers/i18n');
+const { i18n } = require('../helpers');
 const languages = Object.keys(i18n);
 
 module.exports = (app) => {

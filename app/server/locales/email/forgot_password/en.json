@@ -1,0 +1,7 @@
+{
+  "subject": "Reset password",
+  "hello": "Hello",
+  "if_you_didnt_request": "If you didn't request a reset password link from",
+  "ignore_message": "you can ignore this message",
+  "otherwise_follow_the_link": "Otherwise, please, follow the link to reset the password"
+}

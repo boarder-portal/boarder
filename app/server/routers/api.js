@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAndExecute } = require('../helpers/require-glob');
+const { requireAndExecute } = require('../helpers');
 const { endpoints } = require('../../config/constants.json');
 
 const router = new express.Router();

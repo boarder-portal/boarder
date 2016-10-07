@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const templates = require('./compiled-pug');
+const { templates } = require('./compiled-pug');
 const {
   mail: {
     auth
@@ -11,20 +11,20 @@ const transporter = nodemailer.createTransport({
   auth
 });
 
-module.exports = ({
+exports.sendEmail = ({
   from: {
     name, email
   },
   to,
   subject,
-  viewPath,
+  templatePath,
   locals
 }) => {
   const mailOptions = {
     from: `"${ name }" <${ email }>`,
     to,
     subject,
-    html: templates[viewPath](locals)
+    html: templates[templatePath](locals)
   };
 
   return new Promise((resolve, reject) => {

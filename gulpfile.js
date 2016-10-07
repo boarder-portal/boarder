@@ -11,8 +11,10 @@ const watch = require('rollup-watch');
 
 const { port } = require('./app/config/config.json');
 const rollupDevConfig = require('./rollup.dev.config');
-const sendEmail = require('./app/server/helpers/send-email');
-const buildLocales = require('./app/server/helpers/build-locales');
+const {
+  sendEmail,
+  buildLocales
+} = require('./app/server/helpers');
 const {
   en,
   ru
@@ -149,7 +151,7 @@ gulp.task('email:send', () => (
     },
     to: 'oklix16@mail.ru',
     subject: 'Test',
-    viewPath: 'email/register',
+    templatePath: 'email/register',
     locals: {
       i18n: en,
       login: 'droooney',

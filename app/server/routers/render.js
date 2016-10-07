@@ -1,7 +1,7 @@
 const path = require('path');
-const templates = require('../helpers/compiled-pug');
-
+const { templates } = require('../helpers');
 const { ASSETS_PATH } = require('../../config/constants.json');
+
 const viewsDir = path.resolve('./app/server/views');
 const { NODE_ENV } = process.env;
 

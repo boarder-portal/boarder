@@ -14,7 +14,7 @@
 mixin langLink(params)
   -
     const { lang, caption } = params;
-    const attrs = lang === i18n.locale ? {} : { href: '' };
+    const attrs = lang === i18n.locale ? { class: 'active' } : { href: '' };
 
   a(data-lang=lang).language&attributes(attrs)= caption
 
@@ -31,6 +31,7 @@ div.main-content
   div(dwayne-router-state="home")
   div(dwayne-router-state="register").auth-state
   div(dwayne-router-state="login").auth-state
+  div(dwayne-router-state="forgot-password").auth-state
   div(dwayne-router-state="games")
 
 footer.main-footer

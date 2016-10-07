@@ -3,7 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { session } = require('../controllers/session');
-
 const { ASSETS_PATH } = require('../../config/constants.json');
 
 module.exports = (app) => {

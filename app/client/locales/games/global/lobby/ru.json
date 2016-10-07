@@ -1,7 +1,13 @@
 {
   "create_room": "Создать комнату",
+  "col_names": {
+    "name": "Название",
+    "status": "Статус",
+    "players": "Игроки",
+    "actions": "Действия"
+  },
   "room_statuses": {
-    "not_playing": "Игра еще не началась",
+    "not_playing": "Ожидание игроков",
     "playing": "Идет игра"
   }
 }

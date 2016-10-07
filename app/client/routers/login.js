@@ -12,6 +12,8 @@ class LoginState extends BaseState {
     form: {
       $: '.login-form',
 
+      $onSubmit: 'submit',
+
       loginInput: '[name="login"]',
       passwordInput: '[name="password"]'
     },
@@ -41,9 +43,7 @@ class LoginState extends BaseState {
     spinner.show();
 
     usersFetch.login({ data })
-      .then((res) => {
-        const user = res.json;
-
+      .then(({ json: user }) => {
         if (!user) {
           spinner.hide();
           checkCredentialsCaption.show();
@@ -51,7 +51,7 @@ class LoginState extends BaseState {
           return;
         }
 
-        Router.prototype._forceNew = true;
+        BaseState.prototype._forceNew = true;
         store.user = user;
 
         form.hide();
@@ -67,7 +67,6 @@ class LoginState extends BaseState {
 
   onRender() {
     const {
-      form,
       checkCredentialsCaption,
       spinnerContainer
     } = this;
@@ -82,8 +81,6 @@ class LoginState extends BaseState {
     checkCredentialsCaption
       .hide()
       .removeClass('hidden');
-
-    form.on('submit', this.submit.bind(this));
   }
 }
 

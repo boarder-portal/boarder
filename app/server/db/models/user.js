@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const hashPassword = require('../../helpers/hash-password');
+const { hashPassword } = require('../../helpers');
 const db = require('../');
 
 const User = db.define('user', {

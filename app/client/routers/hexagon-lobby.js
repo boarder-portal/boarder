@@ -1,9 +1,9 @@
-import { D, Router, isNull } from 'dwayne';
+import { D, Router } from 'dwayne';
 import GamesListState from './games-list';
 import HexagonState from './hexagon';
 import HexagonRoomState from './hexagon-room';
-import Lobby from '../classes/lobby';
-import { extend } from '../helpers';
+import LobbyTemplate from '../views/partials/lobby.pug';
+import { lobbyElements } from '../constants';
 import { games as gamesConfig } from '../../config/constants.json';
 
 const {
@@ -13,33 +13,18 @@ const {
 class HexagonLobbyState extends HexagonState {
   static stateName = 'hexagon-lobby';
   static path = '/';
+  static template = LobbyTemplate;
   static templateParams = {
-    colCount: 4,
+    colCount: 0,
     gameName: 'hexagon'
   };
+  static elements = D({})
+    .deepAssign(lobbyElements)
+    .$;
 
   roomState = HexagonRoomState;
   nsp = LOBBY_NSP;
-
-  getRoomData(room) {
-    return [
-      {
-        name: 'name',
-        value: room.name
-      },
-      {
-        name: 'status',
-        value: room.status
-      },
-      {
-        name: 'players',
-        value: room.playersCount - D(room.players).sum(isNull)
-      }
-    ];
-  }
 }
-
-extend(HexagonState, Lobby);
 
 Router.on('init', () => {
   D(GamesListState.templateParams).deepAssign({

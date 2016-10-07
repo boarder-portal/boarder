@@ -3,12 +3,14 @@ tr(
   data-room-id=`${ id }`
   class=['room', `${ prefix }-room`]
 )
-  each col in room
-    - const { name, value } = col;
+  td= room.name
+  td= i18n.t(`games.global.lobby.room_statuses.${ room.status }`)
+  td= room.players
+  each col in roomData
+    td(class=`room-${ col.name }`)= col.value
 
-    td(class=`room-${ name }`)= value
   td
-    a(href=playLink)
+    a.play-link(href=playLink)
       i.fa.fa-sign-in.enter-room
     a.observe-link(href=observeLink)
       i.fa.fa-eye.enter-room

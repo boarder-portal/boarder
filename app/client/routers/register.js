@@ -12,12 +12,23 @@ class RegisterState extends BaseState {
     form: {
       $: '.register-form',
 
-      inputs: 'input[name]',
+      $onValidate: 'onFormValidate',
+
+      inputs: {
+        $: 'input[name]',
+
+        $onInput: 'onInputChange',
+        $onValidate: 'onInputValidate'
+      },
       loginInput: '[name="login"]',
       emailInput: '[name="email"]',
       passwordInput: '[name="password"]',
       passwordRepeatInput: '[name="password-repeat"]',
-      submitInput: '[type="submit"]',
+      submitInput: {
+        $: 'input[type="submit"]',
+
+        $onClick: 'onPreSubmit'
+      },
       spinnerContainer: '.auth-spinner-container'
     },
     sendToEmail: '.send-to-email',
@@ -215,12 +226,10 @@ class RegisterState extends BaseState {
 
   onRender() {
     const {
-      form,
       inputs,
       loginInput,
       emailInput,
       passwordRepeatInput,
-      submitInput,
       spinnerContainer
     } = this;
     const loaded = new Elem([loginInput, emailInput]);
@@ -228,7 +237,6 @@ class RegisterState extends BaseState {
 
     D(this).assign({
       testEmailInput,
-      submitInput,
       spinner: spinnerContainer
         .child(images.loading)
         .addClass('auth-spinner')
@@ -257,12 +265,6 @@ class RegisterState extends BaseState {
     passwordRepeatInput.validate(this.passwordRepeatValidator.bind(this));
     inputs.validate(this.requiredValidator.bind(this));
     emailInput.validate(this.emailValidator.bind(this));
-    form.on('validate', this.onFormValidate.bind(this));
-    submitInput.on('click', this.onPreSubmit.bind(this));
-    inputs.on({
-      input: this.onInputChange.bind(this),
-      validate: this.onInputValidate.bind(this)
-    });
   }
 }
 

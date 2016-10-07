@@ -1,4 +1,4 @@
-const constructEndpoints = require('../../helpers/construct-endpoints');
+const { constructEndpoints } = require('../../helpers');
 const controllers = require('../../controllers/auth');
 
 module.exports = constructEndpoints('users', controllers);

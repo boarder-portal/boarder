@@ -1,7 +1,13 @@
 {
   "create_room": "Create room",
+  "col_names": {
+    "name": "Name",
+    "status": "Status",
+    "players": "Players",
+    "actions": "Actions"
+  },
   "room_statuses": {
-    "not_playing": "Not playing",
+    "not_playing": "Waiting for players",
     "playing": "Playing"
   }
 }

@@ -24,6 +24,10 @@
       "confirmRegister": {
         "base": "/confirm-register",
         "method": "get"
+      },
+      "forgotPassword": {
+        "base": "/forgot-password",
+        "method": "get"
       }
     },
     "lang": {
@@ -37,8 +41,8 @@
   "games": {
     "global": {
       "roomStatuses": {
-        "NOT_PLAYING": 0,
-        "PLAYING": 1
+        "NOT_PLAYING": "not_playing",
+        "PLAYING": "playing"
       },
       "playerRoles": {
         "OBSERVER": 0,

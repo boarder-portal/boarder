@@ -2,7 +2,7 @@ const D = require('dwayne');
 const express = require('express');
 const constants = require('../../config/constants.json');
 
-module.exports = (path, controllers) => {
+exports.constructEndpoints = (path, controllers) => {
   const {
     endpoints: {
       [path]: paths,

@@ -1,5 +1,5 @@
 const D = require('dwayne');
-const i18n = require('../helpers/i18n');
+const { i18n } = require('../helpers');
 
 const { self } = D;
 const languages = D(i18n).map(self).$;

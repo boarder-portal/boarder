@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, doc } from 'dwayne';
+import { D, doc, isNull } from 'dwayne';
 import BaseState from './base';
 import LoginState from './login';
 import GamesStateTemplate from '../views/states/games.pug';
@@ -25,10 +25,6 @@ class GamesState extends BaseState {
   static stateName = 'games';
   static path = '/games';
   static template = GamesStateTemplate;
-  static elements = {
-    rooms: '.rooms',
-    createRoomBtn: '.create-room-btn'
-  };
 
   roomsToAdd = [];
   roomsToDelete = [];
@@ -47,22 +43,34 @@ class GamesState extends BaseState {
       .find(`#room-${ id }`);
   }
 
+  getRoomData() {
+    return [];
+  }
+
   getRow(room) {
     const {
+      i18n,
       roomState,
       templateParams: { gameName }
     } = this;
+    const params = { roomId: room.id };
 
     return doc.tbody()
       .html(RoomRowTemplate({
+        i18n,
         prefix: gameName,
         id: room.id,
-        room: this.getRoomData(room),
+        room: {
+          name: room.name,
+          status: room.status,
+          players: room.playersCount - D(room.players).sum(isNull)
+        },
+        roomData: this.getRoomData(),
         playLink: roomState.buildURL({
-          params: { roomId: room.id }
+          params
         }),
         observeLink: roomState.buildURL({
-          params: { roomId: room.id },
+          params,
           query: { observe: true }
         })
       }))
@@ -185,11 +193,7 @@ GamesState.on({
     state.socket.disconnect();
   },
   render({ state }) {
-    const { createRoomBtn } = state;
-
     state.rendered = true;
-
-    createRoomBtn.on('click', state.onCreateRoomClick.bind(state));
 
     state.renderRoomsList();
   }

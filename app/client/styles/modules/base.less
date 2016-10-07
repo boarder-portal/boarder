@@ -2,14 +2,6 @@
 
 @border-line-width: 2px;
 
-html {
-  height: 100%;
-
-  * {
-    .reset();
-  }
-}
-
 body {
   .bg(@gray-very-light);
 
@@ -39,7 +31,7 @@ body {
     .pseudo();
     .absolute();
     .block();
-    .bg(#000);
+    .bg(@black);
 
     bottom: -@border-line-width;
     left: 0;
@@ -97,7 +89,7 @@ body {
     .pseudo();
     .absolute();
     .block();
-    .bg(#000);
+    .bg(@black);
 
     top: -@border-line-width;
     left: 0;
@@ -111,8 +103,8 @@ body {
     a {
       .relative();
 
-      &:visited {
-        .unvisit();
+      &.active {
+        color: @black;
       }
 
       &.empty {
@@ -122,7 +114,7 @@ body {
           .pseudo();
           .absolute();
           .block();
-          .bg(#000);
+          .bg(@black);
 
           left: @border-line-width/2;
           height: 100%;

@@ -4,7 +4,7 @@ const fs = require('fs');
 const I18n = require('../../shared/i18n');
 const { resolveGlob } = require('./require-glob');
 
-module.exports = resolveGlob('./app/server/i18n/*.json')
+exports.i18n = resolveGlob('./app/server/i18n/*.json')
   .filter((filename) => /\.json$/.test(filename))
   .reduce((translations, filename) => {
     const modules = filename.split(path.sep);

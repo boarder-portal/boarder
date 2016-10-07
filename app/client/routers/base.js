@@ -49,4 +49,6 @@ class BaseState extends Router {
   }
 }
 
+const proto = BaseState.prototype;
+
 export default BaseState;

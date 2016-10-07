@@ -12,6 +12,12 @@
           "name": "name",
           "email": "email"
         }
+      },
+      "forgotPassword": {
+        "from": {
+          "name": "name",
+          "email": "email"
+        }
       }
     }
   },

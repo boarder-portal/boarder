@@ -5,7 +5,7 @@ const { resolveGlob } = require('./require-glob');
 
 const { parseJSON } = D;
 
-module.exports = (sourceDir, buildDir, client) => {
+exports.buildLocales = (sourceDir, buildDir, client) => {
   const locales = {};
   const glob = `${ sourceDir }/**/*.json`;
 
