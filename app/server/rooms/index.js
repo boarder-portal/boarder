@@ -216,7 +216,7 @@ class Room {
     let player = players.find((player) => player && player.login === user.login);
 
     if (!player) {
-      const { key } = D(players).find(isNull) || {};
+      const { key = null } = D(players).find(isNull) || {};
       const willBePlayer = !isNull(key) && isPlayer;
 
       player = new Player({

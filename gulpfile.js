@@ -11,10 +11,8 @@ const watch = require('rollup-watch');
 
 const { port } = require('./app/config/config.json');
 const rollupDevConfig = require('./rollup.dev.config');
-const {
-  sendEmail,
-  buildLocales
-} = require('./app/server/helpers');
+const { sendEmail } = require('./app/server/helpers');
+const { buildLocales } =require('./app/server/helpers/build-locales');
 const {
   en,
   ru

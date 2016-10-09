@@ -73,6 +73,54 @@ body {
 .main-content {
   .flex-col-stretch();
   .flx();
+  .relative();
+  .overflow-hidden();
+
+  > .alerts {
+    .absolute();
+    .flex();
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: @h1;
+
+    .alert {
+      .absolute();
+      .flex();
+      .tr-very-long(top);
+
+      top: -@h1;
+      left: 0;
+      width: 100%;
+      height: @h1;
+      padding: @hs @ws;
+
+      &.visible {
+        top: 0;
+      }
+
+      &.warning {
+        .bg(@orange-lighter);
+      }
+
+      &.info {
+        .bg(@blue-lighter);
+      }
+
+      &.success {
+        .bg(@green-lighter);
+      }
+
+      .alert-caption {
+        .flx();
+      }
+
+      .fa-close {
+        .flx2(16px);
+      }
+    }
+  }
 
   padding: @h1 0;
   margin-top: @border-line-width;

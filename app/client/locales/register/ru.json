@@ -9,7 +9,7 @@
     "password_repeat": "Повторите пароль"
   },
   "validations": {
-    "field_must_be_unique": "Поле должно быть уникально",
+    "field_must_be_unique": "Значение должно быть уникальным",
     "field_must_not_be_empty": "Поле не должно быть пустым",
     "passwords_do_not_match": "Пароли не совпадают",
     "value_is_not_email": "Значение не является email-ом"

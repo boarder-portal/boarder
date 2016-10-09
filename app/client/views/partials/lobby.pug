@@ -5,12 +5,14 @@ div
   )
 table.rooms-table(class=`${ gameName }-rooms-table`)
   thead
-    th= i18n.t('games.global.lobby.col_names.name')
-    th= i18n.t('games.global.lobby.col_names.status')
-    th= i18n.t('games.global.lobby.col_names.players')
+    th.room-name= i18n.t('games.global.lobby.col_names.name')
+    th.room-status= i18n.t('games.global.lobby.col_names.status')
+    th.room-players= i18n.t('games.global.lobby.col_names.players')
 
     each colName in i18n.ta(`games.${ gameName }.lobby.col_names`, colCount)
-      th= colName
+      - const { name, value } = colName;
 
-    th= i18n.t('games.global.lobby.col_names.actions')
+      th(class=`${ name }-header`)= value
+
+    th.room-actions= i18n.t('games.global.lobby.col_names.actions')
   tbody.rooms(class=`${ gameName }-rooms`)

@@ -7,6 +7,12 @@ export const fetcher = new Fetch({
   baseURL
 });
 
-fetcher.after((res) => {
-  res.json = parseJSON(res.data, { dates: true }).$;
-});
+fetcher
+  .after((res) => {
+    res.json = parseJSON(res.data, { dates: true }).$;
+  })
+  .after((err, res) => {
+    console.log(res);
+
+    throw err;
+  });

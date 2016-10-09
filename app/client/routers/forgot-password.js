@@ -1,11 +1,10 @@
-import { D, Router } from 'dwayne';
-import BaseState from './base';
+import { D, Router, Elem } from 'dwayne';
+import AuthState from './auth';
 import LoginState from './login';
 import { usersFetch } from '../fetchers';
 import ForgotPasswordStateTemplate from '../views/states/forgot-password.pug';
-import { images } from '../constants';
 
-class ForgotPasswordState extends BaseState {
+class ForgotPasswordState extends AuthState {
   static stateName = 'forgot-password';
   static path = '/forgot-password';
   static template = ForgotPasswordStateTemplate;
@@ -51,12 +50,10 @@ class ForgotPasswordState extends BaseState {
         }
 
         form.hide();
-        successCaption.removeClass('hidden');
         sendToEmail.text(email);
+        successCaption.show();
       })
-      .catch((res) => {
-        console.log(res);
-      })
+      .catch(() => {})
       .then(() => {
         spinner.hide();
       });
@@ -65,17 +62,10 @@ class ForgotPasswordState extends BaseState {
   onRender() {
     const {
       checkEmailCaption,
-      spinnerContainer
+      successCaption
     } = this;
 
-    D(this).assign({
-      spinner: spinnerContainer
-        .child(images.loading)
-        .addClass('auth-spinner')
-        .hide()
-    });
-
-    checkEmailCaption
+    new Elem([successCaption, checkEmailCaption])
       .hide()
       .removeClass('hidden');
   }

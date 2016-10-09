@@ -14,9 +14,6 @@ const {
       base: usersBase,
       confirmRegister: {
         base: confirmRegisterBase
-      },
-      forgotPassword: {
-        base: resetPasswordBase
       }
     }
   }
@@ -45,7 +42,7 @@ const {
   switcher
 } = D;
 const registerConfirmationPath = apiBase + usersBase + confirmRegisterBase;
-const resetPasswordPath = apiBase + usersBase + resetPasswordBase;
+const resetPasswordPath = '/reset-password';
 const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
 const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');
@@ -267,6 +264,35 @@ module.exports = {
           });
       })
       .then((success) => res.json(success))
+      .catch(next);
+  },
+  resetPassword(req, res, next) {
+    const {
+      body: {
+        email,
+        password,
+        token
+      }
+    } = req;
+
+    User
+      .findOne({
+        where: {
+          email,
+          resetPasswordToken: token
+        }
+      })
+      .then((user) => {
+        if (!user) {
+          return false;
+        }
+
+        user.password = password;
+        user.resetPasswordToken = null;
+
+        return user.save();
+      })
+      .then((user) => res.json(!!user))
       .catch(next);
   },
   socketSession(socket, next) {

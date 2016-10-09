@@ -42,6 +42,12 @@ const User = db.define('user', {
     defaultValue: null,
     allowNull: true
   },
+  resetPasswordToken: {
+    type: Sequelize.STRING,
+    field: 'reset_password_token',
+    defaultValue: null,
+    allowNull: true
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',
@@ -55,6 +61,9 @@ const User = db.define('user', {
 }, {
   hooks: {
     beforeCreate(user) {
+      user.password = hashPassword(user.password);
+    },
+    beforeUpdate(user) {
       user.password = hashPassword(user.password);
     }
   }

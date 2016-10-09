@@ -5,10 +5,28 @@
 
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 
   th, td {
     .bordered();
     .center();
+    .overflow-text();
+  }
+
+  .room-name {
+    width: 35%;
+  }
+
+  .room-status {
+    width: 25%;
+  }
+
+  .room-players {
+    width: 25%;
+  }
+
+  .room-actions {
+    width: 15%;
   }
 
   .rooms {
@@ -20,6 +38,10 @@
 
       .observe-link {
         margin-left: @ws;
+      }
+
+      td {
+        padding: @hs 0;
       }
     }
   }

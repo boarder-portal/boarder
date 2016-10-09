@@ -1,3 +1,17 @@
+@import (reference) '../mixins';
+
 .hidden {
   display: none !important;
+}
+
+.fa-close {
+  .flex();
+  .tr(color);
+  .pointer();
+
+  color: @gray-very-dark;
+
+  &:hover {
+    color: @black;
+  }
 }

@@ -1,10 +1,11 @@
-import { D, Router } from 'dwayne';
+import { D, Router, Elem } from 'dwayne';
 import BaseState from './base';
+import AuthState from './auth';
 import { usersFetch } from '../fetchers';
 import LoginStateTemplate from '../views/states/login.pug';
-import { images, store } from '../constants';
+import { store } from '../constants';
 
-class LoginState extends BaseState {
+class LoginState extends AuthState {
   static stateName = 'login';
   static path = '/login';
   static template = LoginStateTemplate;
@@ -55,11 +56,9 @@ class LoginState extends BaseState {
         store.user = user;
 
         form.hide();
-        successCaption.removeClass('hidden');
+        successCaption.show();
       })
-      .catch((res) => {
-        console.log(res);
-      })
+      .catch(() => {})
       .then(() => {
         spinner.hide();
       });
@@ -68,17 +67,10 @@ class LoginState extends BaseState {
   onRender() {
     const {
       checkCredentialsCaption,
-      spinnerContainer
+      successCaption
     } = this;
 
-    D(this).assign({
-      spinner: spinnerContainer
-        .child(images.loading)
-        .addClass('auth-spinner')
-        .hide()
-    });
-
-    checkCredentialsCaption
+    new Elem([successCaption, checkCredentialsCaption])
       .hide()
       .removeClass('hidden');
   }

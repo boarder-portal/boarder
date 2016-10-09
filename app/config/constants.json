@@ -28,6 +28,10 @@
       "forgotPassword": {
         "base": "/forgot-password",
         "method": "get"
+      },
+      "resetPassword": {
+        "base": "/reset-password",
+        "method": "post"
       }
     },
     "lang": {

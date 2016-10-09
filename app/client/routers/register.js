@@ -1,10 +1,11 @@
 import { D, Elem, Router, doc } from 'dwayne';
+import AuthState from './auth';
 import BaseState from './base';
 import { usersFetch } from '../fetchers';
 import RegisterStateTemplate from '../views/states/register.pug';
 import { images } from '../constants';
 
-class RegisterState extends BaseState {
+class RegisterState extends AuthState {
   static stateName = 'register';
   static path = '/register';
   static template = RegisterStateTemplate;
@@ -35,11 +36,7 @@ class RegisterState extends BaseState {
     successCaption: '.auth-success-caption'
   };
 
-  requiredValidator(value) {
-    if (!value) {
-      throw new Error('field_must_not_be_empty');
-    }
-  }
+  authStateName = 'register';
 
   emailValidator(value) {
     const { testEmailInput } = this;
@@ -51,34 +48,7 @@ class RegisterState extends BaseState {
     }
   }
 
-  passwordRepeatValidator(value) {
-    if (value !== this.passwordInput.prop('value')) {
-      throw new Error('passwords_do_not_match');
-    }
-  }
-
-  findIcon(input) {
-    return input
-      .next()
-      .find('.fa');
-  }
-
-  showErrors(input, message) {
-    input.toggleAttr('invalid', message);
-    input
-      .up()
-      .prev()
-      .text(this.i18n.t(`register.validations.${ message }`));
-  }
-
-  showIcon(input, wrong) {
-    this.findIcon(input)
-      .show()
-      .toggleClass('fa-check', !wrong)
-      .toggleClass('fa-close', wrong);
-  }
-
-  register() {
+  submit() {
     const {
       form,
       spinner,
@@ -111,136 +81,31 @@ class RegisterState extends BaseState {
         }
 
         D(errors).forEach(({ field, message }) => {
-          form
-            .find(`[name="${ field }"`)
-            .up()
-            .prev()
-            .text(D(message).capitalizeFirst());
+          const target = form.find(`[name="${ field }"`);
+
+          this.showIcon(target, true);
+          this.showErrors(target, message);
         });
       })
-      .catch((err) => {
-        console.log(err);
-      })
+      .catch(() => {})
       .then(() => {
+        this.fetching = false;
+
         submitInput.removeAttr('disabled');
         spinner.hide();
       });
   }
 
-  onInputChange({ target }) {
-    D(target).validate();
-  }
-
-  onFormValidate({ target, valid }) {
-    const {
-      form,
-      spinner
-    } = this;
-
-    if (target === form.$[0]) {
-      this.validated = true;
-
-      if (valid) {
-        this.registering = true;
-
-        spinner.show();
-        this.register();
-      }
-    }
-  }
-
-  onInputValidate({ target, error }) {
-    target = D(target);
-
-    const name = target.attr('name');
-
-    if (name === 'password' && this.repeatValidated) {
-      this.passwordRepeatInput.validate();
-    }
-
-    if (name === 'password-repeat') {
-      this.repeatValidated = true;
-    }
-
-    if (this.validated) {
-      this.showErrors(target, error && error.message);
-    }
-
-    this.showIcon(target, error);
-
-    if (name === 'login' || name === 'email') {
-      const fetcher = this.fetchers[name];
-
-      fetcher.timeout.abort();
-
-      const spinner = target
-        .next()
-        .find('.register-input-spinner');
-
-      if (error || this.registering) {
-        spinner.hide();
-
-        return;
-      }
-
-      const timeout = fetcher.timeout = D(500).timeout();
-
-      this.findIcon(target).hide();
-      this.showErrors(target, '');
-      spinner.show();
-
-      timeout.then(() => {
-        const fetch = fetcher.timeout = fetcher.get({
-          query: {
-            [target.attr('name')]: target.prop('value')
-          }
-        });
-
-        fetch
-          .then(({ json: { error } }) => {
-            this.showIcon(target, error);
-
-            if (this.validated) {
-              this.showErrors(target, error || '');
-            }
-          })
-          .catch((err) => {
-            if (err.message === 'Request was aborted') {
-              throw err;
-            }
-
-            console.log(err);
-          })
-          .then(() => {
-            spinner.hide();
-          }, () => {});
-      }, () => {});
-    }
-  }
-
-  onPreSubmit(e) {
-    e.preventDefault();
-
-    this.form.validate();
-  }
-
   onRender() {
     const {
-      inputs,
       loginInput,
-      emailInput,
-      passwordRepeatInput,
-      spinnerContainer
+      emailInput
     } = this;
     const loaded = new Elem([loginInput, emailInput]);
     const testEmailInput = doc.input('$type(email)');
 
     D(this).assign({
       testEmailInput,
-      spinner: spinnerContainer
-        .child(images.loading)
-        .addClass('auth-spinner')
-        .hide(),
       fetchers: {
         login: {
           get: usersFetch.checkLogin,
@@ -262,8 +127,6 @@ class RegisterState extends BaseState {
           .hide();
       });
 
-    passwordRepeatInput.validate(this.passwordRepeatValidator.bind(this));
-    inputs.validate(this.requiredValidator.bind(this));
     emailInput.validate(this.emailValidator.bind(this));
   }
 }
