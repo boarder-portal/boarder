@@ -35,7 +35,8 @@ requireAndExecute([
   '/app/server/routers/base.js',
   '/app/server/routers/locale.js',
   '/app/server/routers/api.js',
-  '/app/server/routers/render.js'
+  '/app/server/routers/render.js',
+  '/app/server/routers/errors.js'
 ], app);
 
 console.log();

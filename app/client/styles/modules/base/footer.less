@@ -1,0 +1,50 @@
+@import (reference) '../../mixins';
+
+.main-footer {
+  .flex-col-stretch();
+  .relative();
+
+  height: @h2;
+
+  &:before {
+    .pseudo();
+    .absolute();
+    .block();
+    .bg(@black);
+
+    top: -@border-line-width;
+    left: 0;
+    width: 100%;
+    height: @border-line-width;
+  }
+
+  .languages {
+    .flex();
+
+    .language,
+    .empty {
+      .relative();
+    }
+
+    .language {
+      &.active {
+        color: @black;
+      }
+    }
+
+    .empty {
+      margin: 0 @h05;
+
+      &:before {
+        .pseudo();
+        .absolute();
+        .block();
+        .bg(@black);
+
+        left: @border-line-width/2;
+        height: 100%;
+        width: @border-line-width;
+      }
+    }
+  }
+}

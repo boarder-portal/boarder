@@ -5,12 +5,6 @@ const TABLE_NAME = 'users';
 module.exports = {
   up(queryInterface, Sequelize) {
     return Promise.all([
-      queryInterface.addColumn(TABLE_NAME, 'id', {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-      }),
       queryInterface.addColumn(TABLE_NAME, 'login', {
         type: Sequelize.STRING,
         allowNull: false,
@@ -29,7 +23,6 @@ module.exports = {
 
   down(queryInterface) {
     return Promise.all([
-      queryInterface.removeColumn(TABLE_NAME, 'id'),
       queryInterface.removeColumn(TABLE_NAME, 'login'),
       queryInterface.removeColumn(TABLE_NAME, 'email'),
       queryInterface.removeColumn(TABLE_NAME, 'password')

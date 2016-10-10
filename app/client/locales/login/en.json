@@ -7,5 +7,6 @@
     "password": "Password"
   },
   "try_again": "Check login and password and try again",
-  "forgot_password": "Forgot password?"
+  "forgot_password": "Forgot password?",
+  "not_registered_yet": "Not registered yet?"
 }

@@ -104,7 +104,7 @@ class Room {
       _expires
     });
 
-    this.expires(_expires);
+    this.expires();
 
     room.use(socketSession);
     room.use(socketAuth);
@@ -139,7 +139,14 @@ class Room {
    * @param {Number} time
    */
   expires(time) {
-    this._timeout.abort();
+    const {
+      _timeout,
+      _expires
+    } = this;
+
+    time = time || _expires;
+
+    _timeout.abort();
 
     if (time === Infinity) {
       return;
@@ -213,9 +220,9 @@ class Room {
 
     socket.role = eventualRole;
 
-    let player = players.find((player) => player && player.login === user.login);
+    let player = players.find((player) => player && player.email === user.email);
 
-    if (!player) {
+    if (!player || !isPlayer) {
       const { key = null } = D(players).find(isNull) || {};
       const willBePlayer = !isNull(key) && isPlayer;
 
@@ -225,14 +232,17 @@ class Room {
       });
 
       if (willBePlayer) {
+        player.index = key;
         players[key] = player;
       } else {
+        player.index = observers.length;
         observers.push(player);
       }
 
       this.update(socket);
     }
 
+    socket.socketIndex = player.sockets.length;
     player.sockets.push(socket.id);
 
     socket.player = player;
@@ -280,33 +290,30 @@ class Room {
         players,
         observers
       },
-      player
+      player: {
+        index,
+        sockets
+      },
+      role,
+      socketIndex
     } = socket;
 
-    const playerIndex = players.indexOf(player);
-    const observerIndex = observers.indexOf(player);
-
-    if (playerIndex !== -1 && status === NOT_PLAYING) {
-      const { sockets } = player;
-      const existentSocketIndex = sockets.indexOf(socket.id);
-
-      if (existentSocketIndex !== -1) {
-        sockets.splice(existentSocketIndex, 1);
-      }
+    if (role === PLAYER && status === NOT_PLAYING) {
+      sockets.splice(socketIndex, 1);
 
       if (!sockets.length) {
-        players[playerIndex] = null;
+        players[index] = null;
 
         this.update();
       }
-    } else if (observerIndex !== -1) {
-      observers.splice(observerIndex, 1);
+    } else {
+      observers.splice(index, 1);
 
       this.update();
     }
 
     if (players.every(isNull) && !observers.length) {
-      this.expires(this._expires);
+      this.expires();
     }
 
     console.log(`leaving  room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);

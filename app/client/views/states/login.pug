@@ -19,6 +19,7 @@ div.auth-block.login-block
       placeholder: i18n.t('login.fields.password')
     })
     a.forgot-password(href=forgotPasswordLink)= i18n.t('login.forgot_password')
+    a.not-registered(href=registerLink)= i18n.t('login.not_registered_yet')
     +input-container({
       class: 'success',
       type: 'submit',

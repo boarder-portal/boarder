@@ -60,10 +60,12 @@ const User = db.define('user', {
   }
 }, {
   hooks: {
-    beforeCreate(user) {
-      user.password = hashPassword(user.password);
+    beforeBulkCreate(users) {
+      users.forEach((user) => {
+        user.password = hashPassword(user.password);
+      });
     },
-    beforeUpdate(user) {
+    beforeCreate(user) {
       user.password = hashPassword(user.password);
     }
   }

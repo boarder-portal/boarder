@@ -1,6 +1,7 @@
 {
   "port": 3333,
   "cookieName": "cookie",
+  "defaultAvatar": "url",
   "mail": {
     "auth": {
       "user": "mail@example.com",

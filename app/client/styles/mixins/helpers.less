@@ -62,3 +62,20 @@
 .pseudo(@content: '') {
   content: @content;
 }
+
+.link {
+  .tr(color);
+  .pointer();
+
+  color: @green-dark;
+  text-decoration: none;
+
+  &:hover {
+    color: @orange-darker;
+  }
+
+  &:active {
+    color: @orange-very-dark;
+    transition-duration: 0s;
+  }
+}

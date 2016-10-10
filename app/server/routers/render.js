@@ -21,10 +21,10 @@ module.exports = (app) => {
 
   app.use(/.*/, (req, res) => {
     const {
+      i18n: { locale },
       session: {
-        locale,
         user = null
-      }
+      } = {}
     } = req;
 
     res.render('index', {

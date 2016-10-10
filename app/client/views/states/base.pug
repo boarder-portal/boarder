@@ -16,7 +16,7 @@ mixin langLink(params)
     const { lang, caption } = params;
     const attrs = lang === i18n.locale ? { class: 'active' } : { href: '' };
 
-  a(data-lang=lang).language&attributes(attrs)= caption
+  span.linky(data-lang=lang).language&attributes(attrs)= caption
 
 header.main-header
   h1.header-caption
@@ -28,6 +28,10 @@ header.main-header
 
 div.main-content
   div.alerts
+    div.success
+    div.info
+    div.warning
+    div.error
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
   div(dwayne-router-state="auth").auth-state

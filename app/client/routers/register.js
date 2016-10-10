@@ -1,6 +1,7 @@
 import { D, Elem, Router, doc } from 'dwayne';
 import AuthState from './auth';
 import BaseState from './base';
+import LoginState from './login';
 import { usersFetch } from '../fetchers';
 import RegisterStateTemplate from '../views/states/register.pug';
 import { images } from '../constants';
@@ -132,11 +133,13 @@ class RegisterState extends AuthState {
 }
 
 Router.on('init', () => {
+  const registerLink = RegisterState.buildURL();
+
   D(BaseState.templateParams).deepAssign({
-    headerParams: {
-      registerLink: RegisterState.buildURL()
-    }
+    headerParams: { registerLink }
   });
+
+  D(LoginState.templateParams).deepAssign({ registerLink });
 });
 
 export default RegisterState;

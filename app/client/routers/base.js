@@ -11,6 +11,13 @@ class BaseState extends Router {
     i18n,
     headerParams: {}
   };
+  static elements = {
+    languages: {
+      $: '.main-footer .languages .language',
+
+      $onClick: 'onLanguageClick'
+    }
+  };
 
   _forceNew = false;
 
@@ -32,20 +39,10 @@ class BaseState extends Router {
   }
 
   onLanguageClick(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
     const target = D(e.target);
     const lang = target.data('lang');
 
     changeLanguage(lang);
-  }
-
-  onRender() {
-    const { base } = this;
-    const languages = base.find('.main-footer .languages');
-
-    languages.on('click', '.language', this.onLanguageClick.bind(this));
   }
 }
 

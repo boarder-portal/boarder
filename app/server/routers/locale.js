@@ -9,11 +9,13 @@ module.exports = (app) => {
   app.use((req, res, next) => {
     const {
       language,
-      session
+      session = {
+        save() {}
+      }
     } = req;
-    let { locale } = session;
+    let { locale } = session || {};
 
-    if (!session.locale) {
+    if (!locale) {
       locale = session.locale = language || 'en';
       session.save();
     }

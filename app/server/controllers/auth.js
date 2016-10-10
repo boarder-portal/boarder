@@ -22,16 +22,10 @@ const {
   mail: {
     emails: {
       register: {
-        from: {
-          name: registerFromName,
-          email: registerFromEmail
-        }
+        from: registerFrom
       },
       forgotPassword: {
-        from: {
-          name: forgotPasswordFromName,
-          email: forgotPasswordFromEmail
-        }
+        from: forgotPasswordFrom
       }
     }
   }
@@ -89,51 +83,29 @@ module.exports = {
   },
   register(req, res, next) {
     const {
-      i18n,
       body: {
         email = '',
         login = '',
         password = ''
-      },
-      protocol
+      }
     } = req;
 
     User
       .create({
         email,
         login,
-        password
+        password,
+        confirmToken: confirmEmailAlphabet.token(40)
       })
       .then((user) => {
         user.confirmToken = confirmEmailAlphabet.token(40);
 
         return user.save();
       })
-      .then(({ confirmToken }) => {
-        sendEmail({
-          from: {
-            name: registerFromName,
-            email: registerFromEmail
-          },
-          to: email,
-          subject: i18n.t('email.register.subject'),
-          templatePath: 'email/register',
-          locals: {
-            i18n,
-            login,
-            confirmLink: buildURL({
-              protocol,
-              host: req.get('host'),
-              path: registerConfirmationPath,
-              query: {
-                login,
-                token: confirmToken
-              }
-            })
-          }
-        });
+      .then((user) => {
+        sendConfirmationEmail(req, user);
+        res.json({ errors: null });
       })
-      .then(() => res.json({ errors: null }))
       .catch((err) => {
         let { errors } = err;
 
@@ -160,8 +132,12 @@ module.exports = {
   },
   confirmRegister(req, res) {
     const {
+      session,
+      session: {
+        user: sessionUser
+      } = {},
       query: {
-        login,
+        email,
         token
       }
     } = req;
@@ -169,20 +145,45 @@ module.exports = {
     User
       .findOne({
         where: {
-          login,
+          email,
           confirmToken: token
         }
       })
       .then((user) => {
-        if (user) {
-          user.confirmed = true;
-          user.confirmToken = null;
-
-          return user.save();
+        if (!user) {
+          throw notAuthorizedError;
         }
+
+        user.confirmed = true;
+        user.confirmToken = null;
+
+        return user.save();
       })
-      .catch(() => {})
-      .then(() => res.redirect('/'));
+      .then((user) => {
+        if (!session || !sessionUser || sessionUser.email !== user.email) {
+          return;
+        }
+
+        session.user = user;
+
+        return new Promise((resolve) => {
+          session.save(resolve);
+        });
+      })
+      .then(() => res.redirect('/?confirmRegister=true'))
+      .catch(() => res.redirect('/'));
+  },
+  sendOneMore(req, res, next) {
+    const {
+      session: { user }
+    } = req;
+
+    if (!user) {
+      return next(notAuthorizedError);
+    }
+
+    sendConfirmationEmail(req, user);
+    res.json(true);
   },
   login(req, res, next) {
     const {
@@ -192,6 +193,7 @@ module.exports = {
       },
       session
     } = req;
+
     const password = hashPassword(origPassword);
     const where = isEmail(login)
       ? { email: login, password }
@@ -239,10 +241,7 @@ module.exports = {
           .save()
           .then(({ resetPasswordToken }) => {
             sendEmail({
-              from: {
-                name: forgotPasswordFromName,
-                email: forgotPasswordFromEmail
-              },
+              from: forgotPasswordFrom,
               to: email,
               subject: i18n.t('email.forgot_password.subject'),
               templatePath: 'email/forgot-password',
@@ -287,7 +286,7 @@ module.exports = {
           return false;
         }
 
-        user.password = password;
+        user.password = hashPassword(password);
         user.resetPasswordToken = null;
 
         return user.save();
@@ -318,3 +317,35 @@ module.exports = {
     next();
   }
 };
+
+function sendConfirmationEmail(req, user) {
+  const {
+    i18n,
+    protocol
+  } = req;
+  const {
+    login,
+    email,
+    confirmToken
+  } = user;
+
+  sendEmail({
+    from: registerFrom,
+    to: email,
+    subject: i18n.t('email.register.subject'),
+    templatePath: 'email/register',
+    locals: {
+      i18n,
+      login,
+      confirmLink: buildURL({
+        protocol,
+        host: req.get('host'),
+        path: registerConfirmationPath,
+        query: {
+          email,
+          token: confirmToken
+        }
+      })
+    }
+  });
+}

@@ -15,18 +15,18 @@ const resolveGlob = exports.resolveGlob = (globs) => {
   ), []);
 };
 
-const requireGlob = exports.requireGlob = (globs) => {
-  return resolveGlob(globs).map((absolutePath) => {
+const requireGlob = exports.requireGlob = (globs) => (
+  resolveGlob(globs).map((absolutePath) => {
     const relativePath = path.relative(serverDir, absolutePath);
 
     console.log('Requiring: %s...', relativePath);
 
     return require(absolutePath);
-  });
-};
+  })
+);
 
-exports.requireAndExecute = (globs, ...args) => {
-  return requireGlob(globs).forEach((func) => {
+exports.requireAndExecute = (globs, ...args) => (
+  requireGlob(globs).forEach((func) => {
     func(...args);
-  });
-};
+  })
+);

@@ -1,31 +1,39 @@
 import { D, parseHTML, Promise, body } from 'dwayne';
 import { ALERT_TRANSITION_DURATION } from '../constants';
+import { Emitter } from './emitter';
+import { i18n } from '../i18n';
 import AlertTemplate from '../views/partials/alert.pug';
 
 const alerts = {};
 
 let alertId = 0;
 
-class Alert {
+class Alert extends Emitter {
   static getById(id) {
     return alerts[id];
   }
 
-  constructor(html, duration, level) {
+  constructor(html, duration, level, locals) {
+    super();
+
     const id = alertId++;
     const elem = parseHTML(
       AlertTemplate({
         id,
-        caption: html
+        caption: html(
+          D({ i18n }).assign(locals).$
+        )
       })
     );
+    const caption = elem.find('.alert-caption');
 
     elem
-      .into('.main-content > .alerts')
+      .into(`.main-content > .alerts > .${ level }`)
       .addClass(level);
 
     D(this).assign({
       elem,
+      caption,
       duration,
       level
     });
@@ -36,6 +44,11 @@ class Alert {
       .timeout()
       .then(() => {
         this.show();
+
+        return D(ALERT_TRANSITION_DURATION).timeout();
+      })
+      .then(() => {
+        this.emit('show');
       });
   }
 
@@ -56,18 +69,21 @@ class Alert {
 
         return D(duration).timeout();
       })
-      .then(() => {
-        this.remove();
-      });
+      .then(() => this.close());
   }
 
-  remove() {
+  close() {
     const { elem } = this;
 
     elem.removeClass('visible');
 
-    D(ALERT_TRANSITION_DURATION * 2)
+    D(ALERT_TRANSITION_DURATION)
       .timeout()
+      .then(() => {
+        this.emit('close');
+
+        return D(ALERT_TRANSITION_DURATION).timeout();
+      })
       .then(() => {
         elem.remove();
 
@@ -83,7 +99,7 @@ body.on('click', '.main-content > .alerts > .alert > .fa-close', ({ target }) =>
     .replace('alert-', '');
   const alert = Alert.getById(alertId);
 
-  alert.remove();
+  alert.close();
 });
 
-export default Alert;
+export { Alert };

@@ -19,11 +19,17 @@
       },
       "login": {
         "base": "/login",
-        "method": "post"
+        "method": "post",
+        "session": true
       },
       "confirmRegister": {
         "base": "/confirm-register",
         "method": "get"
+      },
+      "sendOneMore": {
+        "base": "/send-one-more",
+        "method": "get",
+        "session": true
       },
       "forgotPassword": {
         "base": "/forgot-password",
@@ -38,7 +44,8 @@
       "base": "/lang",
       "change": {
         "base": "/change",
-        "method": "put"
+        "method": "put",
+        "session": true
       }
     }
   },

@@ -1,6 +1,8 @@
 @import (reference) '../mixins';
 
-@border-line-width: 2px;
+@import './base/header';
+@import './base/alerts';
+@import './base/footer';
 
 body {
   .bg(@gray-very-light);
@@ -21,154 +23,13 @@ body {
   min-height: 100%;
 }
 
-.main-header {
-  .flex-stretch();
-  .relative();
-
-  height: @h2;
-
-  &:after {
-    .pseudo();
-    .absolute();
-    .block();
-    .bg(@black);
-
-    bottom: -@border-line-width;
-    left: 0;
-    width: 100%;
-    height: @border-line-width;
-  }
-
-  .header-caption {
-    .flex-col();
-    .flx(70%);
-
-    align-items: flex-start;
-
-    padding-left: @w2;
-  }
-
-  .register-link,
-  .login-link {
-    .relative();
-    .flex();
-    .flx(15%);
-
-    height: 100%;
-
-    &:before {
-      .pseudo();
-      .absolute();
-      .block();
-      .bg(#000);
-
-      top: 10%;
-      left: 0;
-      height: 80%;
-      width: @border-line-width;
-    }
-  }
-}
-
 .main-content {
   .flex-col-stretch();
   .flx();
   .relative();
   .overflow-hidden();
 
-  > .alerts {
-    .absolute();
-    .flex();
-
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: @h1;
-
-    .alert {
-      .absolute();
-      .flex();
-      .tr-very-long(top);
-
-      top: -@h1;
-      left: 0;
-      width: 100%;
-      height: @h1;
-      padding: @hs @ws;
-
-      &.visible {
-        top: 0;
-      }
-
-      &.warning {
-        .bg(@orange-lighter);
-      }
-
-      &.info {
-        .bg(@blue-lighter);
-      }
-
-      &.success {
-        .bg(@green-lighter);
-      }
-
-      .alert-caption {
-        .flx();
-      }
-
-      .fa-close {
-        .flx2(16px);
-      }
-    }
-  }
-
   padding: @h1 0;
   margin-top: @border-line-width;
   margin-bottom: @border-line-width;
-}
-
-.main-footer {
-  .flex-col-stretch();
-  .relative();
-
-  height: @h2;
-
-  &:before {
-    .pseudo();
-    .absolute();
-    .block();
-    .bg(@black);
-
-    top: -@border-line-width;
-    left: 0;
-    width: 100%;
-    height: @border-line-width;
-  }
-
-  .languages {
-    .flex();
-
-    a {
-      .relative();
-
-      &.active {
-        color: @black;
-      }
-
-      &.empty {
-        margin: 0 @h05;
-
-        &:before {
-          .pseudo();
-          .absolute();
-          .block();
-          .bg(@black);
-
-          left: @border-line-width/2;
-          height: 100%;
-          width: @border-line-width;
-        }
-      }
-    }
-  }
 }
