@@ -92,7 +92,7 @@ class Alert extends Emitter {
   }
 }
 
-body.on('click', '.main-content > .alerts > .alert > .fa-close', ({ target }) => {
+body.on('click', '.main-content > .alerts .alert > .fa-close', ({ target }) => {
   const alertId = D(target)
     .closest('.alert')
     .id()
