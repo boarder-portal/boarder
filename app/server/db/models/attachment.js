@@ -23,6 +23,10 @@ const Attachment = db.define('attachment', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  filename: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',

@@ -1,7 +1,7 @@
 @import (reference) '../mixins';
 
 .boarder-input {
-  .bordered(rgba(0,0,0,0));
+  .bordered(@transparent);
 
   height: @h1;
   padding: 0 @ws;
@@ -19,17 +19,7 @@
       .pointer();
 
       &.success {
-        .bg(@green-light);
-
-        &:hover {
-          .bg(@green);
-        }
-
-        &:active {
-          .bg(@green-dark);
-
-          transition-duration: 0s;
-        }
+        .tr-bg-color(@green-light, @green, @green-dark);
       }
     }
 

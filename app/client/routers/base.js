@@ -1,6 +1,7 @@
-import { D, Router } from 'dwayne';
+import { D, Router, find } from 'dwayne';
 import BaseStateTemplate from '../views/states/base.pug';
 import { i18n, changeLanguage } from '../i18n';
+import { store } from '../constants';
 
 class BaseState extends Router {
   static stateName = 'base';
@@ -12,6 +13,15 @@ class BaseState extends Router {
     headerParams: {}
   };
   static elements = {
+    header: {
+      $: '.main-header',
+
+      profile: {
+        $: '.profile',
+
+        openProfileDropdown: '.fa-sort-down'
+      }
+    },
     languages: {
       $: '.main-footer .languages .language',
 
@@ -32,8 +42,29 @@ class BaseState extends Router {
     return false;
   }
 
+  authorize() {
+    const header = find('.main-header');
+    const profile = header.find('.profile');
+    const $avatar = profile.find('.avatar');
+    const $login = profile.find('.login');
+
+    const {
+      avatar,
+      login
+    } = store.user;
+
+    header.addClass('authorized');
+
+    $avatar.ref(avatar);
+    $login.text(login);
+  }
+
   constructor(props) {
     super(props);
+
+    D(this.templateParams).assign({
+      user: store.user
+    });
 
     this.i18n = i18n;
   }

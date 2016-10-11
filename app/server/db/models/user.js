@@ -1,4 +1,6 @@
+const { isNull } = require('dwayne');
 const Sequelize = require('sequelize');
+const Attachment = require('./attachment');
 const { hashPassword } = require('../../helpers');
 const db = require('../');
 
@@ -48,6 +50,18 @@ const User = db.define('user', {
     defaultValue: null,
     allowNull: true
   },
+  avatarId: {
+    type: Sequelize.INTEGER,
+    field: 'avatar_id',
+    defaultValue: null,
+    allowNull: true,
+    references: {
+      model: 'attachments',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'set default'
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',
@@ -68,7 +82,35 @@ const User = db.define('user', {
     beforeCreate(user) {
       user.password = hashPassword(user.password);
     }
+  },
+  instanceMethods: {
+    getAvatar() {
+      const { avatarId } = this;
+
+      if (isNull(this.avatarId)) {
+        return Promise.resolve(null);
+      }
+
+      return Attachment
+        .findOne({
+          where: {
+            id: avatarId
+          }
+        })
+        .then(({ filename }) => filename)
+        .catch(() => null);
+    }
   }
 });
+
+const toJSON = User.Instance.prototype.toJSON;
+
+User.Instance.prototype.toJSON = function () {
+  const json = toJSON.apply(this, arguments);
+
+  json.avatar = this.avatar;
+
+  return json;
+};
 
 module.exports = User;

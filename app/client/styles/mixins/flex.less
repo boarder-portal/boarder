@@ -1,22 +1,22 @@
-.flex {
+.flex(@justify-content: center) {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: @justify-content;
 }
 
-.flex-col {
+.flex-col() {
   .flex();
 
   flex-direction: column;
 }
 
-.flex-stretch {
+.flex-stretch() {
   display: flex;
   align-items: stretch;
   justify-content: center;
 }
 
-.flex-col-stretch {
+.flex-col-stretch() {
   .flex-stretch();
 
   flex-direction: column;

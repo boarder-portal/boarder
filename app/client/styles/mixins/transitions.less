@@ -1,0 +1,41 @@
+.tr(@what: all) {
+  transition: @what 0.2s ease-out;
+}
+
+.tr-long(@what: all) {
+  transition: @what 0.6s ease-out;
+}
+
+.tr-very-long(@what: all) {
+  transition: @what 1s ease-out;
+}
+
+.tr-color(@initial, @hover, @active) {
+  .tr(color);
+
+  color: @initial;
+
+  &:hover {
+    color: @hover;
+  }
+
+  &:active {
+    color: @active;
+    transition-duration: 0s;
+  }
+}
+
+.tr-bg-color(@initial, @hover, @active) {
+  .tr(background-color);
+
+  background-color: @initial;
+
+  &:hover {
+    background-color: @hover;
+  }
+
+  &:active {
+    background-color: @active;
+    transition-duration: 0s;
+  }
+}

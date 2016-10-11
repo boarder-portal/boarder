@@ -18,9 +18,17 @@ mixin langLink(params)
 
   span.linky(data-lang=lang).language&attributes(attrs)= caption
 
-header.main-header
+header.main-header(class=user ? ['authorized'] : [])
   h1.header-caption
     a(href=headerParams.homeLink)= i18n.t('header.home_link')
+  div.profile
+    - const avatarAttrs = user ? { src: user.avatar } : {};
+
+    img.avatar&attributes(avatarAttrs)
+    span.login= user ? user.login : ''
+    i.fa.fa-sort-down.closed.profile-dropdown
+      div.dropdown
+        div.dropdown-item.link= i18n.t('header.profile.dropdown.logout')
   span.register-link
     a(href=headerParams.registerLink)= i18n.t('header.register_link')
   span.login-link
@@ -43,3 +51,4 @@ footer.main-footer
       +langLink(params)
       a.empty!= '&nbsp;'
     +langLink(lastLang)
+    i.fa.fa-sort-down

@@ -1,0 +1,46 @@
+@import (reference) '../mixins';
+
+.fa-sort-down,
+.fa-sort-up {
+  .relative();
+  .pointer();
+  .no-select();
+
+  z-index: 100000;
+
+  &.closed {
+    .dropdown {
+      display: none;
+    }
+  }
+}
+
+.fa-sort-down {
+  padding: 0 @ws 8px;
+}
+
+.fa-sort-up {
+  padding: 8px @ws 0;
+}
+
+.dropdown {
+  .absolute();
+  .bg(@gray-very-light);
+  .bordered();
+  .br(2px);
+  .shadow();
+
+  padding: @hs/2 @ws/2;
+  user-select: initial;
+  cursor: initial;
+  width: @w4;
+
+  .dropdown-item {
+    padding: @hs @ws;
+
+    &.link {
+      .pointer();
+      .tr-bg-color(@transparent, @green-lighter, @green-light);
+    }
+  }
+}

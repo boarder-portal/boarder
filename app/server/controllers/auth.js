@@ -221,10 +221,15 @@ module.exports = {
           return res.json(null);
         }
 
-        session.user = user;
-        session.save();
+        return user
+          .getAvatar()
+          .then((avatar) => {
+            user.avatar = avatar;
+            session.user = user;
 
-        res.json(user);
+            session.save();
+            res.json(user);
+          });
       })
       .catch(next);
   },

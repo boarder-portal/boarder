@@ -1,9 +1,11 @@
 import { D, Router, Elem } from 'dwayne';
 import BaseState from './base';
 import AuthState from './auth';
+import HomeState from './home';
+import { checkUser } from '../helpers';
 import { usersFetch } from '../fetchers';
 import LoginStateTemplate from '../views/states/login.pug';
-import { store } from '../constants';
+import { store, TIME_TO_ALERT_AFTER_LOGIN } from '../constants';
 
 class LoginState extends AuthState {
   static stateName = 'login';
@@ -55,6 +57,11 @@ class LoginState extends AuthState {
         BaseState.prototype._forceNew = true;
         store.user = user;
 
+        this.authorize();
+        D(TIME_TO_ALERT_AFTER_LOGIN)
+          .timeout()
+          .then(checkUser);
+
         form.hide();
         successCaption.show();
       })
@@ -62,6 +69,12 @@ class LoginState extends AuthState {
       .then(() => {
         spinner.hide();
       });
+  }
+
+  onBeforeLoad(e) {
+    if (store.user) {
+      e.go(HomeState.buildURL());
+    }
   }
 
   onRender() {
