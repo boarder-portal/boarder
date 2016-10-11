@@ -13,23 +13,26 @@ const ATTACHMENTS_DIR = path.resolve('./public/attachments');
 
 module.exports = {
   up() {
-    return User.findAll({})
+    return fs.ensureDir(`${ ATTACHMENTS_DIR }`)
+      .then(() => User.findAll({}))
       .then((users) => (
-        Promise
-          .all(
-            users.map(({ id }) => (
-              fs.ensureDir(`${ ATTACHMENTS_DIR }/users/${ id }`)
-                .then(() => Attachment.create({ userId: id }))
-            ))
-          )
+          Promise
+            .all(
+              users.map(({ id }) => (
+                Attachment.create({
+                  userId: id,
+                  type: 'avatar'
+                })
+              ))
+        )
           .then((attachments) => (
             new Promise((resolve) => {
               http.get(defaultAvatar, (res) => {
                 Promise
                   .all(
-                    attachments.map(({ id, userId }) => (
+                    attachments.map(({ id }) => (
                       new Promise((resolve) => {
-                        const stream = fs.createWriteStream(`${ ATTACHMENTS_DIR }/users/${ userId }/${ id }.png`);
+                        const stream = fs.createWriteStream(`${ ATTACHMENTS_DIR }/${ id }.png`);
 
                         res.pipe(stream);
 

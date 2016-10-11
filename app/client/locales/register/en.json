@@ -13,5 +13,6 @@
     "field_must_not_be_empty": "Field must not be empty",
     "passwords_do_not_match": "Passwords do not match",
     "value_is_not_email": "The value is not a valid email"
-  }
+  },
+  "send_one_more_time": "Send email one more time"
 }

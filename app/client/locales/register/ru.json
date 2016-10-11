@@ -13,5 +13,6 @@
     "field_must_not_be_empty": "Поле не должно быть пустым",
     "passwords_do_not_match": "Пароли не совпадают",
     "value_is_not_email": "Значение не является email-ом"
-  }
+  },
+  "send_one_more_time": "Выслать e-mail еще раз"
 }

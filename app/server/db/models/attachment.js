@@ -19,6 +19,10 @@ const Attachment = db.define('attachment', {
     onUpdate: 'cascade',
     onDelete: 'cascade'
   },
+  type: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',

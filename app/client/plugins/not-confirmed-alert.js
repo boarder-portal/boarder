@@ -19,7 +19,8 @@ if (user && !user.confirmed) {
       .on('click', () => {
         currentFetch.abort();
 
-        currentFetch = usersFetch.sendOneMore();
+        currentFetch = usersFetch.sendOneMore()
+          .catch(() => {});
       });
   });
 }

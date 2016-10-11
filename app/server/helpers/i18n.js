@@ -9,7 +9,7 @@ exports.i18n = resolveGlob('./app/server/i18n/*.json')
     const modules = filename.split(path.sep);
     const [locale] = modules.pop().split('.');
 
-    translations[locale] = new I18n(locale, fs.readJsonSync(filename, { encoding: 'utf8' }).$);
+    translations[locale] = new I18n(locale, fs.readJsonSync(filename, { encoding: 'utf8' }));
 
     return translations;
   }, {});

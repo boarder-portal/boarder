@@ -175,15 +175,30 @@ module.exports = {
   },
   sendOneMore(req, res, next) {
     const {
+      query: { email },
       session: { user }
     } = req;
 
-    if (!user) {
+    if (!email && !user) {
       return next(notAuthorizedError);
     }
 
-    sendConfirmationEmail(req, user);
-    res.json(true);
+    const promise = email
+      ? User
+        .findOne({
+          where: { email }
+        })
+      : Promise.resolve(user);
+
+    promise
+      .then((user) => {
+        if (!user) {
+          return res.json(false);
+        }
+
+        sendConfirmationEmail(req, user);
+        res.json(true);
+      });
   },
   login(req, res, next) {
     const {
@@ -328,6 +343,8 @@ function sendConfirmationEmail(req, user) {
     email,
     confirmToken
   } = user;
+
+  console.log(i18n);
 
   sendEmail({
     from: registerFrom,

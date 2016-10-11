@@ -34,7 +34,15 @@ class RegisterState extends AuthState {
       spinnerContainer: '.auth-spinner-container'
     },
     sendToEmail: '.send-to-email',
-    successCaption: '.auth-success-caption'
+    successCaption: {
+      $: '.auth-success-caption',
+
+      sendOneMore: {
+        $: '.send-one-more',
+
+        $onClick: 'sendOneMore'
+      }
+    }
   };
 
   authStateName = 'register';
@@ -47,6 +55,21 @@ class RegisterState extends AuthState {
     if (testEmailInput.validate()) {
       throw new Error('value_is_not_email');
     }
+  }
+
+  sendOneMore() {
+    const {
+      fetchers,
+      email
+    } = this;
+
+    fetchers.sendOneMore.abort();
+
+    fetchers.sendOneMore = usersFetch
+      .sendOneMore({
+        query: { email }
+      })
+      .catch(() => {});
   }
 
   submit() {
@@ -66,6 +89,8 @@ class RegisterState extends AuthState {
       email,
       password: passwordInput.prop('value')
     };
+
+    this.email = email;
 
     submitInput.attr('disabled', '');
 
@@ -115,7 +140,8 @@ class RegisterState extends AuthState {
         email: {
           get: usersFetch.checkEmail,
           timeout: D(500).timeout()
-        }
+        },
+        sendOneMore: D(0).timeout()
       }
     });
 
