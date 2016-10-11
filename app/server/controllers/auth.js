@@ -159,11 +159,12 @@ module.exports = {
 
         return user.save();
       })
+      .then((user) => (
+        !session || !sessionUser || sessionUser.email !== user.email
+          ? user
+          : user.getSessionInfo()
+      ))
       .then((user) => {
-        if (!session || !sessionUser || sessionUser.email !== user.email) {
-          return;
-        }
-
         session.user = user;
 
         return new Promise((resolve) => {
@@ -222,9 +223,8 @@ module.exports = {
         }
 
         return user
-          .getAvatar()
-          .then((avatar) => {
-            user.avatar = avatar;
+          .getSessionInfo()
+          .then(() => {
             session.user = user;
 
             session.save();

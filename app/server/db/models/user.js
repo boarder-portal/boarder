@@ -99,6 +99,14 @@ const User = db.define('user', {
         })
         .then(({ filename }) => filename)
         .catch(() => null);
+    },
+    getSessionInfo() {
+      return this.getAvatar()
+        .then((avatar) => {
+          this.avatar = avatar;
+
+          return this;
+        });
     }
   }
 });
