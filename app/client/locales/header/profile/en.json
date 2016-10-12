@@ -1,5 +1,6 @@
 {
   "dropdown": {
-    "logout": "Log out"
+    "logout": "Log out",
+    "profile": "Profile"
   }
 }

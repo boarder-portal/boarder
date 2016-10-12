@@ -1,0 +1,5 @@
+mixin dropdown(down, hdir)
+  div.dropdown(class = ['open-' + hdir])
+    i.fa(class = [down ? 'fa-sort-down' : 'fa-sort-up'])
+    div.dropdown-list
+      block

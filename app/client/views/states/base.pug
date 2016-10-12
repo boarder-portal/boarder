@@ -1,22 +1,11 @@
--
-  const languages = [
-    {
-      lang: 'en',
-      caption: 'English'
-    },
-    {
-      lang: 'ru',
-      caption: 'Русский'
-    }
-  ];
-  const lastLang = languages.pop();
+include ../mixins/dropdown
 
 mixin langLink(params)
   -
     const { lang, caption } = params;
-    const attrs = lang === i18n.locale ? { class: 'active' } : { href: '' };
+    const attrs = lang === i18n.locale ? { class: 'disabled' } : { href: '' };
 
-  span.linky(data-lang=lang).language&attributes(attrs)= caption
+  div.dropdown-item.link.language(data-lang=lang)&attributes(attrs)= caption
 
 header.main-header(class=user ? ['authorized'] : [])
   h1.header-caption
@@ -26,9 +15,10 @@ header.main-header(class=user ? ['authorized'] : [])
 
     img.avatar&attributes(avatarAttrs)
     span.login= user ? user.login : ''
-    i.fa.fa-sort-down.closed.profile-dropdown
-      div.dropdown
-        div.dropdown-item.link= i18n.t('header.profile.dropdown.logout')
+    +dropdown(true, 'left')
+      div.dropdown-item.link= i18n.t('header.profile.dropdown.profile')
+      div.dropdown-divider
+      div.dropdown-item.link= i18n.t('header.profile.dropdown.logout')
   span.register-link
     a(href=headerParams.registerLink)= i18n.t('header.register_link')
   span.login-link
@@ -47,8 +37,7 @@ div.main-content
 
 footer.main-footer
   div.languages
-    each params in languages
-      +langLink(params)
-      a.empty!= '&nbsp;'
-    +langLink(lastLang)
-    i.fa.fa-sort-down
+    span.current-lang= currentLang
+    +dropdown(false, 'center')
+      each params in languages
+        +langLink(params)

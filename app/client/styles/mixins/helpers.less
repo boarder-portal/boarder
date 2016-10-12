@@ -29,7 +29,7 @@
   position: absolute;
 }
 
-.hidden() {
+.hide() {
   display: none;
 }
 
@@ -67,6 +67,6 @@
   user-select: none;
 }
 
-.shadow {
-  box-shadow: 0 0 @w05 rgba(0,0,0,0.25);
+.shadow(@width: @w05, @alpha: 0.25, @x: 0, @y: 0) {
+  box-shadow: @x @y @width rgba(0,0,0,@alpha);
 }

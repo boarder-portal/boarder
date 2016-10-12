@@ -3,6 +3,17 @@ import BaseStateTemplate from '../views/states/base.pug';
 import { i18n, changeLanguage } from '../i18n';
 import { store } from '../constants';
 
+const languages = [
+  {
+    lang: 'en',
+    caption: 'English'
+  },
+  {
+    lang: 'ru',
+    caption: 'Русский'
+  }
+];
+
 class BaseState extends Router {
   static stateName = 'base';
   static path = '/';
@@ -10,6 +21,8 @@ class BaseState extends Router {
   static template = BaseStateTemplate;
   static templateParams = {
     i18n,
+    languages,
+    currentLang: D(languages).find(({ lang }) => lang === i18n.locale).value.caption,
     headerParams: {}
   };
   static elements = {

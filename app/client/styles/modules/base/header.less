@@ -78,30 +78,21 @@
       margin-left: @ws;
     }
 
-    .fa-sort-down {
+    .profile-dropdown {
       .flx2();
-
-      &.profile-dropdown {
-        .tr(all);
-
-        > .dropdown {
-          top: @w1;
-          right: 0;
-        }
-      }
     }
   }
 
   &:not(.authorized) {
     .profile {
-      .hidden();
+      .hide();
     }
   }
 
   &.authorized {
     .register-link,
     .login-link {
-      .hidden();
+      .hide();
     }
   }
 }
