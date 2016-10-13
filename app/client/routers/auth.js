@@ -1,4 +1,4 @@
-import { D } from 'dwayne';
+import { D, Router } from 'dwayne';
 import BaseState from './base';
 import AuthStateTemplate from '../views/states/auth.pug';
 import { images } from '../constants';
@@ -152,22 +152,24 @@ class AuthState extends BaseState {
     const { spinnerContainer } = this;
 
     D(this).assign({
-      spinner: spinnerContainer
-        .child(images.loading)
-        .addClass('auth-spinner')
+      spinner: images.loading
         .hide()
+        .into(spinnerContainer)
+        .addClass('auth-spinner')
     });
   }
 }
 
-AuthState.on('render', ['register', 'reset-password'], ({ state }) => {
-  const {
-    inputs,
-    passwordRepeatInput
-  } = state;
+Router.on('init', () => {
+  AuthState.on('render', ['register', 'reset-password'], ({ state }) => {
+    const {
+      inputs,
+      passwordRepeatInput
+    } = state;
 
-  passwordRepeatInput.validate(state.passwordRepeatValidator.bind(state));
-  inputs.validate(state.requiredValidator.bind(state));
+    passwordRepeatInput.validate(state.passwordRepeatValidator.bind(state));
+    inputs.validate(state.requiredValidator.bind(state));
+  });
 });
 
 export default AuthState;

@@ -27,7 +27,7 @@ fetcher
   .after((err, res) => {
     console.log(res);
 
-    new Alert(AJAXErrorAlert, AJAX_ERROR_ALERT_DURATION, 'error');
+    new Alert(AJAXErrorAlert, AJAX_ERROR_ALERT_DURATION, 'error', 'high');
 
     throw err;
   });

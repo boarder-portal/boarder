@@ -13,7 +13,7 @@ class ConfirmRegisterState extends BaseState {
     const removeListener = Router.on('render', () => {
       removeListener();
 
-      new Alert(ConfirmedAlertTemplate, REGISTER_CONFIRMED_ALERT_DURATION, 'success');
+      new Alert(ConfirmedAlertTemplate, REGISTER_CONFIRMED_ALERT_DURATION, 'success', 'low');
     });
 
     e.redirectTo(HomeState.buildURL());

@@ -9,9 +9,15 @@ class HomeState extends BaseState {
 }
 
 Router.on('init', () => {
+  const homeLink = HomeState.buildURL();
+
+  D(BaseState.prototype).assign({
+    homeLink
+  });
+
   D(BaseState.templateParams).deepAssign({
     headerParams: {
-      homeLink: HomeState.buildURL()
+      homeLink
     }
   });
 });

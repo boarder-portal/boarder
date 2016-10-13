@@ -29,14 +29,13 @@ socket.on('connect', () => {
   console.log('%c%s', colored('green'), 'livereload enabled');
 });
 
-socket.on('toreload', () => {
-  console.log('%c%s', colored('orange'), 'something changed...');
+socket.on('tokill', () => {
+  toreload();
 
-  livereload
-    .addClass('reloading');
-
-  ready.replace(loading);
+  socket.emit('tokill-event');
 });
+
+socket.on('toreload', toreload);
 
 socket.on('reload', () => {
   console.log('%c%s', colored('red'), 'reloading...');
@@ -46,4 +45,13 @@ socket.on('reload', () => {
 
 function colored(color) {
   return `color: ${ color }; font-weight: 900; font-size: 16px;`;
+}
+
+function toreload() {
+  console.log('%c%s', colored('orange'), 'something changed...');
+
+  livereload
+    .addClass('reloading');
+
+  ready.replace(loading);
 }

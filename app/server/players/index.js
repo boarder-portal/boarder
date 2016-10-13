@@ -31,7 +31,7 @@ class Player {
   constructor(props) {
     D(this).assign({
       status: NOT_READY,
-      sockets: []
+      sockets: {}
     }, props);
   }
 

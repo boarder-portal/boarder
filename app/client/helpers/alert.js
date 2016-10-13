@@ -13,7 +13,7 @@ class Alert extends Emitter {
     return alerts[id];
   }
 
-  constructor(html, duration, level, locals) {
+  constructor(html, duration, level, priority, locals) {
     super();
 
     const id = alertId++;
@@ -28,7 +28,7 @@ class Alert extends Emitter {
     const caption = elem.find('.alert-caption');
 
     elem
-      .into(`.main-content > .alerts > .${ level }`)
+      .into(`.main-content > .alerts > .${ priority } > .${ level }`)
       .addClass(level);
 
     D(this).assign({

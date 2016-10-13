@@ -1,7 +1,8 @@
 import { D, Router, find } from 'dwayne';
 import BaseStateTemplate from '../views/states/base.pug';
 import { i18n, changeLanguage } from '../i18n';
-import { store } from '../constants';
+import { usersFetch } from '../fetchers';
+import { store, images } from '../constants';
 
 const languages = [
   {
@@ -13,6 +14,7 @@ const languages = [
     caption: 'Русский'
   }
 ];
+let fetching = false;
 
 class BaseState extends Router {
   static stateName = 'base';
@@ -32,7 +34,15 @@ class BaseState extends Router {
       profile: {
         $: '.profile',
 
-        openProfileDropdown: '.fa-sort-down'
+        dropdown: {
+          $: '.profile-dropdown',
+
+          logout: {
+            $: '.logout',
+
+            $onClick: 'logOut'
+          }
+        }
       }
     },
     languages: {
@@ -55,6 +65,16 @@ class BaseState extends Router {
     return false;
   }
 
+  constructor(props) {
+    super(props);
+
+    D(this.templateParams).assign({
+      user: store.user
+    });
+
+    this.i18n = i18n;
+  }
+
   authorize() {
     const header = find('.main-header');
     const profile = header.find('.profile');
@@ -68,18 +88,36 @@ class BaseState extends Router {
 
     header.addClass('authorized');
 
-    $avatar.ref(avatar);
+    if (avatar) {
+      $avatar.ref(avatar);
+    }
+
     $login.text(login);
   }
 
-  constructor(props) {
-    super(props);
+  logOut() {
+    if (fetching) {
+      return;
+    }
 
-    D(this.templateParams).assign({
-      user: store.user
-    });
+    const {
+      logout,
+      logoutSpinner
+    } = this;
 
-    this.i18n = i18n;
+    fetching = true;
+
+    logoutSpinner.show();
+    usersFetch.logout()
+      .then(() => {
+        logout.closeDropdown();
+
+        location.href = this.homeLink;
+      })
+      .catch(() => {})
+      .then(() => {
+        logoutSpinner.hide();
+      });
   }
 
   onLanguageClick(e) {
@@ -89,6 +127,19 @@ class BaseState extends Router {
     changeLanguage(lang);
   }
 }
+
+const removeListener = BaseState.on('render', ({ state }) => {
+  removeListener();
+
+  const { logout } = state;
+
+  D(state).assign({
+    logoutSpinner: images.loading
+      .hide()
+      .into(logout)
+      .addClass('logout-spinner')
+  });
+});
 
 const proto = BaseState.prototype;
 

@@ -23,7 +23,13 @@ gulp.task('server:dev', () => {
         resolve();
       });
 
-      child.kill();
+      child.on('message', (message) => {
+        if (message === 'tokill') {
+          child.kill();
+        }
+      });
+
+      child.send('tokill');
     });
   }
 
@@ -46,15 +52,5 @@ gulp.task('server:dev', () => {
 });
 
 gulp.task('watch:server', ['server:dev'], () => {
-  watch(SERVER_FILES, () => {
-    runSequence('toreload', 'server:dev', 'reload');
-  });
+  gulp.watch(SERVER_FILES, ['server:dev']);
 });
-
-gulp.task('toreload', () => (
-  child.send('toreload')
-));
-
-gulp.task('reload', () => (
-  child.send('reload')
-));

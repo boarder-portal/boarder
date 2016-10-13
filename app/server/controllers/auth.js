@@ -161,7 +161,7 @@ module.exports = {
       })
       .then((user) => (
         !session || !sessionUser || sessionUser.email !== user.email
-          ? user
+          ? sessionUser
           : user.getSessionInfo()
       ))
       .then((user) => {
@@ -219,7 +219,7 @@ module.exports = {
       .findOne({ where })
       .then((user) => {
         if (!user) {
-          return res.json(null);
+          return null;
         }
 
         return user
@@ -227,11 +227,22 @@ module.exports = {
           .then(() => {
             session.user = user;
 
-            session.save();
-            res.json(user);
+            return new Promise((resolve) => {
+              session.save(() => {
+                resolve(user);
+              });
+            });
           });
       })
+      .then((user) => {
+        res.json(user);
+      })
       .catch(next);
+  },
+  logout(req, res) {
+    req.session.destroy(() => {
+      res.json(true);
+    });
   },
   forgotPassword(req, res, next) {
     const {

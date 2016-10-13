@@ -5,6 +5,7 @@
 
   height: @h1;
   padding: 0 @ws;
+  outline: none !important;
 
   &[invalid] {
     border-color: @red;
@@ -30,5 +31,14 @@
 
   &::placeholder {
     color: @gray-light;
+  }
+
+  &:-webkit-autofill {
+    box-shadow: 0 0 0 1000px @white inset;
+
+    &:not([invalid]) {
+      border: none;
+      padding: 1px @ws+1;
+    }
   }
 }

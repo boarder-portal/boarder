@@ -38,6 +38,11 @@
       "resetPassword": {
         "base": "/reset-password",
         "method": "post"
+      },
+      "logout": {
+        "base": "/logout",
+        "method": "get",
+        "session": true
       }
     },
     "lang": {

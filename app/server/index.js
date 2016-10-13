@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const http = require('http');
 const express = require('express');
 const sio = require('socket.io');
@@ -18,7 +20,6 @@ const server = http.Server(app);
 const io = sio(server);
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
-let livereload;
 
 io.adapter(redis(`redis://${ redisHost }:${ redisPort }`));
 
@@ -42,12 +43,35 @@ requireAndExecute([
 console.log();
 
 if (development) {
-  livereload = io.of(LIVERELOAD_NSP);
+  const livereload = io.of(LIVERELOAD_NSP);
 
   process.on('message', (message) => {
-    livereload.emit(message);
+    if (message === 'tokill') {
+      livereload.emit('tokill');
+    }
+  });
+
+  livereload.once('connection', () => {
+    process.send('listen-success');
+    livereload.emit('reload');
+  });
+
+  livereload.on('connection', (socket) => {
+    socket.on('tokill-event', () => {
+      process.send('tokill');
+    });
   });
 }
+
+const logs = fs.createWriteStream(path.resolve('./logs/server.log'));
+
+process.on('uncaughtException', (e) => {
+  logs.write(`Uncaught exception:\n ${ e.stack }\n\n`);
+});
+
+process.on('unhandledRejection', (e) => {
+  logs.write(`Unhandled rejection:\n ${ e.stack }\n\n`);
+});
 
 server.listen(port, (error) => {
   if (error) {
@@ -57,15 +81,6 @@ server.listen(port, (error) => {
 
     console.error(error);
   } else {
-    if (development) {
-      livereload.emit('toreload');
-      process.send('listen-success');
-
-      setTimeout(() => {
-        livereload.emit('reload');
-      }, 500);
-    }
-
     console.info('Listening on port %s...', port);
   }
 });

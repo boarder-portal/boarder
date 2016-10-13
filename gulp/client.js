@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const rollup = require('rollup');
 const watch = require('rollup-watch');
-const runSequence = require('run-sequence');
+const { toreload, reload } = require('../app/server/helpers/livereload');
 
 const rollupDevConfig = require('../rollup.dev.config');
 
@@ -12,11 +12,11 @@ gulp.task('client:dev', () => {
     console.log(event);
 
     if (event.code === 'BUILD_START') {
-      runSequence('toreload');
+      toreload();
     }
 
     if (event.code === 'BUILD_END') {
-      runSequence('reload');
+      reload();
     }
   });
 });

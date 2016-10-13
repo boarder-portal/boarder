@@ -7,6 +7,12 @@ mixin langLink(params)
 
   div.dropdown-item.link.language(data-lang=lang)&attributes(attrs)= caption
 
+mixin alertsBlock()
+  div.success
+  div.info
+  div.warning
+  div.error
+
 header.main-header(class=user ? ['authorized'] : [])
   h1.header-caption
     a(href=headerParams.homeLink)= i18n.t('header.home_link')
@@ -15,10 +21,11 @@ header.main-header(class=user ? ['authorized'] : [])
 
     img.avatar&attributes(avatarAttrs)
     span.login= user ? user.login : ''
-    +dropdown(true, 'left')
+    +dropdown(true, 'left', 'profile-dropdown')
       div.dropdown-item.link= i18n.t('header.profile.dropdown.profile')
       div.dropdown-divider
-      div.dropdown-item.link= i18n.t('header.profile.dropdown.logout')
+      div.dropdown-item.logout.link
+        span.logout-caption= i18n.t('header.profile.dropdown.logout')
   span.register-link
     a(href=headerParams.registerLink)= i18n.t('header.register_link')
   span.login-link
@@ -26,10 +33,12 @@ header.main-header(class=user ? ['authorized'] : [])
 
 div.main-content
   div.alerts
-    div.success
-    div.info
-    div.warning
-    div.error
+    div.low
+      +alertsBlock()
+    div.middle
+      +alertsBlock()
+    div.high
+      +alertsBlock()
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
   div(dwayne-router-state="auth").auth-state

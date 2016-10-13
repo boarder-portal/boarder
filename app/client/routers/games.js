@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, doc, isNull } from 'dwayne';
+import { D, Router, doc, isNull } from 'dwayne';
 import BaseState from './base';
 import LoginState from './login';
 import GamesStateTemplate from '../views/states/games.pug';
@@ -155,48 +155,50 @@ class GamesState extends BaseState {
   }
 }
 
-GamesState.on({
-  beforeLoad(e) {
-    const {
-      state,
-      state: {
-        forceNew,
-        nsp
-      }
-    } = e;
+Router.on('init', () => {
+  GamesState.on({
+    beforeLoad(e) {
+      const {
+        state,
+        state: {
+          forceNew,
+          nsp
+        }
+      } = e;
 
-    const socket = state.socket = io(nsp, {
-      forceNew
-    });
+      const socket = state.socket = io(nsp, {
+        forceNew
+      });
 
-    socket.on(GET_LIST, state.onListReceived.bind(state));
-    socket.on(NEW_ROOM, state.onNewRoom.bind(state));
-    socket.on(UPDATE_ROOM, state.onUpdateRoom.bind(state));
-    socket.on(DELETE_ROOM, state.onDeleteRoom.bind(state));
-    socket.on('connect', () => {
-      e.continue();
+      socket.on(GET_LIST, state.onListReceived.bind(state));
+      socket.on(NEW_ROOM, state.onNewRoom.bind(state));
+      socket.on(UPDATE_ROOM, state.onUpdateRoom.bind(state));
+      socket.on(DELETE_ROOM, state.onDeleteRoom.bind(state));
+      socket.on('connect', () => {
+        e.continue();
 
-      console.log('connected');
-    });
-    socket.on('error', (err) => {
-      e.go(LoginState.buildURL());
+        console.log('connected');
+      });
+      socket.on('error', (err) => {
+        e.go(LoginState.buildURL());
 
-      console.log(err);
-    });
-    socket.on('disconnect', () => {
-      console.log('disconnected');
-    });
+        console.log(err);
+      });
+      socket.on('disconnect', () => {
+        console.log('disconnected');
+      });
 
-    e.pause();
-  },
-  leave({ state }) {
-    state.socket.disconnect();
-  },
-  render({ state }) {
-    state.rendered = true;
+      e.pause();
+    },
+    leave({ state }) {
+      state.socket.disconnect();
+    },
+    render({ state }) {
+      state.rendered = true;
 
-    state.renderRoomsList();
-  }
-}, /lobby$/);
+      state.renderRoomsList();
+    }
+  }, /lobby$/);
+});
 
 export default GamesState;

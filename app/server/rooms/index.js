@@ -97,7 +97,7 @@ class Room {
     D(this).assign({
       status: NOT_PLAYING,
       players: array(playersCount, () => null).$,
-      observers: [],
+      observers: D({}),
       room,
       _timeout: timeout
     }, props, {
@@ -204,6 +204,7 @@ class Room {
     socket.on('disconnect', () => this.userLeave(socket));
 
     const {
+      id,
       handshake: {
         query: { role }
       },
@@ -220,7 +221,7 @@ class Room {
 
     socket.role = eventualRole;
 
-    let player = players.find((player) => player && player.email === user.email);
+    let player = players.find((player) => player && player.login === user.login);
 
     if (!player || !isPlayer) {
       const { key = null } = D(players).find(isNull) || {};
@@ -235,15 +236,13 @@ class Room {
         player.index = key;
         players[key] = player;
       } else {
-        player.index = observers.length;
-        observers.push(player);
+        observers.$[id] = true;
       }
 
       this.update(socket);
     }
 
-    socket.socketIndex = player.sockets.length;
-    player.sockets.push(socket.id);
+    player.sockets[id] = true;
 
     socket.player = player;
     socket.emit(ENTER_ROOM, {
@@ -285,6 +284,7 @@ class Room {
    */
   userLeave(socket) {
     const {
+      id,
       room: {
         status,
         players,
@@ -294,25 +294,24 @@ class Room {
         index,
         sockets
       },
-      role,
-      socketIndex
+      role
     } = socket;
 
     if (role === PLAYER && status === NOT_PLAYING) {
-      sockets.splice(socketIndex, 1);
+      delete sockets[id];
 
-      if (!sockets.length) {
+      if (!D(sockets).count) {
         players[index] = null;
 
         this.update();
       }
     } else {
-      observers.splice(index, 1);
+      observers.delete(id);
 
       this.update();
     }
 
-    if (players.every(isNull) && !observers.length) {
+    if (players.every(isNull) && !observers.count) {
       this.expires();
     }
 
@@ -335,7 +334,7 @@ class Room {
       playersCount,
       status,
       players,
-      observers: observers.length
+      observers: observers.count
     };
   }
 }
