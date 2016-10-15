@@ -160,14 +160,11 @@ Router.on('init', () => {
     beforeLoad(e) {
       const {
         state,
-        state: {
-          forceNew,
-          nsp
-        }
+        state: { nsp }
       } = e;
 
       const socket = state.socket = io(nsp, {
-        forceNew
+        forceNew: true
       });
 
       socket.on(GET_LIST, state.onListReceived.bind(state));

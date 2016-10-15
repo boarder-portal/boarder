@@ -2,7 +2,7 @@ mixin input-container(attrs)
   input.boarder-input&attributes(attrs)
 
 div.auth-block.login-block
-  span.auth-header= i18n.t('login.header')
+  h2.auth-header= i18n.t('login.header')
   form.auth-form.login-form
     div.auth-spinner-container
       div.check-credentials-caption.hidden= i18n.t('login.try_again')

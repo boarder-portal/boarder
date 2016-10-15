@@ -1,14 +1,13 @@
 {
   "header": "Изменение пароля",
-  "success": "Пароль был успешно изменен!",
   "action": "Изменить пароль",
   "fields": {
-    "password": "Пароль",
+    "current_password": "Текущий пароль",
+    "new_password": "Новый пароль",
     "password_repeat": "Повторите пароль"
   },
   "validations": {
     "field_must_not_be_empty": "Поле не должно быть пустым",
     "passwords_do_not_match": "Пароли не совпадают"
-  },
-  "wrong_email": "Неверный e-mail или токен"
+  }
 }

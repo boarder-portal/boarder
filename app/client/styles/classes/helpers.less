@@ -6,10 +6,12 @@
 
 .fa-close {
   .flex();
+  .fs(16px);
   .tr(color);
   .pointer();
 
   color: @gray-very-dark;
+  padding-bottom: 2px;
 
   &:hover {
     color: @black;
@@ -24,4 +26,12 @@
   color: @gray-light !important;
   background-color: @transparent !important;
   cursor: default !important;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
 }

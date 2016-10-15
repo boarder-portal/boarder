@@ -43,6 +43,10 @@
         "base": "/logout",
         "method": "get",
         "session": true
+      },
+      "changePassword": {
+        "base": "/change-password",
+        "method": "post"
       }
     },
     "lang": {

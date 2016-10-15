@@ -30,8 +30,12 @@ body.on('click', dropdownActionSelector, ({ target }) => {
 
 Elem.addInstanceProperties({
   closeDropdown() {
-    this.closest(dropdownSelector).removeClass('visible');
+    const dropdown = this.closest(dropdownSelector);
 
-    activeDropdown = new Elem();
+    if (dropdown.length) {
+      dropdown.removeClass('visible');
+
+      activeDropdown = new Elem();
+    }
   }
 });

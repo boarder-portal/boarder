@@ -24,12 +24,11 @@ class HexagonRoomState extends HexagonState {
   onBeforeLoad(e) {
     const {
       params: { roomId },
-      query: { observe },
-      forceNew
+      query: { observe }
     } = this;
 
     const socket = this.socket = io(ROOM_NSP.replace(/\$roomId/, roomId), {
-      forceNew,
+      forceNew: true,
       query: { role: observe ? 'observer' : '' }
     });
 

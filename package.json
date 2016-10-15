@@ -32,6 +32,7 @@
     "pg": "^6.1.0",
     "pug": "^2.0.0-beta6",
     "pug-runtime": "^2.0.2",
+    "redis": "^2.6.2",
     "rollup": "^0.36.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.4",

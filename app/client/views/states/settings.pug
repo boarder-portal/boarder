@@ -1,0 +1,12 @@
+div.settings-menu
+  a.no-link(
+    href=links.settingsAccountLink
+    state="settings-account"
+  )= i18n.t('settings.menu.account')
+  a.no-link(
+    href=links.settingsProfileLink
+    state="settings-profile"
+  )= i18n.t('settings.menu.profile')
+div.settings-content
+  div(dwayne-router-state="settings-account").settings-instance-state.settings-account-state
+  div(dwayne-router-state="settings-profile").settings-instance-state.settings-profile-state

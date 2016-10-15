@@ -32,7 +32,7 @@ class ResetPasswordState extends AuthState {
     spinnerContainer: '.auth-spinner-container'
   };
 
-  authStateName = 'reset_password';
+  stateName = 'reset_password';
 
   constructor(props) {
     super(props);

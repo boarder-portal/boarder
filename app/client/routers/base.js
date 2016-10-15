@@ -37,6 +37,11 @@ class BaseState extends Router {
         dropdown: {
           $: '.profile-dropdown',
 
+          settingsLink: {
+            $: '.settings-link',
+
+            $onClick: 'goToSettings'
+          },
           logout: {
             $: '.logout',
 
@@ -51,19 +56,6 @@ class BaseState extends Router {
       $onClick: 'onLanguageClick'
     }
   };
-
-  _forceNew = false;
-
-  get forceNew() {
-    /* eslint no-use-before-define: 0 */
-    if (proto._forceNew) {
-      proto._forceNew = false;
-
-      return true;
-    }
-
-    return false;
-  }
 
   constructor(props) {
     super(props);
@@ -93,6 +85,10 @@ class BaseState extends Router {
     }
 
     $login.text(login);
+  }
+
+  goToSettings({ target }) {
+    D(target).closeDropdown();
   }
 
   logOut() {
@@ -126,6 +122,141 @@ class BaseState extends Router {
 
     changeLanguage(lang);
   }
+
+  requiredValidator(value) {
+    if (!value) {
+      throw new Error('field_must_not_be_empty');
+    }
+  }
+
+  passwordRepeatValidator(value) {
+    if (value !== this.passwordInput.prop('value')) {
+      throw new Error('passwords_do_not_match');
+    }
+  }
+
+  findIcon(input) {
+    return input
+      .next()
+      .find('.fa');
+  }
+
+  showErrors(input, message) {
+    const {
+      i18n,
+      stateName
+    } = this;
+
+    input.toggleAttr('invalid', message);
+    input
+      .up()
+      .prev()
+      .text(i18n.t(`${ stateName }.validations.${ message }`));
+  }
+
+  showIcon(input, wrong) {
+    this.findIcon(input)
+      .show()
+      .toggleClass('fa-check', !wrong)
+      .toggleClass('fa-times', wrong);
+  }
+
+  onInputChange({ target }) {
+    D(target).validate();
+  }
+
+  onInputValidate({ target, error }) {
+    target = D(target);
+
+    const name = target.attr('name');
+
+    if (name === 'password' && this.repeatValidated) {
+      this.passwordRepeatInput.validate();
+    }
+
+    if (name === 'password-repeat') {
+      this.repeatValidated = true;
+    }
+
+    if (this.validated) {
+      this.showErrors(target, error && error.message);
+    }
+
+    this.showIcon(target, error);
+
+    if (name === 'login' || name === 'email') {
+      const fetcher = this.fetchers[name];
+
+      fetcher.timeout.abort();
+
+      const spinner = target
+        .next()
+        .find('.register-input-spinner');
+
+      if (error || this.fetching) {
+        spinner.hide();
+
+        return;
+      }
+
+      const timeout = fetcher.timeout = D(500).timeout();
+
+      this.findIcon(target).hide();
+      this.showErrors(target, '');
+      spinner.show();
+
+      timeout.then(() => {
+        const fetch = fetcher.timeout = fetcher.get({
+          query: {
+            [target.attr('name')]: target.prop('value')
+          }
+        });
+
+        fetch
+          .then(({ json: { error } }) => {
+            this.showIcon(target, error);
+
+            if (this.validated) {
+              this.showErrors(target, error || '');
+            }
+          })
+          .catch((err) => {
+            if (err.message === 'Request was aborted') {
+              throw err;
+            }
+
+            console.log(err);
+          })
+          .then(() => {
+            spinner.hide();
+          }, () => {});
+      }, () => {});
+    }
+  }
+
+  onFormValidate({ target, valid }) {
+    const {
+      form,
+      spinner
+    } = this;
+
+    if (target === form.$[0]) {
+      this.validated = true;
+
+      if (valid) {
+        this.fetching = true;
+
+        spinner.show();
+        this.submit();
+      }
+    }
+  }
+
+  onPreSubmit(e) {
+    e.preventDefault();
+
+    this.form.validate();
+  }
 }
 
 const removeListener = BaseState.on('render', ({ state }) => {
@@ -140,7 +271,5 @@ const removeListener = BaseState.on('render', ({ state }) => {
       .addClass('logout-spinner')
   });
 });
-
-const proto = BaseState.prototype;
 
 export default BaseState;

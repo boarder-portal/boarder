@@ -325,6 +325,32 @@ module.exports = {
       .then((user) => res.json(!!user))
       .catch(next);
   },
+  changePassword(req, res, next) {
+    const {
+      body: {
+        currentPassword,
+        password
+      }
+    } = req;
+
+    User
+      .findOne({
+        where: {
+          password: hashPassword(currentPassword)
+        }
+      })
+      .then((user) => {
+        if (!user) {
+          return false;
+        }
+
+        user.password = hashPassword(password);
+
+        return user.save();
+      })
+      .then((user) => res.json(!!user))
+      .catch(next);
+  },
   socketSession(socket, next) {
     const {
       request: req

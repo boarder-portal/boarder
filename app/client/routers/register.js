@@ -45,7 +45,7 @@ class RegisterState extends AuthState {
     }
   };
 
-  authStateName = 'register';
+  stateName = 'register';
 
   emailValidator(value) {
     const { testEmailInput } = this;

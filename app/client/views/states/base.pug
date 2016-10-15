@@ -22,7 +22,7 @@ header.main-header(class=user ? ['authorized'] : [])
     img.avatar&attributes(avatarAttrs)
     span.login= user ? user.login : ''
     +dropdown(true, 'left', 'profile-dropdown')
-      div.dropdown-item.link= i18n.t('header.profile.dropdown.profile')
+      a.dropdown-item.settings-link.link.no-link(href=headerParams.settingsLink)= i18n.t('header.profile.dropdown.settings')
       div.dropdown-divider
       div.dropdown-item.logout.link
         span.logout-caption= i18n.t('header.profile.dropdown.logout')
@@ -33,14 +33,19 @@ header.main-header(class=user ? ['authorized'] : [])
 
 div.main-content
   div.alerts
+    div.very-low
+      +alertsBlock()
     div.low
       +alertsBlock()
-    div.middle
+    div.medium
       +alertsBlock()
     div.high
       +alertsBlock()
+    div.very-high
+      +alertsBlock()
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
+  div(dwayne-router-state="settings").settings-state
   div(dwayne-router-state="auth").auth-state
   div(dwayne-router-state="games")
 

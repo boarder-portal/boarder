@@ -10,7 +10,7 @@ mixin input-container(attrs)
       input.boarder-input&attributes(attrs)
 
 div.auth-block.register-block
-  span.auth-header= i18n.t('register.header')
+  h2.auth-header= i18n.t('register.header')
   form.auth-form.register-form(autocomplete='off')
     div.auth-spinner-container
     +input-container({

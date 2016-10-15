@@ -1,3 +1,4 @@
+const { date } = require('dwayne');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -63,14 +64,20 @@ if (development) {
   });
 }
 
-const logs = fs.createWriteStream(path.resolve('./logs/server.log'));
-
-process.on('uncaughtException', (e) => {
-  logs.write(`Uncaught exception:\n ${ e.stack }\n\n`);
+const logFile = path.resolve('./logs/server.log');
+const logs = fs.createWriteStream(logFile, {
+  flags: 'r+',
+  start: fs.readFileSync(logFile, { encoding: 'utf8' }).length
 });
 
-process.on('unhandledRejection', (e) => {
-  logs.write(`Unhandled rejection:\n ${ e.stack }\n\n`);
+process.on('uncaughtException', (err) => {
+  console.error(err);
+  logs.write(`${ date().toISOString() }\nUncaught exception:\n ${ err.stack }\n\n`);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error(err);
+  logs.write(`${ date().toISOString() }\nUnhandled rejection:\n ${ err.stack }\n\n`);
 });
 
 server.listen(port, (error) => {

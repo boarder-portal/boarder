@@ -4,9 +4,17 @@
 @import './base/alerts';
 @import './base/footer';
 
+html {
+  .fs(12px);
+
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  letter-spacing: 0.3px;
+}
+
 body {
-  .bg(@gray-very-light);
-  .fs(14px);
+  .bg(@background-color);
+
+  min-width: @w2 * 12;
 }
 
 #dwayne-router {
@@ -28,7 +36,7 @@ body {
   .relative();
   .overflow-hidden();
 
-  padding: @h2 0 @h1;
+  padding: @h1+@h05 0 @h1;
   margin-top: @border-line-width;
   margin-bottom: @border-line-width;
 }

@@ -8,6 +8,13 @@ html {
   }
 }
 
-a:not(.link) {
+a:not(.no-link) {
   .link();
+}
+
+a.no-link {
+  .pointer();
+
+  color: @black;
+  text-decoration: none;
 }

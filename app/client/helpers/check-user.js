@@ -10,7 +10,7 @@ export function checkUser() {
   const { user } = store;
 
   if (user && !user.confirmed) {
-    const alert = new Alert(NotConfirmedAlertTemplate, REGISTER_NOT_CONFIRMED_ALERT_DURATION, 'warning', 'low');
+    const alert = new Alert(NotConfirmedAlertTemplate, REGISTER_NOT_CONFIRMED_ALERT_DURATION, 'warning', 'very-low');
 
     alert.caption.find('.send-one-more')
       .on('click', () => {

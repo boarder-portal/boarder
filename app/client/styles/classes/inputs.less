@@ -1,20 +1,31 @@
 @import (reference) '../mixins';
 
 .boarder-input {
-  .bordered(@transparent);
+  .relative();
+  .bordered(@gray-lighter);
+  .br();
+  .fs(11px);
+  .shadow(@w05/4, 0.10);
 
   height: @h1;
   padding: 0 @ws;
-  outline: none !important;
+  font-weight: 300;
+  font-family: inherit;
 
   &[invalid] {
     border-color: @red;
   }
 
+  &[disabled] {
+    .bg(@gray-very-light);
+  }
+
   &[type='submit'] {
+    .fs(12px);
     .tr(background-color);
 
     border: 0;
+    font-weight: 500;
 
     &:not([disabled]) {
       .pointer();
@@ -35,10 +46,5 @@
 
   &:-webkit-autofill {
     box-shadow: 0 0 0 1000px @white inset;
-
-    &:not([invalid]) {
-      border: none;
-      padding: 1px @ws+1;
-    }
   }
 }

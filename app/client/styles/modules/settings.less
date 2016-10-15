@@ -1,0 +1,85 @@
+@import (reference) '../mixins';
+
+@import './settings/account';
+
+.settings-state {
+  flex-direction: row !important;
+  align-items: flex-start !important;
+
+  .settings-menu {
+    .relative();
+    .flex-col-stretch();
+    .flx2(@w5);
+
+    margin-right: @w05;
+
+    &:after {
+      .pseudo();
+      .absolute();
+      .bg(@black);
+
+      top: 0;
+      right: -(@w05 + @border-line-width)/2;
+      width: @border-line-width;
+      height: 100%;
+    }
+
+    > a {
+      .flex(flex-start);
+      .br(2px);
+
+      height: @h1;
+      padding: @hs @ws;
+
+      &.active {
+        .bold();
+        .bg(@green-very-dark);
+
+        color: @white;
+        cursor: default;
+      }
+
+      &:not(.active) {
+        .tr-bg-color(@transparent, @green-lighter, @green-light);
+      }
+    }
+  }
+
+  .settings-content {
+    .flx2(@w12);
+
+    padding-left: @w05;
+  }
+
+  .settings-instance-state {
+    .flex-col-stretch();
+
+    .settings-instance-section {
+      .relative();
+      .flx();
+
+      margin-bottom: @h2;
+
+      &:first-child {
+        margin-top: @hs;
+      }
+
+      &:not(:last-child) {
+        &:after {
+          .pseudo();
+          .absolute();
+          .bg(@black);
+
+          bottom: -(@h1 + @border-line-width)/2;
+          left: 0;
+          width: 100%;
+          height: @border-line-width;
+        }
+      }
+
+      .settings-instance-section-header {
+        margin-bottom: @h05 * 1.5;
+      }
+    }
+  }
+}
