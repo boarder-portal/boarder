@@ -4,13 +4,11 @@
   .relative();
   .bordered(@gray-lighter);
   .br();
-  .fs(11px);
   .shadow(@w05/4, 0.10);
 
   height: @h1;
   padding: 0 @ws;
   font-weight: 300;
-  font-family: inherit;
 
   &[invalid] {
     border-color: @red;
@@ -20,8 +18,11 @@
     .bg(@gray-very-light);
   }
 
+  &:not([type="submit"]) {
+    .fs(11px);
+  }
+
   &[type='submit'] {
-    .fs(12px);
     .tr(background-color);
 
     border: 0;

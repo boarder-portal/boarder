@@ -7,10 +7,12 @@ import { store, images } from '../constants';
 const languages = [
   {
     lang: 'en',
+    flag: 'gb',
     caption: 'English'
   },
   {
     lang: 'ru',
+    flag: 'ru',
     caption: 'Русский'
   }
 ];
@@ -116,11 +118,10 @@ class BaseState extends Router {
       });
   }
 
-  onLanguageClick(e) {
-    const target = D(e.target);
-    const lang = target.data('lang');
+  onLanguageClick({ target }) {
+    target = D(target).closest('.language');
 
-    changeLanguage(lang);
+    changeLanguage(target.data('lang'));
   }
 
   requiredValidator(value) {

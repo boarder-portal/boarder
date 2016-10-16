@@ -7,6 +7,7 @@ gulp.task('default', [
   'ensure:logs',
   'watch:server',
   'copy:fonts',
+  'copy:flags',
   'watch:less',
   'client:dev',
   'watch:locales'

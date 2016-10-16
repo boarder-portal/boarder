@@ -21,29 +21,15 @@
   .languages {
     .flex();
 
-    .language,
-    .empty {
-      .relative();
-    }
-
     .language {
-      &.active {
-        color: @black;
+      .flag-icon {
+        margin-right: @ws;
       }
-    }
 
-    .empty {
-      margin: 0 @h05;
-
-      &:before {
-        .pseudo();
-        .absolute();
-        .block();
-        .bg(@black);
-
-        left: @border-line-width/2;
-        height: 100%;
-        width: @border-line-width;
+      &.disabled {
+        .flag-icon {
+          opacity: 0.25;
+        }
       }
     }
   }

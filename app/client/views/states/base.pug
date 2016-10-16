@@ -2,10 +2,12 @@ include ../mixins/dropdown
 
 mixin langLink(params)
   -
-    const { lang, caption } = params;
+    const { lang, flag, caption } = params;
     const attrs = lang === i18n.locale ? { class: 'disabled' } : { href: '' };
 
-  div.dropdown-item.link.language(data-lang=lang)&attributes(attrs)= caption
+  div.dropdown-item.link.language(data-lang=lang)&attributes(attrs)
+    i.flag-icon(class=`flag-icon-${ flag }`)
+    span= caption
 
 mixin alertsBlock()
   div.success
@@ -22,9 +24,12 @@ header.main-header(class=user ? ['authorized'] : [])
     img.avatar&attributes(avatarAttrs)
     span.login= user ? user.login : ''
     +dropdown(true, 'left', 'profile-dropdown')
-      a.dropdown-item.settings-link.link.no-link(href=headerParams.settingsLink)= i18n.t('header.profile.dropdown.settings')
+      a.dropdown-item.settings-link.link.no-link(href=headerParams.settingsLink)
+        i.menu-icon.fa.fa-cog
+        span= i18n.t('header.profile.dropdown.settings')
       div.dropdown-divider
       div.dropdown-item.logout.link
+        i.menu-icon.fa.fa-sign-out
         span.logout-caption= i18n.t('header.profile.dropdown.logout')
   span.register-link
     a(href=headerParams.registerLink)= i18n.t('header.register_link')

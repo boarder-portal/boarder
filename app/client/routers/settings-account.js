@@ -76,6 +76,8 @@ class SettingsAccountState extends SettingsState {
         ]).prop('value', '');
         form.find('.fa-check, .fa-times').removeClass('fa-check', 'fa-times');
 
+        this.validated = false;
+
         new Alert(ChangePasswordSuccessAlertTemplate, CHANGE_PASSWORD_SUCCESS, 'success', 'very-high');
       })
       .catch(() => {})
