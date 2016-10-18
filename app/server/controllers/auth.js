@@ -2,10 +2,10 @@ const D = require('dwayne');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const {
-  hashPassword,
   sendEmail,
   buildURL
 } = require('../helpers');
+const hashPassword = require('../helpers/hash-password');
 const { session } = require('./session');
 const {
   endpoints: {
@@ -167,15 +167,7 @@ module.exports = {
       .then((user) => {
         session.user = user;
 
-        return new Promise((resolve, reject) => {
-          session.save((err) => {
-            if (err) {
-              return reject(err);
-            }
-
-            resolve();
-          });
-        });
+        return session.savePr();
       })
       .then(() => res.redirect('/?confirmRegister=true'))
       .catch(() => res.redirect('/'));
@@ -236,26 +228,22 @@ module.exports = {
           .then(() => {
             session.user = user;
 
-            return new Promise((resolve) => {
-              session.save(() => {
-                resolve(user);
-              });
-            });
-          });
+            return session.savePr();
+          })
+          .then(() => user);
       })
       .then((user) => {
         res.json(user);
       })
       .catch(next);
   },
-  logout(req, res) {
-    req.session.destroy((err) => {
-      if (err) {
-        return next(err);
-      }
-
-      res.json(true);
-    });
+  logout(req, res, next) {
+    req.session
+      .destroyPr()
+      .then(() => (
+        res.json(true)
+      ))
+      .catch(next);
   },
   forgotPassword(req, res, next) {
     const {
@@ -343,25 +331,21 @@ module.exports = {
       body: {
         currentPassword,
         password
-      }
+      },
+      user
     } = req;
 
-    User
-      .findOne({
-        where: {
-          password: hashPassword(currentPassword)
-        }
-      })
-      .then((user) => {
-        if (!user) {
-          return false;
-        }
+    if (user.password !== hashPassword(currentPassword)) {
+      return res.json(false);
+    }
 
-        user.password = hashPassword(password);
+    user.password = hashPassword(password);
 
-        return user.save();
-      })
-      .then((user) => res.json(!!user))
+    user
+      .save()
+      .then(() => (
+        res.json(true)
+      ))
       .catch(next);
   },
   socketSession(socket, next) {

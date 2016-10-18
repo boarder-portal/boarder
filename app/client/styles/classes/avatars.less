@@ -1,12 +1,17 @@
 @import (reference) '../mixins';
 
 .avatar-container {
-  .flex();
   .relative();
   .bordered();
+  .overflow-hidden();
 
   .avatar {
+    .absolute();
+
+    top: 50%;
+    left: 50%;
     max-width: 100%;
     max-height: 100%;
+    transform: translate(-50%, -50%);
   }
 }

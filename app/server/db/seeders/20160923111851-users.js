@@ -2,7 +2,7 @@
 
 /* eslint camelcase: 0 */
 
-const { hashPassword } = require('../../helpers');
+const hashPassword = require('../../helpers/hash-password');
 
 const TABLE_NAME = 'users';
 

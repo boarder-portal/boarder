@@ -1,0 +1,8 @@
+mixin popup(notClose)
+  - const overlayAttrs = notClose ? {} : { class: 'closing' };
+
+  div.popup
+    div.popup-overlay&attributes(overlayAttrs)
+    div.popup-content
+      i.popup-close.fa.fa-close
+      block

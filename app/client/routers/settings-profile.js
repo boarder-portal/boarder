@@ -1,7 +1,12 @@
-import { D, Promise, Router } from 'dwayne';
+import { D, Promise, Router, parseHTML } from 'dwayne';
 import SettingsState from './settings';
 import SettingsProfileStateTemplate from '../views/states/settings-profile.pug';
 import { userFetch } from '../fetchers';
+import AvatarsList from '../views/partials/avatars-list.pug';
+import AvatarAddedAlertTemplate from '../views/alerts/avatar-added.pug';
+import AvatarChangedAlertTemplate from '../views/alerts/avatar-changed.pug';
+import { Alert } from '../helpers';
+import { images, store, AVATAR_LOADED_SUCCESS, AVATAR_CHANGED_SUCCESS } from '../constants';
 
 class SettingsProfileState extends SettingsState {
   static stateName = 'settings-profile';
@@ -12,34 +17,91 @@ class SettingsProfileState extends SettingsState {
       $: '.change-avatar-section',
 
       avatarContainer: {
-        $: '.avatar-container',
+        $: '.main.avatar-container',
 
-        avatar: '.avatar',
-        uploaderProgressBar: '.uploader-progress-bar',
-        addAvatar: {
-          $: '.add-avatar',
+        spinnerContainer: '.spinner-container',
+        avatarsContainer: '.avatars',
+        uploader: {
+          $: '.uploader',
 
-          avatarUploader: {
-            $: '#avatar-uploader',
+          uploadingAvatar: '.uploading-avatar',
+          uploaderProgressBar: '.uploader-progress-bar',
+          addAvatar: {
+            $: '.add-avatar',
 
-            $onChange: 'onFileSelect'
+            avatarUploader: {
+              $: '#avatar-uploader',
+
+              $onChange: 'onFileSelect'
+            }
           }
         }
       }
     }
   };
 
+  onLoad() {
+    this.templateParams.user = store.user;
+  }
+
+  onRender() {
+    const {
+      spinnerContainer,
+      avatarsContainer
+    } = this;
+    const {
+      user,
+      user: {
+        avatars,
+        avatar: avatarURL
+      }
+    } = store;
+    let promise = Promise.resolve(avatars);
+
+    spinnerContainer.child(images.loading);
+
+    if (!avatars) {
+      promise = userFetch.getAllAvatars()
+        .then(({ json }) => (
+          D([null]).concat(json).$
+        ));
+    }
+
+    promise
+      .catch(() => [])
+      .then((avatars) => {
+        user.avatars = avatars;
+
+        spinnerContainer.hide();
+        avatarsContainer.removeClass('hidden');
+
+        parseHTML(
+          AvatarsList({ avatars })
+        ).into(avatarsContainer);
+
+        const { key } = D(avatars).find((avatar) => avatar && avatar.filename === avatarURL) || { key: -1 };
+
+        avatarsContainer
+          .child(key === -1 ? Infinity : key)
+          .moveClass('current-avatar');
+      });
+  }
+
   onFileSelect({ target }) {
     const {
-      avatarContainer,
-      avatar,
-      uploaderProgressBar,
-      addAvatar
-    } = this;
+      user: { avatars }
+    } = store;
     const file = target.files[0];
+    const {
+      uploader,
+      uploadingAvatar,
+      uploaderProgressBar,
+      addAvatar,
+      avatarsContainer
+    } = this;
 
     if (!file) {
-      avatar.removeAttr('src');
+      uploadingAvatar.removeAttr('src');
 
       return;
     }
@@ -47,23 +109,23 @@ class SettingsProfileState extends SettingsState {
     D(file)
       .readAs('dataURL')
       .then((url) => {
-        avatar
+        uploadingAvatar
           .css('visibility', 'hidden')
           .ref(url);
 
-        return avatar.load();
+        return uploadingAvatar.load();
       })
       .then(() => {
         const {
           left: cLeft,
           top: cTop
-        } = avatarContainer.$[0].getBoundingClientRect();
+        } = uploader.$[0].getBoundingClientRect();
         const {
           left,
           top,
           width,
           height
-        } = avatar.$[0].getBoundingClientRect();
+        } = uploadingAvatar.$[0].getBoundingClientRect();
 
         uploaderProgressBar.css({
           left: `${ left - cLeft - 1 }px`,
@@ -75,7 +137,7 @@ class SettingsProfileState extends SettingsState {
         return D(200).timeout(height);
       })
       .then((height) => {
-        avatar.removeCSS('visibility');
+        uploadingAvatar.removeCSS('visibility');
 
         return D(800).timeout(height);
       })
@@ -87,8 +149,16 @@ class SettingsProfileState extends SettingsState {
           }
         })
       ))
-      .then(() => {
-        console.log('success');
+      .then(({ json: avatar }) => {
+        D(avatars).splice(avatars.length - 1, 0, avatar);
+
+        uploadingAvatar.removeAttr('src');
+        avatarsContainer
+          .div('.avatar-container')
+            .img('.avatar')
+              .ref(avatar.filename);
+
+        new Alert(AvatarAddedAlertTemplate, AVATAR_LOADED_SUCCESS, 'success', 'medium');
       });
   }
 }

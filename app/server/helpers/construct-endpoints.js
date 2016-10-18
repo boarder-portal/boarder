@@ -14,11 +14,17 @@ exports.constructEndpoints = (path, controllers) => {
     }
   } = constants;
   const router = new express.Router();
+  const authMiddleware = require('../controllers/user-auth');
 
-  D(paths).forEach(({ base, method, session, files }, name) => {
+  D(paths).forEach(({ base, method, session, auth, files }, name) => {
     if (name !== 'base') {
       if (session) {
         router.use(base, sessionRequired);
+      }
+
+      if (auth) {
+        router.use(base, sessionRequired);
+        router.use(base, authMiddleware);
       }
 
       if (files) {

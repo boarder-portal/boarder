@@ -3,6 +3,7 @@ import BaseState from '../routers/base';
 import NotFoundState from '../routers/404';
 import '../plugins/disabled';
 import '../plugins/dropdown';
+import '../plugins/popup';
 
 registerState(BaseState);
 Router.default = NotFoundState;

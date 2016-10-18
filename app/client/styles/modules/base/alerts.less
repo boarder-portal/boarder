@@ -75,7 +75,18 @@
     }
 
     .fa-close {
+      .flex();
       .flx2(16px);
+      .fs(16px);
+      .tr(color);
+      .pointer();
+
+      color: @gray-very-dark;
+      padding-bottom: 2px;
+
+      &:hover {
+        color: @black;
+      }
     }
   }
 }

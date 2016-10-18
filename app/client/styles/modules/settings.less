@@ -32,7 +32,7 @@
       height: @h1;
       padding: @hs @ws;
 
-      &.active {
+      &.menu-active {
         .bold();
         .bg(@green-very-dark);
 
@@ -40,7 +40,7 @@
         cursor: default;
       }
 
-      &:not(.active) {
+      &:not(.menu-active) {
         .tr-bg-color(@transparent, @green-lighter, @green-light);
       }
     }

@@ -72,21 +72,27 @@ class BaseState extends Router {
   authorize() {
     const header = find('.main-header');
     const profile = header.find('.profile');
-    const $avatar = profile.find('.avatar');
     const $login = profile.find('.login');
 
-    const {
-      avatar,
-      login
-    } = store.user;
+    const { login } = store.user;
 
     header.addClass('authorized');
+
+    this.changeAvatar();
+
+    $login.text(login);
+  }
+
+  changeAvatar() {
+    const header = find('.main-header');
+    const profile = header.find('.profile');
+    const $avatar = profile.find('.avatar');
+
+    const { avatar } = store.user;
 
     if (avatar) {
       $avatar.ref(avatar);
     }
-
-    $login.text(login);
   }
 
   goToSettings({ target }) {

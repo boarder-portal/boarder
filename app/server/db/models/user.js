@@ -1,7 +1,7 @@
 const { isNull } = require('dwayne');
 const Sequelize = require('sequelize');
 const Attachment = require('./attachment');
-const { hashPassword } = require('../../helpers');
+const hashPassword = require('../../helpers/hash-password');
 const db = require('../');
 
 const User = db.define('user', {

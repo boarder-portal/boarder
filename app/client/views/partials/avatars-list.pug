@@ -1,0 +1,16 @@
+each avatar in avatars
+  if avatar
+    div.avatar-container
+      img.avatar(src=avatar.filename)
+  else
+    div.avatar-container.uploader
+      img.avatar.uploading-avatar
+      div.uploader-progress-bar
+      form.add-avatar
+        input#avatar-uploader.hidden(
+          type="file"
+          name="avatar"
+          accept="image/png, image/jpeg"
+        )
+        label.upload-file-btn(for='avatar-uploader')
+          i.fa.fa-upload

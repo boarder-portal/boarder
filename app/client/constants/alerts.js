@@ -9,3 +9,5 @@ export const AJAX_ERROR_ALERT_DURATION = failure;
 export const TIME_TO_ALERT_AFTER_LOGIN = 2.5 * ms;
 export const CHANGE_PASSWORD_SUCCESS = success;
 export const CHANGE_PASSWORD_FAILURE = failure;
+export const AVATAR_LOADED_SUCCESS = success;
+export const AVATAR_CHANGED_SUCCESS = success;

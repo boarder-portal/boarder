@@ -46,7 +46,8 @@
       },
       "changePassword": {
         "base": "/change-password",
-        "method": "post"
+        "method": "post",
+        "auth": true
       }
     },
     "user": {
@@ -54,10 +55,21 @@
       "uploadAvatar": {
         "base": "/upload-avatar",
         "method": "post",
+        "auth": true,
         "files": {
           "type": "single",
           "opts": ["avatar"]
         }
+      },
+      "changeAvatar": {
+        "base": "/change-avatar",
+        "method": "put",
+        "auth": true
+      },
+      "getAllAvatars": {
+        "base": "/get-all-avatars",
+        "method": "get",
+        "auth": true
       }
     },
     "lang": {

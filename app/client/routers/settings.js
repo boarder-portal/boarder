@@ -23,7 +23,7 @@ body.on('click', '.settings-state .settings-menu > .active', (e) => {
 });
 
 SettingsState.on('render', ({ state }) => {
-  find(`.settings-state .settings-menu > [state="${ state.name }"]`).moveClass('active');
+  find(`.settings-state .settings-menu > [state="${ state.name }"]`).moveClass('menu-active');
 });
 
 export default SettingsState;

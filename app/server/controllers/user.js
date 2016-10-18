@@ -1,7 +1,81 @@
+const path = require('path');
+const fs = require('fs-promise');
+const Attachment = require('../db/models/attachment');
+const { ASSETS_PATH } = require('../../config/constants.json');
+
+const attachmentsDir = path.resolve('./public/attachments');
+
 module.exports = {
   uploadAvatar(req, res, next) {
-    console.log(req.file);
+    const {
+      file: {
+        originalname,
+        filename,
+        path: filePath
+      },
+      user
+    } = req;
+    const ext = path.extname(originalname);
+    let eventualFilename;
 
-    res.json(true);
+    Attachment
+      .create({
+        userId: user.id,
+        type: 'avatar',
+        filename
+      })
+      .then((attachment) => {
+        const { id } = attachment;
+
+        eventualFilename = id + ext;
+
+        attachment.filename = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
+        user.avatarId = id;
+
+        return attachment.save();
+      })
+      .then((attachment) => (
+        fs.copy(filePath, path.join(attachmentsDir, eventualFilename))
+          .then(() => attachment)
+      ))
+      .then((attachment) => res.json(attachment))
+      .catch(next);
+  },
+  changeAvatar(req, res, next) {
+    const {
+      body: { avatarId },
+      session,
+      user
+    } = req;
+
+    user.avatarId = avatarId;
+
+    user
+      .save()
+      .then(() => (
+        user.getSessionInfo()
+      ))
+      .then(() => {
+        session.user = user;
+
+        return session.savePr();
+      })
+      .then(() => res.json(true))
+      .catch(next);
+  },
+  getAllAvatars(req, res, next) {
+    const { user } = req;
+
+    Attachment
+      .findAll({
+        where: {
+          userId: user.id,
+          type: 'avatar'
+        }
+      })
+      .then((avatars) => (
+        res.json(avatars)
+      ))
+      .catch(next);
   }
 };
