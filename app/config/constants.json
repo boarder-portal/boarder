@@ -49,6 +49,17 @@
         "method": "post"
       }
     },
+    "user": {
+      "base": "/user",
+      "uploadAvatar": {
+        "base": "/upload-avatar",
+        "method": "post",
+        "files": {
+          "type": "single",
+          "opts": ["avatar"]
+        }
+      }
+    },
     "lang": {
       "base": "/lang",
       "change": {

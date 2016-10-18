@@ -1,1 +1,14 @@
-div Profile settings
+div.settings-instance-section.change-avatar-section
+  h2.settings-instance-section-header= i18n.t('settings.states.profile.avatar.header')
+  div.avatar-upload-container
+    div.avatar-container
+      img.avatar
+      div.uploader-progress-bar
+      form.add-avatar
+        input#avatar-uploader.hidden(
+          type="file"
+          name="avatar"
+          accept="image/png, image/jpeg"
+        )
+        label.upload-file-btn(for="avatar-uploader")
+          i.fa.fa-upload

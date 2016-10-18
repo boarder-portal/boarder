@@ -13,10 +13,12 @@ function constructFetchers(path) {
     baseURL: baseURL + base
   });
 
-  return D(paths).map(({ base, method }) => fetcherInstance.instance({
-    url: base,
-    method
-  })).$;
+  return D(paths).map(({ base, method }) => (
+    fetcherInstance.instance({
+      url: base,
+      method
+    })
+  )).$;
 }
 
 export { constructFetchers };

@@ -1,6 +1,7 @@
 @import (reference) '../mixins';
 
 @import './settings/account';
+@import './settings/profile';
 
 .settings-state {
   flex-direction: row !important;
@@ -58,13 +59,13 @@
       .relative();
       .flx();
 
-      margin-bottom: @h2;
-
       &:first-child {
         margin-top: @hs;
       }
 
       &:not(:last-child) {
+        margin-bottom: @h2;
+
         &:after {
           .pseudo();
           .absolute();

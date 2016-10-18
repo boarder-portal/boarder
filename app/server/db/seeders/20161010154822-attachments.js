@@ -30,7 +30,7 @@ module.exports = {
       ))
       .then((attachments) => (
         new Promise((resolve) => {
-          http.get(defaultAvatar, (res) => {
+          const req = http.get(defaultAvatar, (res) => {
             Promise
               .all(
                 attachments.map((attachment) => (
@@ -48,6 +48,7 @@ module.exports = {
                   ])
                 ))
               )
+              .then(() => req.abort())
               .then(resolve);
           });
         })

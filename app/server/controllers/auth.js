@@ -167,8 +167,14 @@ module.exports = {
       .then((user) => {
         session.user = user;
 
-        return new Promise((resolve) => {
-          session.save(resolve);
+        return new Promise((resolve, reject) => {
+          session.save((err) => {
+            if (err) {
+              return reject(err);
+            }
+
+            resolve();
+          });
         });
       })
       .then(() => res.redirect('/?confirmRegister=true'))
@@ -194,12 +200,15 @@ module.exports = {
     promise
       .then((user) => {
         if (!user) {
-          return res.json(false);
+          return false;
         }
 
         sendConfirmationEmail(req, user);
-        res.json(true);
-      });
+
+        return true;
+      })
+      .then((success) => res.json(success))
+      .catch(next);
   },
   login(req, res, next) {
     const {
@@ -240,7 +249,11 @@ module.exports = {
       .catch(next);
   },
   logout(req, res) {
-    req.session.destroy(() => {
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+
       res.json(true);
     });
   },
@@ -385,8 +398,6 @@ function sendConfirmationEmail(req, user) {
     email,
     confirmToken
   } = user;
-
-  console.log(i18n);
 
   sendEmail({
     from: registerFrom,

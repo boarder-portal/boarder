@@ -2,6 +2,7 @@ const D = require('dwayne');
 const express = require('express');
 const constants = require('../../config/constants.json');
 const sessionRequired = require('../controllers/session-required');
+const uploader = require('../controllers/files');
 
 exports.constructEndpoints = (path, controllers) => {
   const {
@@ -14,10 +15,14 @@ exports.constructEndpoints = (path, controllers) => {
   } = constants;
   const router = new express.Router();
 
-  D(paths).forEach(({ base, method, session }, name) => {
+  D(paths).forEach(({ base, method, session, files }, name) => {
     if (name !== 'base') {
       if (session) {
         router.use(base, sessionRequired);
+      }
+
+      if (files) {
+        router.use(base, uploader[files.type](...files.opts || []));
       }
 
       router[method](base, controllers[name]);

@@ -4,20 +4,20 @@
   justify-content: @justify-content;
 }
 
-.flex-col() {
-  .flex();
+.flex-col(@justify-content: center) {
+  .flex(@justify-content);
 
   flex-direction: column;
 }
 
-.flex-stretch() {
+.flex-stretch(@justify-content: center) {
   display: flex;
   align-items: stretch;
-  justify-content: center;
+  justify-content: @justify-content;
 }
 
-.flex-col-stretch() {
-  .flex-stretch();
+.flex-col-stretch(@justify-content: center) {
+  .flex-stretch(@justify-content);
 
   flex-direction: column;
 }

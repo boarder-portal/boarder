@@ -5,8 +5,6 @@ const Attachment = require('../models/attachment');
 
 module.exports = {
   up() {
-    console.log('seeding');
-
     return User.findAll({})
       .then((users) => (
         Promise

@@ -6,7 +6,7 @@ const express = require('express');
 const sio = require('socket.io');
 const redis = require('socket.io-redis');
 
-const { requireAndExecute } = require('./helpers/require-glob');
+const { requireAndExecute, redisClient } = require('./helpers/require-glob');
 const {
   port,
   redis: {
@@ -21,8 +21,18 @@ const server = http.Server(app);
 const io = sio(server);
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
+const logFile = path.resolve('./logs/server.log');
+const logs = fs.createWriteStream(logFile, {
+  flags: 'r+',
+  start: fs.readFileSync(logFile, { encoding: 'utf8' }).length
+});
 
-io.adapter(redis(`redis://${ redisHost }:${ redisPort }`));
+io.adapter(redis({
+  host: redisHost,
+  port: redisPort,
+  pubClient: redisClient,
+  subClient: redisClient
+}));
 
 module.exports = {
   app,
@@ -63,12 +73,6 @@ if (development) {
     });
   });
 }
-
-const logFile = path.resolve('./logs/server.log');
-const logs = fs.createWriteStream(logFile, {
-  flags: 'r+',
-  start: fs.readFileSync(logFile, { encoding: 'utf8' }).length
-});
 
 process.on('uncaughtException', (err) => {
   console.error(err);

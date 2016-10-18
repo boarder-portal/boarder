@@ -21,7 +21,8 @@ header.main-header(class=user ? ['authorized'] : [])
   div.profile
     - const avatarAttrs = user ? { src: user.avatar } : {};
 
-    img.avatar&attributes(avatarAttrs)
+    div.avatar-container
+      img.avatar&attributes(avatarAttrs)
     span.login= user ? user.login : ''
     +dropdown(true, 'left', 'profile-dropdown')
       a.dropdown-item.settings-link.link.no-link(href=headerParams.settingsLink)

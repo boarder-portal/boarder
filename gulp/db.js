@@ -3,7 +3,7 @@ const gulp = require('gulp');
 const run = require('gulp-run');
 
 const sequelizePath = path.resolve('./node_modules/.bin/sequelize');
-const sequelizeCommand = `node ${ sequelizePath }`;
+const sequelizeCommand = `${ sequelizePath }`;
 
 gulp.task('db:migration:create', () => (
   run(`${ sequelizeCommand } migration:create`).exec()

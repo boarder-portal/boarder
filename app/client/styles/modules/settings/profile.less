@@ -1,0 +1,48 @@
+@import (reference) '../../mixins';
+
+.settings-profile-state {
+  .avatar-upload-container {
+    .flex-col(flex-start);
+    .inline-block();
+
+    .avatar-container {
+      .br(@hs);
+
+      width: @w5;
+      height: @w5;
+
+      .avatar {
+        &[src] {
+          ~ .add-avatar {
+            .hide();
+          }
+        }
+      }
+
+      .uploader-progress-bar {
+        .absolute();
+        .rgba(@white, 0.75);
+        .tr(height);
+
+        width: 0;
+        height: 0;
+      }
+
+      .add-avatar {
+        .fs(@w2);
+
+        width: 100%;
+        height: 100%;
+
+        .upload-file-btn {
+          .flex();
+          .pointer();
+
+          width: 100%;
+          height: 100%;
+          color: @green;
+        }
+      }
+    }
+  }
+}
