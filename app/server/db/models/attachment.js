@@ -27,6 +27,10 @@ const Attachment = db.define('attachment', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  url: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   createdAt: {
     type: Sequelize.DATE,
     field: 'created_at',
@@ -38,5 +42,15 @@ const Attachment = db.define('attachment', {
     allowNull: false
   }
 });
+
+const toJSON = Attachment.Instance.prototype.toJSON;
+
+Attachment.Instance.prototype.toJSON = function () {
+  const json = toJSON.apply(this, arguments);
+
+  delete json.filename;
+
+  return json;
+};
 
 module.exports = Attachment;

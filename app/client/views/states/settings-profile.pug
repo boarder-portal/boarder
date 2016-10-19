@@ -3,14 +3,15 @@ include ../mixins/popup
 div.settings-instance-section.change-avatar-section
   h2.settings-instance-section-header= i18n.t('settings.states.profile.avatar.header')
   div.main.avatar-container
-    -
-      const avatarAttrs = user.avatar
-        ? { src: user.avatar }
-        : {};
-
-    img.avatar&attributes(avatarAttrs)
+    img.main.avatar&attributes(avatarAttrs)
+    div.avatar-replacement
+      i.fa.fa-image
     div.open-popup
     +popup()
       div.avatars-container
         div.spinner-container
         div.avatars.hidden
+          div.avatar-container.to-upload
+            form.add-avatar
+              label.upload-file-btn
+                i.fa.fa-upload

@@ -97,7 +97,7 @@ const User = db.define('user', {
             id: avatarId
           }
         })
-        .then(({ filename }) => filename)
+        .then(({ url }) => url)
         .catch(() => null);
     },
     getSessionInfo() {
@@ -117,6 +117,8 @@ User.Instance.prototype.toJSON = function () {
   const json = toJSON.apply(this, arguments);
 
   json.avatar = this.avatar;
+
+  delete json.password;
 
   return json;
 };

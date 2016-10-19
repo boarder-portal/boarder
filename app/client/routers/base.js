@@ -92,6 +92,8 @@ class BaseState extends Router {
 
     if (avatar) {
       $avatar.ref(avatar);
+    } else {
+      $avatar.removeAttr('src');
     }
   }
 

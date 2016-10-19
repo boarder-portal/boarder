@@ -8,6 +8,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 100000;
 
   &.visible {
     .block();
@@ -35,7 +36,7 @@
       .absolute();
       .pointer();
       .fs(@w05);
-      .tr-color(@gray-light, @gray-lighter, @white);
+      .tr-color(@gray-light, @gray-lighter, @gray-very-light);
 
       top: -@w05;
       right: -@w05;

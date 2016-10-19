@@ -36,8 +36,6 @@ header.main-header(class=user ? ['authorized'] : [])
     a(href=headerParams.registerLink)= i18n.t('header.register_link')
   span.login-link
     a(href=headerParams.loginLink)= i18n.t('header.login_link')
-
-div.main-content
   div.alerts
     div.very-low
       +alertsBlock()
@@ -49,6 +47,8 @@ div.main-content
       +alertsBlock()
     div.very-high
       +alertsBlock()
+
+div.main-content
   div(dwayne-router-state="404").not-found-state
   div(dwayne-router-state="home")
   div(dwayne-router-state="settings").settings-state

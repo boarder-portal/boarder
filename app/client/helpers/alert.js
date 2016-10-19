@@ -28,7 +28,7 @@ class Alert extends Emitter {
     const caption = elem.find('.alert-caption');
 
     elem
-      .into(`.main-content > .alerts > .${ priority } > .${ level }`)
+      .into(`.main-header > .alerts > .${ priority } > .${ level }`)
       .addClass(level);
 
     D(this).assign({
@@ -92,7 +92,7 @@ class Alert extends Emitter {
   }
 }
 
-body.on('click', '.main-content > .alerts .alert > .fa-close', ({ target }) => {
+body.on('click', '.main-header > .alerts .alert > .fa-close', ({ target }) => {
   const alertId = D(target)
     .closest('.alert')
     .id()

@@ -7,6 +7,15 @@
     width: @w5;
     height: @w5;
 
+    .main.avatar {
+      &[src] {
+        ~ .avatar-replacement {
+          .hide();
+        }
+      }
+    }
+
+    .avatar-replacement,
     .open-popup {
       .absolute();
       .pointer();
@@ -14,25 +23,33 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      height: 100%
+    }
+
+    .avatar-replacement {
+      .flex();
+      .fs(@w2);
+      .clr(@green);
     }
 
     .avatars-container {
-      @avatars-container-height: @h16;
       @avatars-container-border-width: @border-line-width;
       @avatars-in-row: 4;
       @avatar-size: @w5;
       @space-between-avatars: @hs;
 
+      .relative();
       .bordered(@black, @avatars-container-border-width);
+      .bg(@white);
 
       width: auto;
       min-width: @avatar-size * @avatars-in-row + @space-between-avatars * (@avatars-in-row + 1);
-      height: @avatars-container-height;
+      height: @h16;
       box-sizing: content-box;
       overflow-y: auto;
 
       .spinner-container {
+        .pos-center();
         .flex();
         .bg(@background-color);
 
@@ -55,6 +72,7 @@
 
         .avatar-container {
           .inline-block();
+          .br(@hs);
           .bordered(@black, @border-line-width);
 
           width: @avatar-size;
@@ -80,12 +98,27 @@
           }
 
           .avatar {
-            &[src] {
-              .pointer();
+            .pointer();
+          }
 
-              ~ .add-avatar {
-                .hide();
-              }
+          .delete-avatar {
+            .absolute();
+            .pointer();
+            .rgba(@white, 0.85);
+            .clr(@red-dark);
+
+            bottom: 0;
+            right: 0;
+            width: @h1;
+            height: @h1;
+            border-top-left-radius: 100%;
+
+            .fa-trash-o {
+              .absolute();
+              .fs(17px);
+
+              bottom: 4px;
+              right: 4px;
             }
           }
 
@@ -112,6 +145,10 @@
               width: 100%;
               height: 100%;
               color: @green;
+
+              &.forbidden {
+                cursor: not-allowed;
+              }
             }
           }
         }

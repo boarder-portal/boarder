@@ -58,7 +58,7 @@
 
 .link() {
   .pointer();
-  .tr-color(@green-dark, @orange-darker, @orange-very-dark);
+  .tr-color(@green-dark, @orange-dark, @orange-darker);
 
   text-decoration: none;
 }
@@ -73,4 +73,12 @@
 
 .fs(@size) {
   font-size: @size;
+}
+
+.pos-center {
+  .absolute();
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

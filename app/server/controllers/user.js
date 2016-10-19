@@ -22,20 +22,22 @@ module.exports = {
       .create({
         userId: user.id,
         type: 'avatar',
-        filename
+        filename,
+        url: ''
       })
       .then((attachment) => {
         const { id } = attachment;
 
         eventualFilename = id + ext;
 
-        attachment.filename = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
+        attachment.filename = path.join(attachmentsDir, eventualFilename);
+        attachment.url = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
         user.avatarId = id;
 
         return attachment.save();
       })
       .then((attachment) => (
-        fs.copy(filePath, path.join(attachmentsDir, eventualFilename))
+        fs.move(filePath, attachment.filename)
           .then(() => attachment)
       ))
       .then((attachment) => res.json(attachment))

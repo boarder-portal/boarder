@@ -23,7 +23,8 @@ module.exports = {
               Attachment.create({
                 userId: id,
                 type: 'avatar',
-                filename: ''
+                filename: '',
+                url: ''
               })
             ))
           )
@@ -33,20 +34,23 @@ module.exports = {
           const req = http.get(defaultAvatar, (res) => {
             Promise
               .all(
-                attachments.map((attachment) => (
-                  Promise.all([
+                attachments.map((attachment) => {
+                  const filename = `${ ATTACHMENTS_DIR }/${ attachment.id }.png`;
+
+                  return Promise.all([
                     attachment.update({
-                      filename: `${ ASSETS_PATH }/attachments/${ attachment.id }.png`
+                      filename,
+                      url: `${ ASSETS_PATH }/attachments/${ attachment.id }.png`
                     }),
                     new Promise((resolve) => {
-                      const stream = fs.createWriteStream(`${ ATTACHMENTS_DIR }/${ attachment.id }.png`);
+                      const stream = fs.createWriteStream(filename);
 
                       res.pipe(stream);
 
                       stream.on('finish', resolve);
                     })
-                  ])
-                ))
+                  ]);
+                })
               )
               .then(() => req.abort())
               .then(resolve);

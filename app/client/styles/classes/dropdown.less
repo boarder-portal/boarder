@@ -3,8 +3,6 @@
 .dropdown {
   .relative();
 
-  z-index: 10000;
-
   .fa-sort-down,
   .fa-sort-up {
     .relative();
@@ -63,7 +61,7 @@
     width: @w4;
     padding: @hs/2 @ws/2;
     user-select: initial;
-    cursor: initial;
+    z-index: 10000;
 
     .dropdown-divider {
       .bg(@gray-light);

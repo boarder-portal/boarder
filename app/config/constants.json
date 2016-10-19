@@ -72,6 +72,14 @@
         "auth": true
       }
     },
+    "avatar": {
+      "base": "/avatar",
+      "delete": {
+        "base": "/delete",
+        "method": "delete",
+        "auth": true
+      }
+    },
     "lang": {
       "base": "/lang",
       "change": {

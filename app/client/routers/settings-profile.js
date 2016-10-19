@@ -1,8 +1,11 @@
-import { D, Promise, Router, parseHTML } from 'dwayne';
+import { D, Promise, Router, parseHTML, body } from 'dwayne';
 import SettingsState from './settings';
 import SettingsProfileStateTemplate from '../views/states/settings-profile.pug';
-import { userFetch } from '../fetchers';
+import { userFetch, avatarsFetch } from '../fetchers';
+import UploaderInput from '../views/partials/uploader-input.pug';
+import AvatarDelete from '../views/partials/avatar-delete.pug';
 import AvatarsList from '../views/partials/avatars-list.pug';
+import AvatarUploader from '../views/partials/avatar-uploader.pug';
 import AvatarAddedAlertTemplate from '../views/alerts/avatar-added.pug';
 import AvatarChangedAlertTemplate from '../views/alerts/avatar-changed.pug';
 import { Alert } from '../helpers';
@@ -19,16 +22,17 @@ class SettingsProfileState extends SettingsState {
       avatarContainer: {
         $: '.main.avatar-container',
 
+        mainAvatar: '.main.avatar',
+
         spinnerContainer: '.spinner-container',
         avatarsContainer: '.avatars',
-        uploader: {
-          $: '.uploader',
+        toUpload: {
+          $: '.to-upload',
 
-          uploadingAvatar: '.uploading-avatar',
-          uploaderProgressBar: '.uploader-progress-bar',
           addAvatar: {
             $: '.add-avatar',
 
+            uploadFileBtn: '.upload-file-btn',
             avatarUploader: {
               $: '#avatar-uploader',
 
@@ -39,6 +43,8 @@ class SettingsProfileState extends SettingsState {
       }
     }
   };
+
+  canRequest = true;
 
   onLoad() {
     this.templateParams.user = store.user;
@@ -51,19 +57,18 @@ class SettingsProfileState extends SettingsState {
     } = this;
     const {
       user,
-      user: {
-        avatars,
-        avatar: avatarURL
-      }
+      user: { avatars }
     } = store;
     let promise = Promise.resolve(avatars);
 
     spinnerContainer.child(images.loading);
+    this.insertInput();
+    this.setAvatar();
 
     if (!avatars) {
       promise = userFetch.getAllAvatars()
         .then(({ json }) => (
-          D([null]).concat(json).$
+          D(json).sortBy('createdAt', true).$
         ));
     }
 
@@ -79,12 +84,152 @@ class SettingsProfileState extends SettingsState {
           AvatarsList({ avatars })
         ).into(avatarsContainer);
 
-        const { key } = D(avatars).find((avatar) => avatar && avatar.filename === avatarURL) || { key: -1 };
+        this.setAvatar();
 
-        avatarsContainer
-          .child(key === -1 ? Infinity : key)
-          .moveClass('current-avatar');
+        avatarsContainer.on('click', '.avatar-container, .avatar-container > .avatar', this.chooseAvatar.bind(this));
+        avatarsContainer.on('click', '.delete-avatar, .delete-avatar .fa-trash-o', this.deleteAvatar.bind(this));
       });
+  }
+
+  chooseAvatar({ target }) {
+    const { avatarsContainer } = this;
+    const {
+      user,
+      user: {
+        avatars
+      }
+    } = store;
+
+    if (!this.canRequest) {
+      return;
+    }
+
+    const container = D(target).closest('.avatar-container');
+    const index = avatarsContainer.children().indexOf(container.$[0]);
+
+    if (index > 0) {
+      const avatar = avatars[index - 1];
+
+      this.blockRequests();
+      userFetch
+        .changeAvatar({
+          data: {
+            avatarId: avatar.id
+          }
+        })
+        .then(() => {
+          user.avatar = avatar.url;
+
+          this.changeAvatar();
+          this.setAvatar();
+        })
+        .catch(() => {})
+        .then(() => {
+          this.unblockRequests();
+        });
+    }
+  }
+
+  deleteAvatar({ target }) {
+    const { avatarsContainer } = this;
+    const {
+      user,
+      user: {
+        avatars
+      }
+    } = store;
+
+    if (!this.canRequest) {
+      return;
+    }
+
+    const container = D(target).closest('.avatar-container');
+    let index = avatarsContainer.children().indexOf(container.$[0]);
+
+    if (index !== -1) {
+      const avatar = avatars[index - 1];
+
+      this.blockRequests();
+      avatarsFetch
+        .delete({
+          query: {
+            avatarId: avatar.id
+          }
+        })
+        .then(() => {
+          index = D(avatars).find(({ id }) => id === avatar.id).key;
+
+          avatars.splice(index, 1);
+          container.remove();
+
+          if (avatar.url === user.avatar) {
+            user.avatar = null;
+
+            this.changeAvatar();
+            this.setAvatar();
+          }
+        })
+        .catch(() => {})
+        .then(() => {
+          this.unblockRequests();
+        });
+    }
+  }
+
+  setAvatar() {
+    const {
+      mainAvatar,
+      avatarsContainer
+    } = this;
+    const {
+      avatar,
+      avatars
+    } = store.user;
+
+    if (avatar && mainAvatar.ref() !== avatar) {
+      mainAvatar.ref(avatar);
+    } else if (!avatar) {
+      mainAvatar.removeAttr('src');
+    }
+
+    const { key } = D(avatars).find(({ url }) => url === avatar) || { key: -1 };
+
+    avatarsContainer
+      .child(key === -1 ? Infinity : key + 1)
+      .moveClass('current-avatar');
+  }
+
+  insertInput() {
+    const { uploadFileBtn } = this;
+    const avatarUploader = parseHTML(
+      UploaderInput()
+    );
+
+    avatarUploader.on('change', this.onFileSelect.bind(this));
+    avatarUploader.into(uploadFileBtn);
+
+    this.avatarUploader = avatarUploader;
+  }
+
+  blockRequests() {
+    const {
+      avatarUploader,
+      uploadFileBtn
+    } = this;
+
+    body.wait();
+    avatarUploader.remove();
+    uploadFileBtn.addClass('forbidden');
+
+    this.canRequest = false;
+  }
+
+  unblockRequests() {
+    body.unwait();
+    this.insertInput();
+    this.uploadFileBtn.removeClass('forbidden');
+
+    this.canRequest = true;
   }
 
   onFileSelect({ target }) {
@@ -93,18 +238,22 @@ class SettingsProfileState extends SettingsState {
     } = store;
     const file = target.files[0];
     const {
-      uploader,
-      uploadingAvatar,
-      uploaderProgressBar,
       addAvatar,
-      avatarsContainer
+      toUpload
     } = this;
 
     if (!file) {
-      uploadingAvatar.removeAttr('src');
-
       return;
     }
+
+    const fd = new FormData(addAvatar.$[0]);
+    const uploader = parseHTML(
+      AvatarUploader()
+    ).insertAfter(toUpload);
+    const uploadingAvatar = uploader.find('.avatar');
+    const uploaderProgressBar = uploader.find('.uploader-progress-bar');
+
+    this.blockRequests();
 
     D(file)
       .readAs('dataURL')
@@ -143,22 +292,28 @@ class SettingsProfileState extends SettingsState {
       })
       .then((height) => (
         userFetch.uploadAvatar({
-          data: new FormData(addAvatar.$[0]),
+          data: fd,
           onprogress({ loaded, total }) {
             uploaderProgressBar.css('height', `${ (1 - loaded / total) * height }px`);
           }
         })
       ))
       .then(({ json: avatar }) => {
-        D(avatars).splice(avatars.length - 1, 0, avatar);
+        avatars.unshift(avatar);
 
-        uploadingAvatar.removeAttr('src');
-        avatarsContainer
-          .div('.avatar-container')
-            .img('.avatar')
-              .ref(avatar.filename);
+        uploader.child(
+          parseHTML(
+            AvatarDelete()
+          )
+        );
 
         new Alert(AvatarAddedAlertTemplate, AVATAR_LOADED_SUCCESS, 'success', 'medium');
+      })
+      .catch(() => {
+        uploader.remove();
+      })
+      .then(() => {
+        this.unblockRequests();
       });
   }
 }
