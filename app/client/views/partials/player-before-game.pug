@@ -1,0 +1,19 @@
+div.player-before-game-block
+  if player
+    - const avatarAttrs = player ? { src: player.avatar } : {};
+
+    div.avatar-container
+      img.avatar(src=player.avatar)
+    div.login= player.login
+    div.ready-caption(
+      class={
+        ready: player.ready,
+        'not-ready': !player.ready
+      }
+    )
+      if player.ready
+        i.fa.fa-check
+        span= i18n.t('games.global.room.ready')
+      else
+        i.fa.fa-times
+        span= i18n.t('games.global.room.not_ready')

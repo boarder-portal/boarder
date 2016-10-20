@@ -1,20 +1,34 @@
 import io from 'socket.io-client';
-import { D, Router, doc, isNull } from 'dwayne';
+import { D, Router, doc, isNull, parseHTML } from 'dwayne';
 import BaseState from './base';
 import LoginState from './login';
 import GamesStateTemplate from '../views/states/games.pug';
 import RoomRowTemplate from '../views/partials/room-row.pug';
+import PlayerBeforeGameTemplate from '../views/partials/player-before-game.pug';
+import ReadyToPlayBtnTemplate from '../views/partials/ready-btn.pug';
 import { store } from '../constants';
 import { games as gamesConfig } from '../../config/constants.json';
 
 const {
   global: {
+    playerRoles: {
+      OBSERVER,
+      PLAYER
+    },
+    playerStatuses: {
+      READY
+    },
     events: {
       lobby: {
         GET_LIST,
         NEW_ROOM,
         UPDATE_ROOM,
         DELETE_ROOM
+      },
+      room: {
+        ENTER_ROOM,
+        UPDATE_ROOM: UPDATE_ROOM_ITSELF,
+        TOGGLE_PLAYER_STATUS
       }
     }
   }
@@ -148,6 +162,83 @@ class GamesState extends BaseState {
     this.listRendered = true;
   }
 
+  onEnterRoom(roomData) {
+    console.log(roomData);
+
+    const {
+      dataToUpdate = roomData.room,
+      role,
+      observerCaption
+    } = this;
+    const eventualRole = roomData.role;
+
+    D(this).assign({
+      eventualRole
+    });
+
+    this.eventualRole = roomData.role;
+    this.enteredRoom = true;
+
+    if (role === PLAYER && eventualRole === OBSERVER) {
+      observerCaption.removeClass('hidden');
+    }
+
+    this.onUpdateRoomItself(dataToUpdate);
+  }
+
+  onTryToUpdateRoom(roomData) {
+    if (!this.enteredRoom) {
+      this.dataToUpdate = roomData;
+
+      return;
+    }
+
+    this.onUpdateRoomItself(roomData);
+  }
+
+  toggleStatus() {
+    this.socket.emit(TOGGLE_PLAYER_STATUS);
+  }
+
+  onUpdateRoomItself(room) {
+    const {
+      i18n,
+      eventualRole,
+      playersBeforeGameList
+    } = this;
+    const { players } = room;
+
+    playersBeforeGameList.html('');
+
+    D(players).forEach((player) => {
+      if (player) {
+        player.ready = player.status === READY;
+      }
+
+      parseHTML(
+        PlayerBeforeGameTemplate({
+          i18n,
+          player
+        })
+      ).into(playersBeforeGameList);
+    });
+
+    if (eventualRole === PLAYER) {
+      const newBtn = parseHTML(
+        ReadyToPlayBtnTemplate({
+          i18n,
+          ready: D(players).find((player) => player && player.login === store.user.login).value.ready
+        })
+      );
+
+      this.readyToPlayBtn.replace(newBtn);
+      newBtn.removeClass('not-visible');
+      newBtn.on('click', this.toggleStatus.bind(this));
+
+      this.readyToPlayBtn = newBtn;
+    }
+  }
+
   onBeforeLoad(e) {
     if (!store.user) {
       e.go(LoginState.buildURL());
@@ -196,6 +287,54 @@ Router.on('init', () => {
       state.renderRoomsList();
     }
   }, /lobby$/);
+
+  GamesState.on({
+    beforeLoad(e) {
+      const {
+        state,
+        state: { nsp }
+      } = e;
+      const {
+        params: { roomId },
+        query: { observe }
+      } = state;
+      const socket = state.socket = io(nsp.replace(/\$roomId/, roomId), {
+        forceNew: true,
+        query: { role: observe ? 'observer' : '' }
+      });
+
+      D(state).assign({
+        role: observe ? OBSERVER : PLAYER
+      });
+
+      socket.on(ENTER_ROOM, state.onEnterRoom.bind(state));
+      socket.on(UPDATE_ROOM_ITSELF, state.onTryToUpdateRoom.bind(state));
+      socket.on('connect', () => {
+        e.continue();
+
+        console.log('connected');
+      });
+      socket.on('error', (err) => {
+        console.log(err);
+
+        if (err === 'Invalid namespace') {
+          e.stop();
+
+          return;
+        }
+
+        e.go(LoginState.buildURL());
+      });
+      socket.on('disconnect', () => {
+        console.log('disconnected');
+      });
+
+      e.pause();
+    },
+    leave({ state }) {
+      state.socket.disconnect();
+    }
+  }, /room$/);
 });
 
 export default GamesState;

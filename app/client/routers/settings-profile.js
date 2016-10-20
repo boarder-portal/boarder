@@ -122,6 +122,8 @@ class SettingsProfileState extends SettingsState {
 
           this.changeAvatar();
           this.setAvatar();
+
+          new Alert(AvatarChangedAlertTemplate, AVATAR_CHANGED_SUCCESS, 'success', 'medium');
         })
         .catch(() => {})
         .then(() => {

@@ -76,7 +76,7 @@ class Lobby {
     const roomData = {
       id: roomId,
       lobby: this,
-      playersCount: 3,
+      playersCount: 1,
       name: `room-${ now() }`
     };
     const room = new Room(roomData);

@@ -34,7 +34,6 @@ const {
   method
 } = D;
 const disconnect = method('disconnect');
-const isReady = method('isReady');
 
 /**
  * @class Room
@@ -54,11 +53,11 @@ class Room {
    * @public
    */
   /**
-   * @member {Object} Room#players
+   * @member {Arr} Room#players
    * @public
    */
   /**
-   * @member {Object[]} Room#observers
+   * @member {Arr} Room#observers
    * @public
    */
   /**
@@ -96,7 +95,7 @@ class Room {
 
     D(this).assign({
       status: NOT_PLAYING,
-      players: array(playersCount, () => null).$,
+      players: array(playersCount, () => null),
       observers: D({}),
       room,
       _timeout: timeout
@@ -136,7 +135,7 @@ class Room {
   /**
    * @method Room#expires
    * @public
-   * @param {Number} time
+   * @param {Number} [time = this._expires]
    */
   expires(time) {
     const {
@@ -216,25 +215,26 @@ class Room {
       Player,
       game
     } = this;
-    const eventualRole = role === 'observer' || game ? OBSERVER : PLAYER;
-    const isPlayer = eventualRole === PLAYER;
+    const planningRole = role === 'observer' || game ? OBSERVER : PLAYER;
+    const { value: existentPlayer } = players.find((player) => player && player.login === user.login) || {};
+    const isGoingToBePlayer = planningRole === PLAYER;
+    let eventualRole = planningRole;
+    let eventualPlayer = existentPlayer;
 
-    socket.role = eventualRole;
+    if (!existentPlayer || !isGoingToBePlayer) {
+      const { key = null } = players.find(isNull) || {};
+      const willBePlayer = !isNull(key) && isGoingToBePlayer;
 
-    let player = players.find((player) => player && player.login === user.login);
-
-    if (!player || !isPlayer) {
-      const { key = null } = D(players).find(isNull) || {};
-      const willBePlayer = !isNull(key) && isPlayer;
-
-      player = new Player({
+      eventualRole = willBePlayer ? PLAYER : OBSERVER;
+      eventualPlayer = new Player({
         login: user.login,
+        avatar: user.avatar,
         room: this
       });
 
       if (willBePlayer) {
-        player.index = key;
-        players[key] = player;
+        eventualPlayer.index = key;
+        players.$[key] = eventualPlayer;
       } else {
         observers.$[id] = true;
       }
@@ -242,16 +242,17 @@ class Room {
       this.update(socket);
     }
 
-    player.sockets[id] = true;
+    eventualPlayer.sockets.$[id] = true;
 
-    socket.player = player;
+    socket.role = eventualRole;
+    socket.player = eventualPlayer;
     socket.emit(ENTER_ROOM, {
       role: eventualRole,
       room: this
     });
 
-    if (isPlayer) {
-      socket.on(TOGGLE_PLAYER_STATUS, () => this.toggleUserStatus(player));
+    if (eventualRole === PLAYER) {
+      socket.on(TOGGLE_PLAYER_STATUS, () => this.togglePlayerStatus(eventualPlayer));
     }
   }
 
@@ -260,7 +261,7 @@ class Room {
    * @public
    * @param {Player} player
    */
-  toggleUserStatus(player) {
+  togglePlayerStatus(player) {
     const {
       players,
       room,
@@ -268,6 +269,7 @@ class Room {
     } = this;
 
     player.toggleStatus();
+    this.update();
 
     if (players.every(isReady) && this.isRequiredPlayers()) {
       this.game = new Game({
@@ -298,14 +300,14 @@ class Room {
     } = socket;
 
     if (role === PLAYER && status === NOT_PLAYING) {
-      delete sockets[id];
+      sockets.delete(id);
 
-      if (!D(sockets).count) {
-        players[index] = null;
+      if (!sockets.count) {
+        players.$[index] = null;
 
         this.update();
       }
-    } else {
+    } else if (role === OBSERVER) {
       observers.delete(id);
 
       this.update();
@@ -340,3 +342,7 @@ class Room {
 }
 
 module.exports = Room;
+
+function isReady(player) {
+  return !player || player.isReady();
+}

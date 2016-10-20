@@ -24,14 +24,14 @@ class Player {
    * @public
    */
   /**
-   * @member {String[]} Player#sockets
+   * @member {Super} Player#sockets
    * @public
    */
 
   constructor(props) {
     D(this).assign({
       status: NOT_READY,
-      sockets: {}
+      sockets: D({})
     }, props);
   }
 
@@ -55,11 +55,13 @@ class Player {
   toJSON() {
     const {
       login,
+      avatar,
       status
     } = this;
 
     return {
       login,
+      avatar,
       status
     };
   }
