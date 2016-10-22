@@ -12,12 +12,17 @@
     .center();
     .overflow-text();
 
-    height: @h1;
     padding: @hs @ws;
   }
 
   th {
     .bg(@gray-very-light);
+
+    height: @h1;
+  }
+
+  td {
+    height: @h1 + @h05;
   }
 
   .room-name {
@@ -30,6 +35,21 @@
 
   .room-players {
     width: 25%;
+
+    .players-container {
+      .flex();
+
+      .avatar-container {
+        .br(@border-radius);
+
+        width: @h1;
+        height: @h1;
+
+        &:not(:first-child) {
+          margin-left: @ws/2;
+        }
+      }
+    }
   }
 
   .room-actions {

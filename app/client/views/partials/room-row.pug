@@ -1,3 +1,8 @@
+mixin player(player)
+  div.avatar-container
+    if player
+      img.avatar(src=player.avatar)
+
 tr(
   id=`room-${ id }`
   data-room-id=`${ id }`
@@ -5,7 +10,10 @@ tr(
 )
   td= room.name
   td= i18n.t(`games.global.lobby.room_statuses.${ room.status }`)
-  td= room.players
+  td.room-players
+    div.players-container
+      each player in room.players
+        +player(player)
   each col in roomData
     td(class=`room-${ col.name }`)= col.value
 

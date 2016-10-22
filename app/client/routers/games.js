@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, Router, doc, isNull, parseHTML } from 'dwayne';
+import { D, Router, doc, parseHTML } from 'dwayne';
 import BaseState from './base';
 import LoginState from './login';
 import GamesStateTemplate from '../views/states/games.pug';
@@ -77,7 +77,7 @@ class GamesState extends BaseState {
         room: {
           name: room.name,
           status: room.status,
-          players: room.playersCount - D(room.players).sum(isNull)
+          players: room.players
         },
         roomData: this.getRoomData(),
         playLink: roomState.buildURL({
