@@ -1,3 +1,51 @@
-| Hello world!
-div
-  span {i18n.t('header.register_link')}
+header.main-header(d-class="{{ authorized: user }}")
+  h1.header-caption
+    a(href="{global.router.buildURL('home')}") {i18n.t('header.home_link')}
+  div.profile
+    div.avatar-container
+      img.avatar(src="{user.avatar}")
+    span.login {user.login}
+    Dropdown(down="{true}", hdir="left", cls="profile-dropdown")
+      a.dropdown-item.settings-link.link.no-link(href="{global.router.buildURL('settings')}")
+        i.menu-icon.fa.fa-cog
+        span {i18n.t('header.profile.dropdown.settings')}
+      div.dropdown-divider
+      div.dropdown-item.logout.link(d-on-click="{logout()}")
+        i.menu-icon.fa.fa-sign-out
+        span.logout-caption {i18n.t('header.profile.dropdown.logout')}
+  span.register-link
+    a(href="{global.router.buildURL('register')}") {i18n.t('header.register_link')}
+  span.login-link
+    a(href="{global.router.buildURL('login')}") {i18n.t('header.login_link')}
+
+div.main-content
+  //div.alerts
+    div.very-low
+      +alertsBlock()
+    div.low
+      +alertsBlock()
+    div.medium
+      +alertsBlock()
+    div.high
+      +alertsBlock()
+    div.very-high
+      +alertsBlock()
+  NotFoundRoute
+  Home
+  Settings
+  Auth
+  Games
+
+footer.main-footer
+  div.languages
+    span.language
+      i.flag-icon(d-class="{['flag-icon-' + currentLang.flag]}")
+      span {currentLang.caption}
+    Dropdown(down="{false}", hdir="center")
+      d-each(set="{languages}", item="lang", uid="{$index}")
+        div.dropdown-item.link.language(
+          d-on-click="{chooseLang(lang.lang)}"
+          d-class="{{ disabled: lang.lang === i18n.locale }}"
+        )
+          i.flag-icon(d-class="{['flag-icon-' + lang.flag]}")
+          span {lang.caption}
