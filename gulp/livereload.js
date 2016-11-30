@@ -1,5 +1,12 @@
 const gulp = require('gulp');
-const { toreload, reload } = require('../app/server/helpers/livereload');
 
-gulp.task('toreload', toreload);
-gulp.task('reload', reload);
+gulp.task('toreload', () => {
+  const { toreload } = require('../app/server/helpers/livereload');
+
+  toreload();
+});
+gulp.task('reload', () => {
+  const { reload } = require('../app/server/helpers/livereload');
+
+  reload();
+});

@@ -1,8 +1,6 @@
 const cp = require('child_process');
 const path = require('path');
 const gulp = require('gulp');
-const watch = require('gulp-watch');
-const runSequence = require('run-sequence');
 
 let child;
 
