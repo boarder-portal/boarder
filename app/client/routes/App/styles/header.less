@@ -1,0 +1,121 @@
+@import (reference) '../../../styles/mixins';
+
+.main-header {
+  .flex-stretch();
+  .relative();
+
+  height: @h2;
+
+  &:after {
+    .pseudo();
+    .absolute();
+    .block();
+    .bg(@black);
+
+    bottom: -@border-line-width;
+    left: 0;
+    width: 100%;
+    height: @border-line-width;
+  }
+
+  .header-caption {
+    .flex-col();
+    .flx(auto);
+
+    align-items: flex-start;
+
+    padding: 0 @w05 0 @w2;
+  }
+
+  .header-caption,
+  .register-link {
+    margin-right: @border-line-width;
+  }
+
+  .register-link,
+  .login-link,
+  .profile {
+    .relative();
+    .flex();
+    .flx2(@w3);
+
+    height: 100%;
+    padding: 0 @ws;
+
+    &:before {
+      .pseudo();
+      .absolute();
+      .block();
+      .bg(#000);
+
+      top: 10%;
+      left: -@border-line-width;
+      height: 80%;
+      width: @border-line-width;
+    }
+  }
+
+  .profile {
+    .flx2(@w5);
+
+    max-width: @w5;
+    justify-content: flex-start;
+    padding-left: @w05;
+
+    .avatar-container {
+      .br(2px);
+      .flx2(@w1);
+
+      width: @w1;
+      height: @w1;
+    }
+
+    .login {
+      .flx();
+      .overflow-text();
+
+      margin-left: @ws;
+    }
+
+    .profile-dropdown {
+      .flx2();
+
+      .menu-icon {
+        .flx2(20px);
+        .fs(20px);
+
+        margin-right: @ws;
+      }
+
+      .logout {
+        .flex();
+
+        .logout-caption {
+          .flx();
+        }
+
+        .logout-spinner {
+          @logout-spinner-height: @h1 - 2*@hs;
+
+          .flx2(@logout-spinner-height);
+
+          width: @logout-spinner-height;
+          height: @logout-spinner-height;
+        }
+      }
+    }
+  }
+
+  &:not(.authorized) {
+    .profile {
+      .hide();
+    }
+  }
+
+  &.authorized {
+    .register-link,
+    .login-link {
+      .hide();
+    }
+  }
+}
