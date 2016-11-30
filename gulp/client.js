@@ -1,22 +1,23 @@
 const gulp = require('gulp');
-const rollup = require('rollup');
-const watch = require('rollup-watch');
-const { toreload, reload } = require('../app/server/helpers/livereload');
+const webpack = require('webpack');
+const webpackConfig = require('../webpack.config');
 
-const rollupDevConfig = require('../rollup.dev.config');
+gulp.task('watch:client', () => {
+  const { toreload, reload } = require('../app/server/helpers/livereload');
+  const compiler = webpack(webpackConfig);
 
-gulp.task('client:dev', () => {
-  const watcher = watch(rollup, rollupDevConfig);
+  compiler.watch({}, () => {});
 
-  watcher.on('event', (event) => {
-    console.log(event);
+  compiler.plugin('compile', ()  => {
+    console.log('start compiling...');
+    toreload();
+  });
 
-    if (event.code === 'BUILD_START') {
-      toreload();
-    }
-
-    if (event.code === 'BUILD_END') {
-      reload();
-    }
+  compiler.plugin('done', (stats)  => {
+    console.log(stats.toString({
+      chunks: false,
+      colors: true
+    }));
+    reload();
   });
 });
