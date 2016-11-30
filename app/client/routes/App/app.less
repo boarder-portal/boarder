@@ -1,0 +1,40 @@
+@import (reference) '../../styles/mixins';
+
+@import './styles/header';
+@import './styles/alerts';
+@import './styles/footer';
+
+html {
+  .fs(14px);
+
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  letter-spacing: 0.025em;
+}
+
+body {
+  .bg(@background-color);
+
+  min-width: @w2 * 12;
+}
+
+.route-root {
+  .flex-col-stretch();
+
+  min-height: 100%;
+
+  .dwayne-route {
+    .flex-col-stretch();
+    .flx();
+  }
+}
+
+.main-content {
+  .flex-col-stretch();
+  .flx();
+  .relative();
+  .overflow-hidden();
+
+  padding: @h1+@h05 0 @h1;
+  margin-top: @border-line-width;
+  margin-bottom: @border-line-width;
+}

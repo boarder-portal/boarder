@@ -5,7 +5,6 @@ process.env.NODE_ENV = 'development';
 
 gulp.task('default', [
   'watch:server',
-  'watch:less',
   'watch:client',
   'watch:locales'
 ]);

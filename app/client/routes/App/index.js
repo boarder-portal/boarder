@@ -1,6 +1,7 @@
 import { Block, wrap, makeRoute } from 'dwayne';
 import { includeGlobals } from '../../helper';
 import template from './index.pug';
+import './index.less';
 
 class App extends Block {
   static template = template();
