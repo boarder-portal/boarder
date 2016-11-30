@@ -1,0 +1,36 @@
+@import (reference) '../../../styles/mixins';
+
+.main-footer {
+  .flex-col-stretch();
+  .relative();
+
+  height: @h2;
+
+  &:before {
+    .pseudo();
+    .absolute();
+    .block();
+    .bg(@black);
+
+    top: -@border-line-width;
+    left: 0;
+    width: 100%;
+    height: @border-line-width;
+  }
+
+  .languages {
+    .flex();
+
+    .language {
+      .flag-icon {
+        margin-right: @ws;
+      }
+
+      &.disabled {
+        .flag-icon {
+          opacity: 0.25;
+        }
+      }
+    }
+  }
+}
