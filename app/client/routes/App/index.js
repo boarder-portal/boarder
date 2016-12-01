@@ -1,5 +1,5 @@
 import { D, Block, wrap, makeRoute } from 'dwayne';
-import { includeGlobals } from '../../helper';
+import { injectGlobals } from '../../helper';
 import { i18n, changeLanguage } from '../../i18n';
 import template from './index.pug';
 
@@ -19,10 +19,7 @@ class App extends Block {
     }
   ];
   currentLang = D(this.languages).find(({ lang }) => lang === i18n.locale).value;
-
-  chooseLang(lang) {
-    changeLanguage(lang);
-  }
+  chooseLang = changeLanguage;
 }
 
 Block.App = wrap(App, [
@@ -30,5 +27,5 @@ Block.App = wrap(App, [
     name: 'root',
     root: true
   }),
-  includeGlobals
+  injectGlobals
 ]);
