@@ -1,24 +1,12 @@
-import { D, Block, wrap, makeRoute } from 'dwayne';
-import { i18n, changeLanguage } from '../../i18n';
+import { Block, wrap, makeRoute } from 'dwayne';
 import template from './index.pug';
+
+import './blocks/Header';
+import './blocks/Content';
+import './blocks/Footer';
 
 class App extends Block {
   static template = template();
-
-  languages = [
-    {
-      lang: 'en',
-      flag: 'gb',
-      caption: 'English'
-    },
-    {
-      lang: 'ru',
-      flag: 'ru',
-      caption: 'Русский'
-    }
-  ];
-  currentLang = D(this.languages).find(({ lang }) => lang === i18n.locale).value;
-  chooseLang = changeLanguage;
 }
 
 Block.App = wrap(App, [
