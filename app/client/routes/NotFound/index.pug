@@ -1,0 +1,6 @@
+h1 {i18n.t('404.this_page')}
+h1.not-found-url-container
+  | (
+  span.not-found-url {args.route.href.slice(args.route.origin.length)}
+  | )
+h1 {i18n.t('404.does_not_exist')}

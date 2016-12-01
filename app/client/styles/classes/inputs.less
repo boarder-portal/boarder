@@ -9,11 +9,13 @@
   padding: 0 @ws;
   font-weight: 300;
 
-  &[invalid] {
+  &[invalid="invalid"],
+  &[invalid=""] {
     border-color: @red;
   }
 
-  &[disabled] {
+  &[disabled="disabled"],
+  &[disabled=""] {
     .bg(@gray-very-light);
   }
 
@@ -22,7 +24,7 @@
     .shadow(@w05/4, 0.10);
   }
 
-  &[type='submit'] {
+  &[type="submit"] {
     .tr(background-color);
 
     border: 0;

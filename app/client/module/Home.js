@@ -1,1 +1,1 @@
-
+import '../routes/Home';

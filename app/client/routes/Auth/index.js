@@ -1,17 +1,13 @@
 import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 
-import './blocks/Header';
-import './blocks/Content';
-import './blocks/Footer';
-
-class App extends Block {
+class Auth extends Block {
   static template = template();
 }
 
-Block.App = App
+Block.Auth = Auth
   .wrap(makeRoute({
-    name: 'root',
+    name: 'auth',
     abstract: true,
-    root: true
+    path: '/'
   }));
