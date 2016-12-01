@@ -1,7 +1,7 @@
 footer.main-footer
   div.languages
     span.language
-      i.flag-icon(d-class="{['flag-icon-' + currentLang.flag]}")
+      i.flag-icon(d-class="{'flag-icon-' + currentLang.flag}")
       span {currentLang.caption}
     Dropdown(down="{false}", hdir="center")
       d-each(set="{languages}", item="lang", uid="{$index}")
@@ -9,5 +9,5 @@ footer.main-footer
           d-on-click="{chooseLang(lang.lang)}"
           d-class="{{ disabled: lang.lang === i18n.locale }}"
         )
-          i.flag-icon(d-class="{['flag-icon-' + lang.flag]}")
+          i.flag-icon(d-class="{'flag-icon-' + lang.flag}")
           span {lang.caption}

@@ -1,0 +1,9 @@
+d-if(if="{args.validate}")
+  div.input-container
+    span.validate-error
+    div.input-container2
+      d-block
+      label.validate-icon-container(for="{args.id}")
+        i.fa
+d-else
+  d-block
