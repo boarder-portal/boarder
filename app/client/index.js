@@ -5,7 +5,9 @@ import './module/App';
 import './module/Home';
 
 D(Block).forEach((block, name) => {
-  if (isFunction(block)) {
+  const descriptor = D(Block).propertyDescriptor(name);
+
+  if (isFunction(block) && descriptor.writable) {
     Block[name] = injectGlobals(block);
   }
 });
