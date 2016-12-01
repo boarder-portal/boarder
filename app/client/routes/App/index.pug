@@ -6,11 +6,11 @@ header.main-header(d-class="{{ authorized: user }}")
       img.avatar(src="{user.avatar}")
     span.login {user.login}
     Dropdown(down="{true}", hdir="left", cls="profile-dropdown")
-      a.dropdown-item.settings-link.link.no-link(href="{global.router.buildURL('settings')}")
+      a.dropdown-item.settings-link.link.no-link(href="{global.router.buildURL('settings')}", action="close")
         i.menu-icon.fa.fa-cog
         span {i18n.t('header.profile.dropdown.settings')}
       div.dropdown-divider
-      div.dropdown-item.logout.link(d-on-click="{logout()}")
+      div.dropdown-item.logout.link(d-on-click="{logout()}", action="close")
         i.menu-icon.fa.fa-sign-out
         span.logout-caption {i18n.t('header.profile.dropdown.logout')}
   span.register-link
