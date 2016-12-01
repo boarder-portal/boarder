@@ -1,12 +1,12 @@
 header.main-header(d-class="{{ authorized: user }}")
   h1.header-caption
-    a(href="{global.router.buildURL('home')}") {i18n.t('header.home_link')}
+    a(href="{router.buildURL('home')}") {i18n.t('header.home_link')}
   div.profile
     div.avatar-container
       img.avatar(src="{user.avatar}")
     span.login {user.login}
     Dropdown(down="{true}", hdir="left", cls="profile-dropdown")
-      a.dropdown-item.settings-link.link.no-link(href="{global.router.buildURL('settings')}", action="close")
+      a.dropdown-item.settings-link.link.no-link(href="{router.buildURL('settings')}", action="close")
         i.menu-icon.fa.fa-cog
         span {i18n.t('header.profile.dropdown.settings')}
       div.dropdown-divider
@@ -14,9 +14,9 @@ header.main-header(d-class="{{ authorized: user }}")
         i.menu-icon.fa.fa-sign-out
         span.logout-caption {i18n.t('header.profile.dropdown.logout')}
   span.register-link
-    a(href="{global.router.buildURL('register')}") {i18n.t('header.register_link')}
+    a(href="{router.buildURL('register')}") {i18n.t('header.register_link')}
   span.login-link
-    a(href="{global.router.buildURL('login')}") {i18n.t('header.login_link')}
+    a(href="{router.buildURL('login')}") {i18n.t('header.login_link')}
 
 div.main-content
   //div.alerts
