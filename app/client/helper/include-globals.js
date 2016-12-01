@@ -1,6 +1,6 @@
 import { i18n } from '../i18n';
 
-export function includeGlobals(Block) {
+export function injectGlobals(Block) {
   return class extends Block {
     constructor(opts) {
       super(opts);
