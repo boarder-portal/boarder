@@ -1,1 +1,1 @@
-export * from './include-globals';
+export * from './inject-globals';
