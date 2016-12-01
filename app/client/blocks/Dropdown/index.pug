@@ -1,12 +1,11 @@
 div.dropdown(
   d-elem="elem"
-  d-class="{['open-' + args.hdir]}"
-  d-class-visible="{{ visible: visible }}"
-  d-class-custom="{[args.cls]}"
+  d-class="{'open-' + args.hdir}"
+  d-class-custom="{args.cls}"
 )
   i.fa(
-    d-class="{[args.down ? 'fa-sort-down' : 'fa-sort-up']}"
+    d-class="{args.down ? 'fa-sort-down' : 'fa-sort-up'}"
     d-on-click="{open()}"
   )
-  div.dropdown-list
+  div.dropdown-list(d-show="{visible}")
     d-block

@@ -51,11 +51,11 @@
   }
 
   .dropdown-list {
+    .flex-col-stretch();
     .absolute();
     .bg(@gray-very-light);
     .bordered();
     .br(2px);
-    .hide();
     .shadow(@w05, 0.35);
 
     width: @w4;
@@ -83,12 +83,6 @@
         .pointer();
         .tr-bg-color(@transparent, @green-lighter, @green-light);
       }
-    }
-  }
-
-  &.visible {
-    .dropdown-list {
-      .flex-col-stretch();
     }
   }
 }
