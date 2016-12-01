@@ -1,4 +1,4 @@
-import { Block, wrap, makeRoute } from 'dwayne';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 
 import './blocks/Header';
@@ -9,9 +9,8 @@ class App extends Block {
   static template = template();
 }
 
-Block.App = wrap(App, [
-  makeRoute({
+Block.App = App
+  .wrap(makeRoute({
     name: 'root',
     root: true
-  })
-]);
+  }));

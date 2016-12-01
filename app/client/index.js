@@ -8,7 +8,7 @@ D(Block).forEach((block, name) => {
   const descriptor = D(Block).propertyDescriptor(name);
 
   if (isFunction(block) && descriptor.writable) {
-    Block[name] = injectGlobals(block);
+    Block[name] = block.wrap(injectGlobals);
   }
 });
 
