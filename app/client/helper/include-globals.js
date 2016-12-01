@@ -6,6 +6,7 @@ export function includeGlobals(Block) {
       super(opts);
 
       this.i18n = i18n;
+      this.router = this.global.router;
     }
   };
 }
