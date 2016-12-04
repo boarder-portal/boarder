@@ -9,9 +9,11 @@ class App extends Block {
   static template = template();
 }
 
-Block.App = App
+const wrap = App
   .wrap(makeRoute({
     name: 'root',
     abstract: true,
     root: true
   }));
+
+Block.register('App', wrap);
