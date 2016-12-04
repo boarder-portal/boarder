@@ -21,4 +21,4 @@ class MainFooter extends Block {
   chooseLang = changeLanguage;
 }
 
-Block.MainFooter = MainFooter;
+Block.register('MainFooter', MainFooter);

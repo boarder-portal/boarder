@@ -5,4 +5,4 @@ class InputWrapper extends Block {
   static template = template();
 }
 
-Block.InputWrapper = InputWrapper;
+Block.register('InputWrapper', InputWrapper);
