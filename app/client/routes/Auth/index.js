@@ -5,9 +5,11 @@ class Auth extends Block {
   static template = template();
 }
 
-Block.Auth = Auth
+const wrap = Auth
   .wrap(makeRoute({
     name: 'auth',
     abstract: true,
     path: '/'
   }));
+
+Block.register('Auth', wrap);

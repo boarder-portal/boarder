@@ -5,8 +5,10 @@ class Home extends Block {
   static template = template();
 }
 
-Block.Home = Home
+const wrap = Home
   .wrap(makeRoute({
     name: 'home',
     path: '/'
   }));
+
+Block.register('Home', wrap);

@@ -5,4 +5,4 @@ class MainContent extends Block {
   static template = template();
 }
 
-Block.MainContent = MainContent;
+Block.register('MainContent', MainContent);

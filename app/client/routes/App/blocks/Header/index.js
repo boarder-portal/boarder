@@ -5,4 +5,4 @@ class MainHeader extends Block {
   static template = template();
 }
 
-Block.MainHeader = MainHeader;
+Block.register('MainHeader', MainHeader);
