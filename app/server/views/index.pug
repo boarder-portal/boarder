@@ -13,7 +13,7 @@ html(lang=lang)
   body
     if NODE_ENV === 'development'
       div#livereload
-    d-root(block="App")
+    div.app-root
     script(type="text/javascript").
       window.boarderUser = '#{ user }';
     script(
