@@ -1,4 +1,4 @@
-import { Block, initApp } from 'dwayne';
+import { Block, initApp, find } from 'dwayne';
 import { injectGlobals } from './helper';
 
 import './module/App';
@@ -10,4 +10,4 @@ Block.getBlocks().forEach((block, name) => {
   Block.register(name, block.wrap(injectGlobals));
 });
 
-initApp();
+initApp('App', find('.app-root'));
