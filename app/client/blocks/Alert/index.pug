@@ -1,0 +1,15 @@
+div.alert(id="{'alert-' + args.alert.id}", d-class="{{ visible: visible }}")
+  div.alert-caption
+    d-switch(value="{args.alert.type}")
+      d-case(if="ajax-error")
+        span {i18n.t('alerts.ajax_error.base')}
+      d-case(if="change-password-failure")
+        span {i18n.t('alerts.change_password.failure')}
+      d-case(if="change-password-success")
+        span {i18n.t('alerts.change_password.success')}
+      d-case(if="user-confirmed")
+        span {i18n.t('alerts.confirmed.base')}
+      d-case(if="user-not-confirmed")
+        span {i18n.t('alerts.not_confirmed.base') + '. ' }
+        span.linky.send-one-more {i18n.t('alerts.not_confirmed.send_one_more_time')}
+  i.fa.fa-close(d-bind-click="{close}")

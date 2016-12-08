@@ -1,100 +1,84 @@
-import { Block, makeRoute } from 'dwayne';
-import {
-  requiredValidator,
-  passwordRepeatValidator,
-  emailValidator
-} from '../../helper';
+import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
+import { usersFetch } from '../../fetchers';
 
 class Register extends Block {
   static template = template();
+  static routerOptions = {
+    name: 'register',
+    parent: 'auth',
+    path: '/register'
+  };
 
-  requiredValidator = requiredValidator;
-  passwordRepeatValidator = passwordRepeatValidator;
-  emailValidator = emailValidator;
+  constructor(opts) {
+    super(opts);
 
-  beforeLoad() {
-    this.validated = false;
-    this.repeatValidated = false;
+    this.reset();
   }
 
-  onInput({ target }) {
-    D(target).validate();
+  beforeLeaveRoute() {
+    this.reset();
   }
 
-  onInputValidate = ({ target, error }) => {
-    target = D(target);
+  reset() {
+    D(this).assign({
+      attemptedToSubmit: false,
+      submitting: false,
+      registerSuccess: false,
+      login: '',
+      email: '',
+      password: '',
+      passwordRepeat: '',
+      loginError: null,
+      emailError: null,
+      passwordError: null
+    });
+  }
 
-    const name = target.attr('name');
+  submit = (e) => {
+    e.preventDefault();
 
-    if (name === 'password' && this.repeatValidated) {
-      this.passwordRepeatInput.validate();
-    }
+    const {
+      login,
+      email,
+      password
+    } = this;
+    const errors = this.form.validate();
 
-    if (name === 'password-repeat') {
-      this.repeatValidated = true;
-    }
+    this.attemptedToSubmit = true;
 
-    if (this.validated) {
-      this.showErrors(target, error && error.message);
-    }
+    if (!errors) {
+      const data = {
+        login,
+        email,
+        password
+      };
 
-    this.showIcon(target, error);
+      this.submitting = true;
 
-    if (name === 'login' || name === 'email') {
-      const fetcher = this.fetchers[name];
+      usersFetch
+        .register({ data })
+        .then(({ json }) => {
+          const { errors } = json;
 
-      fetcher.timeout.abort();
+          if (!errors) {
+            this.registerSuccess = true;
 
-      const spinner = target
-        .next()
-        .find('.register-input-spinner');
-
-      if (error || this.fetching) {
-        spinner.hide();
-
-        return;
-      }
-
-      const timeout = fetcher.timeout = D(500).timeout();
-
-      this.findIcon(target).hide();
-      this.showErrors(target, '');
-      spinner.show();
-
-      timeout.then(() => {
-        const fetch = fetcher.timeout = fetcher.get({
-          query: {
-            [target.attr('name')]: target.prop('value')
+            return;
           }
+
+          this.loginError = errors.login;
+          this.emailError = errors.email;
+          this.passwordError = errors.password;
+        })
+        .finally(() => {
+          this.submitting = false;
         });
-
-        fetch
-          .then(({ json: { error } }) => {
-            this.showIcon(target, error);
-
-            if (this.validated) {
-              this.showErrors(target, error || '');
-            }
-          })
-          .catch((err) => {
-            if (err.message === 'Request was aborted') {
-              throw err;
-            }
-
-            console.log(err);
-          })
-          .then(() => {
-            spinner.hide();
-          }, () => {});
-      }, () => {});
     }
   };
 }
 
-Block.Register = Register
-  .wrap(makeRoute({
-    name: 'register',
-    parent: 'auth',
-    path: '/register'
-  }));
+const wrap = Register
+  .wrap(makeRoute());
+
+Block.register('Register', wrap);

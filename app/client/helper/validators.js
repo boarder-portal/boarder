@@ -11,10 +11,10 @@ export function requiredValidator(value) {
 export function passwordRepeatValidator(value, input) {
   const passwordValue = D(input)
     .closest('form')
-    .find('input[name="password-repeat"]')
+    .find('input[name="password"]')
     .prop('value');
 
-  if (value !== passwordValue) {
+  if (passwordValue !== value) {
     throw new Error('passwords_do_not_match');
   }
 }

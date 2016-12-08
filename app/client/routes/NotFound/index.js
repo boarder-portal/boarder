@@ -3,12 +3,13 @@ import template from './index.pug';
 
 class NotFound extends Block {
   static template = template();
+  static routerOptions = {
+    name: 'not-found',
+    default: true
+  };
 }
 
 const wrap = NotFound
-  .wrap(makeRoute({
-    name: 'not-found',
-    default: true
-  }));
+  .wrap(makeRoute());
 
 Block.register('NotFound', wrap);
