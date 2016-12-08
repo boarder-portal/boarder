@@ -117,16 +117,13 @@ module.exports = {
           message = registerValidatorSwitcher(message);
 
           if (message) {
-            errors.push({
-              field: path,
-              message
-            });
+            errors[path] = message;
           }
 
           return errors;
-        }, []);
+        }, {});
 
-        res.json({ errors: errors.length ? errors : null });
+        res.json({ errors: D(errors).count ? errors : null });
       })
       .catch(next);
   },

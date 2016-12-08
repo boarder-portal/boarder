@@ -1,0 +1,34 @@
+div.auth-block.login-block
+  h2.auth-header {i18n.t('login.header')}
+  form.auth-form.login-form(
+    d-hide="{loginSuccess}"
+    d-bind-submit="{submit}"
+  )
+    div.auth-spinner-container
+      div.check-credentials-caption(d-show="{loginError}") {i18n.t('login.try_again')}
+      img(
+        class="auth-spinner"
+        src="{images.loading}"
+        d-show="{submitting}"
+      )
+    input.boarder-input(
+      id="login"
+      name="login"
+      type="text"
+      placeholder="{i18n.t('login.fields.login')}"
+      d-value="login"
+    )
+    input.boarder-input(
+      id="password"
+      name="password"
+      type="password"
+      placeholder="{i18n.t('login.fields.password')}"
+      d-value="password"
+    )
+    a.forgot-password(href="{router.buildURL('forgot-password')}") {i18n.t('login.forgot_password')}
+    a.not-registered(href="{router.buildURL('register')}") {i18n.t('login.not_registered_yet')}
+    input.boarder-input.success(
+      type="submit"
+      value="{i18n.t('login.action')}"
+    )
+  div.auth-success-caption(d-show="{loginSuccess}") {i18n.t('login.success')}

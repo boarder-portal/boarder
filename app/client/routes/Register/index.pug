@@ -1,65 +1,77 @@
 div.auth-block.register-block
   h2.auth-header {i18n.t('register.header')}
-  form.auth-form.register-form(autocomplete="off")
-    div.auth-spinner-container
-    InputWrapper(validate="{true}", id="login")
-      input.boarder-input(
+  form.auth-form.register-form(
+    autocomplete="off"
+    d-elem="form"
+    d-hide="{registerSuccess}"
+    d-validate
+    d-bind-submit="{submit}"
+  )
+    div
+      img(
+        class="auth-spinner"
+        src="{images.loading}"
+        d-show="{submitting}"
+      )
+    InputWrapper(
+      validators="{['required']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="register"
+      error="{loginError}"
+    )
+      input(
         id="login"
-        type="text"
         name="login"
-        placeholder="{i18n.t('register.fields.login')}"
-        invalid="{loginErrorMessage}"
-        d-bind-input="{onInput}"
-        d-bind-validate="{onInputValidate}"
-        d-validate-required="{requiredValidator}"
-        validate="{true}"
-      )
-    InputWrapper(validate="{true}", id="email")
-      input.boarder-input(
-        id="email"
         type="text"
+        placeholder="{i18n.t('register.fields.login')}"
+        d-value="login"
+      )
+    InputWrapper(
+      validators="{['required', 'email']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="register"
+      error="{emailError}"
+    )
+      input(
+        id="email"
         name="email"
+        type="text"
         placeholder="{i18n.t('register.fields.email')}"
-        invalid="{emailErrorMessage}"
-        d-bind-input="{onInput}"
-        d-bind-validate="{onInputValidate}"
-        d-validate-required="{requiredValidator}"
-        d-validate-email="{emailValidator}"
-        validate="{true}"
+        d-value="email"
       )
-    InputWrapper(validate="{true}", id="password")
-      input.boarder-input(
+    InputWrapper(
+      validators="{['required']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="register"
+      error="{passwordError}"
+    )
+      input(
         id="password"
-        type="password"
         name="password"
-        placeholder="{i18n.t('register.fields.password')}"
-        invalid="{passwordErrorMessage}"
-        d-bind-input="{onInput}"
-        d-bind-validate="{onInputValidate}"
-        d-validate-required="{requiredValidator}"
-        d-validate-password-repeat="{passwordRepeatValidator}"
-        validate="{true}"
-      )
-    InputWrapper(validate="{true}", id="password-repeat")
-      input.boarder-input(
-        id="password-repeat"
         type="password"
+        placeholder="{i18n.t('register.fields.password')}"
+        d-value="password"
+      )
+    InputWrapper(
+      validators="{['required', 'password-repeat']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="register"
+    )
+      input(
+        id="password-repeat"
         name="password-repeat"
+        type="password"
         placeholder="{i18n.t('register.fields.password_repeat')}"
-        invalid="{passwordRepeatErrorMessage}"
-        d-bind-input="{onInput}"
-        d-bind-validate="{onInputValidate}"
-        d-elem="passwordRepeatInput"
-        d-validate-required="{requiredValidator}"
-        validate="{true}"
+        d-value="passwordRepeat"
       )
     InputWrapper
-      input.boarder-input(
+      input(
         class="success"
         type="submit"
         value="{i18n.t('register.action')}"
+        disabled="{submitting ? 'disabled' : null}"
       )
-  div.auth-success-caption.hidden
+  div.auth-success-caption(d-show="{registerSuccess}")
     span {i18n.t('register.success') + ' '}
-    b.send-to-email
+    b.send-to-email {email}
     p.send-one-more.linky {i18n.t('register.send_one_more_time')}
