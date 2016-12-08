@@ -166,7 +166,7 @@ module.exports = {
 
         return session.savePr();
       })
-      .then(() => res.redirect('/?confirmRegister=true'))
+      .then(() => res.redirect('/?confirm_register=true'))
       .catch(() => res.redirect('/'));
   },
   sendOneMore(req, res, next) {

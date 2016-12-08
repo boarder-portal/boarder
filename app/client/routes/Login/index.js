@@ -1,6 +1,6 @@
 import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
-import { usersFetch } from '../../fetchers';
+import { TIME_TO_ALERT_AFTER_LOGIN } from '../../constants';
 
 class Login extends Block {
   static template = template();
@@ -45,12 +45,16 @@ class Login extends Block {
     this.submitting = true;
     this.loginError = false;
 
-    usersFetch
+    this.global.usersFetch
       .login({ data })
       .then(({ json: user }) => {
         if (user) {
           this.loginSuccess = true;
           this.global.changeUser(user);
+
+          D(TIME_TO_ALERT_AFTER_LOGIN)
+            .timeout()
+            .then(this.global.checkIfUserConfirmed);
         } else {
           this.loginError = true;
         }

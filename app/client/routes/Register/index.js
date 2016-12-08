@@ -1,6 +1,5 @@
 import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
-import { usersFetch } from '../../fetchers';
 
 class Register extends Block {
   static template = template();
@@ -56,7 +55,7 @@ class Register extends Block {
 
       this.submitting = true;
 
-      usersFetch
+      this.global.usersFetch
         .register({ data })
         .then(({ json }) => {
           const { errors } = json;

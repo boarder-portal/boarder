@@ -2,7 +2,12 @@ import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { getUserFromString, constructFetchers } from '../../helper';
 import { fetcher } from '../../fetchers/base';
-import { alertsLevels, alertsPriorities, AJAX_ERROR_ALERT_DURATION } from '../../constants';
+import {
+  alertsLevels,
+  alertsPriorities,
+  AJAX_ERROR_ALERT_DURATION,
+  REGISTER_NOT_CONFIRMED_ALERT_DURATION
+} from '../../constants';
 
 import './blocks/Header';
 import './blocks/Content';
@@ -48,14 +53,17 @@ class App extends Block {
       addAlert: this.addAlert,
       usersFetch: constructFetchers('users'),
       userFetch: constructFetchers('user'),
-      langFetch: constructFetchers('lang')
+      langFetch: constructFetchers('lang'),
+      checkIfUserConfirmed: this.checkIfUserConfirmed
     });
+
+    this.checkIfUserConfirmed();
   }
 
   changeUser = (user) => {
     this.global.user = {
       ...this.global.user,
-      user
+      ...user
     };
   };
 
@@ -98,6 +106,19 @@ class App extends Block {
         ]
       }
     };
+  };
+
+  checkIfUserConfirmed = () => {
+    const { user } = this.global;
+
+    if (user && !user.confirmed) {
+      this.addAlert({
+        type: 'user-not-confirmed',
+        level: 'warning',
+        priority: 'very-low',
+        duration: REGISTER_NOT_CONFIRMED_ALERT_DURATION
+      });
+    }
   };
 }
 

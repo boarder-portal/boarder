@@ -1,4 +1,4 @@
-div.alert(id="{'alert-' + args.alert.id}", d-class="{{ visible: visible }}")
+div.alert(id="{'alert-' + args.alert.id}", d-class="{{ visible: visible }}", d-elem="alertElem")
   div.alert-caption
     d-switch(value="{args.alert.type}")
       d-case(if="ajax-error")
