@@ -1,6 +1,8 @@
 import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 
+let currentFetchIfUserConfirmed = Promise.resolve();
+
 class Register extends Block {
   static template = template();
   static routerOptions = {
@@ -33,6 +35,18 @@ class Register extends Block {
       passwordError: null
     });
   }
+
+  sendOneMoreConfirmation = () => {
+    currentFetchIfUserConfirmed.abort();
+
+    currentFetchIfUserConfirmed = this.global.usersFetch
+      .sendOneMore({
+        query: {
+          email: this.email
+        }
+      });
+    currentFetchIfUserConfirmed.catch(() => {});
+  };
 
   submit = (e) => {
     e.preventDefault();
