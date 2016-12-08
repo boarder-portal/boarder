@@ -1,6 +1,8 @@
-import { D, Block } from 'dwayne';
-import { i18n, changeLanguage } from '../../../../i18n';
+import { D, Block, Promise, html } from 'dwayne';
+import { i18n } from '../../../../i18n';
 import template from './index.pug';
+
+let fetch = Promise.resolve();
 
 class MainFooter extends Block {
   static template = template();
@@ -18,7 +20,27 @@ class MainFooter extends Block {
     }
   ];
   currentLang = D(this.languages).find(({ lang }) => lang === i18n.locale).value;
-  chooseLang = changeLanguage;
+
+  chooseLang(lang) {
+    fetch.abort();
+
+    if (lang === html.attr('lang')) {
+      return;
+    }
+
+    fetch = this.global.langFetch.change({
+      data: { lang }
+    });
+
+    fetch
+      .then(({ json }) => {
+        if (!json) {
+          return;
+        }
+
+        location.reload();
+      });
+  }
 }
 
 Block.register('MainFooter', MainFooter);
