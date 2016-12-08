@@ -1,21 +1,11 @@
-mixin alertsBlock
-  div.success
-  div.info
-  div.warning
-  div.error
-
 section.main-content
   div.alerts
-    div.very-low
-      +alertsBlock()
-    div.low
-      +alertsBlock()
-    div.medium
-      +alertsBlock()
-    div.high
-      +alertsBlock()
-    div.very-high
-      +alertsBlock()
+    d-each(set="{global.alerts}", item="priorityAlerts", index="priority", uid="{priority}")
+      div(d-class="{priority}")
+        d-each(set="{priorityAlerts}", item="levelAlerts", index="level", uid="{level}")
+          div(d-class="{level + '-alerts'}")
+            d-each(set="{levelAlerts}", item="alert", uid="{alert.id}")
+              Alert(alert="{alert}")
   NotFound
   Home
   Settings

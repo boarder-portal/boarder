@@ -1,6 +1,7 @@
-import { D, Block } from 'dwayne';
-import { ALERT_TRANSITION_DURATION } from '../../constants';
+import { D, Block, Promise } from 'dwayne';
 import template from './index.pug';
+
+let currentFetchIfUserConfirmed = Promise.resolve();
 
 class Alert extends Block {
   static template = template();
@@ -10,19 +11,35 @@ class Alert extends Block {
   afterRender() {
     const { alert } = this.args;
 
-    this.visible = true;
+    D(100)
+      .timeout()
+      .then(() => {
+        this.visible = true;
 
-    if (alert.duration !== Infinity) {
-      D(ALERT_TRANSITION_DURATION + alert.duration)
-        .timeout()
-        .then(() => {
-          this.close();
-        });
-    }
+        if (alert.duration !== Infinity) {
+          const off = this.alertElem.on('transitionend', () => {
+            off();
+
+            D(alert.duration)
+              .timeout()
+              .then(this.close);
+          });
+        }
+      });
   }
 
   close = () => {
-    this.args.alert.remove();
+    this.visible = false;
+
+    this.alertElem.on('transitionend', () => {
+      this.args.alert.remove();
+    });
+  };
+
+  sendOneMore = () => {
+    currentFetchIfUserConfirmed.abort();
+
+    currentFetchIfUserConfirmed = this.global.usersFetch.sendOneMore();
   };
 }
 
