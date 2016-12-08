@@ -1,4 +1,4 @@
-import { D, Block, body } from 'dwayne';
+import { D, Block, body, isFunction } from 'dwayne';
 import template from './index.pug';
 
 const dropdownSelector = '.dropdown';
@@ -11,7 +11,14 @@ class Dropdown extends Block {
   elem = null;
 
   afterRender() {
-    const { elem } = this;
+    const {
+      elem,
+      args: { setDropdown }
+    } = this;
+
+    if (isFunction(setDropdown)) {
+      setDropdown(this);
+    }
 
     elem.$[0].boarderDropdown = this;
 

@@ -1,9 +1,13 @@
-d-if(if="{args.validate}")
-  div.input-container
+div.input-container(d-elem="inputContainer")
+  d-if(if="{args.validators}")
     span.validate-error
+      | {args.showErrorMessage ? i18n.t(args.i18nModule + '.validations.' + (error ? error.message : args.error)) : ''}
     div.input-container2
       d-block
-      label.validate-icon-container(for="{args.id}")
-        i.fa
-d-else
-  d-block
+      label.validate-icon-container(for="{labelFor}")
+        i.fa(
+          d-class-wrong="{changed && (error || args.error) && 'fa-times'}"
+          d-class-right="{changed && !error && !args.error && 'fa-check'}"
+        )
+  d-else
+    d-block

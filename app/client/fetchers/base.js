@@ -1,7 +1,4 @@
 import { parseJSON, Fetch } from 'dwayne';
-import { Alert } from '../helpers';
-import { AJAX_ERROR_ALERT_DURATION } from '../constants';
-import AJAXErrorAlert from '../views/alerts/ajax-error.pug';
 import { endpoints } from '../../config/constants.json';
 
 export const baseURL = endpoints.base;
@@ -23,11 +20,4 @@ fetcher
   })
   .after((res) => {
     res.json = parseJSON(res.data, { dates: true }).$;
-  })
-  .after((err, res) => {
-    console.log(res);
-
-    new Alert(AJAXErrorAlert, AJAX_ERROR_ALERT_DURATION, 'error', 'high');
-
-    throw err;
   });
