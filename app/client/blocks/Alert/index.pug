@@ -11,5 +11,5 @@ div.alert(id="{'alert-' + args.alert.id}", d-class="{{ visible: visible }}", d-e
         span {i18n.t('alerts.confirmed.base')}
       d-case(if="user-not-confirmed")
         span {i18n.t('alerts.not_confirmed.base') + '. ' }
-        span.linky.send-one-more {i18n.t('alerts.not_confirmed.send_one_more_time')}
+        span.linky.send-one-more(d-bind-click="{sendOneMoreConfirmation}") {i18n.t('alerts.not_confirmed.send_one_more_time')}
   i.fa.fa-close(d-bind-click="{close}")

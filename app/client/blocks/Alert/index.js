@@ -36,10 +36,12 @@ class Alert extends Block {
     });
   };
 
-  sendOneMore = () => {
+  sendOneMoreConfirmation = () => {
     currentFetchIfUserConfirmed.abort();
 
-    currentFetchIfUserConfirmed = this.global.usersFetch.sendOneMore();
+    currentFetchIfUserConfirmed = this.global.usersFetch
+      .sendOneMore();
+    currentFetchIfUserConfirmed.catch(() => {});
   };
 }
 
