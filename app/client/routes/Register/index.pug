@@ -74,4 +74,4 @@ div.auth-block.register-block
   div.auth-success-caption(d-show="{registerSuccess}")
     span {i18n.t('register.success') + ' '}
     b.send-to-email {email}
-    p.send-one-more.linky {i18n.t('register.send_one_more_time')}
+    p.send-one-more.linky(d-bind-click="{sendOneMoreConfirmation}") {i18n.t('register.send_one_more_time')}
