@@ -6,7 +6,8 @@ const express = require('express');
 const sio = require('socket.io');
 const redis = require('socket.io-redis');
 
-const { requireAndExecute, redisClient } = require('./helpers/require-glob');
+const { requireAndExecute, createClient } = require('./helpers');
+
 const {
   port,
   redis: {
@@ -30,8 +31,8 @@ const logs = fs.createWriteStream(logFile, {
 io.adapter(redis({
   host: redisHost,
   port: redisPort,
-  pubClient: redisClient,
-  subClient: redisClient
+  pubClient: createClient(true),
+  subClient: createClient(true)
 }));
 
 module.exports = {
