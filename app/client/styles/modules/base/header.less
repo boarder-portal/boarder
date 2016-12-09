@@ -105,4 +105,85 @@
       }
     }
   }
+
+  .alerts {
+    .absolute();
+    .flex();
+
+    bottom: -@h1 - @border-line-width;
+    left: 0;
+    width: 100%;
+    height: @h1;
+    overflow: hidden;
+
+    .error-alerts > .alert {
+      .bg(@red-lighter);
+    }
+
+    .warning-alerts > .alert {
+      .bg(@orange-light);
+    }
+
+    .info-alerts > .alert {
+      .bg(@blue-lighter);
+    }
+
+    .success-alerts > .alert {
+      .bg(@green-lighter);
+    }
+
+    .error-alerts,
+    .warning-alerts {
+      .linky {
+        color: @green-dark;
+
+        &:hover {
+          color: @green-darker;
+        }
+
+        &:active {
+          color: @green-very-dark;
+        }
+      }
+    }
+
+    &.info-alerts,
+    &.success-alerts {
+      .linky {
+        color: @orange-dark;
+
+        &:hover {
+          color: @orange-darker;
+        }
+
+        &:active {
+          color: @orange-very-dark;
+        }
+      }
+    }
+
+    .alert {
+      .absolute();
+      .flex();
+      .tr-very-long(top);
+
+      top: -@h1;
+      left: 0;
+      width: 100%;
+      height: @h1;
+      padding: @hs @ws;
+
+      &.visible {
+        top: 0;
+      }
+
+      .alert-caption {
+        .flx();
+      }
+
+      .fa-close {
+        .flx2(16px);
+      }
+    }
+  }
 }

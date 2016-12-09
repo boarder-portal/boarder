@@ -18,3 +18,10 @@ header.main-header(d-class="{{ authorized: global.user }}")
     a(href="{router.buildURL('register')}") {i18n.t('header.register_link')}
   span.login-link(d-hide="{global.user}")
     a(href="{router.buildURL('login')}") {i18n.t('header.login_link')}
+  div.alerts
+    d-each(set="{global.alerts}", item="priorityAlerts", index="priority", uid="{priority}")
+      div(d-class="{priority}")
+        d-each(set="{priorityAlerts}", item="levelAlerts", index="level", uid="{level}")
+          div(d-class="{level + '-alerts'}")
+            d-each(set="{levelAlerts}", item="alert", uid="{alert.id}")
+              Alert(alert="{alert}")

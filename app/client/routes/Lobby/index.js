@@ -21,20 +21,21 @@ class Lobby extends Block {
   static routerOptions = {
     name: 'lobby',
     parent: 'games',
-    path: /\/(hexagon|pexeso)/
+    path: '/:game(hexagon|pexeso)'
   };
 
   rooms = [];
   gameName = '';
 
   beforeLoadRoute() {
-    const { router } = this;
-    const nsp = gamesConfig.pexeso.LOBBY_NSP;
+    const { router } = this.global;
+    const name = this.args.route.params.game;
+    const nsp = gamesConfig[name].LOBBY_NSP;
     const socket = this.socket = io(nsp, {
       forceNew: true
     });
 
-    this.gameName = 'pexeso';
+    this.gameName = name;
 
     socket.on(GET_LIST, this.onListReceived);
     socket.on(NEW_ROOM, this.onNewRoom);
@@ -75,14 +76,10 @@ class Lobby extends Block {
   };
 
   onListReceived = (rooms) => {
-    console.log(rooms);
-
     this.rooms = rooms;
   };
 
   onNewRoom = (room) => {
-    console.log(room);
-
     const { rooms } = this;
 
     this.rooms = [

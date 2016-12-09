@@ -15,7 +15,7 @@ const Store = redis(session);
 const middleware = session({
   name: cookieName,
   store: new Store({
-    client: redisClient,
+    client: createClient(),
     host,
     port
   }),
