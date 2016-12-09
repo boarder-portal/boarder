@@ -124,6 +124,10 @@
     "hexagon": {
       "LOBBY_NSP": "/hexagon/lobby",
       "ROOM_NSP": "/hexagon/room/$roomId"
+    },
+    "pexeso": {
+      "LOBBY_NSP": "/pexeso/lobby",
+      "ROOM_NSP": "/pexeso/room/$roomId"
     }
   }
 }

@@ -9,19 +9,29 @@ const {
   }
 } = require('../../config/config.json');
 
-const client = redis.createClient({
-  host,
-  port
-});
 const logFile = path.resolve('./logs/server.log');
 const logs = fs.createWriteStream(logFile, {
   flags: 'r+',
   start: fs.readFileSync(logFile, { encoding: 'utf8' }).length
 });
 
-client.on('error', (err) => {
-  console.error(err);
-  logs.write(`${ date().toISOString() }\nRedis error:\n ${ err.stack }\n\n`);
-});
+exports.createClient = (returnBuffers) => {
+  const options = {
+    host,
+    port
+  };
 
-exports.redisClient = client;
+  if (returnBuffers) {
+    /* eslint camelcase: 0 */
+    options.return_buffers = true;
+  }
+
+  const client = redis.createClient(options);
+
+  client.on('error', (err) => {
+    console.error(err);
+    logs.write(`${ date().toISOString() }\nRedis error:\n ${ err.stack }\n\n`);
+  });
+
+  return client;
+};

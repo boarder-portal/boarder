@@ -1,6 +1,6 @@
 const session = require('express-session');
 const redis = require('connect-redis');
-const { redisClient } = require('../helpers');
+const { createClient } = require('../helpers');
 const {
   cookieName,
   sessionExpires,
