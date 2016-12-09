@@ -13,10 +13,14 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
   tbody.rooms(d-class="{gameName + '-rooms'}")
     d-each(set="{rooms}", item="room", uid="{room.id}")
       tr(d-class="{['room', gameName + '-room']}")
-        td {room.name}
-        td {i18n.t('games.global.lobby.room_statuses.' + room.status)}
-        td {room.players}
-        td
+        td.room-name {room.name}
+        td.room-status {i18n.t('games.global.lobby.room_statuses.' + room.status)}
+        td.room-players
+          div.players-container
+            d-each(set="{room.players}", item="player", uid="{player.id}")
+              div.avatar-container
+                img.avatar(src="{player.avatar}")
+        td.room-actions
           a.play-link(href="{constructPlayLink(room)}")
             i.fa.fa-sign-in.enter-room
           a.observe-link(href="{constructObserveLink(room)}")
