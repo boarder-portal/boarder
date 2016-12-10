@@ -1,4 +1,4 @@
-header.main-header(d-class="{{ authorized: global.user }}")
+header.main-header
   h1.header-caption
     a(href="{router.buildURL('home')}") {i18n.t('header.home_link')}
   div.profile(d-show="{global.user}")

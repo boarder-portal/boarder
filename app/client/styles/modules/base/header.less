@@ -117,7 +117,7 @@
     overflow: hidden;
 
     .error-alerts > .alert {
-      .bg(@red-lighter);
+      .bg(@red-light);
     }
 
     .warning-alerts > .alert {
@@ -125,40 +125,24 @@
     }
 
     .info-alerts > .alert {
-      .bg(@blue-lighter);
+      .bg(@blue-light);
     }
 
     .success-alerts > .alert {
-      .bg(@green-lighter);
+      .bg(@green-light);
     }
 
     .error-alerts,
     .warning-alerts {
       .linky {
-        color: @green-dark;
-
-        &:hover {
-          color: @green-darker;
-        }
-
-        &:active {
-          color: @green-very-dark;
-        }
+        .tr-color(@green-dark, @green-darker, @green-very-dark);
       }
     }
 
     &.info-alerts,
     &.success-alerts {
       .linky {
-        color: @orange-dark;
-
-        &:hover {
-          color: @orange-darker;
-        }
-
-        &:active {
-          color: @orange-very-dark;
-        }
+        .tr-color(@orange-dark, @orange-darker, @orange-very-dark);
       }
     }
 
@@ -182,7 +166,10 @@
       }
 
       .fa-close {
+        .flex();
         .flx2(16px);
+        .fs(16px);
+        .tr-color(@gray-dark, @gray-darker, @gray-very-dark);
         .pointer();
 
         padding: @hs @ws;

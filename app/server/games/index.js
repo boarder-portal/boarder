@@ -20,10 +20,12 @@ class Game {
   constructor(props) {
     D(this).assign(props);
 
-    const { game } = this;
+    this.emit(PREPARING_GAME);
+    this.emit(GAME_STARTED, this);
+  }
 
-    game.emit(PREPARING_GAME);
-    game.emit(GAME_STARTED, this);
+  emit() {
+    this.game.emit(...arguments);
   }
 
   toJSON() {

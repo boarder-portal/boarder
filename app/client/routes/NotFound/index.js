@@ -7,6 +7,12 @@ class NotFound extends Block {
     name: 'not-found',
     default: true
   };
+
+  beforeLoadRoute() {
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.not_found'));
+    }, 0);
+  }
 }
 
 const wrap = NotFound
