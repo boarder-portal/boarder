@@ -17,6 +17,12 @@ class Register extends Block {
     this.reset();
   }
 
+  beforeLoadRoute() {
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.register'));
+    }, 0);
+  }
+
   beforeLeaveRoute() {
     this.reset();
   }

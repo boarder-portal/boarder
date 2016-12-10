@@ -31,8 +31,10 @@ class Alert extends Block {
   close = () => {
     this.visible = false;
 
-    this.alertElem.on('transitionend', () => {
-      this.args.alert.remove();
+    this.alertElem.on('transitionend', ({ target }) => {
+      if (D(target).hasClass('alert')) {
+        this.args.alert.remove();
+      }
     });
   };
 

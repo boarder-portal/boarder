@@ -7,6 +7,12 @@ class Home extends Block {
     name: 'home',
     path: '/'
   };
+
+  beforeLoadRoute() {
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.home'));
+    }, 0);
+  }
 }
 
 const wrap = Home

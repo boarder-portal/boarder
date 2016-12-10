@@ -8,6 +8,12 @@ class GamesList extends Block {
     parent: 'games',
     path: '/'
   };
+
+  beforeLoadRoute() {
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.games'));
+    }, 0);
+  }
 }
 
 const wrap = GamesList

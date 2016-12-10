@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, Block, makeRoute } from 'dwayne';
+import { D, Block, makeRoute, router } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -24,11 +24,18 @@ class Lobby extends Block {
     path: '/:game(hexagon|pexeso)'
   };
 
-  rooms = [];
-  gameName = '';
+  constructor(opts) {
+    super(opts);
+
+    this.reset();
+  }
+
+  reset() {
+    this.rooms = [];
+    this.gameName = '';
+  }
 
   beforeLoadRoute() {
-    const { router } = this.global;
     const name = this.args.route.params.game;
     const nsp = gamesConfig[name].LOBBY_NSP;
     const socket = this.socket = io(nsp, {
@@ -52,6 +59,15 @@ class Lobby extends Block {
     socket.on('disconnect', () => {
       console.log('disconnected');
     });
+
+    setTimeout(() => {
+      this.title.text(this.i18n.t(`games.${ name }_caption`));
+    }, 0);
+  }
+
+  beforeLeaveRoute() {
+    this.socket.disconnect();
+    this.reset();
   }
 
   constructPlayLink(room) {
