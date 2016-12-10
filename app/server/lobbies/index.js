@@ -55,6 +55,10 @@ class Lobby {
     lobby.on('connection', this.userEnter.bind(this));
   }
 
+  emit() {
+    this.lobby.emit(...arguments);
+  }
+
   /**
    * @method Lobby#createRoom
    * @public
@@ -63,7 +67,6 @@ class Lobby {
   createRoom() {
     const {
       Room,
-      lobby,
       rooms
     } = this;
 
@@ -83,7 +86,7 @@ class Lobby {
 
     rooms.push(room);
 
-    lobby.emit(NEW_ROOM, room);
+    this.emit(NEW_ROOM, room);
 
     console.log(`creating room #${ room.id }`);
   }
@@ -94,10 +97,7 @@ class Lobby {
    * @param {Room} room
    */
   deleteRoom(room) {
-    const {
-      lobby,
-      rooms
-    } = this;
+    const { rooms } = this;
     const {
       id,
       room: { name }
@@ -110,7 +110,7 @@ class Lobby {
 
     delete io.nsps[name];
 
-    lobby.emit(DELETE_ROOM, id);
+    this.emit(DELETE_ROOM, id);
     console.log(`deleting room #${ room.id }`);
   }
 
@@ -120,9 +120,7 @@ class Lobby {
    * @param {Room} room
    */
   updateRoom(room) {
-    const { lobby } = this;
-
-    lobby.emit(UPDATE_ROOM, room);
+    this.emit(UPDATE_ROOM, room);
   }
 
   /**
@@ -135,7 +133,7 @@ class Lobby {
 
     socket.emit(GET_LIST, this.rooms);
 
-    socket.on(NEW_ROOM, this.createRoom.bind(this));
+    socket.on(NEW_ROOM, (data) => this.createRoom(data));
     socket.on('disconnect', () => this.userLeave(socket));
   }
 

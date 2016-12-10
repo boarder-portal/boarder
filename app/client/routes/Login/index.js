@@ -16,6 +16,12 @@ class Login extends Block {
     this.reset();
   }
 
+  beforeLoadRoute() {
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.login'));
+    }, 0);
+  }
+
   beforeLeaveRoute() {
     this.reset();
   }
