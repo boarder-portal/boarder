@@ -14,7 +14,10 @@ const {
           TOGGLE_PLAYER_STATUS
         }
       },
-      roomStatuses: { NOT_PLAYING },
+      roomStatuses: {
+        NOT_PLAYING,
+        PLAYING
+      },
       playerRoles: {
         PLAYER,
         OBSERVER
@@ -88,7 +91,7 @@ class Room {
       playersCount,
       _expires = ROOM_DESTRUCTION_DELAY
     } = props;
-    const room = io.of(_roomNsp.replace(/\$roomId/, id));
+    const socket = io.of(_roomNsp.replace(/\$roomId/, id));
     const timeout = D(0).timeout();
 
     timeout.catch(() => {});
@@ -97,7 +100,7 @@ class Room {
       status: NOT_PLAYING,
       players: array(playersCount, () => null),
       observers: D({}),
-      room,
+      socket,
       _timeout: timeout
     }, props, {
       _expires
@@ -105,9 +108,9 @@ class Room {
 
     this.expires();
 
-    room.use(socketSession);
-    room.use(socketAuth);
-    room.on('connection', this.userEnter.bind(this));
+    socket.use(socketSession);
+    socket.use(socketAuth);
+    socket.on('connection', this.userEnter);
   }
 
   /**
@@ -117,13 +120,13 @@ class Room {
   delete() {
     const {
       lobby,
-      room
+      socket
     } = this;
 
-    const { connected } = room;
+    const { connected } = socket;
     const sockets = D(connected);
 
-    room.removeAllListeners();
+    socket.removeAllListeners();
 
     while (connected.length) {
       sockets.forEach(disconnect);
@@ -171,16 +174,43 @@ class Room {
   }
 
   /**
+   * @method Room#toogleUserStatus
+   * @public
+   * @param {Player} player
+   */
+  togglePlayerStatus(player) {
+    player.toggleStatus();
+    this.update();
+    this.tryToStartGame();
+  }
+
+  tryToStartGame() {
+    const {
+      players,
+      socket,
+      Game
+    } = this;
+
+    if (players.every(isReady) && this.isRequiredPlayers()) {
+      this.game = new Game({
+        socket,
+        players: players.filter(Boolean)
+      });
+      this.status = PLAYING;
+    }
+  }
+
+  /**
    * @method Room#update
    * @public
-   * @param {Socket} [socket]
+   * @param {Socket} [playerSocket]
    */
-  update(socket) {
+  update(playerSocket) {
     const {
       lobby,
-      room
+      socket
     } = this;
-    const channel = socket ? socket.broadcast : room;
+    const channel = playerSocket ? playerSocket.broadcast : socket;
 
     lobby.updateRoom(this);
     channel.emit(UPDATE_ROOM, this);
@@ -190,7 +220,7 @@ class Room {
    * @method Room#userEnter
    * @param {Socket} socket
    */
-  userEnter(socket) {
+  userEnter = (socket) => {
     console.log(`entering room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
 
     if (socket.player) {
@@ -212,16 +242,20 @@ class Room {
     const {
       players,
       observers,
+      Game,
       Player,
       game
     } = this;
-    const planningRole = role === 'observer' || game ? OBSERVER : PLAYER;
     const { value: existentPlayer } = players.find((player) => player && player.login === user.login) || {};
+    const planningRole = role === 'observer' || (game && !existentPlayer) ? OBSERVER : PLAYER;
     const isGoingToBePlayer = planningRole === PLAYER;
     let eventualRole = planningRole;
     let eventualPlayer = existentPlayer;
 
-    if (!existentPlayer || !isGoingToBePlayer) {
+    if (
+      (!game && (!existentPlayer || !isGoingToBePlayer)) ||
+      (game && !isGoingToBePlayer)
+    ) {
       const { key = null } = players.find(isNull) || {};
       const willBePlayer = !isNull(key) && isGoingToBePlayer;
 
@@ -253,31 +287,18 @@ class Room {
 
     if (eventualRole === PLAYER) {
       socket.on(TOGGLE_PLAYER_STATUS, () => this.togglePlayerStatus(eventualPlayer));
-    }
-  }
 
-  /**
-   * @method Room#toogleUserStatus
-   * @public
-   * @param {Player} player
-   */
-  togglePlayerStatus(player) {
-    const {
-      players,
-      room,
-      Game
-    } = this;
-
-    player.toggleStatus();
-    this.update();
-
-    if (players.every(isReady) && this.isRequiredPlayers()) {
-      this.game = new Game({
-        game: room,
-        players
+      D(Game.listeners).forEach(({ forActivePlayer, listener }, event) => {
+        socket.on(event, (data) => {
+          if (this.status === PLAYING) {
+            if (!forActivePlayer || this.game.isSocketActivePlayer(socket)) {
+              this.game[listener](data, socket);
+            }
+          }
+        });
       });
     }
-  }
+  };
 
   /**
    * @method Room#userLeave
@@ -306,6 +327,7 @@ class Room {
         players.$[index] = null;
 
         this.update();
+        this.tryToStartGame();
       }
     } else if (role === OBSERVER) {
       observers.delete(id);
@@ -324,6 +346,7 @@ class Room {
     const {
       id,
       name,
+      game,
       playersCount,
       status,
       players,
@@ -333,6 +356,7 @@ class Room {
     return {
       id,
       name,
+      game,
       playersCount,
       status,
       players,
@@ -341,8 +365,8 @@ class Room {
   }
 }
 
-module.exports = Room;
-
 function isReady(player) {
-  return !player || player.isReady();
+  return !player || player.ready;
 }
+
+module.exports = Room;

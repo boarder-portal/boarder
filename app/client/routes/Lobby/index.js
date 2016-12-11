@@ -20,8 +20,7 @@ class Lobby extends Block {
   static template = template();
   static routerOptions = {
     name: 'lobby',
-    parent: 'games',
-    path: '/:game(hexagon|pexeso)'
+    parent: 'game'
   };
 
   constructor(opts) {
@@ -36,13 +35,13 @@ class Lobby extends Block {
   }
 
   beforeLoadRoute() {
-    const name = this.args.route.params.game;
-    const nsp = gamesConfig[name].LOBBY_NSP;
+    const { game } = this.args.route.params;
+    const nsp = gamesConfig[game].LOBBY_NSP;
     const socket = this.socket = io(nsp, {
       forceNew: true
     });
 
-    this.gameName = name;
+    this.gameName = game;
 
     socket.on(GET_LIST, this.onListReceived);
     socket.on(NEW_ROOM, this.onNewRoom);
@@ -57,11 +56,11 @@ class Lobby extends Block {
       console.log(err);
     });
     socket.on('disconnect', () => {
-      console.log('disconnected');
+      console.log('disconnected from lobby');
     });
 
     setTimeout(() => {
-      this.title.text(this.i18n.t(`games.${ name }_caption`));
+      this.title.text(this.i18n.t(`games.${ game }_caption`));
     }, 0);
   }
 
@@ -73,6 +72,7 @@ class Lobby extends Block {
   constructPlayLink(room) {
     return this.router.buildURL('room', {
       params: {
+        game: this.gameName,
         roomId: room.id
       }
     });
@@ -81,6 +81,7 @@ class Lobby extends Block {
   constructObserveLink(room) {
     return this.router.buildURL('room', {
       params: {
+        game: this.gameName,
         roomId: room.id
       },
       query: { observe: true }
