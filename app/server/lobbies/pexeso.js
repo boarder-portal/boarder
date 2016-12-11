@@ -18,7 +18,7 @@ class PexesoLobby extends Lobby {
 }
 
 D(PexesoLobby.prototype).assign({
-  lobby: io.of(LOBBY_NSP),
+  socket: io.of(LOBBY_NSP),
   Room,
   rooms
 });

@@ -1,14 +1,4 @@
 const D = require('dwayne');
-const {
-  games: {
-    global: {
-      playerStatuses: {
-        NOT_READY,
-        READY
-      }
-    }
-  }
-} = require('../../config/constants.json');
 
 /**
  * @class Player
@@ -20,7 +10,11 @@ class Player {
    * @public
    */
   /**
-   * @member {Number} Player#status
+   * @member {Boolean} Player#ready
+   * @public
+   */
+  /**
+   * @member {Boolean} Player#active
    * @public
    */
   /**
@@ -30,18 +24,11 @@ class Player {
 
   constructor(props) {
     D(this).assign({
-      status: NOT_READY,
+      ready: false,
+      active: false,
+      score: 0,
       sockets: D({})
     }, props);
-  }
-
-  /**
-   * @method Player#isReady
-   * @public
-   * @returns {Boolean}
-   */
-  isReady() {
-    return this.status === READY;
   }
 
   /**
@@ -49,20 +36,24 @@ class Player {
    * @public
    */
   toggleStatus() {
-    this.status = this.status === READY ? NOT_READY : READY;
+    this.ready = !this.ready;
   }
 
   toJSON() {
     const {
       login,
       avatar,
-      status
+      ready,
+      active,
+      score
     } = this;
 
     return {
       login,
       avatar,
-      status
+      ready,
+      active,
+      score
     };
   }
 }

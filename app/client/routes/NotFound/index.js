@@ -5,7 +5,8 @@ class NotFound extends Block {
   static template = template();
   static routerOptions = {
     name: 'not-found',
-    default: true
+    default: true,
+    path: '/not_found'
   };
 
   beforeLoadRoute() {

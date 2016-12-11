@@ -1,5 +1,6 @@
 {
   "observer_caption": "You can only observer the game",
   "not_ready": "Not ready",
-  "ready": "Ready!"
+  "ready": "Ready!",
+  "preparing": "Preparing game..."
 }

@@ -1,0 +1,33 @@
+div.room-state
+  d-switch(value="{status}")
+    d-case(if="{roomStatuses.NOT_PLAYING}")
+      div.before-game
+        span.observer-caption(d-show="{plannedRole === playerRoles.PLAYER && role === playerRoles.OBSERVER}")
+          | {i18n.t('games.global.room.observer_caption')}
+        div.players-before-game-list
+          d-each(set="{roomData.players}", item="player", uid="{player.id}")
+            div.player-before-game-block
+              d-if(if="{player}")
+                div.avatar-container
+                  img.avatar(src="{player.avatar}")
+                div.login {player.login}
+                div.ready-caption(d-class="{player.ready && 'ready'}")
+                  i.fa(d-class="{player.ready ? 'fa-check' : 'fa-times'}")
+                  span {i18n.t('games.global.room.' + (player.ready ? 'ready' : 'not_ready'))}
+        input.boarder-input.success.ready-to-play-btn(
+          type="submit"
+          value="{i18n.t('games.global.room.' + (ready ? 'not_ready' : 'ready'))}"
+          d-bind-click="{toggleStatus}"
+        )
+    d-case(if="{roomStatuses.PREPARING}")
+      div.preparing-game
+        | {i18n.t('games.global.room.preparing')}
+    d-case(if="{roomStatuses.PLAYING}")
+      div.game-container
+        div.game(d-class="{gameName + '-game-container'}")
+          d-switch(value="{gameName}")
+            d-case(if="pexeso")
+              Pexeso(gameData="{gameData}", socket="{socket}", isMyTurn="{isMyTurn}")
+        div.players-in-game-list
+          d-each(set="{players}", item="player", uid="{player.id}")
+            div.player(d-class="{player.active && 'active'}") {player.login + ' ' + player.score}

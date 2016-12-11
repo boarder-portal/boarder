@@ -48,15 +48,15 @@ class Lobby {
    */
 
   constructor() {
-    const { lobby } = this;
+    const { socket } = this;
 
-    lobby.use(socketSession);
-    lobby.use(socketAuth);
-    lobby.on('connection', this.userEnter.bind(this));
+    socket.use(socketSession);
+    socket.use(socketAuth);
+    socket.on('connection', this.userEnter);
   }
 
   emit() {
-    this.lobby.emit(...arguments);
+    this.socket.emit(...arguments);
   }
 
   /**
@@ -100,7 +100,7 @@ class Lobby {
     const { rooms } = this;
     const {
       id,
-      room: { name }
+      socket: { name }
     } = room;
     const roomIndex = rooms.indexOf(room);
 
@@ -128,14 +128,14 @@ class Lobby {
    * @public
    * @param {Socket} socket
    */
-  userEnter(socket) {
+  userEnter = (socket) => {
     console.log('connected to lobby');
 
     socket.emit(GET_LIST, this.rooms);
 
     socket.on(NEW_ROOM, (data) => this.createRoom(data));
     socket.on('disconnect', () => this.userLeave(socket));
-  }
+  };
 
   /**
    * @method Lobby#userLeave

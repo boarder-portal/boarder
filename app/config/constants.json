@@ -93,15 +93,12 @@
     "global": {
       "roomStatuses": {
         "NOT_PLAYING": "not_playing",
+        "PREPARING": "preparing",
         "PLAYING": "playing"
       },
       "playerRoles": {
         "OBSERVER": 0,
         "PLAYER": 1
-      },
-      "playerStatuses": {
-        "NOT_READY": 0,
-        "READY": 1
       },
       "events": {
         "lobby": {
@@ -117,7 +114,8 @@
         },
         "game": {
           "PREPARING_GAME": "game/preparing",
-          "GAME_STARTED": "game/started"
+          "GAME_STARTED": "game/started",
+          "UPDATE_PLAYERS": "game/update-players"
         }
       }
     },
@@ -127,7 +125,12 @@
     },
     "pexeso": {
       "LOBBY_NSP": "/pexeso/lobby",
-      "ROOM_NSP": "/pexeso/room/$roomId"
+      "ROOM_NSP": "/pexeso/room/$roomId",
+      "events": {
+        "game": {
+          "TURN_CARD": "game/turn-card"
+        }
+      }
     }
   }
 }
