@@ -1,0 +1,10 @@
+div.field
+  d-each(set="{field}", item="row", index="y", uid="{y}")
+    div.cards-row
+      d-each(set="{row}", item="card", index="x", uid="{x}")
+        div.card-container
+          d-if(if="{card.isInPlay}")
+            img.card(
+              src="{card.isTurned ? '/public/images/pexeso/sets/lost/' + card.card + '.jpg' : '/public/images/pexeso/backs/default/0.jpg'}"
+              d-on-click="{turnCard(x, y)}"
+            )

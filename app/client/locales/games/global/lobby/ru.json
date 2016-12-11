@@ -8,6 +8,7 @@
   },
   "room_statuses": {
     "not_playing": "Ожидание игроков",
+    "preparing": "Подготовка в игре...",
     "playing": "Идет игра"
   }
 }

@@ -1,3 +1,11 @@
+require('babel-register')({
+  presets: ['stage-0'],
+  plugins: [
+    'transform-object-rest-spread',
+    'transform-class-properties'
+  ]
+});
+
 const { date } = require('dwayne');
 const path = require('path');
 const fs = require('fs');

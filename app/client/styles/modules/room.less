@@ -39,15 +39,12 @@
         .ready-caption {
           .flex();
           .flx2(@h1);
+          .clr(@red-light);
 
           padding-top: @hs;
 
           &.ready {
             .clr(@green);
-          }
-
-          &.not-ready {
-            .clr(@red-light);
           }
 
           .fa-times,
@@ -64,6 +61,18 @@
     .ready-to-play-btn {
       width: @w4;
       height: @h1 + @h05;
+    }
+  }
+
+  .game-container {
+    .players-in-game-list {
+      .player {
+        border: 1px solid black;
+
+        &.active {
+          border-color: @red;
+        }
+      }
     }
   }
 }
