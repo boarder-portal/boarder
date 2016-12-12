@@ -6,7 +6,8 @@ const {
   pexeso: {
     events: {
       game: {
-        TURN_CARD
+        TURN_CARD,
+        CARDS_LOADED
       }
     }
   }
@@ -25,6 +26,8 @@ class Pexeso extends Block {
     this.turn = gameData.turn;
     this.players = gameData.players;
     this.currentTurnedCards = gameData.currentTurnedCards;
+    this.loaded = 0;
+    this.match = gameData.match;
 
     socket.on(TURN_CARD, this.onTurnCard);
   }
@@ -60,28 +63,38 @@ class Pexeso extends Block {
     ];
   }
 
-  onTurnCard = ({ x, y, isLast, match }) => {
-    const { currentTurnedCards } = this;
-
+  onTurnCard = ({ x, y, match }) => {
     this.currentTurnedCards.push({ x, y });
     this.changeCard(x, y, {
       isTurned: true
     });
+    this.match = match;
+  };
 
-    if (!isLast) {
+  onCardLoaded = ({ target }) => {
+    if (D(target).attr('image') === 'false') {
       return;
     }
+
+    if (++this.loaded !== 2) {
+      return;
+    }
+
+    const { currentTurnedCards } = this;
+
+    this.emit(CARDS_LOADED);
 
     D(2000)
       .timeout()
       .then(() => {
+        this.loaded = 0;
         this.currentTurnedCards = D([]);
 
         currentTurnedCards.forEach(({ x, y }) => {
           this.changeCard(
             x,
             y,
-            match
+            this.match
               ? { isInPlay: false }
               : { isTurned: false }
           );

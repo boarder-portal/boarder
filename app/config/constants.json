@@ -128,7 +128,8 @@
       "ROOM_NSP": "/pexeso/room/$roomId",
       "events": {
         "game": {
-          "TURN_CARD": "game/turn-card"
+          "TURN_CARD": "game/turn-card",
+          "CARDS_LOADED": "game/cards-loaded"
         }
       }
     }
