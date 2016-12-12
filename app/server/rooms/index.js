@@ -188,13 +188,15 @@ class Room {
     const {
       players,
       socket,
-      Game
+      Game,
+      gameOptions
     } = this;
 
     if (players.every(isReady) && this.isRequiredPlayers()) {
       this.game = new Game({
         socket,
-        players: players.filter(Boolean)
+        players: players.filter(Boolean),
+        options: gameOptions
       });
       this.status = PLAYING;
     }
@@ -350,7 +352,8 @@ class Room {
       playersCount,
       status,
       players,
-      observers
+      observers,
+      gameOptions
     } = this;
 
     return {
@@ -360,7 +363,8 @@ class Room {
       playersCount,
       status,
       players,
-      observers: observers.count
+      observers: observers.count,
+      gameOptions
     };
   }
 }

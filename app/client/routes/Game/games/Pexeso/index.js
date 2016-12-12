@@ -16,6 +16,8 @@ const {
 class Pexeso extends Block {
   static template = template();
 
+  backImage = '/public/images/pexeso/backs/default/0.jpg';
+
   constructor(opts) {
     super(opts);
 

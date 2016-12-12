@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { D, Block, makeRoute, router } from 'dwayne';
+import { D, Block, makeRoute, router, switcher } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -16,12 +16,25 @@ const {
   }
 } = gamesConfig;
 
+const roomOptionsSwitcher = switcher('strictEquals', {})
+  .case('pexeso', (lobby) => ({
+    set: lobby.chosenSet
+  }));
+
 class Lobby extends Block {
   static template = template();
   static routerOptions = {
     name: 'lobby',
     parent: 'game'
   };
+
+  sets = [
+    '0',
+    'potc',
+    'lost',
+    'sw',
+    'got'
+  ];
 
   constructor(opts) {
     super(opts);
@@ -32,6 +45,7 @@ class Lobby extends Block {
   reset() {
     this.rooms = [];
     this.gameName = '';
+    this.chosenSet = 'lost';
   }
 
   beforeLoadRoute() {
@@ -89,7 +103,7 @@ class Lobby extends Block {
   }
 
   onCreateRoomClick = () => {
-    this.socket.emit(NEW_ROOM);
+    this.socket.emit(NEW_ROOM, roomOptionsSwitcher(this.gameName, [this]));
   };
 
   onListReceived = (rooms) => {

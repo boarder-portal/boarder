@@ -74,13 +74,15 @@ class Game {
     const {
       field,
       turn,
-      players
+      players,
+      options
     } = this;
 
     return {
       field,
       turn,
-      players
+      players,
+      options
     };
   }
 }
