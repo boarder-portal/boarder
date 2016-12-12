@@ -33,7 +33,8 @@ class Lobby extends Block {
     'potc',
     'lost',
     'sw',
-    'got'
+    'got',
+    'poker'
   ];
 
   constructor(opts) {
