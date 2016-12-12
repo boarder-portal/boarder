@@ -5,7 +5,8 @@ const {
     pexeso: {
       events: {
         game: {
-          TURN_CARD
+          TURN_CARD,
+          CARDS_LOADED
         }
       }
     }
@@ -15,17 +16,6 @@ const {
 const { array } = D;
 
 const cards = array(30);
-
-const colors = [
-  'red',
-  'green',
-  'blue',
-  'yellow',
-  'orange',
-  'purple',
-  'pink',
-  'lime'
-];
 
 /**
  * @class PexesoGame
@@ -37,6 +27,9 @@ class PexesoGame extends Game {
     [TURN_CARD]: {
       forActivePlayer: true,
       listener: 'onTurnCard'
+    },
+    [CARDS_LOADED]: {
+      listener: 'onCardsLoaded'
     }
   };
 
@@ -49,6 +42,8 @@ class PexesoGame extends Game {
       .shuffle()
       .$;
 
+    this.areAllTurned = false;
+    this.currentLoadedPlayersCards = {};
     this.currentTurnedCards = [];
     this.field = array(6, (y) => (
       array(10, (x) => ({
@@ -64,13 +59,10 @@ class PexesoGame extends Game {
     this.startGame();
   }
 
-  onTurnCard(data, socket) {
-    const { player } = socket;
+  onTurnCard(data) {
     const { x, y } = data;
     const { currentTurnedCards } = this;
     const card = this.field[y][x];
-
-    console.log(card, currentTurnedCards);
 
     if (!card.isInPlay || card.isTurned || currentTurnedCards.length >= 2) {
       return;
@@ -80,24 +72,45 @@ class PexesoGame extends Game {
     card.isTurned = true;
 
     const [card1, card2] = currentTurnedCards;
-    const isLast = currentTurnedCards.length === 2;
-    const match = card2 && card1.card === card2.card;
+    const match = this.match = card2 && card1.card === card2.card;
 
     this.emit(TURN_CARD, {
       x,
       y,
-      isLast,
       match
     });
 
-    if (!isLast) {
+    if (currentTurnedCards.length === 2) {
+      this.areAllTurned = true;
+    }
+  }
+
+  onCardsLoaded(data, socket) {
+    if (!this.areAllTurned) {
       return;
     }
+
+    const { currentLoadedPlayersCards } = this;
+
+    currentLoadedPlayersCards[socket.player.login] = true;
+
+    if (D(currentLoadedPlayersCards).count !== this.players.length) {
+      return;
+    }
+
+    const {
+      currentTurnedCards,
+      match
+    } = this;
+    const player = this.players.$[this.turn];
+
+    this.areAllTurned = false;
 
     D(2000)
       .timeout()
       .then(() => {
         this.currentTurnedCards = [];
+        this.currentLoadedPlayersCards = {};
 
         currentTurnedCards.forEach((card) => {
           if (match) {
@@ -117,11 +130,15 @@ class PexesoGame extends Game {
   }
 
   toJSON() {
-    const { currentTurnedCards } = this;
+    const {
+      currentTurnedCards,
+      match
+    } = this;
 
     return {
       ...super.toJSON(),
-      currentTurnedCards
+      currentTurnedCards,
+      match
     };
   }
 }
