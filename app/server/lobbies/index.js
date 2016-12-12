@@ -62,9 +62,9 @@ class Lobby {
   /**
    * @method Lobby#createRoom
    * @public
-   * @param {*} data
+   * @param {*} options
    */
-  createRoom() {
+  createRoom = (options) => {
     const {
       Room,
       rooms
@@ -80,7 +80,8 @@ class Lobby {
       id: roomId,
       lobby: this,
       playersCount: 3,
-      name: `room-${ now() }`
+      name: `room-${ now() }`,
+      gameOptions: options
     };
     const room = new Room(roomData);
 
@@ -89,7 +90,7 @@ class Lobby {
     this.emit(NEW_ROOM, room);
 
     console.log(`creating room #${ room.id }`);
-  }
+  };
 
   /**
    * @method Lobby#deleteRoom
@@ -133,7 +134,7 @@ class Lobby {
 
     socket.emit(GET_LIST, this.rooms);
 
-    socket.on(NEW_ROOM, (data) => this.createRoom(data));
+    socket.on(NEW_ROOM, this.createRoom);
     socket.on('disconnect', () => this.userLeave(socket));
   };
 
