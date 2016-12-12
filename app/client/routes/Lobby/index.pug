@@ -1,13 +1,9 @@
-div
-  input.boarder-input.success.create-room-btn(
-    type="submit"
-    value="{i18n.t('games.global.lobby.create_room')}"
-    d-bind-click="{onCreateRoomClick}"
-  )
 table.rooms-table(d-class="{gameName + '-rooms-table'}")
   thead
     th.room-name {i18n.t('games.global.lobby.col_names.name')}
     th.room-status {i18n.t('games.global.lobby.col_names.status')}
+    d-if(if="{gameName === 'pexeso'}")
+      th.room-set {i18n.t('games.pexeso.lobby.col_names.set')}
     th.room-players {i18n.t('games.global.lobby.col_names.players')}
     th.room-actions {i18n.t('games.global.lobby.col_names.actions')}
   tbody.rooms(d-class="{gameName + '-rooms'}")
@@ -15,6 +11,8 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
       tr(d-class="{['room', gameName + '-room']}")
         td.room-name {room.name}
         td.room-status {i18n.t('games.global.lobby.room_statuses.' + room.status)}
+        d-if(if="{gameName === 'pexeso'}")
+          td.room-set {room.gameOptions.set}
         td.room-players
           div.players-container
             d-each(set="{room.players}", item="player", uid="{player.id}")
@@ -25,3 +23,18 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
             i.fa.fa-sign-in.enter-room
           a.observe-link(href="{constructObserveLink(room)}")
             i.fa.fa-eye.enter-room
+    tr
+      td.room-name
+      td.room-status
+      d-if(if="{gameName === 'pexeso'}")
+        td.room-set
+          select(d-value="chosenSet")
+            d-each(set="{sets}", item="set", uid="{set}")
+              option(value="{set}") {set}
+      td.room-players
+      td.room-actions
+        input.boarder-input.success.create-room-btn(
+          type="submit"
+          value="{i18n.t('games.global.lobby.create_room')}"
+          d-bind-click="{onCreateRoomClick}"
+        )

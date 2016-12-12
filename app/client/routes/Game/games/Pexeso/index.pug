@@ -8,6 +8,6 @@ div.field
               image="{card.isTurned}"
               d-bind-load="{onCardLoaded}"
               d-bind-error="{onCardLoaded}"
-              src="{card.isTurned ? '/public/images/pexeso/sets/lost/' + card.card + '.jpg' : '/public/images/pexeso/backs/default/0.jpg'}"
+              src="{card.isTurned ? '/public/images/pexeso/sets/' + gameData.options.set + '/' + card.card + '.jpg' : backImage}"
               d-on-click="{turnCard(x, y)}"
             )
