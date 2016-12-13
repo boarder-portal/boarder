@@ -30,4 +30,4 @@ div.room-state
               Pexeso(gameData="{gameData}", socket="{socket}", isMyTurn="{isMyTurn}")
         div.players-in-game-list
           d-each(set="{players}", item="player", uid="{player.id}")
-            div.player(d-class="{player.active && 'active'}") {player.login + ' ' + player.score}
+            div.player(d-class="{player.active && 'active'}") {i18n.t('games.global.room.player') + ': ' + player.login + ' ' + player.score}
