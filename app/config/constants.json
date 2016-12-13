@@ -131,7 +131,19 @@
           "TURN_CARD": "game/turn-card",
           "CARDS_LOADED": "game/cards-loaded"
         }
-      }
+      },
+      "sets": [
+        "0",
+        "potc",
+        "lost",
+        "sw",
+        "got",
+        "poker"
+      ]
+    },
+    "virusWar": {
+      "LOBBY_NSP": "/virus-war/lobby",
+      "ROOM_NSP": "/virus-war/room/$roomId"
     }
   }
 }
