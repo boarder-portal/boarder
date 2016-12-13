@@ -13,12 +13,15 @@ const {
         DELETE_ROOM
       }
     }
+  },
+  pexeso: {
+    sets: pexesoSets
   }
 } = gamesConfig;
 
 const roomOptionsSwitcher = switcher('strictEquals', {})
   .case('pexeso', (lobby) => ({
-    set: lobby.chosenSet
+    set: lobby.pexesoChosenSet
   }));
 
 class Lobby extends Block {
@@ -28,14 +31,7 @@ class Lobby extends Block {
     parent: 'game'
   };
 
-  sets = [
-    '0',
-    'potc',
-    'lost',
-    'sw',
-    'got',
-    'poker'
-  ];
+  pexesoSets = pexesoSets;
 
   constructor(opts) {
     super(opts);
@@ -46,7 +42,7 @@ class Lobby extends Block {
   reset() {
     this.rooms = [];
     this.gameName = '';
-    this.chosenSet = 'lost';
+    this.pexesoChosenSet = 'lost';
   }
 
   beforeLoadRoute() {
