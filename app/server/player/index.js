@@ -10,6 +10,10 @@ class Player {
    * @public
    */
   /**
+   * @member {String} Player#avatar
+   * @public
+   */
+  /**
    * @member {Boolean} Player#ready
    * @public
    */
@@ -21,22 +25,23 @@ class Player {
    * @member {Super} Player#sockets
    * @public
    */
+  /**
+   * @member {Number} Player#score
+   * @public
+   */
+  /**
+   * @member {Object} Player#data
+   * @public
+   */
 
   constructor(props) {
     D(this).assign({
       ready: false,
       active: false,
       score: 0,
-      sockets: D({})
+      sockets: D({}),
+      data: {}
     }, props);
-  }
-
-  /**
-   * @method Player#toggleStatus
-   * @public
-   */
-  toggleStatus() {
-    this.ready = !this.ready;
   }
 
   toJSON() {
@@ -45,7 +50,8 @@ class Player {
       avatar,
       ready,
       active,
-      score
+      score,
+      data
     } = this;
 
     return {
@@ -53,7 +59,8 @@ class Player {
       avatar,
       ready,
       active,
-      score
+      score,
+      data
     };
   }
 }

@@ -28,8 +28,8 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
       td.room-status
       d-if(if="{gameName === 'pexeso'}")
         td.room-set
-          select(d-value="chosenSet")
-            d-each(set="{sets}", item="set", uid="{set}")
+          select(d-value="pexesoChosenSet")
+            d-each(set="{pexesoSets}", item="set", uid="{set}")
               option(value="{set}") {set}
       td.room-players
       td.room-actions

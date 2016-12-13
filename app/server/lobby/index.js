@@ -1,5 +1,6 @@
 const D = require('dwayne');
 const { io } = require('../');
+const Room = require('../room');
 const {
   socketSession,
   socketAuth
@@ -47,7 +48,9 @@ class Lobby {
    * @public
    */
 
-  constructor() {
+  constructor(options) {
+    D(this).assign(options);
+
     const { socket } = this;
 
     socket.use(socketSession);
@@ -66,8 +69,9 @@ class Lobby {
    */
   createRoom = (options) => {
     const {
-      Room,
-      rooms
+      rooms,
+      roomNsp,
+      Game
     } = this;
 
     let roomId = alphabet.token(15);
@@ -81,6 +85,8 @@ class Lobby {
       lobby: this,
       playersCount: 3,
       name: `room-${ now() }`,
+      roomNsp,
+      Game,
       gameOptions: options
     };
     const room = new Room(roomData);
