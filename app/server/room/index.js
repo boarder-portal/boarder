@@ -1,9 +1,10 @@
 const D = require('dwayne');
+const { io } = require('../index');
+const Player = require('../player');
 const {
   socketSession,
   socketAuth
 } = require('../controllers/auth');
-const { io } = require('../index');
 const {
   games: {
     global: {
@@ -25,11 +26,7 @@ const {
     }
   }
 } = require('../../config/constants.json');
-const {
-  constants: {
-    ROOM_DESTRUCTION_DELAY
-  }
-} = require('../constants/index');
+const { ROOM_DESTRUCTION_DELAY } = require('../constants/index');
 
 const {
   array,
@@ -79,19 +76,15 @@ class Room {
    * @member {Promise} Room#_timeout
    * @protected
    */
-  /**
-   * @member {String} Room#_roomNsp
-   * @protected
-   */
 
   constructor(props) {
-    const { _roomNsp } = this;
     const {
       id,
+      roomNsp,
       playersCount,
       _expires = ROOM_DESTRUCTION_DELAY
     } = props;
-    const socket = io.of(_roomNsp.replace(/\$roomId/, id));
+    const socket = io.of(roomNsp.replace(/\$roomId/, id));
     const timeout = D(0).timeout();
 
     timeout.catch(() => {});
@@ -179,7 +172,8 @@ class Room {
    * @param {Player} player
    */
   togglePlayerStatus(player) {
-    player.toggleStatus();
+    player.ready = !player.ready;
+
     this.update();
     this.tryToStartGame();
   }
@@ -245,7 +239,6 @@ class Room {
       players,
       observers,
       Game,
-      Player,
       game
     } = this;
     const { value: existentPlayer } = players.find((player) => player && player.login === user.login) || {};
