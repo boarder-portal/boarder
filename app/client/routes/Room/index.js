@@ -111,15 +111,23 @@ class Room extends Block {
     this.reset();
   }
 
-  onEnterRoom = (roomData) => {
-    console.log(roomData);
+  startGame(gameData) {
+    console.log(gameData);
 
+    this.gameData = gameData;
+    this.players = gameData.players;
+  }
+
+  onEnterRoom = (roomData) => {
     this.roomData = roomData.room;
     this.gameData = roomData.room.game;
-    this.players = this.gameData && this.gameData.players;
     this.status = roomData.room.status;
     this.role = roomData.role;
     this.ready = false;
+
+    if (roomData.room.game) {
+      this.startGame(roomData.room.game);
+    }
   };
 
   onUpdateRoom = (roomData) => {
@@ -134,9 +142,8 @@ class Room extends Block {
   };
 
   onGameStarted = (gameData) => {
-    this.gameData = gameData;
-    this.players = gameData.players;
     this.status = roomStatuses.PLAYING;
+    this.startGame(gameData);
   };
 
   onUpdatePlayers = (players) => {

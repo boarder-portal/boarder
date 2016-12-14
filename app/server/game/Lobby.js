@@ -1,6 +1,6 @@
 const D = require('dwayne');
 const { io } = require('../');
-const Room = require('../room');
+const Room = require('./Room');
 const {
   socketSession,
   socketAuth
