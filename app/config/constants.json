@@ -121,11 +121,13 @@
     },
     "hexagon": {
       "LOBBY_NSP": "/hexagon/lobby",
-      "ROOM_NSP": "/hexagon/room/$roomId"
+      "ROOM_NSP": "/hexagon/room/$roomId",
+      "playersCount": 3
     },
     "pexeso": {
       "LOBBY_NSP": "/pexeso/lobby",
       "ROOM_NSP": "/pexeso/room/$roomId",
+      "playersCount": 4,
       "events": {
         "game": {
           "TURN_CARD": "game/turn-card",
@@ -143,7 +145,8 @@
     },
     "virusWar": {
       "LOBBY_NSP": "/virus-war/lobby",
-      "ROOM_NSP": "/virus-war/room/$roomId"
+      "ROOM_NSP": "/virus-war/room/$roomId",
+      "playersCount": 2
     }
   }
 }
