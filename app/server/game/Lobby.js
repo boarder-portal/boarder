@@ -71,6 +71,7 @@ class Lobby {
     const {
       rooms,
       roomNsp,
+      playersCount,
       Game
     } = this;
 
@@ -83,7 +84,7 @@ class Lobby {
     const roomData = {
       id: roomId,
       lobby: this,
-      playersCount: 3,
+      playersCount,
       name: `room-${ now() }`,
       roomNsp,
       Game,
