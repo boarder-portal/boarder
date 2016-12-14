@@ -13,6 +13,15 @@ const {
   }
 } = require('../../config/constants.json');
 
+const colors = [
+  '#ff0000',
+  '#007f00',
+  '#0000ff',
+  '#ffff00',
+  '#ff7f00',
+  '#ff00ff'
+];
+
 /**
  * @class Game
  * @public
@@ -39,6 +48,14 @@ class Game {
       .forEach((player) => {
         player.score = 0;
       });
+  }
+
+  setColors() {
+    const newColors = D(colors).shuffle().$;
+
+    this.players.forEach((player, i) => {
+      player.color = newColors[i];
+    });
   }
 
   startGame() {
