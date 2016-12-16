@@ -6,7 +6,8 @@ const {
         game: {
           PREPARING_GAME,
           GAME_STARTED,
-          UPDATE_PLAYERS
+          UPDATE_PLAYERS,
+          UPDATE_GAME
         }
       }
     }
@@ -29,12 +30,25 @@ class Game {
     this.prepareGame();
   }
 
-  emit() {
+  emit(event, data, isNeededToUpdatePlayers) {
+    const dataObject = {
+      event,
+      data
+    };
+
+    if (isNeededToUpdatePlayers) {
+      dataObject.players = this.players;
+    }
+
+    this.pureEmit(UPDATE_GAME, dataObject);
+  }
+
+  pureEmit() {
     this.socket.emit(...arguments);
   }
 
   prepareGame() {
-    this.emit(PREPARING_GAME);
+    this.pureEmit(PREPARING_GAME);
 
     this.turn = 0;
     this.players
@@ -57,7 +71,7 @@ class Game {
   }
 
   startGame() {
-    this.emit(GAME_STARTED, this);
+    this.pureEmit(GAME_STARTED, this);
   }
 
   isSocketActivePlayer(socket) {
@@ -82,7 +96,7 @@ class Game {
   }
 
   updatePlayers() {
-    this.emit(UPDATE_PLAYERS, this.players);
+    this.pureEmit(UPDATE_PLAYERS, this.players);
   }
 
   toJSON() {

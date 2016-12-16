@@ -115,7 +115,8 @@
         "game": {
           "PREPARING_GAME": "game/preparing",
           "GAME_STARTED": "game/started",
-          "UPDATE_PLAYERS": "game/update-players"
+          "UPDATE_PLAYERS": "game/update-players",
+          "UPDATE_GAME": "game/update-game"
         }
       }
     },
@@ -130,8 +131,8 @@
       "playersCount": 4,
       "events": {
         "game": {
-          "TURN_CARD": "game/turn-card",
-          "CARDS_LOADED": "game/cards-loaded"
+          "TURN_CARD": "pexeso/turn-card",
+          "CARDS_LOADED": "pexeso/cards-loaded"
         }
       },
       "sets": [
@@ -150,6 +151,10 @@
       "virusesTypes": {
         "VIRUS": "virus",
         "FORTRESS": "fortress"
+      },
+      "virusesShapes": {
+        "CIRCLE": "circle",
+        "RECT": "rect"
       }
     }
   },
