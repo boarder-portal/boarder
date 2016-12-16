@@ -30,6 +30,10 @@ class Player {
    * @public
    */
   /**
+   * @member {String} Player#color
+   * @public
+   */
+  /**
    * @member {Object} Player#data
    * @public
    */
@@ -51,6 +55,7 @@ class Player {
       ready,
       active,
       score,
+      color,
       data
     } = this;
 
@@ -60,6 +65,7 @@ class Player {
       ready,
       active,
       score,
+      color,
       data
     };
   }
