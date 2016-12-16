@@ -1,5 +1,5 @@
 d-if(if="{args.cell.type}")
-  svg(width="{SIZE}", height="{SIZE}", stroke-width="2px")
+  svg.virus-cell(width="{SIZE}", height="{SIZE}", stroke-width="2px")
     d-switch(value="{args.shape}")
       d-case(if="{virusesShapes.CIRCLE}")
         circle(
