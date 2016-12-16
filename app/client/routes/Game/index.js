@@ -7,7 +7,7 @@ class Game extends Block {
     name: 'game',
     parent: 'games',
     abstract: true,
-    path: '/:game(hexagon|pexeso)'
+    path: '/:game(hexagon|pexeso|virus_war)'
   };
 }
 
