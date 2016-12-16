@@ -10,17 +10,11 @@ const {
         }
       }
     }
-  }
+  },
+  colors: colorsObject
 } = require('../../config/constants.json');
 
-const colors = [
-  '#ff0000',
-  '#007f00',
-  '#0000ff',
-  '#ffff00',
-  '#ff7f00',
-  '#ff00ff'
-];
+const colors = D(colorsObject).keys();
 
 /**
  * @class Game
@@ -51,9 +45,13 @@ class Game {
   }
 
   setColors() {
-    const newColors = D(colors).shuffle().$;
+    const { players } = this;
+    const newColors = colors
+      .slice(0, players.length)
+      .shuffle()
+      .$;
 
-    this.players.forEach((player, i) => {
+    players.forEach((player, i) => {
       player.color = newColors[i];
     });
   }

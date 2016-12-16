@@ -1,6 +1,6 @@
 import { D, Block } from 'dwayne';
 import template from './index.pug';
-import { games as gamesConfig } from '../../../../../config/constants.json';
+import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
   pexeso: {
@@ -73,8 +73,8 @@ class Pexeso extends Block {
     this.match = match;
   };
 
-  onCardLoaded = ({ target }) => {
-    if (D(target).attr('image') === 'false') {
+  onCardLoaded(card) {
+    if (!card.isTurned) {
       return;
     }
 
@@ -102,7 +102,7 @@ class Pexeso extends Block {
           );
         });
       });
-  };
+  }
 }
 
 Block.register('Pexeso', Pexeso);
