@@ -32,7 +32,7 @@ div.room-state
           d-each(set="{players}", item="player", uid="{player.id}")
             div.player.row(d-class="{[player.active && 'active', $index && 'marg-t-10']}")
               div.avatar-container
-                img.avatar(src="{global.user.avatar}")
+                img.avatar(src="{player.avatar}")
               div
                div {i18n.t('games.global.room.player') + ': ' + player.login}
-               div {i18n.t('games.global.room.score') + ': ' + ' ' + player.score}
+               div {i18n.t('games.global.room.score') + ': ' + player.score}
