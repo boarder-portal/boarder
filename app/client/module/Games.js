@@ -5,4 +5,5 @@ import '../routes/Game';
 import '../routes/Lobby';
 import '../routes/Room';
 
-import '../routes/Game/games/Pexeso';
+import '../games/Pexeso';
+import '../games/VirusWar';
