@@ -66,11 +66,21 @@
 
   .game-container {
     .players-in-game-list {
+      margin-top: 6px;
+      margin-right: 10px;
+
       .player {
         border: 1px solid black;
+        padding: 10px;
 
         &.active {
-          border-color: @red;
+         background: @green-light;
+        }
+
+        .avatar-container {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
         }
       }
     }

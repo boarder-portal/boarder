@@ -1,6 +1,7 @@
 {
   "LIVERELOAD_NSP": "/livereload",
   "ASSETS_PATH": "/public",
+  "VENDOR_PATH": "/vendor",
   "endpoints": {
     "base": "/api",
     "users": {
