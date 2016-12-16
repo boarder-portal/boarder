@@ -8,10 +8,9 @@ class VirusWar extends Block {
   constructor(opts) {
     super(opts);
 
-    const gameData = this.gameData = this.args.gameData;
-    const socket = this.socket = this.args.socket;
+    const gameData = this.args.gameData;
+    const emitter = this.args.emitter;
 
-    this.players = gameData.players;
     this.field = this.transformField(gameData.field);
     this.mapPlayersToColors = D(gameData.players).object((colors, { color, login }) => {
       colors[login] = color;
@@ -61,3 +60,5 @@ class VirusWar extends Block {
 }
 
 Block.register('VirusWar', VirusWar);
+
+export default VirusWar;

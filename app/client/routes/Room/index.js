@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import { D, Block, makeRoute, router } from 'dwayne';
 import template from './index.pug';
+import { Emitter } from '../../helper';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -16,7 +17,8 @@ const {
       game: {
         PREPARING_GAME,
         GAME_STARTED,
-        UPDATE_PLAYERS
+        UPDATE_PLAYERS,
+        UPDATE_GAME
       }
     }
   }
@@ -49,7 +51,8 @@ class Room extends Block {
       ready: false,
       gameData: null,
       players: null,
-      isMyTurn: false
+      isMyTurn: false,
+      emitter: null
     });
   }
 
@@ -70,6 +73,7 @@ class Room extends Block {
       }
     });
 
+    this.emitter = new Emitter();
     this.gameName = game;
     this.plannedRole = observe
       ? playerRoles.OBSERVER
@@ -80,6 +84,7 @@ class Room extends Block {
     socket.on(PREPARING_GAME, this.onPreparingGame);
     socket.on(GAME_STARTED, this.onGameStarted);
     socket.on(UPDATE_PLAYERS, this.onUpdatePlayers);
+    socket.on(UPDATE_GAME, this.onUpdateGame);
     socket.on('connect', () => {
       console.log('connected to room');
     });
@@ -151,6 +156,14 @@ class Room extends Block {
   onUpdatePlayers = (players) => {
     this.players = players;
     this.setIsMyTurn();
+  };
+
+  onUpdateGame = ({ event, data, players }) => {
+    if (players) {
+      this.players = players;
+    }
+
+    this.emitter.emit(event, data);
   };
 
   setIsMyTurn() {
