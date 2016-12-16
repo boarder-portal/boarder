@@ -1,5 +1,15 @@
 const D = require('dwayne');
 const Game = require('./');
+const {
+  games: {
+    virus_war: {
+      virusesTypes: {
+        VIRUS,
+        FORTRESS
+      }
+    }
+  }
+} = require('../../config/constants.json');
 
 const {
   array,
@@ -15,11 +25,11 @@ const virusCellSwitcher = switcher('call', {
 })
   .case(({ x, y }) => x === 0 && y === 0, (players) => ({
     player: players.$[0].login,
-    type: 'virus'
+    type: VIRUS
   }))
   .case(({ x, y }) => x === width - 1 && y === height - 1, (players) => ({
     player: players.$[1].login,
-    type: 'virus'
+    type: VIRUS
   }));
 
 /**
@@ -38,7 +48,10 @@ class VirusWarGame extends Game {
         ...virusCellSwitcher({ x, y }, [this.players])
       })).$
     )).$;
+    this.players.$[0].active = true;
     this.setColors();
+
+    this.startGame();
   }
 }
 

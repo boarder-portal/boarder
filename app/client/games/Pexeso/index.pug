@@ -5,9 +5,8 @@ div.field
         div.card-container
           d-if(if="{card.isInPlay}")
             img.card(
-              image="{card.isTurned}"
-              d-bind-load="{onCardLoaded}"
-              d-bind-error="{onCardLoaded}"
+              d-on-load="{onCardLoaded(card)}"
+              d-on-error="{onCardLoaded(card)}"
               src="{card.isTurned ? '/public/images/pexeso/sets/' + gameData.options.set + '/' + card.card + '.jpg' : backImage}"
               d-on-click="{turnCard(x, y)}"
             )

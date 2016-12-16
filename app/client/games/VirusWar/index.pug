@@ -1,13 +1,10 @@
-div.field
+table.field(d-class="{args.isMyTurn && 'my-turn'}")
   d-each(set="{field}", item="row", index="y", uid="{y}")
-    div.cards-row
-      d-each(set="{row}", item="card", index="x", uid="{x}")
-        div.card-container
-          d-if(if="{card.isInPlay}")
-            img.card(
-              image="{card.isTurned}"
-              d-bind-load="{onCardLoaded}"
-              d-bind-error="{onCardLoaded}"
-              src="{card.isTurned ? '/public/images/pexeso/sets/' + gameData.options.set + '/' + card.card + '.jpg' : backImage}"
-              d-on-click="{turnCard(x, y)}"
+    tr
+      d-each(set="{row}", item="cell", index="x", uid="{x}")
+        td(d-class="{ cell.isAvailable && 'available'}")
+          d-if(if="{cell.player}")
+            img.shape(
+              src="{'/public/images/virus-war/' + cell.type + '-' + mapPlayersToColors[cell.player] + '.png'}"
+              d-on-click="{clickCell(x, y)}"
             )
