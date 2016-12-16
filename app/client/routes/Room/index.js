@@ -48,7 +48,8 @@ class Room extends Block {
       role: null,
       ready: false,
       gameData: null,
-      players: null
+      players: null,
+      isMyTurn: false
     });
   }
 
@@ -116,6 +117,7 @@ class Room extends Block {
 
     this.gameData = gameData;
     this.players = gameData.players;
+    this.setIsMyTurn();
   }
 
   onEnterRoom = (roomData) => {
@@ -148,13 +150,14 @@ class Room extends Block {
 
   onUpdatePlayers = (players) => {
     this.players = players;
+    this.setIsMyTurn();
   };
 
-  isMyTurn = () => {
+  setIsMyTurn() {
     const { login } = this.global.user;
 
-    return D(this.players).find((player) => player && player.login === login).value.active;
-  };
+    this.isMyTurn = D(this.players).find((player) => player && player.login === login).value.active;
+  }
 
   toggleStatus = () => {
     this.socket.emit(TOGGLE_PLAYER_STATUS);

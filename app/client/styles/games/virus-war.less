@@ -1,0 +1,35 @@
+@import (reference) '../mixins';
+
+.virus_war-game-container {
+  .field {
+    border-collapse: collapse;
+
+    td {
+      width: @h1;
+      height: @h1;
+      border: 1px solid @black;
+      overflow: hidden;
+
+      .shape {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &.my-turn {
+      td {
+        &.available {
+          .rgba(#000, 0.1);
+        }
+
+        &:empty {
+          .pointer();
+
+          &:hover {
+            .rgba(#000, 0.25);
+          }
+        }
+      }
+    }
+  }
+}
