@@ -21,17 +21,16 @@ class Pexeso extends Block {
   constructor(opts) {
     super(opts);
 
-    const gameData = this.gameData = this.args.gameData;
-    const socket = this.socket = this.args.socket;
+    const gameData = this.args.gameData;
+    const emitter = this.args.emitter;
 
     this.field = gameData.field;
     this.turn = gameData.turn;
-    this.players = gameData.players;
     this.currentTurnedCards = gameData.currentTurnedCards;
     this.loaded = 0;
     this.match = gameData.match;
 
-    socket.on(TURN_CARD, this.onTurnCard);
+    emitter.on(TURN_CARD, this.onTurnCard);
   }
 
   emit() {

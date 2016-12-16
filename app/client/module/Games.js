@@ -7,3 +7,4 @@ import '../routes/Room';
 
 import '../games/Pexeso';
 import '../games/VirusWar';
+import '../games/VirusWar/blocks';
