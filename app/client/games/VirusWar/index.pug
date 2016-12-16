@@ -3,8 +3,4 @@ table.field(d-class="{args.isMyTurn && 'my-turn'}")
     tr
       d-each(set="{row}", item="cell", index="x", uid="{x}")
         td(d-class="{ cell.isAvailable && 'available'}")
-          d-if(if="{cell.player}")
-            img.shape(
-              src="{'/public/images/virus-war/' + cell.type + '-' + mapPlayersToColors[cell.player] + '.png'}"
-              d-on-click="{clickCell(x, y)}"
-            )
+          VirusCell
