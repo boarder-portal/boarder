@@ -24,11 +24,13 @@ class Pexeso extends Block {
     const gameData = this.args.gameData;
     const emitter = this.args.emitter;
 
+    this.socket = this.args.socket;
     this.field = gameData.field;
     this.turn = gameData.turn;
     this.currentTurnedCards = gameData.currentTurnedCards;
     this.loaded = 0;
     this.match = gameData.match;
+    this.options = gameData.options;
 
     emitter.on(TURN_CARD, this.onTurnCard);
   }
@@ -40,7 +42,7 @@ class Pexeso extends Block {
   turnCard(x, y) {
     const card = this.field[y][x];
 
-    if (!this.args.isMyTurn() || !card.isInPlay || card.isTurned || this.currentTurnedCards.length >= 2) {
+    if (!this.args.isMyTurn || !card.isInPlay || card.isTurned || this.currentTurnedCards.length >= 2) {
       return;
     }
 

@@ -4,7 +4,7 @@ import VirusWar from '../..';
 import { games as gamesConfig } from '../../../../../config/constants.json';
 
 const {
-  virusWar: {
+  virus_war: {
     virusesTypes,
     virusesShapes
   }
