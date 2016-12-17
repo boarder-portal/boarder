@@ -1,6 +1,14 @@
-table.field(d-class="{args.isMyTurn && 'my-turn'}")
+table.field(d-class="{[args.isMyTurn && 'my-turn', isTopLeft && 'to-bottom-left']}")
   d-each(set="{field}", item="row", index="y", uid="{y}")
     tr
       d-each(set="{row}", item="cell", index="x", uid="{x}")
-        td(d-class="{ cell.isAvailable && 'available'}")
-          VirusCell
+        td(
+          d-class="{cell.isAvailable && 'available'}"
+          d-on-click="{onClickCell(cell)}"
+        )
+          VirusCell(cell="{cell}", color="{mapPlayersToColors[cell.player]}", shape="{mapPlayersToShapes[cell.player]}")
+input.boarder-input.success(
+  type="submit"
+  value="{i18n.t('games.global.room.end_turn')}"
+  d-bind-click="{endTurn}"
+)

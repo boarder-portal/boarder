@@ -3,5 +3,6 @@
   "not_ready": "Not ready",
   "ready": "Ready!",
   "preparing": "Preparing game...",
-  "player": "Player"
+  "player": "Player",
+  "end_turn": "End turn"
 }
