@@ -27,9 +27,9 @@ div.room-state
         div.game(d-class="{gameName + '-game-container'}")
           d-switch(value="{gameName}")
             d-case(if="pexeso")
-              Pexeso(gameData="{gameData}", emitter="{emitter}", isMyTurn="{isMyTurn}")
+              Pexeso(gameData="{gameData}", emitter="{emitter}", socket="{socket}", isMyTurn="{isMyTurn}")
             d-case(if="virus_war")
-              VirusWar(gameData="{gameData}", emitter="{emitter}", isMyTurn="{isMyTurn}")
+              VirusWar(gameData="{gameData}", emitter="{emitter}", socket="{socket}", isMyTurn="{isMyTurn}")
         div.players-in-game-list
           d-each(set="{players}", item="player", uid="{player.id}")
             div.player(d-class="{player.active && 'active'}") {i18n.t('games.global.room.player') + ': ' + player.login + ' ' + player.score}
