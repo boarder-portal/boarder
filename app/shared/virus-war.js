@@ -14,12 +14,12 @@ D = D.D || D;
 
 const { switcher } = D;
 const availableCellsSwitcher = switcher()
-  .case(VIRUS, (availableCells, emptyNeighbours) => {
-    availableCells.push(...emptyNeighbours);
+  .case(VIRUS, (availableCells, availableNeighbours) => {
+    availableCells.push(...availableNeighbours);
   })
-  .case(FORTRESS, (availableCells, emptyNeighbours, neighbours, login) => {
+  .case(FORTRESS, (availableCells, availableNeighbours, neighbours, login) => {
     if (neighbours.some(({ player, type }) => type === VIRUS && player === login)) {
-      availableCells.push(...emptyNeighbours);
+      availableCells.push(...availableNeighbours);
     }
   });
 
@@ -34,9 +34,14 @@ exports.getAvailableCells = (field, player) => {
       }
 
       const neighbours = getNeighbours(cell, field);
-      const emptyNeighbours = neighbours.filter(({ player }) => !player).$;
+      const availableNeighbours = neighbours.filter((cell) => (
+        !cell.player || (
+          cell.player !== login
+          && cell.type === VIRUS
+        )
+      )).$;
 
-      availableCellsSwitcher(cell.type, [availableCells, emptyNeighbours, neighbours, login]);
+      availableCellsSwitcher(cell.type, [availableCells, availableNeighbours, neighbours, login]);
     });
   });
 
@@ -79,9 +84,9 @@ function getNeighbours(cell, field) {
   }
 
   if (bottomRow) {
-    const bottomLeft = topRow[x - 1];
+    const bottomLeft = bottomRow[x - 1];
     const bottom = bottomRow[x];
-    const bottomRight = topRow[x + 1];
+    const bottomRight = bottomRow[x + 1];
 
     if (bottomLeft) {
       neighbours.push(bottomLeft);
