@@ -14,16 +14,24 @@ D = D.D || D;
 
 const { switcher } = D;
 const availableCellsSwitcher = switcher()
-  .case(VIRUS, (availableCells, availableNeighbours) => {
-    availableCells.push(...availableNeighbours);
+  .case(VIRUS, (availableCells, availableNeighbours, lastSetCells) => {
+    if (lastSetCells.length === 3) {
+      availableNeighbours = availableNeighbours.filter(({ player }) => player);
+    }
+
+    availableCells.push(...availableNeighbours.$);
   })
-  .case(FORTRESS, (availableCells, availableNeighbours, neighbours, login) => {
+  .case(FORTRESS, (availableCells, availableNeighbours, lastSetCells, neighbours, login) => {
     if (neighbours.some(({ player, type }) => type === VIRUS && player === login)) {
-      availableCells.push(...availableNeighbours);
+      if (lastSetCells.length === 3) {
+        availableNeighbours = availableNeighbours.filter(({ player }) => player);
+      }
+
+      availableCells.push(...availableNeighbours.$);
     }
   });
 
-exports.getAvailableCells = (field, player) => {
+exports.getAvailableCells = (field, player, lastSetCells) => {
   const { login } = player;
   const availableCells = D([]);
 
@@ -34,14 +42,14 @@ exports.getAvailableCells = (field, player) => {
       }
 
       const neighbours = getNeighbours(cell, field);
-      const availableNeighbours = neighbours.filter((cell) => (
-        !cell.player || (
-          cell.player !== login
-          && cell.type === VIRUS
+      const availableNeighbours = neighbours.filter(({ player, type }) => (
+        !player || (
+          player !== login
+          && type === VIRUS
         )
-      )).$;
+      ));
 
-      availableCellsSwitcher(cell.type, [availableCells, availableNeighbours, neighbours, login]);
+      availableCellsSwitcher(cell.type, [availableCells, availableNeighbours, lastSetCells, neighbours, login]);
     });
   });
 
