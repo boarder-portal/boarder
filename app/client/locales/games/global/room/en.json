@@ -4,7 +4,6 @@
   "ready": "Ready!",
   "preparing": "Preparing game...",
   "player": "Player",
-  "score": "Score"
-  "player": "Player",
+  "score": "Score",
   "end_turn": "End turn"
 }

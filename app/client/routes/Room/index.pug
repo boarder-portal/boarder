@@ -27,7 +27,9 @@ div.room-state
         div.game.col-xs-12.col-sm(d-class="{gameName + '-game-container'}")
           d-switch(value="{gameName}")
             d-case(if="pexeso")
-              Pexeso(gameData="{gameData}", socket="{socket}", isMyTurn="{isMyTurn}")
+              Pexeso(gameData="{gameData}", socket="{socket}", emitter="{emitter}", isMyTurn="{isMyTurn}")
+            d-case(if="virus_war")
+              VirusWar(gameData="{gameData}", socket="{socket}", emitter="{emitter}", isMyTurn="{isMyTurn}")
         div.players-in-game-list.col-xs-12.col-sm
           d-each(set="{players}", item="player", uid="{player.id}")
             div.player.row(d-class="{[player.active && 'active', $index && 'marg-t-10']}")
