@@ -116,7 +116,8 @@
           "PREPARING_GAME": "game/preparing",
           "GAME_STARTED": "game/started",
           "UPDATE_PLAYERS": "game/update-players",
-          "UPDATE_GAME": "game/update-game"
+          "UPDATE_GAME": "game/update-game",
+          "END_TURN": "game/end-turn"
         }
       }
     },
@@ -148,6 +149,11 @@
       "LOBBY_NSP": "/virus-war/lobby",
       "ROOM_NSP": "/virus-war/room/$roomId",
       "playersCount": 2,
+      "events": {
+        "game": {
+          "SET_CELL": "virus-war/set-cell"
+        }
+      },
       "virusesTypes": {
         "VIRUS": "virus",
         "FORTRESS": "fortress"
