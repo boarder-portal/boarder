@@ -7,8 +7,8 @@
     td {
       .relative();
 
-      width: @h1;
-      height: @h1;
+      width: @w1;
+      height: @w1;
       border: 1px solid @black;
       overflow: hidden;
 
@@ -17,13 +17,16 @@
       }
     }
 
+    transform: scaleX(-1);
+
+    &.to-bottom-left {
+      transform: scaleY(-1);
+    }
+
     &.my-turn {
       td {
         &.available {
           .rgba(#000, 0.1);
-        }
-
-        &:empty {
           .pointer();
 
           &:hover {

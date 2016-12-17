@@ -164,6 +164,7 @@ class Room extends Block {
     }
 
     this.emitter.emit(event, data);
+    this.setIsMyTurn();
   };
 
   setIsMyTurn() {
