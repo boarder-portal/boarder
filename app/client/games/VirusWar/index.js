@@ -1,7 +1,8 @@
 import { D, Block } from 'dwayne';
 import template from './index.pug';
+import { toRGBA } from '../../helper';
 import { getAvailableCells } from '../../../shared/virus-war';
-import { games as gamesConfig } from '../../../config/constants.json';
+import { games as gamesConfig, colors } from '../../../config/constants.json';
 
 const {
   global: {
@@ -12,12 +13,15 @@ const {
   virus_war: {
     events: {
       game: { SET_CELL }
-    }
+    },
+    virusesTypes: { VIRUS }
   }
 } = gamesConfig;
 
 class VirusWar extends Block {
   static template = template();
+
+  colors = colors;
 
   constructor(opts) {
     super(opts);
@@ -27,6 +31,7 @@ class VirusWar extends Block {
 
     this.socket = this.args.socket;
     this.field = gameData.field;
+    this.lastSetCells = D(gameData.lastSetCells);
     this.mapPlayersToColors = D(gameData.players).object((colors, { color, login }) => {
       colors[login] = color;
     }).$;
@@ -35,13 +40,15 @@ class VirusWar extends Block {
     }).$;
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
 
-    getAvailableCells(this.field, this.global.user).forEach((cell) => {
-      console.log(cell);
-
+    this.lastSetCells.forEach(({ x, y }) => {
+      this.field[y][x].isAmongLastSetCells = true;
+    });
+    getAvailableCells(this.field, this.global.user, this.lastSetCells).forEach((cell) => {
       cell.isAvailable = true;
     });
 
-    emitter.on(SET_CELL, this.setCell);
+    emitter.on(SET_CELL, this.onSetCell);
+    emitter.on(END_TURN, this.onEndTurn);
 
     console.log(gameData);
   }
@@ -50,7 +57,7 @@ class VirusWar extends Block {
     this.socket.emit(...arguments);
   }
 
-  onClickCell(cell) {
+  setCell(cell) {
     if (!cell.isAvailable) {
       return;
     }
@@ -69,24 +76,55 @@ class VirusWar extends Block {
     this.emit(END_TURN);
   };
 
-  setCell = (changedCell) => {
+  refreshField(isLast) {
     const {
       field,
+      args: { isMyTurn },
       global: { user }
+    } = this;
+
+    if (isLast && !isMyTurn) {
+      this.lastSetCells = D([]);
+    }
+
+    const availableCells = getAvailableCells(field, user, this.lastSetCells);
+
+    if (isLast && isMyTurn) {
+      this.lastSetCells = D([]);
+    }
+
+    this.field = D(field).map((row) => (
+      D(row).map((cell) => ({
+        ...cell,
+        isAvailable: availableCells.includes(cell),
+        isAmongLastSetCells: this.lastSetCells.some(({ x, y }) => cell.x === x && cell.y === y)
+      })).$
+    )).$;
+  }
+
+  onEndTurn = () => {
+    this.refreshField(true);
+  };
+
+  onSetCell = ({ cell: changedCell, isLast }) => {
+    const {
+      field,
+      lastSetCells
     } = this;
     const { x, y } = changedCell;
 
     field[y][x] = changedCell;
 
-    const availableCells = getAvailableCells(field, user);
+    if (changedCell.type === VIRUS) {
+      lastSetCells.push(changedCell);
+    }
 
-    this.field = D(field).map((row) => (
-      D(row).map((cell) => ({
-        ...cell,
-        isAvailable: availableCells.includes(cell)
-      })).$
-    )).$;
+    this.refreshField(isLast);
   };
+
+  toRGBA(color) {
+    return toRGBA(color, 0.25);
+  }
 }
 
 Block.register('VirusWar', VirusWar);
