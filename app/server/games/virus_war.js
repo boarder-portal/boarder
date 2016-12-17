@@ -63,7 +63,7 @@ class VirusWarGame extends Game {
   prepareGame() {
     super.prepareGame();
 
-    this.movesCount = 0;
+    this.lastSetCells = [];
     this.field = array(height, (y) => (
       array(width, (x) => ({
         x,
@@ -94,31 +94,64 @@ class VirusWarGame extends Game {
   }
 
   onSetCell({ x, y }, socket) {
+    const {
+      field,
+      lastSetCells,
+      players
+    } = this;
     const { player } = socket;
-    const availableCells = getAvailableCells(this.field, player);
-    const cell = this.field[y][x];
+    const availableCells = getAvailableCells(field, player, lastSetCells);
+    const cell = field[y][x];
+    let isLast;
 
     if (!availableCells.includes(cell)) {
       return;
     }
 
     if (cell.player && cell.type === VIRUS) {
+      const cellHost = players.find(({ login }) => cell.player === login).value;
+
+      cellHost.score--;
+
       cell.type = FORTRESS;
-      this.players.find(({ login }) => cell.player === login).value.score--;
       cell.player = player.login;
-      this.emit(SET_CELL, cell, true);
-    } else if (!cell.player && this.movesCount < 3) {
-      cell.type = VIRUS;
+    } else if (!cell.type) {
       socket.player.score++;
-      this.movesCount++;
+
+      cell.type = VIRUS;
       cell.player = player.login;
-      this.emit(SET_CELL, cell, true);
+
+      lastSetCells.push(cell);
     }
+
+    if (!getAvailableCells(field, player, lastSetCells).length) {
+      isLast = true;
+      this.endTurn();
+    }
+
+    this.emit(SET_CELL, {
+      cell,
+      isLast
+    }, true);
+  }
+
+  endTurn() {
+    this.lastSetCells = [];
+    this.changeTurn();
   }
 
   onEndTurn() {
-    this.movesCount = 0;
-    this.changeTurn(true);
+    this.endTurn();
+    this.emit(END_TURN, {}, true);
+  }
+
+  toJSON() {
+    const { lastSetCells } = this;
+
+    return {
+      ...super.toJSON(),
+      lastSetCells
+    };
   }
 }
 
