@@ -4,6 +4,8 @@ import template from './index.pug';
 import { Emitter } from '../../helper';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
 
+import './blocks/CommonPlayersInGameBlock';
+
 const {
   global: {
     roomStatuses,

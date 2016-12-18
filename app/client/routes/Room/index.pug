@@ -23,20 +23,21 @@ div.room-state
       div.preparing-game
         | {i18n.t('games.global.room.preparing')}
     d-case(if="{roomStatuses.PLAYING}")
-      div.game-container.row
-        div.game.col-xs-12.col-sm(d-class="{gameName + '-game-container'}")
-          d-switch(value="{gameName}")
-            d-case(if="pexeso")
-              Pexeso(gameData="{gameData}", socket="{socket}", emitter="{emitter}", isMyTurn="{isMyTurn}")
-            d-case(if="virus_war")
-              VirusWar(gameData="{gameData}", socket="{socket}", emitter="{emitter}", isMyTurn="{isMyTurn}")
-        div.players-in-game-list.col-xs-12.col-sm
-          d-each(set="{players}", item="player", uid="{player.id}")
-            div.player.row(d-class="{[player.active && 'active', $index && 'marg-t-10']}")
-              d-if(if="{player.color}")
-                div.color-container(d-style="{{ background: colors[player.color] }}")
-              div.avatar-container
-                img.avatar(src="{player.avatar}")
-              div
-               div {i18n.t('games.global.room.player') + ': ' + player.login}
-               div {i18n.t('games.global.room.score') + ': ' + player.score}
+      div.game-container
+        d-switch(value="{gameName}")
+          d-case(if="pexeso")
+            Pexeso(
+              gameData="{gameData}"
+              socket="{socket}"
+              emitter="{emitter}"
+              isMyTurn="{isMyTurn}"
+              players="{players}"
+            )
+          d-case(if="virus_war")
+            VirusWar(
+              gameData="{gameData}"
+              socket="{socket}"
+              emitter="{emitter}"
+              isMyTurn="{isMyTurn}"
+              players="{players}"
+            )
