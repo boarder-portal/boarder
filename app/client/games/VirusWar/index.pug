@@ -1,16 +1,18 @@
-table.field(d-class="{[args.isMyTurn && 'my-turn', isTopLeft && 'to-bottom-left']}")
-  d-each(set="{field}", item="row", index="y", uid="{y}")
-    tr
-      d-each(set="{row}", item="cell", index="x", uid="{x}")
-        td(
-          d-class="{cell.isAvailable && 'available'}"
-          d-on-click="{setCell(cell)}"
-          d-style="{{ background: cell.isAmongLastSetCells ? toRGBA(colors[mapPlayersToColors[cell.player]]) : null }}"
-        )
-          VirusCell(cell="{cell}", color="{mapPlayersToColors[cell.player]}", shape="{mapPlayersToShapes[cell.player]}")
-input.boarder-input.success(
-  type="submit"
-  value="{i18n.t('games.global.room.end_turn')}"
-  d-bind-click="{endTurn}"
-  d-show="{args.isMyTurn}"
-)
+div.virus-war-game.row
+  table.field(d-class="{[args.isMyTurn && 'my-turn', isTopLeft && 'to-bottom-left']}")
+    d-each(set="{field}", item="row", index="y", uid="{y}")
+      tr
+        d-each(set="{row}", item="cell", index="x", uid="{x}")
+          td(
+            d-class="{cell.isAvailable && 'available'}"
+            d-on-click="{setCell(cell)}"
+            d-style="{{ background: cell.isAmongLastSetCells ? toRGBA(colors[mapPlayersToColors[cell.player]]) : null }}"
+          )
+            VirusCell(cell="{cell}", color="{mapPlayersToColors[cell.player]}", shape="{mapPlayersToShapes[cell.player]}")
+  input.boarder-input.success(
+    type="submit"
+    value="{i18n.t('games.global.room.end_turn')}"
+    d-bind-click="{endTurn}"
+    d-show="{args.isMyTurn}"
+  )
+  CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")
