@@ -144,6 +144,11 @@ class Room extends Block {
     const { login } = this.global.user;
 
     this.roomData = roomData;
+
+    if (this.role === playerRoles.OBSERVER) {
+      return;
+    }
+
     this.ready = D(roomData.players).find((player) => player && player.login === login).value.ready;
   };
 
@@ -171,6 +176,10 @@ class Room extends Block {
   };
 
   setIsMyTurn() {
+    if (this.role === playerRoles.OBSERVER) {
+      return;
+    }
+
     const { login } = this.global.user;
 
     this.isMyTurn = D(this.players).find((player) => player && player.login === login).value.active;
