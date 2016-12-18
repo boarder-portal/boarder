@@ -78,9 +78,20 @@
         }
 
         .avatar-container {
-          width: 40px;
-          height: 40px;
-          margin-right: 10px;
+          .br(2px);
+
+          width: @w1;
+          height: @w1;
+          margin-right: @ws;
+        }
+
+        .color-container {
+          width: @ws/2;
+
+          +.avatar-container {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+          }
         }
       }
     }
