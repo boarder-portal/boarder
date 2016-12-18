@@ -26,6 +26,13 @@ div.room-state
     d-case(if="{roomStatuses.PLAYING}")
       div.game-container
         d-switch(value="{gameName}")
+          d-case(if="dungeon_runner")
+            DungeonRunner(
+              gameData="{gameData}"
+              socket="{socket}"
+              emitter="{emitter}"
+              players="{players}"
+            )
           d-case(if="pexeso")
             Pexeso(
               gameData="{gameData}"

@@ -163,7 +163,8 @@ class Room {
   isRequiredPlayers() {
     const { players } = this;
 
-    return players.sum((player) => !isNull(player)) > 1;
+    //return players.sum((player) => !isNull(player)) > 1;
+    return true;
   }
 
   /**

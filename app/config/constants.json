@@ -127,6 +127,16 @@
       "ROOM_NSP": "/hexagon/room/$roomId",
       "playersCount": 3
     },
+    "dungeon_runner": {
+      "LOBBY_NSP": "/dungeon_runner/lobby",
+      "ROOM_NSP": "/dungeon_runner/room/$roomId",
+      "playersCount": 4,
+      "events": {
+        "game": {
+          "CHANGE_BUTTON_STATUS": "dungeon-runner/change-button-status"
+        }
+      }
+    },
     "pexeso": {
       "LOBBY_NSP": "/pexeso/lobby",
       "ROOM_NSP": "/pexeso/room/$roomId",

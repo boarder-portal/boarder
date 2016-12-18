@@ -7,7 +7,8 @@ const {
 const games = [
   'pexeso',
   'hexagon',
-  'virus_war'
+  'virus_war',
+  'dungeon_runner'
 ];
 
 module.exports = () => {
