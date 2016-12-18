@@ -18,6 +18,7 @@ div.room-state
           type="submit"
           value="{i18n.t('games.global.room.' + (ready ? 'not_ready' : 'ready'))}"
           d-bind-click="{toggleStatus}"
+          d-show="{role === playerRoles.PLAYER}"
         )
     d-case(if="{roomStatuses.PREPARING}")
       div.preparing-game
