@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { D, Block, makeRoute, router } from 'dwayne';
 import template from './index.pug';
 import { Emitter } from '../../helper';
-import { games as gamesConfig } from '../../../config/constants.json';
+import { games as gamesConfig, colors } from '../../../config/constants.json';
 
 const {
   global: {
@@ -32,6 +32,7 @@ class Room extends Block {
     path: '/:roomId'
   };
 
+  colors = colors;
   playerRoles = playerRoles;
   roomStatuses = roomStatuses;
 

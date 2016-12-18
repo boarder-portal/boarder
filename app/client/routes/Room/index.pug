@@ -33,6 +33,8 @@ div.room-state
         div.players-in-game-list.col-xs-12.col-sm
           d-each(set="{players}", item="player", uid="{player.id}")
             div.player.row(d-class="{[player.active && 'active', $index && 'marg-t-10']}")
+              d-if(if="{player.color}")
+                div.color-container(d-style="{{ background: colors[player.color] }}")
               div.avatar-container
                 img.avatar(src="{player.avatar}")
               div
