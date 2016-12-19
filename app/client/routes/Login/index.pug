@@ -11,14 +11,12 @@ div.auth-block.login-block
         d-show="{submitting}"
       )
     input.boarder-input(
-      id="login"
       name="login"
       type="text"
       placeholder="{i18n.t('login.fields.login')}"
       d-value="login"
     )
     input.boarder-input(
-      id="password"
       name="password"
       type="password"
       placeholder="{i18n.t('login.fields.password')}"
@@ -29,5 +27,6 @@ div.auth-block.login-block
     input.boarder-input.success(
       type="submit"
       value="{i18n.t('login.action')}"
+      disabled="{submitting ? 'disabled' : null}"
     )
   div.auth-success-caption(d-show="{loginSuccess}") {i18n.t('login.success')}

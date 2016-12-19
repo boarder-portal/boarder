@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { D, Block, makeRoute, router } from 'dwayne';
 import template from './index.pug';
-import { Emitter } from '../../helper';
+import { Emitter } from '../../helpers';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
 
 import './blocks/CommonPlayersInGameBlock';

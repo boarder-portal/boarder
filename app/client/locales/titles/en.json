@@ -2,6 +2,8 @@
   "home": "Boarder",
   "register": "Registration",
   "login": "Log in",
+  "forgot_password": "Reset password",
+  "reset_password": "Reset password",
   "games": "Games",
   "not_found": "Not found",
   "settings_account": "Account settings",

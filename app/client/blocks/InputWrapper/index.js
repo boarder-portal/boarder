@@ -4,7 +4,7 @@ import {
   requiredValidator,
   passwordRepeatValidator,
   emailValidator
-} from '../../helper';
+} from '../../helpers';
 
 const validatorSwitcher = switcher()
   .case('required', () => requiredValidator)

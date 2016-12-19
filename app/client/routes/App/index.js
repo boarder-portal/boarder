@@ -1,7 +1,10 @@
 import { D, Block, makeRoute } from 'dwayne';
 import template from './index.pug';
-import { getUserFromString, constructFetchers } from '../../helper';
-import { fetcher } from '../../fetchers/base';
+import {
+  getUserFromString,
+  constructFetchers,
+  fetcher
+} from '../../helpers';
 import {
   alertsLevels,
   alertsPriorities,

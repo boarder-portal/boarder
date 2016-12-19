@@ -18,8 +18,7 @@ div.settings-instance-section.change-password-section
       i18nModule="settings.states.account.change_password"
       empty="{!changePasswordFormChanged}"
     )
-      input(
-        id="current-password"
+      input#current-password(
         name="current-password"
         type="password"
         placeholder="{i18n.t('settings.states.account.change_password.fields.current_password')}"
@@ -31,8 +30,7 @@ div.settings-instance-section.change-password-section
       i18nModule="settings.states.account.change_password"
       empty="{!changePasswordFormChanged}"
     )
-      input(
-        id="new-password"
+      input#new-password(
         name="password"
         type="password"
         placeholder="{i18n.t('settings.states.account.change_password.fields.new_password')}"
@@ -44,8 +42,7 @@ div.settings-instance-section.change-password-section
       i18nModule="settings.states.account.change_password"
       empty="{!changePasswordFormChanged}"
     )
-      input(
-        id="password-repeat"
+      input#password-repeat(
         name="password-repeat"
         type="password"
         placeholder="{i18n.t('settings.states.account.change_password.fields.password_repeat')}"
