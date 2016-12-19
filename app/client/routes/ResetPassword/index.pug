@@ -1,0 +1,48 @@
+div.auth-block.reset-password-block
+  h2.auth-header {i18n.t('reset_password.header')}
+  form.auth-form.reset-password-form(
+    autocomplete="off"
+    d-hide="{resetPasswordSuccess}"
+    d-elem="form"
+    d-bind-submit="{submit}"
+  )
+    div.auth-spinner-container
+      div.wrong-email-caption(d-show="{emailError}") {i18n.t('reset_password.wrong_email')}
+      img.auth-spinner(
+        src="{images.loading}"
+        d-show="{submitting}"
+      )
+    InputWrapper(validators="{['required']}")
+      input#email(
+        type="text"
+        value="{args.route.query.email}"
+        disabled
+      )
+    InputWrapper(
+      validators="{['required']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="reset_password"
+    )
+      input#password(
+        name="password"
+        type="password"
+        placeholder="{i18n.t('reset_password.fields.password')}"
+        d-value="password"
+      )
+    InputWrapper(
+      validators="{['required', 'password-repeat']}"
+      showErrorMessage="{attemptedToSubmit}"
+      i18nModule="reset_password"
+    )
+      input#password-repeat(
+        name="password-repeat"
+        type="password"
+        placeholder="{i18n.t('reset_password.fields.password_repeat')}"
+        d-value="passwordRepeat"
+      )
+    input.boarder-input.success(
+      type="submit"
+      value="{i18n.t('reset_password.action')}"
+      disabled="{submitting ? 'disabled' : null}"
+    )
+  div.auth-success-caption(d-show="{resetPasswordSuccess}") {i18n.t('reset_password.success')}

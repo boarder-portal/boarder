@@ -1,0 +1,26 @@
+div.auth-block.forgot-password-block
+  h2.auth-header {i18n.t('forgot_password.header')}
+  form.auth-form.forgot-password-form(
+    d-hide="{fetchSuccess}"
+    d-bind-submit="{submit}"
+  )
+    div.auth-spinner-container
+      div.check-email-caption(d-show="{emailError}") {i18n.t('forgot_password.try_again')}
+      img.auth-spinner(
+        src="{images.loading}"
+        d-show="{submitting}"
+      )
+    input.boarder-input(
+      name="email"
+      type="text"
+      placeholder="{i18n.t('forgot_password.fields.email')}"
+      d-value="email"
+    )
+    input.boarder-input.success(
+      type="submit"
+      value="{i18n.t('forgot_password.action')}"
+      disabled="{submitting ? 'disabled' : null}"
+    )
+  div.auth-success-caption(d-show="{fetchSuccess}")
+    span {i18n.t('forgot_password.success') + ' '}
+    b.send-to-email {email}

@@ -57,43 +57,44 @@ class Register extends Block {
   submit = (e) => {
     e.preventDefault();
 
+    this.attemptedToSubmit = true;
+
+    if (this.form.validate()) {
+      return;
+    }
+
     const {
       login,
       email,
       password
     } = this;
-    const errors = this.form.validate();
 
-    this.attemptedToSubmit = true;
+    const data = {
+      login,
+      email,
+      password
+    };
 
-    if (!errors) {
-      const data = {
-        login,
-        email,
-        password
-      };
+    this.submitting = true;
 
-      this.submitting = true;
+    this.global.usersFetch
+      .register({ data })
+      .then(({ json }) => {
+        const { errors } = json;
 
-      this.global.usersFetch
-        .register({ data })
-        .then(({ json }) => {
-          const { errors } = json;
+        if (!errors) {
+          this.registerSuccess = true;
 
-          if (!errors) {
-            this.registerSuccess = true;
+          return;
+        }
 
-            return;
-          }
-
-          this.loginError = errors.login;
-          this.emailError = errors.email;
-          this.passwordError = errors.password;
-        })
-        .finally(() => {
-          this.submitting = false;
-        });
-    }
+        this.loginError = errors.login;
+        this.emailError = errors.email;
+        this.passwordError = errors.password;
+      })
+      .finally(() => {
+        this.submitting = false;
+      });
   };
 }
 

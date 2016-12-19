@@ -1,5 +1,5 @@
 import { Block, initApp, find } from 'dwayne';
-import { injectGlobals } from './helper';
+import { injectGlobals } from './helpers';
 
 import './module/App';
 import './module/Auth';

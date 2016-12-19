@@ -18,8 +18,7 @@ div.auth-block.register-block
       i18nModule="register"
       error="{loginError}"
     )
-      input(
-        id="login"
+      input#login(
         name="login"
         type="text"
         placeholder="{i18n.t('register.fields.login')}"
@@ -31,8 +30,7 @@ div.auth-block.register-block
       i18nModule="register"
       error="{emailError}"
     )
-      input(
-        id="email"
+      input#email(
         name="email"
         type="text"
         placeholder="{i18n.t('register.fields.email')}"
@@ -44,8 +42,7 @@ div.auth-block.register-block
       i18nModule="register"
       error="{passwordError}"
     )
-      input(
-        id="password"
+      input#password(
         name="password"
         type="password"
         placeholder="{i18n.t('register.fields.password')}"
@@ -56,8 +53,7 @@ div.auth-block.register-block
       showErrorMessage="{attemptedToSubmit}"
       i18nModule="register"
     )
-      input(
-        id="password-repeat"
+      input#password-repeat(
         name="password-repeat"
         type="password"
         placeholder="{i18n.t('register.fields.password_repeat')}"

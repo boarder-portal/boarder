@@ -1,5 +1,5 @@
 import { D } from 'dwayne';
-import { fetcher, baseURL } from '../fetchers/base';
+import { fetcher, baseURL } from './fetcher';
 import { endpoints } from '../../config/constants.json';
 
 function constructFetchers(path) {

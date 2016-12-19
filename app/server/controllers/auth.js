@@ -36,7 +36,7 @@ const {
   switcher
 } = D;
 const registerConfirmationPath = apiBase + usersBase + confirmRegisterBase;
-const resetPasswordPath = '/reset-password';
+const resetPasswordPath = '/reset_password';
 const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
 const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');

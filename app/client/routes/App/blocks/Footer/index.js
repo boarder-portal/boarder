@@ -1,6 +1,6 @@
 import { D, Block, Promise, html } from 'dwayne';
-import { i18n } from '../../../../i18n';
 import template from './index.pug';
+import { i18n } from '../../../../i18n';
 
 let fetch = Promise.resolve();
 

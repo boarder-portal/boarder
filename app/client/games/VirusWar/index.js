@@ -1,6 +1,6 @@
 import { D, Block } from 'dwayne';
 import template from './index.pug';
-import { toRGBA } from '../../helper';
+import { toRGBA } from '../../helpers';
 import { getAvailableCells } from '../../../shared/virus-war';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
 

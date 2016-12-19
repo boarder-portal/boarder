@@ -1,6 +1,5 @@
 import { Block } from 'dwayne';
 import template from './index.pug';
-import { usersFetch } from '../../../../fetchers';
 
 class MainHeader extends Block {
   static template = template();
@@ -18,7 +17,7 @@ class MainHeader extends Block {
 
     this.logoutFetching = true;
 
-    usersFetch
+    this.global.usersFetch
       .logout()
       .then(() => {
         this.dropdown.close();
