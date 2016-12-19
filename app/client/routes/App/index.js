@@ -5,6 +5,7 @@ import { fetcher } from '../../fetchers/base';
 import {
   alertsLevels,
   alertsPriorities,
+  alertTypes,
   AJAX_ERROR_ALERT_DURATION,
   REGISTER_NOT_CONFIRMED_ALERT_DURATION
 } from '../../constants';
@@ -37,7 +38,7 @@ class App extends Block {
         console.log(res);
 
         this.addAlert({
-          type: 'ajax-error',
+          type: alertTypes.AJAX_ERROR,
           priority: 'high',
           level: 'error',
           duration: AJAX_ERROR_ALERT_DURATION
@@ -113,7 +114,7 @@ class App extends Block {
 
     if (user && !user.confirmed) {
       this.addAlert({
-        type: 'user-not-confirmed',
+        type: alertTypes.USER_NOT_CONFIRMED,
         level: 'warning',
         priority: 'very-low',
         duration: REGISTER_NOT_CONFIRMED_ALERT_DURATION

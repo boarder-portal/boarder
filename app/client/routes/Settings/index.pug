@@ -1,0 +1,12 @@
+div.settings-menu
+  a.no-link(
+    href="{router.buildURL('settings-account')}"
+    d-class="{args.route.name === 'settings-account' && 'menu-active'}"
+  ) {i18n.t('settings.menu.account')}
+  a.no-link(
+    href="{router.buildURL('settings-profile')}"
+    d-class="{args.route.name === 'settings-profile' && 'menu-active'}"
+  ) {i18n.t('settings.menu.profile')}
+div.settings-content
+  SettingsAccount
+  SettingsProfile

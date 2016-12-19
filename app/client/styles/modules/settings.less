@@ -3,7 +3,7 @@
 @import './settings/account';
 @import './settings/profile';
 
-.settings-state {
+.route-settings {
   flex-direction: row !important;
   align-items: flex-start !important;
 
@@ -51,36 +51,37 @@
 
     padding-left: @w05;
   }
+}
 
-  .settings-instance-state {
-    .flex-col-stretch();
+.route-settings-account,
+.route-settings-profile {
+  .flex-col-stretch();
 
-    .settings-instance-section {
-      .relative();
-      .flx();
+  .settings-instance-section {
+    .relative();
+    .flx();
 
-      &:first-child {
-        margin-top: @hs;
+    &:first-child {
+      margin-top: @hs;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: @h2;
+
+      &:after {
+        .pseudo();
+        .absolute();
+        .bg(@black);
+
+        bottom: -(@h1 + @border-line-width)/2;
+        left: 0;
+        width: 100%;
+        height: @border-line-width;
       }
+    }
 
-      &:not(:last-child) {
-        margin-bottom: @h2;
-
-        &:after {
-          .pseudo();
-          .absolute();
-          .bg(@black);
-
-          bottom: -(@h1 + @border-line-width)/2;
-          left: 0;
-          width: 100%;
-          height: @border-line-width;
-        }
-      }
-
-      .settings-instance-section-header {
-        margin-bottom: @h05 * 1.5;
-      }
+    .settings-instance-section-header {
+      margin-bottom: @h05 * 1.5;
     }
   }
 }
