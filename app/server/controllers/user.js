@@ -50,6 +50,10 @@ module.exports = {
       user
     } = req;
 
+    if (!avatarId) {
+      return next(new Error('Wrong avatar id'));
+    }
+
     user.avatarId = avatarId;
 
     user
