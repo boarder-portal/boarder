@@ -30,8 +30,6 @@ class VirusWar extends Block {
     const emitter = this.args.emitter;
 
     this.socket = this.args.socket;
-    this.field = gameData.field;
-    this.lastSetCells = D(gameData.lastSetCells);
     this.mapPlayersToColors = D(gameData.players).object((colors, { color, login }) => {
       colors[login] = color;
     }).$;
@@ -39,13 +37,7 @@ class VirusWar extends Block {
       shapes[login] = shape;
     }).$;
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
-
-    this.lastSetCells.forEach(({ x, y }) => {
-      this.field[y][x].isAmongLastSetCells = true;
-    });
-    getAvailableCells(this.field, this.global.user, this.lastSetCells).forEach((cell) => {
-      cell.isAvailable = true;
-    });
+    this.setup();
 
     emitter.on(SET_CELL, this.onSetCell);
     emitter.on(END_TURN, this.onEndTurn);
@@ -53,9 +45,31 @@ class VirusWar extends Block {
     console.log(gameData);
   }
 
+  afterConstruct() {
+    this.watchArgs('gameData', this.setup);
+  }
+
   emit() {
     this.socket.emit(...arguments);
   }
+
+  setup = () => {
+    const { gameData } = this.args;
+
+    if (!gameData) {
+      return;
+    }
+
+    this.field = gameData.field;
+    this.lastSetCells = D(gameData.lastSetCells);
+
+    this.lastSetCells.forEach(({ x, y }) => {
+      this.field[y][x].isAmongLastSetCells = true;
+    });
+    getAvailableCells(this.field, this.global.user, this.lastSetCells).forEach((cell) => {
+      cell.isAvailable = true;
+    });
+  };
 
   setCell(cell) {
     if (!cell.isAvailable) {

@@ -25,19 +25,33 @@ class Pexeso extends Block {
     const emitter = this.args.emitter;
 
     this.socket = this.args.socket;
-    this.field = gameData.field;
-    this.turn = gameData.turn;
-    this.currentTurnedCards = gameData.currentTurnedCards;
     this.loaded = 0;
-    this.match = gameData.match;
     this.options = gameData.options;
+    this.setup();
 
     emitter.on(TURN_CARD, this.onTurnCard);
+  }
+
+  afterConstruct() {
+    this.watchArgs('gameData', this.setup);
   }
 
   emit() {
     this.socket.emit(...arguments);
   }
+
+  setup = () => {
+    const { gameData } = this.args;
+
+    if (!gameData) {
+      return;
+    }
+
+    this.field = gameData.field;
+    this.turn = gameData.turn;
+    this.currentTurnedCards = gameData.currentTurnedCards;
+    this.match = gameData.match;
+  };
 
   turnCard(x, y) {
     const card = this.field[y][x];
