@@ -1,11 +1,13 @@
 import { D, Block, Promise } from 'dwayne';
 import template from './index.pug';
+import { alertTypes } from '../../constants';
 
 let currentFetchIfUserConfirmed = Promise.resolve();
 
 class Alert extends Block {
   static template = template();
 
+  alertTypes = alertTypes;
   visible = false;
 
   afterRender() {

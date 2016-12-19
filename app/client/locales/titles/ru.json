@@ -3,5 +3,7 @@
   "register": "Регистрация",
   "login": "Авторизация",
   "games": "Игры",
-  "not_found": "Не найдено"
+  "not_found": "Не найдено",
+  "settings_account": "Настройки аккаунта",
+  "settings_profile": "Настройки профиля"
 }

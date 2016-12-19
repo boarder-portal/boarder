@@ -1,5 +1,8 @@
 import { D, Block, makeRoute } from 'dwayne';
-import { REGISTER_CONFIRMED_ALERT_DURATION } from '../../constants';
+import {
+  alertTypes,
+  REGISTER_CONFIRMED_ALERT_DURATION
+} from '../../constants';
 
 class ConfirmRegister extends Block {
   static template = '';
@@ -14,7 +17,7 @@ class ConfirmRegister extends Block {
       .timeout()
       .then(() => {
         this.global.addAlert({
-          type: 'user-confirmed',
+          type: alertTypes.USER_CONFIRMED,
           level: 'success',
           priority: 'low',
           duration: REGISTER_CONFIRMED_ALERT_DURATION

@@ -6,7 +6,7 @@ header.main-header
       img.avatar(src="{global.user.avatar}")
     span.login {global.user.login}
     Dropdown(down, hdir="left", cls="profile-dropdown", setDropdown="{setDropdown}")
-      a.dropdown-item.settings-link.link.no-link(href="{router.buildURL('settings')}", action="close")
+      a.dropdown-item.settings-link.link.no-link(href="{router.buildURL('settings-account')}", action="close")
         i.menu-icon.fa.fa-cog
         span {i18n.t('header.profile.dropdown.settings')}
       div.dropdown-divider

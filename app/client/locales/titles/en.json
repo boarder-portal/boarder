@@ -3,5 +3,7 @@
   "register": "Registration",
   "login": "Log in",
   "games": "Games",
-  "not_found": "Not found"
+  "not_found": "Not found",
+  "settings_account": "Account settings",
+  "settings_profile": "Profile settings"
 }

@@ -8,8 +8,7 @@ div.auth-block.register-block
     d-bind-submit="{submit}"
   )
     div
-      img(
-        class="auth-spinner"
+      img.auth-spinner(
         src="{images.loading}"
         d-show="{submitting}"
       )
@@ -65,8 +64,7 @@ div.auth-block.register-block
         d-value="passwordRepeat"
       )
     InputWrapper
-      input(
-        class="success"
+      input.success(
         type="submit"
         value="{i18n.t('register.action')}"
         disabled="{submitting ? 'disabled' : null}"

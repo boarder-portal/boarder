@@ -44,6 +44,12 @@ class InputWrapper extends Block {
     this.input = input;
     this.labelFor = input.id();
 
+    this.watchArgs('empty', (newValue) => {
+      if (newValue) {
+        this.changed = false;
+      }
+    });
+
     if (validators) {
       D(validators).forEach((validator) => {
         validator = validatorSwitcher(validator);

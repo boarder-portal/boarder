@@ -6,8 +6,7 @@ div.auth-block.login-block
   )
     div.auth-spinner-container
       div.check-credentials-caption(d-show="{loginError}") {i18n.t('login.try_again')}
-      img(
-        class="auth-spinner"
+      img.auth-spinner(
         src="{images.loading}"
         d-show="{submitting}"
       )
