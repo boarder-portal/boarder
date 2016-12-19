@@ -7,7 +7,8 @@ import {
   alertsPriorities,
   alertTypes,
   AJAX_ERROR_ALERT_DURATION,
-  REGISTER_NOT_CONFIRMED_ALERT_DURATION
+  REGISTER_NOT_CONFIRMED_ALERT_DURATION,
+  TIME_TO_ALERT_AFTER_PAGE_LOAD
 } from '../../constants';
 
 import './blocks/Header';
@@ -55,10 +56,11 @@ class App extends Block {
       usersFetch: constructFetchers('users'),
       userFetch: constructFetchers('user'),
       langFetch: constructFetchers('lang'),
+      avatarsFetch: constructFetchers('avatar'),
       checkIfUserConfirmed: this.checkIfUserConfirmed
     });
 
-    this.checkIfUserConfirmed();
+    setTimeout(this.checkIfUserConfirmed, TIME_TO_ALERT_AFTER_PAGE_LOAD);
   }
 
   changeUser = (user) => {
