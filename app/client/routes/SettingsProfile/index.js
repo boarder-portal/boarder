@@ -41,6 +41,9 @@ class SettingsProfile extends Block {
       .finally(() => {
         this.avatarsFetching = false;
       });
+    setTimeout(() => {
+      this.title.text(this.i18n.t('titles.settings_profile'));
+    }, 0);
   }
 
   beforeLeaveRoute() {
