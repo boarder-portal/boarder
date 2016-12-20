@@ -31,6 +31,7 @@ class App extends Block {
   constructor(opts) {
     super(opts);
 
+    const user = getUserFromString();
     const alerts = D(alertsPriorities).object((alerts, priority) => {
       alerts[priority] = D(alertsLevels).object((alerts, level) => {
         alerts[level] = [];
@@ -52,7 +53,7 @@ class App extends Block {
       });
 
     D(this.global).assign({
-      user: getUserFromString(),
+      user,
       changeUser: this.changeUser,
       alerts,
       addAlert: this.addAlert,
@@ -60,10 +61,12 @@ class App extends Block {
       userFetch: constructFetchers('user'),
       langFetch: constructFetchers('lang'),
       avatarsFetch: constructFetchers('avatar'),
-      checkIfUserConfirmed: this.checkIfUserConfirmed
+      addNotConfirmedAlertIfNeeded: this.addNotConfirmedAlertIfNeeded
     });
 
-    setTimeout(this.checkIfUserConfirmed, TIME_TO_ALERT_AFTER_PAGE_LOAD);
+    if (user && !user.confirmed) {
+      setTimeout(this.addNotConfirmedAlertIfNeeded, TIME_TO_ALERT_AFTER_PAGE_LOAD);
+    }
   }
 
   changeUser = (user) => {
@@ -114,7 +117,7 @@ class App extends Block {
     };
   };
 
-  checkIfUserConfirmed = () => {
+  addNotConfirmedAlertIfNeeded = () => {
     const { user } = this.global;
 
     if (user && !user.confirmed) {

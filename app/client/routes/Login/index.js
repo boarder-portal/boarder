@@ -60,7 +60,7 @@ class Login extends Block {
 
           D(TIME_TO_ALERT_AFTER_LOGIN)
             .timeout()
-            .then(this.global.checkIfUserConfirmed);
+            .then(this.global.addNotConfirmedAlertIfNeeded);
         } else {
           this.loginError = true;
         }
