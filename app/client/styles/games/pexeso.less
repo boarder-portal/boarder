@@ -35,17 +35,19 @@
         color: white;
         font-size: 8px;
         overflow: hidden;
+        backface-visibility: hidden;
+        transform: translate3d(0, 0, 0);
 
         .card {
-          .pos-center();
-          .tr(width);
+          .tr(transform);
 
           opacity: 1;
           width: 100%;
           height: 100%;
+          transform: scaleX(1);
 
           &.opened {
-            width: 0;
+            transform: scaleX(0);
           }
 
           &.not-in-play {
