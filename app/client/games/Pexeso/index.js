@@ -1,4 +1,4 @@
-import { D, Block } from 'dwayne';
+import { D, Block, doc } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -53,12 +53,12 @@ class Pexeso extends Block {
     this.match = gameData.match;
   };
 
-  turnCard(x, y) {
-    const card = this.field[y][x];
-
+  turnCard(card) {
     if (!this.args.isMyTurn || !card.isInPlay || card.isTurned || this.currentTurnedCards.length >= 2) {
       return;
     }
+
+    const { x, y } = card;
 
     this.emit(TURN_CARD, { x, y });
   }
@@ -81,38 +81,32 @@ class Pexeso extends Block {
   }
 
   onTurnCard = ({ x, y, match }) => {
-    this.currentTurnedCards.push({ x, y });
-    this.match = match;
-    this.changeCard(x, y, {
-      opened: true
-    });
-
-    D(200)
-      .timeout()
-      .then(() => {
-        this.changeCard(x, y, {
-          isTurned: true,
-          opened: false
-        });
-      });
-  };
-
-  onCardLoaded(card) {
-    if (!card.isTurned) {
-      return;
-    }
-
-    if (++this.loaded !== 2) {
-      return;
-    }
-
     const { currentTurnedCards } = this;
 
-    this.emit(CARDS_LOADED);
+    currentTurnedCards.push({ x, y });
 
-    D(2000)
-      .timeout()
+    doc
+      .img()
+      .ref(this.constructImageURL(this.field[y][x]))
+      .load()
       .then(() => {
+        this.changeCard(x, y, {
+          opened: true
+        });
+
+        if (++this.loaded !== 2) {
+          return;
+        }
+
+        this.emit(CARDS_LOADED);
+
+        return D(2000).timeout(true);
+      })
+      .then((isLast) => {
+        if (!isLast) {
+          return;
+        }
+
         this.loaded = 0;
         this.currentTurnedCards = D([]);
 
@@ -120,28 +114,25 @@ class Pexeso extends Block {
           this.changeCard(
             x,
             y,
-            this.match
+            match
               ? { isInPlay: false }
               : { opened: true }
           );
         });
-
-        if (!this.match) {
-          return D(200).timeout();
-        }
-      })
-      .then(() => {
-        if (this.match) {
-          return;
-        }
-
-        currentTurnedCards.forEach(({ x, y }) => {
-          this.changeCard(x, y, {
-            isTurned: false,
-            opened: false
-          });
-        });
       });
+  };
+
+  onTransitionEnd(card) {
+    this.changeCard(card.x, card.y, {
+      isTurned: card.opened ? !card.isTurned : card.isTurned,
+      opened: false
+    });
+  }
+
+  constructImageURL(card) {
+    const { options } = this;
+
+    return `/public/images/pexeso/sets/${ options.set }/${ card.card }.jpg`;
   }
 }
 
