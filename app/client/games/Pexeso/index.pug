@@ -6,9 +6,8 @@ div.pexeso-game.row
           div.card-container
             img.card(
               d-class="{[card.opened && 'opened', !card.isInPlay && 'not-in-play']}"
-              d-on-load="{onCardLoaded(card)}"
-              d-on-error="{onCardLoaded(card)}"
-              src="{card.isTurned ? '/public/images/pexeso/sets/' + options.set + '/' + card.card + '.jpg' : backImage}"
-              d-on-click="{turnCard(x, y)}"
+              d-on-transitionend="{onTransitionEnd(card)}"
+              d-on-click="{turnCard(card)}"
+              src="{card.isTurned ? constructImageURL(card) : backImage}"
             )
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")
