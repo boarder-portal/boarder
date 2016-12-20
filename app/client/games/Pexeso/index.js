@@ -25,7 +25,7 @@ class Pexeso extends Block {
     const emitter = this.args.emitter;
 
     this.socket = this.args.socket;
-    this.loaded = 0;
+    this.loaded = this.currentTurnedCards.length;
     this.options = gameData.options;
     this.setup();
 
