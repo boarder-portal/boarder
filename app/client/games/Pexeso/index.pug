@@ -4,11 +4,11 @@ div.pexeso-game.row
       div.cards-row
         d-each(set="{row}", item="card", index="x", uid="{x}")
           div.card-container
-            d-if(if="{card.isInPlay}")
-              img.card(
-                d-on-load="{onCardLoaded(card)}"
-                d-on-error="{onCardLoaded(card)}"
-                src="{card.isTurned ? '/public/images/pexeso/sets/' + options.set + '/' + card.card + '.jpg' : backImage}"
-                d-on-click="{turnCard(x, y)}"
-              )
+            img.card(
+              d-class="{[card.opened && 'opened', !card.isInPlay && 'not-in-play']}"
+              d-on-load="{onCardLoaded(card)}"
+              d-on-error="{onCardLoaded(card)}"
+              src="{card.isTurned ? '/public/images/pexeso/sets/' + options.set + '/' + card.card + '.jpg' : backImage}"
+              d-on-click="{turnCard(x, y)}"
+            )
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")

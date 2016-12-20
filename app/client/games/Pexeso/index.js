@@ -82,10 +82,19 @@ class Pexeso extends Block {
 
   onTurnCard = ({ x, y, match }) => {
     this.currentTurnedCards.push({ x, y });
-    this.changeCard(x, y, {
-      isTurned: true
-    });
     this.match = match;
+    this.changeCard(x, y, {
+      opened: true
+    });
+
+    D(200)
+      .timeout()
+      .then(() => {
+        this.changeCard(x, y, {
+          isTurned: true,
+          opened: false
+        });
+      });
   };
 
   onCardLoaded(card) {
@@ -113,8 +122,24 @@ class Pexeso extends Block {
             y,
             this.match
               ? { isInPlay: false }
-              : { isTurned: false }
+              : { opened: true }
           );
+        });
+
+        if (!this.match) {
+          return D(200).timeout();
+        }
+      })
+      .then(() => {
+        if (this.match) {
+          return;
+        }
+
+        currentTurnedCards.forEach(({ x, y }) => {
+          this.changeCard(x, y, {
+            isTurned: false,
+            opened: false
+          });
         });
       });
   }
