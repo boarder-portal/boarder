@@ -163,6 +163,34 @@
         "CIRCLE": "circle",
         "RECT": "rect"
       }
+    },
+    "set": {
+      "LOBBY_NSP": "/set/lobby",
+      "ROOM_NSP": "/set/room/$roomId",
+      "playersCount": 2,
+      "events": {
+        "game": {
+          "FIND_SET": "set/find-set",
+          "SET_FOUND": "set/set-found",
+          "NO_SET_HERE": "set/no-set-here",
+          "ADD_CARDS": "set/add-cards"
+        }
+      },
+      "shapesTypes": {
+        "OVAL": "oval",
+        "DIAMOND": "diamond",
+        "WAVE": "wave"
+      },
+      "colors": {
+        "RED": "#ff0000",
+        "GREEN": "#007f00",
+        "BLUE": "#5522dd"
+      },
+      "fillTypes": {
+        "EMPTY": "empty",
+        "FILLED": "filled",
+        "SHADED": "shaded"
+      }
     }
   },
   "colors": {

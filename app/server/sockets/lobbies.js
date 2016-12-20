@@ -6,6 +6,7 @@ const {
 
 const games = [
   'pexeso',
+  'set',
   'hexagon',
   'virus_war'
 ];
