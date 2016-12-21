@@ -1,0 +1,27 @@
+@import (reference) '../mixins';
+
+.set-game {
+  .field {
+    .flex-col-stretch();
+
+    .cards-row {
+      .flex-stretch();
+
+      .card-container {
+        .flex-col();
+        .bordered();
+
+        width: 105px;
+        height: 150px;
+        border-radius: 3 * @border-radius;
+        margin: @hs;
+
+        .shape {
+          &:not(:first-child) {
+            margin-top: 2*@hs;
+          }
+        }
+      }
+    }
+  }
+}

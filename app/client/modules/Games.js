@@ -6,5 +6,7 @@ import '../routes/Lobby';
 import '../routes/Room';
 
 import '../games/Pexeso';
+import '../games/Set';
+import '../games/Set/blocks';
 import '../games/VirusWar';
 import '../games/VirusWar/blocks';

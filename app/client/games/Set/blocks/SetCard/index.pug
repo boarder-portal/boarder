@@ -1,0 +1,37 @@
+d-each(set="{array(card.count).$}", index="i", uid="{i}")
+  svg.shape(
+    width="{WIDTH + BORDER_WIDTH}"
+    height="{HEIGHT + BORDER_WIDTH}"
+    viewBox="{[-BORDER_WIDTH/2, -BORDER_WIDTH/2, WIDTH + BORDER_WIDTH, HEIGHT+BORDER_WIDTH].join(' ')}"
+    stroke-width="{BORDER_WIDTH}"
+  )
+    defs
+      d-each(set="{colors}", item="color", index="colorName", uid="{colorName}")
+        pattern(
+          id="{'shaded-' + colorName}"
+          patternUnits="userSpaceOnUse"
+          x="0px"
+          y="0px"
+          width="{SHADED_FREQ}"
+          height="100px"
+        )
+          rect(x="0px", y="0px", width="{SHADED_WIDTH}", height="100px", fill="{color}")
+    d-switch(value="{shapesTypes[card.shape]}")
+      d-case(if="{shapesTypes.DIAMOND}")
+        polygon(
+          points="{diamondPath}"
+          stroke="{colors[card.color]}"
+          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+        )
+      d-case(if="{shapesTypes.OVAL}")
+        path(
+          d="{ovalPath}"
+          stroke="{colors[card.color]}"
+          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+        )
+      d-case(if="{shapesTypes.WAVE}")
+        path(
+          d="{wavePath}"
+          stroke="{colors[card.color]}"
+          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+        )

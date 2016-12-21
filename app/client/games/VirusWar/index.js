@@ -26,10 +26,13 @@ class VirusWar extends Block {
   constructor(opts) {
     super(opts);
 
-    const gameData = this.args.gameData;
-    const emitter = this.args.emitter;
+    const {
+      gameData,
+      emitter,
+      socket
+    } = this.args;
 
-    this.socket = this.args.socket;
+    this.socket = socket;
     this.mapPlayersToColors = D(gameData.players).object((colors, { color, login }) => {
       colors[login] = color;
     }).$;
@@ -37,12 +40,11 @@ class VirusWar extends Block {
       shapes[login] = shape;
     }).$;
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
+
     this.setup();
 
     emitter.on(SET_CELL, this.onSetCell);
     emitter.on(END_TURN, this.onEndTurn);
-
-    console.log(gameData);
   }
 
   afterConstruct() {

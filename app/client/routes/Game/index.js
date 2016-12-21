@@ -1,12 +1,11 @@
-import { Block, makeRoute } from 'dwayne';
+import { D, Block, makeRoute, self } from 'dwayne';
 import template from './index.pug';
+import { games as gamesConfig } from '../../../config/constants.json';
 
-const games = [
-  'hexagon',
-  'set',
-  'pexeso',
-  'virus_war'
-];
+const games = D(gamesConfig)
+  .map(self)
+  .delete('global')
+  .keys();
 
 class Game extends Block {
   static template = template();

@@ -1,4 +1,8 @@
-div.pexeso-game.row
+div.set-game.row
   div.field.col-xs-12.col-sm
-
+    d-each(set="{field}", item="row", index="y", uid="{y}")
+      div.cards-row
+        d-each(set="{row}", item="card", index="x", uid="{x}")
+          div.card-container
+            SetCard(card="{card}")
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")
