@@ -21,10 +21,14 @@ class SetGame extends Block {
   constructor(opts) {
     super(opts);
 
-    const gameData = this.args.gameData;
-    const emitter = this.args.emitter;
+    const {
+      gameData,
+      emitter,
+      socket
+    } = this.args;
 
-    this.socket = this.args.socket;
+    this.socket = socket;
+
     this.setup();
 
     emitter.on(SET_FOUND, this.onSetFound);
@@ -45,6 +49,8 @@ class SetGame extends Block {
     if (!gameData) {
       return;
     }
+
+    this.field = gameData.field;
   };
 
   onSetFound = (cards) => {
@@ -57,3 +63,5 @@ class SetGame extends Block {
 }
 
 Block.register('SetGame', SetGame);
+
+export default SetGame;

@@ -1,17 +1,14 @@
 import { Block } from 'dwayne';
 import template from './index.pug';
 import VirusWar from '../../';
-import config from '../../../../../config/constants.json';
+import { games as gamesConfig, colors } from '../../../../../config/constants.json';
 
 const {
-  games: {
-    virus_war: {
-      virusesTypes,
-      virusesShapes
-    }
-  },
-  colors
-} = config;
+  virus_war: {
+    virusesTypes,
+    virusesShapes
+  }
+} = gamesConfig;
 
 class VirusCell extends Block {
   static template = template();

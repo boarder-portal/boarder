@@ -1,17 +1,16 @@
-const { io } = require('../');
+const D = require('dwayne');
 const Lobby = require('../game/Lobby');
 const {
   games: gamesConfig
 } = require('../../config/constants.json');
 
-const games = [
-  'pexeso',
-  'set',
-  'hexagon',
-  'virus_war'
-];
+const { self } = D;
+const games = D(gamesConfig)
+  .map(self)
+  .delete('global')
+  .keys();
 
-module.exports = () => {
+module.exports = (io) => {
   games.forEach((game) => {
     const {
       LOBBY_NSP,
