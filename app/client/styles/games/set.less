@@ -1,46 +1,49 @@
 @import (reference) '../mixins';
 
 .set-game {
+  @card-width: 105px;
+  @card-height: 150px;
+  @card-margin: @hs;
+
   .field {
-    .flex-col-stretch();
+    .relative();
+    .tr-very-long(min-width);
 
-    .cards-row {
-      .flex-stretch();
+    height: 3 * @card-height + 4 * @card-margin;
 
-      .card-container {
-        .absolute();
-        .flex-col();
-        .bordered();
-        .tr-very-long(opacity);
+    .card-container {
+      .absolute();
+      .flex-col();
+      .bordered();
+      .bg(@background-color);
+      .tr-very-long(all);
 
-        width: 105px;
-        height: 150px;
-        border-radius: 3 * @border-radius;
-        margin: @hs;
-        opacity: 1;
+      width: @card-width;
+      height: @card-height;
+      border-radius: 3 * @border-radius;
+      opacity: 1;
 
-        &.selected {
-          .rgba(#000, 0.15);
+      &.selected {
+        .rgba(#000, 0.10);
 
-          transition-delay: 0s;
-        }
+        transition-duration: 0s;
+      }
 
-        &.right {
-          .bg(@green-lighter);
-        }
+      &.right {
+        .bg(@green-lighter);
+      }
 
-        &.wrong {
-          .bg(@red-lighter);
-        }
+      &.wrong {
+        .bg(@red-lighter);
+      }
 
-        &.matched {
-          opacity: 0;
-        }
+      &.matched {
+        opacity: 0;
+      }
 
-        .shape {
-          &:not(:first-child) {
-            margin-top: 2*@hs;
-          }
+      .shape {
+        &:not(:first-child) {
+          margin-top: 2*@hs;
         }
       }
     }

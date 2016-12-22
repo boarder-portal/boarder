@@ -1,9 +1,24 @@
 div.set-game.row
-  div.field.col-xs-12.col-sm
+  div.field.col-xs-12.col-sm(
+    d-style-min-width="{{ minWidth: (CARD_WIDTH + CARD_MARGIN) * Math.max(Math.round(field.length / 3), 4) + CARD_MARGIN + 'px' }}"
+  )
     d-each(set="{field}", item="card", uid="{[card.shape, card.color, card.fillType, card.count].join('_')}")
-      div.card-container(
-        d-class="{card.isSelected && 'selected'}"
-        d-on-click="{clickCard(card)}"
-      )
-        SetCard(card="{card}")
+      d-if(if="{card}")
+        div.card-container(
+          d-class="{[card.isSelected && 'selected', card.wrong && 'wrong', card.right && 'right', card.matched && 'matched']}"
+          d-style-top="{{ top: CARD_MARGIN + (CARD_HEIGHT + CARD_MARGIN) * card.y + 'px' }}"
+          d-style-left="{{ left: CARD_MARGIN + (CARD_WIDTH + CARD_MARGIN) * card.x + 'px' }}"
+          d-on-click="{clickCard(card)}"
+          d-bind-transitionend="{onTransitionEnd}"
+        )
+          SetCard(card="{card}")
+  div
+    input.boarder-input.success(
+      type="submit"
+      value="{i18n.t('games.set.room.add_3_cards')}"
+      d-bind-click="{add3Cards}"
+    )
+    br
+    d-if(if="{cardsLeft || cardsLeft === 0}")
+      span {i18n.t('games.set.room.cards_left') + ': ' + cardsLeft}
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")
