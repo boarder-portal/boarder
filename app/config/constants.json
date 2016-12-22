@@ -171,8 +171,7 @@
       "events": {
         "game": {
           "FIND_SET": "set/find-set",
-          "NO_SET_HERE": "set/no-set-here",
-          "ADD_CARDS": "set/add-cards"
+          "NO_SET_HERE": "set/no-set-here"
         }
       },
       "shapesTypes": {

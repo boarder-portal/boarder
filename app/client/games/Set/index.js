@@ -7,8 +7,7 @@ const {
     events: {
       game: {
         FIND_SET,
-        NO_SET_HERE,
-        ADD_CARDS
+        NO_SET_HERE
       }
     }
   }
@@ -17,11 +16,14 @@ const {
 class SetGame extends Block {
   static template = template();
 
+  CARD_WIDTH = 105;
+  CARD_HEIGHT = 150;
+  CARD_MARGIN = 6;
+
   constructor(opts) {
     super(opts);
 
     const {
-      gameData,
       emitter,
       socket
     } = this.args;
@@ -33,7 +35,7 @@ class SetGame extends Block {
     this.setup();
 
     emitter.on(FIND_SET, this.onFindSet);
-    emitter.on(ADD_CARDS, this.onAddCards);
+    emitter.on(NO_SET_HERE, this.onNoSetHere);
   }
 
   afterConstruct() {
@@ -51,28 +53,44 @@ class SetGame extends Block {
       return;
     }
 
+    this.cardsLeft = gameData.cardsLeft;
     this.field = gameData.field;
-    this.selectedCards.forEach(({ x, y, selected }) => {
-      this.changeCard(x, y, { selected });
+    this.selectedCards.forEach((i) => {
+      this.changeCard(i, { isSelected: true });
     });
   };
 
-  changeCard(x, y, card) {
+  changeCard(index, card) {
     const { field } = this;
+    const i = D(field).find((card) => card && card.index === index).key;
 
     this.field = [
-      ...field.slice(0, y),
-      [
-        ...field[y].slice(0, x),
-        {
-          ...field[y][x],
-          ...card
-        },
-        ...field[y].slice(x + 1)
-      ],
-      ...field.slice(y + 1)
+      ...field.slice(0, i),
+      {
+        ...field[i],
+        ...card
+      },
+      ...field.slice(i + 1)
     ];
   }
+
+  deleteCard = (index) => {
+    const { field } = this;
+
+    const i = D(field).find((card) => card && card.index === index).key;
+
+    this.field = [
+      ...field.slice(0, i),
+      ...field.slice(i + 1)
+    ];
+  };
+
+  addCard = (card) => {
+    this.field = [
+      ...this.field,
+      card
+    ];
+  };
 
   clickCard(card) {
     if (!this.ableToClick) {
@@ -82,34 +100,132 @@ class SetGame extends Block {
     const { selectedCards } = this;
 
     if (card.isSelected) {
-      const found = selectedCards.find(({ x, y }) => card.x === x && card.y === y);
+      const index = selectedCards.indexOf(card.index);
 
-      if (found) {
-        selectedCards.splice(found.key, 1);
+      if (index !== -1) {
+        selectedCards.splice(index, 1);
       }
     } else {
-      selectedCards.push({
-        x: card.x,
-        y: card.y
-      });
+      selectedCards.push(card.index);
     }
-
-    this.changeCard(card.x, card.y, {
+    this.changeCard(card.index, {
       isSelected: !card.isSelected
     });
 
-    if (this.selectedCards.length === 3) {
+    if (selectedCards.length === 3) {
       this.ableToClick = false;
-      this.emit(FIND_SET, this.selectedCards);
+      this.emit(FIND_SET, selectedCards);
     }
   }
 
-  onFindSet = ({ cards, isSet, additionalCards, cardsToChange }) => {
+  onTransitionEnd = () => {
+    const {
+      colorTransitionStarted,
+      opacityTransitionStarted
+    } = this;
 
+    if (this.transitionsCount++) {
+      if (this.transitionsCount === 3) {
+        this.transitionsCount = 0;
+      }
+
+      return;
+    }
+
+    if (!colorTransitionStarted && !opacityTransitionStarted) {
+      return;
+    }
+
+    const {
+      cards,
+      isSet
+    } = this;
+
+    if (this.colorTransitionStarted) {
+      this.colorTransitionStarted = false;
+      this.opacityTransitionStarted = true;
+
+      return D(cards).forEach((i) => {
+        this.changeCard(i, {
+          wrong: false,
+          matched: isSet
+        });
+      });
+    }
+
+    this.opacityTransitionStarted = false;
+
+    if (!this.isSet) {
+      this.ableToClick = true;
+
+      return;
+    }
+
+    const {
+      additionalCards,
+      cardsToMove,
+      cardsLeftToSet
+    } = this;
+
+    if (!cardsToMove.length) {
+      D(cards).forEach(this.deleteCard);
+    }
+
+    D(500)
+      .timeout()
+      .then(() => {
+        this.ableToClick = true;
+        this.cardsLeft = cardsLeftToSet;
+
+        D(additionalCards).forEach(this.addCard);
+
+        if (cardsToMove.length) {
+          D(cards).forEach(this.deleteCard);
+          D(cardsToMove).forEach((card) => {
+            this.changeCard(card.oldIndex, card);
+          });
+        }
+      });
   };
 
-  onAddCards = (cards) => {
+  onFindSet = ({ cards, cardsLeft, isSet, additionalCards, cardsToMove }) => {
+    const { selectedCards } = this;
 
+    this.ableToClick = false;
+    this.cardsLeftToSet = cardsLeft;
+    this.isSet = isSet;
+    this.additionalCards = additionalCards;
+    this.cardsToMove = cardsToMove;
+    this.cards = cards;
+    this.colorTransitionStarted = true;
+    this.transitionsCount = 0;
+
+    D(cards).forEach((i) => {
+      this.changeCard(i, {
+        isSelected: false,
+        right: isSet,
+        wrong: !isSet
+      });
+
+      const index = selectedCards.indexOf(i);
+
+      if (index !== -1) {
+        selectedCards.splice(index, 1);
+      }
+    });
+  };
+
+  add3Cards = () => {
+    if (!this.ableToClick) {
+      return;
+    }
+
+    this.emit(NO_SET_HERE);
+  };
+
+  onNoSetHere = ({ cardsLeft, additionalCards }) => {
+    this.cardsLeft = cardsLeft;
+    D(additionalCards).forEach(this.addCard);
   };
 }
 

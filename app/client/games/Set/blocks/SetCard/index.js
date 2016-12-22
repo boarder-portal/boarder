@@ -76,7 +76,18 @@ class SetCard extends Block {
       HEIGHT
     } = this;
     const R = HEIGHT / 2;
+    const wavePath = D(WavePath)
+      .map(([x, y]) => (
+        [
+          (x * WIDTH / originalWaveWidth).toFixed(1).replace(/\.0/, ''),
+          (y * HEIGHT / originalWaveHeight).toFixed(1).replace(/\.0/, '')
+        ].join(','))
+      )
+      .join(' ');
+    const waveXStart = (WaveStart[0] * WIDTH / originalWaveWidth).toFixed(1);
+    const waveYStart = (WaveStart[1] * HEIGHT / originalWaveHeight).toFixed(1);
 
+    this.wavePath = `M${ waveXStart } ${ waveYStart }c${ wavePath }z`;
     this.diamondPath = createSVGPolygonPath([
       {
         x: 0,
@@ -102,18 +113,6 @@ class SetCard extends Block {
       A ${ R } ${ R }, 0, 1, 1, ${ R } 0
       Z
     `.replace(/\s*\n\s*/g, ' ');
-
-    const wavePath = D(WavePath)
-      .map(([x, y]) => (
-        [
-          (x * WIDTH / originalWaveWidth).toFixed(1).replace(/\.0/, ''),
-          (y * HEIGHT / originalWaveHeight).toFixed(1).replace(/\.0/, '')
-        ].join(','))
-      )
-      .join(' ');
-    const waveStart = `${ WaveStart[0] * WIDTH / originalWaveWidth } ${ WaveStart[1] * HEIGHT / originalWaveHeight }`;
-
-    this.wavePath = `M${ waveStart }c${ wavePath }z`;
   }
 
   afterConstruct() {

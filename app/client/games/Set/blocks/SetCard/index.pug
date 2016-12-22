@@ -15,7 +15,7 @@ d-each(set="{array(card.count).$}", index="i", uid="{i}")
           width="{SHADED_FREQ}"
           height="100px"
         )
-          rect(x="0px", y="0px", width="{SHADED_WIDTH}", height="100px", fill="{color}")
+          rect(x="{(SHADED_FREQ - SHADED_WIDTH) / 2}", y="0px", width="{SHADED_WIDTH}", height="100px", fill="{color}")
     d-switch(value="{shapesTypes[card.shape]}")
       d-case(if="{shapesTypes.DIAMOND}")
         polygon(

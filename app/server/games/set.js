@@ -6,8 +6,7 @@ const {
       events: {
         game: {
           FIND_SET,
-          NO_SET_HERE,
-          ADD_CARDS
+          NO_SET_HERE
         }
       },
       shapesTypes: shapesTypesObject,
@@ -58,33 +57,37 @@ class SetGame extends Game {
     super.prepareGame();
 
     const remainingCards = this.remainingCards = cards
-      .slice()
+      .map((card) => D(card).clone().$)
       .shuffle();
 
     this.field = array(12, (i) => (
       D(remainingCards.pop()).assign({
-        i,
-        x: i % 4,
-        y: Math.floor(i / 4)
+        index: i,
+        x: Math.floor(i / 3),
+        y: i % 3
       }).$
     )).$;
 
     this.startGame();
   }
 
-  onFindSet([i1, i2, i3], socket) {
+  onFindSet([index1, index2, index3], socket) {
     const {
       field,
       remainingCards
     } = this;
     const { player } = socket;
-    const card1 = field[i1];
-    const card2 = field[i2];
-    const card3 = field[i3];
+    const card1 = field[index1];
+    const card2 = field[index2];
+    const card3 = field[index3];
     const cards = [card1, card2, card3];
     const isSet = this.isSet(cards);
-    const additionalCards = [];
-    const cardsToChange = [];
+    let additionalCards = [];
+    let cardsToMove = [];
+
+    if (!card1 || !card2 || !card3) {
+      return;
+    }
 
     if (isSet) {
       player.score++;
@@ -99,36 +102,129 @@ class SetGame extends Game {
         D(card2).assign(newCard2);
         D(card3).assign(newCard3);
 
-        additionalCards.push(...cards);
+        additionalCards = cards;
       // when there are still cards in the deck and there are more than 12 cards on the table
       } else if (field.length > 12) {
-        const lastCards = field.splice(field.length - 3);
+        const lastCards = [
+          field.pop(),
+          field.pop(),
+          field.pop()
+        ].reverse();
         const lastCardsInPlay = lastCards.filter((card) => cards.indexOf(card) === -1);
         const matchedNotLastCards = cards.filter((card) => lastCards.indexOf(card) === -1);
 
         matchedNotLastCards.forEach((card, i) => {
+          const {
+            index,
+            x,
+            y
+          } = card;
+
           D(card)
             .assign(lastCardsInPlay[i])
             .assign({
-              x: card.x,
-              y: card.y
+              index,
+              x,
+              y
             });
         });
-        cardsToChange.push(...matchedNotLastCards);
+        cardsToMove = lastCardsInPlay.map((card, i) => {
+          const {
+            index,
+            x,
+            y
+          } = matchedNotLastCards[i];
+
+          return {
+            ...card,
+            oldIndex: card.index,
+            index,
+            x,
+            y
+          };
+        });
       // when there are no more cards in the deck
       } else {
-        field.splice(field.indexOf(card1));
-        field.splice(field.indexOf(card2));
-        field.splice(field.indexOf(card3));
+        field[field.indexOf(card1)] = null;
+        field[field.indexOf(card2)] = null;
+        field[field.indexOf(card3)] = null;
       }
+    } else {
+      player.score--;
     }
 
     this.emit(FIND_SET, {
-      cards,
+      cards: [index1, index2, index3],
+      cardsLeft: remainingCards.length,
       isSet,
       additionalCards,
-      cardsToChange
-    }, isSet);
+      cardsToMove
+    }, true);
+  }
+
+  onNoSetHere(data, socket) {
+    if (this.finished) {
+      return;
+    }
+
+    const {
+      field,
+      remainingCards
+    } = this;
+    const { player } = socket;
+    const cards = field.filter(Boolean);
+    const isThereSet = cards.some((card1, i1) => (
+      cards.slice(i1 + 1).some((card2, i2) => (
+        cards.slice(i2 + 1).some((card3) => (
+          this.isSet([card1, card2, card3])
+        ))
+      ))
+    ));
+    let additionalCards = [];
+
+    if (isThereSet) {
+      player.score -= 0.5;
+    } else {
+      player.score += 0.5;
+
+      if (remainingCards.length) {
+        const { length } = this.field;
+        const x = Math.round(length / 3);
+        const newCard1 = remainingCards.pop();
+        const newCard2 = remainingCards.pop();
+        const newCard3 = remainingCards.pop();
+
+        D(newCard1).assign({
+          index: length,
+          x,
+          y: 0
+        });
+        D(newCard2).assign({
+          index: length + 1,
+          x,
+          y: 1
+        });
+        D(newCard3).assign({
+          index: length + 2,
+          x,
+          y: 2
+        });
+        field.push(newCard1, newCard2, newCard3);
+
+        additionalCards = [
+          newCard1,
+          newCard2,
+          newCard3
+        ];
+      } else {
+        this.finished = true;
+      }
+    }
+
+    this.emit(NO_SET_HERE, {
+      cardsLeft: remainingCards.length,
+      additionalCards
+    }, true);
   }
 
   isSet([
@@ -166,6 +262,15 @@ class SetGame extends Game {
         || (count1 !== count2 && count2 !== count3 && count3 !== count1)
       )
     );
+  }
+
+  toJSON() {
+    const { remainingCards } = this;
+
+    return {
+      ...super.toJSON(),
+      cardsLeft: remainingCards.length
+    };
   }
 }
 
