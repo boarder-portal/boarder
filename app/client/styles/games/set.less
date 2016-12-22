@@ -8,13 +8,34 @@
       .flex-stretch();
 
       .card-container {
+        .absolute();
         .flex-col();
         .bordered();
+        .tr-very-long(opacity);
 
         width: 105px;
         height: 150px;
         border-radius: 3 * @border-radius;
         margin: @hs;
+        opacity: 1;
+
+        &.selected {
+          .rgba(#000, 0.15);
+
+          transition-delay: 0s;
+        }
+
+        &.right {
+          .bg(@green-lighter);
+        }
+
+        &.wrong {
+          .bg(@red-lighter);
+        }
+
+        &.matched {
+          opacity: 0;
+        }
 
         .shape {
           &:not(:first-child) {

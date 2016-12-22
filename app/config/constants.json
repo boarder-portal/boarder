@@ -167,11 +167,10 @@
     "set": {
       "LOBBY_NSP": "/set/lobby",
       "ROOM_NSP": "/set/room/$roomId",
-      "playersCount": 2,
+      "playersCount": 4,
       "events": {
         "game": {
           "FIND_SET": "set/find-set",
-          "SET_FOUND": "set/set-found",
           "NO_SET_HERE": "set/no-set-here",
           "ADD_CARDS": "set/add-cards"
         }
