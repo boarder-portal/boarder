@@ -7,7 +7,6 @@ const {
     events: {
       game: {
         FIND_SET,
-        SET_FOUND,
         NO_SET_HERE,
         ADD_CARDS
       }
@@ -27,11 +26,13 @@ class SetGame extends Block {
       socket
     } = this.args;
 
+    this.ableToClick = true;
     this.socket = socket;
+    this.selectedCards = D([]);
 
     this.setup();
 
-    emitter.on(SET_FOUND, this.onSetFound);
+    emitter.on(FIND_SET, this.onFindSet);
     emitter.on(ADD_CARDS, this.onAddCards);
   }
 
@@ -51,9 +52,59 @@ class SetGame extends Block {
     }
 
     this.field = gameData.field;
+    this.selectedCards.forEach(({ x, y, selected }) => {
+      this.changeCard(x, y, { selected });
+    });
   };
 
-  onSetFound = (cards) => {
+  changeCard(x, y, card) {
+    const { field } = this;
+
+    this.field = [
+      ...field.slice(0, y),
+      [
+        ...field[y].slice(0, x),
+        {
+          ...field[y][x],
+          ...card
+        },
+        ...field[y].slice(x + 1)
+      ],
+      ...field.slice(y + 1)
+    ];
+  }
+
+  clickCard(card) {
+    if (!this.ableToClick) {
+      return;
+    }
+
+    const { selectedCards } = this;
+
+    if (card.isSelected) {
+      const found = selectedCards.find(({ x, y }) => card.x === x && card.y === y);
+
+      if (found) {
+        selectedCards.splice(found.key, 1);
+      }
+    } else {
+      selectedCards.push({
+        x: card.x,
+        y: card.y
+      });
+    }
+
+    this.changeCard(card.x, card.y, {
+      isSelected: !card.isSelected
+    });
+
+    if (this.selectedCards.length === 3) {
+      this.ableToClick = false;
+      this.emit(FIND_SET, this.selectedCards);
+    }
+  }
+
+  onFindSet = ({ cards, isSet, additionalCards, cardsToChange }) => {
 
   };
 
