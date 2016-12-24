@@ -1,0 +1,26 @@
+div.filler-game.row
+  div.field.col-xs-12.col-sm
+    svg(
+      width="{field[0].length * CELL_SIZE}"
+      height="{field.length * CELL_SIZE}"
+      viewBox="{[0, 0, field[0].length * CELL_SIZE, field.length * CELL_SIZE].join(' ')}"
+    )
+      d-each(set="{field}", item="row", index="y", uid="{y}")
+        d-each(set="{row}", item="cell", index="x", uid="{x}")
+          rect(
+            x="{x * CELL_SIZE}"
+            y="{y * CELL_SIZE}"
+            width="{CELL_SIZE}"
+            height="{CELL_SIZE}"
+            fill="{colors[cell.color]}"
+            stroke-width="{STROKE_WIDTH}"
+            stroke="#ddd"
+          )
+    div.colors-pane
+      d-each(set="{colors}", item="color", index="colorName", uid="{colorName}")
+        div.color(
+          d-style="{{ background: color }}"
+          d-class="{currentColors.includes(colorName) && 'current-color'}"
+          d-on-click="{chooseColor(colorName)}"
+        )
+  CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")
