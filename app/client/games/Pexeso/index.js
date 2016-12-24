@@ -51,6 +51,8 @@ class Pexeso extends Block {
     this.turn = gameData.turn;
     this.currentTurnedCards = gameData.currentTurnedCards;
     this.match = gameData.match;
+
+    this.tryToCloseCards();
   };
 
   turnCard(card) {
@@ -80,10 +82,39 @@ class Pexeso extends Block {
     ];
   }
 
+  tryToCloseCards() {
+    if (this.loaded < 2) {
+      return;
+    }
+
+    const { currentTurnedCards } = this;
+
+    this.emit(CARDS_LOADED);
+
+    D(2000)
+      .timeout()
+      .then(() => {
+        this.loaded = 0;
+        this.currentTurnedCards = D([]);
+
+        currentTurnedCards.forEach(({ x, y }) => {
+          this.changeCard(
+            x,
+            y,
+            this.match
+              ? { beforeNotInPlay: true }
+              : { opened: true }
+          );
+        });
+      });
+  }
+
   onTurnCard = ({ x, y, match }) => {
     const { currentTurnedCards } = this;
 
     currentTurnedCards.push({ x, y });
+
+    this.match = match;
 
     doc
       .img()
@@ -94,38 +125,17 @@ class Pexeso extends Block {
           opened: true
         });
 
-        if (++this.loaded !== 2) {
-          return;
-        }
+        this.loaded++;
 
-        this.emit(CARDS_LOADED);
-
-        return D(2000).timeout(true);
-      })
-      .then((isLast) => {
-        if (!isLast) {
-          return;
-        }
-
-        this.loaded = 0;
-        this.currentTurnedCards = D([]);
-
-        currentTurnedCards.forEach(({ x, y }) => {
-          this.changeCard(
-            x,
-            y,
-            match
-              ? { isInPlay: false }
-              : { opened: true }
-          );
-        });
+        this.tryToCloseCards();
       });
   };
 
   onTransitionEnd(card) {
     this.changeCard(card.x, card.y, {
       isTurned: card.opened ? !card.isTurned : card.isTurned,
-      opened: false
+      opened: false,
+      isInPlay: card.beforeNotInPlay ? false : card.isInPlay
     });
   }
 
