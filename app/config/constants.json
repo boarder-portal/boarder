@@ -164,6 +164,25 @@
         "RECT": "rect"
       }
     },
+    "filler": {
+      "LOBBY_NSP": "/filler/lobby",
+      "ROOM_NSP": "/filler/room/$roomId",
+      "playersCount": 2,
+      "events": {
+        "game": {
+          "CHOOSE_COLOR": "set/choose-color"
+        }
+      },
+      "colors": {
+        "RED": "#ff0000",
+        "GREEN": "#007f00",
+        "BLUE": "#0000ff",
+        "YELLOW": "#ffff00",
+        "ORANGE": "#ff7f00",
+        "PURPLE": "#ff00ff",
+        "LIME": "#00ff00"
+      }
+    },
     "set": {
       "LOBBY_NSP": "/set/lobby",
       "ROOM_NSP": "/set/room/$roomId",

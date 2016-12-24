@@ -41,6 +41,14 @@ div.room-state
               emitter="{emitter}"
               players="{players}"
             )
+          d-case(if="filler")
+            FillerGame(
+              gameData="{gameData}"
+              socket="{socket}"
+              emitter="{emitter}"
+              isMyTurn="{isMyTurn}"
+              players="{players}"
+            )
           d-case(if="virus_war")
             VirusWar(
               gameData="{gameData}"

@@ -1,0 +1,21 @@
+@import (reference) '../mixins';
+
+.filler-game {
+  .colors-pane {
+    .flex();
+    .bordered();
+
+    .color {
+      .pointer();
+
+      width: 40px;
+      height: 40px;
+      margin: @hs @ws;
+
+      &.current-color {
+        cursor: not-allowed;
+        opacity: 0.05;
+      }
+    }
+  }
+}
