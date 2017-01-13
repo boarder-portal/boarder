@@ -39,13 +39,19 @@ class Player {
    */
 
   constructor(props) {
+    this.sockets = D({});
+
+    D(this).assign(props);
+    this.setInitialGameState();
+  }
+
+  setInitialGameState() {
     D(this).assign({
       ready: false,
       active: false,
       score: 0,
-      sockets: D({}),
       data: {}
-    }, props);
+    });
   }
 
   toJSON() {

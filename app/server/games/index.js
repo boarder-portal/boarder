@@ -6,6 +6,7 @@ const {
         game: {
           PREPARING_GAME,
           GAME_STARTED,
+          GAME_FINISHING,
           UPDATE_PLAYERS,
           UPDATE_GAME
         }
@@ -93,6 +94,11 @@ class Game {
     if (isNeededToUpdatePlayers) {
       this.updatePlayers();
     }
+  }
+
+  finishGame() {
+    this.pureEmit(GAME_FINISHING, this.players);
+    this.room.finishGame(this.players);
   }
 
   updatePlayers() {

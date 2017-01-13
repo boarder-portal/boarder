@@ -13,11 +13,15 @@ const {
           ENTER_ROOM,
           UPDATE_ROOM,
           TOGGLE_PLAYER_STATUS
+        },
+        game: {
+          GAME_FINISHED
         }
       },
       roomStatuses: {
         NOT_PLAYING,
-        PLAYING
+        PLAYING,
+        FINISHING
       },
       playerRoles: {
         PLAYER,
@@ -147,12 +151,33 @@ class Room {
       return;
     }
 
-    const timeout = this._timeout = D(time)
-      .timeout();
+    const timeout = this._timeout = D(time).timeout();
 
     timeout
       .then(() => this.delete(), () => {})
       .catch(() => {});
+  }
+
+  /**
+   * @method Room#finishGame
+   * @public
+   */
+  finishGame() {
+    this.status = FINISHING;
+
+    D(5000)
+      .timeout()
+      .then(() => {
+        this.game = null;
+        this.status = NOT_PLAYING;
+        this.players.forEach((player) => {
+          if (player) {
+            player.setInitialGameState();
+          }
+        });
+        this.update();
+        this.socket.emit(GAME_FINISHED);
+      });
   }
 
   /**
@@ -189,6 +214,7 @@ class Room {
     if (players.every(isReady) && this.isRequiredPlayers()) {
       this.game = new Game({
         socket,
+        room: this,
         players: players.filter(Boolean),
         options: gameOptions
       });

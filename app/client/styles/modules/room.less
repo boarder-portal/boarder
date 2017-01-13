@@ -96,4 +96,41 @@
       }
     }
   }
+
+  .game-results {
+    .flex();
+
+    .results-table {
+      .bordered();
+
+      width: @w6;
+      border-collapse: collapse;
+      table-layout: fixed;
+
+      th, td {
+        .bordered();
+        .center();
+        .overflow-text();
+
+        padding: @hs @ws;
+        height: @h1;
+      }
+
+      th {
+        .bg(@gray-very-light);
+      }
+
+      .place {
+        width: 30%;
+      }
+
+      .player {
+        width: 40%;
+      }
+
+      .score {
+        width: 30%;
+      }
+    }
+  }
 }

@@ -95,7 +95,8 @@
       "roomStatuses": {
         "NOT_PLAYING": "not_playing",
         "PREPARING": "preparing",
-        "PLAYING": "playing"
+        "PLAYING": "playing",
+        "FINISHING": "finishing"
       },
       "playerRoles": {
         "OBSERVER": 0,
@@ -116,6 +117,8 @@
         "game": {
           "PREPARING_GAME": "game/preparing",
           "GAME_STARTED": "game/started",
+          "GAME_FINISHING": "game/finishing",
+          "GAME_FINISHED": "game/finished",
           "UPDATE_PLAYERS": "game/update-players",
           "UPDATE_GAME": "game/update-game",
           "END_TURN": "game/end-turn"
