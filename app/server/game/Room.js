@@ -163,20 +163,32 @@ class Room {
    * @public
    */
   finishGame() {
+    const {
+      players,
+      socket
+    } = this;
+
     this.status = FINISHING;
 
+    this.update();
     D(5000)
       .timeout()
       .then(() => {
         this.game = null;
         this.status = NOT_PLAYING;
-        this.players.forEach((player) => {
+
+        players.forEach((player, i) => {
           if (player) {
-            player.setInitialGameState();
+            if (player.sockets.count) {
+              player.setInitialGameState();
+            } else {
+              players.$[i] = null;
+            }
           }
         });
         this.update();
-        this.socket.emit(GAME_FINISHED);
+        this.tryToRemoveRoom();
+        socket.emit(GAME_FINISHED);
       });
   }
 
@@ -201,6 +213,17 @@ class Room {
 
     this.update();
     this.tryToStartGame();
+  }
+
+  tryToRemoveRoom() {
+    const {
+      players,
+      observers
+    } = this;
+
+    if (players.every(isNull) && !observers.count) {
+      this.expires();
+    }
   }
 
   tryToStartGame() {
@@ -341,10 +364,10 @@ class Room {
       role
     } = socket;
 
-    if (role === PLAYER && status === NOT_PLAYING) {
+    if (role === PLAYER) {
       sockets.delete(id);
 
-      if (!sockets.count) {
+      if (!sockets.count && status === NOT_PLAYING) {
         players.$[index] = null;
 
         this.update();
@@ -356,9 +379,7 @@ class Room {
       this.update();
     }
 
-    if (players.every(isNull) && !observers.count) {
-      this.expires();
-    }
+    this.tryToRemoveRoom();
 
     console.log(`leaving  room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
   }

@@ -8,7 +8,8 @@
   },
   "room_statuses": {
     "not_playing": "Waiting for players",
-    "preparing": "Preparing game...",
-    "playing": "Playing"
+    "preparing": "Preparing the game...",
+    "playing": "Playing",
+    "finishing": "The game has finished"
   }
 }
