@@ -72,6 +72,10 @@ class SetGame extends Game {
   }
 
   onFindSet([index1, index2, index3], socket) {
+    if (this.finished) {
+      return;
+    }
+
     const {
       field,
       remainingCards
@@ -218,6 +222,10 @@ class SetGame extends Game {
         ];
       } else {
         this.finished = true;
+
+        setTimeout(() => {
+          this.finishGame();
+        }, 1000);
       }
     }
 

@@ -129,6 +129,10 @@ class FillerGame extends Game {
   }
 
   chooseColor(color, player) {
+    if (this.finished) {
+      return;
+    }
+
     const {
       currentColors,
       field
@@ -149,6 +153,14 @@ class FillerGame extends Game {
     playerCells.push(...neighbourCells.$);
 
     player.score = playerCells.length;
+
+    if (player.score > WIDTH05 * HEIGHT) {
+      this.finished = true;
+
+      setTimeout(() => {
+        this.finishGame();
+      }, 1000);
+    }
   }
 
   onChooseColor(color, socket) {

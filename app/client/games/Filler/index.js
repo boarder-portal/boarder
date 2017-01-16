@@ -1,4 +1,4 @@
-import { D, Block } from 'dwayne';
+import { D, Block, self } from 'dwayne';
 import template from './index.pug';
 import { getNeighbourCells } from '../../../shared/filler';
 import { games as gamesConfig } from '../../../config/constants.json';
@@ -25,11 +25,13 @@ class FillerGame extends Block {
     super(opts);
 
     const {
+      gameData,
       emitter,
       socket
     } = this.args;
 
     this.socket = socket;
+    this.isTopLeft = gameData.players[0].login === this.global.user.login;
     this.setup();
 
     emitter.on(CHOOSE_COLOR, this.onChooseColor);
@@ -60,21 +62,19 @@ class FillerGame extends Block {
     }).$;
   };
 
-  changeCell(x, y, cell) {
+  changeCells(cells, color) {
     const { field } = this;
 
-    this.field = [
-      ...field.slice(0, y),
-      [
-        ...field[y].slice(0, x),
-        {
-          ...field[y][x],
-          ...cell
-        },
-        ...field[y].slice(x + 1)
-      ],
-      ...field.slice(y + 1)
-    ];
+    cells.forEach((cell) => {
+      field[cell.y][cell.x] = {
+        ...field[cell.y][cell.x],
+        color
+      };
+    });
+
+    this.field = D(field).map((row) => (
+      D(row).map(self).$
+    )).$;
   }
 
   chooseColor(color) {
@@ -86,18 +86,12 @@ class FillerGame extends Block {
   }
 
   onChooseColor = ({ currentColors, color, player }) => {
-    const cell = player.data.mainCell;
     const playerCells = this.playersCells[player.login];
+    const neighbours = getNeighbourCells(this.field, color, playerCells);
 
     this.currentColors = D(currentColors);
 
-    this.changeCell(cell.x, cell.y, { color });
-
-    const neighbours = getNeighbourCells(this.field, color, playerCells);
-
-    playerCells.forEach((cell) => {
-      this.changeCell(cell.x, cell.y, { color });
-    });
+    this.changeCells(playerCells, color);
     playerCells.push(...neighbours.$);
   };
 }
