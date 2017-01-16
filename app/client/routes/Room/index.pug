@@ -21,7 +21,7 @@ div.room-state
           d-show="{role === playerRoles.PLAYER}"
         )
     d-case(if="{roomStatuses.PREPARING}")
-      div.preparing-game
+      h1.text-center
         | {i18n.t('games.global.room.preparing')}
     d-case(if="{roomStatuses.PLAYING}")
       div.game-container
@@ -57,3 +57,17 @@ div.room-state
               isMyTurn="{isMyTurn}"
               players="{players}"
             )
+    d-case(if="{roomStatuses.FINISHING}")
+      div.game-results
+        table.results-table
+          thead
+            tr
+              th.place Place
+              th.player Player
+              th.score Score
+          tbody
+            d-each(set="{players}", item="player", index="i", uid="{player.id}")
+              tr
+                td.place {i+1}
+                td.player {player.login}
+                td.score {player.score}

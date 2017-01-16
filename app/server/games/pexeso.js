@@ -15,7 +15,8 @@ const {
 
 const { array } = D;
 
-const cards = array(30);
+const setsCount = 30;
+const cards = array(setsCount);
 
 /**
  * @class PexesoGame
@@ -36,7 +37,6 @@ class PexesoGame extends Game {
   prepareGame() {
     super.prepareGame();
 
-    let i = 0;
     const newCards = D(cards)
       .concat(cards)
       .shuffle()
@@ -45,13 +45,14 @@ class PexesoGame extends Game {
     this.areAllTurned = false;
     this.currentLoadedPlayersCards = {};
     this.currentTurnedCards = [];
-    this.field = array(6, (y) => (
-      array(10, (x) => ({
+    this.allTurnedCardsCount = 0;
+    this.field = array(2, (y) => (
+      array(2, (x) => ({
         x,
         y,
         isInPlay: true,
         isTurned: false,
-        card: newCards[i++] + 1
+        card: newCards.pop() + 1
       })).$
     )).$;
     this.players.$[0].active = true;
@@ -123,6 +124,10 @@ class PexesoGame extends Game {
         if (match) {
           player.score++;
           this.updatePlayers();
+
+          if (++this.allTurnedCardsCount >= setsCount) {
+            this.finishGame();
+          }
         } else {
           this.changeTurn(true);
         }

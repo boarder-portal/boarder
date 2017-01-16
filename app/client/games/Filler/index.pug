@@ -1,9 +1,10 @@
 div.filler-game.row
   div.field.col-xs-12.col-sm
-    svg(
+    svg.field-rect(
       width="{field[0].length * CELL_SIZE}"
       height="{field.length * CELL_SIZE}"
       viewBox="{[0, 0, field[0].length * CELL_SIZE, field.length * CELL_SIZE].join(' ')}"
+      d-class="{isTopLeft && 'to-bottom-left'}"
     )
       d-each(set="{field}", item="row", index="y", uid="{y}")
         d-each(set="{row}", item="cell", index="x", uid="{x}")

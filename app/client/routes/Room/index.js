@@ -19,6 +19,8 @@ const {
       game: {
         PREPARING_GAME,
         GAME_STARTED,
+        GAME_FINISHING,
+        GAME_FINISHED,
         UPDATE_PLAYERS,
         UPDATE_GAME
       }
@@ -86,6 +88,8 @@ class Room extends Block {
     socket.on(UPDATE_ROOM, this.onUpdateRoom);
     socket.on(PREPARING_GAME, this.onPreparingGame);
     socket.on(GAME_STARTED, this.onGameStarted);
+    socket.on(GAME_FINISHING, this.onGameFinishing);
+    socket.on(GAME_FINISHED, this.onGameFinished);
     socket.on(UPDATE_PLAYERS, this.onUpdatePlayers);
     socket.on(UPDATE_GAME, this.onUpdateGame);
     socket.on('connect', () => {
@@ -95,7 +99,7 @@ class Room extends Block {
       console.log(err);
 
       if (err === 'Invalid namespace') {
-        router.go('not-found', {
+        router.redirect('not-found', {
           query: {
             path: pathname
           }
@@ -159,6 +163,15 @@ class Room extends Block {
   onGameStarted = (gameData) => {
     this.status = roomStatuses.PLAYING;
     this.startGame(gameData);
+  };
+
+  onGameFinishing = (players) => {
+    this.status = roomStatuses.FINISHING;
+    this.players = D(players).sortBy('score', true).$;
+  };
+
+  onGameFinished = () => {
+    this.status = roomStatuses.NOT_PLAYING;
   };
 
   onUpdatePlayers = (players) => {

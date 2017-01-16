@@ -13,11 +13,15 @@ const {
           ENTER_ROOM,
           UPDATE_ROOM,
           TOGGLE_PLAYER_STATUS
+        },
+        game: {
+          GAME_FINISHED
         }
       },
       roomStatuses: {
         NOT_PLAYING,
-        PLAYING
+        PLAYING,
+        FINISHING
       },
       playerRoles: {
         PLAYER,
@@ -147,12 +151,45 @@ class Room {
       return;
     }
 
-    const timeout = this._timeout = D(time)
-      .timeout();
+    const timeout = this._timeout = D(time).timeout();
 
     timeout
       .then(() => this.delete(), () => {})
       .catch(() => {});
+  }
+
+  /**
+   * @method Room#finishGame
+   * @public
+   */
+  finishGame() {
+    const {
+      players,
+      socket
+    } = this;
+
+    this.status = FINISHING;
+
+    this.update();
+    D(5000)
+      .timeout()
+      .then(() => {
+        this.game = null;
+        this.status = NOT_PLAYING;
+
+        players.forEach((player, i) => {
+          if (player) {
+            if (player.sockets.count) {
+              player.setInitialGameState();
+            } else {
+              players.$[i] = null;
+            }
+          }
+        });
+        this.update();
+        this.tryToRemoveRoom();
+        socket.emit(GAME_FINISHED);
+      });
   }
 
   /**
@@ -178,6 +215,17 @@ class Room {
     this.tryToStartGame();
   }
 
+  tryToRemoveRoom() {
+    const {
+      players,
+      observers
+    } = this;
+
+    if (players.every(isNull) && !observers.count) {
+      this.expires();
+    }
+  }
+
   tryToStartGame() {
     const {
       players,
@@ -189,6 +237,7 @@ class Room {
     if (players.every(isReady) && this.isRequiredPlayers()) {
       this.game = new Game({
         socket,
+        room: this,
         players: players.filter(Boolean),
         options: gameOptions
       });
@@ -315,10 +364,10 @@ class Room {
       role
     } = socket;
 
-    if (role === PLAYER && status === NOT_PLAYING) {
+    if (role === PLAYER) {
       sockets.delete(id);
 
-      if (!sockets.count) {
+      if (!sockets.count && status === NOT_PLAYING) {
         players.$[index] = null;
 
         this.update();
@@ -330,9 +379,7 @@ class Room {
       this.update();
     }
 
-    if (players.every(isNull) && !observers.count) {
-      this.expires();
-    }
+    this.tryToRemoveRoom();
 
     console.log(`leaving  room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
   }
