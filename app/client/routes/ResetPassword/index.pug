@@ -4,6 +4,7 @@ div.auth-block.reset-password-block
     autocomplete="off"
     d-hide="{resetPasswordSuccess}"
     d-elem="form"
+    d-validate
     d-bind-submit="{submit}"
   )
     div.auth-spinner-container
@@ -12,7 +13,7 @@ div.auth-block.reset-password-block
         src="{images.loading}"
         d-show="{submitting}"
       )
-    InputWrapper(validators="{['required']}")
+    InputWrapper(validators="{[]}")
       input#email(
         type="text"
         value="{args.route.query.email}"
@@ -40,9 +41,10 @@ div.auth-block.reset-password-block
         placeholder="{i18n.t('reset_password.fields.password_repeat')}"
         d-value="passwordRepeat"
       )
-    input.boarder-input.success(
-      type="submit"
-      value="{i18n.t('reset_password.action')}"
-      disabled="{submitting ? 'disabled' : null}"
-    )
+    InputWrapper
+      input.success(
+        type="submit"
+        value="{i18n.t('reset_password.action')}"
+        disabled="{submitting ? 'disabled' : null}"
+      )
   div.auth-success-caption(d-show="{resetPasswordSuccess}") {i18n.t('reset_password.success')}
