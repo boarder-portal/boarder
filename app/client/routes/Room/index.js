@@ -99,7 +99,7 @@ class Room extends Block {
       console.log(err);
 
       if (err === 'Invalid namespace') {
-        router.go('not-found', {
+        router.redirect('not-found', {
           query: {
             path: pathname
           }
