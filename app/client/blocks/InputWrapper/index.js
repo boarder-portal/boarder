@@ -73,4 +73,4 @@ class InputWrapper extends Block {
   }
 }
 
-Block.register('InputWrapper', InputWrapper);
+Block.block('InputWrapper', InputWrapper);

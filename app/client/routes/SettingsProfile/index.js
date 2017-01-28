@@ -255,4 +255,4 @@ class SettingsProfile extends Block {
 const wrap = SettingsProfile
   .wrap(makeRoute());
 
-Block.register('SettingsProfile', wrap);
+Block.block('SettingsProfile', wrap);

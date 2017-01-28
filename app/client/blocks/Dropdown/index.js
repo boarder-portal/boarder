@@ -65,4 +65,4 @@ body.on('click', ({ target }) => {
   activeDropdown.close();
 });
 
-Block.register('Dropdown', Dropdown);
+Block.block('Dropdown', Dropdown);

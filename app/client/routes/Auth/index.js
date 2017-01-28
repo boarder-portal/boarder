@@ -13,4 +13,4 @@ class Auth extends Block {
 const wrap = Auth
   .wrap(makeRoute());
 
-Block.register('Auth', wrap);
+Block.block('Auth', wrap);

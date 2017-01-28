@@ -20,4 +20,4 @@ class Game extends Block {
 const wrap = Game
   .wrap(makeRoute());
 
-Block.register('Game', wrap);
+Block.block('Game', wrap);

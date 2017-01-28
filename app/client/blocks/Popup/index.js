@@ -34,4 +34,4 @@ body.on('click', popupActionSelector, ({ target }) => {
   }
 });
 
-Block.register('Popup', Popup);
+Block.block('Popup', Popup);

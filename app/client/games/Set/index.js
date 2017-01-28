@@ -229,6 +229,6 @@ class SetGame extends Block {
   };
 }
 
-Block.register('SetGame', SetGame);
+Block.block('SetGame', SetGame);
 
 export default SetGame;

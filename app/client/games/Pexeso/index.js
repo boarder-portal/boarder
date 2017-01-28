@@ -146,4 +146,4 @@ class Pexeso extends Block {
   }
 }
 
-Block.register('Pexeso', Pexeso);
+Block.block('Pexeso', Pexeso);

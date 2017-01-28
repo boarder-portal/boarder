@@ -43,4 +43,4 @@ class MainFooter extends Block {
   }
 }
 
-Block.register('MainFooter', MainFooter);
+Block.block('MainFooter', MainFooter);

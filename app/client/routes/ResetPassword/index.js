@@ -83,4 +83,4 @@ class ResetPassword extends Block {
 const wrap = ResetPassword
   .wrap(makeRoute());
 
-Block.register('ResetPassword', wrap);
+Block.block('ResetPassword', wrap);

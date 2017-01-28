@@ -101,4 +101,4 @@ class SettingsAccount extends Block {
 const wrap = SettingsAccount
   .wrap(makeRoute());
 
-Block.register('SettingsAccount', wrap);
+Block.block('SettingsAccount', wrap);

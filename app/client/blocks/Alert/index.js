@@ -49,4 +49,4 @@ class Alert extends Block {
   };
 }
 
-Block.register('Alert', Alert);
+Block.block('Alert', Alert);

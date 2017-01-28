@@ -8,4 +8,4 @@ class CommonPlayersInGameBlock extends Block {
   colors = colors;
 }
 
-Block.register('CommonPlayersInGameBlock', CommonPlayersInGameBlock);
+Block.block('CommonPlayersInGameBlock', CommonPlayersInGameBlock);

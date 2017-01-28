@@ -19,4 +19,4 @@ class NotFound extends Block {
 const wrap = NotFound
   .wrap(makeRoute());
 
-Block.register('NotFound', wrap);
+Block.block('NotFound', wrap);

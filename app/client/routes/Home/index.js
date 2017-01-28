@@ -18,4 +18,4 @@ class Home extends Block {
 const wrap = Home
   .wrap(makeRoute());
 
-Block.register('Home', wrap);
+Block.block('Home', wrap);

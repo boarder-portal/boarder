@@ -61,4 +61,4 @@ class ForgotPassword extends Block {
 const wrap = ForgotPassword
   .wrap(makeRoute());
 
-Block.register('ForgotPassword', wrap);
+Block.block('ForgotPassword', wrap);

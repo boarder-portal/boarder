@@ -19,4 +19,4 @@ class GamesList extends Block {
 const wrap = GamesList
   .wrap(makeRoute());
 
-Block.register('GamesList', wrap);
+Block.block('GamesList', wrap);

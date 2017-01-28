@@ -30,4 +30,4 @@ class ConfirmRegister extends Block {
 const wrap = ConfirmRegister
   .wrap(makeRoute());
 
-Block.register('ConfirmRegister', wrap);
+Block.block('ConfirmRegister', wrap);

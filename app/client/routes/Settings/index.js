@@ -13,4 +13,4 @@ class Settings extends Block {
 const wrap = Settings
   .wrap(makeRoute());
 
-Block.register('Settings', wrap);
+Block.block('Settings', wrap);

@@ -206,4 +206,4 @@ class Room extends Block {
 const wrap = Room
   .wrap(makeRoute());
 
-Block.register('Room', wrap);
+Block.block('Room', wrap);

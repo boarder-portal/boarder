@@ -5,4 +5,4 @@ class MainContent extends Block {
   static template = template();
 }
 
-Block.register('MainContent', MainContent);
+Block.block('MainContent', MainContent);

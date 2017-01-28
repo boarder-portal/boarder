@@ -96,4 +96,4 @@ class FillerGame extends Block {
   };
 }
 
-Block.register('FillerGame', FillerGame);
+Block.block('FillerGame', FillerGame);

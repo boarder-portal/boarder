@@ -122,5 +122,4 @@ class SetCard extends Block {
   }
 }
 
-SetGame.register('SetCard', SetCard);
-
+SetGame.block('SetCard', SetCard);

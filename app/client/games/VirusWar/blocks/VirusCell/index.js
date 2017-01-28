@@ -26,4 +26,4 @@ class VirusCell extends Block {
   }
 }
 
-VirusWar.register('VirusCell', VirusCell);
+VirusWar.block('VirusCell', VirusCell);

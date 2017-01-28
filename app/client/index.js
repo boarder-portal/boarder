@@ -9,7 +9,7 @@ import './modules/Games';
 import './modules/Settings';
 
 Block.getBlocks().forEach((block, name) => {
-  Block.register(name, block.wrap(injectGlobals));
+  Block.block(name, block.wrap(injectGlobals));
 });
 
 initApp('App', find('.app-root'));

@@ -149,4 +149,4 @@ class Lobby extends Block {
 const wrap = Lobby
   .wrap(makeRoute());
 
-Block.register('Lobby', wrap);
+Block.block('Lobby', wrap);

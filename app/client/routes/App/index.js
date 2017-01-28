@@ -134,4 +134,4 @@ class App extends Block {
 const wrap = App
   .wrap(makeRoute());
 
-Block.register('App', wrap);
+Block.block('App', wrap);

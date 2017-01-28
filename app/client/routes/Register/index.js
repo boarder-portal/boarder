@@ -101,4 +101,4 @@ class Register extends Block {
 const wrap = Register
   .wrap(makeRoute());
 
-Block.register('Register', wrap);
+Block.block('Register', wrap);

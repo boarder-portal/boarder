@@ -74,4 +74,4 @@ class Login extends Block {
 const wrap = Login
   .wrap(makeRoute());
 
-Block.register('Login', wrap);
+Block.block('Login', wrap);

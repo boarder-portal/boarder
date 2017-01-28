@@ -143,6 +143,6 @@ class VirusWar extends Block {
   }
 }
 
-Block.register('VirusWar', VirusWar);
+Block.block('VirusWar', VirusWar);
 
 export default VirusWar;

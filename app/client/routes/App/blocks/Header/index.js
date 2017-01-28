@@ -30,4 +30,4 @@ class MainHeader extends Block {
   }
 }
 
-Block.register('MainHeader', MainHeader);
+Block.block('MainHeader', MainHeader);
