@@ -27,13 +27,12 @@ class Pexeso extends Block {
     this.socket = this.args.socket;
     this.loaded = gameData.currentTurnedCards.length;
     this.options = gameData.options;
-    this.setup();
 
     emitter.on(TURN_CARD, this.onTurnCard);
   }
 
   afterConstruct() {
-    this.watchArgs('gameData', this.setup);
+    this.watch('args.gameData', this.setup);
   }
 
   emit() {

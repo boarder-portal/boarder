@@ -17,11 +17,10 @@ class VirusCell extends Block {
   BORDER_WIDTH = 2;
   virusesTypes = virusesTypes;
   virusesShapes = virusesShapes;
-  color = colors[this.args.color];
 
   afterConstruct() {
-    this.watchArgs('color', (newColor) => {
-      this.color = colors[newColor];
+    this.watch('args.color', () => {
+      this.color = colors[this.args.color];
     });
   }
 }

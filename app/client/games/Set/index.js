@@ -32,14 +32,12 @@ class SetGame extends Block {
     this.socket = socket;
     this.selectedCards = D([]);
 
-    this.setup();
-
     emitter.on(FIND_SET, this.onFindSet);
     emitter.on(NO_SET_HERE, this.onNoSetHere);
   }
 
   afterConstruct() {
-    this.watchArgs('gameData', this.setup);
+    this.watch('args.gameData', this.setup);
   }
 
   emit() {

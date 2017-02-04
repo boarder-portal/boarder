@@ -41,14 +41,12 @@ class VirusWar extends Block {
     }).$;
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
 
-    this.setup();
-
     emitter.on(SET_CELL, this.onSetCell);
     emitter.on(END_TURN, this.onEndTurn);
   }
 
   afterConstruct() {
-    this.watchArgs('gameData', this.setup);
+    this.watch('args.gameData', this.setup);
   }
 
   emit() {

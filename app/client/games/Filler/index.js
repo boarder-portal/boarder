@@ -32,13 +32,12 @@ class FillerGame extends Block {
 
     this.socket = socket;
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
-    this.setup();
 
     emitter.on(CHOOSE_COLOR, this.onChooseColor);
   }
 
   afterConstruct() {
-    this.watchArgs('gameData', this.setup);
+    this.watch('args.gameData', this.setup);
   }
 
   emit() {

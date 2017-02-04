@@ -62,7 +62,6 @@ class SetCard extends Block {
   shapesTypes = shapesTypes;
   colors = colors;
   fillTypes = fillTypes;
-  card = this.args.card;
   fillPatternSwitcher = switcher()
     .case(fillTypes.EMPTY, 'rgba(0,0,0,0)')
     .case(fillTypes.FILLED, (color) => colors[color])
@@ -116,8 +115,8 @@ class SetCard extends Block {
   }
 
   afterConstruct() {
-    this.watchArgs('card', (newCard) => {
-      this.card = newCard;
+    this.watch('args.card', () => {
+      this.card = this.args.card;
     });
   }
 }

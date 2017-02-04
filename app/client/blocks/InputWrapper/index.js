@@ -44,8 +44,8 @@ class InputWrapper extends Block {
     this.input = input;
     this.labelFor = input.id();
 
-    this.watchArgs('empty', (newValue) => {
-      if (newValue) {
+    this.watch('args.empty', () => {
+      if (this.args.empty) {
         this.changed = false;
       }
     });
