@@ -1,8 +1,12 @@
-import { parseJSON, Fetch } from 'dwayne';
+import { parseJSON } from 'dwayne';
+import Ajaxer from 'ajaxer';
+import Promise from 'el-promise';
 import { endpoints } from '../../config/constants.json';
 
-export const baseURL = endpoints.base;
-export const fetcher = new Fetch({
+Ajaxer.usePromise(Promise);
+
+const baseURL = endpoints.base;
+const fetcher = new Ajaxer({
   baseURL
 });
 
@@ -21,3 +25,5 @@ fetcher
   .after((res) => {
     res.json = parseJSON(res.data, { dates: true }).$;
   });
+
+export { baseURL, fetcher };

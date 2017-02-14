@@ -1,4 +1,5 @@
-import { D, Block, Promise } from 'dwayne';
+import { D, Block } from 'dwayne';
+import Promise from 'el-promise';
 import template from './index.pug';
 import { alertTypes } from '../../constants';
 

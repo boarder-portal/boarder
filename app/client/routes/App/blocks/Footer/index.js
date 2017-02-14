@@ -1,4 +1,5 @@
-import { D, Block, Promise, html } from 'dwayne';
+import { D, Block, html } from 'dwayne';
+import Promise from 'el-promise';
 import template from './index.pug';
 import { i18n } from '../../../../i18n';
 

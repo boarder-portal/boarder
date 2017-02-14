@@ -2,6 +2,7 @@
   "name": "boarder",
   "version": "0.0.1",
   "dependencies": {
+    "ajaxer": "^1.0.0",
     "autoprefixer": "^6.5.3",
     "babel-core": "^6.18.2",
     "babel-eslint": "^6.1.2",
@@ -16,6 +17,7 @@
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.26.0",
     "dwayne": "dwaynejs/dwayne.git#dwayne-2.0",
+    "el-promise": "^1.0.1",
     "eslint": "^3.5.0",
     "eslint-loader": "^1.6.1",
     "express": "^4.14.0",

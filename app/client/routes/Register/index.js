@@ -1,4 +1,5 @@
 import { D, Block, makeRoute } from 'dwayne';
+import Promise from 'el-promise';
 import template from './index.pug';
 
 let currentFetchIfUserConfirmed = Promise.resolve();
