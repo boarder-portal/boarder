@@ -16,7 +16,6 @@ class NotFound extends Block {
   }
 }
 
-const wrap = NotFound
-  .wrap(makeRoute());
-
-Block.block('NotFound', wrap);
+Block.block('NotFound', NotFound.wrap(
+  makeRoute()
+));

@@ -1,10 +1,11 @@
-import { D, Block, makeRoute, body, doc } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute, body, doc } from 'dwayne';
 import template from './index.pug';
 import {
-  alertTypes,
-  AVATAR_LOADED_SUCCESS,
-  AVATAR_CHANGED_SUCCESS
-} from '../../constants';
+  getBlobDataURL,
+  timeout
+} from '../../helpers';
+import { ALERTS } from '../../constants';
 
 class SettingsProfile extends Block {
   static template = template();
@@ -21,7 +22,7 @@ class SettingsProfile extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       canRequest: true,
       avatarsFetching: false,
       avatars: [],
@@ -36,7 +37,7 @@ class SettingsProfile extends Block {
     this.global.userFetch
       .getAllAvatars()
       .then(({ json: avatars }) => {
-        this.avatars = D(avatars).sortBy('createdAt', true).$;
+        this.avatars = _.sortByField(avatars, 'createdAt', true);
       })
       .finally(() => {
         this.avatarsFetching = false;
@@ -84,7 +85,7 @@ class SettingsProfile extends Block {
 
     this.blockRequests();
 
-    D(file)
+    getBlobDataURL(file)
       .readAs('dataURL')
       .then((url) => {
         this.uploadingAvatarSrc = url;
@@ -141,14 +142,13 @@ class SettingsProfile extends Block {
       }
     });
 
-    D(200)
-      .timeout()
+    timeout(200)
       .then(() => {
         this.changeUploadingAvatar({
           loading: false
         });
 
-        return D(800).timeout();
+        return timeout(800);
       })
       .then(() => (
         this.global.userFetch
@@ -170,12 +170,7 @@ class SettingsProfile extends Block {
           isUploading: false,
           url: this.uploadingAvatarSrc
         });
-        this.global.addAlert({
-          type: alertTypes.AVATAR_ADDED,
-          level: 'success',
-          priority: 'medium',
-          duration: AVATAR_LOADED_SUCCESS
-        });
+        this.global.addAlert(ALERTS.AVATAR_ADDED);
       })
       .finally(() => {
         this.uploadingAvatar = doc.input('$type(file)').prop('files');
@@ -202,19 +197,14 @@ class SettingsProfile extends Block {
         this.global.changeUser({
           avatar: avatar.url
         });
-        this.global.addAlert({
-          type: alertTypes.AVATAR_CHANGED,
-          level: 'success',
-          priority: 'medium',
-          duration: AVATAR_CHANGED_SUCCESS
-        });
+        this.global.addAlert(ALERTS.AVATAR_CHANGED);
       })
       .finally(() => {
         this.unblockRequests();
       });
   };
 
-  deleteAvatar = (avatar) => {
+  deleteAvatar = ({ id, url }) => {
     const {
       canRequest,
       avatars,
@@ -229,18 +219,18 @@ class SettingsProfile extends Block {
     this.global.avatarsFetch
       .delete({
         query: {
-          avatarId: avatar.id
+          avatarId: id
         }
       })
       .then(() => {
-        const index = D(avatars).find(({ id }) => id === avatar.id).key;
+        const index = _.findIndex(avatars, { id });
 
         this.avatars = [
           ...avatars.slice(0, index),
           ...avatars.slice(index + 1)
         ];
 
-        if (user.avatar === avatar.url) {
+        if (user.avatar === url) {
           this.global.changeUser({
             avatar: null
           });
@@ -252,7 +242,6 @@ class SettingsProfile extends Block {
   };
 }
 
-const wrap = SettingsProfile
-  .wrap(makeRoute());
-
-Block.block('SettingsProfile', wrap);
+Block.block('SettingsProfile', SettingsProfile.wrap(
+  makeRoute()
+));

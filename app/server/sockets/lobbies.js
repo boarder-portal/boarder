@@ -1,14 +1,10 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const Lobby = require('../game/Lobby');
 const {
   games: gamesConfig
 } = require('../../config/constants.json');
 
-const { self } = D;
-const games = D(gamesConfig)
-  .map(self)
-  .delete('global')
-  .keys();
+const games = _.keys(_.omit(gamesConfig, 'global'));
 
 module.exports = (io) => {
   games.forEach((game) => {
@@ -22,7 +18,7 @@ module.exports = (io) => {
     new Lobby({
       socket: io.of(LOBBY_NSP),
       roomNsp: ROOM_NSP,
-      rooms: [],
+      rooms: {},
       playersCount,
       Game
     });

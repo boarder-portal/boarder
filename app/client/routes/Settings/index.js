@@ -10,7 +10,6 @@ class Settings extends Block {
   };
 }
 
-const wrap = Settings
-  .wrap(makeRoute());
-
-Block.block('Settings', wrap);
+Block.block('Settings', Settings.wrap(
+  makeRoute()
+));

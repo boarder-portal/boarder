@@ -1,4 +1,5 @@
-import { D, Block, self } from 'dwayne';
+import _ from 'lodash';
+import { Block } from 'dwayne';
 import template from './index.pug';
 import { getNeighbourCells } from '../../../shared/filler';
 import { games as gamesConfig } from '../../../config/constants.json';
@@ -52,32 +53,31 @@ class FillerGame extends Block {
     }
 
     this.field = gameData.field;
-    this.currentColors = D(gameData.currentColors);
-    this.playersCells = D(this.args.players).object((playersCells, player) => {
-      const { mainCell } = player.data;
-
-      playersCells[player.login] = D([mainCell])
-        .concat(getNeighbourCells(this.field, mainCell.color, D([mainCell])));
-    }).$;
+    this.currentColors = gameData.currentColors;
+    this.playersCells = _(this.args.players)
+      .map(({ data: { mainCell }, login }) => [
+        login,
+        _.concat([mainCell], getNeighbourCells(this.field, mainCell.color, [mainCell]))
+      ])
+      .fromPairs()
+      .value();
   };
 
   changeCells(cells, color) {
     const { field } = this;
 
-    cells.forEach((cell) => {
+    _.forEach(cells, (cell) => {
       field[cell.y][cell.x] = {
         ...field[cell.y][cell.x],
         color
       };
     });
 
-    this.field = D(field).map((row) => (
-      D(row).map(self).$
-    )).$;
+    this.field = _.map(field, (row) => _.map(row));
   }
 
   chooseColor(color) {
-    if (!this.args.isMyTurn || !colors[color] || this.currentColors.includes(color)) {
+    if (!this.args.isMyTurn || !colors[color] || _.includes(this.currentColors, color)) {
       return;
     }
 
@@ -88,10 +88,10 @@ class FillerGame extends Block {
     const playerCells = this.playersCells[player.login];
     const neighbours = getNeighbourCells(this.field, color, playerCells);
 
-    this.currentColors = D(currentColors);
+    this.currentColors = currentColors;
 
     this.changeCells(playerCells, color);
-    playerCells.push(...neighbours.$);
+    playerCells.push(...neighbours);
   };
 }
 

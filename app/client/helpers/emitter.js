@@ -1,10 +1,10 @@
-import { D } from 'dwayne';
+import _ from 'lodash';
 
 class Emitter {
   _listeners = {};
 
   on(event, listener) {
-    const listeners = this._listeners[event] = this._listeners[event] || D([]);
+    const listeners = this._listeners[event] = this._listeners[event] || [];
     const index = listeners.length;
 
     listeners.push(listener);
@@ -13,9 +13,11 @@ class Emitter {
   }
 
   emit(event, data) {
-    const e = D({}).assign({ type: event }, data).$;
+    const e = _.assign({}, { type: event }, data);
 
-    D(this._listeners[event]).forEach((listener) => listener(e));
+    _.forEach(this._listeners[event], (listener) => {
+      listener(e);
+    });
   }
 }
 

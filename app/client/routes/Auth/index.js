@@ -10,7 +10,6 @@ class Auth extends Block {
   };
 }
 
-const wrap = Auth
-  .wrap(makeRoute());
-
-Block.block('Auth', wrap);
+Block.block('Auth', Auth.wrap(
+  makeRoute()
+));

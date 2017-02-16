@@ -1,4 +1,5 @@
-import { D, Block, makeRoute } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { TIME_TO_ALERT_AFTER_LOGIN } from '../../constants';
 
@@ -27,7 +28,7 @@ class Login extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       submitting: false,
       loginSuccess: false,
       loginError: false,
@@ -58,9 +59,10 @@ class Login extends Block {
           this.loginSuccess = true;
           this.global.changeUser(user);
 
-          D(TIME_TO_ALERT_AFTER_LOGIN)
-            .timeout()
-            .then(this.global.addNotConfirmedAlertIfNeeded);
+          setTimeout(
+            this.global.addNotConfirmedAlertIfNeeded,
+            TIME_TO_ALERT_AFTER_LOGIN
+          );
         } else {
           this.loginError = true;
         }
@@ -71,7 +73,6 @@ class Login extends Block {
   };
 }
 
-const wrap = Login
-  .wrap(makeRoute());
-
-Block.block('Login', wrap);
+Block.block('Login', Login.wrap(
+  makeRoute()
+));

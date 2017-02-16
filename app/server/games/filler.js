@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const Game = require('./');
 const { getNeighbourCells } = require('../../shared/filler');
 const {
@@ -14,15 +14,10 @@ const {
   }
 } = require('../../config/constants.json');
 
-const {
-  array,
-  iterate
-} = D;
-
-const colors = D(colorsObject).keys();
-const WIDTH = 30;
-const HEIGHT = 16;
-const WIDTH05 = D(WIDTH / 2).round;
+const colors = _.keys(colorsObject);
+const WIDTH = 10;
+const HEIGHT = 6;
+const WIDTH05 = _.round(WIDTH / 2);
 
 /**
  * @class FillerGame
@@ -40,21 +35,21 @@ class FillerGame extends Game {
   prepareGame() {
     super.prepareGame();
 
-    const field = this.field = array(HEIGHT, (y) => (
-      array(WIDTH, (x) => ({
+    const field = this.field = _.times(HEIGHT, (y) => (
+      _.times(WIDTH, (x) => ({
         x,
         y,
         color: null
-      })).$
-    )).$;
-    const currentColors = this.currentColors = D([]);
+      }))
+    ));
+    const currentColors = this.currentColors = [];
 
-    iterate(HEIGHT, (y) => {
+    _.times(HEIGHT, (y) => {
       const y1 = HEIGHT - y - 1;
 
-      iterate(WIDTH05, (x) => {
+      _.times(WIDTH05, (x) => {
         const x1 = WIDTH - x - 1;
-        const color = colors.random();
+        const color = _.sample(colors);
         const topCell = field[y - 1] && field[y - 1][x];
         const leftCell = field[y][x - 1];
         const isTopLeft = x === 0 && y === 0;
@@ -88,7 +83,7 @@ class FillerGame extends Game {
         if (coords) {
           color1 = field[y + y1 - coords.y][x + x1 - coords.x].color;
         } else {
-          const neighbourColors = D([]);
+          const neighbourColors = [];
 
           if (isThereTopNeighbour) {
             neighbourColors.push(field[y1 + 1][x1].color);
@@ -102,9 +97,9 @@ class FillerGame extends Game {
             neighbourColors.push(color);
           }
 
-          color1 = colors
+          color1 = _(colors)
             .filter((color) => !neighbourColors.includes(color))
-            .random();
+            .sample();
 
           if (isTopLeft) {
             currentColors.push(color, color1);
@@ -115,20 +110,20 @@ class FillerGame extends Game {
         field[y1][x1].color = color1;
       });
     });
-    this.players.$[0].active = true;
+    this.players[0].active = true;
 
-    const mainCell = this.players.$[0].data.mainCell = field[0][0];
-    const mainCell1 = this.players.$[1].data.mainCell = field[HEIGHT - 1][WIDTH - 1];
+    const mainCell = this.players[0].data.mainCell = field[0][0];
+    const mainCell1 = this.players[1].data.mainCell = field[HEIGHT - 1][WIDTH - 1];
 
-    this.players.$[0].cells = [mainCell];
-    this.players.$[1].cells = [mainCell1];
+    this.players[0].cells = [mainCell];
+    this.players[1].cells = [mainCell1];
 
-    this.chooseColor(mainCell.color, this.players.$[0]);
-    this.chooseColor(mainCell1.color, this.players.$[1]);
+    this.chooseColor(mainCell.color, this.players[0], true);
+    this.chooseColor(mainCell1.color, this.players[1], true);
     this.startGame();
   }
 
-  chooseColor(color, player) {
+  chooseColor(color, player, isFirst) {
     if (this.finished) {
       return;
     }
@@ -145,12 +140,16 @@ class FillerGame extends Game {
     currentColors.splice(currentColors.indexOf(playerMainCell.color), 1);
     currentColors.push(color);
 
-    const neighbourCells = getNeighbourCells(field, color, playerCells);
+    let neighbourCells = getNeighbourCells(field, color, playerCells);
+
+    if (isFirst) {
+      neighbourCells = neighbourCells.filter((cell) => cell !== playerMainCell);
+    }
 
     playerCells.forEach((cell) => {
       cell.color = color;
     });
-    playerCells.push(...neighbourCells.$);
+    playerCells.push(...neighbourCells);
 
     player.score = playerCells.length;
 
@@ -172,7 +171,7 @@ class FillerGame extends Game {
 
     const { player } = socket;
 
-    this.chooseColor(color, player);
+    this.chooseColor(color, player, false);
     this.changeTurn();
     this.emit(CHOOSE_COLOR, {
       currentColors,

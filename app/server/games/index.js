@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const {
   games: {
     global: {
@@ -13,10 +13,16 @@ const {
       }
     }
   },
-  colors: colorsObject
+  colors
 } = require('../../config/constants.json');
 
-const colors = D(colorsObject).keys();
+const COLORS = _.keys(colors);
+const PUBLIC_FIELDS = [
+  'field',
+  'turn',
+  'players',
+  'options'
+];
 
 /**
  * @class Game
@@ -26,7 +32,7 @@ class Game {
   static listeners = {};
 
   constructor(props) {
-    D(this).assign(props);
+    _.assign(this, props);
 
     this.prepareGame();
   }
@@ -52,7 +58,7 @@ class Game {
     this.pureEmit(PREPARING_GAME);
 
     this.turn = 0;
-    this.players
+    this.players = _(this.players)
       .shuffle()
       .forEach((player) => {
         player.score = 0;
@@ -61,13 +67,10 @@ class Game {
 
   setColors() {
     const { players } = this;
-    const newColors = colors
-      .slice(0, players.length)
-      .shuffle()
-      .$;
+    const colors = _.shuffle(COLORS);
 
     players.forEach((player, i) => {
-      player.color = newColors[i];
+      player.color = colors[i];
     });
   }
 
@@ -78,7 +81,7 @@ class Game {
   isSocketActivePlayer(socket) {
     const { player } = socket;
 
-    return this.players.$[this.turn].login === player.login;
+    return this.players[this.turn].login === player.login;
   }
 
   changeTurn(isNeededToUpdatePlayers) {
@@ -88,8 +91,8 @@ class Game {
       ? 0
       : this.turn;
 
-    this.players.$[oldTurn].active = false;
-    this.players.$[this.turn].active = true;
+    this.players[oldTurn].active = false;
+    this.players[this.turn].active = true;
 
     if (isNeededToUpdatePlayers) {
       this.updatePlayers();
@@ -106,19 +109,7 @@ class Game {
   }
 
   toJSON() {
-    const {
-      field,
-      turn,
-      players,
-      options
-    } = this;
-
-    return {
-      field,
-      turn,
-      players,
-      options
-    };
+    return _.pick(this, PUBLIC_FIELDS);
   }
 }
 

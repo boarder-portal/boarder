@@ -1,4 +1,14 @@
-const D = require('dwayne');
+const _ = require('lodash');
+
+const PUBLIC_FIELDS = [
+  'login',
+  'avatar',
+  'ready',
+  'active',
+  'score',
+  'color',
+  'data'
+];
 
 /**
  * @class Player
@@ -22,7 +32,7 @@ class Player {
    * @public
    */
   /**
-   * @member {Super} Player#sockets
+   * @member {Object} Player#sockets
    * @public
    */
   /**
@@ -39,14 +49,14 @@ class Player {
    */
 
   constructor(props) {
-    this.sockets = D({});
+    this.sockets = {};
 
-    D(this).assign(props);
+    _.assign(this, props);
     this.setInitialGameState();
   }
 
   setInitialGameState() {
-    D(this).assign({
+    _.assign(this, {
       ready: false,
       active: false,
       score: 0,
@@ -55,25 +65,7 @@ class Player {
   }
 
   toJSON() {
-    const {
-      login,
-      avatar,
-      ready,
-      active,
-      score,
-      color,
-      data
-    } = this;
-
-    return {
-      login,
-      avatar,
-      ready,
-      active,
-      score,
-      color,
-      data
-    };
+    return _.pick(this, PUBLIC_FIELDS);
   }
 }
 

@@ -133,11 +133,12 @@
     "pexeso": {
       "LOBBY_NSP": "/pexeso/lobby",
       "ROOM_NSP": "/pexeso/room/$roomId",
+      "TRANSITION_DURATION": 200,
+      "CARD_SHOWN_DURATION": 2000,
       "playersCount": 4,
       "events": {
         "game": {
-          "TURN_CARD": "pexeso/turn-card",
-          "CARDS_LOADED": "pexeso/cards-loaded"
+          "TURN_CARD": "pexeso/turn-card"
         }
       },
       "sets": [

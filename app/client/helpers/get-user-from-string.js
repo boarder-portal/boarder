@@ -1,4 +1,5 @@
-import { parseJSON, doc } from 'dwayne';
+import { doc } from 'dwayne';
+import { parseJSON } from './parseJSON';
 
 export function getUserFromString() {
   return parseJSON(
@@ -6,6 +7,6 @@ export function getUserFromString() {
       .div()
       .html(window.boarderUser || null)
       .text(),
-    { dates: true }
-  ).$;
+    true
+  );
 }

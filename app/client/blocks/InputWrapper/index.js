@@ -1,15 +1,11 @@
-import { D, Block, isFunction, switcher } from 'dwayne';
+import _ from 'lodash';
+import { Block } from 'dwayne';
 import template from './index.pug';
 import {
   requiredValidator,
   passwordRepeatValidator,
   emailValidator
 } from '../../helpers';
-
-const validatorSwitcher = switcher()
-  .case('required', () => requiredValidator)
-  .case('password-repeat', () => passwordRepeatValidator)
-  .case('email', () => emailValidator);
 
 class InputWrapper extends Block {
   static template = template();
@@ -23,7 +19,7 @@ class InputWrapper extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       changed: false,
       error: null
     });
@@ -51,10 +47,10 @@ class InputWrapper extends Block {
     });
 
     if (validators) {
-      D(validators).forEach((validator) => {
-        validator = validatorSwitcher(validator);
+      _.forEach(validators, (validator) => {
+        validator = this.validatorSwitcher(validator);
 
-        if (isFunction(validator)) {
+        if (_.isFunction(validator)) {
           input.validate(validator);
         }
       });
@@ -69,6 +65,23 @@ class InputWrapper extends Block {
           input.toggleAttr('invalid', this.changed && error);
         }
       });
+    }
+  }
+
+  validatorSwitcher(validator) {
+    /* eslint indent: 0 */
+    switch (validator) {
+      case 'required': {
+        return requiredValidator;
+      }
+
+      case 'password-repeat': {
+        return passwordRepeatValidator;
+      }
+
+      case 'email': {
+        return emailValidator;
+      }
     }
   }
 }

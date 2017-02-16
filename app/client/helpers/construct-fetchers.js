@@ -1,4 +1,4 @@
-import { D } from 'dwayne';
+import _ from 'lodash';
 import { fetcher, baseURL } from './fetcher';
 import { endpoints } from '../../config/constants.json';
 
@@ -13,12 +13,12 @@ function constructFetchers(path) {
     baseURL: baseURL + base
   });
 
-  return D(paths).map(({ base, method }) => (
+  return _.mapValues(paths, ({ base, method }) => (
     fetcherInstance.instance({
       url: base,
       method
     })
-  )).$;
+  ));
 }
 
 export { constructFetchers };

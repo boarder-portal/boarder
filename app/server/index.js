@@ -6,7 +6,6 @@ require('babel-register')({
   ]
 });
 
-const { date } = require('dwayne');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -85,12 +84,12 @@ if (development) {
 
 process.on('uncaughtException', (err) => {
   console.error(err);
-  logs.write(`${ date().toISOString() }\nUncaught exception:\n ${ err.stack }\n\n`);
+  logs.write(`${ new Date().toISOString() }\nUncaught exception:\n ${ err.stack }\n\n`);
 });
 
 process.on('unhandledRejection', (err) => {
   console.error(err);
-  logs.write(`${ date().toISOString() }\nUnhandled rejection:\n ${ err.stack }\n\n`);
+  logs.write(`${ new Date().toISOString() }\nUnhandled rejection:\n ${ err.stack }\n\n`);
 });
 
 server.listen(port, (error) => {

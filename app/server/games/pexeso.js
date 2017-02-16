@@ -1,22 +1,22 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const Game = require('./');
 const {
   games: {
     pexeso: {
+      TRANSITION_DURATION,
+      CARD_SHOWN_DURATION,
       events: {
         game: {
-          TURN_CARD,
-          CARDS_LOADED
+          TURN_CARD
         }
       }
     }
   }
 } = require('../../config/constants.json');
+const SLEEP_DURATION = CARD_SHOWN_DURATION + 4 * TRANSITION_DURATION;
 
-const { array } = D;
-
-const setsCount = 30;
-const cards = array(setsCount);
+const SETS_COUNT = 30;
+const CARDS_ARRAY = _.times(SETS_COUNT).concat(_.times(SETS_COUNT));
 
 /**
  * @class PexesoGame
@@ -28,34 +28,27 @@ class PexesoGame extends Game {
     [TURN_CARD]: {
       forActivePlayer: true,
       listener: 'onTurnCard'
-    },
-    [CARDS_LOADED]: {
-      listener: 'onCardsLoaded'
     }
   };
 
   prepareGame() {
     super.prepareGame();
 
-    const newCards = D(cards)
-      .concat(cards)
-      .shuffle()
-      .$;
+    const newCards = _.shuffle(CARDS_ARRAY);
 
-    this.areAllTurned = false;
-    this.currentLoadedPlayersCards = {};
+    this.sleepMode = false;
     this.currentTurnedCards = [];
     this.allTurnedCardsCount = 0;
-    this.field = array(2, (y) => (
-      array(2, (x) => ({
+    this.field = _.times(6, (y) => (
+      _.times(10, (x) => ({
         x,
         y,
         isInPlay: true,
         isTurned: false,
         card: newCards.pop() + 1
-      })).$
-    )).$;
-    this.players.$[0].active = true;
+      }))
+    ));
+    this.players[0].active = true;
 
     this.startGame();
   }
@@ -65,7 +58,7 @@ class PexesoGame extends Game {
     const { currentTurnedCards } = this;
     const card = this.field[y][x];
 
-    if (!card.isInPlay || card.isTurned || currentTurnedCards.length >= 2) {
+    if (this.sleepMode || !card.isInPlay || card.isTurned) {
       return;
     }
 
@@ -82,44 +75,19 @@ class PexesoGame extends Game {
     });
 
     if (currentTurnedCards.length === 2) {
-      this.areAllTurned = true;
-    }
-  }
+      this.sleepMode = true;
+      this.currentTurnedCards = [];
 
-  onCardsLoaded(data, socket) {
-    if (!this.areAllTurned) {
-      return;
-    }
+      currentTurnedCards.forEach((card) => {
+        if (match) {
+          card.isInPlay = false;
+        } else {
+          card.isTurned = false;
+        }
+      });
 
-    const { currentLoadedPlayersCards } = this;
-
-    currentLoadedPlayersCards[socket.player.login] = true;
-
-    if (D(currentLoadedPlayersCards).count !== this.players.length) {
-      return;
-    }
-
-    const {
-      currentTurnedCards,
-      match
-    } = this;
-    const player = this.players.$[this.turn];
-
-    this.areAllTurned = false;
-
-    D(2000)
-      .timeout()
-      .then(() => {
-        this.currentTurnedCards = [];
-        this.currentLoadedPlayersCards = {};
-
-        currentTurnedCards.forEach((card) => {
-          if (match) {
-            card.isInPlay = false;
-          } else {
-            card.isTurned = false;
-          }
-        });
+      setTimeout(() => {
+        this.sleepMode = false;
 
         if (match) {
           player.score++;
@@ -131,7 +99,8 @@ class PexesoGame extends Game {
         } else {
           this.changeTurn(true);
         }
-      });
+      }, SLEEP_DURATION);
+    }
   }
 
   toJSON() {

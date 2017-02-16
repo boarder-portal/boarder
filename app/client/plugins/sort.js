@@ -1,8 +1,10 @@
-import { Arr } from 'dwayne';
+import _ from 'lodash';
 
-Arr.addInstanceProperties({
-  sortBy(field, reverse) {
-    return this.sort((x, y) => {
+_.mixin({
+  sortByField(array, field, reverse) {
+    reverse = !!reverse;
+
+    return array.sort((x, y) => {
       if (reverse) {
         return sort(field, y, x);
       }

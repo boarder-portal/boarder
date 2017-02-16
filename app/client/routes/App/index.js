@@ -1,4 +1,5 @@
-import { D, Block, makeRoute } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import {
   getUserFromString,
@@ -6,11 +7,9 @@ import {
   fetcher
 } from '../../helpers';
 import {
-  alertsLevels,
-  alertsPriorities,
-  alertTypes,
-  AJAX_ERROR_ALERT_DURATION,
-  REGISTER_NOT_CONFIRMED_ALERT_DURATION,
+  ALERTS,
+  ALERTS_LEVELS,
+  ALERTS_PRIORITIES,
   TIME_TO_ALERT_AFTER_PAGE_LOAD
 } from '../../constants';
 
@@ -32,27 +31,27 @@ class App extends Block {
     super(opts);
 
     const user = getUserFromString();
-    const alerts = D(alertsPriorities).object((alerts, priority) => {
-      alerts[priority] = D(alertsLevels).object((alerts, level) => {
-        alerts[level] = [];
-      }).$;
-    }).$;
+    const alerts = _(ALERTS_PRIORITIES)
+      .map((p) => [
+        p,
+        _(ALERTS_LEVELS)
+          .map((l) => [l, []])
+          .fromPairs()
+          .value()
+      ])
+      .fromPairs()
+      .value();
 
     fetcher
       .after((err, res) => {
         console.log(res);
 
-        this.addAlert({
-          type: alertTypes.AJAX_ERROR,
-          priority: 'high',
-          level: 'error',
-          duration: AJAX_ERROR_ALERT_DURATION
-        });
+        this.addAlert(ALERTS.AJAX_ERROR);
 
         throw err;
       });
 
-    D(this.global).assign({
+    _.assign(this.global, {
       user,
       changeUser: this.changeUser,
       alerts,
@@ -76,12 +75,17 @@ class App extends Block {
     };
   };
 
-  addAlert = ({ type, level, priority, duration }) => {
+  addAlert = (Alert) => {
+    const {
+      level,
+      priority,
+      duration
+    } = Alert;
     const alerts = this.global.alerts;
 
     const alert = {
       id: alertId++,
-      type,
+      type: Alert,
       duration,
       remove: () => {
         const alerts = this.global.alerts;
@@ -121,17 +125,11 @@ class App extends Block {
     const { user } = this.global;
 
     if (user && !user.confirmed) {
-      this.addAlert({
-        type: alertTypes.USER_NOT_CONFIRMED,
-        level: 'warning',
-        priority: 'very-low',
-        duration: REGISTER_NOT_CONFIRMED_ALERT_DURATION
-      });
+      this.addAlert(ALERTS.USER_NOT_CONFIRMED);
     }
   };
 }
 
-const wrap = App
-  .wrap(makeRoute());
-
-Block.block('App', wrap);
+Block.block('App', App.wrap(
+  makeRoute()
+));

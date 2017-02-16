@@ -1,4 +1,4 @@
-const { isNull } = require('dwayne');
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const Attachment = require('./attachment');
 const hashPassword = require('../../helpers/hash-password');
@@ -87,7 +87,7 @@ const User = db.define('user', {
     getAvatar() {
       const { avatarId } = this;
 
-      if (isNull(this.avatarId)) {
+      if (_.isNull(this.avatarId)) {
         return Promise.resolve(null);
       }
 

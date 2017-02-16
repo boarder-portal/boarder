@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const Game = require('./');
 const {
   games: {
@@ -16,12 +16,11 @@ const {
   }
 } = require('../../config/constants.json');
 
-const { array } = D;
-const shapesTypes = D(shapesTypesObject).keys();
-const colors = D(colorsObject).keys();
-const fillTypes = D(fillTypesObject).keys();
-const countTypes = array(3, (n) => n + 1);
-const cards = D([]);
+const shapesTypes = _.keys(shapesTypesObject);
+const colors = _.keys(colorsObject);
+const fillTypes = _.keys(fillTypesObject);
+const countTypes = _.times(3, (n) => n + 1);
+const cards = [];
 
 shapesTypes.forEach((shape) => {
   colors.forEach((color) => {
@@ -56,17 +55,15 @@ class SetGame extends Game {
   prepareGame() {
     super.prepareGame();
 
-    const remainingCards = this.remainingCards = cards
-      .map((card) => D(card).clone().$)
-      .shuffle();
+    const remainingCards = this.remainingCards = _.shuffle(cards.map(_.clone));
 
-    this.field = array(12, (i) => (
-      D(remainingCards.pop()).assign({
+    this.field = _.times(12, (i) => (
+      _.assign(remainingCards.pop(), {
         index: i,
         x: Math.floor(i / 3),
         y: i % 3
-      }).$
-    )).$;
+      })
+    ));
 
     this.startGame();
   }
@@ -102,9 +99,9 @@ class SetGame extends Game {
         const newCard2 = remainingCards.pop();
         const newCard3 = remainingCards.pop();
 
-        D(card1).assign(newCard1);
-        D(card2).assign(newCard2);
-        D(card3).assign(newCard3);
+        _.assign(card1, newCard1);
+        _.assign(card2, newCard2);
+        _.assign(card3, newCard3);
 
         additionalCards = cards;
       // when there are still cards in the deck and there are more than 12 cards on the table
@@ -124,13 +121,11 @@ class SetGame extends Game {
             y
           } = card;
 
-          D(card)
-            .assign(lastCardsInPlay[i])
-            .assign({
-              index,
-              x,
-              y
-            });
+          _.assign(card, lastCardsInPlay[i], {
+            index,
+            x,
+            y
+          });
         });
         cardsToMove = lastCardsInPlay.map((card, i) => {
           const {
@@ -198,17 +193,17 @@ class SetGame extends Game {
         const newCard2 = remainingCards.pop();
         const newCard3 = remainingCards.pop();
 
-        D(newCard1).assign({
+        _.assign(newCard1, {
           index: length,
           x,
           y: 0
         });
-        D(newCard2).assign({
+        _.assign(newCard2, {
           index: length + 1,
           x,
           y: 1
         });
-        D(newCard3).assign({
+        _.assign(newCard3, {
           index: length + 2,
           x,
           y: 2

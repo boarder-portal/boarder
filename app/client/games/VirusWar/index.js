@@ -1,4 +1,5 @@
-import { D, Block } from 'dwayne';
+import _ from 'lodash';
+import { Block } from 'dwayne';
 import template from './index.pug';
 import { toRGBA } from '../../helpers';
 import { getAvailableCells } from '../../../shared/virus-war';
@@ -33,12 +34,14 @@ class VirusWar extends Block {
     } = this.args;
 
     this.socket = socket;
-    this.mapPlayersToColors = D(gameData.players).object((colors, { color, login }) => {
-      colors[login] = color;
-    }).$;
-    this.mapPlayersToShapes = D(gameData.players).object((shapes, { data: { shape }, login }) => {
-      shapes[login] = shape;
-    }).$;
+    this.mapPlayersToColors = _(gameData.players)
+      .map(({ color, login }) => [login, color])
+      .fromPairs()
+      .value();
+    this.mapPlayersToShapes = _(gameData.players)
+      .map(({ data: { shape }, login }) => [login, shape])
+      .fromPairs()
+      .value();
     this.isTopLeft = gameData.players[0].login === this.global.user.login;
 
     emitter.on(SET_CELL, this.onSetCell);
@@ -61,12 +64,12 @@ class VirusWar extends Block {
     }
 
     this.field = gameData.field;
-    this.lastSetCells = D(gameData.lastSetCells);
+    this.lastSetCells = gameData.lastSetCells;
 
-    this.lastSetCells.forEach(({ x, y }) => {
+    _.forEach(this.lastSetCells, ({ x, y }) => {
       this.field[y][x].isAmongLastSetCells = true;
     });
-    getAvailableCells(this.field, this.global.user, this.lastSetCells).forEach((cell) => {
+    _.forEach(getAvailableCells(this.field, this.global.user, this.lastSetCells), (cell) => {
       cell.isAvailable = true;
     });
   };
@@ -98,22 +101,22 @@ class VirusWar extends Block {
     } = this;
 
     if (isLast && !isMyTurn) {
-      this.lastSetCells = D([]);
+      this.lastSetCells = [];
     }
 
     const availableCells = getAvailableCells(field, user, this.lastSetCells);
 
     if (isLast && isMyTurn) {
-      this.lastSetCells = D([]);
+      this.lastSetCells = [];
     }
 
-    this.field = D(field).map((row) => (
-      D(row).map((cell) => ({
+    this.field = _.map(field, (row) => (
+      _.map(row, (cell) => ({
         ...cell,
-        isAvailable: availableCells.includes(cell),
-        isAmongLastSetCells: this.lastSetCells.some(({ x, y }) => cell.x === x && cell.y === y)
-      })).$
-    )).$;
+        isAvailable: _.includes(availableCells, cell),
+        isAmongLastSetCells: _.some(this.lastSetCells, ({ x, y }) => cell.x === x && cell.y === y)
+      }))
+    ));
   }
 
   onEndTurn = () => {

@@ -1,34 +1,30 @@
 import { D, Block } from 'dwayne';
 import Promise from 'el-promise';
 import template from './index.pug';
-import { alertTypes } from '../../constants';
+import { ALERTS } from '../../constants';
 
 let currentFetchIfUserConfirmed = Promise.resolve();
 
 class Alert extends Block {
   static template = template();
 
-  alertTypes = alertTypes;
+  ALERTS = ALERTS;
   visible = false;
 
   afterRender() {
     const { alert } = this.args;
 
-    D(100)
-      .timeout()
-      .then(() => {
-        this.visible = true;
+    setTimeout(() => {
+      this.visible = true;
 
-        if (alert.duration !== Infinity) {
-          const off = this.alertElem.on('transitionend', () => {
-            off();
+      if (alert.duration !== Infinity) {
+        const off = this.alertElem.on('transitionend', () => {
+          off();
 
-            D(alert.duration)
-              .timeout()
-              .then(this.close);
-          });
-        }
-      });
+          setTimeout(this.close, alert.duration);
+        });
+      }
+    }, 100);
   }
 
   close = () => {

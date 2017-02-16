@@ -1,10 +1,7 @@
-import { D, Block, makeRoute } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
-import {
-  alertTypes,
-  CHANGE_PASSWORD_FAILURE,
-  CHANGE_PASSWORD_SUCCESS
-} from '../../constants';
+import { ALERTS } from '../../constants';
 
 class SettingsAccount extends Block {
   static template = template();
@@ -31,7 +28,7 @@ class SettingsAccount extends Block {
   }
 
   resetChangePasswordBlock() {
-    D(this).assign({
+    _.assign(this, {
       changePasswordFormChanged: false,
       attemptedToChangePassword: false,
       changingPassword: false,
@@ -73,23 +70,13 @@ class SettingsAccount extends Block {
         .changePassword({ data })
         .then(({ json: success }) => {
           if (!success) {
-            this.global.addAlert({
-              type: alertTypes.CHANGE_PASSWORD_FAILURE,
-              level: 'error',
-              priority: 'high',
-              duration: CHANGE_PASSWORD_FAILURE
-            });
+            this.global.addAlert(ALERTS.CHANGE_PASSWORD_FAILURE);
 
             return;
           }
 
           this.resetChangePasswordBlock();
-          this.global.addAlert({
-            type: alertTypes.CHANGE_PASSWORD_SUCCESS,
-            level: 'success',
-            priority: 'high',
-            duration: CHANGE_PASSWORD_SUCCESS
-          });
+          this.global.addAlert(ALERTS.CHANGE_PASSWORD_SUCCESS);
         })
         .finally(() => {
           this.changingPassword = false;
@@ -98,7 +85,6 @@ class SettingsAccount extends Block {
   };
 }
 
-const wrap = SettingsAccount
-  .wrap(makeRoute());
-
-Block.block('SettingsAccount', wrap);
+Block.block('SettingsAccount', SettingsAccount.wrap(
+  makeRoute()
+));

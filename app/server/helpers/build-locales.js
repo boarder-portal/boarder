@@ -1,9 +1,7 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const path = require('path');
 const fs = require('fs-promise');
 const { resolveGlob } = require('./require-glob');
-
-const { parseJSON } = D;
 
 exports.buildLocales = (sourceDir, buildDir, client) => {
   const locales = {};
@@ -17,7 +15,9 @@ exports.buildLocales = (sourceDir, buildDir, client) => {
 
     modules.reduce((localTranslations, module, index) => {
       if (index === modules.length - 1) {
-        return D(localTranslations).deepAssign(parseJSON(fs.readFileSync(filename)).$);
+        return _.merge(localTranslations, JSON.parse(
+          fs.readFileSync(filename)
+        ));
       }
 
       /* eslint no-return-assign: 0 */
@@ -25,8 +25,8 @@ exports.buildLocales = (sourceDir, buildDir, client) => {
     }, translations);
   });
 
-  D(locales).forEach((translations, locale) => {
-    translations = D(translations).json();
+  _.forEach(locales, (translations, locale) => {
+    translations = JSON.stringify(translations);
 
     const path = `${ buildDir }/${ locale }.${ client ? 'js' : 'json' }`;
 

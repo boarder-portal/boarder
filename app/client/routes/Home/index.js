@@ -15,7 +15,6 @@ class Home extends Block {
   }
 }
 
-const wrap = Home
-  .wrap(makeRoute());
-
-Block.block('Home', wrap);
+Block.block('Home', Home.wrap(
+  makeRoute()
+));

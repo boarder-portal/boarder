@@ -1,7 +1,5 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const { requireGlob } = require('./require-glob');
+const sources = requireGlob('/app/server/helpers/!(index|build-locales|hash-password|livereload).js');
 
-requireGlob('/app/server/helpers/!(index|build-locales|hash-password|livereload).js')
-  .forEach((helpers) => {
-    D(exports).assign(helpers);
-  });
+_.assign(exports, ...sources);

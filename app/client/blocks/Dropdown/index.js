@@ -1,4 +1,5 @@
-import { D, Block, body, isFunction } from 'dwayne';
+import _ from 'lodash';
+import { D, Block, body } from 'dwayne';
 import template from './index.pug';
 
 const dropdownSelector = '.dropdown';
@@ -16,7 +17,7 @@ class Dropdown extends Block {
       args: { setDropdown }
     } = this;
 
-    if (isFunction(setDropdown)) {
+    if (_.isFunction(setDropdown)) {
       setDropdown(this);
     }
 

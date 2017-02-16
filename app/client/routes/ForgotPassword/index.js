@@ -1,4 +1,5 @@
-import { D, Block, makeRoute } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 
 class ForgotPassword extends Block {
@@ -26,7 +27,7 @@ class ForgotPassword extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       submitting: false,
       fetchSuccess: false,
       emailError: false,
@@ -58,7 +59,6 @@ class ForgotPassword extends Block {
   };
 }
 
-const wrap = ForgotPassword
-  .wrap(makeRoute());
-
-Block.block('ForgotPassword', wrap);
+Block.block('ForgotPassword', ForgotPassword.wrap(
+  makeRoute()
+));

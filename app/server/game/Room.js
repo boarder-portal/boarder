@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const { io } = require('../');
 const Player = require('./Player');
 const {
@@ -32,12 +32,18 @@ const {
 } = require('../../config/constants.json');
 const { ROOM_DESTRUCTION_DELAY } = require('../constants/index');
 
-const {
-  array,
-  isNull,
-  method
-} = D;
-const disconnect = method('disconnect');
+const isNotNull = _.negate(_.isNull);
+const disconnect = _.method('disconnect');
+const PUBLIC_FIELDS = [
+  'id',
+  'name',
+  'game',
+  'playersCount',
+  'status',
+  'players',
+  'observersCount',
+  'gameOptions'
+];
 
 /**
  * @class Room
@@ -57,11 +63,11 @@ class Room {
    * @public
    */
   /**
-   * @member {Arr} Room#players
+   * @member {Player[]} Room#players
    * @public
    */
   /**
-   * @member {Arr} Room#observers
+   * @member {String[]} Room#observers
    * @public
    */
   /**
@@ -77,7 +83,7 @@ class Room {
    * @protected
    */
   /**
-   * @member {Promise} Room#_timeout
+   * @member {Number} Room#_timeout
    * @protected
    */
 
@@ -89,16 +95,14 @@ class Room {
       _expires = ROOM_DESTRUCTION_DELAY
     } = props;
     const socket = io.of(roomNsp.replace(/\$roomId/, id));
-    const timeout = D(0).timeout();
 
-    timeout.catch(() => {});
-
-    D(this).assign({
+    _.assign(this, {
       status: NOT_PLAYING,
-      players: array(playersCount, () => null),
-      observers: D({}),
+      players: _.times(playersCount, () => null),
+      observers: {},
+      observersCount: 0,
       socket,
-      _timeout: timeout
+      _timeout: setTimeout(_.noop, 0)
     }, props, {
       _expires
     });
@@ -114,23 +118,22 @@ class Room {
    * @method Room#delete
    * @public
    */
-  delete() {
+  delete = () => {
     const {
       lobby,
       socket
     } = this;
 
     const { connected } = socket;
-    const sockets = D(connected);
 
     socket.removeAllListeners();
 
     while (connected.length) {
-      sockets.forEach(disconnect);
+      _.forEach(connected, disconnect);
     }
 
     lobby.deleteRoom(this);
-  }
+  };
 
   /**
    * @method Room#expires
@@ -145,17 +148,13 @@ class Room {
 
     time = time || _expires;
 
-    _timeout.abort();
+    clearTimeout(_timeout);
 
     if (time === Infinity) {
       return;
     }
 
-    const timeout = this._timeout = D(time).timeout();
-
-    timeout
-      .then(() => this.delete(), () => {})
-      .catch(() => {});
+    this._timeout = setTimeout(this.delete, time);
   }
 
   /**
@@ -171,25 +170,24 @@ class Room {
     this.status = FINISHING;
 
     this.update();
-    D(5000)
-      .timeout()
-      .then(() => {
-        this.game = null;
-        this.status = NOT_PLAYING;
 
-        players.forEach((player, i) => {
-          if (player) {
-            if (player.sockets.count) {
-              player.setInitialGameState();
-            } else {
-              players.$[i] = null;
-            }
+    setTimeout(() => {
+      this.game = null;
+      this.status = NOT_PLAYING;
+
+      players.forEach((player, i) => {
+        if (player) {
+          if (_.isEmpty(player.sockets)) {
+            players[i] = null;
+          } else {
+            player.setInitialGameState();
           }
-        });
-        this.update();
-        this.tryToRemoveRoom();
-        socket.emit(GAME_FINISHED);
+        }
       });
+      this.update();
+      this.tryToRemoveRoom();
+      socket.emit(GAME_FINISHED);
+    }, 5000);
   }
 
   /**
@@ -200,7 +198,7 @@ class Room {
   isRequiredPlayers() {
     const { players } = this;
 
-    return players.sum((player) => !isNull(player)) > 1;
+    return players.filter(isNotNull).length > 1;
   }
 
   /**
@@ -221,7 +219,7 @@ class Room {
       observers
     } = this;
 
-    if (players.every(isNull) && !observers.count) {
+    if (players.every(_.isNull) && _.isEmpty(observers)) {
       this.expires();
     }
   }
@@ -290,7 +288,7 @@ class Room {
       Game,
       game
     } = this;
-    const { value: existentPlayer } = players.find((player) => player && player.login === user.login) || {};
+    const existentPlayer = players.find((player) => player && player.login === user.login);
     const planningRole = role === 'observer' || (game && !existentPlayer) ? OBSERVER : PLAYER;
     const isGoingToBePlayer = planningRole === PLAYER;
     let eventualRole = planningRole;
@@ -300,8 +298,8 @@ class Room {
       (!game && (!existentPlayer || !isGoingToBePlayer)) ||
       (game && !isGoingToBePlayer)
     ) {
-      const { key = null } = players.find(isNull) || {};
-      const willBePlayer = !isNull(key) && isGoingToBePlayer;
+      const index = _.findIndex(players, _.isNull);
+      const willBePlayer = index !== -1 && isGoingToBePlayer;
 
       eventualRole = willBePlayer ? PLAYER : OBSERVER;
       eventualPlayer = new Player({
@@ -311,16 +309,17 @@ class Room {
       });
 
       if (willBePlayer) {
-        eventualPlayer.index = key;
-        players.$[key] = eventualPlayer;
+        eventualPlayer.index = index;
+        players[index] = eventualPlayer;
       } else {
-        observers.$[id] = true;
+        observers[id] = true;
+        this.observersCount++;
       }
 
       this.update(socket);
     }
 
-    eventualPlayer.sockets.$[id] = true;
+    eventualPlayer.sockets[id] = true;
 
     socket.role = eventualRole;
     socket.player = eventualPlayer;
@@ -332,7 +331,7 @@ class Room {
     if (eventualRole === PLAYER) {
       socket.on(TOGGLE_PLAYER_STATUS, () => this.togglePlayerStatus(eventualPlayer));
 
-      D(Game.listeners).forEach(({ forActivePlayer, listener }, event) => {
+      _.forEach(Game.listeners, ({ forActivePlayer, listener }, event) => {
         socket.on(event, (data) => {
           if (this.status === PLAYING) {
             if (!forActivePlayer || this.game.isSocketActivePlayer(socket)) {
@@ -365,16 +364,17 @@ class Room {
     } = socket;
 
     if (role === PLAYER) {
-      sockets.delete(id);
+      delete sockets[id];
 
-      if (!sockets.count && status === NOT_PLAYING) {
-        players.$[index] = null;
+      if (_.isEmpty(sockets) && status === NOT_PLAYING) {
+        players[index] = null;
 
         this.update();
         this.tryToStartGame();
       }
     } else if (role === OBSERVER) {
-      observers.delete(id);
+      delete observers[id];
+      this.observersCount--;
 
       this.update();
     }
@@ -385,27 +385,7 @@ class Room {
   }
 
   toJSON() {
-    const {
-      id,
-      name,
-      game,
-      playersCount,
-      status,
-      players,
-      observers,
-      gameOptions
-    } = this;
-
-    return {
-      id,
-      name,
-      game,
-      playersCount,
-      status,
-      players,
-      observers: observers.count,
-      gameOptions
-    };
+    return _.pick(this, PUBLIC_FIELDS);
   }
 }
 

@@ -1,4 +1,5 @@
-import { D, Block, makeRoute } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import Promise from 'el-promise';
 import template from './index.pug';
 
@@ -29,7 +30,7 @@ class Register extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       attemptedToSubmit: false,
       submitting: false,
       registerSuccess: false,
@@ -99,7 +100,6 @@ class Register extends Block {
   };
 }
 
-const wrap = Register
-  .wrap(makeRoute());
-
-Block.block('Register', wrap);
+Block.block('Register', Register.wrap(
+  makeRoute()
+));

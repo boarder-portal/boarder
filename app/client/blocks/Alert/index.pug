@@ -1,19 +1,19 @@
 div.alert(id="{'alert-' + args.alert.id}", d-class="{{ visible: visible }}", d-elem="alertElem")
   div.alert-caption
     d-switch(value="{args.alert.type}")
-      d-case(if="{alertTypes.AJAX_ERROR}")
+      d-case(if="{ALERTS.AJAX_ERROR}")
         span {i18n.t('alerts.ajax_error.base')}
-      d-case(if="{alertTypes.CHANGE_PASSWORD_FAILURE}")
+      d-case(if="{ALERTS.CHANGE_PASSWORD_FAILURE}")
         span {i18n.t('alerts.change_password.failure')}
-      d-case(if="{alertTypes.CHANGE_PASSWORD_SUCCESS}")
+      d-case(if="{ALERTS.CHANGE_PASSWORD_SUCCESS}")
         span {i18n.t('alerts.change_password.success')}
-      d-case(if="{alertTypes.USER_CONFIRMED}")
+      d-case(if="{ALERTS.USER_CONFIRMED}")
         span {i18n.t('alerts.confirmed.base')}
-      d-case(if="{alertTypes.USER_NOT_CONFIRMED}")
+      d-case(if="{ALERTS.USER_NOT_CONFIRMED}")
         span {i18n.t('alerts.not_confirmed.base') + '. ' }
         span.linky.send-one-more(d-bind-click="{sendOneMoreConfirmation}") {i18n.t('alerts.not_confirmed.send_one_more_time')}
-      d-case(if="{alertTypes.AVATAR_ADDED}")
+      d-case(if="{ALERTS.AVATAR_ADDED}")
         span {i18n.t('alerts.avatar_added.base')}
-      d-case(if="{alertTypes.AVATAR_CHANGED}")
+      d-case(if="{ALERTS.AVATAR_CHANGED}")
         span {i18n.t('alerts.avatar_changed.base')}
   i.fa.fa-close(d-bind-click="{close}")

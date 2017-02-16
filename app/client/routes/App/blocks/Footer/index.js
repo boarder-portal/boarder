@@ -1,4 +1,5 @@
-import { D, Block, html } from 'dwayne';
+import _ from 'lodash';
+import { Block, html } from 'dwayne';
 import Promise from 'el-promise';
 import template from './index.pug';
 import { i18n } from '../../../../i18n';
@@ -20,7 +21,7 @@ class MainFooter extends Block {
       caption: 'Русский'
     }
   ];
-  currentLang = D(this.languages).find(({ lang }) => lang === i18n.locale).value;
+  currentLang = _.find(this.languages, ({ lang }) => lang === i18n.locale);
 
   chooseLang(lang) {
     fetch.abort();

@@ -1,4 +1,4 @@
-let D = require('dwayne');
+const _ = require('lodash');
 const {
   games: {
     virus_war: {
@@ -10,46 +10,25 @@ const {
   }
 } = require('../config/constants.json');
 
-D = D.D || D;
-
-const { switcher } = D;
-const availableCellsSwitcher = switcher()
-  .case(VIRUS, (availableCells, availableNeighbours, lastSetCells) => {
-    if (lastSetCells.length === 3) {
-      availableNeighbours = availableNeighbours.filter(({ player }) => player);
-    }
-
-    availableCells.push(...availableNeighbours.$);
-  })
-  .case(FORTRESS, (availableCells, availableNeighbours, lastSetCells, neighbours, login) => {
-    if (neighbours.some(({ player, type }) => type === VIRUS && player === login)) {
-      if (lastSetCells.length === 3) {
-        availableNeighbours = availableNeighbours.filter(({ player }) => player);
-      }
-
-      availableCells.push(...availableNeighbours.$);
-    }
-  });
-
 exports.getAvailableCells = (field, player, lastSetCells) => {
   const { login } = player;
-  const availableCells = D([]);
+  const availableCells = [];
 
-  D(field).forEach((row) => {
-    D(row).forEach((cell) => {
+  _.forEach(field, (row) => {
+    _.forEach(row, (cell) => {
       if (cell.player !== login) {
         return;
       }
 
       const neighbours = getNeighbours(cell, field);
-      const availableNeighbours = neighbours.filter(({ player, type }) => (
+      const availableNeighbours = _.filter(neighbours, ({ player, type }) => (
         !player || (
           player !== login
           && type === VIRUS
         )
       ));
 
-      availableCellsSwitcher(cell.type, [availableCells, availableNeighbours, lastSetCells, neighbours, login]);
+      addAvailableCells(cell.type, availableCells, availableNeighbours, lastSetCells, neighbours, login);
     });
   });
 
@@ -58,7 +37,7 @@ exports.getAvailableCells = (field, player, lastSetCells) => {
 
 function getNeighbours(cell, field) {
   const { x, y } = cell;
-  const neighbours = D([]);
+  const neighbours = [];
   const row = field[y];
   const topRow = field[y - 1];
   const bottomRow = field[y + 1];
@@ -110,4 +89,22 @@ function getNeighbours(cell, field) {
   }
 
   return neighbours;
+}
+
+function addAvailableCells(type, availableCells, availableNeighbours, lastSetCells, neighbours, login) {
+  if (type === VIRUS) {
+    if (lastSetCells.length === 3) {
+      availableNeighbours = _.filter(availableNeighbours, ({ player }) => player);
+    }
+
+    availableCells.push(...availableNeighbours);
+  } else if (type === FORTRESS) {
+    if (_.some(neighbours, ({ player, type }) => type === VIRUS && player === login)) {
+      if (lastSetCells.length === 3) {
+        availableNeighbours = _.filter(availableNeighbours, ({ player }) => player);
+      }
+
+      availableCells.push(...availableNeighbours);
+    }
+  }
 }

@@ -1,4 +1,4 @@
-d-each(set="{array(card.count).$}", index="i", uid="{i}")
+d-each(set="{_.times(card.count)}", index="i", uid="{i}")
   svg.shape(
     width="{WIDTH + BORDER_WIDTH}"
     height="{HEIGHT + BORDER_WIDTH}"
@@ -6,7 +6,7 @@ d-each(set="{array(card.count).$}", index="i", uid="{i}")
     stroke-width="{BORDER_WIDTH}"
   )
     defs
-      d-each(set="{colors}", item="color", index="colorName", uid="{colorName}")
+      d-each(set="{COLORS}", item="color", index="colorName", uid="{colorName}")
         pattern(
           id="{'shaded-' + colorName}"
           patternUnits="userSpaceOnUse"
@@ -16,22 +16,22 @@ d-each(set="{array(card.count).$}", index="i", uid="{i}")
           height="100px"
         )
           rect(x="{(SHADED_FREQ - SHADED_WIDTH) / 2}", y="0px", width="{SHADED_WIDTH}", height="100px", fill="{color}")
-    d-switch(value="{shapesTypes[card.shape]}")
-      d-case(if="{shapesTypes.DIAMOND}")
+    d-switch(value="{card.shape}")
+      d-case(if="DIAMOND")
         polygon(
           points="{diamondPath}"
-          stroke="{colors[card.color]}"
-          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+          stroke="{COLORS[card.color]}"
+          fill="{fillPatternSwitcher(card)}"
         )
-      d-case(if="{shapesTypes.OVAL}")
+      d-case(if="OVAL")
         path(
           d="{ovalPath}"
-          stroke="{colors[card.color]}"
-          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+          stroke="{COLORS[card.color]}"
+          fill="{fillPatternSwitcher(card)}"
         )
-      d-case(if="{shapesTypes.WAVE}")
+      d-case(if="WAVE")
         path(
           d="{wavePath}"
-          stroke="{colors[card.color]}"
-          fill="{fillPatternSwitcher(fillTypes[card.fillType], [card.color])}"
+          stroke="{COLORS[card.color]}"
+          fill="{fillPatternSwitcher(card)}"
         )

@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
-import { D, Block, makeRoute, router } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { Emitter } from '../../helpers';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
@@ -47,7 +48,7 @@ class Room extends Block {
   }
 
   reset() {
-    D(this).assign({
+    _.assign(this, {
       socket: null,
       roomData: null,
       status: null,
@@ -99,7 +100,7 @@ class Room extends Block {
       console.log(err);
 
       if (err === 'Invalid namespace') {
-        router.redirect('not-found', {
+        this.router.redirect('not-found', {
           query: {
             path: pathname
           }
@@ -108,7 +109,7 @@ class Room extends Block {
         return;
       }
 
-      router.go('login');
+      this.router.go('login');
     });
     socket.on('disconnect', () => {
       console.log('disconnected from room');
@@ -153,7 +154,7 @@ class Room extends Block {
       return;
     }
 
-    this.ready = D(roomData.players).find((player) => player && player.login === login).value.ready;
+    this.ready = _.find(roomData.players, (player) => player && player.login === login).ready;
   };
 
   onPreparingGame = () => {
@@ -167,7 +168,7 @@ class Room extends Block {
 
   onGameFinishing = (players) => {
     this.status = roomStatuses.FINISHING;
-    this.players = D(players).sortBy('score', true).$;
+    this.players = _.sortByField(players, 'score', true);
   };
 
   onGameFinished = () => {
@@ -195,7 +196,7 @@ class Room extends Block {
 
     const { login } = this.global.user;
 
-    this.isMyTurn = D(this.players).find((player) => player && player.login === login).value.active;
+    this.isMyTurn = _.find(this.players, (player) => player && player.login === login).active;
   }
 
   toggleStatus = () => {
@@ -203,7 +204,6 @@ class Room extends Block {
   };
 }
 
-const wrap = Room
-  .wrap(makeRoute());
-
-Block.block('Room', wrap);
+Block.block('Room', Room.wrap(
+  makeRoute()
+));

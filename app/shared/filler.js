@@ -1,16 +1,14 @@
-let D = require('dwayne');
-
-D = D.D || D;
+const _ = require('lodash');
 
 exports.getNeighbourCells = (field, color, playerCells) => {
-  const neighbourCells = D([]);
+  const neighbourCells = [];
   let array = playerCells;
   let condition = true;
 
   while (condition) {
-    const newCells = D([]);
+    const newCells = [];
 
-    array.forEach((cell) => {
+    _.forEach(array, (cell) => {
       const { x, y } = cell;
       const top = field[y - 1] && field[y - 1][x];
       const bottom = field[y + 1] && field[y + 1][x];
@@ -34,7 +32,7 @@ exports.getNeighbourCells = (field, color, playerCells) => {
         newNewCells.push(right);
       }
 
-      newNewCells = newNewCells.filter((cell) => !neighbourCells.includes(cell));
+      newNewCells = _.filter(newNewCells, (cell) => !_.includes(neighbourCells, cell));
 
       newCells.push(...newNewCells);
       neighbourCells.push(...newNewCells);

@@ -1,12 +1,12 @@
 const path = require('path');
 const glob = require('glob');
-const { isString } = require('dwayne');
+const _ = require('lodash');
 
 const root = path.resolve('./');
 const serverDir = path.resolve('./app/server');
 
 const resolveGlob = exports.resolveGlob = (globs) => {
-  globs = isString(globs) ? [globs] : globs;
+  globs = _.isString(globs) ? [globs] : globs;
 
   return globs.reduce((modules, singleGlob) => modules.concat(
     glob

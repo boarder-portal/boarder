@@ -1,10 +1,12 @@
-import { D } from 'dwayne';
+import _ from 'lodash';
 import { ASSETS_PATH } from '../../config/constants.json';
 
-export const images = {
+const images = {
   loading: 'loading.gif'
 };
 
-D(images).forEach((value, key, images) => {
+_.forEach(images, (value, key, images) => {
   images[key] = `${ ASSETS_PATH }/images/${ value }`;
 });
+
+export { images };

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Block, initApp, find } from 'dwayne';
 import { injectGlobals } from './helpers';
 
@@ -8,7 +9,7 @@ import './modules/NotFound';
 import './modules/Games';
 import './modules/Settings';
 
-Block.getBlocks().forEach((block, name) => {
+_.forEach(Block._blocks, (block, name) => {
   Block.block(name, block.wrap(injectGlobals));
 });
 

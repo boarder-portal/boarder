@@ -1,5 +1,6 @@
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import io from 'socket.io-client';
-import { D, Block, makeRoute, router, switcher } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -19,11 +20,6 @@ const {
   }
 } = gamesConfig;
 
-const roomOptionsSwitcher = switcher('strictEquals', {})
-  .case('pexeso', (lobby) => ({
-    set: lobby.pexesoChosenSet
-  }));
-
 class Lobby extends Block {
   static template = template();
   static routerOptions = {
@@ -40,7 +36,7 @@ class Lobby extends Block {
   }
 
   reset() {
-    this.rooms = [];
+    this.rooms = {};
     this.gameName = '';
     this.pexesoChosenSet = 'lost';
   }
@@ -62,7 +58,7 @@ class Lobby extends Block {
       console.log('connected to lobby');
     });
     socket.on('error', (err) => {
-      router.go('login');
+      this.router.go('login');
 
       console.log(err);
     });
@@ -99,8 +95,28 @@ class Lobby extends Block {
     });
   }
 
+  getRoomOptions() {
+    const {
+      gameName,
+      pexesoChosenSet
+    } = this;
+
+    /* eslint indent: 0 */
+    switch (gameName) {
+      case 'pexeso': {
+        return {
+          set: pexesoChosenSet
+        };
+      }
+
+      default: {
+        return {};
+      }
+    }
+  }
+
   onCreateRoomClick = () => {
-    this.socket.emit(NEW_ROOM, roomOptionsSwitcher(this.gameName, [this]));
+    this.socket.emit(NEW_ROOM, this.getRoomOptions());
   };
 
   onListReceived = (rooms) => {
@@ -108,45 +124,24 @@ class Lobby extends Block {
   };
 
   onNewRoom = (room) => {
-    const { rooms } = this;
-
-    this.rooms = [
-      ...rooms,
-      room
-    ];
+    this.rooms = {
+      ...this.rooms,
+      [room.id]: room
+    };
   };
 
   onUpdateRoom = (room) => {
-    const { rooms } = this;
-    const foundRoom = D(rooms).find(({ id }) => id === room.id);
-
-    if (foundRoom) {
-      const { key } = foundRoom;
-
-      this.rooms = [
-        ...rooms.slice(0, key),
-        room,
-        ...rooms.slice(key + 1)
-      ];
-    }
+    this.rooms = {
+      ...this.rooms,
+      [room.id]: room
+    };
   };
 
   onDeleteRoom = (id) => {
-    const { rooms } = this;
-    const foundRoom = D(rooms).find(({ id: ID }) => ID === id);
-
-    if (foundRoom) {
-      const { key } = foundRoom;
-
-      this.rooms = [
-        ...rooms.slice(0, key),
-        ...rooms.slice(key + 1)
-      ];
-    }
+    this.rooms = _.omit(this.rooms, id);
   };
 }
 
-const wrap = Lobby
-  .wrap(makeRoute());
-
-Block.block('Lobby', wrap);
+Block.block('Lobby', Lobby.wrap(
+  makeRoute()
+));

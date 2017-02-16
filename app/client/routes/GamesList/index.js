@@ -16,7 +16,6 @@ class GamesList extends Block {
   }
 }
 
-const wrap = GamesList
-  .wrap(makeRoute());
-
-Block.block('GamesList', wrap);
+Block.block('GamesList', GamesList.wrap(
+  makeRoute()
+));

@@ -1,4 +1,3 @@
-const D = require('dwayne');
 const path = require('path');
 const pug = require('pug');
 const { resolveGlob } = require('./require-glob');
@@ -7,9 +6,10 @@ const viewsDir = path.resolve('./app/server/views');
 
 exports.templates = resolveGlob('./app/server/views/**/*.pug')
   .reduce((templates, filename) => {
-    const relativeName = D(path.relative(viewsDir, filename))
-      .replace(/.pug$/)
-      .replaceString(path.sep, '/');
+    const relativeName = path.relative(viewsDir, filename)
+      .replace(/.pug$/, '')
+      .split(path.sep)
+      .join('/');
 
     templates[relativeName] = compilePug(filename);
 

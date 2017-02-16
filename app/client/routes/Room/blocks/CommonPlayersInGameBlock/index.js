@@ -5,7 +5,7 @@ import { colors } from '../../../../../config/constants.json';
 class CommonPlayersInGameBlock extends Block {
   static template = template();
 
-  colors = colors;
+  COLORS = colors;
 }
 
 Block.block('CommonPlayersInGameBlock', CommonPlayersInGameBlock);

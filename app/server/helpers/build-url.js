@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 
 exports.buildURL = ({
   protocol = 'http',
@@ -8,12 +8,12 @@ exports.buildURL = ({
 } = {}) => {
   let search = '';
 
-  if (D(query).count) {
+  if (!_.isEmpty(query)) {
     search += '?';
-    search += D(query)
-      .object((query, value, key) => (
-        query.push(`${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`)
-      ), [])
+    search += _(query)
+      .map((value, key) => (
+        `${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`
+      ))
       .join('&');
   }
 

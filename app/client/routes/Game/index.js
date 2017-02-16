@@ -1,11 +1,9 @@
-import { D, Block, makeRoute, self } from 'dwayne';
+import _ from 'lodash';
+import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
-const games = D(gamesConfig)
-  .map(self)
-  .delete('global')
-  .keys();
+const games = _.keys(_.omit(gamesConfig, 'global'));
 
 class Game extends Block {
   static template = template();
@@ -17,7 +15,6 @@ class Game extends Block {
   };
 }
 
-const wrap = Game
-  .wrap(makeRoute());
-
-Block.block('Game', wrap);
+Block.block('Game', Game.wrap(
+  makeRoute()
+));

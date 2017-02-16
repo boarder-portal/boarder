@@ -1,18 +1,20 @@
-import { D, Block, array, switcher } from 'dwayne';
+import _ from 'lodash';
+import { Block } from 'dwayne';
 import template from './index.pug';
 import SetGame from '../../';
 import { games as gamesConfig } from '../../../../../config/constants.json';
-import { createSVGPolygonPath } from '../../../../helpers';
+import {
+  createSVGPolygonPath,
+  injectGlobals
+} from '../../../../helpers';
 
 const {
   set: {
-    shapesTypes,
-    colors,
-    fillTypes
+    colors: COLORS
   }
 } = gamesConfig;
-const WaveStart = [696, 1];
-const WavePath = [
+const WAVE_START = [696, 1];
+const WAVE_PATH = [
   [-41, 7],
   [-118, 95],
   [-235, 74],
@@ -47,8 +49,8 @@ const WavePath = [
   [22, -220],
   [-48, -208]
 ];
-const originalWaveWidth = 770;
-const originalWaveHeight = 359;
+const ORIGINAL_WAVE_WIDTH = 770;
+const ORIGINAL_WAVE_HEIGHT = 359;
 
 class SetCard extends Block {
   static template = template();
@@ -58,14 +60,7 @@ class SetCard extends Block {
   BORDER_WIDTH = 2;
   SHADED_WIDTH = 2;
   SHADED_FREQ = 7;
-  array = array;
-  shapesTypes = shapesTypes;
-  colors = colors;
-  fillTypes = fillTypes;
-  fillPatternSwitcher = switcher()
-    .case(fillTypes.EMPTY, 'rgba(0,0,0,0)')
-    .case(fillTypes.FILLED, (color) => colors[color])
-    .case(fillTypes.SHADED, (color) => `url(#shaded-${ color })`);
+  COLORS = COLORS;
 
   constructor(opts) {
     super(opts);
@@ -75,16 +70,16 @@ class SetCard extends Block {
       HEIGHT
     } = this;
     const R = HEIGHT / 2;
-    const wavePath = D(WavePath)
+    const wavePath = _(WAVE_PATH)
       .map(([x, y]) => (
         [
-          (x * WIDTH / originalWaveWidth).toFixed(1).replace(/\.0/, ''),
-          (y * HEIGHT / originalWaveHeight).toFixed(1).replace(/\.0/, '')
+          (x * WIDTH / ORIGINAL_WAVE_WIDTH).toFixed(1).replace(/\.0/, ''),
+          (y * HEIGHT / ORIGINAL_WAVE_HEIGHT).toFixed(1).replace(/\.0/, '')
         ].join(','))
       )
       .join(' ');
-    const waveXStart = (WaveStart[0] * WIDTH / originalWaveWidth).toFixed(1);
-    const waveYStart = (WaveStart[1] * HEIGHT / originalWaveHeight).toFixed(1);
+    const waveXStart = _.round(WAVE_START[0] * WIDTH / ORIGINAL_WAVE_WIDTH, 1);
+    const waveYStart = _.round(WAVE_START[1] * HEIGHT / ORIGINAL_WAVE_HEIGHT, 1);
 
     this.wavePath = `M${ waveXStart } ${ waveYStart }c${ wavePath }z`;
     this.diamondPath = createSVGPolygonPath([
@@ -119,6 +114,30 @@ class SetCard extends Block {
       this.card = this.args.card;
     });
   }
+
+  fillPatternSwitcher(card) {
+    const {
+      color,
+      fillType
+    } = card;
+
+    /* eslint indent: 0 */
+    switch (fillType) {
+      case 'EMPTY': {
+        return 'rgba(0,0,0,0)';
+      }
+
+      case 'FILLED': {
+        return COLORS[color];
+      }
+
+      case 'SHADED': {
+        return `url(#shaded-${ color })`;
+      }
+    }
+  }
 }
 
-SetGame.block('SetCard', SetCard);
+SetGame.block('SetCard', SetCard.wrap(
+  injectGlobals
+));

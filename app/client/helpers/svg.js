@@ -1,7 +1,7 @@
-import { D } from 'dwayne';
+import _ from 'lodash';
 
 export function createSVGPolygonPath(pointsArray) {
-  return D(pointsArray)
+  return _(pointsArray)
     .map(({ x, y }) => `${ x },${ y }`)
     .join(' ');
 }

@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const express = require('express');
 const constants = require('../../config/constants.json');
 const sessionRequired = require('../controllers/session-required');
@@ -16,7 +16,7 @@ exports.constructEndpoints = (path, controllers) => {
   const router = new express.Router();
   const authMiddleware = require('../controllers/user-auth');
 
-  D(paths).forEach(({ base, method, session, auth, files }, name) => {
+  _.forEach(paths, ({ base, method, session, auth, files }, name) => {
     if (name !== 'base') {
       if (session) {
         router.use(base, sessionRequired);

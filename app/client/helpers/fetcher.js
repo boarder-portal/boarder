@@ -1,6 +1,6 @@
-import { parseJSON } from 'dwayne';
 import Ajaxer from 'ajaxer';
 import Promise from 'el-promise';
+import { parseJSON } from './parseJSON';
 import { endpoints } from '../../config/constants.json';
 
 Ajaxer.usePromise(Promise);
@@ -23,7 +23,7 @@ fetcher
     throw error;
   })
   .after((res) => {
-    res.json = parseJSON(res.data, { dates: true }).$;
+    res.json = parseJSON(res.data, true);
   });
 
 export { baseURL, fetcher };

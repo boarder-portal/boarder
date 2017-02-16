@@ -1,4 +1,5 @@
-import { D, Block } from 'dwayne';
+import _ from 'lodash';
+import { Block } from 'dwayne';
 import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -30,7 +31,7 @@ class SetGame extends Block {
 
     this.ableToClick = true;
     this.socket = socket;
-    this.selectedCards = D([]);
+    this.selectedCards = [];
 
     emitter.on(FIND_SET, this.onFindSet);
     emitter.on(NO_SET_HERE, this.onNoSetHere);
@@ -53,14 +54,15 @@ class SetGame extends Block {
 
     this.cardsLeft = gameData.cardsLeft;
     this.field = gameData.field;
-    this.selectedCards.forEach((i) => {
+
+    _.forEach(this.selectedCards, (i) => {
       this.changeCard(i, { isSelected: true });
     });
   };
 
   changeCard(index, card) {
     const { field } = this;
-    const i = D(field).find((card) => card && card.index === index).key;
+    const i = _.findIndex(field, (card) => card && card.index === index);
 
     this.field = [
       ...field.slice(0, i),
@@ -74,8 +76,7 @@ class SetGame extends Block {
 
   deleteCard = (index) => {
     const { field } = this;
-
-    const i = D(field).find((card) => card && card.index === index).key;
+    const i = _.findIndex(field, (card) => card && card.index === index);
 
     this.field = [
       ...field.slice(0, i),
@@ -143,7 +144,7 @@ class SetGame extends Block {
       this.colorTransitionStarted = false;
       this.opacityTransitionStarted = true;
 
-      return D(cards).forEach((i) => {
+      return _.forEach(cards, (i) => {
         this.changeCard(i, {
           wrong: false,
           matched: isSet
@@ -166,24 +167,22 @@ class SetGame extends Block {
     } = this;
 
     if (!cardsToMove.length) {
-      D(cards).forEach(this.deleteCard);
+      _.forEach(cards, this.deleteCard);
     }
 
-    D(500)
-      .timeout()
-      .then(() => {
-        this.ableToClick = true;
-        this.cardsLeft = cardsLeftToSet;
+    setTimeout(() => {
+      this.ableToClick = true;
+      this.cardsLeft = cardsLeftToSet;
 
-        D(additionalCards).forEach(this.addCard);
+      _.forEach(additionalCards, this.addCard);
 
-        if (cardsToMove.length) {
-          D(cards).forEach(this.deleteCard);
-          D(cardsToMove).forEach((card) => {
-            this.changeCard(card.oldIndex, card);
-          });
-        }
-      });
+      if (cardsToMove.length) {
+        _.forEach(cards, this.deleteCard);
+        _.forEach(cardsToMove, (card) => {
+          this.changeCard(card.oldIndex, card);
+        });
+      }
+    }, 500);
   };
 
   onFindSet = ({ cards, cardsLeft, isSet, additionalCards, cardsToMove }) => {
@@ -198,7 +197,7 @@ class SetGame extends Block {
     this.colorTransitionStarted = true;
     this.transitionsCount = 0;
 
-    D(cards).forEach((i) => {
+    _.forEach(cards, (i) => {
       this.changeCard(i, {
         isSelected: false,
         right: isSet,
@@ -223,7 +222,7 @@ class SetGame extends Block {
 
   onNoSetHere = ({ cardsLeft, additionalCards }) => {
     this.cardsLeft = cardsLeft;
-    D(additionalCards).forEach(this.addCard);
+    _.forEach(additionalCards, this.addCard);
   };
 }
 

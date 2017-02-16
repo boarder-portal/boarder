@@ -1,4 +1,4 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const Game = require('./');
 const { getAvailableCells } = require('../../shared/virus-war');
 const {
@@ -16,32 +16,14 @@ const {
         VIRUS,
         FORTRESS
       },
-      virusesShapes: shapesObject
+      virusesShapes
     }
   }
 } = require('../../config/constants.json');
 
-const {
-  array,
-  switcher
-} = D;
-
-const shapes = D(shapesObject).keys();
-const width = 10;
-const height = 10;
-
-const virusCellSwitcher = switcher('call', {
-  player: null,
-  type: null
-})
-  .case(({ x, y }) => x === 0 && y === 0, (players) => ({
-    player: players.$[0].login,
-    type: VIRUS
-  }))
-  .case(({ x, y }) => x === width - 1 && y === height - 1, (players) => ({
-    player: players.$[1].login,
-    type: VIRUS
-  }));
+const SHAPES = _.keys(virusesShapes);
+const WIDTH = 10;
+const HEIGHT = 10;
 
 /**
  * @class VirusWarGame
@@ -64,17 +46,17 @@ class VirusWarGame extends Game {
     super.prepareGame();
 
     this.lastSetCells = [];
-    this.field = array(height, (y) => (
-      array(width, (x) => ({
+    this.field = _.times(HEIGHT, (y) => (
+      _.times(WIDTH, (x) => ({
         x,
         y,
-        ...virusCellSwitcher({ x, y }, [this.players])
-      })).$
-    )).$;
+        ...this.virusCellSwitcher({ x, y }, this.players)
+      }))
+    ));
     this.players.forEach((player) => {
       player.score = 1;
     });
-    this.players.$[0].active = true;
+    this.players[0].active = true;
     this.setColors();
     this.setShapes();
 
@@ -83,13 +65,10 @@ class VirusWarGame extends Game {
 
   setShapes() {
     const { players } = this;
-    const newShapes = shapes
-      .slice(0, this.players.length)
-      .shuffle()
-      .$;
+    const shapes = _.shuffle(SHAPES);
 
     players.forEach((player, i) => {
-      player.data.shape = newShapes[i];
+      player.data.shape = shapes[i];
     });
   }
 
@@ -109,7 +88,7 @@ class VirusWarGame extends Game {
     }
 
     if (cell.player && cell.type === VIRUS) {
-      const cellHost = players.find(({ login }) => cell.player === login).value;
+      const cellHost = players.find(({ login }) => cell.player === login);
 
       cellHost.score--;
 
@@ -143,6 +122,32 @@ class VirusWarGame extends Game {
   onEndTurn() {
     this.endTurn();
     this.emit(END_TURN, {}, true);
+  }
+
+  virusCellSwitcher({ x, y }, players) {
+    /* eslint indent: 0 */
+    switch (true) {
+      case x === 0 && y === 0: {
+        return {
+          player: players[0].login,
+          type: VIRUS
+        };
+      }
+
+      case x === WIDTH - 1 && y === HEIGHT - 1: {
+        return {
+          player: players[1].login,
+          type: VIRUS
+        };
+      }
+
+      default: {
+        return {
+          player: null,
+          type: null
+        };
+      }
+    }
   }
 
   toJSON() {

@@ -1,13 +1,16 @@
-import { D, Block, doc } from 'dwayne';
+import _ from 'lodash';
+import { Block, doc } from 'dwayne';
 import template from './index.pug';
+import { timeout } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
   pexeso: {
+    TRANSITION_DURATION,
+    CARD_SHOWN_DURATION,
     events: {
       game: {
-        TURN_CARD,
-        CARDS_LOADED
+        TURN_CARD
       }
     }
   }
@@ -29,6 +32,12 @@ class Pexeso extends Block {
     this.options = gameData.options;
 
     emitter.on(TURN_CARD, this.onTurnCard);
+
+    _.times(30, (i) => {
+      doc
+        .img()
+        .ref(this.constructImageURL({ card: i }));
+    });
   }
 
   afterConstruct() {
@@ -50,8 +59,6 @@ class Pexeso extends Block {
     this.turn = gameData.turn;
     this.currentTurnedCards = gameData.currentTurnedCards;
     this.match = gameData.match;
-
-    this.tryToCloseCards();
   };
 
   turnCard(card) {
@@ -81,30 +88,48 @@ class Pexeso extends Block {
     ];
   }
 
-  tryToCloseCards() {
-    if (this.loaded < 2) {
-      return;
-    }
-
+  closeCards(promise, match) {
     const { currentTurnedCards } = this;
 
-    this.emit(CARDS_LOADED);
-
-    D(2000)
-      .timeout()
+    promise
+      .then(() => timeout(CARD_SHOWN_DURATION))
       .then(() => {
-        this.loaded = 0;
-        this.currentTurnedCards = D([]);
-
-        currentTurnedCards.forEach(({ x, y }) => {
+        _.forEach(currentTurnedCards, ({ x, y }) => {
           this.changeCard(
             x,
             y,
-            this.match
-              ? { beforeNotInPlay: true }
-              : { opened: true }
+            match
+              ? { isFading: true }
+              : { isShrinking: true }
           );
         });
+
+        if (match) {
+          timeout(2 * TRANSITION_DURATION).then(() => {
+            this.currentTurnedCards = [];
+
+            _.forEach(currentTurnedCards, ({ x, y }) => {
+              this.changeCard(x, y, {
+                isInPlay: false
+              });
+            });
+          });
+        } else {
+          timeout(TRANSITION_DURATION)
+            .then(() => {
+              _.forEach(currentTurnedCards, ({ x, y }) => {
+                this.changeCard(x, y, {
+                  isShrinking: false,
+                  isTurned: false
+                });
+              });
+
+              return timeout(TRANSITION_DURATION);
+            })
+            .then(() => {
+              this.currentTurnedCards = [];
+            });
+        }
       });
   }
 
@@ -113,30 +138,25 @@ class Pexeso extends Block {
 
     currentTurnedCards.push({ x, y });
 
-    this.match = match;
-
-    doc
-      .img()
-      .ref(this.constructImageURL(this.field[y][x]))
-      .load()
-      .then(() => {
-        this.changeCard(x, y, {
-          opened: true
-        });
-
-        this.loaded++;
-
-        this.tryToCloseCards();
-      });
-  };
-
-  onTransitionEnd(card) {
-    this.changeCard(card.x, card.y, {
-      isTurned: card.opened ? !card.isTurned : card.isTurned,
-      opened: false,
-      isInPlay: card.beforeNotInPlay ? false : card.isInPlay
+    this.changeCard(x, y, {
+      isShrinking: true
     });
-  }
+
+    const promise = timeout(TRANSITION_DURATION).then(() => {
+      this.changeCard(x, y, {
+        isShrinking: false,
+        isTurned: true
+      });
+
+      return timeout(TRANSITION_DURATION);
+    });
+
+    if (currentTurnedCards.length < 2) {
+      return;
+    }
+
+    this.closeCards(promise, match);
+  };
 
   constructImageURL(card) {
     const { options } = this;

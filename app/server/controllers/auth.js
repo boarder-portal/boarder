@@ -1,9 +1,10 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const { isEmail } = require('validator');
 const User = require('../db/models/user');
 const {
   sendEmail,
-  buildURL
+  buildURL,
+  generateUID
 } = require('../helpers');
 const hashPassword = require('../helpers/hash-password');
 const { session } = require('./session');
@@ -31,20 +32,11 @@ const {
   }
 } = require('../../config/config.json');
 
-const {
-  alphabet,
-  switcher
-} = D;
 const registerConfirmationPath = apiBase + usersBase + confirmRegisterBase;
 const resetPasswordPath = '/reset_password';
 const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
 const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
 const notAuthorizedError = new Error('Not authorized');
-const confirmEmailAlphabet = alphabet('0-9a-zA-Z');
-const resetPasswordAlphabet = alphabet('0-9a-zA-Z');
-const registerValidatorSwitcher = switcher('call', null)
-  .case((message) => /unique/i.test(message), FIELD_MUST_BE_UNIQUE)
-  .case((message) => /email/i.test(message), VALUE_IS_NOT_EMAIL);
 
 module.exports = {
   checkLogin(req, res, next) {
@@ -95,12 +87,7 @@ module.exports = {
         email,
         login,
         password,
-        confirmToken: confirmEmailAlphabet.token(40)
-      })
-      .then((user) => {
-        user.confirmToken = confirmEmailAlphabet.token(40);
-
-        return user.save();
+        confirmToken: generateUID(40)
       })
       .then((user) => {
         sendConfirmationEmail(req, user);
@@ -123,7 +110,7 @@ module.exports = {
           return errors;
         }, {});
 
-        res.json({ errors: D(errors).count ? errors : null });
+        res.json({ errors: _.isEmpty(errors) ? null : errors });
       })
       .catch(next);
   },
@@ -264,7 +251,7 @@ module.exports = {
           return false;
         }
 
-        user.resetPasswordToken = resetPasswordAlphabet.token(40);
+        user.resetPasswordToken = generateUID(40);
 
         return user
           .save()
@@ -368,6 +355,23 @@ module.exports = {
     next();
   }
 };
+
+function registerValidatorSwitcher(message) {
+  /* eslint indent: 0 */
+  switch (true) {
+    case /unique/i.test(message): {
+      return FIELD_MUST_BE_UNIQUE;
+    }
+
+    case /email/i.test(message): {
+      return VALUE_IS_NOT_EMAIL;
+    }
+
+    default: {
+      return null;
+    }
+  }
+}
 
 function sendConfirmationEmail(req, user) {
   const {

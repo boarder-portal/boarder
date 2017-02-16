@@ -1,10 +1,13 @@
-const D = require('dwayne');
+const _ = require('lodash');
 const { io } = require('../');
 const Room = require('./Room');
 const {
   socketSession,
   socketAuth
 } = require('../controllers/auth');
+const {
+  generateUID
+} = require('../helpers');
 const {
   games: {
     global: {
@@ -19,12 +22,6 @@ const {
     }
   }
 } = require('../../config/constants.json');
-
-const {
-  now,
-  alphabet: Alphabet
-} = D;
-const alphabet = Alphabet('a-zA-Z');
 
 /**
  * @class Lobby
@@ -44,12 +41,12 @@ class Lobby {
    * @public
    */
   /**
-   * @member {Room[]} Lobby#rooms
+   * @member {Object.<String, Room>} Lobby#rooms
    * @public
    */
 
   constructor(options) {
-    D(this).assign(options);
+    _.assign(this, options);
 
     const { socket } = this;
 
@@ -74,25 +71,21 @@ class Lobby {
       playersCount,
       Game
     } = this;
-
-    let roomId = alphabet.token(15);
-
-    while (rooms.some(({ id }) => roomId === id)) {
-      roomId = alphabet.token(15);
-    }
+    const now = Date.now();
+    const roomId = `${ now }-${ generateUID(7, rooms) }`;
 
     const roomData = {
       id: roomId,
       lobby: this,
       playersCount,
-      name: `room-${ now() }`,
+      name: `room-${ now }`,
       roomNsp,
       Game,
       gameOptions: options
     };
     const room = new Room(roomData);
 
-    rooms.push(room);
+    rooms[roomId] = room;
 
     this.emit(NEW_ROOM, room);
 
@@ -110,12 +103,8 @@ class Lobby {
       id,
       socket: { name }
     } = room;
-    const roomIndex = rooms.indexOf(room);
 
-    if (roomIndex !== -1) {
-      rooms.splice(roomIndex, 1);
-    }
-
+    delete rooms[id];
     delete io.nsps[name];
 
     this.emit(DELETE_ROOM, id);
@@ -155,7 +144,7 @@ class Lobby {
   }
 }
 
-D(Lobby.prototype).assign({
+_.assign(Lobby.prototype, {
   name: 'default'
 });
 

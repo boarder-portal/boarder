@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const { date } = require('dwayne');
 const redis = require('redis');
 const {
   redis: {
@@ -30,7 +29,7 @@ exports.createClient = (returnBuffers) => {
 
   client.on('error', (err) => {
     console.error(err);
-    logs.write(`${ date().toISOString() }\nRedis error:\n ${ err.stack }\n\n`);
+    logs.write(`${ new Date().toISOString() }\nRedis error:\n ${ err.stack }\n\n`);
   });
 
   return client;

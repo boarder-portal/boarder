@@ -10,6 +10,10 @@
   transition: @what 1s ease-out;
 }
 
+.transition(@duration, @what: all) {
+  transition: @what unit(@duration, s) ease-out;
+}
+
 .tr-color(@initial, @hover, @active) {
   .tr(color);
 

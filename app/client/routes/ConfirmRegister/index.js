@@ -1,8 +1,5 @@
-import { D, Block, makeRoute } from 'dwayne';
-import {
-  alertTypes,
-  REGISTER_CONFIRMED_ALERT_DURATION
-} from '../../constants';
+import { Block, makeRoute } from 'dwayne';
+import { ALERTS } from '../../constants';
 
 class ConfirmRegister extends Block {
   static template = '';
@@ -13,21 +10,13 @@ class ConfirmRegister extends Block {
   };
 
   beforeLoadRoute() {
-    D(100)
-      .timeout()
-      .then(() => {
-        this.global.addAlert({
-          type: alertTypes.USER_CONFIRMED,
-          level: 'success',
-          priority: 'low',
-          duration: REGISTER_CONFIRMED_ALERT_DURATION
-        });
-        this.router.redirect('home');
-      });
+    setTimeout(() => {
+      this.global.addAlert(ALERTS.USER_CONFIRMED);
+      this.router.redirect('home');
+    }, 100);
   }
 }
 
-const wrap = ConfirmRegister
-  .wrap(makeRoute());
-
-Block.block('ConfirmRegister', wrap);
+Block.block('ConfirmRegister', ConfirmRegister.wrap(
+  makeRoute()
+));
