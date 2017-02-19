@@ -2,7 +2,7 @@ div.auth-block.login-block
   h2.auth-header {i18n.t('login.header')}
   form.auth-form.login-form(
     d-hide="{loginSuccess}"
-    d-bind-submit="{submit}"
+    d-bind(submit)="{submit}"
   )
     div.auth-spinner-container
       div.check-credentials-caption(d-show="{loginError}") {i18n.t('login.try_again')}

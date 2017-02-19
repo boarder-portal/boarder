@@ -10,7 +10,7 @@ header.main-header
         i.menu-icon.fa.fa-cog
         span {i18n.t('header.profile.dropdown.settings')}
       div.dropdown-divider
-      div.dropdown-item.logout.link(d-on-click="{logout()}")
+      div.dropdown-item.logout.link(d-on(click)="{logout()}")
         i.menu-icon.fa.fa-sign-out
         span.logout-caption {i18n.t('header.profile.dropdown.logout')}
         img.logout-spinner(src="{images.loading}", d-show="{logoutFetching}")

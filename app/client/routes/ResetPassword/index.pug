@@ -5,7 +5,7 @@ div.auth-block.reset-password-block
     d-hide="{resetPasswordSuccess}"
     d-elem="form"
     d-validate
-    d-bind-submit="{submit}"
+    d-bind(submit)="{submit}"
   )
     div.auth-spinner-container
       div.wrong-email-caption(d-show="{emailError}") {i18n.t('reset_password.wrong_email')}

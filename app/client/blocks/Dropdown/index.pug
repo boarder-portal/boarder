@@ -1,11 +1,11 @@
 div.dropdown(
   d-elem="elem"
   d-class="{'open-' + args.hdir}"
-  d-class-custom="{args.cls}"
+  d-class#custom="{args.cls}"
 )
   i.fa(
     d-class="{args.down ? 'fa-sort-down' : 'fa-sort-up'}"
-    d-on-click="{open()}"
+    d-on(click)="{open()}"
   )
   div.dropdown-list(d-show="{visible}")
     d-block

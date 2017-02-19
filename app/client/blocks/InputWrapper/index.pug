@@ -6,8 +6,8 @@ div.input-container(d-elem="inputContainer")
       d-block
       label.validate-icon-container(for="{labelFor}")
         i.fa(
-          d-class-wrong="{changed && (error || args.error) && 'fa-times'}"
-          d-class-right="{changed && !error && !args.error && 'fa-check'}"
+          d-class#wrong="{changed && (error || args.error) && 'fa-times'}"
+          d-class#right="{changed && !error && !args.error && 'fa-check'}"
         )
   d-else
     d-block

@@ -36,5 +36,5 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
         input.boarder-input.success.create-room-btn(
           type="submit"
           value="{i18n.t('games.global.lobby.create_room')}"
-          d-bind-click="{onCreateRoomClick}"
+          d-bind(click)="{onCreateRoomClick}"
         )

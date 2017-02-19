@@ -2,7 +2,7 @@ div.auth-block.forgot-password-block
   h2.auth-header {i18n.t('forgot_password.header')}
   form.auth-form.forgot-password-form(
     d-hide="{fetchSuccess}"
-    d-bind-submit="{submit}"
+    d-bind(submit)="{submit}"
   )
     div.auth-spinner-container
       div.check-email-caption(d-show="{emailError}") {i18n.t('forgot_password.try_again')}

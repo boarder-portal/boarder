@@ -9,8 +9,8 @@ div.settings-instance-section.change-password-section
   form.change-password-form(
     d-elem="changePasswordForm"
     d-validate
-    d-bind-submit="{changePassword}"
-    d-bind-input="{onChange}"
+    d-bind(submit)="{changePassword}"
+    d-bind(input)="{onChange}"
   )
     InputWrapper(
       validators="{['required']}"

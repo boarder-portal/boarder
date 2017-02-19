@@ -7,7 +7,7 @@ div.pexeso-game.row
             d-if(if="{card.isInPlay}")
               img.card(
                 d-class="{{ shrinking: card.isShrinking, fading: card.isFading }}"
-                d-on-click="{turnCard(card)}"
+                d-on(click)="{turnCard(card)}"
                 src="{card.isTurned ? constructImageURL(card) : backImage}"
               )
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")

@@ -6,7 +6,7 @@ footer.main-footer
     Dropdown(down="{false}", hdir="center")
       d-each(set="{languages}", item="lang", uid="{$index}")
         div.dropdown-item.link.language(
-          d-on-click="{chooseLang(lang.lang)}"
+          d-on(click)="{chooseLang(lang.lang)}"
           d-class="{{ disabled: lang.lang === i18n.locale }}"
         )
           i.flag-icon(d-class="{'flag-icon-' + lang.flag}")

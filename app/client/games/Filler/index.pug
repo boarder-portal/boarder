@@ -22,6 +22,6 @@ div.filler-game.row
         div.color(
           d-style="{{ background: color }}"
           d-class="{_.includes(currentColors, colorName) && 'current-color'}"
-          d-on-click="{chooseColor(colorName)}"
+          d-on(click)="{chooseColor(colorName)}"
         )
   CommonPlayersInGameBlock(players="{args.players}", containerCls="col-xs-12 col-sm")

@@ -17,7 +17,7 @@ div.room-state
         input.boarder-input.success.ready-to-play-btn(
           type="submit"
           value="{i18n.t('games.global.room.' + (ready ? 'not_ready' : 'ready'))}"
-          d-bind-click="{toggleStatus}"
+          d-bind(click)="{toggleStatus}"
           d-show="{role === playerRoles.PLAYER}"
         )
     d-case(if="{roomStatuses.PREPARING}")

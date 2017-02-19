@@ -1,5 +1,5 @@
 div.popup(d-elem="elem", d-show="{visible}")
-  div.popup-overlay(d-bind-click="{close}")
+  div.popup-overlay(d-bind(click)="{close}")
   div.popup-content
-    i.popup-close.fa.fa-close(d-bind-click="{close}")
+    i.popup-close.fa.fa-close(d-bind(click)="{close}")
     d-block

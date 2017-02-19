@@ -25,11 +25,11 @@ div.settings-instance-section.change-avatar-section
             div.avatar-container(d-class="{avatar.url === global.user.avatar && 'current-avatar'}")
               img.avatar(
                 src="{avatar.url}"
-                d-on-click="{chooseAvatar(avatar)}"
-                d-on-load="{onLocalAvatarLoaded(avatar)}"
-                d-on-error="{onLocalAvatarLoaded(avatar)}"
+                d-on(click)="{chooseAvatar(avatar)}"
+                d-on(load)="{onLocalAvatarLoaded(avatar)}"
+                d-on(error)="{onLocalAvatarLoaded(avatar)}"
                 d-style="{{ visibility: avatar.loading ? 'hidden' : 'visible' }}"
               )
               div.uploader-progress-bar(d-style="{avatar.uploaderProgressBarStyle}")
-              div.delete-avatar(d-on-click="{deleteAvatar(avatar)}", d-hide="{avatar.isUploading}")
+              div.delete-avatar(d-on(click)="{deleteAvatar(avatar)}", d-hide="{avatar.isUploading}")
                 i.fa.fa-trash-o
