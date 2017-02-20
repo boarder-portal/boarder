@@ -1,12 +1,15 @@
 div.virus-war-game.row
-  table.field(d-class="{[args.isMyTurn && 'my-turn', isTopLeft && 'to-bottom-left']}")
+  table.field(
+    d-class(my-turn)="{args.isMyTurn}"
+    d-class(to-bottom-left)="{isTopLeft}"
+  )
     d-each(set="{field}", item="row", index="y", uid="{y}")
       tr
         d-each(set="{row}", item="cell", index="x", uid="{x}")
           td(
-            d-class="{cell.isAvailable && 'available'}"
+            d-class(available)="{cell.isAvailable}"
             d-on(click)="{setCell(cell)}"
-            d-style="{{ background: cell.isAmongLastSetCells ? toRGBA(colors[mapPlayersToColors[cell.player]]) : null }}"
+            d-style(background)="{cell.isAmongLastSetCells ? toRGBA(colors[mapPlayersToColors[cell.player]]) : null}"
           )
             VirusCell(cell="{cell}", color="{mapPlayersToColors[cell.player]}", shape="{mapPlayersToShapes[cell.player]}")
   input.boarder-input.success(

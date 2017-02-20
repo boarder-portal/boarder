@@ -11,7 +11,7 @@ div.room-state
                 div.avatar-container
                   img.avatar(src="{player.avatar}")
                 div.login {player.login}
-                div.ready-caption(d-class="{player.ready && 'ready'}")
+                div.ready-caption(d-class(ready)="{player.ready}")
                   i.fa(d-class="{player.ready ? 'fa-check' : 'fa-times'}")
                   span {i18n.t('games.global.room.' + (player.ready ? 'ready' : 'not_ready'))}
         input.boarder-input.success.ready-to-play-btn(

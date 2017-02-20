@@ -8,7 +8,7 @@ table.rooms-table(d-class="{gameName + '-rooms-table'}")
     th.room-actions {i18n.t('games.global.lobby.col_names.actions')}
   tbody.rooms(d-class="{gameName + '-rooms'}")
     d-each(set="{rooms}", item="room", uid="{room.id}")
-      tr(d-class="{['room', gameName + '-room']}")
+      tr.room(d-class="{gameName + '-room'}")
         td.room-name {room.name}
         td.room-status {i18n.t('games.global.lobby.room_statuses.' + room.status)}
         d-if(if="{gameName === 'pexeso'}")

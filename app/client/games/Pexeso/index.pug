@@ -6,7 +6,8 @@ div.pexeso-game.row
           div.card-container
             d-if(if="{card.isInPlay}")
               img.card(
-                d-class="{{ shrinking: card.isShrinking, fading: card.isFading }}"
+                d-class(shrinking)="{card.isShrinking}"
+                d-class(fading)="{card.isFading}"
                 d-on(click)="{turnCard(card)}"
                 src="{card.isTurned ? constructImageURL(card) : backImage}"
               )

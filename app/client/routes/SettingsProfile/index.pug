@@ -12,7 +12,7 @@ div.settings-instance-section.change-avatar-section
         div.avatars(d-elem="avatarsElem")
           div.avatar-container.to-upload
             form.add-avatar(d-elem="addAvatarForm")
-              label.upload-file-btn(d-class="{!canRequest && 'forbidden'}")
+              label.upload-file-btn(d-class(forbidden)="{!canRequest}")
                 input.hidden(
                   name="avatar"
                   type="file"
@@ -22,13 +22,13 @@ div.settings-instance-section.change-avatar-section
                 )
                 i.fa.fa-upload
           d-each(set="{avatars}", item="avatar", uid="{avatar.url}")
-            div.avatar-container(d-class="{avatar.url === global.user.avatar && 'current-avatar'}")
+            div.avatar-container(d-class(current-avatar)="{avatar.url === global.user.avatar}")
               img.avatar(
                 src="{avatar.url}"
                 d-on(click)="{chooseAvatar(avatar)}"
                 d-on(load)="{onLocalAvatarLoaded(avatar)}"
                 d-on(error)="{onLocalAvatarLoaded(avatar)}"
-                d-style="{{ visibility: avatar.loading ? 'hidden' : 'visible' }}"
+                d-style(visibility)="{avatar.loading ? 'hidden' : 'visible'}"
               )
               div.uploader-progress-bar(d-style="{avatar.uploaderProgressBarStyle}")
               div.delete-avatar(d-on(click)="{deleteAvatar(avatar)}", d-hide="{avatar.isUploading}")

@@ -1,13 +1,18 @@
 div.set-game.row
   div.field.col-xs-12.col-sm(
-    d-style="{{ minWidth: (CARD_WIDTH + CARD_MARGIN) * Math.max(Math.round(field.length / 3), 4) + CARD_MARGIN + 'px' }}"
+    d-style(min-width)="{(CARD_WIDTH + CARD_MARGIN) * Math.max(Math.round(field.length / 3), 4) + CARD_MARGIN + 'px'}"
   )
     d-each(set="{field}", item="card", uid="{[card.shape, card.color, card.fillType, card.count].join('_')}")
       d-if(if="{card}")
         div.card-container(
-          d-class="{[card.isSelected && 'selected', card.wrong && 'wrong', card.right && 'right', card.matched && 'matched']}"
-          d-style#top="{{ top: CARD_MARGIN + (CARD_HEIGHT + CARD_MARGIN) * card.y + 'px' }}"
-          d-style#left="{{ left: CARD_MARGIN + (CARD_WIDTH + CARD_MARGIN) * card.x + 'px' }}"
+          d-class(selected)="{card.isSelected}"
+          d-class(wrong)="{card.wrong}"
+          d-class(right)="{card.right}"
+          d-class(matched)="{card.matched}"
+
+          d-style(top)="{CARD_MARGIN + (CARD_HEIGHT + CARD_MARGIN) * card.y + 'px'}"
+          d-style(left)="{CARD_MARGIN + (CARD_WIDTH + CARD_MARGIN) * card.x + 'px'}"
+
           d-on(click)="{clickCard(card)}"
           d-bind(transitionend)="{onTransitionEnd}"
         )

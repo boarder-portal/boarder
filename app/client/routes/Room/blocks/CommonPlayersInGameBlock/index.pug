@@ -1,8 +1,11 @@
 div.players-in-game-list(d-class="{args.containerCls}")
   d-each(set="{args.players}", item="player", uid="{player.id}")
-    div.player.row(d-class="{[player.active && 'active', $index && 'marg-t-10']}")
+    div.player.row(
+      d-class(active)="{player.active}"
+      d-class(marg-t-10)="{$index}"
+    )
       d-if(if="{player.color}")
-        div.color-container(d-style="{{ background: COLORS[player.color] }}")
+        div.color-container(d-style(background)="{COLORS[player.color]}")
       div.avatar-container
         img.avatar(src="{player.avatar}")
       div
