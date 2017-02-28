@@ -44,7 +44,7 @@ class ForgotPassword extends Block {
     this.submitting = true;
     this.emailError = false;
 
-    this.global.usersFetch
+    this.globals.usersFetch
       .forgotPassword({ query })
       .then(({ json: success }) => {
         if (success) {

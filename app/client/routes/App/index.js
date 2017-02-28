@@ -51,7 +51,7 @@ class App extends Block {
         throw err;
       });
 
-    _.assign(this.global, {
+    _.assign(this.globals, {
       user,
       changeUser: this.changeUser,
       alerts,
@@ -69,8 +69,8 @@ class App extends Block {
   }
 
   changeUser = (user) => {
-    this.global.user = {
-      ...this.global.user,
+    this.globals.user = {
+      ...this.globals.user,
       ...user
     };
   };
@@ -81,14 +81,14 @@ class App extends Block {
       priority,
       duration
     } = Alert;
-    const alerts = this.global.alerts;
+    const alerts = this.globals.alerts;
 
     const alert = {
       id: alertId++,
       type: Alert,
       duration,
       remove: () => {
-        const alerts = this.global.alerts;
+        const alerts = this.globals.alerts;
         const alertsArray = alerts[priority][level];
         const index = alertsArray.indexOf(alert);
 
@@ -96,7 +96,7 @@ class App extends Block {
           return;
         }
 
-        this.global.alerts = {
+        this.globals.alerts = {
           ...alerts,
           [priority]: {
             ...alerts[priority],
@@ -109,7 +109,7 @@ class App extends Block {
       }
     };
 
-    this.global.alerts = {
+    this.globals.alerts = {
       ...alerts,
       [priority]: {
         ...alerts[priority],
@@ -122,7 +122,7 @@ class App extends Block {
   };
 
   addNotConfirmedAlertIfNeeded = () => {
-    const { user } = this.global;
+    const { user } = this.globals;
 
     if (user && !user.confirmed) {
       this.addAlert(ALERTS.USER_NOT_CONFIRMED);

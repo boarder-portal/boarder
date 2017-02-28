@@ -11,7 +11,7 @@ export function injectGlobals(Block) {
       this.Math = Math;
       this.console = window.console;
       this.i18n = i18n;
-      this.router = this.global.router;
+      this.router = this.globals.router;
       this.images = images;
       this.title = title;
     }

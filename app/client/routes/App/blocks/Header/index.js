@@ -17,7 +17,7 @@ class MainHeader extends Block {
 
     this.logoutFetching = true;
 
-    this.global.usersFetch
+    this.globals.usersFetch
       .logout()
       .then(() => {
         this.dropdown.close();

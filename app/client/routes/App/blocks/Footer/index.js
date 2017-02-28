@@ -30,7 +30,7 @@ class MainFooter extends Block {
       return;
     }
 
-    fetch = this.global.langFetch.change({
+    fetch = this.globals.langFetch.change({
       data: { lang }
     });
 

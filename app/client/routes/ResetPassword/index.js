@@ -66,7 +66,7 @@ class ResetPassword extends Block {
     this.submitting = true;
     this.emailError = false;
 
-    this.global.usersFetch
+    this.globals.usersFetch
       .resetPassword({ data })
       .then(({ json: success }) => {
         if (success) {

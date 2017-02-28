@@ -1,7 +1,7 @@
 div.settings-instance-section.change-avatar-section
   h2.settings-instance-section-header {i18n.t('settings.states.profile.avatar.header')}
   div.main.avatar-container
-    img.main.avatar(src="{global.user.avatar}")
+    img.main.avatar(src="{globals.user.avatar}")
     div.avatar-replacement
       i.fa.fa-image
     div.open-popup
@@ -22,7 +22,7 @@ div.settings-instance-section.change-avatar-section
                 )
                 i.fa.fa-upload
           d-each(set="{avatars}", item="avatar", uid="{avatar.url}")
-            div.avatar-container(d-class(current-avatar)="{avatar.url === global.user.avatar}")
+            div.avatar-container(d-class(current-avatar)="{avatar.url === globals.user.avatar}")
               img.avatar(
                 src="{avatar.url}"
                 d-on(click)="{chooseAvatar(avatar)}"

@@ -47,7 +47,7 @@ class Register extends Block {
   sendOneMoreConfirmation = () => {
     currentFetchIfUserConfirmed.abort();
 
-    currentFetchIfUserConfirmed = this.global.usersFetch
+    currentFetchIfUserConfirmed = this.globals.usersFetch
       .sendOneMore({
         query: {
           email: this.email
@@ -79,7 +79,7 @@ class Register extends Block {
 
     this.submitting = true;
 
-    this.global.usersFetch
+    this.globals.usersFetch
       .register({ data })
       .then(({ json }) => {
         const { errors } = json;

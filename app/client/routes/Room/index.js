@@ -146,7 +146,7 @@ class Room extends Block {
   };
 
   onUpdateRoom = (roomData) => {
-    const { login } = this.global.user;
+    const { login } = this.globals.user;
 
     this.roomData = roomData;
 
@@ -194,7 +194,7 @@ class Room extends Block {
       return;
     }
 
-    const { login } = this.global.user;
+    const { login } = this.globals.user;
 
     this.isMyTurn = _.find(this.players, (player) => player && player.login === login).active;
   }

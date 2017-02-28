@@ -66,17 +66,17 @@ class SettingsAccount extends Block {
 
       this.changingPassword = true;
 
-      this.global.usersFetch
+      this.globals.usersFetch
         .changePassword({ data })
         .then(({ json: success }) => {
           if (!success) {
-            this.global.addAlert(ALERTS.CHANGE_PASSWORD_FAILURE);
+            this.globals.addAlert(ALERTS.CHANGE_PASSWORD_FAILURE);
 
             return;
           }
 
           this.resetChangePasswordBlock();
-          this.global.addAlert(ALERTS.CHANGE_PASSWORD_SUCCESS);
+          this.globals.addAlert(ALERTS.CHANGE_PASSWORD_SUCCESS);
         })
         .finally(() => {
           this.changingPassword = false;

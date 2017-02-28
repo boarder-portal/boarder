@@ -11,7 +11,7 @@ class ConfirmRegister extends Block {
 
   beforeLoadRoute() {
     setTimeout(() => {
-      this.global.addAlert(ALERTS.USER_CONFIRMED);
+      this.globals.addAlert(ALERTS.USER_CONFIRMED);
       this.router.redirect('home');
     }, 100);
   }

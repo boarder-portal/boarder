@@ -1,10 +1,10 @@
 header.main-header
   h1.header-caption
     a(href="{router.buildURL('home')}") {i18n.t('header.home_link')}
-  div.profile(d-show="{global.user}")
+  div.profile(d-show="{globals.user}")
     div.avatar-container
-      img.avatar(src="{global.user.avatar}")
-    span.login {global.user.login}
+      img.avatar(src="{globals.user.avatar}")
+    span.login {globals.user.login}
     Dropdown(down, hdir="left", cls="profile-dropdown", setDropdown="{setDropdown}")
       a.dropdown-item.settings-link.link.no-link(href="{router.buildURL('settings-account')}", action="close")
         i.menu-icon.fa.fa-cog
@@ -14,12 +14,12 @@ header.main-header
         i.menu-icon.fa.fa-sign-out
         span.logout-caption {i18n.t('header.profile.dropdown.logout')}
         img.logout-spinner(src="{images.loading}", d-show="{logoutFetching}")
-  span.register-link(d-hide="{global.user}")
+  span.register-link(d-hide="{globals.user}")
     a(href="{router.buildURL('register')}") {i18n.t('header.register_link')}
-  span.login-link(d-hide="{global.user}")
+  span.login-link(d-hide="{globals.user}")
     a(href="{router.buildURL('login')}") {i18n.t('header.login_link')}
   div.alerts
-    d-each(set="{global.alerts}", item="priorityAlerts", index="priority", uid="{priority}")
+    d-each(set="{globals.alerts}", item="priorityAlerts", index="priority", uid="{priority}")
       div(d-class="{priority}")
         d-each(set="{priorityAlerts}", item="levelAlerts", index="level", uid="{level}")
           div(d-class="{level + '-alerts'}")

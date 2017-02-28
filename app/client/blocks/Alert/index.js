@@ -40,7 +40,7 @@ class Alert extends Block {
   sendOneMoreConfirmation = () => {
     currentFetchIfUserConfirmed.abort();
 
-    currentFetchIfUserConfirmed = this.global.usersFetch
+    currentFetchIfUserConfirmed = this.globals.usersFetch
       .sendOneMore();
     currentFetchIfUserConfirmed.catch(() => {});
   };

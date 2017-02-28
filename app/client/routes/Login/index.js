@@ -52,15 +52,15 @@ class Login extends Block {
     this.submitting = true;
     this.loginError = false;
 
-    this.global.usersFetch
+    this.globals.usersFetch
       .login({ data })
       .then(({ json: user }) => {
         if (user) {
           this.loginSuccess = true;
-          this.global.changeUser(user);
+          this.globals.changeUser(user);
 
           setTimeout(
-            this.global.addNotConfirmedAlertIfNeeded,
+            this.globals.addNotConfirmedAlertIfNeeded,
             TIME_TO_ALERT_AFTER_LOGIN
           );
         } else {

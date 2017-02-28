@@ -42,7 +42,7 @@ class VirusWar extends Block {
       .map(({ data: { shape }, login }) => [login, shape])
       .fromPairs()
       .value();
-    this.isTopLeft = gameData.players[0].login === this.global.user.login;
+    this.isTopLeft = gameData.players[0].login === this.globals.user.login;
 
     emitter.on(SET_CELL, this.onSetCell);
     emitter.on(END_TURN, this.onEndTurn);
@@ -69,7 +69,7 @@ class VirusWar extends Block {
     _.forEach(this.lastSetCells, ({ x, y }) => {
       this.field[y][x].isAmongLastSetCells = true;
     });
-    _.forEach(getAvailableCells(this.field, this.global.user, this.lastSetCells), (cell) => {
+    _.forEach(getAvailableCells(this.field, this.globals.user, this.lastSetCells), (cell) => {
       cell.isAvailable = true;
     });
   };
@@ -97,7 +97,7 @@ class VirusWar extends Block {
     const {
       field,
       args: { isMyTurn },
-      global: { user }
+      globals: { user }
     } = this;
 
     if (isLast && !isMyTurn) {

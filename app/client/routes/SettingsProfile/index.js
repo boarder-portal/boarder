@@ -34,7 +34,7 @@ class SettingsProfile extends Block {
   beforeLoadRoute() {
     this.avatarsFetching = true;
 
-    this.global.userFetch
+    this.globals.userFetch
       .getAllAvatars()
       .then(({ json: avatars }) => {
         this.avatars = _.sortByField(avatars, 'createdAt', true);
@@ -151,7 +151,7 @@ class SettingsProfile extends Block {
         return timeout(800);
       })
       .then(() => (
-        this.global.userFetch
+        this.globals.userFetch
           .uploadAvatar({
             data: this.formData,
             onprogress: ({ loaded, total }) => {
@@ -170,7 +170,7 @@ class SettingsProfile extends Block {
           isUploading: false,
           url: this.uploadingAvatarSrc
         });
-        this.global.addAlert(ALERTS.AVATAR_ADDED);
+        this.globals.addAlert(ALERTS.AVATAR_ADDED);
       })
       .finally(() => {
         this.uploadingAvatar = doc.input('$type(file)').prop('files');
@@ -187,17 +187,17 @@ class SettingsProfile extends Block {
     }
 
     this.blockRequests();
-    this.global.userFetch
+    this.globals.userFetch
       .changeAvatar({
         data: {
           avatarId: avatar.id
         }
       })
       .then(() => {
-        this.global.changeUser({
+        this.globals.changeUser({
           avatar: avatar.url
         });
-        this.global.addAlert(ALERTS.AVATAR_CHANGED);
+        this.globals.addAlert(ALERTS.AVATAR_CHANGED);
       })
       .finally(() => {
         this.unblockRequests();
@@ -208,7 +208,7 @@ class SettingsProfile extends Block {
     const {
       canRequest,
       avatars,
-      global: { user }
+      globals: { user }
     } = this;
 
     if (!canRequest) {
@@ -216,7 +216,7 @@ class SettingsProfile extends Block {
     }
 
     this.blockRequests();
-    this.global.avatarsFetch
+    this.globals.avatarsFetch
       .delete({
         query: {
           avatarId: id
@@ -231,7 +231,7 @@ class SettingsProfile extends Block {
         ];
 
         if (user.avatar === url) {
-          this.global.changeUser({
+          this.globals.changeUser({
             avatar: null
           });
         }
