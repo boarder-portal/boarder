@@ -190,6 +190,16 @@
         "LIME": "#00ff00"
       }
     },
+    "survival_online": {
+      "LOBBY_NSP": "/survival-online/lobby",
+      "ROOM_NSP": "/survival-online/room/$roomId",
+      "playersCount": 4,
+      "events": {
+        "game": {
+          "HELLO": "survival-online/hello"
+        }
+      }
+    },
     "set": {
       "LOBBY_NSP": "/set/lobby",
       "ROOM_NSP": "/set/room/$roomId",

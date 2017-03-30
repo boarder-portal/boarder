@@ -49,6 +49,13 @@ div.room-state
               isMyTurn="{isMyTurn}"
               players="{players}"
             )
+          d-case(if="survival_online")
+            SurvivalGame(
+              gameData="{gameData}"
+              socket="{socket}"
+              emitter="{emitter}"
+              players="{players}"
+            )
           d-case(if="virus_war")
             VirusWar(
               gameData="{gameData}"

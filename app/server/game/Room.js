@@ -331,7 +331,14 @@ class Room {
     if (eventualRole === PLAYER) {
       socket.on(TOGGLE_PLAYER_STATUS, () => this.togglePlayerStatus(eventualPlayer));
 
-      _.forEach(Game.listeners, ({ forActivePlayer, listener }, event) => {
+      _.forEach(Game.listeners, (listener, event) => {
+        let forActivePlayer;
+
+        if (!_.isString(listener)) {
+          listener = listener.listener;
+          forActivePlayer = listener.forActivePlayer;
+        }
+
         socket.on(event, (data) => {
           if (this.status === PLAYING) {
             if (!forActivePlayer || this.game.isSocketActivePlayer(socket)) {
