@@ -198,7 +198,7 @@ class Room {
   isRequiredPlayers() {
     const { players } = this;
 
-    return players.filter(isNotNull).length > 1;
+    return players.filter(isNotNull).length > 0;
   }
 
   /**

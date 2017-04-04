@@ -4,11 +4,16 @@ import template from './index.pug';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
-  filler: {
+  survival_online: {
     events: {
       game: {
-        HELLO
+        HELLO,
+        GET_INITIAL_INFO
       }
+    },
+    map: {
+      width: mapW,
+      height: mapH
     }
   }
 } = gamesConfig;
@@ -27,19 +32,30 @@ class SurvivalGame extends Block {
     this.socket = socket;
 
     emitter.on(HELLO, this.onHello);
+    emitter.on(GET_INITIAL_INFO, this.onGetInitialInfo);
   }
 
   afterConstruct() {
     this.watch('args.gameData', this.setup);
   }
 
-  emit() {
-    this.socket.emit(...arguments);
-  }
-
   setup = () => {
-
+    this.map = this.map || _.times(mapH, (y) => {
+      return _.times(mapW, (x) => {
+        return {
+          x,
+          y,
+          land: 'grass',
+          building: null,
+          creature: null
+        }
+      });
+    });
   };
+
+  onGetInitialInfo({ map }) {
+    console.log(map);
+  }
 
   onHello = (data) => {
     console.log(data);
@@ -51,6 +67,10 @@ class SurvivalGame extends Block {
 
     ctx.fillStyle = '#f00';
     ctx.fillRect(10, 10, 100, 100);
+  }
+
+  emit() {
+    this.socket.emit(...arguments);
   }
 }
 

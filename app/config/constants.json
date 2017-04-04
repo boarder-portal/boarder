@@ -196,8 +196,13 @@
       "playersCount": 4,
       "events": {
         "game": {
-          "HELLO": "survival-online/hello"
+          "HELLO": "survival-online/hello",
+          "GET_INITIAL_INFO": "survival-online/get-initial-info"
         }
+      },
+      "map": {
+        "width": 15,
+        "height": 10
       }
     },
     "set": {

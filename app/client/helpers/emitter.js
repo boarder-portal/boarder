@@ -13,10 +13,8 @@ class Emitter {
   }
 
   emit(event, data) {
-    const e = _.assign({}, { type: event }, data);
-
     _.forEach(this._listeners[event], (listener) => {
-      listener(e);
+      listener(data);
     });
   }
 }
