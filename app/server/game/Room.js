@@ -312,14 +312,14 @@ class Room {
         eventualPlayer.index = index;
         players[index] = eventualPlayer;
       } else {
-        observers[id] = true;
+        observers[id] = socket;
         this.observersCount++;
       }
 
       this.update(socket);
     }
 
-    eventualPlayer.sockets[id] = true;
+    eventualPlayer.sockets[id] = socket;
 
     socket.role = eventualRole;
     socket.player = eventualPlayer;
