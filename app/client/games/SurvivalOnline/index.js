@@ -7,7 +7,6 @@ const {
   survival_online: {
     events: {
       game: {
-        HELLO,
         GET_INITIAL_INFO
       }
     },
@@ -31,15 +30,12 @@ class SurvivalGame extends Block {
 
     this.socket = socket;
 
-    emitter.on(HELLO, this.onHello);
-    emitter.on(GET_INITIAL_INFO, this.onGetInitialInfo);
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
+    socket.on(GET_INITIAL_INFO, this.onGetInitialInfo);
   }
 
   setup = () => {
+    this.emit(GET_INITIAL_INFO);
+
     this.map = this.map || _.times(mapH, (y) => {
       return _.times(mapW, (x) => {
         return {
@@ -53,24 +49,26 @@ class SurvivalGame extends Block {
     });
   };
 
-  onGetInitialInfo({ map }) {
-    console.log(map);
+  onGetInitialInfo({ playerMap }) {
+    _.forEach(playerMap, (cell) => {
+      this.map[cell.y][cell.x] = cell;
+    });
   }
 
-  onHello = (data) => {
-    console.log(data);
-    this.emit(HELLO, 'Hello, Server!');
-  };
+  renderMap(cornerX, cornerY) {
+
+  }
 
   afterRender() {
-    const ctx = this.ctx = this.canvas.getContext('2d');
-
-    ctx.fillStyle = '#f00';
-    ctx.fillRect(10, 10, 100, 100);
+    this.ctx = this.canvas.getContext('2d');
   }
 
   emit() {
     this.socket.emit(...arguments);
+  }
+
+  afterConstruct() {
+    this.watch('args.gameData', this.setup);
   }
 }
 

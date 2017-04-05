@@ -55,6 +55,12 @@ class Player {
     this.setInitialGameState();
   }
 
+  emit() {
+    _.forEach(this.sockets, (socket) => {
+      socket.emit(...arguments);
+    });
+  }
+
   setInitialGameState() {
     _.assign(this, {
       ready: false,

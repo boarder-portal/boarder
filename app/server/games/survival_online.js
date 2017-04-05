@@ -5,13 +5,16 @@ const {
     survival_online: {
       events: {
         game: {
-          HELLO,
           GET_INITIAL_INFO
         }
       },
       map: {
         width: mapW,
         height: mapH
+      },
+      playerMap: {
+        width: pMapW,
+        height: pMapH
       }
     }
   }
@@ -24,7 +27,7 @@ const {
  */
 class SurvivalGame extends Game {
   static listeners = {
-    [HELLO]: 'onHello'
+    [GET_INITIAL_INFO]: 'onGetInitialInfo'
   };
 
   prepareGame() {
@@ -32,30 +35,30 @@ class SurvivalGame extends Game {
 
     this.createMap();
     this.placePlayers();
-    this.sendInitialInfo();
 
     this.startGame();
-
-    setTimeout(() => {
-      this.emit(HELLO, 'Hello, Player!');
-    }, 2000);
   }
 
-  sendInitialInfo(player) {
-    const sendInitialInfoToPlayer = (player) => {
-      this.emit(GET_INITIAL_INFO, {
-        map: this.map
+  onGetInitialInfo(data, { player }) {
+    const { map } = this;
+    const { x: playerX, y: playerY } = player;
+    const cornerX = playerX - Math.floor(playerX/2);
+    const cornerY = playerY - Math.floor(playerY/2);
+
+    const playerMap = [];
+
+    _.times(pMapH, (y) => {
+      _.times(pMapW, (x) => {
+        const cell = map[cornerY + y] && map[cornerY + y][cornerX + x];
+
+        if (cell) {
+          playerMap.push(cell);
+        }
       });
-    };
+    });
 
-    if (player) {
-      return sendInitialInfoToPlayer(player);
-    }
-
-    _.forEach(this.players, (player) => {
-      //observers?
-
-      sendInitialInfoToPlayer(player);
+    player.emit(GET_INITIAL_INFO, {
+      playerMap
     });
   }
 
@@ -99,10 +102,6 @@ class SurvivalGame extends Game {
         startY++;
       }
     });
-  }
-
-  onHello(data, socket) {
-    console.log(data, socket.id);
   }
 
   toJSON() {
