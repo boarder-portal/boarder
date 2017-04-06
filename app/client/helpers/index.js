@@ -1,6 +1,7 @@
 export * from './construct-fetchers';
 export * from './emitter';
 export * from './fetcher';
+export * from './game-wrapper';
 export * from './get-blob-data-url';
 export * from './get-user-from-string';
 export * from './inject-globals';

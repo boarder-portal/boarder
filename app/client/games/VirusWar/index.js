@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
-import Game from '../';
-import { toRGBA } from '../../helpers';
+import { toRGBA, gameWrapper } from '../../helpers';
 import { getAvailableCells } from '../../../shared/virus-war';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
 
@@ -20,7 +19,7 @@ const {
   }
 } = gamesConfig;
 
-class VirusWar extends Game {
+class VirusWar extends Block {
   static template = template();
   static listeners = {
     [SET_CELL]: 'onSetCell',
@@ -32,7 +31,7 @@ class VirusWar extends Game {
   constructor(opts) {
     super(opts);
 
-    const { gameData } = this;
+    const { gameData } = this.args;
 
     this.mapPlayersToColors = _(gameData.players)
       .map(({ color, login }) => [login, color])
@@ -133,6 +132,6 @@ class VirusWar extends Game {
   }
 }
 
-Block.block('VirusWar', VirusWar);
+Block.block('VirusWar', VirusWar.wrap(gameWrapper));
 
 export default VirusWar;

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
-import Game from '../';
+import { gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -15,7 +15,7 @@ const {
   }
 } = gamesConfig;
 
-class SetGame extends Game {
+class SetGame extends Block {
   static template = template();
   static listeners = {
     [FIND_SET]: 'onFindSet',
@@ -210,6 +210,6 @@ class SetGame extends Game {
   };
 }
 
-Block.block('SetGame', SetGame);
+Block.block('SetGame', SetGame.wrap(gameWrapper));
 
 export default SetGame;

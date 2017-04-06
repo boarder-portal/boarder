@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
-import Game from '../';
+import { gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -18,7 +18,7 @@ const {
   }
 } = gamesConfig;
 
-class SurvivalGame extends Game {
+class SurvivalGame extends Block {
   static template = template();
   static listeners = {
     // [GET_INITIAL_INFO]: 'onGetInitialInfo'
@@ -27,19 +27,10 @@ class SurvivalGame extends Game {
   constructor(opts) {
     super(opts);
 
-    /*
-    const {
-      emitter,
-      socket
-    } = this;
-    */
-
     const {
       emitter,
       socket
     } = this.args;
-
-    this.socket = socket;
 
     socket.on(GET_INITIAL_INFO, this.onGetInitialInfo);
   }
@@ -75,4 +66,4 @@ class SurvivalGame extends Game {
   }
 }
 
-Block.block('SurvivalGame', SurvivalGame);
+Block.block('SurvivalGame', SurvivalGame.wrap(gameWrapper));

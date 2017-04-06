@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
-import Game from '../';
+import { gameWrapper } from '../../helpers';
 import { getNeighbourCells } from '../../../shared/filler';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -16,7 +16,7 @@ const {
   }
 } = gamesConfig;
 
-class FillerGame extends Game {
+class FillerGame extends Block {
   static template = template();
   static listeners = {
     [CHOOSE_COLOR]: 'onChooseColor'
@@ -29,7 +29,7 @@ class FillerGame extends Game {
   constructor(opts) {
     super(opts);
 
-    const { gameData } = this;
+    const { gameData } = this.args;
 
     this.isTopLeft = gameData.players[0].login === this.globals.user.login;
   }
@@ -84,4 +84,4 @@ class FillerGame extends Game {
   };
 }
 
-Block.block('FillerGame', FillerGame);
+Block.block('FillerGame', FillerGame.wrap(gameWrapper));

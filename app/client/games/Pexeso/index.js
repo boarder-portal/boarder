@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import { Block, doc } from 'dwayne';
 import template from './index.pug';
-import Game from '../';
-import { timeout } from '../../helpers';
+import { timeout, gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -17,7 +16,7 @@ const {
   }
 } = gamesConfig;
 
-class Pexeso extends Game {
+class Pexeso extends Block {
   static template = template();
   static listeners = {
     [TURN_CARD]: 'onTurnCard'
@@ -28,7 +27,7 @@ class Pexeso extends Game {
   constructor(opts) {
     super(opts);
 
-    const { gameData } = this;
+    const { gameData } = this.args;
 
     this.loaded = gameData.currentTurnedCards.length;
     this.options = gameData.options;
@@ -157,4 +156,4 @@ class Pexeso extends Game {
   }
 }
 
-Block.block('Pexeso', Pexeso);
+Block.block('Pexeso', Pexeso.wrap(gameWrapper));
