@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
+import Game from '../';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -14,36 +15,19 @@ const {
   }
 } = gamesConfig;
 
-class SetGame extends Block {
+class SetGame extends Game {
   static template = template();
+  static listeners = {
+    [FIND_SET]: 'onFindSet',
+    [NO_SET_HERE]: 'onNoSetHere'
+  };
 
   CARD_WIDTH = 105;
   CARD_HEIGHT = 150;
   CARD_MARGIN = 6;
 
-  constructor(opts) {
-    super(opts);
-
-    const {
-      emitter,
-      socket
-    } = this.args;
-
-    this.ableToClick = true;
-    this.socket = socket;
-    this.selectedCards = [];
-
-    emitter.on(FIND_SET, this.onFindSet);
-    emitter.on(NO_SET_HERE, this.onNoSetHere);
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
-  }
-
-  emit() {
-    this.socket.emit(...arguments);
-  }
+  ableToClick = true;
+  selectedCards = [];
 
   setup = () => {
     const { gameData } = this.args;

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
+import Game from '../';
 import { getNeighbourCells } from '../../../shared/filler';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -15,8 +16,11 @@ const {
   }
 } = gamesConfig;
 
-class FillerGame extends Block {
+class FillerGame extends Game {
   static template = template();
+  static listeners = {
+    [CHOOSE_COLOR]: 'onChooseColor'
+  };
 
   CELL_SIZE = 24;
   BORDER_WIDTH = 2;
@@ -25,24 +29,9 @@ class FillerGame extends Block {
   constructor(opts) {
     super(opts);
 
-    const {
-      gameData,
-      emitter,
-      socket
-    } = this.args;
+    const { gameData } = this;
 
-    this.socket = socket;
     this.isTopLeft = gameData.players[0].login === this.globals.user.login;
-
-    emitter.on(CHOOSE_COLOR, this.onChooseColor);
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
-  }
-
-  emit() {
-    this.socket.emit(...arguments);
   }
 
   setup = () => {

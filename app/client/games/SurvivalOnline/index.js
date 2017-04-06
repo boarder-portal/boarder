@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
+import Game from '../';
 import { games as gamesConfig } from '../../../config/constants.json';
 
 const {
@@ -17,11 +18,21 @@ const {
   }
 } = gamesConfig;
 
-class SurvivalGame extends Block {
+class SurvivalGame extends Game {
   static template = template();
+  static listeners = {
+    // [GET_INITIAL_INFO]: 'onGetInitialInfo'
+  };
 
   constructor(opts) {
     super(opts);
+
+    /*
+    const {
+      emitter,
+      socket
+    } = this;
+    */
 
     const {
       emitter,
@@ -61,14 +72,6 @@ class SurvivalGame extends Block {
 
   afterRender() {
     this.ctx = this.canvas.getContext('2d');
-  }
-
-  emit() {
-    this.socket.emit(...arguments);
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
   }
 }
 

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block } from 'dwayne';
 import template from './index.pug';
+import Game from '../';
 import { toRGBA } from '../../helpers';
 import { getAvailableCells } from '../../../shared/virus-war';
 import { games as gamesConfig, colors } from '../../../config/constants.json';
@@ -19,21 +20,20 @@ const {
   }
 } = gamesConfig;
 
-class VirusWar extends Block {
+class VirusWar extends Game {
   static template = template();
+  static listeners = {
+    [SET_CELL]: 'onSetCell',
+    [END_TURN]: 'onEndTurn'
+  };
 
   colors = colors;
 
   constructor(opts) {
     super(opts);
 
-    const {
-      gameData,
-      emitter,
-      socket
-    } = this.args;
+    const { gameData } = this;
 
-    this.socket = socket;
     this.mapPlayersToColors = _(gameData.players)
       .map(({ color, login }) => [login, color])
       .fromPairs()
@@ -43,17 +43,6 @@ class VirusWar extends Block {
       .fromPairs()
       .value();
     this.isTopLeft = gameData.players[0].login === this.globals.user.login;
-
-    emitter.on(SET_CELL, this.onSetCell);
-    emitter.on(END_TURN, this.onEndTurn);
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
-  }
-
-  emit() {
-    this.socket.emit(...arguments);
   }
 
   setup = () => {

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block, doc } from 'dwayne';
 import template from './index.pug';
+import Game from '../';
 import { timeout } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
 
@@ -16,36 +17,27 @@ const {
   }
 } = gamesConfig;
 
-class Pexeso extends Block {
+class Pexeso extends Game {
   static template = template();
+  static listeners = {
+    [TURN_CARD]: 'onTurnCard'
+  };
 
   backImage = '/public/images/pexeso/backs/default/0.jpg';
 
   constructor(opts) {
     super(opts);
 
-    const gameData = this.args.gameData;
-    const emitter = this.args.emitter;
+    const { gameData } = this;
 
-    this.socket = this.args.socket;
     this.loaded = gameData.currentTurnedCards.length;
     this.options = gameData.options;
-
-    emitter.on(TURN_CARD, this.onTurnCard);
 
     _.times(30, (i) => {
       doc
         .img()
         .ref(this.constructImageURL({ card: i }));
     });
-  }
-
-  afterConstruct() {
-    this.watch('args.gameData', this.setup);
-  }
-
-  emit() {
-    this.socket.emit(...arguments);
   }
 
   setup = () => {
