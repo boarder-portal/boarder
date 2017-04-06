@@ -1,4 +1,15 @@
 const _ = require('lodash');
+const {
+  games: {
+    global: {
+      events: {
+        game: {
+          UPDATE_GAME
+        }
+      }
+    }
+  }
+} = require('../../config/constants.json');
 
 const PUBLIC_FIELDS = [
   'login',
@@ -55,7 +66,14 @@ class Player {
     this.setInitialGameState();
   }
 
-  emit() {
+  emit(event, data) {
+    this.pureEmit(UPDATE_GAME, {
+      event,
+      data
+    });
+  }
+
+  pureEmit() {
     _.forEach(this.sockets, (socket) => {
       socket.emit(...arguments);
     });
