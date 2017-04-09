@@ -42,8 +42,8 @@ class SurvivalGame extends Game {
   onGetInitialInfo(data, { player }) {
     const { map } = this;
     const { x: playerX, y: playerY } = player;
-    const cornerX = playerX - Math.floor(playerX/2);
-    const cornerY = playerY - Math.floor(playerY/2);
+    const cornerX = playerX - Math.floor(pMapW/2);
+    const cornerY = playerY - Math.floor(pMapH/2);
 
     const playerMap = [];
 
@@ -58,7 +58,9 @@ class SurvivalGame extends Game {
     });
 
     player.emit(GET_INITIAL_INFO, {
-      playerMap
+      playerMap,
+      playerX,
+      playerY
     });
   }
 
@@ -73,6 +75,17 @@ class SurvivalGame extends Game {
           creature: null
         }
       });
+    });
+
+    _.times(Math.floor(mapH*mapW*0.1), () => {
+      const randX = Math.floor(Math.random()*mapW);
+      const randY = Math.floor(Math.random()*mapH);
+
+      const cell = this.map[randY][randX];
+
+      if (cell.land === 'grass' && !cell.creature && !cell.building) {
+        cell.building = 'tree';
+      }
     });
   }
 
@@ -99,7 +112,6 @@ class SurvivalGame extends Game {
         }
 
         startX++;
-        startY++;
       }
     });
   }

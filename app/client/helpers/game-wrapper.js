@@ -14,7 +14,7 @@ export function gameWrapper(Block) {
       this.gameData = gameData;
 
       _.forEach(Block.listeners, (listener, event) => {
-        emitter.on(event, this[listener]);
+        emitter.on(event, this[listener].bind(this));
       });
     }
 
