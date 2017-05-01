@@ -8,7 +8,10 @@ const {
   survival_online: {
     events: {
       game: {
-        GET_INITIAL_INFO
+        GET_INITIAL_INFO,
+        MOVE_TO,
+        REVERT_MOVE,
+        APPROVE_MOVE
       }
     },
     map: {
@@ -25,7 +28,9 @@ const {
 class SurvivalGame extends Block {
   static template = template();
   static listeners = {
-    [GET_INITIAL_INFO]: 'onGetInitialInfo'
+    [GET_INITIAL_INFO]: 'onGetInitialInfo',
+    [REVERT_MOVE]: 'onRevertMove',
+    [APPROVE_MOVE]: 'onApproveMove'
   };
 
   constructor(opts) {
@@ -51,17 +56,71 @@ class SurvivalGame extends Block {
         }
       });
     });
+    this.unapprovedMovements = [];
   };
 
   onGetInitialInfo({ playerMap, playerX, playerY }) {
     this.playerX = playerX;
     this.playerY = playerY;
+    this.lastApprovedPlayerX = playerX;
+    this.lastApprovedPlayerY = playerY;
 
     _.forEach(playerMap, (cell) => {
       this.map[cell.y][cell.x] = cell;
     });
 
     this.renderMap();
+  }
+
+  onRevertMove({ toX, toY, fromX, fromY }) {
+    console.log('reverted: ', toX, toY, fromX, fromY);
+
+    console.log(this.unapprovedMovements);
+
+    _.forEachRight(this.unapprovedMovements, (unapprovedMovement) => {
+      const {
+        before,
+      } = unapprovedMovement;
+
+      _.forEachRight(before.cells, (cell) => {
+        this.map[cell.y][cell.x] = _.cloneDeep(cell);
+      });
+    });
+
+    this.unapprovedMovements = [];
+
+    this.playerX = this.lastApprovedPlayerX;
+    this.playerY = this.lastApprovedPlayerY;
+
+    this.renderMap();
+  }
+
+  onApproveMove({ toX, toY, fromX, fromY }) {
+    console.log('approved: ', toX, toY, fromX, fromY);
+
+    _.forEach(this.unapprovedMovements, (unapprovedMovement, index) => {
+      const {
+        from: {
+          x: fromUnapprovedMovementX,
+          y: fromUnapprovedMovementY
+        },
+        to: {
+          x: toUnapprovedMovementX,
+          y: toUnapprovedMovementY
+        },
+        before,
+        after
+      } = unapprovedMovement;
+
+      if (fromUnapprovedMovementX === fromX && fromUnapprovedMovementY === fromY
+        && toUnapprovedMovementX === toX && toUnapprovedMovementY === toY) {
+        this.unapprovedMovements.splice(index, 1);
+        this.lastApprovedPlayerX = toX;
+        this.lastApprovedPlayerY = toY;
+
+        return false;
+      }
+    });
   }
 
   renderMap(cornerX, cornerY, direction, state) {
@@ -101,8 +160,55 @@ class SurvivalGame extends Block {
     this.canvas.width = this.cellSize * pMapW;
     this.canvas.height = this.cellSize * pMapH;
 
+    const keyCodeActions = {
+      65: 'left',
+      68: 'right',
+      87: 'top',
+      83: 'bottom',
+    };
+
     document.onkeydown = (e) => {
-      console.log(e.keyCode);
+      const keyCode = e.keyCode;
+      const {
+        playerX,
+        playerY,
+        map
+      } = this;
+      const moveDifference = {
+        from: { x: playerX, y: playerY },
+        to: { x: null, y: null },
+        before: { cells: [] },
+        after: { cells: [] }
+      };
+
+      //console.log(keyCode);
+
+      const action = keyCodeActions[keyCode];
+
+      if (!action) return;
+
+      let toX = playerX + (action === 'left' ? -1 : action === 'right' ? 1 : 0);
+      let toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
+      const cellFrom = map[playerY][playerX];
+      const cellTo = map[toY] && map[toY][toX];
+
+      moveDifference.to = { x: toX, y: toY };
+      moveDifference.before.cells.push(_.cloneDeep(cellFrom), _.cloneDeep(cellTo));
+
+      this.emit(MOVE_TO, { toX, toY, fromX: playerX, fromY: playerY });
+
+      if (cellTo) {
+        this.playerX = toX;
+        this.playerY = toY;
+
+        cellFrom.creature = null;
+        cellTo.creature = 'player';
+      }
+
+      moveDifference.after.cells.push(_.cloneDeep(cellFrom), _.cloneDeep(cellTo));
+
+      this.unapprovedMovements.push(moveDifference);
+      this.renderMap();
     }
   }
 }

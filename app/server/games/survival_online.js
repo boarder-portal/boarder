@@ -5,7 +5,10 @@ const {
     survival_online: {
       events: {
         game: {
-          GET_INITIAL_INFO
+          GET_INITIAL_INFO,
+          MOVE_TO,
+          REVERT_MOVE,
+          APPROVE_MOVE
         }
       },
       map: {
@@ -27,7 +30,8 @@ const {
  */
 class SurvivalGame extends Game {
   static listeners = {
-    [GET_INITIAL_INFO]: 'onGetInitialInfo'
+    [GET_INITIAL_INFO]: 'onGetInitialInfo',
+    [MOVE_TO]: 'onMoveTo'
   };
 
   prepareGame() {
@@ -42,8 +46,8 @@ class SurvivalGame extends Game {
   onGetInitialInfo(data, { player }) {
     const { map } = this;
     const { x: playerX, y: playerY } = player;
-    const cornerX = playerX - Math.floor(pMapW/2);
-    const cornerY = playerY - Math.floor(pMapH/2);
+    const cornerX = playerX - Math.floor(pMapW / 2);
+    const cornerY = playerY - Math.floor(pMapH / 2);
 
     const playerMap = [];
 
@@ -62,6 +66,31 @@ class SurvivalGame extends Game {
       playerX,
       playerY
     });
+  }
+
+  onMoveTo({ toX, toY, fromX, fromY }, { player }) {
+    const {
+      x: playerX,
+      y: playerY
+    } = player;
+
+    if (playerX !== fromX || playerY !== fromY) {
+      return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
+    }
+
+    const cellFrom = this.map[fromY] && this.map[fromY][fromX];
+    const cellTo = this.map[toY] && this.map[toY][toX];
+
+    if (!cellTo || cellTo.creature || cellTo.building) {
+      return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
+    }
+
+    cellFrom.creature = null;
+    cellTo.creature = 'player';
+    player.x = toX;
+    player.y = toY;
+
+    player.emit(APPROVE_MOVE, { toX, toY, fromX, fromY });
   }
 
   createMap() {

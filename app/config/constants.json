@@ -197,7 +197,10 @@
       "events": {
         "game": {
           "HELLO": "survival-online/hello",
-          "GET_INITIAL_INFO": "survival-online/get-initial-info"
+          "GET_INITIAL_INFO": "survival-online/get-initial-info",
+          "MOVE_TO": "survival-online/move-to",
+          "REVERT_MOVE": "survival-online/revert-move",
+          "APPROVE_MOVE": "survival-online/approve-move"
         }
       },
       "map": {
