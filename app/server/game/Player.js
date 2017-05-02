@@ -73,6 +73,15 @@ class Player {
     });
   }
 
+  broadcast(event, data) {
+    _.forEach(this.sockets, (socket) => {
+      socket.broadcast.emit(UPDATE_GAME, {
+        event,
+        data
+      });
+    });
+  }
+
   pureEmit() {
     _.forEach(this.sockets, (socket) => {
       socket.emit(...arguments);

@@ -85,8 +85,9 @@ class SurvivalGame extends Game {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
     }
 
+    cellTo.creature = _.cloneDeep(cellFrom.creature);
     cellFrom.creature = null;
-    cellTo.creature = 'player';
+    
     player.x = toX;
     player.y = toY;
 
@@ -120,8 +121,8 @@ class SurvivalGame extends Game {
 
   placePlayers() {
     const map = this.map;
-    let startX = Math.floor(mapW/2);
-    let startY = Math.floor(mapW/2);
+    let startX = Math.floor(mapW / 2);
+    let startY = Math.floor(mapW / 2);
 
     _.forEach(this.players, (player) => {
       let isPlayerPlaced = false;
@@ -131,7 +132,10 @@ class SurvivalGame extends Game {
           const cell = map[startY][startX];
 
           if (!cell.creature && !cell.building) {
-            cell.creature = 'player';
+            cell.creature = {
+              type: 'player',
+              login: player.login
+            };
 
             player.x = startX;
             player.y = startY;
