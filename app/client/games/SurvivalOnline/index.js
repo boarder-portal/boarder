@@ -10,7 +10,8 @@ const {
       game: {
         GET_INITIAL_INFO,
         MOVE_TO,
-        REVERT_MOVE
+        REVERT_MOVE,
+        CHANGED_CELLS
       }
     },
     map: {
@@ -29,7 +30,7 @@ class SurvivalGame extends Block {
   static listeners = {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
     [REVERT_MOVE]: 'onRevertMove',
-    [APPROVE_MOVE]: 'onApproveMove'
+    [CHANGED_CELLS]: 'onChangedCells'
   };
 
   constructor(opts) {
@@ -82,6 +83,19 @@ class SurvivalGame extends Block {
     this.renderMap();
   }
 
+  onChangedCells({ cells, additionalInfo }) {
+    _.forEach(cells, (cell) => {
+      this.map[cell.y][cell.x] = cell;
+    });
+
+    if (additionalInfo.approvedMove) {
+      this.lastApprovedPlayerX = additionalInfo.approvedMove.toX;
+      this.lastApprovedPlayerY = additionalInfo.approvedMove.toY;
+    }
+
+    this.renderMap();
+  }
+
   renderMap(cornerX, cornerY, direction, state) {
     const { playerX, playerY, map, ctx, cellSize } = this;
 
@@ -104,7 +118,7 @@ class SurvivalGame extends Block {
           if (cell.creature) {
             if (cell.creature.type === 'player') {
               if (cell.creature.login === this.player.login) {
-                ctx.fillStyle = 'pink';
+                //ctx.fillStyle = 'pink';
               } else {
                 ctx.fillStyle = 'black';
               } 
@@ -117,6 +131,9 @@ class SurvivalGame extends Block {
         ctx.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
       });
     });
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(this.canvas.width/2 - this.cellSize/2, this.canvas.height/2 - this.cellSize/2, this.cellSize, this.cellSize);
   }
 
   afterRender() {
@@ -150,6 +167,8 @@ class SurvivalGame extends Block {
       let toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
       const cellFrom = map[playerY][playerX];
       const cellTo = map[toY] && map[toY][toX];
+
+      if (cellTo && (cellTo.creature || cellTo.building)) return;
 
       this.emit(MOVE_TO, { toX, toY, fromX: playerX, fromY: playerY });
 

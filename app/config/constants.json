@@ -200,7 +200,8 @@
           "GET_INITIAL_INFO": "survival-online/get-initial-info",
           "MOVE_TO": "survival-online/move-to",
           "REVERT_MOVE": "survival-online/revert-move",
-          "APPROVE_MOVE": "survival-online/approve-move"
+          "APPROVE_MOVE": "survival-online/approve-move",
+          "CHANGED_CELLS": "survival-online/changed-cells"
         }
       },
       "map": {

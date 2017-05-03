@@ -8,7 +8,8 @@ const {
           GET_INITIAL_INFO,
           MOVE_TO,
           REVERT_MOVE,
-          APPROVE_MOVE
+          APPROVE_MOVE,
+          CHANGED_CELLS
         }
       },
       map: {
@@ -78,6 +79,7 @@ class SurvivalGame extends Game {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
     }
 
+    const changedCells = [];
     const cellFrom = this.map[fromY] && this.map[fromY][fromX];
     const cellTo = this.map[toY] && this.map[toY][toX];
 
@@ -87,11 +89,84 @@ class SurvivalGame extends Game {
 
     cellTo.creature = _.cloneDeep(cellFrom.creature);
     cellFrom.creature = null;
+    changedCells.push(cellFrom, cellTo);
+
     
     player.x = toX;
     player.y = toY;
 
-    player.emit(APPROVE_MOVE, { toX, toY, fromX, fromY });
+    _.forEach(this.players, (playerInGame) => {
+      let cellsToSend = [];
+      const additionalInfo = {};
+      const playerCornerX = playerInGame.x - Math.floor(pMapW / 2);
+      const playerCornerY = playerInGame.y - Math.floor(pMapH / 2);
+
+      if (playerInGame.login !== player.login) {
+        _.forEach(changedCells, (cell) => {
+          if (cell.x >= playerCornerX && cell.x < playerCornerX + pMapW
+            && cell.y >= playerCornerY && cell.y < playerCornerY + pMapH) {
+            cellsToSend.push(cell);
+          }
+        });
+      } else {
+        cellsToSend = changedCells;
+        additionalInfo.approvedMove = { toX, toY };
+
+        if (toX > fromX) {
+          const cellX = playerCornerX + pMapW - 1;
+
+          _.times(pMapH, (index) => {
+            const cellY = playerCornerY + index;
+
+            const cell = this.map[cellY] && this.map[cellY][cellX];
+
+            if (cell) {
+              cellsToSend.push(cell);
+            }
+          });
+        } else if (toX < fromX) {
+          const cellX = playerCornerX;
+
+          _.times(pMapH, (index) => {
+            const cellY = playerCornerY + index;
+
+            const cell = this.map[cellY] && this.map[cellY][cellX];
+
+            if (cell) {
+              cellsToSend.push(cell);
+            }
+          });
+        } else if (toY > fromY) {
+          const cellY = playerCornerY + pMapH - 1;
+
+          _.times(pMapW, (index) => {
+            const cellX = playerCornerX + index;
+
+            const cell = this.map[cellY] && this.map[cellY][cellX];
+
+            if (cell) {
+              cellsToSend.push(cell);
+            }
+          });
+        } else if (toY < fromY) {
+          const cellY = playerCornerY;
+
+          _.times(pMapW, (index) => {
+            const cellX = playerCornerX + index;
+
+            const cell = this.map[cellY] && this.map[cellY][cellX];
+
+            if (cell) {
+              cellsToSend.push(cell);
+            }
+          });
+        }
+      }
+
+      //console.log(playerInGame.login, cellsToSend);
+
+      playerInGame.emit(CHANGED_CELLS, { cells: cellsToSend, additionalInfo });
+    });
   }
 
   createMap() {
