@@ -79,6 +79,7 @@ class SurvivalGame extends Game {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
     }
 
+    const direction = this.getDirectionByCoords(fromX, fromY, toX, toY);
     const changedCells = [];
     const cellFrom = this.map[fromY] && this.map[fromY][fromX];
     const cellTo = this.map[toY] && this.map[toY][toX];
@@ -89,8 +90,7 @@ class SurvivalGame extends Game {
 
     cellTo.creature = _.cloneDeep(cellFrom.creature);
     cellFrom.creature = null;
-    changedCells.push(cellFrom, cellTo);
-
+    changedCells.push(cellFrom, { ...cellTo, move: { direction } });
     
     player.x = toX;
     player.y = toY;
@@ -109,7 +109,7 @@ class SurvivalGame extends Game {
           }
         });
       } else {
-        cellsToSend = changedCells;
+        cellsToSend = [...changedCells];
         additionalInfo.approvedMove = { toX, toY };
 
         if (toX > fromX) {
@@ -163,9 +163,7 @@ class SurvivalGame extends Game {
         }
       }
 
-      //console.log(playerInGame.login, cellsToSend);
-
-      playerInGame.emit(CHANGED_CELLS, { cells: cellsToSend, additionalInfo });
+      cellsToSend.length && playerInGame.emit(CHANGED_CELLS, { cells: cellsToSend, additionalInfo });
     });
   }
 
@@ -222,6 +220,18 @@ class SurvivalGame extends Game {
         startX++;
       }
     });
+  }
+
+  getDirectionByCoords(x1, y1, x2, y2) {
+    if (x2 > x1) {
+      return 'right';
+    } else if (x2 < x1) {
+      return 'left';
+    } else if (y2 > y1) {
+      return 'bottom';
+    } else {
+      return 'top';
+    }
   }
 
   toJSON() {

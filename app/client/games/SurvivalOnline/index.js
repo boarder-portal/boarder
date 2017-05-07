@@ -66,6 +66,7 @@ class SurvivalGame extends Block {
     this.playerY = playerY;
     this.lastApprovedPlayerX = playerX;
     this.lastApprovedPlayerY = playerY;
+    this.lastPlayerMoveTimestamp = Date.now();
 
     _.forEach(playerMap, (cell) => {
       this.map[cell.y][cell.x] = cell;
@@ -77,7 +78,7 @@ class SurvivalGame extends Block {
   }
 
   onRevertMove({ toX, toY, fromX, fromY }) {
-    console.log('reverted: ', toX, toY, fromX, fromY);
+    console.log('Reverted: ', toX, toY, fromX, fromY);
 
     this.playerX = this.lastApprovedPlayerX;
     this.playerY = this.lastApprovedPlayerY;
@@ -88,7 +89,17 @@ class SurvivalGame extends Block {
   }
 
   onChangedCells({ cells, additionalInfo }) {
+    //console.log('Changed cells: ', cells);
+
     _.forEach(cells, (cell) => {
+      if (cell.move) {
+        if (cell.creature.login === this.player.login) {
+          delete cell.move;
+        } else {
+          cell.move.startMoving = Date.now();
+        }
+      }
+
       this.map[cell.y][cell.x] = cell;
     });
 
@@ -107,8 +118,9 @@ class SurvivalGame extends Block {
   }
 
   renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
-    //console.log(cornerX, cornerY, stateX, stateY, direction);
+    //console.log(...arguments, Date.now());
     const { playerX, playerY, map, ctx, cellSize } = this;
+    const movingCells = [];
 
     cornerX = cornerX != null ? cornerX : playerX - Math.floor(pMapW/2);
     cornerY = cornerY != null ? cornerY : playerY - Math.floor(pMapH/2);
@@ -125,22 +137,53 @@ class SurvivalGame extends Block {
           if (cell.building === 'tree') {
             ctx.fillStyle = 'orange';
           }
-
-          if (cell.creature) {
-            if (cell.creature.type === 'player') {
-              if (cell.creature.login === this.player.login) {
-                //ctx.fillStyle = 'pink';
-              } else {
-                ctx.fillStyle = 'black';
-              } 
-            }
-          }
         } else {
           ctx.fillStyle = 'black';
         }
 
         ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+
+        if (cell && cell.creature) {
+          if (cell.creature.type === 'player') {
+            if (cell.creature.login === this.player.login) {
+              //ctx.fillStyle = 'pink';
+            } else {
+              ctx.fillStyle = 'black';
+            }
+          }
+
+          if (cell.move) {
+            movingCells.push({ ...cell, originalCell: cell, relativeX: x, relativeY: y });
+          } else {
+            ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+          }
+        }
       });
+    });
+
+    _.forEach(movingCells, (cell) => {
+      let shiftX = 0;
+      let shiftY = 0;
+
+      const cellDirection = cell.move.direction;
+      const cellMovingState = Math.min((Date.now() - cell.move.startMoving)/70, 1);
+
+      if (cellDirection === 'right') {
+        shiftX = -(1 - cellMovingState);
+      } else if (cellDirection === 'left') {
+        shiftX = (1 - cellMovingState);
+      } else if (cellDirection === 'top') {
+        shiftY = (1 - cellMovingState);
+      } else if (cellDirection === 'bottom') {
+        shiftY = -(1 - cellMovingState);
+      }
+
+      if (cellMovingState >= 1) {
+        delete cell.originalCell.move;
+      }
+
+      ctx.fillStyle = 'black';
+      ctx.fillRect(Math.floor((-stateX + shiftX +  cell.relativeX)*cellSize), Math.floor((-stateY + shiftY + cell.relativeY)*cellSize), cellSize, cellSize);
     });
 
     ctx.fillStyle = 'black';
@@ -172,9 +215,9 @@ class SurvivalGame extends Block {
       newStateX = Number(newStateX.toFixed(1));
       newStateY = Number(newStateY.toFixed(1));
 
-      //setTimeout(() => this.renderMap.call(this, cornerX, cornerY, newStateX, newStateY, direction), 500);
-
-      requestAnimationFrame(this.renderMap.bind(this, cornerX, cornerY, newStateX, newStateY, direction));
+      requestAnimationFrame(() => this.renderMap(cornerX, cornerY, newStateX, newStateY, direction));
+    } else if (movingCells.length) {
+      requestAnimationFrame(() => this.renderMap());
     }
   }
 
@@ -203,7 +246,9 @@ class SurvivalGame extends Block {
 
       const action = keyCodeActions[keyCode];
 
-      if (!action || this.playerIsMoving) return;
+      if (!action || this.playerIsMoving || Date.now() - this.lastPlayerMoveTimestamp < 170) return;
+
+      this.lastPlayerMoveTimestamp = Date.now();
 
       let toX = playerX + (action === 'left' ? -1 : action === 'right' ? 1 : 0);
       let toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
