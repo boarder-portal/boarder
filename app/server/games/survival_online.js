@@ -8,7 +8,6 @@ const {
           GET_INITIAL_INFO,
           MOVE_TO,
           REVERT_MOVE,
-          APPROVE_MOVE,
           CHANGED_CELLS
         }
       },
@@ -47,8 +46,8 @@ class SurvivalGame extends Game {
   onGetInitialInfo(data, { player }) {
     const { map } = this;
     const { x: playerX, y: playerY } = player;
-    const cornerX = playerX - Math.floor(pMapW / 2);
-    const cornerY = playerY - Math.floor(pMapH / 2);
+    const cornerX = playerX - Math.floor(pMapW/2);
+    const cornerY = playerY - Math.floor(pMapH/2);
 
     const playerMap = [];
 
@@ -79,10 +78,14 @@ class SurvivalGame extends Game {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
     }
 
+    const {
+      map
+    } = this;
+
     const direction = this.getDirectionByCoords(fromX, fromY, toX, toY);
     const changedCells = [];
-    const cellFrom = this.map[fromY] && this.map[fromY][fromX];
-    const cellTo = this.map[toY] && this.map[toY][toX];
+    const cellFrom = map[fromY] && map[fromY][fromX];
+    const cellTo = map[toY] && map[toY][toX];
 
     if (!cellTo || cellTo.creature || cellTo.building) {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
@@ -117,8 +120,7 @@ class SurvivalGame extends Game {
 
           _.times(pMapH, (index) => {
             const cellY = playerCornerY + index;
-
-            const cell = this.map[cellY] && this.map[cellY][cellX];
+            const cell = map[cellY] && map[cellY][cellX];
 
             if (cell) {
               cellsToSend.push(cell);
@@ -130,7 +132,7 @@ class SurvivalGame extends Game {
           _.times(pMapH, (index) => {
             const cellY = playerCornerY + index;
 
-            const cell = this.map[cellY] && this.map[cellY][cellX];
+            const cell = map[cellY] && map[cellY][cellX];
 
             if (cell) {
               cellsToSend.push(cell);
@@ -142,7 +144,7 @@ class SurvivalGame extends Game {
           _.times(pMapW, (index) => {
             const cellX = playerCornerX + index;
 
-            const cell = this.map[cellY] && this.map[cellY][cellX];
+            const cell = map[cellY] && map[cellY][cellX];
 
             if (cell) {
               cellsToSend.push(cell);
@@ -154,7 +156,7 @@ class SurvivalGame extends Game {
           _.times(pMapW, (index) => {
             const cellX = playerCornerX + index;
 
-            const cell = this.map[cellY] && this.map[cellY][cellX];
+            const cell = map[cellY] && map[cellY][cellX];
 
             if (cell) {
               cellsToSend.push(cell);
@@ -194,8 +196,8 @@ class SurvivalGame extends Game {
 
   placePlayers() {
     const map = this.map;
-    let startX = Math.floor(mapW / 2);
-    let startY = Math.floor(mapW / 2);
+    let startX = Math.floor(mapW/2);
+    let startY = Math.floor(mapW/2);
 
     _.forEach(this.players, (player) => {
       let isPlayerPlaced = false;
