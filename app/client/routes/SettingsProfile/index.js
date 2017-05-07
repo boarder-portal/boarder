@@ -85,20 +85,18 @@ class SettingsProfile extends Block {
 
     this.blockRequests();
 
-    getBlobDataURL(file)
-      .readAs('dataURL')
-      .then((url) => {
-        this.uploadingAvatarSrc = url;
-        this.avatars = [
-          {
-            url,
-            loading: true,
-            uploaderProgressBarStyle: null,
-            isUploading: true
-          },
-          ...avatars
-        ];
-      });
+    getBlobDataURL(file).then((url) => {
+      this.uploadingAvatarSrc = url;
+      this.avatars = [
+        {
+          url,
+          loading: true,
+          uploaderProgressBarStyle: null,
+          isUploading: true
+        },
+        ...avatars
+      ];
+    });
   };
 
   changeUploadingAvatar(data) {
