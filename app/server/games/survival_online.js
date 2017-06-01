@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { generateUID } = require('../helpers/generate-uid');
 const Game = require('./');
 const {
   games: {
@@ -30,7 +31,7 @@ const {
  */
 class SurvivalGame extends Game {
   static listeners = {
-    [GET_INITIAL_INFO]: 'onGetInitialInfo',
+    [GET_INITIAL_INFO]: 'onPlayerRequestsInitialInfo',
     [MOVE_TO]: 'onMoveTo'
   };
 
@@ -43,197 +44,66 @@ class SurvivalGame extends Game {
     this.startGame();
   }
 
-  onGetInitialInfo(data, { player }) {
+  onPlayerRequestsInitialInfo(data, { player }) {
     const { map } = this;
     const { x: playerX, y: playerY } = player;
-    const cornerX = playerX - Math.floor(pMapW/2);
-    const cornerY = playerY - Math.floor(pMapH/2);
-
-    const playerMap = [];
-
-    _.times(pMapH, (y) => {
-      _.times(pMapW, (x) => {
-        const cell = map[cornerY + y] && map[cornerY + y][cornerX + x];
-
-        if (cell) {
-          playerMap.push(cell);
-        }
-      });
-    });
 
     player.emit(GET_INITIAL_INFO, {
-      playerMap,
+      playerMap: {
+        objects: map.objects
+      },
       playerX,
       playerY
     });
   }
 
   onMoveTo({ toX, toY, fromX, fromY }, { player }) {
-    const {
-      x: playerX,
-      y: playerY
-    } = player;
 
-    if (playerX !== fromX || playerY !== fromY) {
-      return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
-    }
-
-    const {
-      map
-    } = this;
-
-    const direction = this.getDirectionByCoords(fromX, fromY, toX, toY);
-    const changedCells = [];
-    const cellFrom = map[fromY] && map[fromY][fromX];
-    const cellTo = map[toY] && map[toY][toX];
-
-    if (!cellTo || cellTo.creature || cellTo.building) {
-      return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
-    }
-
-    cellTo.creature = _.cloneDeep(cellFrom.creature);
-    cellFrom.creature = null;
-    changedCells.push(cellFrom, { ...cellTo, move: { direction } });
-    
-    player.x = toX;
-    player.y = toY;
-
-    _.forEach(this.players, (playerInGame) => {
-      let cellsToSend = [];
-      const additionalInfo = {};
-      const playerCornerX = playerInGame.x - Math.floor(pMapW / 2);
-      const playerCornerY = playerInGame.y - Math.floor(pMapH / 2);
-
-      if (playerInGame.login !== player.login) {
-        _.forEach(changedCells, (cell) => {
-          if (cell.x >= playerCornerX && cell.x < playerCornerX + pMapW
-            && cell.y >= playerCornerY && cell.y < playerCornerY + pMapH) {
-            cellsToSend.push(cell);
-          }
-        });
-      } else {
-        cellsToSend = [...changedCells];
-        additionalInfo.approvedMove = { toX, toY };
-
-        if (toX > fromX) {
-          const cellX = playerCornerX + pMapW - 1;
-
-          _.times(pMapH, (index) => {
-            const cellY = playerCornerY + index;
-            const cell = map[cellY] && map[cellY][cellX];
-
-            if (cell) {
-              cellsToSend.push(cell);
-            }
-          });
-        } else if (toX < fromX) {
-          const cellX = playerCornerX;
-
-          _.times(pMapH, (index) => {
-            const cellY = playerCornerY + index;
-
-            const cell = map[cellY] && map[cellY][cellX];
-
-            if (cell) {
-              cellsToSend.push(cell);
-            }
-          });
-        } else if (toY > fromY) {
-          const cellY = playerCornerY + pMapH - 1;
-
-          _.times(pMapW, (index) => {
-            const cellX = playerCornerX + index;
-
-            const cell = map[cellY] && map[cellY][cellX];
-
-            if (cell) {
-              cellsToSend.push(cell);
-            }
-          });
-        } else if (toY < fromY) {
-          const cellY = playerCornerY;
-
-          _.times(pMapW, (index) => {
-            const cellX = playerCornerX + index;
-
-            const cell = map[cellY] && map[cellY][cellX];
-
-            if (cell) {
-              cellsToSend.push(cell);
-            }
-          });
-        }
-      }
-
-      cellsToSend.length && playerInGame.emit(CHANGED_CELLS, { cells: cellsToSend, additionalInfo });
-    });
-  }
+  };
 
   createMap() {
-    this.map = _.times(mapH, (y) => {
-      return _.times(mapW, (x) => {
-        return {
-          x,
-          y,
-          land: 'grass',
-          building: null,
-          creature: null
-        }
-      });
-    });
+    const map = this.map = {
+      objects: {}
+    };
 
-    _.times(Math.floor(mapH*mapW*0.1), () => {
+    _.times(Math.floor(mapH*mapW*0.00001), () => {
       const randX = Math.floor(Math.random()*mapW);
       const randY = Math.floor(Math.random()*mapH);
 
-      const cell = this.map[randY][randX];
+      const generatedID = generateUID();
 
-      if (cell.land === 'grass' && !cell.creature && !cell.building) {
-        cell.building = 'tree';
+      map.objects[generatedID] = {
+        id: generatedID,
+        x: randX,
+        y: randY,
+        type: 'tree'
       }
     });
   }
 
   placePlayers() {
-    const map = this.map;
+    const {
+      map: {
+        objects
+      }
+    } = this;
     let startX = Math.floor(mapW/2);
     let startY = Math.floor(mapW/2);
 
+
     _.forEach(this.players, (player) => {
-      let isPlayerPlaced = false;
+      const generatedID = generateUID();
 
-      while (!isPlayerPlaced) {
-        if (map[startY] && map[startY][startX]) {
-          const cell = map[startY][startX];
+      player.x = startX;
+      player.y = startY;
 
-          if (!cell.creature && !cell.building) {
-            cell.creature = {
-              type: 'player',
-              login: player.login
-            };
-
-            player.x = startX;
-            player.y = startY;
-
-            isPlayerPlaced = true;
-          }
-        }
-
-        startX++;
-      }
+      objects[generatedID] = {
+        id: generatedID,
+        x: startX,
+        y: startY,
+        type: 'player'
+      };
     });
-  }
-
-  getDirectionByCoords(x1, y1, x2, y2) {
-    if (x2 > x1) {
-      return 'right';
-    } else if (x2 < x1) {
-      return 'left';
-    } else if (y2 > y1) {
-      return 'bottom';
-    } else {
-      return 'top';
-    }
   }
 
   toJSON() {
