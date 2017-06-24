@@ -19,16 +19,16 @@ export function gameWrapper(Block) {
     }
 
     afterConstruct() {
-      this.watch('args.gameData', () => this.setup());
+      this.watch('args.gameData', () => this.setupGame());
     }
 
     emit() {
       this.socket.emit(...arguments);
     }
 
-    setup() {
-      if (super.setup) {
-        super.setup();
+    setupGame() {
+      if (this.setup) {
+        this.setup();
       }
     }
   };

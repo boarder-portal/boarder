@@ -44,11 +44,17 @@ class SurvivalGame extends Game {
   }
 
   onGetInitialInfo(data, { player }) {
-    const { map } = this;
-    const { x: playerX, y: playerY } = player;
-    const cornerX = playerX - Math.floor(pMapW/2);
-    const cornerY = playerY - Math.floor(pMapH/2);
-
+    const {
+      map
+    } = this;
+    const {
+      x: playerX,
+      y: playerY
+    } = player;
+    const {
+      x: cornerX,
+      y: cornerY
+    } = this.getCornerByMiddleCell({ x: playerX, y: playerY });
     const playerMap = [];
 
     _.times(pMapH, (y) => {
@@ -101,13 +107,17 @@ class SurvivalGame extends Game {
     _.forEach(this.players, (playerInGame) => {
       let cellsToSend = [];
       const additionalInfo = {};
-      const playerCornerX = playerInGame.x - Math.floor(pMapW / 2);
-      const playerCornerY = playerInGame.y - Math.floor(pMapH / 2);
+      const {
+        x: playerCornerX,
+        y: playerCornerY
+      } = this.getCornerByMiddleCell({ x: playerInGame.x, y: playerInGame.y });
 
       if (playerInGame.login !== player.login) {
         _.forEach(changedCells, (cell) => {
-          if (cell.x >= playerCornerX && cell.x < playerCornerX + pMapW
-            && cell.y >= playerCornerY && cell.y < playerCornerY + pMapH) {
+          if (
+            cell.x >= playerCornerX && cell.x < playerCornerX + pMapW
+            && cell.y >= playerCornerY && cell.y < playerCornerY + pMapH
+          ) {
             cellsToSend.push(cell);
           }
         });
@@ -182,11 +192,13 @@ class SurvivalGame extends Game {
       });
     });
 
-    _.times(Math.floor(mapH*mapW*0.1), () => {
-      const randX = Math.floor(Math.random()*mapW);
-      const randY = Math.floor(Math.random()*mapH);
+    const map = this.map;
 
-      const cell = this.map[randY][randX];
+    _.times(Math.floor(mapH * mapW * 0.1), () => {
+      const randX = Math.floor(Math.random() * mapW);
+      const randY = Math.floor(Math.random() * mapH);
+
+      const cell = map[randY][randX];
 
       if (cell.land === 'grass' && !cell.creature && !cell.building) {
         cell.building = 'tree';
@@ -196,8 +208,8 @@ class SurvivalGame extends Game {
 
   placePlayers() {
     const map = this.map;
-    let startX = Math.floor(mapW/2);
-    let startY = Math.floor(mapW/2);
+    let startX = Math.floor(mapW / 2);
+    let startY = Math.floor(mapW / 2);
 
     _.forEach(this.players, (player) => {
       let isPlayerPlaced = false;
@@ -234,6 +246,13 @@ class SurvivalGame extends Game {
     } else {
       return 'top';
     }
+  }
+
+  getCornerByMiddleCell({ x, y }) {
+    return {
+      x: x - Math.floor(pMapW/2),
+      y: y - Math.floor(pMapH/2)
+    };
   }
 
   toJSON() {

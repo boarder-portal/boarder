@@ -40,16 +40,13 @@ class SurvivalGame extends Block {
 
   constructor(opts) {
     super(opts);
-
-    const {
-      emitter,
-      socket
-    } = this.args;
     
-    this.player = this.globals.user;
+    this.player = {
+      ...this.globals.user
+    };
   }
 
-  setup = () => {
+  setup() {
     this.emit(GET_INITIAL_INFO);
 
     this.map = this.map || _.times(mapH, (y) => {
@@ -66,14 +63,19 @@ class SurvivalGame extends Block {
   };
 
   onGetInitialInfo({ playerMap, playerX, playerY }) {
-    this.playerX = playerX;
-    this.playerY = playerY;
-    this.lastApprovedPlayerX = playerX;
-    this.lastApprovedPlayerY = playerY;
-    this.lastPlayerMoveTimestamp = Date.now();
+    const {
+      player,
+      map
+    } = this;
+
+    player.x = playerX;
+    player.y = playerY;
+    player.lastApprovedPlayerX = playerX;
+    player.lastApprovedPlayerY = playerY;
+    player.lastMoveTimestamp = Date.now();
 
     _.forEach(playerMap, (cell) => {
-      this.map[cell.y][cell.x] = cell;
+      map[cell.y][cell.x] = cell;
     });
 
     this.renderMap();
@@ -82,14 +84,20 @@ class SurvivalGame extends Block {
   onRevertMove({ toX, toY, fromX, fromY }) {
     console.log('Reverted: ', toX, toY, fromX, fromY);
 
-    this.playerX = this.lastApprovedPlayerX;
-    this.playerY = this.lastApprovedPlayerY;
+    const player = this.player;
+
+    player.x = player.lastApprovedPlayerX;
+    player.y = player.lastApprovedPlayerY;
 
     this.renderMap();
   }
 
   onChangedCells({ cells, additionalInfo }) {
     //console.log('Changed cells: ', cells);
+    const {
+      player,
+      map
+    } = this;
 
     _.forEach(cells, (cell) => {
       if (cell.move) {
@@ -100,28 +108,38 @@ class SurvivalGame extends Block {
         }
       }
 
-      this.map[cell.y][cell.x] = cell;
+      map[cell.y][cell.x] = cell;
     });
 
     if (additionalInfo.approvedMove) {
-      this.lastApprovedPlayerX = additionalInfo.approvedMove.toX;
-      this.lastApprovedPlayerY = additionalInfo.approvedMove.toY;
+      player.lastApprovedPlayerX = additionalInfo.approvedMove.toX;
+      player.lastApprovedPlayerY = additionalInfo.approvedMove.toY;
 
       //console.log('Approved: ', Date.now());
     }
 
-    if (this.playerIsMoving) return;
+    if (player.isMoving) return;
 
     this.renderMap();
   }
 
   renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
     //console.log(...arguments, Date.now());
-    const { playerX, playerY, map, ctx, cellSize } = this;
+
+    const {
+      player,
+      player: {
+        x: playerX,
+        y: playerY
+      },
+      map,
+      ctx,
+      cellSize
+    } = this;
     const movingObjects = [];
 
-    cornerX = cornerX != null ? cornerX : playerX - Math.floor(pMapW/2);
-    cornerY = cornerY != null ? cornerY : playerY - Math.floor(pMapH/2);
+    cornerX = cornerX != null ? cornerX : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).x;
+    cornerY = cornerY != null ? cornerY : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).y;
 
     _.times(pMapH + (direction === 'bottom' ? 1 : 0), (y) => {
       _.times(pMapW + (direction === 'right' ? 1 : 0), (x) => {
@@ -139,7 +157,7 @@ class SurvivalGame extends Block {
               ctx.fillStyle = 'green';
             }
 
-            ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+            ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
           }
 
           if (cellBuilding) {
@@ -147,7 +165,7 @@ class SurvivalGame extends Block {
               ctx.fillStyle = 'orange';
             }
 
-            ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+            ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
           }
 
           if (cellCreature) {
@@ -156,7 +174,7 @@ class SurvivalGame extends Block {
             }
 
             if (!cell.move) {
-              ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+              ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
             } else {
               movingObjects.push({ ...cell, originalCell: cell, relativeX: x, relativeY: y });
             }
@@ -164,14 +182,14 @@ class SurvivalGame extends Block {
         } else {
           ctx.fillStyle = 'black';
 
-          ctx.fillRect(Math.floor((-stateX +  x)*cellSize), Math.floor((-stateY + y)*cellSize), cellSize, cellSize);
+          ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
         }
       });
     });
 
     _.forEach(movingObjects, (cell) => {
       const cellDirection = cell.move.direction;
-      const cellMovingState = Math.min((Date.now() - cell.move.startMoving)/BETWEEN_CELL_DRAWING_MOVING, 1);
+      const cellMovingState = Math.min((Date.now() - cell.move.startMoving) / BETWEEN_CELL_DRAWING_MOVING, 1);
       const shiftX = cellDirection === 'right' ? -1 + cellMovingState : cellDirection === 'left' ? 1 - cellMovingState : 0;
       const shiftY = cellDirection === 'top' ? 1 - cellMovingState : cellDirection === 'bottom' ? -1 + cellMovingState : 0;
 
@@ -180,18 +198,19 @@ class SurvivalGame extends Block {
       }
 
       ctx.fillStyle = 'black';
-      ctx.fillRect(Math.floor((-stateX + shiftX +  cell.relativeX)*cellSize), Math.floor((-stateY + shiftY + cell.relativeY)*cellSize), cellSize, cellSize);
+      ctx.fillRect(Math.floor((-stateX + shiftX +  cell.relativeX) * cellSize), Math.floor((-stateY + shiftY + cell.relativeY) * cellSize), cellSize, cellSize);
     });
 
     ctx.fillStyle = 'black';
     ctx.fillRect(this.canvas.width/2 - this.cellSize/2, this.canvas.height/2 - this.cellSize/2, this.cellSize, this.cellSize);
 
-    if (this.playerIsMoving && direction) {
+    if (player.isMoving && direction) {
       if ((direction === 'right' && stateX === 1)
         || (direction === 'left' && stateX === 0)
         || (direction === 'top' && stateY === 0)
-        || (direction === 'bottom' && stateY === 1)) {
-        this.playerIsMoving = false;
+        || (direction === 'bottom' && stateY === 1)
+      ) {
+        player.isMoving = false;
 
         return;
       }
@@ -207,8 +226,8 @@ class SurvivalGame extends Block {
           ? Math.min(stateY + DELAY_IN_PARTS_OF_SELF_MOVING, 1)
           : stateY;
 
-      newStateX = Number(newStateX.toFixed(1));
-      newStateY = Number(newStateY.toFixed(1));
+      newStateX = +newStateX.toFixed(1);
+      newStateY = +newStateY.toFixed(1);
 
       requestAnimationFrame(() => this.renderMap(cornerX, cornerY, newStateX, newStateY, direction));
     } else if (movingObjects.length) {
@@ -225,8 +244,11 @@ class SurvivalGame extends Block {
     };
     const keyCode = e.keyCode;
     const {
-      playerX,
-      playerY,
+      player,
+      player: {
+        x: playerX,
+        y: playerY
+      },
       map
     } = this;
 
@@ -234,16 +256,16 @@ class SurvivalGame extends Block {
 
     const action = keyCodeActions[keyCode];
 
-    if (!action || this.playerIsMoving || Date.now() - this.lastPlayerMoveTimestamp < DELAY_BETWEEN_PLAYER_ACTIONS) return;
+    if (!action || player.isMoving || Date.now() - player.lastMoveTimestamp < DELAY_BETWEEN_PLAYER_ACTIONS) return;
 
-    this.lastPlayerMoveTimestamp = Date.now();
+    player.lastMoveTimestamp = Date.now();
 
-    let toX = playerX + (action === 'left' ? -1 : action === 'right' ? 1 : 0);
-    let toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
+    const toX = playerX + (action === 'left' ? -1 : action === 'right' ? 1 : 0);
+    const toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
     const cellFrom = map[playerY][playerX];
     const cellTo = map[toY] && map[toY][toX];
 
-    if (!cellTo || cellTo && (cellTo.creature || cellTo.building)) return;
+    if (!cellTo || (cellTo && (cellTo.creature || cellTo.building))) return;
 
     this.emit(MOVE_TO, { toX, toY, fromX: playerX, fromY: playerY });
 
@@ -251,8 +273,8 @@ class SurvivalGame extends Block {
     let newCornerY;
     let newStateX = 0;
     let newStateY = 0;
-    const oldCorner = this.getPlayerCornerByCellCoords(playerX, playerY);
-    const newCorner = this.getPlayerCornerByCellCoords(toX, toY);
+    const oldCorner = this.getCornerByMiddleCell({ x: playerX, y: playerY });
+    const newCorner = this.getCornerByMiddleCell({ x: toX, y: toY });
 
     if (cellTo) {
       if (action === 'right') {
@@ -273,9 +295,9 @@ class SurvivalGame extends Block {
         newStateY = DELAY_IN_PARTS_OF_SELF_MOVING;
       }
 
-      this.playerX = toX;
-      this.playerY = toY;
-      this.playerIsMoving = true;
+      player.x = toX;
+      player.y = toY;
+      player.isMoving = true;
     }
 
     //console.log('Start moving: ', Date.now());
@@ -292,11 +314,11 @@ class SurvivalGame extends Block {
     document.onkeydown = this.onKeyDown.bind(this);
   }
 
-  getPlayerCornerByCellCoords(cellX, cellY) {
+  getCornerByMiddleCell({ x, y }) {
     return {
-      x: cellX - Math.floor(pMapW/2),
-      y: cellY - Math.floor(pMapH/2)
-    }
+      x: x - Math.floor(pMapW/2),
+      y: y - Math.floor(pMapH/2)
+    };
   }
 }
 
