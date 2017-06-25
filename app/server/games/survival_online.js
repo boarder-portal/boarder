@@ -74,7 +74,7 @@ class SurvivalGame extends Game {
     });
   }
 
-  onMoveTo({ toX, toY, fromX, fromY }, { player }) {
+  onMoveTo({ toX, toY, fromX, fromY, direction }, { player }) {
     const {
       x: playerX,
       y: playerY
@@ -88,21 +88,27 @@ class SurvivalGame extends Game {
       map
     } = this;
 
-    const direction = this.getDirectionByCoords(fromX, fromY, toX, toY);
     const changedCells = [];
     const cellFrom = map[fromY] && map[fromY][fromX];
     const cellTo = map[toY] && map[toY][toX];
+    const isSameCell = fromX === toX && fromY === toY;
 
-    if (!cellTo || cellTo.creature || cellTo.building) {
+    if ((!cellTo || cellTo.creature || cellTo.building) && !isSameCell) {
       return player.emit(REVERT_MOVE, { toX, toY, fromX, fromY });
     }
 
-    cellTo.creature = _.cloneDeep(cellFrom.creature);
-    cellFrom.creature = null;
-    changedCells.push(cellFrom, { ...cellTo, move: { direction } });
-    
-    player.x = toX;
-    player.y = toY;
+    if (isSameCell) {
+      changedCells.push(cellTo);
+    } else {
+      player.x = toX;
+      player.y = toY;
+
+      cellTo.creature = _.cloneDeep(cellFrom.creature);
+      cellFrom.creature = null;
+      changedCells.push(cellFrom, { ...cellTo, move: { direction } });
+    }
+
+    cellTo.creature.direction = direction;
 
     _.forEach(this.players, (playerInGame) => {
       let cellsToSend = [];
@@ -221,7 +227,8 @@ class SurvivalGame extends Game {
           if (!cell.creature && !cell.building) {
             cell.creature = {
               type: 'player',
-              login: player.login
+              login: player.login,
+              direction: 'bottom'
             };
 
             player.x = startX;
@@ -234,18 +241,6 @@ class SurvivalGame extends Game {
         startX++;
       }
     });
-  }
-
-  getDirectionByCoords(x1, y1, x2, y2) {
-    if (x2 > x1) {
-      return 'right';
-    } else if (x2 < x1) {
-      return 'left';
-    } else if (y2 > y1) {
-      return 'bottom';
-    } else {
-      return 'top';
-    }
   }
 
   getCornerByMiddleCell({ x, y }) {

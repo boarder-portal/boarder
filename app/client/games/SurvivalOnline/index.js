@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { Block } from 'dwayne';
+import { Block, doc } from 'dwayne';
+import Promise from 'el-promise';
 import template from './index.pug';
 import { gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
@@ -26,7 +27,8 @@ const {
       BETWEEN_CELL_DRAWING_MOVING,
       DELAY_BETWEEN_PLAYER_ACTIONS,
       DELAY_IN_PARTS_OF_SELF_MOVING
-    }
+    },
+    imagesPaths
   }
 } = gamesConfig;
 
@@ -44,6 +46,24 @@ class SurvivalGame extends Block {
     this.player = {
       ...this.globals.user
     };
+    this.imagesLoaded = false;
+    this.imagesPromise = Promise.all(
+      _.map(imagesPaths, (href, name) => (
+        new Promise((resolve) => {
+          const image = new Image();
+
+          image.addEventListener('load', () => resolve([name, image]));
+          image.src = `/public/images/survival_online/${ href }`;
+        })
+      ))
+    ).then((images) => {
+      this.images = {};
+      this.imagesLoaded = true;
+
+      _.forEach(images, ([name, image]) => {
+        this.images[name] = image;
+      });
+    });
   }
 
   setup() {
@@ -57,10 +77,10 @@ class SurvivalGame extends Block {
           land: 'grass',
           building: null,
           creature: null
-        }
+        };
       });
     });
-  };
+  }
 
   onGetInitialInfo({ playerMap, playerX, playerY }) {
     const {
@@ -124,19 +144,22 @@ class SurvivalGame extends Block {
   }
 
   renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
+    if (!this.imagesLoaded) {
+      return this.imagesPromise.then(() => this.renderMap(...arguments));
+    }
     //console.log(...arguments, Date.now());
 
     const {
       player,
       player: {
         x: playerX,
-        y: playerY
+        y: playerY,
+        login
       },
-      map,
-      ctx,
-      cellSize
+      map
     } = this;
     const movingObjects = [];
+    let selfCell;
 
     cornerX = cornerX != null ? cornerX : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).x;
     cornerY = cornerY != null ? cornerY : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).y;
@@ -145,44 +168,20 @@ class SurvivalGame extends Block {
       _.times(pMapW + (direction === 'right' ? 1 : 0), (x) => {
         const cell = map[cornerY + y] && map[cornerY + y][cornerX + x];
 
-        if (cell) {
-          const {
-            land: cellLand,
-            building: cellBuilding,
-            creature: cellCreature
-          } = cell;
+        this.renderCell(
+          cell,
+          -stateX + x,
+          -stateY + y,
+          false,
+          false
+        );
 
-          if (cellLand) {
-            if (cellLand === 'grass') {
-              ctx.fillStyle = 'green';
-            }
+        if (cell && cell.creature && cell.move) {
+          movingObjects.push({ ...cell, originalCell: cell, relativeX: x, relativeY: y });
+        }
 
-            ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
-          }
-
-          if (cellBuilding) {
-            if (cellBuilding === 'tree') {
-              ctx.fillStyle = 'orange';
-            }
-
-            ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
-          }
-
-          if (cellCreature) {
-            if (cell.creature.type === 'player' && cell.creature.login !== this.player.login) {
-              ctx.fillStyle = 'black';
-            }
-
-            if (!cell.move) {
-              ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
-            } else {
-              movingObjects.push({ ...cell, originalCell: cell, relativeX: x, relativeY: y });
-            }
-          }
-        } else {
-          ctx.fillStyle = 'black';
-
-          ctx.fillRect(Math.floor((-stateX + x) * cellSize), Math.floor((-stateY + y) * cellSize), cellSize, cellSize);
+        if (cell && cell.creature && cell.creature.type === 'player' && cell.creature.login === login) {
+          selfCell = cell;
         }
       });
     });
@@ -197,15 +196,28 @@ class SurvivalGame extends Block {
         delete cell.originalCell.move;
       }
 
-      ctx.fillStyle = 'black';
-      ctx.fillRect(Math.floor((-stateX + shiftX +  cell.relativeX) * cellSize), Math.floor((-stateY + shiftY + cell.relativeY) * cellSize), cellSize, cellSize);
+      this.renderCell(
+        cell,
+        -stateX + shiftX + cell.relativeX,
+        -stateY + shiftY + cell.relativeY,
+        false,
+        true
+      );
     });
 
-    ctx.fillStyle = 'black';
-    ctx.fillRect(this.canvas.width/2 - this.cellSize/2, this.canvas.height/2 - this.cellSize/2, this.cellSize, this.cellSize);
+    // TODO: see why playerX and playerY don't match selfCell
+
+    this.renderCell(
+      selfCell,
+      Math.round((pMapW - 1) / 2),
+      Math.round((pMapH - 1) / 2),
+      true,
+      true
+    );
 
     if (player.isMoving && direction) {
-      if ((direction === 'right' && stateX === 1)
+      if (
+        (direction === 'right' && stateX === 1)
         || (direction === 'left' && stateX === 0)
         || (direction === 'top' && stateY === 0)
         || (direction === 'bottom' && stateY === 1)
@@ -235,7 +247,57 @@ class SurvivalGame extends Block {
     }
   }
 
-  onKeyDown(e) {
+  renderCell(cell, x, y, renderSelf, renderMoving) {
+    const {
+      ctx,
+      cellSize,
+      images
+    } = this;
+    const cornerX = Math.floor(x * cellSize);
+    const cornerY = Math.floor(y * cellSize);
+
+    if (cell) {
+      const {
+        land: cellLand,
+        building: cellBuilding,
+        creature: cellCreature,
+        move: isCreatureMoving
+      } = cell;
+      const imagesToDraw = [];
+
+      if (cellLand) {
+        if (cellLand === 'grass') {
+          imagesToDraw.push(images.grass);
+        }
+      }
+
+      if (cellBuilding) {
+        if (cellBuilding === 'tree') {
+          imagesToDraw.push(images.tree);
+        }
+      }
+
+      if (cellCreature && (!isCreatureMoving || renderMoving)) {
+        if (cell.creature.type === 'player' && (cell.creature.login !== this.player.login || renderSelf)) {
+          imagesToDraw.push(images.player);
+
+          if (cell.creature.direction !== 'top') {
+            imagesToDraw.push(images[`player_eyes_${ cell.creature.direction }`]);
+          }
+        }
+      }
+
+      _.forEach(imagesToDraw, (image) => {
+        ctx.drawImage(image, cornerX, cornerY, cellSize, cellSize);
+      });
+    } else {
+      ctx.fillStyle = 'black';
+
+      ctx.fillRect(cornerX, cornerY, cellSize, cellSize);
+    }
+  }
+
+  onKeyDown = (e) => {
     const keyCodeActions = {
       65: 'left',
       68: 'right',
@@ -264,10 +326,17 @@ class SurvivalGame extends Block {
     const toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
     const cellFrom = map[playerY][playerX];
     const cellTo = map[toY] && map[toY][toX];
+    const isAbleToMove = cellTo && !cellTo.creature && !cellTo.building;
 
-    if (!cellTo || (cellTo && (cellTo.creature || cellTo.building))) return;
+    this.emit(MOVE_TO, {
+      toX: isAbleToMove ? toX : playerX,
+      toY: isAbleToMove ? toY : playerY,
+      fromX: playerX,
+      fromY: playerY,
+      direction: action
+    });
 
-    this.emit(MOVE_TO, { toX, toY, fromX: playerX, fromY: playerY });
+    if (!isAbleToMove) return;
 
     let newCornerX;
     let newCornerY;
@@ -303,15 +372,30 @@ class SurvivalGame extends Block {
     //console.log('Start moving: ', Date.now());
 
     this.renderMap(newCornerX, newCornerY, newStateX, newStateY, action);
+  };
+
+  onResize = () => {
+    this.setSize();
+    this.renderMap();
+  };
+
+  setSize() {
+    this.cellSize = Math.floor(Math.min(window.innerHeight / pMapH, window.innerWidth / pMapW));
+    this.canvas.width = this.cellSize * pMapW;
+    this.canvas.height = this.cellSize * pMapH;
   }
 
   afterRender() {
     this.ctx = this.canvas.getContext('2d');
-    this.cellSize = Math.floor(Math.min(window.innerHeight/pMapH, window.innerWidth/pMapW));
-    this.canvas.width = this.cellSize * pMapW;
-    this.canvas.height = this.cellSize * pMapH;
+    this.setSize();
 
-    document.onkeydown = this.onKeyDown.bind(this);
+    this.removeOnKeydown = doc.on('keydown', this.onKeyDown);
+    window.addEventListener('resize', this.onResize, false);
+  }
+
+  beforeRemove() {
+    this.removeOnKeydown();
+    window.removeEventListener('resize', this.onResize, false);
   }
 
   getCornerByMiddleCell({ x, y }) {

@@ -14,5 +14,5 @@ module.exports = {
     ]
   },
   watch: true,
-  devtool: 'eval-source-map'
+  devtool: 'source-map'
 };

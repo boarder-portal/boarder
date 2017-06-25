@@ -209,13 +209,22 @@
         "height": 10
       },
       "playerMap": {
-        "width": 19,
-        "height": 10
+        "width": 21,
+        "height": 11
       },
       "timers": {
         "BETWEEN_CELL_DRAWING_MOVING": 70,
         "DELAY_BETWEEN_PLAYER_ACTIONS": 150,
         "DELAY_IN_PARTS_OF_SELF_MOVING": 0.2
+      },
+      "imagesPaths": {
+        "player": "creatures/player.png",
+        "zombie": "creatures/zombie.png",
+        "grass": "land/grass.png",
+        "tree": "buildings/tree.png",
+        "player_eyes_left": "eyes/player/left.png",
+        "player_eyes_bottom": "eyes/player/bottom.png",
+        "player_eyes_right": "eyes/player/right.png"
       }
     },
     "set": {
