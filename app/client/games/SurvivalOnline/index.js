@@ -47,23 +47,53 @@ class SurvivalGame extends Block {
       ...this.globals.user
     };
     this.imagesLoaded = false;
-    this.imagesPromise = Promise.all(
-      _.map(imagesPaths, (href, name) => (
+
+    const imagesPathsAsArray = [];
+
+    deepMap(imagesPaths, (href) => {
+      imagesPathsAsArray.push(href);
+    });
+
+    this.loadImagesPromise = Promise.all(
+      _.map(imagesPathsAsArray, (href) => (
         new Promise((resolve) => {
           const image = new Image();
 
-          image.addEventListener('load', () => resolve([name, image]));
+          image.addEventListener('load', () => resolve(image));
           image.src = `/public/images/survival_online/${ href }`;
         })
       ))
     ).then((images) => {
-      this.images = {};
+      this.images = _.cloneDeep(imagesPaths);
       this.imagesLoaded = true;
 
-      _.forEach(images, ([name, image]) => {
-        this.images[name] = image;
+      let index = 0;
+
+      deepMap(this.images, (href, name, obj) => {
+        obj[name] = images[index++];
       });
     });
+
+    function deepMap(obj, f, ctx) {
+      if (Array.isArray(obj)) {
+        return obj.map(function(val, key) {
+          return (typeof val === 'object') ? deepMap(val, f, ctx) : f.call(ctx, val, key, obj);
+        });
+      } else if (typeof obj === 'object') {
+        const res = {};
+        for (let key in obj) {
+          const val = obj[key];
+          if (typeof val === 'object') {
+            res[key] = deepMap(val, f, ctx);
+          } else {
+            res[key] = f.call(ctx, val, key, obj);
+          }
+        }
+        return res;
+      } else {
+        return obj;
+      }
+    }
   }
 
   setup() {
@@ -145,7 +175,7 @@ class SurvivalGame extends Block {
 
   renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
     if (!this.imagesLoaded) {
-      return this.imagesPromise.then(() => this.renderMap(...arguments));
+      return this.loadImagesPromise.then(() => this.renderMap(...arguments));
     }
     //console.log(...arguments, Date.now());
 
@@ -168,13 +198,13 @@ class SurvivalGame extends Block {
       _.times(pMapW + (direction === 'right' ? 1 : 0), (x) => {
         const cell = map[cornerY + y] && map[cornerY + y][cornerX + x];
 
-        this.renderCell(
+        this.renderCell({
           cell,
-          -stateX + x,
-          -stateY + y,
-          false,
-          false
-        );
+          x: -stateX + x,
+          y:  -stateY + y,
+          renderSelf: false,
+          renderMoving: false
+        });
 
         if (cell && cell.creature && cell.move) {
           movingObjects.push({ ...cell, originalCell: cell, relativeX: x, relativeY: y });
@@ -196,24 +226,22 @@ class SurvivalGame extends Block {
         delete cell.originalCell.move;
       }
 
-      this.renderCell(
+      this.renderCell({
         cell,
-        -stateX + shiftX + cell.relativeX,
-        -stateY + shiftY + cell.relativeY,
-        false,
-        true
-      );
+        x: -stateX + shiftX + cell.relativeX,
+        y: -stateY + shiftY + cell.relativeY,
+        renderSelf: false,
+        renderMoving: true
+      });
     });
 
-    // TODO: see why playerX and playerY don't match selfCell
-
-    this.renderCell(
-      selfCell,
-      Math.round((pMapW - 1) / 2),
-      Math.round((pMapH - 1) / 2),
-      true,
-      true
-    );
+    this.renderCell({
+      cell: selfCell,
+      x: Math.round((pMapW - 1) / 2),
+      y: Math.round((pMapH - 1) / 2),
+      renderSelf: true,
+      renderMoving: true
+    });
 
     if (player.isMoving && direction) {
       if (
@@ -247,11 +275,14 @@ class SurvivalGame extends Block {
     }
   }
 
-  renderCell(cell, x, y, renderSelf, renderMoving) {
+  renderCell({ cell, x, y, renderSelf, renderMoving }) {
     const {
       ctx,
       cellSize,
-      images
+      images,
+      player: {
+        login: selfPlayerLogin
+      }
     } = this;
     const cornerX = Math.floor(x * cellSize);
     const cornerY = Math.floor(y * cellSize);
@@ -266,23 +297,19 @@ class SurvivalGame extends Block {
       const imagesToDraw = [];
 
       if (cellLand) {
-        if (cellLand === 'grass') {
-          imagesToDraw.push(images.grass);
-        }
+        imagesToDraw.push(images.land[cellLand]);
       }
 
       if (cellBuilding) {
-        if (cellBuilding === 'tree') {
-          imagesToDraw.push(images.tree);
-        }
+        imagesToDraw.push(images.buildings[cellBuilding]);
       }
 
       if (cellCreature && (!isCreatureMoving || renderMoving)) {
-        if (cell.creature.type === 'player' && (cell.creature.login !== this.player.login || renderSelf)) {
-          imagesToDraw.push(images.player);
+        if (cellCreature.type === 'player' && (cellCreature.login !== selfPlayerLogin || renderSelf)) {
+          imagesToDraw.push(images.creatures[cellCreature.type].body);
 
-          if (cell.creature.direction !== 'top') {
-            imagesToDraw.push(images[`player_eyes_${ cell.creature.direction }`]);
+          if (cellCreature.direction !== 'top') {
+            imagesToDraw.push(images.creatures[cellCreature.type].eyes[cellCreature.direction]);
           }
         }
       }

@@ -218,13 +218,30 @@
         "DELAY_IN_PARTS_OF_SELF_MOVING": 0.2
       },
       "imagesPaths": {
-        "player": "creatures/player.png",
-        "zombie": "creatures/zombie.png",
-        "grass": "land/grass.png",
-        "tree": "buildings/tree.png",
-        "player_eyes_left": "eyes/player/left.png",
-        "player_eyes_bottom": "eyes/player/bottom.png",
-        "player_eyes_right": "eyes/player/right.png"
+        "creatures": {
+          "player": {
+            "body": "creatures/player.png",
+            "eyes": {
+              "left": "eyes/player/left.png",
+              "right": "eyes/player/right.png",
+              "bottom": "eyes/player/bottom.png"
+            }
+          },
+          "zombie": {
+            "body": "creatures/zombie.png",
+            "eyes": {
+              "left": "eyes/player/left.png",
+              "right": "eyes/player/right.png",
+              "bottom": "eyes/player/bottom.png"
+            }
+          }
+        },
+        "land": {
+          "grass": "land/grass.png"
+        },
+        "buildings": {
+          "tree": "buildings/tree.png"
+        }
       }
     },
     "set": {
