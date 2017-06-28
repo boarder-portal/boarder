@@ -18,6 +18,10 @@ const {
       playerMap: {
         width: pMapW,
         height: pMapH
+      },
+      chunk: {
+        width: chunkW,
+        height: chunkH
       }
     }
   }
@@ -106,6 +110,18 @@ class SurvivalGame extends Game {
       cellTo.creature = _.cloneDeep(cellFrom.creature);
       cellFrom.creature = null;
       changedCells.push(cellFrom, { ...cellTo, move: { direction } });
+
+      const prevChunk = this.getChunkByCoords({ x: fromX, y: fromY });
+      const nextChunk = this.getChunkByCoords({ x: toX, y: toY });
+
+      if (prevChunk !== nextChunk) {
+        const playerIndex = _.findIndex(prevChunk.players, player);
+
+        _.pullAt(prevChunk.players, playerIndex);
+        nextChunk.players.push(player);
+
+        console.log(prevChunk.players, nextChunk.players);
+      }
     }
 
     cellTo.creature.direction = direction;
@@ -200,6 +216,53 @@ class SurvivalGame extends Game {
 
     const map = this.map;
 
+    this.createChunks();
+    this.placeBuildings();
+  }
+
+  createChunks() {
+    const chunks = this.chunks = [];
+    const chunksH = mapH / chunkH;
+    const chunksW = mapW / chunkW;
+
+    if ((chunksH) % 1 !== 0 || (chunksW) % 1 !== 0) {
+      throw new Error('Chunk width or height is wrong!');
+    }
+
+    _.times(chunksH, (y) => {
+      chunks[y] = chunks[y] || [];
+
+      _.times(chunksW, (x) => {
+        chunks[y][x] = {
+          x,
+          y,
+          closeChunks: [],
+          players: []
+        };
+      });
+    });
+
+    _.times(chunksH, (y) => {
+      _.times(chunksW, (x) => {
+        const closeChunks = chunks[y][x].closeChunks;
+        const topChunk = chunks[y - 1] && chunks[y - 1][x];
+        const bottomChunk = chunks[y + 1] && chunks[y + 1][x];
+        const rightChunk = chunks[y][x + 1] && chunks[y][x + 1];
+        const leftChunk = chunks[y][x - 1] && chunks[y][x - 1];
+
+        topChunk && closeChunks.push(topChunk);
+        bottomChunk && closeChunks.push(bottomChunk);
+        rightChunk && closeChunks.push(rightChunk);
+        leftChunk && closeChunks.push(leftChunk);
+      });
+    });
+  }
+
+  placeBuildings() {
+    const {
+      map
+    } = this;
+
     _.times(Math.floor(mapH * mapW * 0.1), () => {
       const randX = Math.floor(Math.random() * mapW);
       const randY = Math.floor(Math.random() * mapH);
@@ -234,6 +297,10 @@ class SurvivalGame extends Game {
             player.x = startX;
             player.y = startY;
 
+            const playerChunk = this.getChunkByCoords({ x: startX, y: startY });
+
+            playerChunk.players.push(player);
+
             isPlayerPlaced = true;
           }
         }
@@ -248,6 +315,13 @@ class SurvivalGame extends Game {
       x: x - Math.floor(pMapW/2),
       y: y - Math.floor(pMapH/2)
     };
+  }
+
+  getChunkByCoords({ x, y }) {
+    const chunkX = Math.floor(x / chunkW);
+    const chunkY = Math.floor(y / chunkH);
+
+    return this.chunks[chunkY][chunkX];
   }
 
   toJSON() {

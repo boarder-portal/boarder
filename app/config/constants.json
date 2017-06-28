@@ -205,10 +205,14 @@
         }
       },
       "map": {
-        "width": 15,
-        "height": 10
+        "width": 63,
+        "height": 33
       },
       "playerMap": {
+        "width": 21,
+        "height": 11
+      },
+      "chunk": {
         "width": 21,
         "height": 11
       },

@@ -113,6 +113,8 @@ class SurvivalGame extends Block {
   }
 
   onGetInitialInfo({ playerMap, playerX, playerY }) {
+    console.log('Initial info: ', ...arguments);
+
     const {
       player,
       map
