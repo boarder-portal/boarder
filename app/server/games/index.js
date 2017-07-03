@@ -34,7 +34,7 @@ class Game {
   constructor(props) {
     _.assign(this, props);
 
-    this.prepareGame();
+    setTimeout(() =>this.prepareGame(), 0);
   }
 
   emit(event, data, isNeededToUpdatePlayers) {
