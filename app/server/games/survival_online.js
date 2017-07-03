@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Game = require('./');
+const Zombie = require('../../shared/survival-online/classes/Zombie');
 const {
   games: {
     survival_online: {
@@ -27,12 +28,21 @@ const {
   }
 } = require('../../config/constants.json');
 
+const chunksH = mapH / chunkH;
+const chunksW = mapW / chunkW;
+
 /**
  * @class SurvivalGame
  * @extends Game
  * @public
  */
 class SurvivalGame extends Game {
+  constructor(args) {
+    super(args);
+
+    this.moveZombies = this.moveZombies.bind(this);
+  }
+
   static listeners = {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
     [MOVE_TO]: 'onMoveTo'
@@ -43,6 +53,7 @@ class SurvivalGame extends Game {
 
     this.createMap();
     this.placePlayers();
+    this.initTimers();
 
     this.startGame();
   }
@@ -218,12 +229,11 @@ class SurvivalGame extends Game {
 
     this.createChunks();
     this.placeBuildings();
+    this.placeCreatures();
   }
 
   createChunks() {
     const chunks = this.chunks = [];
-    const chunksH = mapH / chunkH;
-    const chunksW = mapW / chunkW;
 
     if ((chunksH) % 1 !== 0 || (chunksW) % 1 !== 0) {
       throw new Error('Chunk width or height is wrong!');
@@ -237,7 +247,8 @@ class SurvivalGame extends Game {
           x,
           y,
           closeChunks: [],
-          players: []
+          players: [],
+          zombies: []
         };
       });
     });
@@ -256,6 +267,31 @@ class SurvivalGame extends Game {
         leftChunk && closeChunks.push(leftChunk);
       });
     });
+  }
+
+  initTimers() {
+    setInterval(this.moveZombies, 2000);
+  }
+
+  moveZombies() {
+    console.log(this);
+
+    /*const {
+      chunks
+    } = this;
+
+    console.log(this);
+
+    _.times(chunksH, (y) => {
+      _.times(chunksW, (x) => {
+        const chunk = chunks[y][x];
+
+        _.forEach(chunk.zombies, (zombie) => {
+          const localChangedCells = zombie.move();
+        });
+      });
+    });*/
+
   }
 
   placeBuildings() {
@@ -306,6 +342,36 @@ class SurvivalGame extends Game {
         }
 
         startX++;
+      }
+    });
+  }
+
+  placeCreatures() {
+    const {
+      map,
+      chunks
+    } = this;
+
+    _.times(1 || Math.floor(mapH * mapW * 0.01), () => {
+      const randX = Math.floor(Math.random() * mapW);
+      const randY = Math.floor(Math.random() * mapH);
+
+      const cell = map[randY][randX];
+
+      if (cell.land === 'grass' && !cell.creature && !cell.building) {
+        const zombie = new Zombie({
+          map,
+          chunks,
+          direction: 'bottom',
+          type: 'zombie',
+          x: randX,
+          y: randY,
+          health: 100
+        });
+
+        cell.creature = zombie;
+
+        zombie.chunk.zombies.push(zombie);
       }
     });
   }

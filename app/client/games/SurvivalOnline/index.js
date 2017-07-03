@@ -4,6 +4,7 @@ import Promise from 'el-promise';
 import template from './index.pug';
 import { gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
+import { deepMap } from '../../../shared/survival-online';
 
 const {
   survival_online: {
@@ -73,27 +74,6 @@ class SurvivalGame extends Block {
         obj[name] = images[index++];
       });
     });
-
-    function deepMap(obj, f, ctx) {
-      if (Array.isArray(obj)) {
-        return obj.map(function(val, key) {
-          return (typeof val === 'object') ? deepMap(val, f, ctx) : f.call(ctx, val, key, obj);
-        });
-      } else if (typeof obj === 'object') {
-        const res = {};
-        for (let key in obj) {
-          const val = obj[key];
-          if (typeof val === 'object') {
-            res[key] = deepMap(val, f, ctx);
-          } else {
-            res[key] = f.call(ctx, val, key, obj);
-          }
-        }
-        return res;
-      } else {
-        return obj;
-      }
-    }
   }
 
   setup() {
@@ -307,7 +287,7 @@ class SurvivalGame extends Block {
       }
 
       if (cellCreature && (!isCreatureMoving || renderMoving)) {
-        if (cellCreature.type === 'player' && (cellCreature.login !== selfPlayerLogin || renderSelf)) {
+        if (cellCreature.type !== 'player' || (cellCreature.type === 'player' && (cellCreature.login !== selfPlayerLogin || renderSelf))) {
           imagesToDraw.push(images.creatures[cellCreature.type].body);
 
           if (cellCreature.direction !== 'top') {

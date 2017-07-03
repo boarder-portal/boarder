@@ -234,9 +234,9 @@
           "zombie": {
             "body": "creatures/zombie.png",
             "eyes": {
-              "left": "eyes/player/left.png",
-              "right": "eyes/player/right.png",
-              "bottom": "eyes/player/bottom.png"
+              "left": "eyes/zombie/left.png",
+              "right": "eyes/zombie/right.png",
+              "bottom": "eyes/zombie/bottom.png"
             }
           }
         },
