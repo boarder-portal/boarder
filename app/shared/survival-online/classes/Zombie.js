@@ -6,16 +6,36 @@ class Zombie extends Creature {
   }
 
   move() {
+    const {
+      map,
+      x: fromX,
+      y: fromY
+    } = this;
+
+    const changedCells = [];
     const rand = Math.random();
     const direction = rand < 0.25 ? 'left' : rand < 0.5 ? 'right' : rand < 0.75 ? 'top' : 'bottom';
 
     const toX = (direction == 'right' || direction == 'left') ? this.x + this.directionToProjection(direction) : this.x;
     const toY = (direction == 'top' || direction == 'bottom') ? this.y + this.directionToProjection(direction) : this.y;
 
-    this.x = toX;
-    this.y = toY;
+    const cellFrom = map[fromY] && map[fromY][fromX];
+    const cellTo = map[toY] && map[toY][toX];
 
-    console.log({ x: this.x, y: this.y });
+    cellFrom.creature.direction = direction;
+    changedCells.push(cellFrom);
+
+    if (cellTo && !cellTo.building && !cellTo.creature) {
+      this.x = toX;
+      this.y = toY;
+
+      cellTo.creature = cellFrom.creature;
+      cellFrom.creature = null;
+
+      changedCells.push(cellTo);
+    }
+
+    return { changedCells };
   }
 
   toJSON() {
