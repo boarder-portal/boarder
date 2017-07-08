@@ -2,6 +2,11 @@ const _ = require('lodash');
 const Game = require('./');
 const Zombie = require('../../shared/survival-online/classes/Zombie');
 const {
+  setFrozenStatusToCloseChunks,
+  shouldChunkBeFrozen,
+  unfreezeChunkIfNeeded
+} = require('../../shared/survival-online');
+const {
   games: {
     survival_online: {
       events: {
@@ -41,6 +46,7 @@ class SurvivalGame extends Game {
     super(args);
 
     this.moveZombies = this.moveZombies.bind(this);
+    this.freezeChunksIfNeeded = this.freezeChunksIfNeeded.bind(this);
   }
 
   static listeners = {
@@ -131,7 +137,7 @@ class SurvivalGame extends Game {
         _.pullAt(prevChunk.players, playerIndex);
         nextChunk.players.push(player);
 
-        console.log(prevChunk.players, nextChunk.players);
+        setFrozenStatusToCloseChunks({ chunk: nextChunk, toFroze: false, actionSelf: true });
       }
     }
 
@@ -167,73 +173,71 @@ class SurvivalGame extends Game {
       } else {
         cellsToSend = [...changedCells];
 
-        if (movingPlayer) {
-          const direction = movingPlayer.direction;
+        const direction = movingPlayer.direction;
 
-          additionalInfo.approvedMove = { toX: movingPlayer.x, toY: movingPlayer.y };
+        additionalInfo.approvedMove = { toX: movingPlayer.x, toY: movingPlayer.y };
 
-          switch (direction) {
-            case 'right': {
-              const cellX = playerCornerX + pMapW - 1;
+        switch (direction) {
+          case 'right': {
+            const cellX = playerCornerX + pMapW - 1;
 
-              _.times(pMapH, (index) => {
-                const cellY = playerCornerY + index;
-                const cell = map[cellY] && map[cellY][cellX];
+            _.times(pMapH, (index) => {
+              const cellY = playerCornerY + index;
+              const cell = map[cellY] && map[cellY][cellX];
 
-                if (cell) {
-                  cellsToSend.push(cell);
-                }
-              });
+              if (cell) {
+                cellsToSend.push(cell);
+              }
+            });
 
-              break;
-            }
+            break;
+          }
 
-            case 'left': {
-              const cellX = playerCornerX;
+          case 'left': {
+            const cellX = playerCornerX;
 
-              _.times(pMapH, (index) => {
-                const cellY = playerCornerY + index;
+            _.times(pMapH, (index) => {
+              const cellY = playerCornerY + index;
 
-                const cell = map[cellY] && map[cellY][cellX];
+              const cell = map[cellY] && map[cellY][cellX];
 
-                if (cell) {
-                  cellsToSend.push(cell);
-                }
-              });
+              if (cell) {
+                cellsToSend.push(cell);
+              }
+            });
 
-              break;
-            }
+            break;
+          }
 
-            case 'bottom': {
-              const cellY = playerCornerY + pMapH - 1;
+          case 'bottom': {
+            const cellY = playerCornerY + pMapH - 1;
 
-              _.times(pMapW, (index) => {
-                const cellX = playerCornerX + index;
+            _.times(pMapW, (index) => {
+              const cellX = playerCornerX + index;
 
-                const cell = map[cellY] && map[cellY][cellX];
+              const cell = map[cellY] && map[cellY][cellX];
 
-                if (cell) {
-                  cellsToSend.push(cell);
-                }
-              });
+              if (cell) {
+                cellsToSend.push(cell);
+              }
+            });
 
-              break;
-            }
+            break;
+          }
 
 
-            case 'top': {
-              const cellY = playerCornerY;
+          case 'top': {
+            const cellY = playerCornerY;
 
-              _.times(pMapW, (index) => {
-                const cellX = playerCornerX + index;
+            _.times(pMapW, (index) => {
+              const cellX = playerCornerX + index;
 
-                const cell = map[cellY] && map[cellY][cellX];
+              const cell = map[cellY] && map[cellY][cellX];
 
-                if (cell) {
-                  cellsToSend.push(cell);
-                }
-              });
-            }
+              if (cell) {
+                cellsToSend.push(cell);
+              }
+            });
           }
         }
       }
@@ -260,6 +264,7 @@ class SurvivalGame extends Game {
     this.createChunks();
     this.placeBuildings();
     this.placeCreatures();
+    this.unfreezeActiveChunks();
   }
 
   createChunks() {
@@ -278,7 +283,9 @@ class SurvivalGame extends Game {
           y,
           closeChunks: [],
           players: [],
-          zombies: []
+          zombies: [],
+          isFrozen: true,
+          timestampLastSetUnfrozen: Date.now()
         };
       });
     });
@@ -286,21 +293,77 @@ class SurvivalGame extends Game {
     _.times(chunksH, (y) => {
       _.times(chunksW, (x) => {
         const closeChunks = chunks[y][x].closeChunks;
+        const topLeftChunk = chunks[y - 1] && chunks[y - 1][x - 1];
         const topChunk = chunks[y - 1] && chunks[y - 1][x];
+        const topRightChunk = chunks[y - 1] && chunks[y - 1][x + 1];
+        const leftChunk = chunks[y] && chunks[y][x - 1];
+        const rightChunk = chunks[y] && chunks[y][x + 1];
+        const bottomLeftChunk = chunks[y + 1] && chunks[y + 1][x - 1];
         const bottomChunk = chunks[y + 1] && chunks[y + 1][x];
-        const rightChunk = chunks[y][x + 1] && chunks[y][x + 1];
-        const leftChunk = chunks[y][x - 1] && chunks[y][x - 1];
+        const bottomRightChunk = chunks[y + 1] && chunks[y + 1][x + 1];
 
+        topLeftChunk && closeChunks.push(topLeftChunk);
         topChunk && closeChunks.push(topChunk);
-        bottomChunk && closeChunks.push(bottomChunk);
-        rightChunk && closeChunks.push(rightChunk);
+        topRightChunk && closeChunks.push(topRightChunk);
         leftChunk && closeChunks.push(leftChunk);
+        rightChunk && closeChunks.push(rightChunk);
+        bottomLeftChunk && closeChunks.push(bottomLeftChunk);
+        bottomChunk && closeChunks.push(bottomChunk);
+        bottomRightChunk && closeChunks.push(bottomRightChunk);
+      });
+    });
+  }
+
+  unfreezeActiveChunks() {
+    const chunks = this.chunks;
+
+    _.times(chunksH, (y) => {
+      _.times(chunksW, (x) => {
+        unfreezeChunkIfNeeded({ chunk: chunks[y][x] });
       });
     });
   }
 
   initTimers() {
-    setInterval(this.moveZombies, 2000);
+    setInterval(this.freezeChunksIfNeeded, 500);
+    setInterval(this.moveZombies, 300);
+  }
+
+  freezeChunksIfNeeded() {
+    const {
+      chunks
+    } = this;
+
+    const nowTimestamp = Date.now();
+    const unfrozenChunks = [];
+
+    _.times(chunksH, (y) => {
+      _.times(chunksW, (x) => {
+        const chunk = chunks[y][x];
+
+        if (chunk.isFrozen) return;
+
+        unfrozenChunks.push({ x, y });
+
+        if (nowTimestamp - chunk.timestampLastSetUnfrozen > 10000) {
+          if (shouldChunkBeFrozen(chunk)) {
+            chunk.isFrozen = true;
+
+            return;
+          }
+
+          chunk.timestampLastSetUnfrozen = nowTimestamp;
+        }
+      });
+    });
+
+    _.forEach(this.players, (player) => {
+      player.emit('unfrozenChunks', {
+        unfrozenChunks
+      });
+    });
+
+    //console.log(unfrozenChunks.length);
   }
 
   moveZombies() {
@@ -309,12 +372,17 @@ class SurvivalGame extends Game {
     } = this;
 
     const changedCells = [];
+    const nowTimestamp = Date.now();
 
     _.times(chunksH, (y) => {
       _.times(chunksW, (x) => {
         const chunk = chunks[y][x];
 
+        if (chunk.isFrozen) return;
+
         _.forEach(chunk.zombies, (zombie) => {
+          if (!zombie || nowTimestamp - zombie.lastMovedTimestamp < 100) return;
+
           const { changedCells: localChangedCells } = zombie.move();
 
           changedCells.push(...localChangedCells);
@@ -369,6 +437,8 @@ class SurvivalGame extends Game {
 
             playerChunk.players.push(player);
 
+            setFrozenStatusToCloseChunks({ chunk: playerChunk, toFroze: false, actionSelf: true });
+
             isPlayerPlaced = true;
           }
         }
@@ -384,7 +454,7 @@ class SurvivalGame extends Game {
       chunks
     } = this;
 
-    _.times(1 || Math.floor(mapH * mapW * 0.01), () => {
+    _.times(50 /*|| Math.floor(mapH * mapW * 0.01)*/, () => {
       const randX = Math.floor(Math.random() * mapW);
       const randY = Math.floor(Math.random() * mapH);
 

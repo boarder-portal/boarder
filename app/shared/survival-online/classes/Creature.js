@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const {
   games: {
     survival_online: {
@@ -16,6 +17,10 @@ const {
     }
   }
 } = require('../../../config/constants.json');
+const {
+  unfreezeChunkIfNeeded,
+  shouldChunkBeFrozen
+} = require('../index');
 
 class Creature {
   constructor({ x, y, health, type, direction, map, chunks }) {
@@ -27,6 +32,29 @@ class Creature {
     this.map = map;
     this.chunks = chunks;
     this.chunk = this.getChunkByCoords({ x, y });
+    this.lastMovedTimestamp = Date.now();
+  }
+
+  changeChunkIfNeeded() {
+    const {
+      type: creatureType
+    } = this;
+    const chunkGroup = creatureType + 's';
+    const prevChunk = this.chunk;
+    const nextChunk = this.getChunkByCoords({ x: this.x, y: this.y });
+
+    if (prevChunk !== nextChunk) {
+      const creatureIndex = _.findIndex(prevChunk[chunkGroup], this);
+
+      _.pullAt(prevChunk[chunkGroup], creatureIndex);
+      nextChunk[chunkGroup].push(this);
+
+      this.chunk = nextChunk;
+
+      if (!shouldChunkBeFrozen(prevChunk) || !shouldChunkBeFrozen(nextChunk)) {
+        unfreezeChunkIfNeeded({ chunk: nextChunk, forceSet: true });
+      }
+    }
   }
 
   getChunkByCoords({ x, y }) {

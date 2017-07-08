@@ -194,6 +194,9 @@
       "LOBBY_NSP": "/survival-online/lobby",
       "ROOM_NSP": "/survival-online/room/$roomId",
       "playersCount": 4,
+      "development": {
+        "SHOW_CHUNK_BORDER": true
+      },
       "events": {
         "game": {
           "HELLO": "survival-online/hello",
@@ -204,17 +207,20 @@
           "CHANGED_CELLS": "survival-online/changed-cells"
         }
       },
+      "limits": {
+        "densityForChunkToNotBeFrozen": 100
+      },
       "map": {
-        "width": 63,
-        "height": 33
+        "width": 66,
+        "height": 36
       },
       "playerMap": {
-        "width": 21,
-        "height": 11
+        "width": 66,
+        "height": 36
       },
       "chunk": {
-        "width": 21,
-        "height": 11
+        "width": 11,
+        "height": 6
       },
       "timers": {
         "BETWEEN_CELL_DRAWING_MOVING": 70,

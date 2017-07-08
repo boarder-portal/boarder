@@ -8,6 +8,9 @@ import { deepMap } from '../../../shared/survival-online';
 
 const {
   survival_online: {
+    development: {
+      SHOW_CHUNK_BORDER
+    },
     events: {
       game: {
         GET_INITIAL_INFO,
@@ -24,6 +27,10 @@ const {
       width: pMapW,
       height: pMapH
     },
+    chunk: {
+      width: chunkW,
+      height: chunkH
+    },
     timers: {
       BETWEEN_CELL_DRAWING_MOVING,
       DELAY_BETWEEN_PLAYER_ACTIONS,
@@ -38,7 +45,8 @@ class SurvivalGame extends Block {
   static listeners = {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
     [REVERT_MOVE]: 'onRevertMove',
-    [CHANGED_CELLS]: 'onChangedCells'
+    [CHANGED_CELLS]: 'onChangedCells',
+    unfrozenChunks: 'onUnfrozenChunks'
   };
 
   constructor(opts) {
@@ -151,6 +159,12 @@ class SurvivalGame extends Block {
     }
 
     if (player.isMoving) return;
+
+    this.renderMap();
+  }
+
+  onUnfrozenChunks({ unfrozenChunks }) {
+    this.unfrozenChunks = unfrozenChunks;
 
     this.renderMap();
   }
@@ -299,6 +313,21 @@ class SurvivalGame extends Block {
       _.forEach(imagesToDraw, (image) => {
         ctx.drawImage(image, cornerX, cornerY, cellSize, cellSize);
       });
+
+      if (SHOW_CHUNK_BORDER) {
+        if (cell.x % chunkW === 0 || cell.y % chunkH === 0) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          ctx.fillRect(cornerX, cornerY, cellSize, cellSize);
+        }
+
+        const chunkX = Math.floor(cell.x / chunkW);
+        const chunkY = Math.floor(cell.y / chunkH);
+
+        if (_.find(this.unfrozenChunks, ({ x, y }) =>  x === chunkX && y === chunkY)) {
+          ctx.fillStyle = 'rgba(250, 0, 0, 0.5)';
+          ctx.fillRect(cornerX, cornerY, cellSize, cellSize);
+        }
+      }
     } else {
       ctx.fillStyle = 'black';
 

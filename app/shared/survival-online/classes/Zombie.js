@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Creature = require('./Creature');
 
 class Zombie extends Creature {
@@ -16,8 +17,8 @@ class Zombie extends Creature {
     const rand = Math.random();
     const direction = rand < 0.25 ? 'left' : rand < 0.5 ? 'right' : rand < 0.75 ? 'top' : 'bottom';
 
-    const toX = (direction == 'right' || direction == 'left') ? this.x + this.directionToProjection(direction) : this.x;
-    const toY = (direction == 'top' || direction == 'bottom') ? this.y + this.directionToProjection(direction) : this.y;
+    const toX = (direction === 'right' || direction === 'left') ? this.x + this.directionToProjection(direction) : this.x;
+    const toY = (direction === 'top' || direction === 'bottom') ? this.y + this.directionToProjection(direction) : this.y;
 
     const cellFrom = map[fromY] && map[fromY][fromX];
     const cellTo = map[toY] && map[toY][toX];
@@ -33,7 +34,11 @@ class Zombie extends Creature {
       cellFrom.creature = null;
 
       changedCells.push(cellTo);
+
+      this.changeChunkIfNeeded();
     }
+
+    this.lastMovedTimestamp = Date.now();
 
     return { changedCells };
   }
