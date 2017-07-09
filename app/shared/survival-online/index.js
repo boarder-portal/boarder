@@ -15,7 +15,7 @@ function getInventoryIds(inventory) {
 }
 
 function areInventoryIdsSame(ids1, ids2) {
-  return _.every(ids1, (id) => !id || _.includes(ids2, id));
+  return _.every(ids1, (id) => !id || _.includes(ids2, id)) && _.every(ids2, (id) => !id || _.includes(ids1, id));
 }
 
 function deepMap(obj, f, ctx) {
@@ -92,5 +92,3 @@ exports.setFrozenStatusToCloseChunks = setFrozenStatusToCloseChunks;
 exports.countChunkDensity = countChunkDensity;
 exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
 exports.unfreezeChunkIfNeeded = unfreezeChunkIfNeeded;
-
-
