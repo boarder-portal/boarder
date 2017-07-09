@@ -1,1 +1,7 @@
-canvas(d-node="canvas")
+div.survival-online-game
+  canvas(d-node="canvas").map
+  SurvivalGameInventory(
+    inventory="{player.inventory}"
+    changeInventory="{changeInventory}"
+    useInventoryItem="{useInventoryItem}"
+  )

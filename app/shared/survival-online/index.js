@@ -10,6 +10,14 @@ const {
 
 } = require('../../config/constants.json');
 
+function getInventoryIds(inventory) {
+  return _.map(inventory, (item) => item && item.id);
+}
+
+function areInventoryIdsSame(ids1, ids2) {
+  return _.every(ids1, (id) => !id || _.includes(ids2, id));
+}
+
 function deepMap(obj, f, ctx) {
   if (Array.isArray(obj)) {
     return obj.map(function(val, key) {
@@ -77,9 +85,10 @@ function unfreezeChunkIfNeeded({ chunk, forceSet }) {
   }
 }
 
+exports.getInventoryIds = getInventoryIds;
+exports.areInventoryIdsSame = areInventoryIdsSame;
 exports.deepMap = deepMap;
 exports.setFrozenStatusToCloseChunks = setFrozenStatusToCloseChunks;
-exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
 exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
 exports.unfreezeChunkIfNeeded = unfreezeChunkIfNeeded;
 

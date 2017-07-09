@@ -16,13 +16,15 @@ const {
   }
 } = gamesConfig;
 
+const IMAGES_ROOT = '/public/images/games/pexeso';
+
 class Pexeso extends Block {
   static template = template();
   static listeners = {
     [TURN_CARD]: 'onTurnCard'
   };
 
-  backImage = '/public/images/pexeso/backs/default/0.jpg';
+  backImage = `${ IMAGES_ROOT }/backs/default/0.jpg`;
 
   constructor(opts) {
     super(opts);
@@ -152,7 +154,7 @@ class Pexeso extends Block {
   constructImageURL(card) {
     const { options } = this;
 
-    return `/public/images/pexeso/sets/${ options.set }/${ card.card }.jpg`;
+    return `${ IMAGES_ROOT }/sets/${ options.set }/${ card.card }.jpg`;
   }
 }
 

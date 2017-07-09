@@ -4,7 +4,7 @@ import Promise from 'el-promise';
 import template from './index.pug';
 import { gameWrapper } from '../../helpers';
 import { games as gamesConfig } from '../../../config/constants.json';
-import { deepMap } from '../../../shared/survival-online';
+import { deepMap, getInventoryIds } from '../../../shared/survival-online';
 
 const {
   survival_online: {
@@ -16,8 +16,15 @@ const {
         GET_INITIAL_INFO,
         MOVE_TO,
         REVERT_MOVE,
-        CHANGED_CELLS
+        CHANGED_CELLS,
+        CHANGE_INVENTORY_ITEMS_ORDER,
+        CHANGE_INVENTORY_ITEM,
+        REMOVE_INVENTORY_ITEM,
+        USE_INVENTORY_ITEM
       }
+    },
+    inventory: {
+      itemsCount: inventoryItemsCount
     },
     map: {
       width: mapW,
@@ -40,12 +47,16 @@ const {
   }
 } = gamesConfig;
 
+const IMAGES_ROOT = '/public/images/games/survival_online';
+
 class SurvivalGame extends Block {
   static template = template();
   static listeners = {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
     [REVERT_MOVE]: 'onRevertMove',
     [CHANGED_CELLS]: 'onChangedCells',
+    [CHANGE_INVENTORY_ITEM]: 'onChangeInventoryItem',
+    [REMOVE_INVENTORY_ITEM]: 'onRemoveInventoryItem',
     unfrozenChunks: 'onUnfrozenChunks'
   };
 
@@ -53,7 +64,8 @@ class SurvivalGame extends Block {
     super(opts);
     
     this.player = {
-      ...this.globals.user
+      ...this.globals.user,
+      inventory: _.times(inventoryItemsCount, () => ({ empty: true }))
     };
     this.imagesLoaded = false;
 
@@ -69,7 +81,7 @@ class SurvivalGame extends Block {
           const image = new Image();
 
           image.addEventListener('load', () => resolve(image));
-          image.src = `/public/images/survival_online/${ href }`;
+          image.src = `${ IMAGES_ROOT }/${ href }`;
         })
       ))
     ).then((images) => {
@@ -100,19 +112,26 @@ class SurvivalGame extends Block {
     });
   }
 
-  onGetInitialInfo({ playerMap, playerX, playerY }) {
+  onGetInitialInfo({ playerMap, playerLocation, playerInventory }) {
     console.log('Initial info: ', ...arguments);
 
+    const {
+      x: playerX,
+      y: playerY
+    } = playerLocation;
     const {
       player,
       map
     } = this;
 
+    player.inventory = _.map(playerInventory, (item) => item || { empty: true });
     player.x = playerX;
     player.y = playerY;
     player.lastApprovedPlayerX = playerX;
     player.lastApprovedPlayerY = playerY;
     player.lastMoveTimestamp = Date.now();
+
+    this.player = { ...player };
 
     _.forEach(playerMap, (cell) => {
       map[cell.y][cell.x] = cell;
@@ -167,6 +186,36 @@ class SurvivalGame extends Block {
     this.unfrozenChunks = unfrozenChunks;
 
     this.renderMap();
+  }
+
+  onChangeInventoryItem(changedItem) {
+    const {
+      inventory
+    } = this.player;
+    const changedIndex = _.findIndex(inventory, (item) => item && item.id === changedItem.id);
+
+    if (changedIndex !== -1) {
+      this.updateInventory([
+        ...inventory.slice(0, changedIndex),
+        changedItem,
+        ...inventory.slice(changedIndex + 1)
+      ]);
+    }
+  }
+
+  onRemoveInventoryItem(removedId) {
+    const {
+      inventory
+    } = this.player;
+    const removedIndex = _.findIndex(inventory, (item) => item && item.id === removedId);
+
+    if (removedIndex !== -1) {
+      this.updateInventory([
+        ...inventory.slice(0, removedIndex),
+        { empty: true },
+        ...inventory.slice(removedIndex + 1)
+      ]);
+    }
   }
 
   renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
@@ -417,8 +466,34 @@ class SurvivalGame extends Block {
     this.renderMap();
   };
 
+  changeInventory = (newInventory) => {
+    const oldInventoryIds = getInventoryIds(this.player.inventory);
+    const newInventoryIds = getInventoryIds(newInventory);
+
+    this.updateInventory(newInventory);
+
+    if (!_.isEqual(oldInventoryIds, newInventoryIds)) {
+      this.emit(CHANGE_INVENTORY_ITEMS_ORDER, newInventoryIds);
+    }
+  };
+
+  useInventoryItem = (index) => {
+    const inventoryItem = this.player.inventory[index];
+
+    if (inventoryItem && inventoryItem.usable) {
+      this.emit(USE_INVENTORY_ITEM, inventoryItem.id);
+    }
+  };
+
+  updateInventory(newInventory) {
+    this.player = {
+      ...this.player,
+      inventory: newInventory
+    };
+  }
+
   setSize() {
-    this.cellSize = Math.floor(Math.min(window.innerHeight / pMapH, window.innerWidth / pMapW));
+    this.cellSize = Math.floor(Math.min((window.innerHeight - 225) / pMapH, window.innerWidth / pMapW));
     this.canvas.width = this.cellSize * pMapW;
     this.canvas.height = this.cellSize * pMapH;
   }

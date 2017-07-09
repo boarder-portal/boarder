@@ -1,0 +1,28 @@
+div.inventory
+  d-each(
+    set="{args.inventory}"
+    item="item"
+    index="index"
+    uid="{item ? item.id : `ix-${ index }`}"
+  )
+    div.inventory-item-container(
+      draggable="false"
+      d-bind(dragover)="{(e) => e.preventDefault()}"
+      d-bind(dragenter)="{() => onDragEnter(index)}"
+      d-bind(dragleave)="{() => onDragLeave(index)}"
+      d-bind(drop)="{() => onDrop(index)}"
+      d-class(empty)="{item.empty}"
+      d-class(before-drop)="{item.hover}"
+    )
+      d-if(if="{!item.empty}")
+        div.inventory-item(
+          draggable="true"
+          d-bind(dragstart)="{() => onDragStart(index)}"
+          d-bind(dragend)="{() => onDragEnd(index)}"
+          d-bind(contextmenu)="{(e) => onRightClick(e, index)}"
+          d-class(dragging)="{item.dragging}"
+        )
+          img(src="{`${ INVENTORY_ROOT }/${ item.type }.png`}").inventory-item-image
+          label.inventory-item-count {item.count}
+          div.draggable-overlay
+      label.key(draggable="false") {INVENTORY_KEYS_MAP[index]}

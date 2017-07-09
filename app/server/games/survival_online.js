@@ -2,6 +2,8 @@ const _ = require('lodash');
 const Game = require('./');
 const Zombie = require('../../shared/survival-online/classes/Zombie');
 const {
+  getInventoryIds,
+  areInventoryIdsSame,
   setFrozenStatusToCloseChunks,
   shouldChunkBeFrozen,
   unfreezeChunkIfNeeded
@@ -14,7 +16,11 @@ const {
           GET_INITIAL_INFO,
           MOVE_TO,
           REVERT_MOVE,
-          CHANGED_CELLS
+          CHANGED_CELLS,
+          CHANGE_INVENTORY_ITEMS_ORDER,
+          CHANGE_INVENTORY_ITEM,
+          REMOVE_INVENTORY_ITEM,
+          USE_INVENTORY_ITEM
         }
       },
       map: {
@@ -36,6 +42,45 @@ const {
 const chunksH = mapH / chunkH;
 const chunksW = mapW / chunkW;
 
+const TEST_INVENTORY = [
+  {
+    id: 'asf7jg9',
+    type: 'axe-stone',
+    count: 34
+  },
+  {
+    id: 'lknw6nb',
+    type: 'cone',
+    usable: true,
+    count: 15
+  },
+  {
+    id: 'nbls07h',
+    type: 'hack-stone',
+    count: 50
+  },
+  null,
+  {
+    id: 'jb5mgb0',
+    type: 'meat',
+    usable: true,
+    count: 7
+  },
+  null,
+  {
+    id: 'vwp9n4n',
+    type: 'torch',
+    count: 89
+  },
+  null,
+  null,
+  {
+    id: 'zkbpnr8',
+    type: 'wood',
+    count: 56
+  }
+];
+
 /**
  * @class SurvivalGame
  * @extends Game
@@ -51,14 +96,16 @@ class SurvivalGame extends Game {
 
   static listeners = {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
-    [MOVE_TO]: 'onMoveTo'
+    [MOVE_TO]: 'onMoveTo',
+    [CHANGE_INVENTORY_ITEMS_ORDER]: 'onChangeInventoryItemsOrder',
+    [USE_INVENTORY_ITEM]: 'onUseInventoryItem'
   };
 
   prepareGame() {
     super.prepareGame();
 
     this.createMap();
-    this.placePlayers();
+    this.configurePlayers();
     this.initTimers();
 
     this.startGame();
@@ -70,7 +117,8 @@ class SurvivalGame extends Game {
     } = this;
     const {
       x: playerX,
-      y: playerY
+      y: playerY,
+      inventory
     } = player;
     const {
       x: cornerX,
@@ -90,8 +138,11 @@ class SurvivalGame extends Game {
 
     player.emit(GET_INITIAL_INFO, {
       playerMap,
-      playerX,
-      playerY
+      playerLocation: {
+        x: playerX,
+        y: playerY
+      },
+      playerInventory: inventory
     });
   }
 
@@ -145,6 +196,35 @@ class SurvivalGame extends Game {
     player.direction = direction;
 
     this.sendChangedCells({ changedCells, movingPlayer: player });
+  }
+
+  onChangeInventoryItemsOrder(newIds, { player }) {
+    const oldInventory = player.inventory;
+    const oldIds = getInventoryIds(oldInventory);
+
+    if (areInventoryIdsSame(oldIds, newIds)) {
+      player.inventory = _.map(newIds, (id) => (
+        _.find(oldInventory, (item) => item && item.id === id) || null
+      ));
+    }
+  }
+
+  onUseInventoryItem(id, { player }) {
+    const playerInventory = player.inventory;
+    const inventoryItemIndex = _.findIndex(playerInventory, (item) => item && item.id === id);
+    const inventoryItem = playerInventory[inventoryItemIndex];
+
+    if (!inventoryItem || !inventoryItem.usable) {
+      return;
+    }
+
+    if (--inventoryItem.count) {
+      this.emit(CHANGE_INVENTORY_ITEM, inventoryItem);
+    } else {
+      playerInventory[inventoryItemIndex] = null;
+
+      this.emit(REMOVE_INVENTORY_ITEM, id);
+    }
   }
 
   sendChangedCells({ changedCells, movingPlayer }) {
@@ -410,13 +490,15 @@ class SurvivalGame extends Game {
     });
   }
 
-  placePlayers() {
+  configurePlayers() {
     const map = this.map;
     let startX = Math.floor(mapW / 2);
     let startY = Math.floor(mapW / 2);
 
     _.forEach(this.players, (player) => {
       let isPlayerPlaced = false;
+
+      player.inventory = _.cloneDeep(TEST_INVENTORY);
 
       while (!isPlayerPlaced) {
         if (map[startY] && map[startY][startX]) {
