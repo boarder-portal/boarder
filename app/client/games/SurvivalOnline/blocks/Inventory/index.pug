@@ -3,7 +3,7 @@ div.inventory
     set="{args.inventory}"
     item="item"
     index="index"
-    uid="{item ? item.id : `ix-${ index }`}"
+    uid="{item.empty ? `ix-${ index }` : item.id}"
   )
     div.inventory-item-container(
       draggable="false"
@@ -18,7 +18,7 @@ div.inventory
         div.inventory-item(
           draggable="true"
           d-bind(dragstart)="{() => onDragStart(index)}"
-          d-bind(dragend)="{() => onDragEnd(index)}"
+          d-bind(dragend)="{() => onDragEnd(item)}"
           d-bind(contextmenu)="{(e) => onRightClick(e, index)}"
           d-class(dragging)="{item.dragging}"
         )

@@ -32,13 +32,13 @@ class SurvivalGameInventory extends Block {
     });
   };
 
-  onDragEnd = (index) => {
+  onDragEnd = (item) => {
     if (!this.isDragging) {
       return;
     }
 
     this.isDragging = false;
-    this.changeInventoryItem(index, {
+    this.changeInventoryItem(this.findIndexById(item.id), {
       dragging: false,
       hover: false
     });
@@ -87,6 +87,10 @@ class SurvivalGameInventory extends Block {
 
     this.args.useInventoryItem(inventoryIndex);
   };
+
+  findIndexById(id) {
+    return _.findIndex(this.args.inventory, (item) => item && item.id === id);
+  }
 
   changeInventoryItem(index, item) {
     this.args.changeInventory([
