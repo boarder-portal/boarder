@@ -60,6 +60,8 @@ class SurvivalGame extends Block {
     unfrozenChunks: 'onUnfrozenChunks'
   };
 
+  fullScreenEnabled = false;
+
   constructor(opts) {
     super(opts);
     
@@ -384,6 +386,31 @@ class SurvivalGame extends Block {
     }
   }
 
+  requestFullScreen = () => {
+    const elem = this.rootNode;
+
+    (
+      elem.requestFullScreen
+      || elem.webkitRequestFullScreen
+      || elem.webkitRequestFullscreen
+      || elem.mozRequestFullScreen
+      || elem.msRequestFullscreen
+      || (() => {})
+    ).call(elem);
+  };
+
+  onFullScreenChange = () => {
+    this.fullScreenEnabled = !!(
+      document.fullscreenElement
+      || document.webkitFullscreenElement
+      || document.mozFullScreenElement
+      || document.msFullscreenElement
+    );
+
+    this.setSize();
+    this.renderMap();
+  };
+
   onKeyDown = (e) => {
     const keyCodeActions = {
       65: 'left',
@@ -493,7 +520,15 @@ class SurvivalGame extends Block {
   }
 
   setSize() {
-    this.cellSize = Math.floor(Math.min((window.innerHeight - 225) / pMapH, window.innerWidth / pMapW));
+    let availableWidth = Math.max(window.innerWidth, 600);
+    let availableHeight = Math.max(window.innerHeight - 150, 300);
+
+    if (this.fullScreenEnabled) {
+      availableWidth = window.outerWidth;
+      availableHeight = window.outerHeight;
+    }
+
+    this.cellSize = Math.floor(Math.min(availableHeight / pMapH, availableWidth / pMapW));
     this.canvas.width = this.cellSize * pMapW;
     this.canvas.height = this.cellSize * pMapH;
   }
@@ -503,11 +538,13 @@ class SurvivalGame extends Block {
     this.setSize();
 
     this.removeOnKeydown = doc.on('keydown', this.onKeyDown);
+    this.removeOnFullScreenChange = doc.on('webkitfullscreenchange mozfullscreenchange MSFullscreenChange', this.onFullScreenChange);
     window.addEventListener('resize', this.onResize, false);
   }
 
   beforeRemove() {
     this.removeOnKeydown();
+    this.removeOnFullScreenChange();
     window.removeEventListener('resize', this.onResize, false);
   }
 

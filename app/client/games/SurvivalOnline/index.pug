@@ -1,7 +1,12 @@
-div.survival-online-game
+div.survival-online-game(
+  d-node="rootNode"
+  d-class(fullscreen)="{fullScreenEnabled}"
+)
   canvas(d-node="canvas").map
   SurvivalGameInventory(
     inventory="{player.inventory}"
     changeInventory="{changeInventory}"
     useInventoryItem="{useInventoryItem}"
   )
+  div.fullscreen-icon(d-bind(click)="{requestFullScreen}")
+    i.fa.fa-arrows-alt
