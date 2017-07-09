@@ -4,7 +4,6 @@ tmp/
 logs/
 *.log
 npm-debug.log*
-package-lock.json
 
 app/server/db/config.json
 app/config/config.json
