@@ -96,6 +96,8 @@ class SurvivalGame extends Block {
         obj[name] = images[index++];
       });
     });
+
+    this.renderMap = this.renderMap.bind(this);
   }
 
   setup() {
@@ -112,6 +114,13 @@ class SurvivalGame extends Block {
         };
       });
     });
+    this.render = {
+      cornerX: null,
+      cornerY: null,
+      stateX: 0,
+      stateY: 0,
+      direction: null
+    };
   }
 
   onGetInitialInfo({ playerMap, playerLocation, playerInventory }) {
@@ -132,6 +141,7 @@ class SurvivalGame extends Block {
     player.lastApprovedPlayerX = playerX;
     player.lastApprovedPlayerY = playerY;
     player.lastMoveTimestamp = Date.now();
+    player.direction = 'bottom';
 
     this.player = { ...player };
 
@@ -139,7 +149,7 @@ class SurvivalGame extends Block {
       map[cell.y][cell.x] = cell;
     });
 
-    this.renderMap();
+    requestAnimationFrame(this.renderMap);
   }
 
   onRevertMove({ toX, toY, fromX, fromY }) {
@@ -149,8 +159,6 @@ class SurvivalGame extends Block {
 
     player.x = player.lastApprovedPlayerX;
     player.y = player.lastApprovedPlayerY;
-
-    this.renderMap();
   }
 
   onChangedCells({ cells, additionalInfo }) {
@@ -178,16 +186,10 @@ class SurvivalGame extends Block {
 
       //console.log('Approved: ', Date.now());
     }
-
-    if (player.isMoving) return;
-
-    this.renderMap();
   }
 
   onUnfrozenChunks({ unfrozenChunks }) {
     this.unfrozenChunks = unfrozenChunks;
-
-    this.renderMap();
   }
 
   onChangeInventoryItem(changedItem) {
@@ -220,12 +222,23 @@ class SurvivalGame extends Block {
     }
   }
 
-  renderMap(cornerX, cornerY, stateX = 0, stateY = 0, direction) {
+  renderMap() {
+    const t1 = Date.now();
+
     if (!this.imagesLoaded) {
-      return this.loadImagesPromise.then(() => this.renderMap(...arguments));
+      return this.loadImagesPromise.then(this.renderMap);
     }
     //console.log(...arguments, Date.now());
 
+    let {
+      render: {
+        cornerX,
+        cornerY,
+        stateX,
+        stateY,
+        direction
+      }
+    } = this;
     const {
       player,
       player: {
@@ -299,6 +312,14 @@ class SurvivalGame extends Block {
       ) {
         player.isMoving = false;
 
+        this.render.cornerX = null;
+        this.render.cornerY = null;
+        this.render.stateX = null;
+        this.render.stateY = null;
+        this.render.direction = null;
+
+        requestAnimationFrame(this.renderMap);
+
         return;
       }
 
@@ -316,10 +337,20 @@ class SurvivalGame extends Block {
       newStateX = +newStateX.toFixed(1);
       newStateY = +newStateY.toFixed(1);
 
-      requestAnimationFrame(() => this.renderMap(cornerX, cornerY, newStateX, newStateY, direction));
+      this.render.stateX = newStateX;
+      this.render.stateY = newStateY;
+      this.render.direction = direction;
     } else if (movingObjects.length) {
-      requestAnimationFrame(() => this.renderMap());
+      this.render.stateX = null;
+      this.render.stateY = null;
+      this.render.direction = null;
     }
+
+    const t2 = Date.now();
+
+    //console.log(t1, t2, t2 - t1);
+
+    requestAnimationFrame(this.renderMap);
   }
 
   renderCell({ cell, x, y, renderSelf, renderMoving }) {
@@ -328,7 +359,8 @@ class SurvivalGame extends Block {
       cellSize,
       images,
       player: {
-        login: selfPlayerLogin
+        login: selfPlayerLogin,
+        direction: playerDirection
       }
     } = this;
     const cornerX = Math.floor(x * cellSize);
@@ -355,8 +387,10 @@ class SurvivalGame extends Block {
         if (cellCreature.type !== 'player' || (cellCreature.type === 'player' && (cellCreature.login !== selfPlayerLogin || renderSelf))) {
           imagesToDraw.push(images.creatures[cellCreature.type].body);
 
-          if (cellCreature.direction !== 'top') {
-            imagesToDraw.push(images.creatures[cellCreature.type].eyes[cellCreature.direction]);
+          const creatureDirection = renderSelf ? playerDirection : cellCreature.direction;
+
+          if (creatureDirection !== 'top') {
+            imagesToDraw.push(images.creatures[cellCreature.type].eyes[creatureDirection]);
           }
         }
       }
@@ -408,7 +442,6 @@ class SurvivalGame extends Block {
     );
 
     this.setSize();
-    this.renderMap();
   };
 
   onKeyDown = (e) => {
@@ -435,6 +468,7 @@ class SurvivalGame extends Block {
     if (!action || player.isMoving || Date.now() - player.lastMoveTimestamp < DELAY_BETWEEN_PLAYER_ACTIONS) return;
 
     player.lastMoveTimestamp = Date.now();
+    player.direction = action;
 
     const toX = playerX + (action === 'left' ? -1 : action === 'right' ? 1 : 0);
     const toY = playerY + (action === 'top' ? -1 : action === 'bottom' ? 1 : 0);
@@ -485,12 +519,15 @@ class SurvivalGame extends Block {
 
     //console.log('Start moving: ', Date.now());
 
-    this.renderMap(newCornerX, newCornerY, newStateX, newStateY, action);
+    this.render.cornerX = newCornerX;
+    this.render.cornerY = newCornerY;
+    this.render.stateX = newStateX;
+    this.render.stateY = newStateY;
+    this.render.direction = action;
   };
 
   onResize = () => {
     this.setSize();
-    this.renderMap();
   };
 
   changeInventory = (newInventory) => {

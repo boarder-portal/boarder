@@ -6,11 +6,15 @@ const {
   areInventoryIdsSame,
   setFrozenStatusToCloseChunks,
   shouldChunkBeFrozen,
-  unfreezeChunkIfNeeded
+  unfreezeChunkIfNeeded,
+  countChunkDensity
 } = require('../../shared/survival-online');
 const {
   games: {
     survival_online: {
+      development: {
+        SHOW_CHUNK_BORDER
+      },
       events: {
         game: {
           GET_INITIAL_INFO,
@@ -365,7 +369,8 @@ class SurvivalGame extends Game {
           players: [],
           zombies: [],
           isFrozen: true,
-          timestampLastSetUnfrozen: Date.now()
+          timestampLastSetUnfrozen: Date.now(),
+          lastZombiesMoved: Date.now()
         };
       });
     });
@@ -399,14 +404,18 @@ class SurvivalGame extends Game {
 
     _.times(chunksH, (y) => {
       _.times(chunksW, (x) => {
-        unfreezeChunkIfNeeded({ chunk: chunks[y][x] });
+        const chunk = chunks[y][x];
+
+        chunk.density = countChunkDensity(chunk);
+
+        unfreezeChunkIfNeeded({ chunk });
       });
     });
   }
 
   initTimers() {
-    setInterval(this.freezeChunksIfNeeded, 500);
-    setInterval(this.moveZombies, 300);
+    setInterval(this.freezeChunksIfNeeded, 1000);
+    setInterval(this.moveZombies, 100);
   }
 
   freezeChunksIfNeeded() {
@@ -421,9 +430,11 @@ class SurvivalGame extends Game {
       _.times(chunksW, (x) => {
         const chunk = chunks[y][x];
 
+        chunk.density = countChunkDensity(chunk);
+
         if (chunk.isFrozen) return;
 
-        unfrozenChunks.push({ x, y });
+        SHOW_CHUNK_BORDER && unfrozenChunks.push({ x, y });
 
         if (nowTimestamp - chunk.timestampLastSetUnfrozen > 10000) {
           if (shouldChunkBeFrozen(chunk)) {
@@ -437,12 +448,13 @@ class SurvivalGame extends Game {
       });
     });
 
-    _.forEach(this.players, (player) => {
-      player.emit('unfrozenChunks', {
-        unfrozenChunks
+    if (SHOW_CHUNK_BORDER) {
+      _.forEach(this.players, (player) => {
+        player.emit('unfrozenChunks', {
+          unfrozenChunks
+        });
       });
-    });
-
+    }
     //console.log(unfrozenChunks.length);
   }
 
@@ -458,15 +470,17 @@ class SurvivalGame extends Game {
       _.times(chunksW, (x) => {
         const chunk = chunks[y][x];
 
-        if (chunk.isFrozen) return;
+        if (chunk.isFrozen && nowTimestamp - chunk.lastZombiesMoved < Math.max(15000 - 50*chunk.density, 0)) return;
 
         _.forEach(chunk.zombies, (zombie) => {
-          if (!zombie || nowTimestamp - zombie.lastMovedTimestamp < 100) return;
+          if (!zombie || nowTimestamp - zombie.lastMovedTimestamp < 1000 + Math.floor(Math.random() * 200)) return;
 
           const { changedCells: localChangedCells } = zombie.move();
 
           changedCells.push(...localChangedCells);
         });
+
+        chunk.lastZombiesMoved = nowTimestamp;
       });
     });
 
@@ -536,7 +550,7 @@ class SurvivalGame extends Game {
       chunks
     } = this;
 
-    _.times(50 /*|| Math.floor(mapH * mapW * 0.01)*/, () => {
+    _.times(10 /*|| Math.floor(mapH * mapW * 0.01)*/, () => {
       const randX = Math.floor(Math.random() * mapW);
       const randY = Math.floor(Math.random() * mapH);
 

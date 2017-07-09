@@ -33,7 +33,7 @@ class Zombie extends Creature {
       cellTo.creature = cellFrom.creature;
       cellFrom.creature = null;
 
-      changedCells.push(cellTo);
+      changedCells.push({ ...cellTo, move: { direction } });
 
       this.changeChunkIfNeeded();
     }

@@ -89,6 +89,7 @@ exports.getInventoryIds = getInventoryIds;
 exports.areInventoryIdsSame = areInventoryIdsSame;
 exports.deepMap = deepMap;
 exports.setFrozenStatusToCloseChunks = setFrozenStatusToCloseChunks;
+exports.countChunkDensity = countChunkDensity;
 exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
 exports.unfreezeChunkIfNeeded = unfreezeChunkIfNeeded;
 

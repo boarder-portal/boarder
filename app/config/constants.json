@@ -283,7 +283,7 @@
       "ROOM_NSP": "/survival-online/room/$roomId",
       "playersCount": 4,
       "development": {
-        "SHOW_CHUNK_BORDER": true
+        "SHOW_CHUNK_BORDER": false
       },
       "events": {
         "game": {
@@ -303,19 +303,19 @@
         "densityForChunkToNotBeFrozen": 100
       },
       "map": {
-        "width": 66,
-        "height": 36
+        "width": 63,
+        "height": 33
       },
       "playerMap": {
-        "width": 66,
-        "height": 36
+        "width": 21,
+        "height": 11
       },
       "chunk": {
-        "width": 11,
-        "height": 6
+        "width": 21,
+        "height": 11
       },
       "timers": {
-        "BETWEEN_CELL_DRAWING_MOVING": 70,
+        "BETWEEN_CELL_DRAWING_MOVING": 500,
         "DELAY_BETWEEN_PLAYER_ACTIONS": 150,
         "DELAY_IN_PARTS_OF_SELF_MOVING": 0.2
       },
