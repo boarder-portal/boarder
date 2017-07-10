@@ -16,7 +16,7 @@
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.26.0",
-    "dwayne": "dwaynejs/dwayne.git#dwayne-2.0",
+    "dwayne": "^2.0.3",
     "el-promise": "^1.0.1",
     "eslint": "^3.5.0",
     "eslint-loader": "^1.6.1",
