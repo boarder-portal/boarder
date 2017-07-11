@@ -380,7 +380,7 @@ class SurvivalGame extends Block {
       }
 
       if (cellBuilding) {
-        imagesToDraw.push(images.buildings[cellBuilding]);
+        imagesToDraw.push(images.buildings[cellBuilding.type]);
       }
 
       if (cellCreature && (!isCreatureMoving || renderMoving)) {

@@ -1,5 +1,14 @@
 const _ = require('lodash');
 const Creature = require('./Creature');
+const {
+  games: {
+    survival_online: {
+      zombie: {
+        vision: ZOMBIE_VISION
+      }
+    }
+  }
+} = require('../../../config/constants.json');
 
 class Zombie extends Creature {
   constructor(args) {
@@ -15,7 +24,30 @@ class Zombie extends Creature {
 
     const changedCells = [];
     const rand = Math.random();
-    const direction = rand < 0.25 ? 'left' : rand < 0.5 ? 'right' : rand < 0.75 ? 'top' : 'bottom';
+
+    let closestDistance = 10e3;
+    let closestTarget = null;
+
+    _.forEach([this.chunk, ...this.chunk.closeChunks], (closeChunk) => {
+      _.forEach(closeChunk.players, (player) => {
+        const distanceToPlayer = this.getDistanceBetweenCoords({ x1: fromX, y1: fromY, x2: player.x, y2: player.y });
+
+        if (distanceToPlayer > closestDistance) return;
+
+        if (distanceToPlayer <= ZOMBIE_VISION) {
+          const isZombieSeePlayer = this.getIsClearBetweenCoords({ x1: fromX, y1: fromY, x2: player.x, y2: player.y });
+
+          if (isZombieSeePlayer) {
+            closestDistance = distanceToPlayer;
+            closestTarget = player;
+          }
+        }
+      });
+    });
+
+    const direction = closestTarget
+      ? this.getToDirectionByCoordOdds({ xDiff:  closestTarget.x - fromX, yDiff: closestTarget.y - fromY })
+      : rand < 0.25 ? 'left' : rand < 0.5 ? 'right' : rand < 0.75 ? 'top' : 'bottom';
 
     const toX = (direction === 'right' || direction === 'left') ? this.x + this.directionToProjection(direction) : this.x;
     const toY = (direction === 'top' || direction === 'bottom') ? this.y + this.directionToProjection(direction) : this.y;

@@ -499,7 +499,9 @@ class SurvivalGame extends Game {
       const cell = map[randY][randX];
 
       if (cell.land === 'grass' && !cell.creature && !cell.building) {
-        cell.building = 'tree';
+        cell.building = {
+          type: 'tree'
+        };
       }
     });
   }
