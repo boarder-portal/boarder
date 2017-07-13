@@ -6,6 +6,10 @@ require('babel-register')({
   ]
 });
 
+require('./plugins');
+
+console.log();
+
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
@@ -51,6 +55,9 @@ module.exports = {
 console.log();
 
 requireAndExecute('/app/server/sockets/*.js', io);
+
+console.log();
+
 requireAndExecute([
   '/app/server/routers/base.js',
   '/app/server/routers/locale.js',
