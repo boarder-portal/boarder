@@ -90,6 +90,28 @@
       }
     }
   },
+  "errors": {
+    "WRONG_AVATAR_ID": {
+      "status": 404,
+      "message": "Wrong avatar id"
+    },
+    "NOT_AUTHORIZED": {
+      "status": 401,
+      "message": "Not authorized"
+    },
+    "NO_SUCH_LANGUAGE_SUPPORTED": {
+      "status": 404,
+      "message": "No such language supported"
+    },
+    "NO_SUCH_EMAIL_REGISTERED": {
+      "status": 404,
+      "message": "No such email registered"
+    },
+    "WRONG_EMAIL_OR_TOKEN": "Wrong email or token",
+    "WRONG_LOGIN_OR_PASSWORD": "Wrong login or password",
+    "WRONG_EMAIL": "Wrong email",
+    "WRONG_PASSWORD": "Wrong password"
+  },
   "games": {
     "global": {
       "roomStatuses": {

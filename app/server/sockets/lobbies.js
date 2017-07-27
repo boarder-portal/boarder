@@ -16,6 +16,7 @@ module.exports = (io) => {
     const Game = require(`../games/${ game }`);
 
     new Lobby({
+      io,
       socket: io.of(LOBBY_NSP),
       roomNsp: ROOM_NSP,
       rooms: {},

@@ -43,6 +43,12 @@ socket.on('reload', () => {
   location.reload();
 });
 
+socket.on('css-updated', () => {
+  find('#all-css').attr('href', `${ ASSETS_PATH }/css/all.css?${ Date.now() }`);
+
+  unreload();
+});
+
 function colored(color) {
   return `color: ${ color }; font-weight: 900; font-size: 16px;`;
 }
@@ -54,4 +60,13 @@ function toreload() {
     .addClass('reloading');
 
   ready.replace(loading);
+}
+
+function unreload() {
+  console.log('%c%s', colored('green'), 'updated');
+
+  livereload
+    .removeClass('reloading');
+
+  loading.replace(ready);
 }

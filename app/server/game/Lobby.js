@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const { io } = require('../');
 const Room = require('./Room');
 const {
   socketSession,
@@ -66,6 +65,7 @@ class Lobby {
    */
   createRoom = (options) => {
     const {
+      io,
       rooms,
       roomNsp,
       playersCount,
@@ -75,6 +75,7 @@ class Lobby {
     const roomId = `${ now }-${ generateUID(7, rooms) }`;
 
     const roomData = {
+      io,
       id: roomId,
       lobby: this,
       playersCount,
@@ -105,7 +106,7 @@ class Lobby {
     } = room;
 
     delete rooms[id];
-    delete io.nsps[name];
+    delete this.io.nsps[name];
 
     this.emit(DELETE_ROOM, id);
     console.log(`deleting room #${ room.id }`);

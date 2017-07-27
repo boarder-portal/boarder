@@ -1,28 +1,23 @@
 const User = require('../db/models/user');
 
-const notAuthorizedError = new Error('Not authorized');
-
-module.exports = (req, res, next) => {
-  const { user } = req.session;
+module.exports = async (ctx, next) => {
+  const { user } = ctx.session;
 
   if (!user) {
-    return next(notAuthorizedError);
+    ctx.reject('NOT_AUTHORIZED');
   }
 
-  User
-    .findOne({
-      where: {
-        email: user.email
-      }
-    })
-    .then((user) => {
-      if (!user) {
-        throw notAuthorizedError;
-      }
+  const dbUser = await User.findOne({
+    where: {
+      email: user.email
+    }
+  });
 
-      req.user = user;
+  if (!dbUser) {
+    ctx.reject('NOT_AUTHORIZED');
+  }
 
-      return next();
-    })
-    .catch(next);
+  ctx.user = dbUser;
+
+  await next();
 };

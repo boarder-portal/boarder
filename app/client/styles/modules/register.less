@@ -1,7 +1,7 @@
 @import (reference) '../mixins';
 
 .register-block {
-  height: @h15;
+  height: @h14;
 
   .send-one-more {
     text-decoration: underline;
@@ -11,6 +11,10 @@
 .register-form {
   .flex-col-stretch();
   .flx();
+
+  & > :first-child {
+    margin-bottom: 2 * @hs;
+  }
 
   .input-container {
     &:not(:last-child):not(:first-child) {

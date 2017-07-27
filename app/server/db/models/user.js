@@ -84,37 +84,33 @@ const User = db.define('user', {
     }
   },
   instanceMethods: {
-    getAvatar() {
+    async getAvatar() {
       const { avatarId } = this;
 
-      if (_.isNull(this.avatarId)) {
+      if (_.isNull(avatarId)) {
         return Promise.resolve(null);
       }
 
-      return Attachment
-        .findOne({
-          where: {
-            id: avatarId
-          }
-        })
-        .then(({ url }) => url)
-        .catch(() => null);
-    },
-    getSessionInfo() {
-      return this.getAvatar()
-        .then((avatar) => {
-          this.avatar = avatar;
+      const { url } = await Attachment.findOne({
+        where: {
+          id: avatarId
+        }
+      });
 
-          return this;
-        });
+      return url;
+    },
+    async getSessionInfo() {
+      this.avatar = await this.getAvatar();
+
+      return this;
     }
   }
 });
 
-const toJSON = User.Instance.prototype.toJSON;
+const { toJSON } = User.Instance.prototype;
 
-User.Instance.prototype.toJSON = function () {
-  const json = toJSON.apply(this, arguments);
+User.Instance.prototype.toJSON = function (...args) {
+  const json = this::toJSON(...args);
 
   json.avatar = this.avatar;
 

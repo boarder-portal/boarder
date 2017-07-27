@@ -2,46 +2,40 @@ const fs = require('fs-promise');
 const Attachment = require('../db/models/attachment');
 
 module.exports = {
-  delete(req, res, next) {
+  async delete(ctx) {
     const {
       query: { avatarId },
       session,
       user
-    } = req;
+    } = ctx;
+    const avatar = await Attachment.findOne({
+      where: {
+        id: avatarId,
+        userId: user.id,
+        type: 'avatar'
+      }
+    });
 
-    Attachment
-      .findOne({
-        where: {
-          id: avatarId,
-          userId: user.id,
-          type: 'avatar'
-        }
-      })
-      .then((avatar) => {
-        if (!avatar) {
-          return false;
-        }
+    if (!avatar) {
+      ctx.reject('WRONG_AVATAR_ID');
+    }
 
-        const destroyer = avatar
-          .destroy()
-          .then(() => (
-            fs.remove(avatar.filename)
-          ));
+    const destroyer = Promise.all([
+      avatar.destroy(),
+      fs.remove(avatar.filename)
+    ]);
 
-        if (session.user.avatar !== avatar.url) {
-          return destroyer;
-        }
+    if (session.user.avatar === avatar.url) {
+      session.user.avatar = null;
 
-        session.user.avatar = null;
+      await Promise.all([
+        session.savePr(),
+        destroyer
+      ]);
+    } else {
+      await destroyer;
+    }
 
-        return Promise.all([
-          session.savePr(),
-          destroyer
-        ]);
-      })
-      .then((avatar) => {
-        res.json(!!avatar);
-      })
-      .catch(next);
+    ctx.success();
   }
 };

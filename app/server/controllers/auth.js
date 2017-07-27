@@ -36,308 +36,279 @@ const registerConfirmationPath = apiBase + usersBase + confirmRegisterBase;
 const resetPasswordPath = '/reset_password';
 const FIELD_MUST_BE_UNIQUE = 'field_must_be_unique';
 const VALUE_IS_NOT_EMAIL = 'value_is_not_email';
-const notAuthorizedError = new Error('Not authorized');
+const NOT_AUTHORIZED_ERROR = new Error('Not authorized');
 
 module.exports = {
-  checkLogin(req, res, next) {
+  async checkLogin(ctx) {
     const {
       login = ''
-    } = req.query;
+    } = ctx.query;
+    const user = await User.findOne({
+      where: { login }
+    });
 
-    User
-      .findOne({
-        where: { login }
-      })
-      .then((user) => {
-        res.json({ error: user && FIELD_MUST_BE_UNIQUE });
-      })
-      .catch(next);
+    ctx.json({
+      error: user && FIELD_MUST_BE_UNIQUE
+    });
   },
-  checkEmail(req, res, next) {
+  async checkEmail(ctx) {
     const {
       email = ''
-    } = req.query;
+    } = ctx.query;
 
     if (!isEmail(email)) {
-      return res.json({ error: VALUE_IS_NOT_EMAIL });
+      return ctx.json({
+        error: VALUE_IS_NOT_EMAIL
+      });
     }
 
-    User
-      .findOne({
-        where: { email }
-      })
-      .then((user) => {
-        res.json({
-          error: user && FIELD_MUST_BE_UNIQUE
-        });
-      })
-      .catch(next);
-  },
-  register(req, res, next) {
-    const {
-      body: {
-        email = '',
-        login = '',
-        password = ''
-      }
-    } = req;
+    const user = await User.findOne({
+      where: { email }
+    });
 
-    User
-      .create({
+    ctx.json({
+      error: user && FIELD_MUST_BE_UNIQUE
+    });
+  },
+  async register(ctx) {
+    const {
+      request: {
+        body: {
+          email = '',
+          login = '',
+          password = ''
+        }
+      }
+    } = ctx;
+
+    try {
+      const user = await User.create({
         email,
         login,
         password,
         confirmToken: generateUID(40)
-      })
-      .then((user) => {
-        sendConfirmationEmail(req, user);
-        res.json({ errors: null });
-      })
-      .catch((err) => {
-        let { errors } = err;
+      });
 
-        if (!errors) {
-          throw err;
+      await sendConfirmationEmail(ctx, user);
+
+      ctx.json({
+        errors: null
+      });
+    } catch (err) {
+      let { errors } = err;
+
+      if (!errors) {
+        throw err;
+      }
+
+      errors = errors.reduce((errors, { message, path }) => {
+        message = registerValidatorSwitcher(message);
+
+        if (message) {
+          errors[path] = message;
         }
 
-        errors = errors.reduce((errors, { message, path }) => {
-          message = registerValidatorSwitcher(message);
+        return errors;
+      }, {});
 
-          if (message) {
-            errors[path] = message;
-          }
-
-          return errors;
-        }, {});
-
-        res.json({ errors: _.isEmpty(errors) ? null : errors });
-      })
-      .catch(next);
+      ctx.json({
+        errors: _.isEmpty(errors)
+          ? null
+          : errors
+      });
+    }
   },
-  confirmRegister(req, res) {
+  async confirmRegister(ctx) {
     const {
-      session,
-      session: {
-        user: sessionUser
-      } = {},
       query: {
         email,
         token
       }
-    } = req;
+    } = ctx;
+    const user = await User.findOne({
+      where: {
+        email,
+        confirmToken: token
+      }
+    });
 
-    User
-      .findOne({
-        where: {
-          email,
-          confirmToken: token
-        }
-      })
-      .then((user) => {
-        if (!user) {
-          throw notAuthorizedError;
-        }
-
-        user.confirmed = true;
-        user.confirmToken = null;
-
-        return user.save();
-      })
-      .then((user) => (
-        !session || !sessionUser || sessionUser.email !== user.email
-          ? sessionUser
-          : user.getSessionInfo()
-      ))
-      .then((user) => {
-        session.user = user;
-
-        return session.savePr();
-      })
-      .then(() => res.redirect('/?confirm_register=true'))
-      .catch(() => res.redirect('/'));
-  },
-  sendOneMore(req, res, next) {
-    const {
-      query: { email },
-      session: { user }
-    } = req;
-
-    if (!email && !user) {
-      return next(notAuthorizedError);
+    if (!user) {
+      ctx.reject('WRONG_EMAIL_OR_TOKEN');
     }
 
-    const promise = email
-      ? User
-        .findOne({
-          where: { email }
-        })
-      : Promise.resolve(user);
+    user.confirmed = true;
+    user.confirmToken = null;
 
-    promise
-      .then((user) => {
-        if (!user) {
-          return false;
-        }
+    await user.save();
 
-        sendConfirmationEmail(req, user);
-
-        return true;
-      })
-      .then((success) => res.json(success))
-      .catch(next);
+    ctx.redirect('/?confirm_register=true');
   },
-  login(req, res, next) {
+  async sendOneMore(ctx) {
     const {
-      body: {
-        login = '',
-        password: origPassword = ''
+      query: { email }
+    } = ctx;
+    let {
+      session: { user }
+    } = ctx;
+
+    if (email) {
+      user = await User.findOne({
+        where: { email }
+      });
+
+      if (!user) {
+        ctx.reject('NO_SUCH_EMAIL_REGISTERED');
+      }
+    } else if (!user) {
+      ctx.reject('NOT_AUTHORIZED');
+    }
+
+    await sendConfirmationEmail(ctx, user);
+
+    ctx.success();
+  },
+  async login(ctx) {
+    const {
+      request: {
+        body: {
+          login = '',
+          password: origPassword = ''
+        }
       },
       session
-    } = req;
+    } = ctx;
 
     const password = hashPassword(origPassword);
-    const where = isEmail(login)
-      ? { email: login, password }
-      : { login, password };
+    const user = await User.findOne({
+      where: isEmail(login)
+        ? { email: login, password }
+        : { login, password }
+    });
 
-    User
-      .findOne({ where })
-      .then((user) => {
-        if (!user) {
-          return null;
-        }
+    if (!user) {
+      ctx.reject('WRONG_LOGIN_OR_PASSWORD');
+    }
 
-        return user
-          .getSessionInfo()
-          .then(() => {
-            session.user = user;
+    await user.getSessionInfo();
 
-            return session.savePr();
-          })
-          .then(() => user);
-      })
-      .then((user) => {
-        res.json(user);
-      })
-      .catch(next);
+    session.user = user;
+
+    await session.savePr();
+
+    ctx.json(user);
   },
-  logout(req, res, next) {
-    req.session
-      .destroyPr()
-      .then(() => (
-        res.json(true)
-      ))
-      .catch(next);
+  async logout(ctx) {
+    await ctx.session.destroyPr();
+
+    ctx.success();
   },
-  forgotPassword(req, res, next) {
+  async forgotPassword(ctx) {
     const {
       i18n,
       query: {
         email = ''
       },
       protocol
-    } = req;
+    } = ctx;
 
     if (!isEmail(email)) {
-      return res.json(false);
+      ctx.reject('WRONG_EMAIL');
     }
 
-    User
-      .findOne({
-        where: { email }
-      })
-      .then((user) => {
-        if (!user) {
-          return false;
-        }
+    const user = await User.findOne({
+      where: { email }
+    });
 
-        user.resetPasswordToken = generateUID(40);
+    if (!user) {
+      ctx.reject('NO_SUCH_EMAIL_REGISTERED');
+    }
 
-        return user
-          .save()
-          .then(({ resetPasswordToken }) => {
-            sendEmail({
-              from: forgotPasswordFrom,
-              to: email,
-              subject: i18n.t('email.forgot_password.subject'),
-              templatePath: 'email/forgot-password',
-              locals: {
-                i18n,
-                resetPasswordLink: buildURL({
-                  protocol,
-                  host: req.get('host'),
-                  path: resetPasswordPath,
-                  query: {
-                    email,
-                    token: resetPasswordToken
-                  }
-                })
-              }
-            });
+    const resetPasswordToken = user.resetPasswordToken = generateUID(40);
 
-            return true;
-          });
-      })
-      .then((success) => res.json(success))
-      .catch(next);
-  },
-  resetPassword(req, res, next) {
-    const {
-      body: {
-        email,
-        password,
-        token
+    await user.save();
+    await sendEmail({
+      from: forgotPasswordFrom,
+      to: email,
+      subject: i18n.t('email.forgot_password.subject'),
+      templatePath: 'email/forgot-password',
+      locals: {
+        i18n,
+        resetPasswordLink: buildURL({
+          protocol,
+          host: ctx.get('host'),
+          path: resetPasswordPath,
+          query: {
+            email,
+            token: resetPasswordToken
+          }
+        })
       }
-    } = req;
+    });
 
-    User
-      .findOne({
-        where: {
-          email,
-          resetPasswordToken: token
-        }
-      })
-      .then((user) => {
-        if (!user) {
-          return false;
-        }
-
-        user.password = hashPassword(password);
-        user.resetPasswordToken = null;
-
-        return user.save();
-      })
-      .then((user) => res.json(!!user))
-      .catch(next);
+    ctx.success();
   },
-  changePassword(req, res, next) {
+  async resetPassword(ctx) {
     const {
-      body: {
-        currentPassword,
-        password
+      request: {
+        body: {
+          email,
+          password,
+          token
+        }
+      }
+    } = ctx;
+    const user = await User.findOne({
+      where: {
+        email,
+        resetPasswordToken: token
+      }
+    });
+
+    if (!user) {
+      ctx.reject('WRONG_EMAIL_OR_TOKEN');
+    }
+
+    user.password = hashPassword(password);
+    user.resetPasswordToken = null;
+
+    await user.save();
+
+    ctx.success();
+  },
+  async changePassword(ctx) {
+    const {
+      request: {
+        body: {
+          currentPassword,
+          password
+        }
       },
       user
-    } = req;
+    } = ctx;
 
     if (user.password !== hashPassword(currentPassword)) {
-      return res.json(false);
+      ctx.reject('WRONG_PASSWORD');
     }
 
     user.password = hashPassword(password);
 
-    user
-      .save()
-      .then(() => (
-        res.json(true)
-      ))
-      .catch(next);
+    await user.save();
+
+    ctx.success();
   },
-  socketSession(socket, next) {
+  async socketSession(socket, next) {
     const {
       request: req
     } = socket;
 
-    session(req, req.res, next);
+    try {
+      await session({
+        req,
+        res: req.res
+      }, () => next());
+    } catch (err) {
+      next(err);
+    }
   },
   socketAuth(socket, next) {
     const {
@@ -347,7 +318,7 @@ module.exports = {
     } = socket;
 
     if (!user) {
-      return next(notAuthorizedError);
+      return next(NOT_AUTHORIZED_ERROR);
     }
 
     socket.user = user;
@@ -373,18 +344,18 @@ function registerValidatorSwitcher(message) {
   }
 }
 
-function sendConfirmationEmail(req, user) {
+function sendConfirmationEmail(ctx, user) {
   const {
     i18n,
     protocol
-  } = req;
+  } = ctx;
   const {
     login,
     email,
     confirmToken
   } = user;
 
-  sendEmail({
+  return sendEmail({
     from: registerFrom,
     to: email,
     subject: i18n.t('email.register.subject'),
@@ -394,7 +365,7 @@ function sendConfirmationEmail(req, user) {
       login,
       confirmLink: buildURL({
         protocol,
-        host: req.get('host'),
+        host: ctx.get('host'),
         path: registerConfirmationPath,
         query: {
           email,

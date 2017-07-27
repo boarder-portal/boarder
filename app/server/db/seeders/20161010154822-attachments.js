@@ -13,50 +13,48 @@ const TABLE_NAME = 'attachments';
 const ATTACHMENTS_DIR = path.resolve('./public/attachments');
 
 module.exports = {
-  up() {
-    return fs.ensureDir(`${ ATTACHMENTS_DIR }`)
-      .then(() => User.findAll({}))
-      .then((users) => (
-        Promise
-          .all(
-            users.map(({ id }) => (
-              Attachment.create({
-                userId: id,
-                type: 'avatar',
-                filename: '',
-                url: ''
-              })
-            ))
-          )
-      ))
-      .then((attachments) => (
-        new Promise((resolve) => {
-          const req = http.get(defaultAvatar, (res) => {
-            Promise
-              .all(
-                attachments.map((attachment) => {
-                  const filename = `${ ATTACHMENTS_DIR }/${ attachment.id }.png`;
+  async up() {
+    await fs.ensureDir(`${ ATTACHMENTS_DIR }`);
 
-                  return Promise.all([
-                    attachment.update({
-                      filename,
-                      url: `${ ASSETS_PATH }/attachments/${ attachment.id }.png`
-                    }),
-                    new Promise((resolve) => {
-                      const stream = fs.createWriteStream(filename);
-
-                      res.pipe(stream);
-
-                      stream.on('finish', resolve);
-                    })
-                  ]);
-                })
-              )
-              .then(() => req.abort())
-              .then(resolve);
-          });
+    const users = await User.findAll({});
+    const attachments = await Promise.all(
+      users.map(({ id }) => (
+        Attachment.create({
+          userId: id,
+          type: 'avatar',
+          filename: '',
+          url: ''
         })
-      ));
+      ))
+    );
+
+    return new Promise((resolve) => {
+      const req = http.get(defaultAvatar, async (res) => {
+        await Promise.all(
+          attachments.map((attachment) => {
+            const filename = `${ ATTACHMENTS_DIR }/${ attachment.id }.png`;
+
+            return Promise.all([
+              attachment.update({
+                filename,
+                url: `${ ASSETS_PATH }/attachments/${ attachment.id }.png`
+              }),
+              new Promise((resolve) => {
+                const stream = fs.createWriteStream(filename);
+
+                res.pipe(stream);
+
+                stream.on('finish', resolve);
+              })
+            ]);
+          })
+        );
+
+        req.abort();
+
+        resolve();
+      });
+    });
   },
 
   down(queryInterface) {

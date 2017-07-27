@@ -1,33 +1,20 @@
-const path = require('path');
 const { templates } = require('../helpers');
+const method = require('../controllers/method');
 const { ASSETS_PATH } = require('../../config/constants.json');
 
-const viewsDir = path.resolve('./app/server/views');
-const { NODE_ENV } = process.env;
+const INDEX_TMPL = templates.index;
 
 module.exports = (app) => {
-  if (NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-      res.render = (filename, locals) => {
-        res.send(templates[filename](locals));
-      };
-
-      next();
-    });
-  } else if (NODE_ENV === 'development') {
-    app.set('view engine', 'pug');
-    app.set('views', viewsDir);
-  }
-
-  app.use(/.*/, (req, res) => {
+  app.use(method('get', async (ctx) => {
     const {
       i18n: { locale },
       session: {
         user = null
       } = {}
-    } = req;
+    } = ctx;
 
-    res.render('index', {
+    ctx.type = 'html';
+    ctx.body = INDEX_TMPL({
       lang: locale,
       allJS: `${ ASSETS_PATH }/js/all.js`,
       allCSS: `${ ASSETS_PATH }/css/all.css`,
@@ -35,5 +22,5 @@ module.exports = (app) => {
       user: JSON.stringify(user),
       NODE_ENV: process.env.NODE_ENV
     });
-  });
+  }));
 };

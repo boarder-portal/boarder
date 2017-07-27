@@ -1,12 +1,19 @@
 const gulp = require('gulp');
 
 gulp.task('toreload', () => {
-  const { toreload } = require('../app/server/helpers/livereload');
+  const { emit } = require('../app/server/helpers/livereload');
 
-  toreload();
+  emit('toreload');
 });
-gulp.task('reload', () => {
-  const { reload } = require('../app/server/helpers/livereload');
 
-  reload();
+gulp.task('reload', () => {
+  const { emit } = require('../app/server/helpers/livereload');
+
+  emit('reload');
+});
+
+gulp.task('css-updated', () => {
+  const { emit } = require('../app/server/helpers/livereload');
+
+  emit('css-updated');
 });

@@ -1,27 +1,36 @@
-const accept = require('express-request-language');
+const { promisify } = require('util');
+const Accept = require('express-request-language');
+
 const { i18n } = require('../helpers');
-const languages = Object.keys(i18n);
+
+const accept = promisify(Accept({
+  languages: Object.keys(i18n)
+}));
 
 module.exports = (app) => {
-  app.use(accept({
-    languages
-  }));
-  app.use((req, res, next) => {
+  app.use(async (ctx, next) => {
+    await accept(ctx.request, ctx.response);
+
     const {
-      language,
-      session = {
-        save() {}
-      }
-    } = req;
-    let { locale } = session || {};
+      request: {
+        language
+      },
+      session
+    } = ctx;
+    let { locale } = session;
 
     if (!locale) {
-      locale = session.locale = language || 'en';
-      session.save();
+      locale = language || 'en';
+
+      if (session) {
+        session.locale = locale;
+
+        await session.savePr();
+      }
     }
 
-    req.i18n = i18n[locale];
+    ctx.i18n = i18n[locale];
 
-    next();
+    await next();
   });
 };

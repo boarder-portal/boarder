@@ -3,14 +3,14 @@ const webpack = require('webpack');
 const webpackConfig = require('../webpack.config');
 
 gulp.task('watch:client', () => {
-  const { toreload, reload } = require('../app/server/helpers/livereload');
+  const { emit } = require('../app/server/helpers/livereload');
   const compiler = webpack(webpackConfig);
 
   compiler.watch({}, () => {});
 
   compiler.plugin('compile', ()  => {
     console.log('start compiling...');
-    toreload();
+    emit('toreload');
   });
 
   compiler.plugin('done', (stats)  => {
@@ -18,6 +18,6 @@ gulp.task('watch:client', () => {
       chunks: false,
       colors: true
     }));
-    reload();
+    emit('reload');
   });
 });

@@ -1,10 +1,11 @@
-module.exports = (app) => {
-  /* eslint no-unused-vars: 0 */
-  app.use((err, req, res, next) => {
-    console.log(err);
+const {
+  BoarderClientError
+} = require('../helpers');
 
-    res
-      .status(500)
-      .send('500 Internal error');
+module.exports = (app) => {
+  app.on('error', (err) => {
+    if (!(err instanceof BoarderClientError)) {
+      console.log('Middleware error:', err);
+    }
   });
 };

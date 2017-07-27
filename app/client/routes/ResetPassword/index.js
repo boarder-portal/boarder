@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
+import { errors } from '../../../config/constants.json';
 
 class ResetPassword extends Block {
   static template = template();
@@ -68,11 +69,15 @@ class ResetPassword extends Block {
 
     this.globals.usersFetch
       .resetPassword({ data })
-      .then(({ json: success }) => {
-        if (success) {
-          this.resetPasswordSuccess = true;
-        } else {
+      .then(() => {
+        this.resetPasswordSuccess = true;
+      }, (err) => {
+        const message = err.response.data;
+
+        if (message === errors.WRONG_EMAIL_OR_TOKEN) {
           this.emailError = true;
+        } else {
+          throw err;
         }
       })
       .finally(() => {

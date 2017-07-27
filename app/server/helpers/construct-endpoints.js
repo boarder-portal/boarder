@@ -1,41 +1,51 @@
 const _ = require('lodash');
-const express = require('express');
-const constants = require('../../config/constants.json');
-const sessionRequired = require('../controllers/session-required');
+const Application = require('koa');
+const mount = require('koa-mount');
+const BodyParser = require('koa-bodyparser');
+
+const { endpoints } = require('../../config/constants.json');
+const { sessionRequired } = require('../controllers/session');
+const authMiddleware = require('../controllers/user-auth');
 const uploader = require('../controllers/files');
+const Method = require('../controllers/method');
+
+const bodyParser = BodyParser();
 
 exports.constructEndpoints = (path, controllers) => {
   const {
-    endpoints: {
-      [path]: paths,
-      [path]: {
-        base
-      }
+    [path]: paths,
+    [path]: {
+      base
     }
-  } = constants;
-  const router = new express.Router();
-  const authMiddleware = require('../controllers/user-auth');
+  } = endpoints;
+  const pathEndpoints = new Application();
 
   _.forEach(paths, ({ base, method, session, auth, files }, name) => {
     if (name !== 'base') {
+      const endpoint = new Application();
+
       if (session) {
-        router.use(base, sessionRequired);
+        endpoint.use(sessionRequired);
       }
 
       if (auth) {
-        router.use(base, sessionRequired);
-        router.use(base, authMiddleware);
+        endpoint.use(sessionRequired);
+        endpoint.use(authMiddleware);
       }
 
       if (files) {
-        router.use(base, uploader[files.type](...files.opts || []));
+        endpoint.use(uploader[files.type](...files.opts || []));
+      } else if (method === 'post' || method === 'put') {
+        endpoint.use(bodyParser);
       }
 
-      router[method](base, controllers[name]);
+      endpoint.use(Method(method, controllers[name]));
+
+      pathEndpoints.use(mount(base, endpoint));
     }
   });
 
   return (app) => {
-    app.use(base, router);
+    app.use(mount(base, pathEndpoints));
   };
 };

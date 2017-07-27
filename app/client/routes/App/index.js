@@ -44,9 +44,11 @@ class App extends Block {
 
     fetcher
       .after((err, res) => {
-        console.log(res);
+        if (res.headers['Custom-Error'] !== 'true') {
+          console.log(res);
 
-        this.addAlert(ALERTS.AJAX_ERROR);
+          this.addAlert(ALERTS.AJAX_ERROR);
+        }
 
         throw err;
       });

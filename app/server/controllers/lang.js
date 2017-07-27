@@ -3,19 +3,27 @@ const { i18n } = require('../helpers');
 
 const languages = _.mapValues(i18n, () => true);
 
-module.exports = {
-  change(req, res) {
-    const {
-      body: { lang },
-      session
-    } = req;
+Reflect.setPrototypeOf(languages, null);
 
-    if (!languages[lang] || lang === session.locale) {
-      return res.json(false);
+module.exports = {
+  async change(ctx) {
+    const {
+      request: {
+        body: { lang }
+      },
+      session
+    } = ctx;
+
+    if (!languages[lang]) {
+      ctx.reject('NO_SUCH_LANGUAGE_SUPPORTED');
     }
 
-    session.locale = lang;
+    if (lang !== session.locale) {
+      session.locale = lang;
 
-    res.json(true);
+      await session.savePr();
+    }
+
+    ctx.success();
   }
 };

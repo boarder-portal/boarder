@@ -11,13 +11,16 @@ const fetcher = new Ajaxer({
 });
 
 fetcher
-  .after(({ status }) => {
+  .after((res) => {
+    const { status } = res;
+
     if (status === 200 || status === 304) {
       return;
     }
 
     const error = new Error('Wrong status');
 
+    error.response = res;
     error.type = 'STATUS_ERROR';
 
     throw error;

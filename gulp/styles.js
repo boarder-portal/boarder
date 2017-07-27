@@ -26,6 +26,6 @@ gulp.task('less', () => (
 
 gulp.task('watch:less', ['less'], () => {
   watch(LESS_FILES, () => {
-    runSequence('toreload', 'less', 'reload');
+    runSequence('toreload', 'less', 'css-updated');
   });
 });

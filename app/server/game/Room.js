@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const { io } = require('../');
 const Player = require('./Player');
 const {
   socketSession,
@@ -89,6 +88,7 @@ class Room {
 
   constructor(props) {
     const {
+      io,
       id,
       roomNsp,
       playersCount,

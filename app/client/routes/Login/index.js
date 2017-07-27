@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { TIME_TO_ALERT_AFTER_LOGIN } from '../../constants';
+import { errors } from '../../../config/constants.json';
 
 class Login extends Block {
   static template = template();
@@ -55,16 +56,20 @@ class Login extends Block {
     this.globals.usersFetch
       .login({ data })
       .then(({ json: user }) => {
-        if (user) {
-          this.loginSuccess = true;
-          this.globals.changeUser(user);
+        this.loginSuccess = true;
+        this.globals.changeUser(user);
 
-          setTimeout(
-            this.globals.addNotConfirmedAlertIfNeeded,
-            TIME_TO_ALERT_AFTER_LOGIN
-          );
-        } else {
+        setTimeout(
+          this.globals.addNotConfirmedAlertIfNeeded,
+          TIME_TO_ALERT_AFTER_LOGIN
+        );
+      }, (err) => {
+        const message = err.response.data;
+
+        if (message === errors.WRONG_LOGIN_OR_PASSWORD) {
           this.loginError = true;
+        } else {
+          throw err;
         }
       })
       .finally(() => {

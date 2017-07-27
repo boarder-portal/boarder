@@ -1,6 +1,8 @@
+const { promisify } = require('util');
 const session = require('express-session');
+const { Session } = require('express-session');
 const redis = require('connect-redis');
-const { createClient } = require('../helpers');
+const { createClient } = require('../helpers/redis');
 const {
   cookieName,
   sessionExpires,
@@ -12,7 +14,7 @@ const {
 } = require('../../config/config.json');
 
 const Store = redis(session);
-const middleware = session({
+const sessionMiddleware = promisify(session({
   name: cookieName,
   store: new Store({
     client: createClient(),
@@ -25,44 +27,24 @@ const middleware = session({
   cookie: {
     maxAge: sessionExpires
   }
-});
+}));
+
+Session.prototype.savePr = promisify(Session.prototype.save);
+Session.prototype.destroyPr = promisify(Session.prototype.destroy);
 
 module.exports = {
-  session(req, res, next) {
-    middleware(req, res, (err) => {
-      if (err) {
-        return next(err);
-      }
+  async session(ctx, next) {
+    await sessionMiddleware(ctx.req, ctx.res);
 
-      const { session } = req;
+    ctx.session = ctx.req.session;
 
-      if (session) {
-        session.savePr = () => (
-          new Promise((resolve, reject) => {
-            session.save((err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
-          })
-        );
+    await next();
+  },
+  async sessionRequired(ctx, next) {
+    if (!ctx.session) {
+      ctx.throw(500, 'No session found');
+    }
 
-        session.destroyPr = () => (
-          new Promise((resolve, reject) => {
-            session.destroy((err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
-          })
-        );
-      }
-
-      next();
-    });
+    await next();
   }
 };

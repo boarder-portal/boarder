@@ -3,85 +3,74 @@ const fs = require('fs-promise');
 const Attachment = require('../db/models/attachment');
 const { ASSETS_PATH } = require('../../config/constants.json');
 
-const attachmentsDir = path.resolve('./public/attachments');
+const ATTACHMENTS_DIR = path.resolve('./public/attachments');
 
 module.exports = {
-  uploadAvatar(req, res, next) {
+  async uploadAvatar(ctx) {
     const {
-      file: {
-        originalname,
-        filename,
-        path: filePath
+      req: {
+        file: {
+          originalname,
+          filename,
+          path: filePath
+        }
       },
       user
-    } = req;
+    } = ctx;
     const ext = path.extname(originalname);
-    let eventualFilename;
+    const attachment = await Attachment.create({
+      userId: user.id,
+      type: 'avatar',
+      filename,
+      url: ''
+    });
+    const { id } = attachment;
+    const eventualFilename = id + ext;
+    const absoluteFilename = path.join(ATTACHMENTS_DIR, eventualFilename);
 
-    Attachment
-      .create({
-        userId: user.id,
-        type: 'avatar',
-        filename,
-        url: ''
-      })
-      .then((attachment) => {
-        const { id } = attachment;
+    attachment.filename = absoluteFilename;
+    attachment.url = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
 
-        eventualFilename = id + ext;
+    await Promise.all([
+      attachment.save(),
+      fs.move(filePath, absoluteFilename)
+    ]);
 
-        attachment.filename = path.join(attachmentsDir, eventualFilename);
-        attachment.url = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
-        user.avatarId = id;
-
-        return attachment.save();
-      })
-      .then((attachment) => (
-        fs.move(filePath, attachment.filename)
-          .then(() => attachment)
-      ))
-      .then((attachment) => res.json(attachment))
-      .catch(next);
+    ctx.json(attachment);
   },
-  changeAvatar(req, res, next) {
+  async changeAvatar(ctx) {
     const {
-      body: { avatarId },
+      request: {
+        body: { avatarId }
+      },
       session,
       user
-    } = req;
+    } = ctx;
 
     if (!avatarId) {
-      return next(new Error('Wrong avatar id'));
+      ctx.reject('WRONG_AVATAR_ID');
     }
 
     user.avatarId = avatarId;
 
-    user
-      .save()
-      .then(() => (
-        user.getSessionInfo()
-      ))
-      .then(() => {
-        session.user = user;
+    await user.save();
+    await user.getSessionInfo();
 
-        return session.savePr();
-      })
-      .then(() => res.json(true))
-      .catch(next);
+    session.user = user;
+
+    await session.savePr();
+
+    ctx.success();
   },
-  getAllAvatars(req, res, next) {
-    const { user } = req;
+  async getAllAvatars(ctx) {
+    const { user } = ctx;
+    const avatars = await Attachment.findAll({
+      where: {
+        userId: user.id,
+        type: 'avatar'
+      }
+    });
 
-    Attachment
-      .findAll({
-        where: {
-          userId: user.id,
-          type: 'avatar'
-        }
-      })
-      .then((avatars) => (
-        res.json(avatars)
-      ))
-      .catch(next);
+    ctx.json(avatars);
   }
 };

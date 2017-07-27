@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { Block, makeRoute } from 'dwayne';
 import template from './index.pug';
 import { ALERTS } from '../../constants';
+import { errors } from '../../../config/constants.json';
 
 class SettingsAccount extends Block {
   static template = template();
@@ -54,11 +55,11 @@ class SettingsAccount extends Block {
       password,
       changePasswordForm
     } = this;
-    const errors = changePasswordForm.validate();
+    const errs = changePasswordForm.validate();
 
     this.attemptedToChangePassword = true;
 
-    if (!errors) {
+    if (!errs) {
       const data = {
         currentPassword,
         password
@@ -68,15 +69,17 @@ class SettingsAccount extends Block {
 
       this.globals.usersFetch
         .changePassword({ data })
-        .then(({ json: success }) => {
-          if (!success) {
-            this.globals.addAlert(ALERTS.CHANGE_PASSWORD_FAILURE);
-
-            return;
-          }
-
+        .then(() => {
           this.resetChangePasswordBlock();
           this.globals.addAlert(ALERTS.CHANGE_PASSWORD_SUCCESS);
+        }, (err) => {
+          const message = err.response.data;
+
+          if (message === errors.WRONG_PASSWORD) {
+            this.globals.addAlert(ALERTS.CHANGE_PASSWORD_FAILURE);
+          } else {
+            throw err;
+          }
         })
         .finally(() => {
           this.changingPassword = false;

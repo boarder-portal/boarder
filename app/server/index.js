@@ -1,8 +1,9 @@
 require('babel-register')({
-  presets: ['stage-0'],
+  babelrc: false,
   plugins: [
     'transform-object-rest-spread',
-    'transform-class-properties'
+    'transform-class-properties',
+    'transform-function-bind'
   ]
 });
 
@@ -13,7 +14,7 @@ console.log();
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
-const express = require('express');
+const Application = require('koa');
 const sio = require('socket.io');
 const redis = require('socket.io-redis');
 
@@ -28,8 +29,8 @@ const {
 } = require('../config/config.json');
 const { LIVERELOAD_NSP } = require('../config/constants.json');
 
-const app = express();
-const server = http.Server(app);
+const app = new Application();
+const server = http.Server(app.callback());
 const io = sio(server);
 const { NODE_ENV } = process.env;
 const development = NODE_ENV === 'development';
@@ -45,12 +46,6 @@ io.adapter(redis({
   pubClient: createClient(true),
   subClient: createClient(true)
 }));
-
-module.exports = {
-  app,
-  server,
-  io
-};
 
 console.log();
 

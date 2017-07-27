@@ -34,14 +34,9 @@ class MainFooter extends Block {
       data: { lang }
     });
 
-    fetch
-      .then(({ json }) => {
-        if (!json) {
-          return;
-        }
-
-        location.reload();
-      });
+    fetch.then(() => {
+      location.reload();
+    });
   }
 }
 
