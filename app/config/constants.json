@@ -316,8 +316,8 @@
           "APPROVE_MOVE": "survival-online/approve-move",
           "CHANGED_CELLS": "survival-online/changed-cells",
           "CHANGE_INVENTORY_ITEMS_ORDER": "survival-online/change-inventory-items-order",
-          "CHANGE_INVENTORY_ITEM": "survival-online/change-inventory-item",
-          "REMOVE_INVENTORY_ITEM": "survival-online/remove-inventory-item",
+          "CHANGE_INVENTORY_ITEMS": "survival-online/change-inventory-items",
+          "REMOVE_INVENTORY_ITEMS": "survival-online/remove-inventory-items",
           "USE_INVENTORY_ITEM": "survival-online/use-inventory-item"
         }
       },

@@ -22,8 +22,8 @@ const {
           REVERT_MOVE,
           CHANGED_CELLS,
           CHANGE_INVENTORY_ITEMS_ORDER,
-          CHANGE_INVENTORY_ITEM,
-          REMOVE_INVENTORY_ITEM,
+          CHANGE_INVENTORY_ITEMS,
+          REMOVE_INVENTORY_ITEMS,
           USE_INVENTORY_ITEM
         }
       },
@@ -223,11 +223,11 @@ class SurvivalGame extends Game {
     }
 
     if (--inventoryItem.count) {
-      this.emit(CHANGE_INVENTORY_ITEM, inventoryItem);
+      this.emit(CHANGE_INVENTORY_ITEMS, [inventoryItem]);
     } else {
       playerInventory[inventoryItemIndex] = null;
 
-      this.emit(REMOVE_INVENTORY_ITEM, id);
+      this.emit(REMOVE_INVENTORY_ITEMS, [id]);
     }
   }
 

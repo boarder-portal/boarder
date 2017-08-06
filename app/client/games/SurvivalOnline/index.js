@@ -18,8 +18,8 @@ const {
         REVERT_MOVE,
         CHANGED_CELLS,
         CHANGE_INVENTORY_ITEMS_ORDER,
-        CHANGE_INVENTORY_ITEM,
-        REMOVE_INVENTORY_ITEM,
+        CHANGE_INVENTORY_ITEMS,
+        REMOVE_INVENTORY_ITEMS,
         USE_INVENTORY_ITEM
       }
     },
@@ -55,8 +55,8 @@ class SurvivalGame extends Block {
     [GET_INITIAL_INFO]: 'onGetInitialInfo',
     [REVERT_MOVE]: 'onRevertMove',
     [CHANGED_CELLS]: 'onChangedCells',
-    [CHANGE_INVENTORY_ITEM]: 'onChangeInventoryItem',
-    [REMOVE_INVENTORY_ITEM]: 'onRemoveInventoryItem',
+    [CHANGE_INVENTORY_ITEMS]: 'onChangeInventoryItems',
+    [REMOVE_INVENTORY_ITEMS]: 'onRemoveInventoryItems',
     unfrozenChunks: 'onUnfrozenChunks'
   };
 
@@ -192,34 +192,41 @@ class SurvivalGame extends Block {
     this.unfrozenChunks = unfrozenChunks;
   }
 
-  onChangeInventoryItem(changedItem) {
+  onChangeInventoryItems(changedItems) {
     const {
       inventory
     } = this.player;
-    const changedIndex = _.findIndex(inventory, (item) => item && item.id === changedItem.id);
 
-    if (changedIndex !== -1) {
+    _.forEach(changedItems, (changedItem) => {
+      const changedIndex = _.findIndex(inventory, (item) => item && item.id === changedItem.id);
+
+      if (changedIndex === -1) return;
+
       this.updateInventory([
         ...inventory.slice(0, changedIndex),
         changedItem,
         ...inventory.slice(changedIndex + 1)
       ]);
-    }
+    });
+
   }
 
-  onRemoveInventoryItem(removedId) {
+  onRemoveInventoryItems(removedIDs) {
     const {
       inventory
     } = this.player;
-    const removedIndex = _.findIndex(inventory, (item) => item && item.id === removedId);
 
-    if (removedIndex !== -1) {
+    _.forEach(removedIDs, (removedID) => {
+      const removedIndex = _.findIndex(inventory, (item) => item && item.id === removedID);
+
+      if (removedIndex === -1) return;
+
       this.updateInventory([
         ...inventory.slice(0, removedIndex),
         { empty: true },
         ...inventory.slice(removedIndex + 1)
       ]);
-    }
+    });
   }
 
   renderMap() {
