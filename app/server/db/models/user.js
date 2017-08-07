@@ -110,7 +110,7 @@ const User = db.define('user', {
 const { toJSON } = User.Instance.prototype;
 
 User.Instance.prototype.toJSON = function (...args) {
-  const json = this::toJSON(...args);
+  const json = toJSON.apply(this, args);
 
   json.avatar = this.avatar;
 
