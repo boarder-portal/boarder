@@ -337,10 +337,10 @@
         "height": 11
       },
       "zombie": {
-        "vision": 10
+        "vision": 10,
+        "speed": 500
       },
       "timers": {
-        "BETWEEN_CELL_DRAWING_MOVING": 500,
         "DELAY_BETWEEN_PLAYER_ACTIONS": 150,
         "DELAY_IN_PARTS_OF_SELF_MOVING": 0.2
       },

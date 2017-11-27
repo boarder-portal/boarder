@@ -4,7 +4,7 @@ const Zombie = require('../../shared/survival-online/classes/Zombie');
 const {
   getInventoryIds,
   areInventoryIdsSame,
-  setFrozenStatusToCloseChunks,
+  setFrozenStatusToNearChunks,
   shouldChunkBeFrozen,
   unfreezeChunkIfNeeded,
   countChunkDensity
@@ -38,6 +38,9 @@ const {
       chunk: {
         width: chunkW,
         height: chunkH
+      },
+      timers: {
+        DELAY_BETWEEN_PLAYER_ACTIONS
       }
     }
   }
@@ -181,7 +184,7 @@ class SurvivalGame extends Game {
 
       cellTo.creature = _.cloneDeep(cellFrom.creature);
       cellFrom.creature = null;
-      changedCells.push(cellFrom, { ...cellTo, move: { direction } });
+      changedCells.push(cellFrom, { ...cellTo, move: { direction, speed: DELAY_BETWEEN_PLAYER_ACTIONS } });
 
       const prevChunk = this.getChunkByCoords({ x: fromX, y: fromY });
       const nextChunk = this.getChunkByCoords({ x: toX, y: toY });
@@ -192,7 +195,7 @@ class SurvivalGame extends Game {
         _.pullAt(prevChunk.players, playerIndex);
         nextChunk.players.push(player);
 
-        setFrozenStatusToCloseChunks({ chunk: nextChunk, toFroze: false, actionSelf: true });
+        setFrozenStatusToNearChunks({ chunk: nextChunk, toFroze: false, actionSelf: true });
       }
     }
 
@@ -470,7 +473,7 @@ class SurvivalGame extends Game {
       _.times(chunksW, (x) => {
         const chunk = chunks[y][x];
 
-        if (chunk.isFrozen && nowTimestamp - chunk.lastZombiesMoved < Math.max(15000 - 50*chunk.density, 0)) return;
+        if (chunk.isFrozen && nowTimestamp - chunk.lastZombiesMoved < Math.max(15000 - 50 * chunk.density, 0)) return;
 
         _.forEach(chunk.zombies, (zombie) => {
           if (!zombie || nowTimestamp - zombie.lastMovedTimestamp < 1000 + Math.floor(Math.random() * 200)) return;
@@ -535,7 +538,7 @@ class SurvivalGame extends Game {
 
             playerChunk.players.push(player);
 
-            setFrozenStatusToCloseChunks({ chunk: playerChunk, toFroze: false, actionSelf: true });
+            setFrozenStatusToNearChunks({ chunk: playerChunk, toFroze: false, actionSelf: true });
 
             isPlayerPlaced = true;
           }

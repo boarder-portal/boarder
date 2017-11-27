@@ -4,7 +4,8 @@ const {
   games: {
     survival_online: {
       zombie: {
-        vision: ZOMBIE_VISION
+        vision: ZOMBIE_VISION,
+        speed: ZOMBIE_SPEED
       }
     }
   }
@@ -65,7 +66,7 @@ class Zombie extends Creature {
       cellTo.creature = cellFrom.creature;
       cellFrom.creature = null;
 
-      changedCells.push({ ...cellTo, move: { direction } });
+      changedCells.push({ ...cellTo, move: { direction, speed: ZOMBIE_SPEED } });
 
       this.changeChunkIfNeeded();
     }

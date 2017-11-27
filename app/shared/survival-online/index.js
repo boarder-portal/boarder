@@ -39,7 +39,7 @@ function deepMap(obj, f, ctx) {
   }
 }
 
-function setFrozenStatusToCloseChunks({ chunk: centerChunk, toFroze, actionSelf }) {
+function setFrozenStatusToNearChunks({ chunk: centerChunk, toFroze, actionSelf }) {
   const chunksToSet = [...centerChunk.closeChunks];
 
   if (actionSelf) {
@@ -61,7 +61,7 @@ function countChunkDensity(chunk) {
     zombies
   } = chunk;
 
-  return players.length*1000 + zombies.length*10;
+  return players.length * 10000 + zombies.length * 10;
 }
 
 function shouldChunkBeFrozen(centerChunk)  {
@@ -88,7 +88,7 @@ function unfreezeChunkIfNeeded({ chunk, forceSet }) {
 exports.getInventoryIds = getInventoryIds;
 exports.areInventoryIdsSame = areInventoryIdsSame;
 exports.deepMap = deepMap;
-exports.setFrozenStatusToCloseChunks = setFrozenStatusToCloseChunks;
+exports.setFrozenStatusToNearChunks = setFrozenStatusToNearChunks;
 exports.countChunkDensity = countChunkDensity;
 exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
 exports.unfreezeChunkIfNeeded = unfreezeChunkIfNeeded;
