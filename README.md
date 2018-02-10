@@ -1,1 +1,1 @@
-A game portal
+A cool game portal
