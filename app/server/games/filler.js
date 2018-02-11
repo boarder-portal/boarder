@@ -124,12 +124,9 @@ class FillerGame extends Game {
   }
 
   chooseColor(color, player, isFirst) {
-    if (this.finished) {
-      return;
-    }
-
     const {
       currentColors,
+      players,
       field
     } = this;
 
@@ -153,12 +150,11 @@ class FillerGame extends Game {
 
     player.score = playerCells.length;
 
-    if (player.score > WIDTH05 * HEIGHT) {
-      this.finished = true;
-
-      setTimeout(() => {
-        this.finishGame();
-      }, 1000);
+    if (
+      player.score > WIDTH05 * HEIGHT
+      || players[0].score + players[1].score === WIDTH * HEIGHT
+    ) {
+      this.finishGame();
     }
   }
 

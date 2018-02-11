@@ -6,9 +6,18 @@
   },
   "parser": "babel-eslint",
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
-  "extends": "eslint:recommended",
+  "plugins": [
+    "react"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
   "rules": {
     "array-bracket-spacing": [
       "error",
@@ -75,7 +84,10 @@
     ],
     "indent": [
       "error",
-      2
+      2,
+      {
+        "SwitchCase": 1
+      }
     ],
     "key-spacing": [
       "error",
@@ -293,7 +305,7 @@
     ],
     "template-curly-spacing": [
       "error",
-      "always"
+      "never"
     ]
   }
 }

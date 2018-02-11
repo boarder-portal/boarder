@@ -1,12 +1,10 @@
-import { doc } from 'dwayne';
-import { parseJSON } from './parseJSON';
+import $ from 'jquery';
+
+import { parseJSON } from './parse-json';
 
 export function getUserFromString() {
   return parseJSON(
-    doc
-      .div()
-      .html(window.boarderUser || null)
-      .text(),
+    $(`<div>${window.boarderUser || null}</div>`).text(),
     true
   );
 }

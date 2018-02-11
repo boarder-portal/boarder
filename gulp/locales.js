@@ -6,12 +6,12 @@ const { buildLocales } = require('../app/server/helpers/build-locales');
 
 const root = path.resolve('./');
 const PUBLIC_PATH = path.resolve('./public');
-const PUBLIC_I18N = `${ PUBLIC_PATH }/i18n`;
-const SERVER_I18N = `${ root }/app/server/i18n`;
+const PUBLIC_I18N = `${PUBLIC_PATH}/i18n`;
+const SERVER_I18N = `${root}/app/server/i18n`;
 const CLIENT_LOCALES_ROOT = './app/client/locales';
 const SERVER_LOCALES_ROOT = './app/server/locales';
-const CLIENT_LOCALES = `${ CLIENT_LOCALES_ROOT }/**/*.json`;
-const SERVER_LOCALES = `${ SERVER_LOCALES_ROOT }/**/*.json`;
+const CLIENT_LOCALES = `${CLIENT_LOCALES_ROOT}/**/*.json`;
+const SERVER_LOCALES = `${SERVER_LOCALES_ROOT}/**/*.json`;
 
 gulp.task('build:server:locales', () => (
   buildLocales(SERVER_LOCALES_ROOT, SERVER_I18N)

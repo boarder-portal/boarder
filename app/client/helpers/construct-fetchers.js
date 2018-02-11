@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { fetcher, baseURL } from './fetcher';
 import { endpoints } from '../../config/constants.json';
 
-function constructFetchers(path) {
+export function constructFetchers(path) {
   const {
     [path]: {
       base,
@@ -20,5 +20,3 @@ function constructFetchers(path) {
     })
   ));
 }
-
-export { constructFetchers };

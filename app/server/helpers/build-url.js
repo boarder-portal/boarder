@@ -1,3 +1,4 @@
+const { stringify } = require('querystring');
 const _ = require('lodash');
 
 exports.buildURL = ({
@@ -9,13 +10,8 @@ exports.buildURL = ({
   let search = '';
 
   if (!_.isEmpty(query)) {
-    search += '?';
-    search += _(query)
-      .map((value, key) => (
-        `${ encodeURIComponent(key) }=${ encodeURIComponent(value) }`
-      ))
-      .join('&');
+    search = `?${stringify(query)}`;
   }
 
-  return `${ protocol }://${ host + path + search }`;
+  return `${protocol}://${host + path + search}`;
 };

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-class Emitter {
+export class Emitter {
   _listeners = {};
 
   on(event, listener) {
@@ -18,5 +18,3 @@ class Emitter {
     });
   }
 }
-
-export { Emitter };

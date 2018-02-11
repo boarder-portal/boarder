@@ -5,7 +5,7 @@ const { resolveGlob } = require('./require-glob');
 
 exports.buildLocales = (sourceDir, buildDir, client) => {
   const locales = {};
-  const glob = `${ sourceDir }/**/*.json`;
+  const glob = `${sourceDir}/**/*.json`;
 
   resolveGlob(glob).forEach((filename) => {
     const relativeFilename = path.relative(sourceDir, filename);
@@ -28,13 +28,13 @@ exports.buildLocales = (sourceDir, buildDir, client) => {
   _.forEach(locales, (translations, locale) => {
     translations = JSON.stringify(translations);
 
-    const path = `${ buildDir }/${ locale }.${ client ? 'js' : 'json' }`;
+    const path = `${buildDir}/${locale}.${client ? 'js' : 'json'}`;
 
     if (client) {
-      translations = `window.boarderI18n = '${ translations.replace(/'/g, '\\\'') }';`;
+      translations = `window.boarderI18n = '${translations.replace(/'/g, '\\\'')}';`;
     }
 
-    console.log(`locale built: ${ path }`);
+    console.log(`locale built: ${path}`);
 
     fs.outputFileSync(path, translations);
   });

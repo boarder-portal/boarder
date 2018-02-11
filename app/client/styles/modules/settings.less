@@ -25,7 +25,7 @@
       height: 100%;
     }
 
-    > a {
+    > a, span {
       .flex(flex-start);
       .br(2px);
 
@@ -38,6 +38,7 @@
 
         color: @white;
         cursor: default;
+        pointer-events: none;
       }
 
       &:not(.menu-active) {

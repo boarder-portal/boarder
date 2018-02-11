@@ -29,7 +29,7 @@ module.exports = {
     const absoluteFilename = path.join(ATTACHMENTS_DIR, eventualFilename);
 
     attachment.filename = absoluteFilename;
-    attachment.url = `${ ASSETS_PATH }/attachments/${ eventualFilename }`;
+    attachment.url = `${ASSETS_PATH}/attachments/${eventualFilename}`;
 
     await Promise.all([
       attachment.save(),

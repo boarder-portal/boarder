@@ -29,7 +29,7 @@ exports.createClient = (returnBuffers) => {
 
   client.on('error', (err) => {
     console.error(err);
-    logs.write(`${ new Date().toISOString() }\nRedis error:\n ${ err.stack }\n\n`);
+    logs.write(`${new Date().toISOString()}\nRedis error:\n ${err.stack}\n\n`);
   });
 
   return client;

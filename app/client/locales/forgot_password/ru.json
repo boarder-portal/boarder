@@ -5,5 +5,5 @@
   "fields": {
     "email": "Ваш e-mail"
   },
-  "try_again": "Этот e-mail не зарегистрирован"
+  "try_again": "Проверьте правильность введенного e-mail"
 }

@@ -238,6 +238,7 @@
     "hexagon": {
       "LOBBY_NSP": "/hexagon/lobby",
       "ROOM_NSP": "/hexagon/room/$roomId",
+      "dev": true,
       "playersCount": 3
     },
     "pexeso": {
@@ -266,6 +267,7 @@
     "virus_war": {
       "LOBBY_NSP": "/virus-war/lobby",
       "ROOM_NSP": "/virus-war/room/$roomId",
+      "dev": true,
       "playersCount": 2,
       "events": {
         "game": {
@@ -303,6 +305,7 @@
     "survival_online": {
       "LOBBY_NSP": "/survival-online/lobby",
       "ROOM_NSP": "/survival-online/room/$roomId",
+      "dev": true,
       "playersCount": 4,
       "development": {
         "SHOW_CHUNK_BORDER": false

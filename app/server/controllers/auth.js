@@ -89,7 +89,7 @@ module.exports = {
         confirmToken: generateUID(40)
       });
 
-      await sendConfirmationEmail(ctx, user);
+      sendConfirmationEmail(ctx, user);
 
       ctx.json({
         errors: null
@@ -141,7 +141,7 @@ module.exports = {
 
     await user.save();
 
-    ctx.redirect('/?confirm_register=true');
+    ctx.redirect('/?register_confirmed');
   },
   async sendOneMore(ctx) {
     const {
@@ -163,7 +163,7 @@ module.exports = {
       ctx.reject('NOT_AUTHORIZED');
     }
 
-    await sendConfirmationEmail(ctx, user);
+    sendConfirmationEmail(ctx, user);
 
     ctx.success();
   },
@@ -280,7 +280,7 @@ module.exports = {
       request: {
         body: {
           currentPassword,
-          password
+          newPassword
         }
       },
       user
@@ -290,7 +290,7 @@ module.exports = {
       ctx.reject('WRONG_PASSWORD');
     }
 
-    user.password = hashPassword(password);
+    user.password = hashPassword(newPassword);
 
     await user.save();
 

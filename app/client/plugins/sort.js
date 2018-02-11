@@ -1,16 +1,14 @@
 import _ from 'lodash';
 
 _.mixin({
-  sortByField(array, field, reverse) {
-    reverse = !!reverse;
+  sortByField(array, field, descending) {
+    descending = !!descending;
 
-    return array.sort((x, y) => {
-      if (reverse) {
-        return sort(field, y, x);
-      }
-
-      return sort(field, x, y);
-    });
+    return array.sort((x, y) => (
+      descending
+        ? sort(field, y, x)
+        : sort(field, x, y)
+    ));
   }
 });
 

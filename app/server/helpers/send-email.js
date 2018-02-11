@@ -25,7 +25,7 @@ exports.sendEmail = ({
   locals
 }) => (
   transporter.sendEmail({
-    from: `"${ name }" <${ email }>`,
+    from: `"${name}" <${email}>`,
     to,
     subject,
     html: templates[templatePath](locals)

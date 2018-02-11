@@ -12,11 +12,9 @@ const SERVER_FILES = [
   './app/shared/**/*'
 ];
 
-gulp.task('server:dev', () => {
-  let promise = Promise.resolve();
-
+gulp.task('server:dev', async () => {
   if (child) {
-    promise = new Promise((resolve) => {
+    await new Promise((resolve) => {
       child.on('close', () => {
         resolve();
       });
@@ -31,7 +29,7 @@ gulp.task('server:dev', () => {
     });
   }
 
-  return promise.then(() => new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     child = cp.fork(path.resolve(SERVER_ROOT), [], {
       cwd: ROOT,
       env: {
@@ -46,7 +44,7 @@ gulp.task('server:dev', () => {
         reject(new Error('Listen error'));
       }
     });
-  }));
+  });
 });
 
 gulp.task('watch:server', ['server:dev'], () => {

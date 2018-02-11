@@ -12,6 +12,7 @@ const {
 } = require('../../config/constants.json');
 
 const PUBLIC_FIELDS = [
+  'id',
   'login',
   'avatar',
   'ready',
@@ -82,9 +83,9 @@ class Player {
     });
   }
 
-  pureEmit() {
+  pureEmit(...args) {
     _.forEach(this.sockets, (socket) => {
-      socket.emit(...arguments);
+      socket.emit(...args);
     });
   }
 

@@ -5,5 +5,5 @@
   "fields": {
     "email": "Your email"
   },
-  "try_again": "This email is not registered"
+  "try_again": "Check the correctness of the email"
 }

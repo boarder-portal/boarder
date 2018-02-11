@@ -5,7 +5,7 @@ logs/
 *.log
 npm-debug.log*
 
-app/server/db/config.json
+app/server/db/config.js
 app/config/config.json
 
 app/server/i18n/

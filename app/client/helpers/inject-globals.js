@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import { i18n } from '../i18n';
-import { images, title } from '../constants';
+import { i18n, images, title } from '../constants';
 
 export function injectGlobals(Block) {
   return class extends Block {

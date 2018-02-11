@@ -1,3 +1,5 @@
+require('./scripts/babel-register');
+
 const gulp = require('gulp');
 const { requireGlob } = require('./app/server/helpers/require-glob');
 

@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Sequelize = require('sequelize');
+
 const Attachment = require('./attachment');
 const hashPassword = require('../../helpers/hash-password');
 const db = require('../');
@@ -88,7 +89,7 @@ const User = db.define('user', {
       const { avatarId } = this;
 
       if (_.isNull(avatarId)) {
-        return Promise.resolve(null);
+        return null;
       }
 
       const { url } = await Attachment.findOne({
@@ -110,11 +111,14 @@ const User = db.define('user', {
 const { toJSON } = User.Instance.prototype;
 
 User.Instance.prototype.toJSON = function (...args) {
-  const json = toJSON.apply(this, args);
+  const json = this::toJSON(...args);
 
   json.avatar = this.avatar;
 
   delete json.password;
+  delete json.confirmToken;
+  delete json.resetPasswordToken;
+  delete json.avatarId;
 
   return json;
 };

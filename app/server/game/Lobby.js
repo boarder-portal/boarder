@@ -72,14 +72,14 @@ class Lobby {
       Game
     } = this;
     const now = Date.now();
-    const roomId = `${ now }-${ generateUID(7, rooms) }`;
+    const roomId = `${now}-${generateUID(7, rooms)}`;
 
     const roomData = {
       io,
       id: roomId,
       lobby: this,
       playersCount,
-      name: `room-${ now }`,
+      name: `room-${now}`,
       roomNsp,
       Game,
       gameOptions: options
@@ -90,7 +90,7 @@ class Lobby {
 
     this.emit(NEW_ROOM, room);
 
-    console.log(`creating room #${ room.id }`);
+    console.log(`creating room #${room.id}`);
   };
 
   /**
@@ -109,7 +109,7 @@ class Lobby {
     delete this.io.nsps[name];
 
     this.emit(DELETE_ROOM, id);
-    console.log(`deleting room #${ room.id }`);
+    console.log(`deleting room #${room.id}`);
   }
 
   /**
@@ -127,7 +127,7 @@ class Lobby {
    * @param {Socket} socket
    */
   userEnter = (socket) => {
-    console.log('connected to lobby');
+    console.log(`connected to lobby ${socket.id.slice(socket.id.indexOf('#'))}`);
 
     socket.emit(GET_LIST, this.rooms);
 
@@ -140,8 +140,8 @@ class Lobby {
    * @public
    * @param {Socket} socket
    */
-  userLeave() {
-    console.log('disconnected from lobby');
+  userLeave(socket) {
+    console.log(`disconnected from lobby ${socket.id.slice(socket.id.indexOf('#'))}`);
   }
 }
 

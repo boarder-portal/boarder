@@ -6,7 +6,7 @@ const images = {
 };
 
 _.forEach(images, (value, key, images) => {
-  images[key] = `${ ASSETS_PATH }/images/${ value }`;
+  images[key] = `${ASSETS_PATH}/images/${value}`;
 });
 
 export { images };

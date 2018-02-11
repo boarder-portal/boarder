@@ -1,6 +1,8 @@
 import Ajaxer from 'ajaxer';
-import Promise from 'el-promise';
-import { parseJSON } from './parseJSON';
+
+import { parseJSON } from './parse-json';
+import { ALERTS } from '../constants';
+import { addAlert } from '../actions';
 import { endpoints } from '../../config/constants.json';
 
 Ajaxer.usePromise(Promise);
@@ -27,6 +29,15 @@ fetcher
   })
   .after((res) => {
     res.json = parseJSON(res.data, true);
+  })
+  .after((err, res) => {
+    if (res.headers['Custom-Error'] !== 'true') {
+      console.log(res);
+
+      addAlert(ALERTS.AJAX_ERROR);
+    }
+
+    throw err;
   });
 
 export { baseURL, fetcher };

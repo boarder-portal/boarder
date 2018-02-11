@@ -69,10 +69,6 @@ class SetGame extends Game {
   }
 
   onFindSet([index1, index2, index3], socket) {
-    if (this.finished) {
-      return;
-    }
-
     const {
       field,
       remainingCards
@@ -162,19 +158,15 @@ class SetGame extends Game {
   }
 
   onNoSetHere(data, socket) {
-    if (this.finished) {
-      return;
-    }
-
     const {
       field,
       remainingCards
     } = this;
     const { player } = socket;
     const cards = field.filter(Boolean);
-    const isThereSet = cards.some((card1, i1) => (
-      cards.slice(i1 + 1).some((card2, i2) => (
-        cards.slice(i2 + 1).some((card3) => (
+    const isThereSet = cards.slice(0, -2).some((card1, i1) => (
+      cards.slice(i1 + 1, -1).some((card2, i2) => (
+        cards.slice(i1 + i2 + 2).some((card3) => (
           this.isSet([card1, card2, card3])
         ))
       ))
@@ -216,11 +208,7 @@ class SetGame extends Game {
           newCard3
         ];
       } else {
-        this.finished = true;
-
-        setTimeout(() => {
-          this.finishGame();
-        }, 1000);
+        this.finishGame();
       }
     }
 

@@ -1,5 +1,3 @@
-import Promise from 'el-promise';
-
 export function getBlobDataURL(blob) {
   const reader = new FileReader();
 

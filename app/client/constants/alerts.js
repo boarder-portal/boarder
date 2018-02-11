@@ -39,7 +39,7 @@ export const ALERTS = {
   USER_NOT_CONFIRMED: {
     level: ALERTS_LEVELS.WARNING,
     priority: ALERTS_PRIORITIES.VERY_LOW,
-    duration: Infinity * s
+    duration: null
   },
   AVATAR_ADDED: {
     level: ALERTS_LEVELS.SUCCESS,

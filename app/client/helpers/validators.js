@@ -1,6 +1,6 @@
-import { D, doc } from 'dwayne';
+import $ from 'jquery';
 
-const testEmailInput = doc.input('$type(email)');
+const testEmailInput = $('<input type="email" />');
 
 export function requiredValidator(value) {
   if (!value) {
@@ -9,7 +9,7 @@ export function requiredValidator(value) {
 }
 
 export function passwordRepeatValidator(value, input) {
-  const passwordValue = D(input)
+  const passwordValue = $(input)
     .closest('form')
     .find('input[name="password"]')
     .prop('value');

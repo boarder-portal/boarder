@@ -34,7 +34,7 @@ class Game {
   constructor(props) {
     _.assign(this, props);
 
-    setTimeout(() =>this.prepareGame(), 0);
+    setTimeout(() => this.prepareGame(), 0);
   }
 
   emit(event, data, isNeededToUpdatePlayers) {
@@ -99,10 +99,20 @@ class Game {
     }
   }
 
-  finishGame() {
-    this.pureEmit(GAME_FINISHING, this.players);
-    this.room.finishGame(this.players);
+  finishGame(closeTimeout = 1000) {
+    this.finished = true;
+
+    if (closeTimeout) {
+      setTimeout(this.closeGame, closeTimeout);
+    } else {
+      this.closeGame();
+    }
   }
+
+  closeGame = () => {
+    this.pureEmit(GAME_FINISHING, this.players);
+    this.room.closeGame(this.players);
+  };
 
   updatePlayers() {
     this.pureEmit(UPDATE_PLAYERS, this.players);

@@ -14,7 +14,7 @@ const ATTACHMENTS_DIR = path.resolve('./public/attachments');
 
 module.exports = {
   async up() {
-    await fs.ensureDir(`${ ATTACHMENTS_DIR }`);
+    await fs.ensureDir(`${ATTACHMENTS_DIR}`);
 
     const users = await User.findAll({});
     const attachments = await Promise.all(
@@ -32,12 +32,12 @@ module.exports = {
       const req = http.get(defaultAvatar, async (res) => {
         await Promise.all(
           attachments.map((attachment) => {
-            const filename = `${ ATTACHMENTS_DIR }/${ attachment.id }.png`;
+            const filename = `${ATTACHMENTS_DIR}/${attachment.id}.png`;
 
             return Promise.all([
               attachment.update({
                 filename,
-                url: `${ ASSETS_PATH }/attachments/${ attachment.id }.png`
+                url: `${ASSETS_PATH}/attachments/${attachment.id}.png`
               }),
               new Promise((resolve) => {
                 const stream = fs.createWriteStream(filename);

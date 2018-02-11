@@ -16,9 +16,9 @@ module.exports = (app) => {
     ctx.type = 'html';
     ctx.body = INDEX_TMPL({
       lang: locale,
-      allJS: `${ ASSETS_PATH }/js/all.js`,
-      allCSS: `${ ASSETS_PATH }/css/all.css`,
-      i18n: `${ ASSETS_PATH }/i18n/${ locale }.js`,
+      allJS: `${ASSETS_PATH}/js/all.js`,
+      allCSS: `${ASSETS_PATH}/css/all.css`,
+      i18n: `${ASSETS_PATH}/i18n/${locale}.js`,
       user: JSON.stringify(user),
       NODE_ENV: process.env.NODE_ENV
     });

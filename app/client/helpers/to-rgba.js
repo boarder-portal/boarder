@@ -3,5 +3,5 @@ export function toRGBA(color, tr) {
   const green = parseInt(color.slice(3, 5), 16);
   const blue = parseInt(color.slice(5), 16);
 
-  return `rgba(${ red },${ green },${ blue },${ tr })`;
+  return `rgba(${red},${green},${blue},${tr})`;
 }

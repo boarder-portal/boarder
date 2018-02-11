@@ -1,29 +1,28 @@
+import $ from 'jquery';
 import io from 'socket.io-client';
-import { D, find, doc, Elem } from 'dwayne';
+
 import {
   LIVERELOAD_NSP,
   ASSETS_PATH
 } from '../../config/constants.json';
 
-const livereload = find('#livereload')
-  .addClass('loaded');
+const livereload = $('#livereload').addClass('loaded');
+const ready = $('<img />')
+  .addClass('image')
+  .attr('src', `${ASSETS_PATH}/images/checkmark.png`);
+const loading = $('<img />')
+  .addClass('image')
+  .attr('src', `${ASSETS_PATH}/images/loading.gif`);
 
-const ready = doc
-  .img('.image')
-  .ref(`${ ASSETS_PATH }/images/checkmark.png`);
-const loading = doc
-  .img('.image')
-  .ref(`${ ASSETS_PATH }/images/loading.gif`);
+(async () => {
+  await ready
+    .add(loading)
+    .load();
 
-new Elem([ready, loading])
-  .load()
-  .then(() => {
-    livereload.child(ready);
-  });
+  livereload.append(ready);
+})();
 
-const socket = io(LIVERELOAD_NSP);
-
-window.D = D;
+const socket = io.connect(LIVERELOAD_NSP);
 
 socket.on('connect', () => {
   console.log('%c%s', colored('green'), 'livereload enabled');
@@ -44,29 +43,25 @@ socket.on('reload', () => {
 });
 
 socket.on('css-updated', () => {
-  find('#all-css').attr('href', `${ ASSETS_PATH }/css/all.css?${ Date.now() }`);
+  $('#all-css').attr('href', `${ASSETS_PATH}/css/all.css?${Date.now()}`);
 
   unreload();
 });
 
 function colored(color) {
-  return `color: ${ color }; font-weight: 900; font-size: 16px;`;
+  return `color: ${color}; font-weight: 900; font-size: 16px;`;
 }
 
 function toreload() {
   console.log('%c%s', colored('orange'), 'something changed...');
 
-  livereload
-    .addClass('reloading');
-
-  ready.replace(loading);
+  livereload.addClass('reloading');
+  ready.replaceWith(loading);
 }
 
 function unreload() {
   console.log('%c%s', colored('green'), 'updated');
 
-  livereload
-    .removeClass('reloading');
-
-  loading.replace(ready);
+  livereload.removeClass('reloading');
+  loading.replaceWith(ready);
 }

@@ -1,11 +1,4 @@
-require('babel-register')({
-  babelrc: false,
-  plugins: [
-    'transform-object-rest-spread',
-    'transform-class-properties',
-    'transform-function-bind'
-  ]
-});
+require('../../scripts/babel-register');
 
 require('./plugins');
 
@@ -86,12 +79,12 @@ if (development) {
 
 process.on('uncaughtException', (err) => {
   console.error(err);
-  logs.write(`${ new Date().toISOString() }\nUncaught exception:\n ${ err.stack }\n\n`);
+  logs.write(`${new Date().toISOString()}\nUncaught exception:\n ${err.stack}\n\n`);
 });
 
 process.on('unhandledRejection', (err) => {
   console.error(err);
-  logs.write(`${ new Date().toISOString() }\nUnhandled rejection:\n ${ err.stack }\n\n`);
+  logs.write(`${new Date().toISOString()}\nUnhandled rejection:\n ${err.stack}\n\n`);
 });
 
 server.listen(port, (error) => {

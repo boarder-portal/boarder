@@ -1,3 +1,3 @@
-import { head } from 'dwayne';
+import $ from 'jquery';
 
-export const title = head.find('.title');
+export const title = $(document.head).find('title');

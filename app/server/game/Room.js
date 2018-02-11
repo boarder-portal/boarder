@@ -115,6 +115,39 @@ class Room {
   }
 
   /**
+   * @method Room#closeGame
+   * @public
+   */
+  closeGame() {
+    const {
+      players,
+      socket
+    } = this;
+
+    this.status = FINISHING;
+
+    this.update();
+
+    setTimeout(() => {
+      this.game = null;
+      this.status = NOT_PLAYING;
+
+      players.forEach((player, i) => {
+        if (player) {
+          if (_.isEmpty(player.sockets)) {
+            players[i] = null;
+          } else {
+            player.setInitialGameState();
+          }
+        }
+      });
+      this.update();
+      this.tryToRemoveRoom();
+      socket.emit(GAME_FINISHED);
+    }, 5000);
+  }
+
+  /**
    * @method Room#delete
    * @public
    */
@@ -155,39 +188,6 @@ class Room {
     }
 
     this._timeout = setTimeout(this.delete, time);
-  }
-
-  /**
-   * @method Room#finishGame
-   * @public
-   */
-  finishGame() {
-    const {
-      players,
-      socket
-    } = this;
-
-    this.status = FINISHING;
-
-    this.update();
-
-    setTimeout(() => {
-      this.game = null;
-      this.status = NOT_PLAYING;
-
-      players.forEach((player, i) => {
-        if (player) {
-          if (_.isEmpty(player.sockets)) {
-            players[i] = null;
-          } else {
-            player.setInitialGameState();
-          }
-        }
-      });
-      this.update();
-      this.tryToRemoveRoom();
-      socket.emit(GAME_FINISHED);
-    }, 5000);
   }
 
   /**
@@ -264,7 +264,7 @@ class Room {
    * @param {Socket} socket
    */
   userEnter = (socket) => {
-    console.log(`entering room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
+    console.log(`entering room #${this.id} (${socket.id.slice(socket.id.indexOf('#'))})`);
 
     if (socket.player) {
       return;
@@ -289,7 +289,7 @@ class Room {
       game
     } = this;
     const existentPlayer = players.find((player) => player && player.login === user.login);
-    const planningRole = role === 'observer' || (game && !existentPlayer) ? OBSERVER : PLAYER;
+    const planningRole = role === OBSERVER || (game && !existentPlayer) ? OBSERVER : PLAYER;
     const isGoingToBePlayer = planningRole === PLAYER;
     let eventualRole = planningRole;
     let eventualPlayer = existentPlayer;
@@ -303,6 +303,7 @@ class Room {
 
       eventualRole = willBePlayer ? PLAYER : OBSERVER;
       eventualPlayer = new Player({
+        id: user.id,
         login: user.login,
         avatar: user.avatar,
         room: this
@@ -340,7 +341,7 @@ class Room {
         }
 
         socket.on(event, (data) => {
-          if (this.status === PLAYING) {
+          if (this.status === PLAYING && !this.game.finished) {
             if (!forActivePlayer || this.game.isSocketActivePlayer(socket)) {
               this.game[listener](data, socket);
             }
@@ -388,7 +389,7 @@ class Room {
 
     this.tryToRemoveRoom();
 
-    console.log(`leaving  room #${ this.id } (${ socket.id.slice(socket.id.indexOf('#')) })`);
+    console.log(`leaving  room #${this.id} (${socket.id.slice(socket.id.indexOf('#'))})`);
   }
 
   toJSON() {

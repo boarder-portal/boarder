@@ -53,7 +53,8 @@ class PexesoGame extends Game {
     this.startGame();
   }
 
-  onTurnCard(data) {
+  onTurnCard(data, socket) {
+    const { player } = socket;
     const { x, y } = data;
     const { currentTurnedCards } = this;
     const card = this.field[y][x];
@@ -66,7 +67,7 @@ class PexesoGame extends Game {
     card.isTurned = true;
 
     const [card1, card2] = currentTurnedCards;
-    const match = this.match = card2 && card1.card === card2.card;
+    const match = card2 && card1.card === card2.card;
 
     this.emit(TURN_CARD, {
       x,
@@ -81,9 +82,9 @@ class PexesoGame extends Game {
       currentTurnedCards.forEach((card) => {
         if (match) {
           card.isInPlay = false;
-        } else {
-          card.isTurned = false;
         }
+
+        card.isTurned = false;
       });
 
       setTimeout(() => {
@@ -93,7 +94,7 @@ class PexesoGame extends Game {
           player.score++;
           this.updatePlayers();
 
-          if (++this.allTurnedCardsCount >= setsCount) {
+          if (++this.allTurnedCardsCount >= SETS_COUNT) {
             this.finishGame();
           }
         } else {
@@ -101,19 +102,6 @@ class PexesoGame extends Game {
         }
       }, SLEEP_DURATION);
     }
-  }
-
-  toJSON() {
-    const {
-      currentTurnedCards,
-      match
-    } = this;
-
-    return {
-      ...super.toJSON(),
-      currentTurnedCards,
-      match
-    };
   }
 }
 
