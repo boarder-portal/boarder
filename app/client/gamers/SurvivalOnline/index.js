@@ -488,7 +488,7 @@ class SurvivalOnline extends Component {
 
     _.forEach(movingObjects, (cell) => {
       const cellDirection = cell.move.direction;
-      const cellMovingState = Math.min((Date.now() - cell.move.startMoving) / BETWEEN_CELL_DRAWING_MOVING, 1);
+      const cellMovingState = Math.min((Date.now() - cell.move.startMoving) / cell.move.speed, 1);
       const shiftX = cellDirection === 'right' ? -1 + cellMovingState : cellDirection === 'left' ? 1 - cellMovingState : 0;
       const shiftY = cellDirection === 'top' ? 1 - cellMovingState : cellDirection === 'bottom' ? -1 + cellMovingState : 0;
 
