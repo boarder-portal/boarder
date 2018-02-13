@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ClassName from 'classnames';
 
-import { gameDataType, playersType } from '../constants';
-import { timeout } from '../helpers';
-import { games as gamesConfig } from '../../config/constants.json';
+import { gameDataType, playersType } from '../../constants';
+import { timeout } from '../../helpers';
+import { games as gamesConfig } from '../../../config/constants.json';
 
-import { GamePlayers } from '../components';
+import { GamePlayers } from '../../components';
 
 const {
   pexeso: {
