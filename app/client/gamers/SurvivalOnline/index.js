@@ -111,6 +111,12 @@ class SurvivalOnline extends Component {
     this.setup();
   }
 
+  componentWillUnmount() {
+    $(document).off('keydown', this.onKeyDown);
+    $(document).off('webkitfullscreenchange mozfullscreenchange MSFullscreenChange', this.onFullScreenChange);
+    $(window).off('resize', this.onResize);
+  }
+
   rootNodeRef = (rootNode) => {
     this.rootNode = rootNode;
   };
