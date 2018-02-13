@@ -15,8 +15,8 @@ const {
 } = require('../../config/constants.json');
 
 const colors = _.keys(colorsObject);
-const WIDTH = 10;
-const HEIGHT = 6;
+const WIDTH = 30;
+const HEIGHT = 16;
 const WIDTH05 = _.round(WIDTH / 2);
 
 /**

@@ -287,6 +287,8 @@
       "LOBBY_NSP": "/filler/lobby",
       "ROOM_NSP": "/filler/room/$roomId",
       "playersCount": 2,
+      "cellSize": 24,
+      "strokeWidth": 2,
       "events": {
         "game": {
           "CHOOSE_COLOR": "set/choose-color"

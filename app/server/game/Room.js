@@ -198,7 +198,7 @@ class Room {
   isRequiredPlayers() {
     const { players } = this;
 
-    return players.filter(isNotNull).length > 0;
+    return players.filter(isNotNull).length > (process.env.NODE_ENV === 'production' ? 1 : 0);
   }
 
   /**

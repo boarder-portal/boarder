@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { gameDataType, playersType } from '../constants';
 import { games as gamesConfig } from '../../config/constants.json';
 
+import Filler from './Filler';
 import Pexeso from './Pexeso';
 import SurvivalOnline from './SurvivalOnline';
 
@@ -17,6 +18,7 @@ const {
 
 /* eslint-disable camelcase */
 const GAMES_MAP = {
+  filler: Filler,
   pexeso: Pexeso,
   survival_online: SurvivalOnline
 };
