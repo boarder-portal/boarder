@@ -7,7 +7,9 @@ const {
   setFrozenStatusToNearChunks,
   shouldChunkBeFrozen,
   unfreezeChunkIfNeeded,
-  countChunkDensity
+  countChunkDensity,
+  getChunkByCoords,
+  getCornerCoordsByMiddleCellCoords
 } = require('../../shared/survival-online');
 const {
   games: {
@@ -130,7 +132,7 @@ class SurvivalGame extends Game {
     const {
       x: cornerX,
       y: cornerY
-    } = this.getCornerByMiddleCell({ x: playerX, y: playerY });
+    } = getCornerCoordsByMiddleCellCoords({ x: playerX, y: playerY });
     const playerMap = [];
 
     _.times(pMapH, (y) => {
@@ -164,7 +166,8 @@ class SurvivalGame extends Game {
     }
 
     const {
-      map
+      map,
+      chunks
     } = this;
 
     const changedCells = [];
@@ -186,8 +189,8 @@ class SurvivalGame extends Game {
       cellFrom.creature = null;
       changedCells.push(cellFrom, { ...cellTo, move: { direction, speed: DELAY_BETWEEN_PLAYER_ACTIONS } });
 
-      const prevChunk = this.getChunkByCoords({ x: fromX, y: fromY });
-      const nextChunk = this.getChunkByCoords({ x: toX, y: toY });
+      const prevChunk = getChunkByCoords({ x: fromX, y: fromY, chunks });
+      const nextChunk = getChunkByCoords({ x: toX, y: toY, chunks });
 
       if (prevChunk !== nextChunk) {
         const playerIndex = _.findIndex(prevChunk.players, player);
@@ -246,7 +249,7 @@ class SurvivalGame extends Game {
       const {
         x: playerCornerX,
         y: playerCornerY
-      } = this.getCornerByMiddleCell({ x: playerInGame.x, y: playerInGame.y });
+      } = getCornerCoordsByMiddleCellCoords({ x: playerInGame.x, y: playerInGame.y });
 
       if (!movingPlayer || playerInGame.login !== movingPlayer.login) {
         _.forEach(changedCells, (cell) => {
@@ -510,11 +513,15 @@ class SurvivalGame extends Game {
   }
 
   configurePlayers() {
-    const map = this.map;
+    const {
+      map,
+      chunks,
+      players
+    } = this;
     let startX = Math.floor(mapW / 2);
     let startY = Math.floor(mapW / 2);
 
-    _.forEach(this.players, (player) => {
+    _.forEach(players, (player) => {
       let isPlayerPlaced = false;
 
       player.inventory = _.cloneDeep(TEST_INVENTORY);
@@ -534,7 +541,7 @@ class SurvivalGame extends Game {
             player.y = startY;
             player.direction = 'bottom';
 
-            const playerChunk = this.getChunkByCoords({ x: startX, y: startY });
+            const playerChunk = getChunkByCoords({ x: startX, y: startY, chunks });
 
             playerChunk.players.push(player);
 
@@ -565,32 +572,11 @@ class SurvivalGame extends Game {
         const zombie = new Zombie({
           map,
           chunks,
-          direction: 'bottom',
-          type: 'zombie',
           x: randX,
-          y: randY,
-          health: 100
+          y: randY
         });
-
-        cell.creature = zombie;
-
-        zombie.chunk.zombies.push(zombie);
       }
     });
-  }
-
-  getCornerByMiddleCell({ x, y }) {
-    return {
-      x: x - Math.floor(pMapW/2),
-      y: y - Math.floor(pMapH/2)
-    };
-  }
-
-  getChunkByCoords({ x, y }) {
-    const chunkX = Math.floor(x / chunkW);
-    const chunkY = Math.floor(y / chunkH);
-
-    return this.chunks[chunkY][chunkX];
   }
 
   toJSON() {
