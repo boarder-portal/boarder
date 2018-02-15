@@ -417,7 +417,7 @@ class SurvivalOnline extends Component {
     let availableWidth = Math.max(window.innerWidth, 600);
     let availableHeight = Math.max(window.innerHeight - 150, 300);
 
-    if (this.fullScreenEnabled) {
+    if (this.state.fullScreenEnabled) {
       availableWidth = window.outerWidth;
       availableHeight = window.outerHeight;
     }
