@@ -323,7 +323,8 @@
           "CHANGE_INVENTORY_ITEMS_ORDER": "survival-online/change-inventory-items-order",
           "CHANGE_INVENTORY_ITEMS": "survival-online/change-inventory-items",
           "REMOVE_INVENTORY_ITEMS": "survival-online/remove-inventory-items",
-          "USE_INVENTORY_ITEM": "survival-online/use-inventory-item"
+          "USE_INVENTORY_ITEM": "survival-online/use-inventory-item",
+          "CHANGE_TIME": "survival-online/change-time"
         }
       },
       "limits": {
@@ -349,6 +350,12 @@
         "DELAY_BETWEEN_PLAYER_ACTIONS": 150,
         "DELAY_IN_PARTS_OF_SELF_MOVING": 0.2
       },
+      "intervals": {
+        "CHANGE_TIME_INTERVAL": 5000
+      },
+      "INITIAL_TIME": 30,
+      "DAY_DURATION": 100,
+      "DAY_LITE_PART": 0.7,
       "CANT_SEE_THROUGH": ["stone", "tree"],
       "imagesPaths": {
         "creatures": {

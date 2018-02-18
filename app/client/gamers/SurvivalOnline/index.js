@@ -25,7 +25,8 @@ const {
         CHANGE_INVENTORY_ITEMS_ORDER,
         CHANGE_INVENTORY_ITEMS,
         REMOVE_INVENTORY_ITEMS,
-        USE_INVENTORY_ITEM
+        USE_INVENTORY_ITEM,
+        CHANGE_TIME
       }
     },
     inventory: {
@@ -48,7 +49,9 @@ const {
       DELAY_BETWEEN_PLAYER_ACTIONS,
       DELAY_IN_PARTS_OF_SELF_MOVING
     },
-    imagesPaths
+    imagesPaths,
+    DAY_DURATION,
+    DAY_LITE_PART
   }
 } = gamesConfig;
 
@@ -66,6 +69,7 @@ class SurvivalOnline extends Component {
     [CHANGED_CELLS]: 'onChangedCells',
     [CHANGE_INVENTORY_ITEMS]: 'onChangeInventoryItems',
     [REMOVE_INVENTORY_ITEMS]: 'onRemoveInventoryItems',
+    [CHANGE_TIME]: 'onChangeTime',
     unfrozenChunks: 'onUnfrozenChunks'
   };
   static propTypes = {
@@ -267,7 +271,7 @@ class SurvivalOnline extends Component {
     };
   }
 
-  onGetInitialInfo = ({ playerMap, playerLocation, playerInventory }) => {
+  onGetInitialInfo = ({ playerMap, playerLocation, playerInventory, hour }) => {
     console.log('Initial info: ', { playerMap, playerLocation, playerInventory });
 
     const {
@@ -292,6 +296,8 @@ class SurvivalOnline extends Component {
     _.forEach(playerMap, (cell) => {
       map[cell.y][cell.x] = cell;
     });
+
+    this.hour = hour;
 
     requestAnimationFrame(this.renderMap);
   };
@@ -413,6 +419,10 @@ class SurvivalOnline extends Component {
     });
   };
 
+  onChangeTime = ({ hour }) => {
+    this.hour = hour;
+  };
+
   setSize = () => {
     let availableWidth = Math.max(window.innerWidth, 600);
     let availableHeight = Math.max(window.innerHeight - 150, 300);
@@ -466,6 +476,7 @@ class SurvivalOnline extends Component {
     } = this;
     const movingObjects = [];
     let selfCell;
+    const shadowPart = this.getShadowPart();
 
     cornerX = cornerX != null ? cornerX : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).x;
     cornerY = cornerY != null ? cornerY : this.getCornerByMiddleCell({ x: playerX, y: playerY  }).y;
@@ -479,7 +490,8 @@ class SurvivalOnline extends Component {
           x: -stateX + x,
           y: -stateY + y,
           renderSelf: false,
-          renderMoving: false
+          renderMoving: false,
+          shadowPart
         });
 
         if (cell && cell.creature && cell.move) {
@@ -507,7 +519,8 @@ class SurvivalOnline extends Component {
         x: -stateX + shiftX + cell.relativeX,
         y: -stateY + shiftY + cell.relativeY,
         renderSelf: false,
-        renderMoving: true
+        renderMoving: true,
+        shadowPart
       });
     });
 
@@ -516,7 +529,8 @@ class SurvivalOnline extends Component {
       x: Math.round((pMapW - 1) / 2),
       y: Math.round((pMapH - 1) / 2),
       renderSelf: true,
-      renderMoving: true
+      renderMoving: true,
+      shadowPart
     });
 
     if (player.isMoving && direction) {
@@ -569,7 +583,7 @@ class SurvivalOnline extends Component {
     requestAnimationFrame(this.renderMap);
   };
 
-  renderCell({ cell, x, y, renderSelf, renderMoving }) {
+  renderCell({ cell, x, y, renderSelf, renderMoving, shadowPart }) {
     const {
       ctx,
       cellSize,
@@ -619,6 +633,9 @@ class SurvivalOnline extends Component {
         ctx.drawImage(image, cornerX, cornerY, cellSize, cellSize);
       });
 
+      ctx.fillStyle = `rgba(0, 0, 0, ${shadowPart})`;
+      ctx.fillRect(cornerX, cornerY, cellSize, cellSize);
+
       if (SHOW_CHUNK_BORDER) {
         if (cell.x % chunkW === 0 || cell.y % chunkH === 0) {
           ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
@@ -638,6 +655,26 @@ class SurvivalOnline extends Component {
 
       ctx.fillRect(cornerX, cornerY, cellSize, cellSize);
     }
+  }
+
+  getShadowPart() {
+    let shadowPart = 1;
+
+    const { hour } = this;
+    const midDay = DAY_DURATION / 2;
+    const halfLightDay = DAY_DURATION * DAY_LITE_PART / 2;
+
+    if (hour <= midDay - halfLightDay || hour >= midDay + halfLightDay) {
+      shadowPart = 1;
+    } else {
+      const b = 1 + midDay / halfLightDay * (hour <= midDay ? -1 : 1);
+      const angle = 1 / halfLightDay;
+      const lightP = b + hour * angle * (hour <= midDay ? 1 : -1);
+
+      shadowPart -= lightP;
+    }
+
+    return shadowPart;
   }
 
   render() {

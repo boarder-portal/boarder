@@ -26,7 +26,8 @@ const {
           CHANGE_INVENTORY_ITEMS_ORDER,
           CHANGE_INVENTORY_ITEMS,
           REMOVE_INVENTORY_ITEMS,
-          USE_INVENTORY_ITEM
+          USE_INVENTORY_ITEM,
+          CHANGE_TIME
         }
       },
       map: {
@@ -43,7 +44,12 @@ const {
       },
       timers: {
         DELAY_BETWEEN_PLAYER_ACTIONS
-      }
+      },
+      intervals: {
+        CHANGE_TIME_INTERVAL
+      },
+      INITIAL_TIME,
+      DAY_DURATION
     }
   }
 } = require('../../config/constants.json');
@@ -101,6 +107,7 @@ class SurvivalGame extends Game {
 
     this.moveZombies = this.moveZombies.bind(this);
     this.freezeChunksIfNeeded = this.freezeChunksIfNeeded.bind(this);
+    this.changeTime = this.changeTime.bind(this);
   }
 
   static listeners = {
@@ -117,12 +124,15 @@ class SurvivalGame extends Game {
     this.configurePlayers();
     this.initTimers();
 
+    this.hour = INITIAL_TIME;
+
     this.startGame();
   }
 
   onGetInitialInfo(data, { player }) {
     const {
-      map
+      map,
+      hour
     } = this;
     const {
       x: playerX,
@@ -151,7 +161,8 @@ class SurvivalGame extends Game {
         x: playerX,
         y: playerY
       },
-      playerInventory: inventory
+      playerInventory: inventory,
+      hour
     });
   }
 
@@ -422,6 +433,7 @@ class SurvivalGame extends Game {
   initTimers() {
     setInterval(this.freezeChunksIfNeeded, 1000);
     setInterval(this.moveZombies, 100);
+    setInterval(this.changeTime, CHANGE_TIME_INTERVAL);
   }
 
   freezeChunksIfNeeded() {
@@ -491,6 +503,16 @@ class SurvivalGame extends Game {
     });
 
     changedCells.length && this.sendChangedCells({ changedCells });
+  }
+
+  changeTime() {
+    this.hour++;
+
+    if (this.hour === DAY_DURATION) {
+      this.hour = 0;
+    }
+
+    this.emit(CHANGE_TIME, { hour: this.hour });
   }
 
   placeBuildings() {
