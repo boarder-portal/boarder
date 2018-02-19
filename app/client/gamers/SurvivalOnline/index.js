@@ -9,7 +9,6 @@ import { deepMap, getInventoryIds } from '../../../shared/survival-online';
 import { games as gamesConfig } from '../../../config/constants';
 
 import Inventory from './Inventory';
-import Promise from 'el-promise';
 
 const {
   survival_online: {

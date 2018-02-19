@@ -65,9 +65,11 @@ class Game {
       });
   }
 
-  setColors() {
+  setColors(shuffle) {
     const { players } = this;
-    const colors = _.shuffle(COLORS);
+    const colors = shuffle
+      ? _.shuffle(COLORS)
+      : COLORS;
 
     players.forEach((player, i) => {
       player.color = colors[i];

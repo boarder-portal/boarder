@@ -35,7 +35,7 @@ class Filler extends Component {
   };
 
   state = {
-    isTopLeft: this.props.gameData.players[0].login === this.props.user.login,
+    isTopLeft: this.props.players[0].login === this.props.user.login,
     field: this.props.gameData.field,
     currentColors: this.props.gameData.currentColors
   };
@@ -47,22 +47,14 @@ class Filler extends Component {
         field: nextProps.gameData.field,
         currentColors: nextProps.gameData.currentColors
       });
+      this.playersCells = this.getPlayersCells(nextProps.gameData.field);
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (!prevProps.players.length && this.props.players.length) {
-      this.playersCells = this.getPlayersCells();
-    }
-  }
-
-  getPlayersCells() {
+  getPlayersCells(field = this.state.field) {
     const {
       players
     } = this.props;
-    const {
-      field
-    } = this.state;
 
     return _(players)
       .map(({ data: { mainCell }, login }) => [

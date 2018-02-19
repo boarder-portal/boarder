@@ -81,21 +81,19 @@ class VirusWarGame extends Game {
     const { player } = socket;
     const availableCells = getAvailableCells(field, player, lastSetCells);
     const cell = field[y][x];
-    let isLast;
+    const otherPlayer = players.find(({ login }) => player.login !== login);
 
     if (!availableCells.includes(cell)) {
       return;
     }
 
     if (cell.player && cell.type === VIRUS) {
-      const cellHost = players.find(({ login }) => cell.player === login);
-
-      cellHost.score--;
+      otherPlayer.score--;
 
       cell.type = FORTRESS;
       cell.player = player.login;
     } else if (!cell.type) {
-      socket.player.score++;
+      player.score++;
 
       cell.type = VIRUS;
       cell.player = player.login;
@@ -103,14 +101,38 @@ class VirusWarGame extends Game {
       lastSetCells.push(cell);
     }
 
-    if (!getAvailableCells(field, player, lastSetCells).length) {
-      isLast = true;
+    const isLast = !getAvailableCells(field, player, lastSetCells).length;
+    const isLastInGame = (
+      // the other player can't make a move
+      !getAvailableCells(field, otherPlayer, []).length
+
+      // the only moves this player can make is to take over the empty cells
+      && !getAvailableCells(field, player, []).filter((cell) => cell.player === otherPlayer.login).length
+    );
+
+    if (isLastInGame) {
+      field.forEach((row) => {
+        row.forEach((cell) => {
+          if (!cell.type) {
+            player.score++;
+
+            cell.type = VIRUS;
+            cell.player = player.login;
+          }
+        });
+      });
+
+      this.finishGame();
+    }
+
+    if (isLast && !isLastInGame) {
       this.endTurn();
     }
 
     this.emit(SET_CELL, {
       cell,
-      isLast
+      isLast,
+      isLastInGame
     }, true);
   }
 

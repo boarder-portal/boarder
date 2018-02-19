@@ -43,9 +43,8 @@ class Pexeso extends Component {
     if (this.props.gameData !== nextProps.gameData) {
       this.setState({
         field: nextProps.gameData.field
-      }, () => {
-        this.currentTurnedCards = this.getCurrentTurnedCards();
       });
+      this.currentTurnedCards = this.getCurrentTurnedCards(nextProps.gameData.field);
     }
   }
 
@@ -57,11 +56,7 @@ class Pexeso extends Component {
     return `${IMAGES_ROOT}/sets/${options.set}/${card.card}.jpg`;
   }
 
-  getCurrentTurnedCards() {
-    const {
-      field
-    } = this.state;
-
+  getCurrentTurnedCards(field = this.state.field) {
     return field.reduce((allTurned, row) => [
       ...allTurned,
       ...row.filter(({ isTurned }) => isTurned)

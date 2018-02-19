@@ -118,19 +118,9 @@ class Room extends Component {
     this.socket.disconnect();
   }
 
-  startGame(gameData) {
-    console.log(gameData);
-
-    this.setState({
-      gameData,
-      status: PLAYING,
-      players: gameData.players
-    }, this.setIsMyTurn);
-  }
-
-  setIsMyTurn = () => {
-    if (this.state.role === OBSERVER) {
-      return;
+  getIsMyTurn(role, players) {
+    if (role === OBSERVER || !players) {
+      return false;
     }
 
     const {
@@ -139,27 +129,27 @@ class Room extends Component {
       }
     } = this.props;
 
-    this.setState((state) => ({
-      isMyTurn: _.find(state.players, (player) => player && player.login === login).active
-    }));
-  };
+    return _.find(players, (player) => player.login === login).active;
+  }
 
   toggleStatus = () => {
     this.socket.emit(TOGGLE_PLAYER_STATUS);
   };
 
   onEnterRoom = (roomData) => {
-    this.setState({
+    console.log('roomData', roomData);
+
+    this.setState(({ players }) => ({
       roomData: roomData.room,
       gameData: roomData.room.game,
+      players: roomData.room.game
+        ? roomData.room.game.players
+        : players,
       status: roomData.room.status,
       role: roomData.role,
-      ready: false
-    });
-
-    if (roomData.room.game) {
-      this.startGame(roomData.room.game);
-    }
+      ready: false,
+      isMyTurn: this.getIsMyTurn(roomData.role, roomData.room.game && roomData.room.game.players)
+    }));
   };
 
   onUpdateRoom = (roomData) => {
@@ -190,7 +180,14 @@ class Room extends Component {
   };
 
   onGameStarted = (gameData) => {
-    this.startGame(gameData);
+    console.log('gameData', gameData);
+
+    this.setState(({ role }) => ({
+      gameData,
+      status: PLAYING,
+      players: gameData.players,
+      isMyTurn: this.getIsMyTurn(role, gameData.players)
+    }));
   };
 
   onGameFinishing = (players) => {
@@ -207,21 +204,19 @@ class Room extends Component {
   };
 
   onUpdatePlayers = (players) => {
-    this.setState({
-      players
-    }, this.setIsMyTurn);
+    this.setState(({ role }) => ({
+      players,
+      isMyTurn: this.getIsMyTurn(role, players)
+    }));
   };
 
   onUpdateGame = ({ event, data, players }) => {
-    if (players) {
-      this.setState({
-        players
-      }, this.setIsMyTurn);
-    } else {
-      this.setIsMyTurn();
-    }
-
-    this.emitter.emit(event, data);
+    this.setState((state) => ({
+      players: players || state.players,
+      isMyTurn: this.getIsMyTurn(state.role, players)
+    }), () => {
+      this.emitter.emit(event, data);
+    });
   };
 
   render() {

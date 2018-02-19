@@ -7,6 +7,7 @@ import { games as gamesConfig } from '../../config/constants.json';
 import Filler from './Filler';
 import Pexeso from './Pexeso';
 import SurvivalOnline from './SurvivalOnline';
+import VirusWar from './VirusWar';
 
 const {
   global: {
@@ -20,7 +21,8 @@ const {
 const GAMES_MAP = {
   filler: Filler,
   pexeso: Pexeso,
-  survival_online: SurvivalOnline
+  survival_online: SurvivalOnline,
+  virus_war: VirusWar
 };
 /* eslint-enable camelcase */
 
