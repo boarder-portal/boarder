@@ -2,8 +2,8 @@
   "name": "boarder",
   "version": "0.0.1",
   "dependencies": {
-    "ajaxer": "^1.0.0",
     "autoprefixer": "^6.5.3",
+    "axios": "^0.17.1",
     "babel-core": "^6.18.2",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.8",

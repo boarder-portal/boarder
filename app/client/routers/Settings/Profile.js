@@ -152,7 +152,7 @@ class Profile extends Component {
     try {
       const { json: newAvatar } = await userFetch.uploadAvatar({
         data: this.formData,
-        onprogress: ({ loaded, total }) => {
+        onUploadProgress: ({ loaded, total }) => {
           this.changeUploadingAvatar({
             uploaderProgressBarStyle: {
               ...this.state.avatars[0].uploaderProgressBarStyle,

@@ -9,6 +9,7 @@ import {
 } from '../constants';
 import { addNotConfirmedAlertIfNeeded, changeUserData } from '../actions';
 import { getLocationQuery, setPageTitle } from '../helpers';
+import { errors } from '../../config/constants.json';
 
 import { Spinner, Input, Caption } from '../components';
 
@@ -77,11 +78,11 @@ class Login extends Component {
         TIME_TO_ALERT_AFTER_LOGIN
       );
     } catch (err) {
-      const message = err.response.data;
-
       this.setState({
         submitting: false
       });
+
+      const message = err.response.data;
 
       if (message === errors.WRONG_LOGIN_OR_PASSWORD) {
         this.setState({
