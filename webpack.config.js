@@ -16,7 +16,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      Promise: 'el-promise'
+      Promise: 'es6-promise'
     })
   ],
   watch: true,
