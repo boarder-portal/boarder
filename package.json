@@ -69,7 +69,6 @@
     "json-loader": "^0.5.4",
     "less-plugin-autoprefix": "^1.5.1",
     "sequelize-cli": "^2.8.0",
-    "url-loader": "^0.5.7",
     "webpack": "^1.13.3"
   }
 }
