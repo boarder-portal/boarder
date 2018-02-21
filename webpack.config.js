@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
+import path from 'path';
+import webpack from 'webpack';
 
-module.exports = {
+export default {
   entry: './app/client/ix.js',
   output: {
     path: path.resolve('./public/js'),
@@ -10,8 +10,7 @@ module.exports = {
   module: {
     loaders: [
       { test: /.js$/, loader: 'babel!eslint', exclude: /node_modules/ },
-      { test: /.json$/, loader: 'json' },
-      { test: /.pug$/, loader: 'pug', exclude: [/node_modules/] }
+      { test: /.json$/, loader: 'json' }
     ]
   },
   plugins: [

@@ -1,15 +1,10 @@
-const _ = require('lodash');
+import _ from 'lodash';
+
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    global: {
-      events: {
-        game: {
-          UPDATE_GAME
-        }
-      }
-    }
-  }
-} = require('../../config/constants.json');
+  UPDATE_GAME
+} = games.global.events.game;
 
 const PUBLIC_FIELDS = [
   'id',
@@ -103,4 +98,4 @@ class Player {
   }
 }
 
-module.exports = Player;
+export default Player;

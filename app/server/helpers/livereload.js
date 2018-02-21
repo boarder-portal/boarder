@@ -1,12 +1,11 @@
-const { createClient } = require('./redis');
-const {
-  redis: redisOpts
-} = require('../../config/config.json');
-const { LIVERELOAD_NSP } = require('../../config/constants.json');
-const io = require('socket.io-emitter')(createClient(), redisOpts);
+import socketIOEmitter from 'socket.io-emitter';
 
-module.exports = {
-  emit(...args) {
-    io.of(LIVERELOAD_NSP).emit(...args);
-  }
-};
+import { createClient } from './redis';
+import config from '../config';
+import { LIVERELOAD_NSP } from '../../shared/constants';
+
+const io = socketIOEmitter(createClient(), config.redis);
+
+export function emit(...args) {
+  io.of(LIVERELOAD_NSP).emit(...args);
+}

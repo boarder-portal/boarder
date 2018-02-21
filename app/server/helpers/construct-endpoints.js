@@ -1,17 +1,17 @@
-const _ = require('lodash');
-const Application = require('koa');
-const mount = require('koa-mount');
-const BodyParser = require('koa-bodyparser');
+import _ from 'lodash';
+import Application from 'koa';
+import mount from 'koa-mount';
+import BodyParser from 'koa-bodyparser';
 
-const { endpoints } = require('../../config/constants.json');
-const { sessionRequired } = require('../controllers/session');
-const authMiddleware = require('../controllers/user-auth');
-const uploader = require('../controllers/files');
-const Method = require('../controllers/method');
+import { endpoints } from '../../shared/constants';
+import { sessionRequired } from '../controllers/session';
+import authMiddleware from '../controllers/user-auth';
+import uploader from '../controllers/files';
+import Method from '../controllers/method';
 
 const bodyParser = BodyParser();
 
-exports.constructEndpoints = (path, controllers) => {
+export function constructEndpoints(path, controllers) {
   const {
     [path]: paths,
     [path]: {
@@ -48,4 +48,4 @@ exports.constructEndpoints = (path, controllers) => {
   return (app) => {
     app.use(mount(base, pathEndpoints));
   };
-};
+}

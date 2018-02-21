@@ -1,12 +1,13 @@
-const { resolve } = require('path');
-const serve = require('koa-static');
-const mount = require('koa-mount');
-const { session } = require('../controllers/session');
-const { ASSETS_PATH, VENDOR_PATH } = require('../../config/constants.json');
+import path from 'path';
+import serve from 'koa-static';
+import mount from 'koa-mount';
 
-module.exports = (app) => {
-  app.use(mount(ASSETS_PATH, serve(resolve('./public'))));
-  app.use(mount(VENDOR_PATH, serve(resolve('./node_modules'))));
+import { session } from '../controllers/session';
+import { ASSETS_PATH, VENDOR_PATH } from '../../shared/constants';
+
+export default (app) => {
+  app.use(mount(ASSETS_PATH, serve(path.resolve('./public'))));
+  app.use(mount(VENDOR_PATH, serve(path.resolve('./node_modules'))));
 
   app.use(session);
 };

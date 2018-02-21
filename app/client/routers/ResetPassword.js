@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 import { usersFetch } from '../constants';
 import { getLocationQuery, setPageTitle } from '../helpers';
-import { errors } from '../../config/constants.json';
+import { errors } from '../../shared/constants';
 
 import { Input, InputValidateWrapper, Spinner, Caption } from '../components';
 

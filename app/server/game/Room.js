@@ -1,35 +1,35 @@
-const _ = require('lodash');
-const Player = require('./Player');
-const {
+import _ from 'lodash';
+
+import Player from './Player';
+import {
   socketSession,
   socketAuth
-} = require('../controllers/auth');
+} from '../controllers/auth';
+import { ROOM_DESTRUCTION_DELAY } from '../constants';
+import { games } from '../../shared/constants';
+import { getRoomNsp } from '../../shared/games';
+
 const {
-  games: {
-    global: {
-      events: {
-        room: {
-          ENTER_ROOM,
-          UPDATE_ROOM,
-          TOGGLE_PLAYER_STATUS
-        },
-        game: {
-          GAME_FINISHED
-        }
-      },
-      roomStatuses: {
-        NOT_PLAYING,
-        PLAYING,
-        FINISHING
-      },
-      playerRoles: {
-        PLAYER,
-        OBSERVER
-      }
+  events: {
+    room: {
+      ENTER_ROOM,
+      UPDATE_ROOM,
+      TOGGLE_PLAYER_STATUS
+    },
+    game: {
+      GAME_FINISHED
     }
+  },
+  roomStatuses: {
+    NOT_PLAYING,
+    PLAYING,
+    FINISHING
+  },
+  playerRoles: {
+    PLAYER,
+    OBSERVER
   }
-} = require('../../config/constants.json');
-const { ROOM_DESTRUCTION_DELAY } = require('../constants/index');
+} = games.global;
 
 const isNotNull = _.negate(_.isNull);
 const disconnect = _.method('disconnect');
@@ -90,11 +90,11 @@ class Room {
     const {
       io,
       id,
-      roomNsp,
+      gameName,
       playersCount,
       _expires = ROOM_DESTRUCTION_DELAY
     } = props;
-    const socket = io.of(roomNsp.replace(/\$roomId/, id));
+    const socket = io.of(getRoomNsp(gameName, id));
 
     _.assign(this, {
       status: NOT_PLAYING,
@@ -401,4 +401,4 @@ function isReady(player) {
   return !player || player.ready;
 }
 
-module.exports = Room;
+export default Room;

@@ -1,12 +1,11 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
 import io from 'socket.io-client';
 
-import { matchType, userType } from '../constants';
-import { setPageTitle } from '../helpers';
-import { games as gamesConfig } from '../../config/constants.json';
+import { matchType } from '../constants';
+import { setPageTitle, whenLoggedIn } from '../helpers';
+import { getLobbyNsp } from '../../shared/games';
+import { games as gamesConfig } from '../../shared/constants';
 
 import { Input, Caption } from '../components';
 
@@ -28,7 +27,6 @@ const {
 
 class Lobby extends Component {
   static propTypes = {
-    user: userType,
     match: matchType.isRequired
   };
 
@@ -45,7 +43,7 @@ class Lobby extends Component {
         }
       }
     } = this.props;
-    const nsp = gamesConfig[game].LOBBY_NSP;
+    const nsp = getLobbyNsp(game);
     const socket = this.socket = io.connect(nsp, {
       forceNew: true
     });
@@ -141,27 +139,9 @@ class Lobby extends Component {
 
   render() {
     const {
-      user,
-      match: {
-        url,
-        params: {
-          game
-        }
-      }
-    } = this.props;
-    const {
       rooms,
       pexesoChosenSet
     } = this.state;
-
-    if (!user) {
-      return (
-        <Redirect
-          to={`/login?from=${encodeURIComponent(url)}`}
-          push={false}
-        />
-      );
-    }
 
     return (
       <div className="route route-lobby">
@@ -275,6 +255,4 @@ class Lobby extends Component {
   }
 }
 
-export default connect((state) => ({
-  user: state.user
-}))(Lobby);
+export default whenLoggedIn(Lobby);

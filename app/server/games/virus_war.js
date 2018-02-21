@@ -1,25 +1,26 @@
-const _ = require('lodash');
-const Game = require('./');
-const { getAvailableCells } = require('../../shared/virus-war');
+import _ from 'lodash';
+
+import Game from './';
+import { getAvailableCells } from '../../shared/games/virus-war';
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    global: {
-      events: {
-        game: { END_TURN }
-      }
-    },
-    virus_war: {
-      events: {
-        game: { SET_CELL }
-      },
-      virusesTypes: {
-        VIRUS,
-        FORTRESS
-      },
-      virusesShapes
+  global: {
+    events: {
+      game: { END_TURN }
     }
+  },
+  virus_war: {
+    events: {
+      game: { SET_CELL }
+    },
+    virusesTypes: {
+      VIRUS,
+      FORTRESS
+    },
+    virusesShapes
   }
-} = require('../../config/constants.json');
+} = games;
 
 const SHAPES = _.keys(virusesShapes);
 const WIDTH = 10;
@@ -182,4 +183,4 @@ class VirusWarGame extends Game {
   }
 }
 
-module.exports = VirusWarGame;
+export default VirusWarGame;

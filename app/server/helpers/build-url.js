@@ -1,17 +1,17 @@
-const { stringify } = require('querystring');
-const _ = require('lodash');
+import qs from 'querystring';
+import _ from 'lodash';
 
-exports.buildURL = ({
+export function buildURL({
   protocol = 'http',
   host = 'boarder.tk',
   path = '/',
   query = {}
-} = {}) => {
+} = {}) {
   let search = '';
 
   if (!_.isEmpty(query)) {
-    search = `?${stringify(query)}`;
+    search = `?${qs.stringify(query)}`;
   }
 
   return `${protocol}://${host + path + search}`;
-};
+}

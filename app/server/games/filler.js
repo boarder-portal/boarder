@@ -1,18 +1,17 @@
-const _ = require('lodash');
-const Game = require('./');
-const { getNeighbourCells } = require('../../shared/filler');
+import _ from 'lodash';
+
+import Game from './';
+import { getNeighbourCells } from '../../shared/games/filler';
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    filler: {
-      events: {
-        game: {
-          CHOOSE_COLOR
-        }
-      },
-      colors: colorsObject
+  events: {
+    game: {
+      CHOOSE_COLOR
     }
-  }
-} = require('../../config/constants.json');
+  },
+  colors: colorsObject
+} = games.filler;
 
 const colors = _.keys(colorsObject);
 const WIDTH = 30;
@@ -186,4 +185,4 @@ class FillerGame extends Game {
   }
 }
 
-module.exports = FillerGame;
+export default FillerGame;

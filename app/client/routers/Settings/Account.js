@@ -8,7 +8,7 @@ import { addAlert } from '../../actions';
 import { setPageTitle } from '../../helpers';
 import { Caption, Spinner, Input, InputValidateWrapper } from '../../components';
 
-import { errors } from '../../../config/constants';
+import { errors } from '../../../shared/constants';
 
 class Account extends Component {
   static propTypes = {

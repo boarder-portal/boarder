@@ -1,4 +1,4 @@
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   ctx.json = (body) => {
     ctx.type = 'json';
     ctx.body = body;

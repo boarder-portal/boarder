@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
 import io from 'socket.io-client';
 import ClassName from 'classnames';
 
 import { matchType, historyType, userType } from '../constants';
-import { setPageTitle, Emitter, getLocationQuery } from '../helpers';
-import { games as gamesConfig } from '../../config/constants.json';
+import { setPageTitle, Emitter, getLocationQuery, whenLoggedIn } from '../helpers';
+import { getRoomNsp } from '../../shared/games';
+import { games as gamesConfig } from '../../shared/constants';
 
 import { Input, Caption } from '../components';
 import Game from '../gamers';
@@ -73,8 +73,7 @@ class Room extends Component {
     } = this.props;
     const query = getLocationQuery();
     const observe = 'observe' in query;
-    const nsp = gamesConfig[game].ROOM_NSP;
-    const socket = this.socket = io.connect(nsp.replace(/\$roomId/, roomId), {
+    const socket = this.socket = io.connect(getRoomNsp(game, roomId), {
       forceNew: true,
       query: {
         role: observe ? OBSERVER : PLAYER
@@ -221,15 +220,6 @@ class Room extends Component {
 
   render() {
     const {
-      user,
-      match: {
-        url,
-        params: {
-          game
-        }
-      }
-    } = this.props;
-    const {
       status,
       ready,
       role,
@@ -239,15 +229,6 @@ class Room extends Component {
       players,
       plannedRole
     } = this.state;
-
-    if (!user) {
-      return (
-        <Redirect
-          to={`/login?from=${encodeURIComponent(url)}`}
-          push={false}
-        />
-      );
-    }
 
     return (
       <div className="route route-room">
@@ -344,6 +325,8 @@ class Room extends Component {
   }
 }
 
-export default connect((state) => ({
-  user: state.user
-}))(Room);
+export default whenLoggedIn(
+  connect((state) => ({
+    user: state.user
+  }))(Room)
+);

@@ -1,8 +1,6 @@
-const {
-  BoarderClientError
-} = require('../helpers');
+import { BoarderClientError } from '../helpers';
 
-module.exports = (app) => {
+export default (app) => {
   app.on('error', (err) => {
     if (!(err instanceof BoarderClientError)) {
       console.log('Middleware error:', err);

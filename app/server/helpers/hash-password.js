@@ -1,9 +1,10 @@
-const crypto = require('crypto');
-const { secret } = require('../../config/config.json');
+import crypto from 'crypto';
 
-module.exports = (password) => (
+import config from '../config';
+
+export default (password) => (
   crypto
-    .createHmac('sha256', secret)
+    .createHmac('sha256', config.secret)
     .update(password)
     .digest('hex')
 );

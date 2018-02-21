@@ -4,21 +4,19 @@ import ClassName from 'classnames';
 
 import { gameDataType, playersType } from '../../constants';
 import { timeout } from '../../helpers';
-import { games as gamesConfig } from '../../../config/constants.json';
+import { games as gamesConfig } from '../../../shared/constants';
 
 import { GamePlayers } from '../../components';
 
 const {
-  pexeso: {
-    TRANSITION_DURATION,
-    CARD_SHOWN_DURATION,
-    events: {
-      game: {
-        TURN_CARD
-      }
+  TRANSITION_DURATION,
+  CARD_SHOWN_DURATION,
+  events: {
+    game: {
+      TURN_CARD
     }
   }
-} = gamesConfig;
+} = gamesConfig.pexeso;
 
 const IMAGES_ROOT = '/public/images/games/pexeso';
 const BACK_IMAGE = `${IMAGES_ROOT}/backs/default/0.jpg`;

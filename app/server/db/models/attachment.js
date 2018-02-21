@@ -1,5 +1,6 @@
-const Sequelize = require('sequelize');
-const db = require('../');
+import Sequelize from 'sequelize';
+
+import db from '../';
 
 const Attachment = db.define('attachment', {
   id: {
@@ -53,4 +54,4 @@ Attachment.Instance.prototype.toJSON = function () {
   return json;
 };
 
-module.exports = Attachment;
+export default Attachment;

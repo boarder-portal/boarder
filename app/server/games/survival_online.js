@@ -1,7 +1,8 @@
-const _ = require('lodash');
-const Game = require('./');
-const Zombie = require('../../shared/survival-online/classes/Zombie');
-const {
+import _ from 'lodash';
+
+import Game from './';
+import Zombie from '../../shared/games/survival-online/classes/Zombie';
+import {
   getInventoryIds,
   areInventoryIdsSame,
   setFrozenStatusToNearChunks,
@@ -10,49 +11,47 @@ const {
   countChunkDensity,
   getChunkByCoords,
   getCornerCoordsByMiddleCellCoords
-} = require('../../shared/survival-online');
+} from '../../shared/games/survival-online';
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    survival_online: {
-      development: {
-        SHOW_CHUNK_BORDER
-      },
-      events: {
-        game: {
-          GET_INITIAL_INFO,
-          MOVE_TO,
-          REVERT_MOVE,
-          CHANGED_CELLS,
-          CHANGE_INVENTORY_ITEMS_ORDER,
-          CHANGE_INVENTORY_ITEMS,
-          REMOVE_INVENTORY_ITEMS,
-          USE_INVENTORY_ITEM,
-          CHANGE_TIME
-        }
-      },
-      map: {
-        width: mapW,
-        height: mapH
-      },
-      playerMap: {
-        width: pMapW,
-        height: pMapH
-      },
-      chunk: {
-        width: chunkW,
-        height: chunkH
-      },
-      timers: {
-        DELAY_BETWEEN_PLAYER_ACTIONS
-      },
-      intervals: {
-        CHANGE_TIME_INTERVAL
-      },
-      INITIAL_TIME,
-      DAY_DURATION
+  development: {
+    SHOW_CHUNK_BORDER
+  },
+  events: {
+    game: {
+      GET_INITIAL_INFO,
+      MOVE_TO,
+      REVERT_MOVE,
+      CHANGED_CELLS,
+      CHANGE_INVENTORY_ITEMS_ORDER,
+      CHANGE_INVENTORY_ITEMS,
+      REMOVE_INVENTORY_ITEMS,
+      USE_INVENTORY_ITEM,
+      CHANGE_TIME
     }
-  }
-} = require('../../config/constants.json');
+  },
+  map: {
+    width: mapW,
+    height: mapH
+  },
+  playerMap: {
+    width: pMapW,
+    height: pMapH
+  },
+  chunk: {
+    width: chunkW,
+    height: chunkH
+  },
+  timers: {
+    DELAY_BETWEEN_PLAYER_ACTIONS
+  },
+  intervals: {
+    CHANGE_TIME_INTERVAL
+  },
+  INITIAL_TIME,
+  DAY_DURATION
+} = games.survival_online;
 
 const chunksH = mapH / chunkH;
 const chunksW = mapW / chunkW;
@@ -608,4 +607,4 @@ class SurvivalGame extends Game {
   }
 }
 
-module.exports = SurvivalGame;
+export default SurvivalGame;

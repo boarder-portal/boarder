@@ -4,7 +4,7 @@ import ClassName from 'classnames';
 
 import { playersType } from '../constants';
 
-import { colors } from '../../config/constants';
+import { colors } from '../../shared/constants';
 
 import { Caption } from './Caption';
 

@@ -1,4 +1,4 @@
-const Game = require('./');
+import Game from './';
 
 /**
  * @class HexagonGame
@@ -9,4 +9,4 @@ class HexagonGame extends Game {
 
 }
 
-module.exports = HexagonGame;
+export default HexagonGame;

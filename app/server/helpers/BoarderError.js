@@ -1,4 +1,4 @@
-exports.BoarderClientError = class extends Error {
+export const BoarderClientError = class extends Error {
   constructor(message, status = 400) {
     super(message);
 

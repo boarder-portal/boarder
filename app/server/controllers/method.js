@@ -1,4 +1,4 @@
-module.exports = (method, middleware) => {
+export default (method, middleware) => {
   method = method.toUpperCase();
 
   return async (ctx, next) => {

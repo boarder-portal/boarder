@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Route, NavLink } from 'react-router-dom';
+import { Route, NavLink, Switch, Redirect } from 'react-router-dom';
 
+import { whenLoggedIn } from '../../helpers';
 import { Caption } from '../../components';
 
 import Account from './Account';
@@ -27,12 +28,18 @@ class Settings extends Component {
 
         </div>
         <div className="settings-content">
-          <Route exact strict path="/settings/account" component={Account} />
-          <Route exact strict path="/settings/profile" component={Profile} />
+          <Switch>
+            <Route exact strict path="/settings/account" component={Account} />
+            <Route exact strict path="/settings/profile" component={Profile} />
+            <Redirect
+              to="/settings/account"
+              push={false}
+            />
+          </Switch>
         </div>
       </div>
     );
   }
 }
 
-export default Settings;
+export default whenLoggedIn(Settings);

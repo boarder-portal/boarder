@@ -1,12 +1,8 @@
-const path = require('path');
-const fs = require('fs');
-const redis = require('redis');
-const {
-  redis: {
-    host,
-    port
-  }
-} = require('../../config/config.json');
+import path from 'path';
+import fs from 'fs';
+import redis from 'redis';
+
+import config from '../config';
 
 const logFile = path.resolve('./logs/server.log');
 const logs = fs.createWriteStream(logFile, {
@@ -14,11 +10,8 @@ const logs = fs.createWriteStream(logFile, {
   start: fs.readFileSync(logFile, { encoding: 'utf8' }).length
 });
 
-exports.createClient = (returnBuffers) => {
-  const options = {
-    host,
-    port
-  };
+export function createClient(returnBuffers) {
+  const options = { ...config.redis };
 
   if (returnBuffers) {
     /* eslint camelcase: 0 */
@@ -33,4 +26,4 @@ exports.createClient = (returnBuffers) => {
   });
 
   return client;
-};
+}

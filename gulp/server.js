@@ -1,6 +1,6 @@
-const cp = require('child_process');
-const path = require('path');
-const gulp = require('gulp');
+import path from 'path';
+import cp from 'child_process';
+import gulp from 'gulp';
 
 let child;
 
@@ -12,7 +12,7 @@ const SERVER_FILES = [
   './app/shared/**/*'
 ];
 
-gulp.task('server:dev', async () => {
+export async function serverDev() {
   if (child) {
     await new Promise((resolve) => {
       child.on('close', () => {
@@ -45,8 +45,8 @@ gulp.task('server:dev', async () => {
       }
     });
   });
-});
+}
 
-gulp.task('watch:server', ['server:dev'], () => {
-  gulp.watch(SERVER_FILES, ['server:dev']);
+export const watchServer = gulp.parallel(serverDev, () => {
+  gulp.watch(SERVER_FILES, serverDev);
 });

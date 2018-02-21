@@ -1,39 +1,38 @@
-const _ = require('lodash');
-const {
-  games: {
-    survival_online: {
-      limits: {
-        densityForChunkToNotBeFrozen: DENSITY_FOR_NOT_TO_BE_FROZEN
-      },
-      development: {
-        SHOW_CHUNK_BORDER
-      },
-      map: {
-        width: mapW,
-        height: mapH
-      },
-      playerMap: {
-        width: pMapW,
-        height: pMapH
-      },
-      chunk: {
-        width: chunkW,
-        height: chunkH
-      },
-      CANT_SEE_THROUGH
-    }
-  }
-} = require('../../config/constants.json');
+import _ from 'lodash';
 
-function getInventoryIds(inventory) {
+import { games } from '../../constants';
+
+const {
+  limits: {
+    densityForChunkToNotBeFrozen: DENSITY_FOR_NOT_TO_BE_FROZEN
+  },
+  development: {
+    SHOW_CHUNK_BORDER
+  },
+  map: {
+    width: mapW,
+    height: mapH
+  },
+  playerMap: {
+    width: pMapW,
+    height: pMapH
+  },
+  chunk: {
+    width: chunkW,
+    height: chunkH
+  },
+  CANT_SEE_THROUGH
+} = games.survival_online;
+
+export function getInventoryIds(inventory) {
   return _.map(inventory, (item) => item && item.id);
 }
 
-function areInventoryIdsSame(ids1, ids2) {
+export function areInventoryIdsSame(ids1, ids2) {
   return _.every(ids1, (id) => !id || _.includes(ids2, id)) && _.every(ids2, (id) => !id || _.includes(ids1, id));
 }
 
-function deepMap(obj, f, ctx) {
+export function deepMap(obj, f, ctx) {
   if (Array.isArray(obj)) {
     return obj.map(function(val, key) {
       return (typeof val === 'object') ? deepMap(val, f, ctx) : f.call(ctx, val, key, obj);
@@ -54,7 +53,7 @@ function deepMap(obj, f, ctx) {
   }
 }
 
-function setFrozenStatusToNearChunks({ chunk: centerChunk, toFroze, actionSelf }) {
+export function setFrozenStatusToNearChunks({ chunk: centerChunk, toFroze, actionSelf }) {
   const chunksToSet = [...centerChunk.closeChunks];
 
   if (actionSelf) {
@@ -70,7 +69,7 @@ function setFrozenStatusToNearChunks({ chunk: centerChunk, toFroze, actionSelf }
   });
 }
 
-function countChunkDensity(chunk) {
+export function countChunkDensity(chunk) {
   const {
     players,
     zombies
@@ -79,7 +78,7 @@ function countChunkDensity(chunk) {
   return players.length * 10000 + zombies.length * 10;
 }
 
-function shouldChunkBeFrozen(centerChunk)  {
+export function shouldChunkBeFrozen(centerChunk)  {
   let density = countChunkDensity(centerChunk);
 
   if (density >= DENSITY_FOR_NOT_TO_BE_FROZEN) return false;
@@ -93,32 +92,32 @@ function shouldChunkBeFrozen(centerChunk)  {
   return density < DENSITY_FOR_NOT_TO_BE_FROZEN;
 }
 
-function unfreezeChunkIfNeeded({ chunk, forceSet }) {
+export function unfreezeChunkIfNeeded({ chunk, forceSet }) {
   if (forceSet || !shouldChunkBeFrozen(chunk)) {
     chunk.isFrozen = false;
     chunk.timestampLastSetUnfrozen = Date.now();
   }
 }
 
-function getRandomDirection() {
+export function getRandomDirection() {
   return _.sample(['top', 'right', 'bottom', 'left']);
 }
 
-function getChunkByCoords({ chunks, x, y } ) {
+export function getChunkByCoords({ chunks, x, y } ) {
   const chunkX = Math.floor(x / chunkW);
   const chunkY = Math.floor(y / chunkH);
 
   return chunks[chunkY][chunkX];
 }
 
-function getCornerCoordsByMiddleCellCoords({ x, y }) {
+export function getCornerCoordsByMiddleCellCoords({ x, y }) {
   return {
     x: x - Math.floor(pMapW / 2),
     y: y - Math.floor(pMapH / 2)
   };
 }
 
-function getProjectionByDirection(direction) {
+export function getProjectionByDirection(direction) {
   if (direction === 'top' || direction === 'left') {
     return -1;
   } else if (direction === 'right' || direction === 'bottom') {
@@ -126,11 +125,11 @@ function getProjectionByDirection(direction) {
   }
 }
 
-function getDistanceBetweenCoords({ x1, y1, x2, y2 }) {
+export function getDistanceBetweenCoords({ x1, y1, x2, y2 }) {
   return Math.abs(x2 - x1) + Math.abs(y2 - y1);
 }
 
-function getIsClearBetweenCoords({ x1, y1, x2, y2, map }) {
+export function getIsClearBetweenCoords({ x1, y1, x2, y2, map }) {
   const xDiff = Math.abs(x1 - x2);
   const yDiff = Math.abs(y1 - y2);
   const angle = Math.min(xDiff, yDiff) / Math.max(xDiff, yDiff);
@@ -174,7 +173,7 @@ function getIsClearBetweenCoords({ x1, y1, x2, y2, map }) {
   }
 }
 
-function getToDirectionByCoordOdds({ xDiff, yDiff }) {
+export function getToDirectionByCoordOdds({ xDiff, yDiff }) {
   if (xDiff === 0) {
     if (yDiff < 0) {
       return 'top';
@@ -200,7 +199,7 @@ function getToDirectionByCoordOdds({ xDiff, yDiff }) {
   }
 }
 
-function getToDirectionBetweenTargets({ targetFrom, targetTo }) {
+export function getToDirectionBetweenTargets({ targetFrom, targetTo }) {
   const {
     x: fromX,
     y: fromY
@@ -213,19 +212,3 @@ function getToDirectionBetweenTargets({ targetFrom, targetTo }) {
 
   return getToDirectionByCoordOdds({ xDiff: toX - fromX, yDiff: toY - fromY });
 }
-
-exports.getInventoryIds = getInventoryIds;
-exports.areInventoryIdsSame = areInventoryIdsSame;
-exports.deepMap = deepMap;
-exports.setFrozenStatusToNearChunks = setFrozenStatusToNearChunks;
-exports.countChunkDensity = countChunkDensity;
-exports.shouldChunkBeFrozen = shouldChunkBeFrozen;
-exports.unfreezeChunkIfNeeded = unfreezeChunkIfNeeded;
-exports.getRandomDirection = getRandomDirection;
-exports.getChunkByCoords = getChunkByCoords;
-exports.getCornerCoordsByMiddleCellCoords = getCornerCoordsByMiddleCellCoords;
-exports.getProjectionByDirection = getProjectionByDirection;
-exports.getDistanceBetweenCoords = getDistanceBetweenCoords;
-exports.getIsClearBetweenCoords = getIsClearBetweenCoords;
-exports.getToDirectionByCoordOdds = getToDirectionByCoordOdds;
-exports.getToDirectionBetweenTargets = getToDirectionBetweenTargets;

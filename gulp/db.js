@@ -1,42 +1,32 @@
-const path = require('path');
-const gulp = require('gulp');
-const run = require('gulp-run');
+import gulp from 'gulp';
+import run from 'gulp-run';
 
-const sequelizePath = path.resolve('./node_modules/.bin/sequelize');
-const sequelizeCommand = `${sequelizePath}`;
+export function dbMigrationCreate() {
+  return run('sequelize migration:create').exec();
+}
 
-gulp.task('db:migration:create', () => (
-  run(`${sequelizeCommand} migration:create`).exec()
-));
+export function dbMigrate() {
+  return run('sequelize db:migrate').exec();
+}
 
-gulp.task('db:migrate', () => (
-  run(`${sequelizeCommand} db:migrate`).exec()
-));
+export function dbMigrationUndo() {
+  return run('sequelize db:migrate:undo').exec();
+}
 
-gulp.task('db:migrate:undo', () => (
-  run(`${sequelizeCommand} db:migrate:undo`).exec()
-));
+export function dbMigrationUndoAll() {
+  return run('sequelize db:migrate:undo:all').exec();
+}
 
-gulp.task('db:migrate:undo:all', () => (
-  run(`${sequelizeCommand} db:migrate:undo:all`).exec()
-));
+export function dbSeedCreate() {
+  return run('sequelize seed:create').exec();
+}
 
-gulp.task('db:seed:create', () => (
-  run(`${sequelizeCommand} seed:create`).exec()
-));
+export function dbSeed() {
+  return run('sequelize db:seed:all').exec();
+}
 
-gulp.task('db:seed', () => (
-  run(`${sequelizeCommand} db:seed:all`).exec()
-));
+export const dbSeedRerun = gulp.series(dbSeedUndoAll, dbSeed);
 
-gulp.task('db:seed:rerun', ['db:seed:undo:all'], () => (
-  run(`${sequelizeCommand} db:seed:all`).exec()
-));
-
-gulp.task('db:seed:undo', () => (
-  run(`${sequelizeCommand} db:seed:undo`).exec()
-));
-
-gulp.task('db:seed:undo:all', () => (
-  run(`${sequelizeCommand} db:seed:undo:all`).exec()
-));
+export function dbSeedUndoAll() {
+  return run('sequelize db:seed:undo:all').exec();
+}

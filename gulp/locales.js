@@ -1,8 +1,11 @@
-const path = require('path');
-const gulp = require('gulp');
-const watch = require('gulp-watch');
-const runSequence = require('run-sequence');
-const { buildLocales } = require('../app/server/helpers/build-locales');
+import path from 'path';
+import fs from 'fs-promise';
+import _ from 'lodash';
+import gulp from 'gulp';
+
+import { toreload, reload } from './livereload';
+
+import { resolveGlob } from '../app/server/helpers/glob';
 
 const root = path.resolve('./');
 const PUBLIC_PATH = path.resolve('./public');
@@ -13,26 +16,60 @@ const SERVER_LOCALES_ROOT = './app/server/locales';
 const CLIENT_LOCALES = `${CLIENT_LOCALES_ROOT}/**/*.json`;
 const SERVER_LOCALES = `${SERVER_LOCALES_ROOT}/**/*.json`;
 
-gulp.task('build:server:locales', () => (
-  buildLocales(SERVER_LOCALES_ROOT, SERVER_I18N)
-));
+export function buildServerLocales() {
+  return outputLocales(SERVER_LOCALES_ROOT, SERVER_I18N);
+}
 
-gulp.task('build:client:locales', () => (
-  buildLocales(CLIENT_LOCALES_ROOT, PUBLIC_I18N, true)
-));
+export function buildClientLocales() {
+  return outputLocales(CLIENT_LOCALES_ROOT, PUBLIC_I18N, true);
+}
 
-gulp.task('build:locales', ['build:server:locales', 'build:client:locales']);
+export const buildLocales = gulp.parallel(buildServerLocales, buildClientLocales);
 
-gulp.task('watch:locales', ['watch:server:locales', 'watch:client:locales']);
-
-gulp.task('watch:server:locales', ['build:server:locales'], () => {
-  watch(SERVER_LOCALES, () => {
-    runSequence('toreload', 'build:server:locales', 'reload');
-  });
+export const watchServerLocales = gulp.parallel(buildServerLocales, () => {
+  gulp.watch(SERVER_LOCALES, gulp.series(toreload, buildServerLocales, reload));
 });
 
-gulp.task('watch:client:locales', ['build:client:locales'], () => {
-  watch(CLIENT_LOCALES, () => {
-    runSequence('toreload', 'build:client:locales', 'reload');
-  });
+export const watchClientLocales = gulp.parallel(buildClientLocales, () => {
+  gulp.watch(CLIENT_LOCALES, gulp.series(toreload, buildClientLocales, reload));
 });
+
+export const watchLocales = gulp.parallel(watchServerLocales, watchClientLocales);
+
+function outputLocales(sourceDir, buildDir, client) {
+  const locales = {};
+  const glob = `${sourceDir}/**/*.json`;
+
+  resolveGlob(glob).forEach((filename) => {
+    const relativeFilename = path.relative(sourceDir, filename);
+    const modules = relativeFilename.split(path.sep);
+    const locale = modules[modules.length - 1].split('.')[0];
+    const translations = locales[locale] = locales[locale] || {};
+
+    modules.reduce((localTranslations, module, index) => {
+      if (index === modules.length - 1) {
+        return _.merge(localTranslations, JSON.parse(
+          fs.readFileSync(filename)
+        ));
+      }
+
+      /* eslint-disable no-return-assign */
+      return localTranslations[module] = localTranslations[module] || {};
+      /* eslint-enable no-return-assign */
+    }, translations);
+  });
+
+  _.forEach(locales, (translations, locale) => {
+    translations = JSON.stringify(translations);
+
+    const path = `${buildDir}/${locale}.${client ? 'js' : 'json'}`;
+
+    if (client) {
+      translations = `window.boarderI18n = '${translations.replace(/'/g, '\\\'')}';`;
+    }
+
+    console.log(`locale built: ${path}`);
+
+    fs.outputFileSync(path, translations);
+  });
+}

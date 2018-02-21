@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ClassName from 'classnames';
 
-import { games as gamesConfig } from '../../../config/constants.json';
+import { games as gamesConfig } from '../../../shared/constants';
 
 const {
   global: {

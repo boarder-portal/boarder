@@ -1,6 +1,6 @@
-const path = require('path');
-const multer = require('koa-multer');
+import path from 'path';
+import multer from 'koa-multer';
 
-module.exports = multer({
+export default multer({
   dest: path.resolve('./tmp/uploads')
 });

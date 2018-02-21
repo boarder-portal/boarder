@@ -1,16 +1,16 @@
-const Application = require('koa');
-const mount = require('koa-mount');
+import Application from 'koa';
+import mount from 'koa-mount';
 
-const errors = require('../controllers/errors');
-const helpers = require('../controllers/helpers');
-const { requireAndExecute } = require('../helpers');
-const { endpoints } = require('../../config/constants.json');
+import errors from '../controllers/errors';
+import helpers from '../controllers/helpers';
+import { importAndExecute } from '../helpers';
+import { endpoints } from '../../shared/constants';
 
 const apiApp = new Application();
 
-requireAndExecute('/app/server/routers/api/*.js', apiApp);
+export default async (app) => {
+  await importAndExecute('/app/server/routers/api/*.js', apiApp);
 
-module.exports = (app) => {
   app.use(errors);
   app.use(helpers);
   app.use(mount(endpoints.base, apiApp));

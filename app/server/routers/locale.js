@@ -1,13 +1,13 @@
-const { promisify } = require('util');
-const Accept = require('express-request-language');
+import util from 'util';
+import Accept from 'express-request-language';
 
-const { i18n } = require('../helpers');
+import { i18n } from '../helpers';
 
-const accept = promisify(Accept({
+const accept = util.promisify(Accept({
   languages: Object.keys(i18n)
 }));
 
-module.exports = (app) => {
+export default (app) => {
   app.use(async (ctx, next) => {
     await accept(ctx.request, ctx.response);
 

@@ -1,28 +1,27 @@
-const _ = require('lodash');
-const {
-  games: {
-    survival_online: {
-      map: {
-        width: mapW,
-        height: mapH
-      },
-      playerMap: {
-        width: pMapW,
-        height: pMapH
-      },
-      chunk: {
-        width: chunkW,
-        height: chunkH
-      },
-      CANT_SEE_THROUGH
-    }
-  }
-} = require('../../../config/constants.json');
-const {
+import _ from 'lodash';
+
+import { games } from '../../../constants';
+import {
   unfreezeChunkIfNeeded,
   shouldChunkBeFrozen,
   getChunkByCoords
-} = require('../index');
+} from '../';
+
+const {
+  map: {
+    width: mapW,
+    height: mapH
+  },
+  playerMap: {
+    width: pMapW,
+    height: pMapH
+  },
+  chunk: {
+    width: chunkW,
+    height: chunkH
+  },
+  CANT_SEE_THROUGH
+} = games.survival_online;
 
 class Creature {
   constructor({ x, y, health, type, direction, map, chunks }) {
@@ -65,4 +64,4 @@ class Creature {
   }
 }
 
-module.exports = Creature;
+export default Creature;

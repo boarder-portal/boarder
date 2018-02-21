@@ -1,25 +1,22 @@
-const Lobby = require('../game/Lobby');
-const {
-  games: gamesConfig
-} = require('../../config/constants.json');
-const { gamesList } = require('../../shared/games');
+import Lobby from '../game/Lobby';
 
-module.exports = (io) => {
-  gamesList.forEach((game) => {
+import { games } from '../../shared/constants';
+import { gamesList, getLobbyNsp } from '../../shared/games';
+
+export default async (io) => {
+  for (const game of gamesList) {
     const {
-      LOBBY_NSP,
-      ROOM_NSP,
       playersCount
-    } = gamesConfig[game];
-    const Game = require(`../games/${game}`);
+    } = games[game];
+    const { default: Game } = await import(`../games/${game}`);
 
     new Lobby({
+      gameName: game,
       io,
-      socket: io.of(LOBBY_NSP),
-      roomNsp: ROOM_NSP,
+      socket: io.of(getLobbyNsp(game)),
       rooms: {},
       playersCount,
       Game
     });
-  });
+  }
 };

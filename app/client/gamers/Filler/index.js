@@ -6,21 +6,19 @@ import ClassName from 'classnames';
 
 import { GamePlayers } from '../../components';
 import { gameDataType, playersType, userType } from '../../constants';
-import { getNeighbourCells } from '../../../shared/filler';
-import { games as gamesConfig } from '../../../config/constants.json';
+import { getNeighbourCells } from '../../../shared/games/filler';
+import { games as gamesConfig } from '../../../shared/constants';
 
 const {
-  filler: {
-    events: {
-      game: {
-        CHOOSE_COLOR
-      }
-    },
-    cellSize,
-    strokeWidth,
-    colors
-  }
-} = gamesConfig;
+  events: {
+    game: {
+      CHOOSE_COLOR
+    }
+  },
+  cellSize,
+  strokeWidth,
+  colors
+} = gamesConfig.filler;
 
 class Filler extends Component {
   static listeners = {

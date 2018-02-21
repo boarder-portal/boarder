@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import axios from 'axios';
-import { endpoints } from '../../config/constants.json';
+
+import { endpoints } from '../../shared/constants';
 import { parseJSON } from './parse-json';
 import { ALERTS } from '../constants';
 import { addAlert } from '../actions';

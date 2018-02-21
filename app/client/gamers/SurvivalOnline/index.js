@@ -5,54 +5,52 @@ import { connect } from 'react-redux';
 import ClassName from 'classnames';
 
 import { userType } from '../../constants';
-import { deepMap, getInventoryIds } from '../../../shared/survival-online';
-import { games as gamesConfig } from '../../../config/constants';
+import { deepMap, getInventoryIds } from '../../../shared/games/survival-online';
+import { games as gamesConfig } from '../../../shared/constants';
 
 import Inventory from './Inventory';
 
 const {
-  survival_online: {
-    development: {
-      SHOW_CHUNK_BORDER
-    },
-    events: {
-      game: {
-        GET_INITIAL_INFO,
-        MOVE_TO,
-        REVERT_MOVE,
-        CHANGED_CELLS,
-        CHANGE_INVENTORY_ITEMS_ORDER,
-        CHANGE_INVENTORY_ITEMS,
-        REMOVE_INVENTORY_ITEMS,
-        USE_INVENTORY_ITEM,
-        CHANGE_TIME
-      }
-    },
-    inventory: {
-      itemsCount: inventoryItemsCount
-    },
-    map: {
-      width: mapW,
-      height: mapH
-    },
-    playerMap: {
-      width: pMapW,
-      height: pMapH
-    },
-    chunk: {
-      width: chunkW,
-      height: chunkH
-    },
-    timers: {
-      BETWEEN_CELL_DRAWING_MOVING,
-      DELAY_BETWEEN_PLAYER_ACTIONS,
-      DELAY_IN_PARTS_OF_SELF_MOVING
-    },
-    imagesPaths,
-    DAY_DURATION,
-    DAY_LITE_PART
-  }
-} = gamesConfig;
+  development: {
+    SHOW_CHUNK_BORDER
+  },
+  events: {
+    game: {
+      GET_INITIAL_INFO,
+      MOVE_TO,
+      REVERT_MOVE,
+      CHANGED_CELLS,
+      CHANGE_INVENTORY_ITEMS_ORDER,
+      CHANGE_INVENTORY_ITEMS,
+      REMOVE_INVENTORY_ITEMS,
+      USE_INVENTORY_ITEM,
+      CHANGE_TIME
+    }
+  },
+  inventory: {
+    itemsCount: inventoryItemsCount
+  },
+  map: {
+    width: mapW,
+    height: mapH
+  },
+  playerMap: {
+    width: pMapW,
+    height: pMapH
+  },
+  chunk: {
+    width: chunkW,
+    height: chunkH
+  },
+  timers: {
+    BETWEEN_CELL_DRAWING_MOVING,
+    DELAY_BETWEEN_PLAYER_ACTIONS,
+    DELAY_IN_PARTS_OF_SELF_MOVING
+  },
+  imagesPaths,
+  DAY_DURATION,
+  DAY_LITE_PART
+} = gamesConfig.survival_online;
 
 const imagesPathsAsArray = [];
 const IMAGES_ROOT = '/public/images/games/survival_online';

@@ -1,22 +1,21 @@
-const _ = require('lodash');
-const Creature = require('./Creature');
-const {
+import _ from 'lodash';
+
+import Creature from './Creature';
+import { games } from '../../../constants';
+import {
   getProjectionByDirection,
   getDistanceBetweenCoords,
   getIsClearBetweenCoords,
   getToDirectionBetweenTargets,
   getRandomDirection
-} = require('../index');
+} from '../';
+
 const {
-  games: {
-    survival_online: {
-      zombie: {
-        vision: ZOMBIE_VISION,
-        speed: ZOMBIE_SPEED
-      }
-    }
+  zombie: {
+    vision: ZOMBIE_VISION,
+    speed: ZOMBIE_SPEED
   }
-} = require('../../../config/constants.json');
+} = games.survival_online;
 
 class Zombie extends Creature {
   constructor(options) {
@@ -102,8 +101,8 @@ class Zombie extends Creature {
       y,
       type,
       direction
-    }
+    };
   }
 }
 
-module.exports = Zombie;
+export default Zombie;

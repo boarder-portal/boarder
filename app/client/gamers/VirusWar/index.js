@@ -7,8 +7,8 @@ import ClassName from 'classnames';
 import { GamePlayers, Input } from '../../components';
 import { toRGBA } from '../../helpers';
 import { gameDataType, playersType, userType } from '../../constants';
-import { getAvailableCells } from '../../../shared/virus-war';
-import { games as gamesConfig, colors } from '../../../config/constants.json';
+import { getAvailableCells } from '../../../shared/games/virus-war';
+import { games as gamesConfig, colors } from '../../../shared/constants';
 
 import VirusCell from './VirusCell';
 

@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const cache = {};
 
@@ -30,4 +30,4 @@ class I18n {
   }
 }
 
-module.exports = I18n;
+export default I18n;

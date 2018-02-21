@@ -1,11 +1,7 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-const {
-  BoarderClientError
-} = require('../helpers');
-const {
-  errors: configErrors
-} = require('../../config/constants.json');
+import { BoarderClientError } from '../helpers';
+import { errors as configErrors } from '../../shared/constants';
 
 const errors = Object.create(null);
 
@@ -17,7 +13,7 @@ _.forEach(configErrors, (err, name) => {
   }
 });
 
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   ctx.reject = (err) => {
     ctx.set('Custom-Error', 'true');
 

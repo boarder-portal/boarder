@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ASSETS_PATH } from '../../config/constants.json';
+import { ASSETS_PATH } from '../../shared/constants';
 
 const images = {
   loading: 'loading.gif'

@@ -10,6 +10,7 @@
     "transform-function-bind",
     "transform-decorators-legacy",
     "transform-do-expressions",
+    "transform-export-extensions",
     ["transform-runtime", {
       "helpers": true,
       "polyfill": false,

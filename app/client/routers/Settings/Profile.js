@@ -215,7 +215,7 @@ class Profile extends Component {
     this.blockRequests();
 
     try {
-      await avatarsFetch.delete({
+      await avatarsFetch.deleteOne({
         query: {
           avatarId: id
         }

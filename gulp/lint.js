@@ -1,14 +1,11 @@
-const gulp = require('gulp');
-const run = require('gulp-run');
+import run from 'gulp-run';
 
-gulp.task('lint', () => (
-  run(`./node_modules/.bin/eslint \\
+export function lint() {
+  return run(`./node_modules/.bin/eslint \\
     app/client/** \\
-    app/config/config.js \\
     app/server/** \\
-    app/server/** \\
+    app/shared/** \\
     gulp/** \\
     scripts/** \\
-    "./!(gulpfile).js"
-  `).exec()
-));
+  `, { verbosity: 3 }).exec();
+}

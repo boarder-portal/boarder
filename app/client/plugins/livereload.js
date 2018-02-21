@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import {
   LIVERELOAD_NSP,
   ASSETS_PATH
-} from '../../config/constants.json';
+} from '../../shared/constants';
 
 const livereload = $('#livereload').addClass('loaded');
 const ready = $('<img />')

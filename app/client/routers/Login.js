@@ -9,7 +9,7 @@ import {
 } from '../constants';
 import { addNotConfirmedAlertIfNeeded, changeUserData } from '../actions';
 import { getLocationQuery, setPageTitle } from '../helpers';
-import { errors } from '../../config/constants.json';
+import { errors } from '../../shared/constants';
 
 import { Spinner, Input, Caption } from '../components';
 

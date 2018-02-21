@@ -1,20 +1,17 @@
-const { promisify } = require('util');
-const nodemailer = require('nodemailer');
-const { templates } = require('./compiled-pug');
-const {
-  mail: {
-    auth
-  }
-} = require('../../config/config.json');
+import util from 'util';
+import nodemailer from 'nodemailer';
+
+import { templates } from './compiled-pug';
+import config from '../config';
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
-  auth
+  auth: config.mail.auth
 });
 
-transporter.sendEmail = promisify(transporter.sendMail);
+transporter.sendEmail = util.promisify(::transporter.sendMail);
 
-exports.sendEmail = ({
+export function sendEmail({
   from: {
     name,
     email
@@ -23,11 +20,11 @@ exports.sendEmail = ({
   subject,
   templatePath,
   locals
-}) => (
-  transporter.sendEmail({
+}) {
+  return transporter.sendEmail({
     from: `"${name}" <${email}>`,
     to,
     subject,
     html: templates[templatePath](locals)
-  })
-);
+  });
+}

@@ -1,6 +1,6 @@
-const gulp = require('gulp');
+import gulp from 'gulp';
 
-gulp.task('copy:fonts', () => (
-  gulp.src('./node_modules/font-awesome/fonts/*')
-    .pipe(gulp.dest('./public/fonts/font-awesome'))
-));
+export function copyFonts() {
+  return gulp.src('./node_modules/font-awesome/fonts/*')
+    .pipe(gulp.dest('./public/fonts/font-awesome'));
+}

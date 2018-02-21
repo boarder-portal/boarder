@@ -1,10 +1,11 @@
-const path = require('path');
-const pug = require('pug');
-const { resolveGlob } = require('./require-glob');
+import path from 'path';
+import pug from 'pug';
+
+import { resolveGlob } from './glob';
 
 const viewsDir = path.resolve('./app/server/views');
 
-exports.templates = resolveGlob('./app/server/views/**/*.pug')
+export const templates = resolveGlob('./app/server/views/**/*.pug')
   .reduce((templates, filename) => {
     const relativeName = path.relative(viewsDir, filename)
       .replace(/.pug$/, '')

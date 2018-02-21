@@ -1,4 +1,4 @@
-const { constructEndpoints } = require('../../helpers');
-const controllers = require('../../controllers/lang');
+import { constructEndpoints } from '../../helpers';
+import * as controllers from '../../controllers/lang';
 
-module.exports = constructEndpoints('lang', controllers);
+export default constructEndpoints('lang', controllers);

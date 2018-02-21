@@ -11,3 +11,4 @@ export * from './svg';
 export * from './timeout';
 export * from './to-rgba';
 export * from './validators';
+export * from './when-logged-in';

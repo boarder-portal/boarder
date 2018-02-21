@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { usersFetch } from '../constants';
 import { setPageTitle } from '../helpers';
-import { errors } from '../../config/constants.json';
+import { errors } from '../../shared/constants';
 
 import { Input, Spinner, Caption } from '../components';
 

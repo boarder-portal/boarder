@@ -1,3 +1,1 @@
-module.exports = {
-  ROOM_DESTRUCTION_DELAY: 10000
-};
+export const ROOM_DESTRUCTION_DELAY = 10000;

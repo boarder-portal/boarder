@@ -1,19 +1,17 @@
-const gulp = require('gulp');
-
-gulp.task('toreload', () => {
-  const { emit } = require('../app/server/helpers/livereload');
+export async function toreload() {
+  const { emit } = await import('../app/server/helpers/livereload');
 
   emit('toreload');
-});
+}
 
-gulp.task('reload', () => {
-  const { emit } = require('../app/server/helpers/livereload');
+export async function reload() {
+  const { emit } = await import('../app/server/helpers/livereload');
 
   emit('reload');
-});
+}
 
-gulp.task('css-updated', () => {
-  const { emit } = require('../app/server/helpers/livereload');
+export async function cssUpdated() {
+  const { emit } = await import('../app/server/helpers/livereload');
 
   emit('css-updated');
-});
+}

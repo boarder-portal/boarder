@@ -1,36 +1,25 @@
-const _ = require('lodash');
-const Room = require('./Room');
-const {
+import _ from 'lodash';
+
+import Room from './Room';
+import {
   socketSession,
   socketAuth
-} = require('../controllers/auth');
+} from '../controllers/auth';
+import { generateUID } from '../helpers';
+import { games } from '../../shared/constants';
+
 const {
-  generateUID
-} = require('../helpers');
-const {
-  games: {
-    global: {
-      events: {
-        lobby: {
-          GET_LIST,
-          NEW_ROOM,
-          UPDATE_ROOM,
-          DELETE_ROOM
-        }
-      }
-    }
-  }
-} = require('../../config/constants.json');
+  GET_LIST,
+  NEW_ROOM,
+  UPDATE_ROOM,
+  DELETE_ROOM
+} = games.global.events.lobby;
 
 /**
  * @class Lobby
  * @public
  */
 class Lobby {
-  /**
-   * @member {String} Lobby#name
-   * @public
-   */
   /**
    * @member {Namespace} Lobby#lobby
    * @public
@@ -54,8 +43,8 @@ class Lobby {
     socket.on('connection', this.userEnter);
   }
 
-  emit() {
-    this.socket.emit(...arguments);
+  emit(...args) {
+    this.socket.emit(...args);
   }
 
   /**
@@ -67,7 +56,7 @@ class Lobby {
     const {
       io,
       rooms,
-      roomNsp,
+      gameName,
       playersCount,
       Game
     } = this;
@@ -80,7 +69,7 @@ class Lobby {
       lobby: this,
       playersCount,
       name: `room-${now}`,
-      roomNsp,
+      gameName,
       Game,
       gameOptions: options
     };
@@ -145,8 +134,4 @@ class Lobby {
   }
 }
 
-_.assign(Lobby.prototype, {
-  name: 'default'
-});
-
-module.exports = Lobby;
+export default Lobby;

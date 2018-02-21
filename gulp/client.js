@@ -1,9 +1,9 @@
-const gulp = require('gulp');
-const webpack = require('webpack');
-const webpackConfig = require('../webpack.config');
+import webpack from 'webpack';
 
-gulp.task('watch:client', () => {
-  const { emit } = require('../app/server/helpers/livereload');
+import webpackConfig from '../webpack.config';
+
+export async function watchClient() {
+  const { emit } = await import('../app/server/helpers/livereload');
   const compiler = webpack(webpackConfig);
 
   compiler.watch({}, () => {});
@@ -20,4 +20,4 @@ gulp.task('watch:client', () => {
     }));
     emit('reload');
   });
-});
+}

@@ -2,7 +2,7 @@
 
 /* eslint camelcase: 0 */
 
-const hashPassword = require('../../helpers/hash-password');
+import hashPassword from '../../helpers/hash-password';
 
 const TABLE_NAME = 'users';
 
@@ -48,12 +48,10 @@ users.forEach((user) => {
   user.password = hashPassword(user.password);
 });
 
-module.exports = {
-  up(queryInterface) {
-    return queryInterface.bulkInsert(TABLE_NAME, users, {});
-  },
+export async function up(queryInterface) {
+  return queryInterface.bulkInsert(TABLE_NAME, users, {});
+}
 
-  down(queryInterface) {
-    return queryInterface.bulkDelete(TABLE_NAME, null, {});
-  }
-};
+export async function down(queryInterface) {
+  return queryInterface.bulkDelete(TABLE_NAME, null, {});
+}

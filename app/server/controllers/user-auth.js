@@ -1,6 +1,6 @@
-const User = require('../db/models/user');
+import User from '../db/models/user';
 
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   const { user } = ctx.session;
 
   if (!user) {

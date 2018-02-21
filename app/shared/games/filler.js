@@ -1,6 +1,6 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-exports.getNeighbourCells = (field, color, playerCells) => {
+export function getNeighbourCells(field, color, playerCells) {
   const neighbourCells = [];
   let array = playerCells;
   let condition = true;
@@ -43,4 +43,4 @@ exports.getNeighbourCells = (field, color, playerCells) => {
   }
 
   return neighbourCells;
-};
+}

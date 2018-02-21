@@ -1,18 +1,17 @@
-const _ = require('lodash');
-const Game = require('./');
+import _ from 'lodash';
+
+import Game from './';
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    pexeso: {
-      TRANSITION_DURATION,
-      CARD_SHOWN_DURATION,
-      events: {
-        game: {
-          TURN_CARD
-        }
-      }
+  TRANSITION_DURATION,
+  CARD_SHOWN_DURATION,
+  events: {
+    game: {
+      TURN_CARD
     }
   }
-} = require('../../config/constants.json');
+} = games.pexeso;
 const SLEEP_DURATION = CARD_SHOWN_DURATION + 4 * TRANSITION_DURATION;
 
 const SETS_COUNT = 30;
@@ -105,4 +104,4 @@ class PexesoGame extends Game {
   }
 }
 
-module.exports = PexesoGame;
+export default PexesoGame;

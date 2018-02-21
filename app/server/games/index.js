@@ -1,20 +1,14 @@
-const _ = require('lodash');
+import _ from 'lodash';
+
+import { games, colors } from '../../shared/constants';
+
 const {
-  games: {
-    global: {
-      events: {
-        game: {
-          PREPARING_GAME,
-          GAME_STARTED,
-          GAME_FINISHING,
-          UPDATE_PLAYERS,
-          UPDATE_GAME
-        }
-      }
-    }
-  },
-  colors
-} = require('../../config/constants.json');
+  PREPARING_GAME,
+  GAME_STARTED,
+  GAME_FINISHING,
+  UPDATE_PLAYERS,
+  UPDATE_GAME
+} = games.global.events.game;
 
 const COLORS = _.keys(colors);
 const PUBLIC_FIELDS = [
@@ -50,8 +44,8 @@ class Game {
     this.pureEmit(UPDATE_GAME, dataObject);
   }
 
-  pureEmit() {
-    this.socket.emit(...arguments);
+  pureEmit(...args) {
+    this.socket.emit(...args);
   }
 
   prepareGame() {
@@ -125,4 +119,4 @@ class Game {
   }
 }
 
-module.exports = Game;
+export default Game;

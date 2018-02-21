@@ -1,9 +1,9 @@
+import util from 'util';
+
 const {
-  inspect: {
-    defaultOptions,
-    styles
-  }
-} = require('util');
+  defaultOptions,
+  styles
+} = util.inspect;
 
 defaultOptions.maxArrayLength = null;
 defaultOptions.depth = 2;

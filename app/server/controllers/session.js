@@ -1,50 +1,41 @@
-const { promisify } = require('util');
-const session = require('express-session');
-const { Session } = require('express-session');
-const redis = require('connect-redis');
-const { createClient } = require('../helpers/redis');
-const {
-  cookieName,
-  sessionExpires,
-  redis: {
-    host,
-    port
-  },
-  secret
-} = require('../../config/config.json');
+import util from 'util';
+import expressSession, { Session } from 'express-session';
+import redis from 'connect-redis';
 
-const Store = redis(session);
-const sessionMiddleware = promisify(session({
-  name: cookieName,
+import { createClient } from '../helpers/redis';
+import config from '../config';
+
+const Store = redis(expressSession);
+const sessionMiddleware = util.promisify(expressSession({
+  name: config.cookieName,
   store: new Store({
     client: createClient(),
-    host,
-    port
+    host: config.redis.host,
+    port: config.redis.port
   }),
-  secret,
+  secret: config.secret,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: sessionExpires
+    maxAge: config.sessionExpires
   }
 }));
 
-Session.prototype.savePr = promisify(Session.prototype.save);
-Session.prototype.destroyPr = promisify(Session.prototype.destroy);
+Session.prototype.savePr = util.promisify(Session.prototype.save);
+Session.prototype.destroyPr = util.promisify(Session.prototype.destroy);
 
-module.exports = {
-  async session(ctx, next) {
-    await sessionMiddleware(ctx.req, ctx.res);
+export async function session(ctx, next) {
+  await sessionMiddleware(ctx.req, ctx.res);
 
-    ctx.session = ctx.req.session;
+  ctx.session = ctx.req.session;
 
-    await next();
-  },
-  async sessionRequired(ctx, next) {
-    if (!ctx.session) {
-      ctx.throw(500, 'No session found');
-    }
+  await next();
+}
 
-    await next();
+export async function sessionRequired(ctx, next) {
+  if (!ctx.session) {
+    ctx.throw(500, 'No session found');
   }
-};
+
+  await next();
+}

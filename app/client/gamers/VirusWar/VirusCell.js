@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { games as gamesConfig, colors } from '../../../config/constants.json';
+import { games as gamesConfig, colors } from '../../../shared/constants';
 
 const {
-  virus_war: {
-    virusesTypes,
-    virusesShapes,
-    cellSize,
-    borderWidth
-  }
-} = gamesConfig;
+  virusesTypes,
+  virusesShapes,
+  cellSize,
+  borderWidth
+} = gamesConfig.virus_war;
 
 class VirusCell extends Component {
   static propTypes = {

@@ -1,16 +1,14 @@
-const _ = require('lodash');
-const {
-  games: {
-    virus_war: {
-      virusesTypes: {
-        VIRUS,
-        FORTRESS
-      }
-    }
-  }
-} = require('../config/constants.json');
+import _ from 'lodash';
 
-exports.getAvailableCells = (field, player, lastSetCells) => {
+import { games } from '../constants';
+const {
+  virusesTypes: {
+    VIRUS,
+    FORTRESS
+  }
+} = games.virus_war;
+
+export function getAvailableCells(field, player, lastSetCells) {
   const { login } = player;
   const availableCells = [];
 
@@ -33,7 +31,7 @@ exports.getAvailableCells = (field, player, lastSetCells) => {
   });
 
   return availableCells;
-};
+}
 
 function getNeighbours(cell, field) {
   const { x, y } = cell;

@@ -1,9 +1,9 @@
-const _ = require('lodash');
-const Sequelize = require('sequelize');
+import _ from 'lodash';
+import Sequelize from 'sequelize';
 
-const Attachment = require('./attachment');
-const hashPassword = require('../../helpers/hash-password');
-const db = require('../');
+import Attachment from './attachment';
+import hashPassword from '../../helpers/hash-password';
+import db from '../';
 
 const User = db.define('user', {
   id: {
@@ -123,4 +123,4 @@ User.Instance.prototype.toJSON = function (...args) {
   return json;
 };
 
-module.exports = User;
+export default User;

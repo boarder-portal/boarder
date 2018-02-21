@@ -1,18 +1,18 @@
-const gulp = require('gulp');
-const less = require('gulp-less');
-const watch = require('gulp-watch');
-const runSequence = require('run-sequence');
-const rename = require('gulp-rename');
-const sourcemaps = require('gulp-sourcemaps');
-const Autoprefixer = require('less-plugin-autoprefix');
+import gulp from 'gulp';
+import gulpLess from 'gulp-less';
+import rename from 'gulp-rename';
+import sourcemaps from 'gulp-sourcemaps';
+import Autoprefixer from 'less-plugin-autoprefix';
+
+import { toreload, cssUpdated } from './livereload';
 
 const LESS_ROOT = './app/client/styles/index.less';
 const LESS_FILES = './app/client/styles/**/*.less';
 
-gulp.task('less', () => (
-  gulp.src(LESS_ROOT)
+export function less() {
+  return gulp.src(LESS_ROOT)
     .pipe(sourcemaps.init())
-    .pipe(less({
+    .pipe(gulpLess({
       plugins: [
         new Autoprefixer({ browsers: ['last 2 versions'] })
       ]
@@ -21,11 +21,9 @@ gulp.task('less', () => (
       basename: 'all'
     }))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./public/css'))
-));
+    .pipe(gulp.dest('./public/css'));
+}
 
-gulp.task('watch:less', ['less'], () => {
-  watch(LESS_FILES, () => {
-    runSequence('toreload', 'less', 'css-updated');
-  });
+export const watchLess = gulp.parallel(less, () => {
+  gulp.watch(LESS_FILES, gulp.series(toreload, less, cssUpdated));
 });

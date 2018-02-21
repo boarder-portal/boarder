@@ -1,20 +1,19 @@
-const _ = require('lodash');
-const Game = require('./');
+import _ from 'lodash';
+
+import Game from './';
+import { games } from '../../shared/constants';
+
 const {
-  games: {
-    set: {
-      events: {
-        game: {
-          FIND_SET,
-          NO_SET_HERE
-        }
-      },
-      shapesTypes: shapesTypesObject,
-      colors: colorsObject,
-      fillTypes: fillTypesObject
+  events: {
+    game: {
+      FIND_SET,
+      NO_SET_HERE
     }
-  }
-} = require('../../config/constants.json');
+  },
+  shapesTypes: shapesTypesObject,
+  colors: colorsObject,
+  fillTypes: fillTypesObject
+} = games.set;
 
 const shapesTypes = _.keys(shapesTypesObject);
 const colors = _.keys(colorsObject);
@@ -265,4 +264,4 @@ class SetGame extends Game {
   }
 }
 
-module.exports = SetGame;
+export default SetGame;

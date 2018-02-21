@@ -1,10 +1,10 @@
-const generateUID = require('uid');
+import generateUid from 'uid';
 
-exports.generateUID = (length = 7, forCollection = {}) => {
+export function generateUID(length = 7, forCollection = {}) {
   let uid;
 
   /* eslint no-empty: 0 */
-  while (forCollection[uid = generateUID(length)]) {}
+  while (forCollection[uid = generateUid(length)]) {}
 
   return uid;
-};
+}

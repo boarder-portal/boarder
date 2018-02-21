@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { gameDataType, playersType } from '../constants';
-import { games as gamesConfig } from '../../config/constants.json';
+import { games as gamesConfig } from '../../shared/constants';
 
 import Filler from './Filler';
 import Pexeso from './Pexeso';
