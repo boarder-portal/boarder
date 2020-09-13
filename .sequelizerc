@@ -1,8 +1,0 @@
-require('./scripts/babel-register');
-
-module.exports = {
-  config: './app/server/db/config.js',
-  'migrations-path': './app/server/db/migrations',
-  'models-path': './app/server/db/models',
-  'seeders-path': './app/server/db/seeders'
-};

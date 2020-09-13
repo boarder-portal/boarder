@@ -1,34 +1,11 @@
-html(lang=lang)
+doctype html
+html
   head
-    meta(property="og:title", content="Boarder")
-    meta(property="og:type", content="website")
-    meta(property="og:description", content="Game portal")
-    meta(property="og:url", content="http://boarder.tk")
-    meta(property="og:site_name", content="Boarder")
-    meta(property="og:image", content="http://boarder.tk/public/images/pexeso/sets/0/1.jpg")
-    meta(property="og:image:width", content="100")
-    meta(property="og:image:height", content="100")
-    link#all-css(
-      type="text/css"
-      rel="stylesheet"
-      href=allCSS
-    )
-    title.title Boarder
-    link.icon(
-      type="image/png"
-      rel="shortcut icon"
-    )
+    title Boarder
+    meta(charset="UTF-8")
+    meta(name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width")
+    link(rel="icon" type="image/x-icon" href="/favicon.ico")
   body
-    if NODE_ENV === 'development'
-      div#livereload
-    div.app-root
-    script(type="text/javascript").
-      window.boarderUser = "#{ user }";
-    script(
-      type="text/javascript"
-      src=i18n
-    )
-    script(
-      type="text/javascript"
-      src=allJS
-    )
+    div#root
+
+    script(src="/client.js")

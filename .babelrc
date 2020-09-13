@@ -1,19 +1,12 @@
 {
   "presets": [
-    "es2015",
-    "react"
-  ],
-  "plugins": [
-    "transform-async-to-generator",
-    "transform-object-rest-spread",
-    "transform-class-properties",
-    "transform-function-bind",
-    "transform-do-expressions",
-    "transform-export-extensions",
-    ["transform-runtime", {
-      "helpers": true,
-      "polyfill": false,
-      "regenerator": true
+    "@babel/react",
+    ["@babel/env", {
+      "targets": {
+        "browsers": ["last 2 Chrome versions"]
+      },
+      "useBuiltIns": "entry",
+      "corejs": 3
     }]
   ]
 }

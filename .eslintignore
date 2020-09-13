@@ -1,3 +1,4 @@
-**/*.json
-
-app/server/db/models/index.js
+.cache
+build
+dist
+node_modules

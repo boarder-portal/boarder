@@ -1,9 +1,0 @@
-{
-  "header": "Reset password",
-  "success": "Reset password link has been sent to",
-  "action": "Get link",
-  "fields": {
-    "email": "Your email"
-  },
-  "try_again": "Check the correctness of the email"
-}
