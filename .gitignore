@@ -1,20 +1,9 @@
-node_modules/
-.idea/
-tmp/
-logs/
-*.log
-npm-debug.log*
+.idea
 
-app/server/db/config.js
-app/server/config/index.js
+node_modules
 
-app/server/i18n/
+.cache
+dist
+build
 
-public/js/all.js
-public/js/all.js.map
-public/css/all.css
-public/css/all.css.map
-public/fonts/font-awesome/
-public/images/flags
-public/i18n/
-public/attachments/
+db.json

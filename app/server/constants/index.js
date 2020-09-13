@@ -1,1 +1,0 @@
-export const ROOM_DESTRUCTION_DELAY = 10000;
