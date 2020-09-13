@@ -4,7 +4,13 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
+import { IUser } from 'common/types';
+
 import Box from 'client/components/common/Box/Box';
+
+interface IHeaderProps {
+  user: IUser | null;
+}
 
 const Root = styled(Container)`
   .Header {
@@ -20,7 +26,9 @@ const Root = styled(Container)`
 
 const b = block('Header');
 
-const Header: React.FC = () => {
+const Header: React.FC<IHeaderProps> = (props) => {
+  const { user } = props;
+
   return (
     <Root className={b()}>
       <Box py={12} flex alignItems="center">
@@ -28,19 +36,25 @@ const Header: React.FC = () => {
           <Box size="xxl" bold>Boarder</Box>
         </Link>
 
-        <Link
-          to="/login"
-          className={b('login').toString()}
-        >
-          Вход
-        </Link>
+        {user ? (
+          <Box ml="auto">{user.login}</Box>
+        ) : (
+          <>
+            <Link
+              to="/login"
+              className={b('login').toString()}
+            >
+              Вход
+            </Link>
 
-        <Link
-          to="/registration"
-          className={b('registration').toString()}
-        >
-          Регистрация
-        </Link>
+            <Link
+              to="/registration"
+              className={b('registration').toString()}
+            >
+              Регистрация
+            </Link>
+          </>
+        )}
       </Box>
     </Root>
   );

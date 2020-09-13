@@ -3,12 +3,20 @@ import { Switch, Route } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Reset } from 'styled-reset';
 import { Normalize } from 'styled-normalize';
+import { Container } from '@material-ui/core';
+import block from 'bem-cn';
+import { useQuery } from '@apollo/react-hooks';
+
+import { GET_USER_QUERY } from 'client/graphql/queries';
+
+import { IUser } from 'common/types';
+
+import Header from 'client/components/Header/Header';
 
 import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
-import Header from 'client/components/Header/Header';
-import { Container } from '@material-ui/core';
-import block from 'bem-cn';
+import Login from 'client/pages/Login/Login';
+import Lobby from 'client/pages/Lobby/Lobby';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -71,22 +79,36 @@ const Root = styled(Container)`
 const b = block('App');
 
 const App: React.FC = () => {
+  const {
+    data: userData,
+  } = useQuery<{ getUser: IUser | null }>(GET_USER_QUERY);
+
+  const user = userData?.getUser || null;
+
   return (
     <>
       <Reset />
       <Normalize />
       <GlobalStyle />
 
-      <Header />
+      <Header user={user} />
 
       <Root className={b().toString()}>
         <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+
           <Route exact path="/registration">
             <Registration />
           </Route>
 
-          <Route exact path="/">
-            <Home />
+          <Route exact path="/login">
+            <Login />
+          </Route>
+
+          <Route exact path="/:game/lobby">
+            <Lobby />
           </Route>
         </Switch>
       </Root>

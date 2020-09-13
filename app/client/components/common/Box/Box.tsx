@@ -15,6 +15,9 @@ interface IBoxProps {
   flex?: boolean;
   column?: boolean;
   alignItems?: 'center';
+  justifyContent?: 'center';
+  background?: string;
+  onClick?(): void;
 }
 
 const TEXT_SIZES_MAP = {
@@ -29,6 +32,7 @@ const Root = styled.div`
   ${({ flex }: IBoxProps) => flex ? 'display: flex;' : ''}
   ${({ column }: IBoxProps) => column ? 'flex-direction: column;' : ''}
   ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}
+  ${({ justifyContent }: IBoxProps) => justifyContent ? `justify-content: ${justifyContent};` : ''}
   ${({ px }: IBoxProps) => px ? `
     padding-left: ${px}px;
     padding-right: ${px}px;
@@ -48,6 +52,7 @@ const Root = styled.div`
     font-size: ${TEXT_SIZES_MAP[size]}px;
     line-height: 1.2;
   ` : ''}
+  ${({ background }: IBoxProps) => background ? `background-color: ${background};` : ''}
 `;
 
 const Box: React.FC<IBoxProps> = (props) => {

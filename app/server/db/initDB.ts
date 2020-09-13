@@ -6,5 +6,7 @@ import writeDB from 'server/db/writeDB';
 (async () => {
   await fs.remove(path.resolve('./db.json'));
 
-  await writeDB({});
+  await writeDB({
+    users: [],
+  });
 })();

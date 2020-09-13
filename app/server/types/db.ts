@@ -1,1 +1,5 @@
-export interface IDB {}
+import { IDBUser } from 'common/types';
+
+export interface IDB {
+  users: IDBUser[];
+}

@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useMutation } from '@apollo/react-hooks';
 
-import { REGISTER_QUERY } from 'client/graphql/queries';
+import { LOGIN_QUERY, GET_USER_QUERY } from 'client/graphql/queries';
 
-import { IRegisterParams } from 'common/types/requestParams';
+import { ILoginParams } from 'common/types/requestParams';
 import { IUser } from 'common/types';
 
 import Input from 'client/components/common/Input/Input';
@@ -18,7 +18,7 @@ const Root = styled(Box)`
   justify-content: center;
   align-items: center;
 
-  .Registration {
+  .Login {
     &__form {
       display: flex;
       flex-direction: column;
@@ -36,34 +36,35 @@ const Root = styled(Box)`
   }
 `;
 
-const b = block('Registration');
+const b = block('Login');
 
-const Registration: React.FC = () => {
+const Login: React.FC = () => {
   const history = useHistory();
 
-  const [login, setLogin] = useState('');
+  const [userLogin, setUserLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordForCheck, setPasswordForCheck] = useState('');
 
   const [
-    register,
+    login,
     {
       data: newUserData,
     },
-  ] = useMutation<IUser, IRegisterParams>(REGISTER_QUERY);
+  ] = useMutation<IUser, ILoginParams>(LOGIN_QUERY);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await register({
+    await login({
       variables: {
         user: {
-          login,
+          login: userLogin,
           password,
         },
       },
+      refetchQueries: [{ query: GET_USER_QUERY }],
+      awaitRefetchQueries: true,
     });
-  }, [login, password, register]);
+  }, [login, password, userLogin]);
 
   useEffect(() => {
     if (newUserData) {
@@ -73,7 +74,7 @@ const Registration: React.FC = () => {
 
   return (
     <Root className={b()} flex column>
-      <Box size="xxl" bold>Регистрация</Box>
+      <Box size="xxl" bold>Вход</Box>
 
       <form
         className={b('form')}
@@ -81,8 +82,8 @@ const Registration: React.FC = () => {
       >
         <Input
           label="Логин"
-          value={login}
-          onChange={setLogin}
+          value={userLogin}
+          onChange={setUserLogin}
         />
 
         <Input
@@ -93,23 +94,15 @@ const Registration: React.FC = () => {
           onChange={setPassword}
         />
 
-        <Input
-          className={b('password').toString()}
-          label="Повторный пароль"
-          value={passwordForCheck}
-          type="password"
-          onChange={setPasswordForCheck}
-        />
-
         <Button
           className={b('submit').toString()}
           isSubmit
         >
-          Регистрация
+          Вход
         </Button>
       </form>
     </Root>
   );
 };
 
-export default React.memo(Registration);
+export default React.memo(Login);

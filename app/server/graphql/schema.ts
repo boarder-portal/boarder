@@ -1,12 +1,27 @@
 import { gql } from 'apollo-server';
 
 const typeDefs = gql`
-  type Company {
-    name: String!
+  type User {
+    login: String!
+  }
+
+  input AddUserInput {
+    login: String!
+    password: String!
+  }
+
+  input UserLoginInput {
+    login: String!
+    password: String!
   }
 
   type Query {
-    getCompany(name: String!): Company!
+    getUser: User
+  }
+
+  type Mutation {
+    register(user: AddUserInput!): User!
+    login(user: UserLoginInput!): User!
   }
 `;
 
