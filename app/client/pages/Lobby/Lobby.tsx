@@ -6,6 +6,8 @@ import { EGame } from 'common/types';
 import { ELobbyEvent, ILobby } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';
+import Room from 'client/pages/Lobby/components/Room/Room';
+import Box from 'client/components/common/Box/Box';
 
 const Lobby: React.FC = () => {
   const { game } = useParams<{ game: EGame }>();
@@ -19,6 +21,14 @@ const Lobby: React.FC = () => {
     }
 
     ioRef.current.emit(ELobbyEvent.CREATE_ROOM);
+  }, []);
+
+  const handleEnterRoom = useCallback((roomId: string) => {
+    if (!ioRef.current) {
+      return;
+    }
+
+    ioRef.current.emit(ELobbyEvent.ENTER_ROOM, roomId);
   }, []);
 
   useEffect(() => {
@@ -37,9 +47,15 @@ const Lobby: React.FC = () => {
     <div>
       <Button onClick={handleCreateRoom}>Создать комнату</Button>
 
-      {lobby.rooms.map(({ id }) => (
-        <div key={id}>{id}</div>
-      ))}
+      <Box between={8} mt={20}>
+        {lobby.rooms.map((room) => (
+          <Room
+            key={room.id}
+            room={room}
+            onEnter={handleEnterRoom}
+          />
+        ))}
+      </Box>
     </div>
   );
 };

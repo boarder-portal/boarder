@@ -1,7 +1,5 @@
 import path from 'path';
 import express from 'express';
-import redis from 'redis';
-import connectRedis from 'connect-redis';
 import expressSession from 'express-session';
 import morgan from 'morgan';
 import multer from 'multer';
@@ -9,13 +7,9 @@ import multer from 'multer';
 import apolloServer from 'server/apolloServer';
 import app from 'server/expressApp';
 import httpServer from 'server/httpServer';
+import sessionSettings from 'server/sessionSettings';
 
 import './gamesData';
-
-const SESSION_ALIVE_TIME_MS = 3 * 30 * 24 * 60 * 60 * 1000;
-
-const redisStore = connectRedis(expressSession);
-const redisClient = redis.createClient();
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -27,16 +21,7 @@ const storage = multer.diskStorage({
 });
 
 app
-  .use(expressSession({
-    secret: 'secrettttt',
-    cookie: {
-      maxAge: SESSION_ALIVE_TIME_MS,
-    },
-    store: new redisStore({
-      client: redisClient,
-      prefix: 'boarder',
-    }),
-  }))
+  .use(expressSession(sessionSettings))
   .set('view engine', 'pug')
   .set('views', path.join(__dirname, 'views'))
   .use(morgan('dev'))
