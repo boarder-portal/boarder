@@ -5,20 +5,12 @@ import connectRedis from 'connect-redis';
 import expressSession from 'express-session';
 import morgan from 'morgan';
 import multer from 'multer';
-import { ApolloServer } from 'apollo-server-express';
 
-import typeDefs from 'server/graphql/schema';
-import resolvers from 'server/graphql/resolvers';
+import apolloServer from 'server/apolloServer';
+import app from 'server/expressApp';
+import httpServer from 'server/httpServer';
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: ({ req }) => ({
-    session: req.session,
-  }),
-});
-
-const app = express();
+import './gamesData';
 
 const SESSION_ALIVE_TIME_MS = 3 * 30 * 24 * 60 * 60 * 1000;
 
@@ -60,6 +52,6 @@ app
     res.render('index');
   });
 
-server.applyMiddleware({ app });
+apolloServer.applyMiddleware({ app });
 
-app.listen(2222, () => console.log('\nListening on port 2222...'));
+httpServer.listen(2222, () => console.log('\nListening on port 2222...'));
