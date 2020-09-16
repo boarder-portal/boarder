@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import { IRoom } from 'common/types/room';
 
@@ -8,6 +9,10 @@ interface IRoomProps {
   room: IRoom;
   onEnter(roomId: string): void;
 }
+
+const Root = styled(Box)`
+  cursor: pointer;
+`;
 
 const Room: React.FC<IRoomProps> = (props) => {
   const {
@@ -19,7 +24,7 @@ const Room: React.FC<IRoomProps> = (props) => {
   } = props;
 
   return (
-    <Box
+    <Root
       flex
       onClick={() => onEnter(id)}
     >
@@ -28,7 +33,7 @@ const Room: React.FC<IRoomProps> = (props) => {
       <Box ml={20}>
         {players.map(({ login }) => login).join(', ')}
       </Box>
-    </Box>
+    </Root>
   );
 };
 

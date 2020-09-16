@@ -1,28 +1,27 @@
 import { Namespace } from 'socket.io';
-import uuid from 'uuid/v4';
 
-import { IRoom } from 'common/types/room';
 import { ELobbyEvent } from 'common/types/lobby';
 import { IAuthSocket } from 'server/types';
+import { EGame, EPlayerStatus } from 'common/types';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
+import Room from 'server/gamesData/Room/Room';
+import ioInstance from 'server/io';
+
 class Lobby {
-  rooms: IRoom[] = [];
+  rooms: Room[] = [];
   io: Namespace;
 
-  constructor({ io }: { io: Namespace}) {
-    this.io = io;
+  constructor({ game }: { game: EGame}) {
+    this.io = ioInstance.of(`/${game}/lobby`);
 
-    io.use(ioSessionMiddleware as any);
-    io.on('connection', (socket: IAuthSocket) => {
+    this.io.use(ioSessionMiddleware as any);
+    this.io.on('connection', (socket: IAuthSocket) => {
       this.sendLobbyUpdate();
 
       socket.on(ELobbyEvent.CREATE_ROOM, () => {
-        this.rooms.push({
-          id: uuid(),
-          players: [],
-        });
+        this.rooms.push(new Room({ game }));
 
         this.sendLobbyUpdate();
       });
@@ -34,7 +33,10 @@ class Lobby {
           return;
         }
 
-        room.players.push(socket.user);
+        room.players.push({
+          ...socket.user,
+          status: EPlayerStatus.NOT_READY,
+        });
 
         this.sendLobbyUpdate();
       });
@@ -43,7 +45,10 @@ class Lobby {
 
   sendLobbyUpdate() {
     this.io.emit(ELobbyEvent.UPDATE, {
-      rooms: this.rooms,
+      rooms: this.rooms.map(({ id, players }) => ({
+        id,
+        players,
+      })),
     });
   }
 }

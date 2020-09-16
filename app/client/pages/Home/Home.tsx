@@ -7,7 +7,9 @@ import { EGame } from 'common/types';
 
 import Box from 'client/components/common/Box/Box';
 
-const Root = styled(Box)`
+const Root = styled.div`
+  padding-top: 20px;
+
   .Home {
     &__game {
       width: 200px;
@@ -31,22 +33,26 @@ const Home: React.FC = () => {
   }, [history]);
 
   return (
-    <Root className={b()} flex between={8}>
-      {Object.values(EGame).map((game, index) => (
-        <Box
-          key={game}
-          className={b('game')}
-          flex
-          column
-          alignItems="center"
-          justifyContent="center"
-          size="xl"
-          background={GAME_COLORS[index]}
-          onClick={() => handleGameClick(game)}
-        >
-          {game}
-        </Box>
-      ))}
+    <Root className={b()} >
+      <Box size="xxl" bold>Игры</Box>
+
+      <Box flex between={8} mt={20}>
+        {Object.values(EGame).map((game, index) => (
+          <Box
+            key={game}
+            className={b('game')}
+            flex
+            column
+            alignItems="center"
+            justifyContent="center"
+            size="xl"
+            background={GAME_COLORS[index]}
+            onClick={() => handleGameClick(game)}
+          >
+            {game}
+          </Box>
+        ))}
+      </Box>
     </Root>
   );
 };

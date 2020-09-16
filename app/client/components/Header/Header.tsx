@@ -33,7 +33,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
     <Root className={b()}>
       <Box py={12} flex alignItems="center">
         <Link to="/">
-          <Box size="xxl" bold>Boarder</Box>
+          <Box size="l" bold>Boarder</Box>
         </Link>
 
         {user ? (

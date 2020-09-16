@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Reset } from 'styled-reset';
@@ -6,6 +6,7 @@ import { Normalize } from 'styled-normalize';
 import { Container } from '@material-ui/core';
 import block from 'bem-cn';
 import { useQuery } from '@apollo/react-hooks';
+import { useSetRecoilState } from 'recoil';
 
 import { GET_USER_QUERY } from 'client/graphql/queries';
 
@@ -17,6 +18,8 @@ import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
 import Login from 'client/pages/Login/Login';
 import Lobby from 'client/pages/Lobby/Lobby';
+import Room from 'client/pages/Room/Room';
+import userAtom from 'client/atoms/userAtom';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -79,11 +82,19 @@ const Root = styled(Container)`
 const b = block('App');
 
 const App: React.FC = () => {
+  const setUser = useSetRecoilState(userAtom);
+
   const {
     data: userData,
   } = useQuery<{ getUser: IUser | null }>(GET_USER_QUERY);
 
   const user = userData?.getUser || null;
+
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [setUser, user]);
 
   return (
     <>
@@ -109,6 +120,10 @@ const App: React.FC = () => {
 
           <Route exact path="/:game/lobby">
             <Lobby />
+          </Route>
+
+          <Route exact path="/:game/room/:roomId">
+            <Room />
           </Route>
         </Switch>
       </Root>

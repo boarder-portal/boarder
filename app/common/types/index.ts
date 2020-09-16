@@ -9,3 +9,12 @@ export interface IUser {
 export interface IDBUser extends IUser {
   password: string;
 }
+
+export enum EPlayerStatus {
+  READY = 'READY',
+  NOT_READY = 'NOT_READY',
+}
+
+export interface IPlayer extends IUser {
+  status: EPlayerStatus;
+}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import io  from 'socket.io-client';
 
 import { EGame } from 'common/types';
@@ -11,6 +11,7 @@ import Box from 'client/components/common/Box/Box';
 
 const Lobby: React.FC = () => {
   const { game } = useParams<{ game: EGame }>();
+  const history = useHistory();
   const ioRef = useRef<SocketIOClient.Socket>();
 
   const [lobby, setLobby] = useState<ILobby | null>(null);
@@ -29,7 +30,9 @@ const Lobby: React.FC = () => {
     }
 
     ioRef.current.emit(ELobbyEvent.ENTER_ROOM, roomId);
-  }, []);
+
+    history.push(`/${game}/room/${roomId}`);
+  }, [game, history]);
 
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/lobby`);
@@ -37,6 +40,12 @@ const Lobby: React.FC = () => {
     ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobby) => {
       setLobby(lobbyData);
     });
+
+    return () => {
+      if (ioRef.current) {
+        ioRef.current.disconnect();
+      }
+    };
   }, [game]);
 
   if (!lobby) {
@@ -45,7 +54,11 @@ const Lobby: React.FC = () => {
 
   return (
     <div>
-      <Button onClick={handleCreateRoom}>Создать комнату</Button>
+      <Box size="xxl" bold>{game}</Box>
+
+      <Box mt={20}>
+        <Button onClick={handleCreateRoom}>Создать комнату</Button>
+      </Box>
 
       <Box between={8} mt={20}>
         {lobby.rooms.map((room) => (
