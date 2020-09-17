@@ -8,16 +8,20 @@ import { ERoomEvent } from 'common/types/room';
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
 import ioInstance from 'server/io';
+import Game from 'server/gamesData/Game/Game';
+import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 
 class Room {
   io: Namespace;
   id: string;
   players: IPlayer[];
+  game: Game<IPlayer> | null;
 
   constructor({ game }: { game: EGame }) {
     this.id = uuid();
     this.players = [];
     this.io = ioInstance.of(`/${game}/room/${this.id}`);
+    this.game = null;
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
@@ -48,6 +52,22 @@ class Room {
         player.status = player.status === EPlayerStatus.READY ? EPlayerStatus.NOT_READY : EPlayerStatus.READY;
 
         this.sendRoomInfo();
+
+        if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
+          if (game === EGame.PEXESO) {
+            this.game = new PexesoGame({ game, players: this.players.map((player) => ({
+              ...player,
+              isActive: false,
+              score: 0,
+            })) });
+          }
+
+          if (!this.game) {
+            return;
+          }
+
+          this.io.emit(ERoomEvent.START_GAME, this.game.id);
+        }
       });
     });
   }

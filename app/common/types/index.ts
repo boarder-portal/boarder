@@ -13,6 +13,7 @@ export interface IDBUser extends IUser {
 export enum EPlayerStatus {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
+  PLAYING = 'PLAYING',
 }
 
 export interface IPlayer extends IUser {

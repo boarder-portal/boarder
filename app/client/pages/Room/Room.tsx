@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import block from 'bem-cn';
@@ -25,6 +25,7 @@ const Root = styled.div`
 const Room: React.FC = () => {
   const { game, roomId } = useParams<{ game: EGame; roomId: string }>();
   const ioRef = useRef<SocketIOClient.Socket>();
+  const history = useHistory();
 
   const [room, setRoom] = useState<IRoom | null>(null);
 
@@ -43,6 +44,10 @@ const Room: React.FC = () => {
 
     ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoom) => {
       setRoom(roomData);
+    });
+
+    ioRef.current.on(ERoomEvent.START_GAME, (gameId: string) => {
+      history.push(`/${game}/game/${gameId}`);
     });
 
     return () => {

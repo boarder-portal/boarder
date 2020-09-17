@@ -20,56 +20,7 @@ import Login from 'client/pages/Login/Login';
 import Lobby from 'client/pages/Lobby/Lobby';
 import Room from 'client/pages/Room/Room';
 import userAtom from 'client/atoms/userAtom';
-
-const GlobalStyle = createGlobalStyle`
-  * {
-    box-sizing: border-box;
-  }
-
-  @font-face {
-    font-family: "Round";
-    src: url(/font-regular.otf);
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  @font-face {
-    font-family: "Round";
-    src: url(/font-bold.otf);
-    font-weight: 900;
-    font-style: normal;
-  }
-
-  html,
-  body {
-    height: 100%;
-  }
-
-  #root {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  body {
-    color: #333;
-
-    * {
-      font-family: Round, Helvetica, sans-serif;
-    }
-  }
-
-  h1 {
-    font-size: 100%;
-    margin: 0;
-  }
-
-  a,
-  a:visited {
-    color: inherit;
-    text-decoration: none;
-  }
-`;
+import Game from 'client/pages/Game/Game';
 
 const Root = styled(Container)`
   &.App {
@@ -100,7 +51,6 @@ const App: React.FC = () => {
     <>
       <Reset />
       <Normalize />
-      <GlobalStyle />
 
       <Header user={user} />
 
@@ -124,6 +74,10 @@ const App: React.FC = () => {
 
           <Route exact path="/:game/room/:roomId">
             <Room />
+          </Route>
+
+          <Route exact path="/:game/game/:gameId">
+            <Game />
           </Route>
         </Switch>
       </Root>

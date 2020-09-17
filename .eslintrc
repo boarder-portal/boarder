@@ -30,6 +30,7 @@
         "newlinesBetween": "always",
         "groups": [
           "module",
+          "/constants/",
           "/queries/",
           "/(/|^)types?(/|$)/",
           "/utilities\\//",
@@ -44,6 +45,7 @@
     "@typescript-eslint/interface-name-prefix": ["error", "always"],
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "array-bracket-spacing": [
