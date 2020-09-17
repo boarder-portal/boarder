@@ -212,13 +212,24 @@ class Room extends Component {
   onUpdateGame = ({ event, data, players }) => {
     this.setState((state) => ({
       players: players || state.players,
-      isMyTurn: this.getIsMyTurn(state.role, players)
+      ...(
+        players
+          ? { isMyTurn: this.getIsMyTurn(state.role, players) }
+          : {}
+      )
     }), () => {
       this.emitter.emit(event, data);
     });
   };
 
   render() {
+    const {
+      match: {
+        params: {
+          game
+        }
+      }
+    } = this.props;
     const {
       status,
       ready,

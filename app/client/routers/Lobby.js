@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import io from 'socket.io-client';
 
 import { matchType } from '../constants';
@@ -97,9 +98,9 @@ class Lobby extends Component {
     }
   }
 
-  onChangePexesoSet = (pexesoChosenSet) => {
+  onChangePexesoSet = (e) => {
     this.setState({
-      pexesoChosenSet
+      pexesoChosenSet: e.target.value
     });
   };
 
@@ -138,6 +139,13 @@ class Lobby extends Component {
   };
 
   render() {
+    const {
+      match: {
+        params: {
+          game
+        }
+      }
+    } = this.props;
     const {
       rooms,
       pexesoChosenSet

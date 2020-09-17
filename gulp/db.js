@@ -30,3 +30,15 @@ export const dbSeedRerun = gulp.series(dbSeedUndoAll, dbSeed);
 export function dbSeedUndoAll() {
   return run('sequelize db:seed:undo:all').exec();
 }
+
+export function dbCreate() {
+  return run('sequelize db:create --debug').exec();
+}
+
+export const dbReset = gulp.series(dbDrop, dbCreate, dbMigrate, dbSeed);
+
+export const dbResetContent = gulp.series(dbMigrationUndoAll, dbMigrate, dbSeed);
+
+export function dbDrop() {
+  return run('sequelize db:drop --debug').exec();
+}
