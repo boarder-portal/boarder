@@ -10,6 +10,7 @@ import {
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
   IPexesoPlayer,
+  IPexesoRoomOptions,
 } from 'common/types/pexeso';
 import { EGame } from 'common/types';
 import { IAuthSocket } from 'server/types';
@@ -32,12 +33,23 @@ class PexesoGame extends Game<IPexesoPlayer> {
     [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
   }
 
+  options: IPexesoRoomOptions;
   cards: IPexesoCard[][] = [];
   openedCardsCoords: IPexesoCardCoords[] = [];
   isShowingCards = false;
 
-  constructor({ game, players }: { game: EGame; players: IPexesoPlayer[] }) {
+  constructor({
+    game,
+    players,
+    options,
+  }: {
+    game: EGame;
+    players: IPexesoPlayer[];
+    options: IPexesoRoomOptions;
+  }) {
     super({ game, players });
+
+    this.options = options;
 
     this.createGameInfo();
   }
@@ -72,6 +84,7 @@ class PexesoGame extends Game<IPexesoPlayer> {
 
   onGetGameInfo({ socket }: { socket: IAuthSocket }) {
     socket.emit(EPexesoGameEvent.GAME_INFO, {
+      options: this.options,
       cards: this.cards,
       openedCardsCoords: this.openedCardsCoords,
       players: this.players,

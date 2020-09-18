@@ -9,6 +9,22 @@ export enum EPexesoGameEvent {
   UPDATE_PLAYERS = 'UPDATE_PLAYERS',
 }
 
+export enum EPexesoSet {
+  COMMON = 'common',
+  FRIENDS = 'friends',
+  GAME_OF_THRONES = 'gameOfThrones',
+  HARRY_POTTER = 'harryPotter',
+  LOST = 'lost',
+  PHILADELPHIA = 'philadelphia',
+  PIRATES = 'pirates',
+  POKER = 'poker',
+  STAR_WARS = 'starWars',
+}
+
+export interface IPexesoRoomOptions {
+  set: EPexesoSet;
+}
+
 export interface IPexesoPlayer extends IPlayer {
   isActive: boolean;
   score: number;
@@ -25,6 +41,7 @@ export interface IPexesoCardCoords {
 }
 
 export interface IPexesoGameInfoEvent {
+  options: IPexesoRoomOptions;
   cards: IPexesoCard[][];
   openedCardsCoords: IPexesoCardCoords[];
   players: IPexesoPlayer[];

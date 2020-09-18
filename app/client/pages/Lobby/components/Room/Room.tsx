@@ -19,6 +19,7 @@ const Room: React.FC<IRoomProps> = (props) => {
     room: {
       id,
       players,
+      options,
     },
     onEnter,
   } = props;
@@ -29,6 +30,10 @@ const Room: React.FC<IRoomProps> = (props) => {
       onClick={() => onEnter(id)}
     >
       <div>{id}</div>
+
+      <Box ml={20}>
+        {options.set}
+      </Box>
 
       <Box ml={20}>
         {players.map(({ login }) => login).join(', ')}

@@ -4,6 +4,7 @@ import uuid from 'uuid/v4';
 import { IAuthSocket } from 'server/types';
 import { EGame, EPlayerStatus, IPlayer } from 'common/types';
 import { ERoomEvent } from 'common/types/room';
+import { IPexesoRoomOptions } from 'common/types/pexeso';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -16,10 +17,12 @@ class Room {
   id: string;
   players: IPlayer[];
   game: Game<IPlayer> | null;
+  options: IPexesoRoomOptions;
 
-  constructor({ game }: { game: EGame }) {
+  constructor({ game, options }: { game: EGame; options: IPexesoRoomOptions }) {
     this.id = uuid();
     this.players = [];
+    this.options = options;
     this.io = ioInstance.of(`/${game}/room/${this.id}`);
     this.game = null;
 
@@ -55,11 +58,15 @@ class Room {
 
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
           if (game === EGame.PEXESO) {
-            this.game = new PexesoGame({ game, players: this.players.map((player) => ({
-              ...player,
-              isActive: false,
-              score: 0,
-            })) });
+            this.game = new PexesoGame({
+              game,
+              players: this.players.map((player) => ({
+                ...player,
+                isActive: false,
+                score: 0,
+              })),
+              options,
+            });
           }
 
           if (!this.game) {

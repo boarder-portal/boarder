@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FormControl, InputLabel, MenuItem, Select as MuiSelect } from '@material-ui/core';
 
 interface ISelectProps {
@@ -7,7 +7,7 @@ interface ISelectProps {
   value: string | string[];
   options: { text: string; value: string }[];
   multiple?: boolean;
-  onChange(e: React.ChangeEvent<{value: string | string[]}>): void;
+  onChange(newValue: string | string[]): void;
 }
 
 const Select: React.FC<ISelectProps> = (props) => {
@@ -19,6 +19,10 @@ const Select: React.FC<ISelectProps> = (props) => {
     multiple = false,
     onChange,
   } = props;
+
+  const handleChange = useCallback((e: React.ChangeEvent<{value: string | string[]}>) => {
+    onChange(e.target.value);
+  }, [onChange]);
 
   return (
     <FormControl className="fromBlock">
@@ -32,7 +36,7 @@ const Select: React.FC<ISelectProps> = (props) => {
           disableAutoFocusItem: true,
           getContentAnchorEl: null,
         }}
-        onChange={onChange as any}
+        onChange={handleChange as any}
       >
         {options.map(({ text, value }) => (
           <MenuItem key={value} value={value}>{text}</MenuItem>

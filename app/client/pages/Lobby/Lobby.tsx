@@ -2,12 +2,24 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import io  from 'socket.io-client';
 
+import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+
 import { EGame } from 'common/types';
 import { ELobbyEvent, ILobby } from 'common/types/lobby';
+import { IPexesoRoomOptions } from 'common/types/pexeso';
 
 import Button from 'client/components/common/Button/Button';
 import Room from 'client/pages/Lobby/components/Room/Room';
 import Box from 'client/components/common/Box/Box';
+import GameOptions from 'client/pages/Lobby/components/GameOptions/GameOptions';
+
+const {
+  games: {
+    pexeso: {
+      defaultRoomSettings,
+    },
+  },
+} = GAMES_CONFIG;
 
 const Lobby: React.FC = () => {
   const { game } = useParams<{ game: EGame }>();
@@ -15,14 +27,15 @@ const Lobby: React.FC = () => {
   const ioRef = useRef<SocketIOClient.Socket>();
 
   const [lobby, setLobby] = useState<ILobby | null>(null);
+  const [roomOptions, setRoomOptions] = useState<IPexesoRoomOptions>(defaultRoomSettings);
 
   const handleCreateRoom = useCallback(() => {
     if (!ioRef.current) {
       return;
     }
 
-    ioRef.current.emit(ELobbyEvent.CREATE_ROOM);
-  }, []);
+    ioRef.current.emit(ELobbyEvent.CREATE_ROOM, roomOptions);
+  }, [roomOptions]);
 
   const handleEnterRoom = useCallback((roomId: string) => {
     if (!ioRef.current) {
@@ -56,8 +69,14 @@ const Lobby: React.FC = () => {
     <div>
       <Box size="xxl" bold>{game}</Box>
 
-      <Box mt={20}>
+      <Box flex alignItems="flex-end" between={8} mt={20}>
         <Button onClick={handleCreateRoom}>Создать комнату</Button>
+
+        <GameOptions
+          game={game}
+          options={roomOptions}
+          onOptionsChange={setRoomOptions}
+        />
       </Box>
 
       <Box between={8} mt={20}>

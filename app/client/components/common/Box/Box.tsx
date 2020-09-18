@@ -14,7 +14,7 @@ interface IBoxProps {
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
   flex?: boolean;
   column?: boolean;
-  alignItems?: 'center';
+  alignItems?: 'center' | 'flex-end';
   justifyContent?: 'center';
   background?: string;
   onClick?(): void;

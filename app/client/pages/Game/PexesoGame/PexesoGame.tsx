@@ -13,6 +13,7 @@ import {
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
   IPexesoPlayer,
+  IPexesoRoomOptions,
 } from 'common/types/pexeso';
 
 import Img from 'client/components/common/Img/Img';
@@ -61,6 +62,7 @@ const {
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io } = props;
 
+  const [options, setOptions] = useState<IPexesoRoomOptions | null>(null);
   const [cards, setCards] = useState<IPexesoCard[][]>([]);
   const [openedCardsCoords, setOpenedCardsCoords] = useState<IPexesoCardCoords[]>([]);
   const [players, setPlayers] = useState<IPexesoPlayer[]>([]);
@@ -83,7 +85,13 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GAME_EVENT, EPexesoGameEvent.GET_GAME_INFO);
 
-    io.on(EPexesoGameEvent.GAME_INFO, ({ cards, players, openedCardsCoords }: IPexesoGameInfoEvent) => {
+    io.on(EPexesoGameEvent.GAME_INFO, ({
+      options,
+      cards,
+      players,
+      openedCardsCoords,
+    }: IPexesoGameInfoEvent) => {
+      setOptions(options);
       setCards(cards);
       setOpenedCardsCoords(openedCardsCoords);
       setPlayers(players);
@@ -113,18 +121,24 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [io]);
 
   useEffect(() => {
+    if (!options) {
+      return;
+    }
+
     times(commonSet.width * commonSet.height / 2, (id) => {
       const image = new Image();
 
-      image.src = `/pexeso/sets/common/${id + 1}.jpg`;
+      image.src = `/pexeso/sets/${options.set}/${id + 1}.jpg`;
 
       imagesRef.current.push(image);
     });
-  }, []);
+  }, [options]);
 
-  if (!cards.length) {
+  if (!cards.length || !options) {
     return null;
   }
+
+  const { set } = options;
 
   return (
     <Root className={b()} flex between={20}>
@@ -139,7 +153,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   width={80}
                   height={80}
                   url={openedCardsCoords.find((card) => card.x === x && card.y === y) ?
-                    `/pexeso/sets/common/${card.id + 1}.jpg` :
+                    `/pexeso/sets/${set}/${card.id + 1}.jpg` :
                     '/pexeso/backs/default/0.jpg'
                   }
                   onClick={() => handleCardClick({ x, y })}
