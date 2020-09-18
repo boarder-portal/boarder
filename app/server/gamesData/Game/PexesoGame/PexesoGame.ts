@@ -92,7 +92,7 @@ class PexesoGame extends Game<IPexesoPlayer> {
   }
 
   onOpenCard({ data: { x, y } }: { data: { x: number; y: number } }) {
-    if (this.isShowingCards) {
+    if (this.isShowingCards || this.openedCardsCoords.some((cardCoords) => cardCoords.x === x && cardCoords.y === y)) {
       return;
     }
 
