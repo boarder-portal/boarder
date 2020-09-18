@@ -10,7 +10,7 @@ import {
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
   IPexesoPlayer,
-  IPexesoRoomOptions,
+  IPexesoGameOptions,
 } from 'common/types/pexeso';
 import { EGame } from 'common/types';
 import { IAuthSocket } from 'server/types';
@@ -33,7 +33,7 @@ class PexesoGame extends Game<IPexesoPlayer> {
     [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
   }
 
-  options: IPexesoRoomOptions;
+  options: IPexesoGameOptions;
   cards: IPexesoCard[][] = [];
   openedCardsCoords: IPexesoCardCoords[] = [];
   isShowingCards = false;
@@ -45,7 +45,7 @@ class PexesoGame extends Game<IPexesoPlayer> {
   }: {
     game: EGame;
     players: IPexesoPlayer[];
-    options: IPexesoRoomOptions;
+    options: IPexesoGameOptions;
   }) {
     super({ game, players });
 

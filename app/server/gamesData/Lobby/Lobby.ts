@@ -3,7 +3,7 @@ import { Namespace } from 'socket.io';
 import { ELobbyEvent } from 'common/types/lobby';
 import { IAuthSocket } from 'server/types';
 import { EGame, EPlayerStatus } from 'common/types';
-import { IPexesoRoomOptions } from 'common/types/pexeso';
+import { TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -21,7 +21,7 @@ class Lobby {
     this.io.on('connection', (socket: IAuthSocket) => {
       this.sendLobbyUpdate();
 
-      socket.on(ELobbyEvent.CREATE_ROOM, (options: IPexesoRoomOptions) => {
+      socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions) => {
         this.rooms.push(new Room({ game, options }));
 
         this.sendLobbyUpdate();

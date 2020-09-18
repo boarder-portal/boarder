@@ -21,7 +21,7 @@ export enum EPexesoSet {
   STAR_WARS = 'starWars',
 }
 
-export interface IPexesoRoomOptions {
+export interface IPexesoGameOptions {
   set: EPexesoSet;
 }
 
@@ -41,7 +41,7 @@ export interface IPexesoCardCoords {
 }
 
 export interface IPexesoGameInfoEvent {
-  options: IPexesoRoomOptions;
+  options: IPexesoGameOptions;
   cards: IPexesoCard[][];
   openedCardsCoords: IPexesoCardCoords[];
   players: IPexesoPlayer[];

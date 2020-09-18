@@ -13,7 +13,7 @@ import {
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
   IPexesoPlayer,
-  IPexesoRoomOptions,
+  IPexesoGameOptions,
 } from 'common/types/pexeso';
 
 import Img from 'client/components/common/Img/Img';
@@ -62,7 +62,7 @@ const {
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io } = props;
 
-  const [options, setOptions] = useState<IPexesoRoomOptions | null>(null);
+  const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
   const [cards, setCards] = useState<IPexesoCard[][]>([]);
   const [openedCardsCoords, setOpenedCardsCoords] = useState<IPexesoCardCoords[]>([]);
   const [players, setPlayers] = useState<IPexesoPlayer[]>([]);

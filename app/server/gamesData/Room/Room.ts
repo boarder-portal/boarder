@@ -4,7 +4,7 @@ import uuid from 'uuid/v4';
 import { IAuthSocket } from 'server/types';
 import { EGame, EPlayerStatus, IPlayer } from 'common/types';
 import { ERoomEvent } from 'common/types/room';
-import { IPexesoRoomOptions } from 'common/types/pexeso';
+import { TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -17,9 +17,9 @@ class Room {
   id: string;
   players: IPlayer[];
   game: Game<IPlayer> | null;
-  options: IPexesoRoomOptions;
+  options: TGameOptions;
 
-  constructor({ game, options }: { game: EGame; options: IPexesoRoomOptions }) {
+  constructor({ game, options }: { game: EGame; options: TGameOptions }) {
     this.id = uuid();
     this.players = [];
     this.options = options;
@@ -83,6 +83,7 @@ class Room {
     this.io.emit(ERoomEvent.UPDATE, {
       id: this.id,
       players: this.players,
+      options: this.options,
     });
   }
 }

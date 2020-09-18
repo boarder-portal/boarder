@@ -43,7 +43,7 @@ export const GAMES_CONFIG = {
           height: 6,
         },
       },
-      defaultRoomSettings: {
+      defaultGameOptions: {
         set: EPexesoSet.COMMON,
       },
     },

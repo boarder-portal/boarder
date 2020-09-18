@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 
-import { EPexesoSet, IPexesoRoomOptions } from 'common/types/pexeso';
+import { EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
 
 interface IPexesoGameOptionsProps {
-  options: IPexesoRoomOptions;
-  onOptionsChange(options: IPexesoRoomOptions): void;
+  options: IPexesoGameOptions;
+  onOptionsChange(options: IPexesoGameOptions): void;
 }
 
 const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {

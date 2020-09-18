@@ -55,7 +55,7 @@ const Room: React.FC = () => {
         ioRef.current.disconnect();
       }
     };
-  }, [game, roomId]);
+  }, [game, history, roomId]);
 
   if (!room || !user) {
     return null;

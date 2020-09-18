@@ -17,7 +17,7 @@ interface IBoxProps {
   alignItems?: 'center' | 'flex-end';
   justifyContent?: 'center';
   background?: string;
-  onClick?(): void;
+  onClick?(e: React.MouseEvent<HTMLDivElement>): void;
 }
 
 const TEXT_SIZES_MAP = {

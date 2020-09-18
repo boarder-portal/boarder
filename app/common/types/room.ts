@@ -1,5 +1,4 @@
 import { IPlayer } from 'common/types/index';
-import { IPexesoRoomOptions } from 'common/types/pexeso';
 
 export enum ERoomEvent {
   UPDATE = 'UPDATE',
@@ -7,8 +6,8 @@ export enum ERoomEvent {
   START_GAME = 'START_GAME',
 }
 
-export interface IRoom {
+export interface IRoom<Options = {}, Player extends IPlayer = IPlayer> {
   id: string;
-  players: IPlayer[];
-  options: IPexesoRoomOptions;
+  players: Player[];
+  options: Options;
 }

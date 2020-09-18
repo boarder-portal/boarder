@@ -17,10 +17,10 @@ import Header from 'client/components/Header/Header';
 import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
 import Login from 'client/pages/Login/Login';
-import Lobby from 'client/pages/Lobby/Lobby';
 import Room from 'client/pages/Room/Room';
 import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
+import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
 
 const Root = styled(Container)`
   &.App {
@@ -68,8 +68,8 @@ const App: React.FC = () => {
             <Login />
           </Route>
 
-          <Route exact path="/:game/lobby">
-            <Lobby />
+          <Route exact path="/pexeso/lobby">
+            <PexesoLobby />
           </Route>
 
           <Route exact path="/:game/room/:roomId">
