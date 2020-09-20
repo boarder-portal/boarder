@@ -44,6 +44,10 @@ export const GAMES_CONFIG = {
           width: 10,
           height: 6,
         },
+        [EPexesoSet.DST]: {
+          width: 10,
+          height: 6,
+        },
       },
       defaultGameOptions: {
         set: EPexesoSet.COMMON,
