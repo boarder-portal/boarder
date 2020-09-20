@@ -1,4 +1,7 @@
 import React, { useCallback } from 'react';
+import times from 'lodash/times';
+
+import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
 
@@ -10,17 +13,34 @@ interface IPexesoGameOptionsProps {
   onOptionsChange(options: IPexesoGameOptions): void;
 }
 
+const {
+  games: {
+    pexeso: {
+      minPlayersCount,
+      maxPlayersCount,
+    },
+  },
+} = GAMES_CONFIG;
+
 const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
 
   const handleSetChange = useCallback((updatedSet: EPexesoSet) => {
     onOptionsChange({
+      ...options,
       set: updatedSet,
     });
-  }, [onOptionsChange]);
+  }, [onOptionsChange, options]);
+
+  const handlePlayersCountChange = useCallback((updatedPlayersCount) => {
+    onOptionsChange({
+      ...options,
+      playersCount: updatedPlayersCount,
+    });
+  }, [onOptionsChange, options]);
 
   return (
-    <Box>
+    <Box flex column between={12}>
       <Select
         label="Сет"
         name="pexesoSet"
@@ -30,6 +50,17 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           text: name,
         }))}
         onChange={handleSetChange as any}
+      />
+
+      <Select
+        label="Количество игроков"
+        name="pexesoPlayersCount"
+        value={String(options.playersCount)}
+        options={times(maxPlayersCount - minPlayersCount + 1, (index) => ({
+          value: String(minPlayersCount + index),
+          text: String(minPlayersCount + index),
+        }))}
+        onChange={handlePlayersCountChange as any}
       />
     </Box>
   );

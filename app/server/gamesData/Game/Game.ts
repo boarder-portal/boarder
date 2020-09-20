@@ -23,17 +23,13 @@ class Game<Player extends IPlayer> {
     this.io.on('connection', (socket: IAuthSocket) => {
       const user = socket.user;
 
-      if (!user) {
-        return;
+      if (user) {
+        const player = this.players.find(({ login }) => login === user.login);
+
+        if (player) {
+          player.status = EPlayerStatus.PLAYING;
+        }
       }
-
-      const player = this.players.find(({ login }) => login === user.login);
-
-      if (!player) {
-        return;
-      }
-
-      player.status = EPlayerStatus.PLAYING;
 
       this.sendBaseGameInfo();
 

@@ -16,6 +16,7 @@ interface IBoxProps {
   column?: boolean;
   alignItems?: 'center' | 'flex-end';
   justifyContent?: 'center';
+  withWrap?: boolean;
   background?: string;
   onClick?(e: React.MouseEvent<HTMLDivElement>): void;
 }
@@ -33,6 +34,7 @@ const Root = styled.div`
   ${({ column }: IBoxProps) => column ? 'flex-direction: column;' : ''}
   ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}
   ${({ justifyContent }: IBoxProps) => justifyContent ? `justify-content: ${justifyContent};` : ''}
+  ${({ withWrap }: IBoxProps) => withWrap ? 'flex-wrap: wrap;' : ''}
   ${({ px }: IBoxProps) => px ? `
     padding-left: ${px}px;
     padding-right: ${px}px;
@@ -48,7 +50,7 @@ const Root = styled.div`
     `& > *:not(:first-child) { margin-${flex ? column ? 'top' : 'left' : 'top'}: ${between}px; }`
     : ''}
   ${({ bold }: IBoxProps) => bold ? 'font-weight: bold;' : ''}
-  ${({ size }: IBoxProps) => size ? `
+  ${({ size = 'm' }: IBoxProps) => size ? `
     font-size: ${TEXT_SIZES_MAP[size]}px;
     line-height: 1.2;
   ` : ''}

@@ -1,4 +1,5 @@
 import { IPlayer } from 'common/types';
+import { ICommonGameOptions } from 'common/types/room';
 
 export enum EPexesoGameEvent {
   GAME_INFO = 'GAME_INFO',
@@ -21,7 +22,7 @@ export enum EPexesoSet {
   STAR_WARS = 'starWars',
 }
 
-export interface IPexesoGameOptions {
+export interface IPexesoGameOptions extends ICommonGameOptions {
   set: EPexesoSet;
 }
 

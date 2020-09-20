@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
-import { useRecoilValue } from 'recoil';
 
 import { EGame, EPlayerStatus } from 'common/types';
 import { EGameEvent, IGame } from 'common/types/game';
 
-import userAtom from 'client/atoms/userAtom';
 import PexesoGame from 'client/pages/Game/PexesoGame/PexesoGame';
 
 const Game: React.FC = () => {
@@ -14,8 +12,6 @@ const Game: React.FC = () => {
   const ioRef = useRef<SocketIOClient.Socket>();
 
   const [gameData, setGameData] = useState<IGame | null>(null);
-
-  const user = useRecoilValue(userAtom);
 
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
@@ -31,7 +27,7 @@ const Game: React.FC = () => {
     };
   }, [game, gameId]);
 
-  if (!gameData || !user || !ioRef.current) {
+  if (!gameData || !ioRef.current) {
     return null;
   }
 

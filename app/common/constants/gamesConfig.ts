@@ -5,6 +5,8 @@ export const GAMES_CONFIG = {
   games: {
     [EGame.PEXESO]: {
       name: EGame.PEXESO,
+      minPlayersCount: 2,
+      maxPlayersCount: 4,
       sets: {
         [EPexesoSet.COMMON]: {
           width: 10,
@@ -45,6 +47,7 @@ export const GAMES_CONFIG = {
       },
       defaultGameOptions: {
         set: EPexesoSet.COMMON,
+        playersCount: 2,
       },
     },
   },

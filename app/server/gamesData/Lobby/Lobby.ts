@@ -29,13 +29,20 @@ class Lobby {
 
       socket.on(ELobbyEvent.ENTER_ROOM, (roomId: string) => {
         const room = this.rooms.find(({ id }) => id === roomId);
+        const { user } = socket;
 
-        if (!room || !socket.user) {
+        if (!room || !user || room.players.length === room.options.playersCount) {
+          return;
+        }
+
+        const player = room.players.find(({ login }) => login === user.login);
+
+        if (player) {
           return;
         }
 
         room.players.push({
-          ...socket.user,
+          ...user,
           status: EPlayerStatus.NOT_READY,
         });
 

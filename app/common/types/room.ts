@@ -6,7 +6,11 @@ export enum ERoomEvent {
   START_GAME = 'START_GAME',
 }
 
-export interface IRoom<Options = {}, Player extends IPlayer = IPlayer> {
+export interface ICommonGameOptions {
+  playersCount: number;
+}
+
+export interface IRoom<Options = ICommonGameOptions, Player extends IPlayer = IPlayer> {
   id: string;
   players: Player[];
   options: Options;
