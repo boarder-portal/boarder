@@ -46,6 +46,8 @@
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/ban-ts-ignore": 0,
+    "no-unused-expressions": 0,
+    "@typescript-eslint/no-unused-expressions": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "array-bracket-spacing": [
@@ -205,7 +207,6 @@
     "no-undef-init": 2,
     "no-unmodified-loop-condition": 2,
     "no-unneeded-ternary": 2,
-    "no-unused-expressions": 2,
     "no-unused-vars": 0,
     "no-use-before-define": 0,
     "no-useless-call": 2,

@@ -22,6 +22,38 @@ import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
 
+const GlobalStyle = createGlobalStyle`
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  #root {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body {
+    color: #333;
+  }
+
+  h1 {
+    font-size: 100%;
+    margin: 0;
+  }
+
+  a,
+  a:visited {
+    color: inherit;
+    text-decoration: none;
+  }
+`;
+
 const Root = styled(Container)`
   &.App {
     display: flex;
@@ -51,6 +83,7 @@ const App: React.FC = () => {
     <>
       <Reset />
       <Normalize />
+      <GlobalStyle />
 
       <Header user={user} />
 

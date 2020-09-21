@@ -22,6 +22,7 @@ const typeDefs = gql`
   type Mutation {
     register(user: AddUserInput!): User!
     login(user: UserLoginInput!): User!
+    logout: Boolean!
   }
 `;
 

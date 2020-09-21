@@ -40,6 +40,11 @@ const resolvers = {
         login: authUser.login,
       };
     },
+    logout(parent: void, _: void, context: { session: ISession }): boolean {
+      context.session.destroy?.();
+
+      return true;
+    },
   },
 };
 

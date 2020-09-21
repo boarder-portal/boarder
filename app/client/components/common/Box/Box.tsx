@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface IBoxProps {
+export interface IBoxProps {
   className?: string;
   children: React.ReactNode;
   px?: number;
@@ -18,6 +18,7 @@ interface IBoxProps {
   justifyContent?: 'center';
   withWrap?: boolean;
   background?: string;
+  innerRef?: React.RefObject<HTMLDivElement>;
   onClick?(e: React.MouseEvent<HTMLDivElement>): void;
 }
 
@@ -58,10 +59,10 @@ const Root = styled.div`
 `;
 
 const Box: React.FC<IBoxProps> = (props) => {
-  const { className, children } = props;
+  const { className, children, innerRef } = props;
 
   return (
-    <Root className={className} {...props}>{children}</Root>
+    <Root className={className} ref={innerRef} {...props}>{children}</Root>
   );
 };
 
