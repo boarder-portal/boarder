@@ -57,7 +57,10 @@ class PexesoGame extends Game<IPexesoPlayer> {
   createGameInfo() {
     const cards: IPexesoCard[][] = [];
 
-    const shuffledIds = shuffle(flatten(times(commonSet.width * commonSet.height / 2, (id) => [id, id])));
+    const shuffledIds = shuffle(flatten(times(
+      commonSet.width * commonSet.height / this.options.sameCardsCount,
+      (id) => new Array(this.options.sameCardsCount).fill(id),
+    )));
 
     times(commonSet.height, (y) => {
       cards.push([]);
@@ -100,28 +103,23 @@ class PexesoGame extends Game<IPexesoPlayer> {
 
     this.io.emit(EPexesoGameEvent.OPEN_CARD, { x, y });
 
-    if (this.openedCardsCoords.length === 2) {
+    if (this.openedCardsCoords.length === this.options.sameCardsCount) {
       this.isShowingCards = true;
 
       setTimeout(() => {
-        const [firstCoords, secondCoords] = this.openedCardsCoords;
-        const firstCard = this.cards[firstCoords.y][firstCoords.x];
-        const secondCard = this.cards[secondCoords.y][secondCoords.x];
-
-        const areOpenedCardsSame = firstCard.id === secondCard.id;
-
-        this.openedCardsCoords = [];
-
+        const openedCards = this.openedCardsCoords.map(({ x, y }) => this.cards[y][x]);
+        const areOpenedCardsSame = openedCards.every(({ id }) => id === openedCards[0].id);
         const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
         let nextActivePlayerIndex = activePlayerIndex;
 
         if (areOpenedCardsSame) {
-          firstCard.isInGame = false;
-          secondCard.isInGame = false;
+          for (const openedCard of openedCards) {
+            openedCard.isInGame = false;
+          }
 
           this.players[activePlayerIndex].score++;
 
-          this.io.emit(EPexesoGameEvent.REMOVE_CARDS, [firstCoords, secondCoords]);
+          this.io.emit(EPexesoGameEvent.REMOVE_CARDS, this.openedCardsCoords);
         } else {
           nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
 
@@ -135,6 +133,7 @@ class PexesoGame extends Game<IPexesoPlayer> {
         this.io.emit(EPexesoGameEvent.UPDATE_PLAYERS, this.players);
 
         this.isShowingCards = false;
+        this.openedCardsCoords = [];
       }, 2000);
     }
   }

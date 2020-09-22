@@ -125,7 +125,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       return;
     }
 
-    times(commonSet.width * commonSet.height / 2, (id) => {
+    times(commonSet.width * commonSet.height / options.sameCardsCount, (id) => {
       const image = new Image();
 
       image.src = `/pexeso/sets/${options.set}/${id}/0.jpg`;
@@ -154,7 +154,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   height={80}
                   url={openedCardsCoords.find((card) => card.x === x && card.y === y) ?
                     `/pexeso/sets/${set}/${card.id}/0.jpg` :
-                    '/pexeso/backs/default/0.jpg'
+                    '/pexeso/backs/default/2.jpg'
                   }
                   onClick={() => handleCardClick({ x, y })}
                 />

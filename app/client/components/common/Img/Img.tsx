@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-interface IPhotoProps {
+interface IImgProps {
   className?: string;
   url: string;
   width: number | 'max';
@@ -10,19 +10,19 @@ interface IPhotoProps {
   onClick?(): void;
 }
 
-const b = block('Photo');
+const b = block('Img');
 
 const Root = styled.div`
-  width: ${({ width }: IPhotoProps) => width === 'max' ? '100%' : `${width}px`};
-  height: ${({ height }: IPhotoProps) => `${height}px`};
-  background-image: ${({ url }: IPhotoProps) => `url(${url})`};
+  width: ${({ width }: IImgProps) => width === 'max' ? '100%' : `${width}px`};
+  height: ${({ height }: IImgProps) => `${height}px`};
+  background-image: ${({ url }: IImgProps) => `url(${url})`};
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 8px;
 `;
 
-const Img: React.FC<IPhotoProps> = (props) => {
+const Img: React.FC<IImgProps> = (props) => {
   const { className } = props;
 
   return (

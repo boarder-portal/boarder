@@ -32,10 +32,17 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
-  const handlePlayersCountChange = useCallback((updatedPlayersCount) => {
+  const handlePlayersCountChange = useCallback((updatedPlayersCount: number) => {
     onOptionsChange({
       ...options,
       playersCount: updatedPlayersCount,
+    });
+  }, [onOptionsChange, options]);
+
+  const handleSameCardsCountChange = useCallback((sameCardsCount: number) => {
+    onOptionsChange({
+      ...options,
+      sameCardsCount,
     });
   }, [onOptionsChange, options]);
 
@@ -49,18 +56,29 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           value: name,
           text: name,
         }))}
-        onChange={handleSetChange as any}
+        onChange={handleSetChange}
       />
 
       <Select
         label="Количество игроков"
         name="pexesoPlayersCount"
-        value={String(options.playersCount)}
+        value={options.playersCount}
         options={times(maxPlayersCount - minPlayersCount + 1, (index) => ({
-          value: String(minPlayersCount + index),
-          text: String(minPlayersCount + index),
+          value: minPlayersCount + index,
+          text: minPlayersCount + index,
         }))}
-        onChange={handlePlayersCountChange as any}
+        onChange={handlePlayersCountChange}
+      />
+
+      <Select
+        label="Количество одинаковых карточек"
+        name="pexesoSameCardsCount"
+        value={options.sameCardsCount}
+        options={[2, 3, 4].map((count) => ({
+          value: count,
+          text: count,
+        }))}
+        onChange={handleSameCardsCountChange}
       />
     </Box>
   );

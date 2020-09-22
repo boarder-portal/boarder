@@ -1,16 +1,30 @@
 import React, { useCallback } from 'react';
 import { FormControl, InputLabel, MenuItem, Select as MuiSelect } from '@material-ui/core';
 
-interface ISelectProps {
+import typedReactMemo from 'client/types/typedReactMemo';
+
+interface ISelectCommonProps {
   label: string;
   name: string;
-  value: string | string[];
-  options: { text: string; value: string }[];
-  multiple?: boolean;
-  onChange(newValue: string | string[]): void;
 }
 
-const Select: React.FC<ISelectProps> = (props) => {
+interface ISelectSingleProps<Value> extends ISelectCommonProps {
+  value: Value;
+  options: { text: React.ReactNode; value: Value }[];
+  multiple?: false;
+  onChange(newValue: Value): void;
+}
+
+interface ISelectMultipleProps<Value> extends ISelectCommonProps {
+  value: Value[];
+  options: { text: React.ReactNode; value: Value }[];
+  multiple: true;
+  onChange(newValue: Value[]): void;
+}
+
+type TSelectProps<Value> = ISelectSingleProps<Value> | ISelectMultipleProps<Value>;
+
+const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
   const {
     label,
     name,
@@ -20,8 +34,8 @@ const Select: React.FC<ISelectProps> = (props) => {
     onChange,
   } = props;
 
-  const handleChange = useCallback((e: React.ChangeEvent<{value: string | string[]}>) => {
-    onChange(e.target.value);
+  const handleChange = useCallback((e: React.ChangeEvent<{value: unknown}>) => {
+    onChange(e.target.value as any);
   }, [onChange]);
 
   return (
@@ -36,14 +50,16 @@ const Select: React.FC<ISelectProps> = (props) => {
           disableAutoFocusItem: true,
           getContentAnchorEl: null,
         }}
-        onChange={handleChange as any}
+        onChange={handleChange}
       >
         {options.map(({ text, value }) => (
-          <MenuItem key={value} value={value}>{text}</MenuItem>
+          <MenuItem key={value} value={value}>
+            {text}
+          </MenuItem>
         ))}
       </MuiSelect>
     </FormControl>
   );
 };
 
-export default React.memo(Select);
+export default typedReactMemo(Select);

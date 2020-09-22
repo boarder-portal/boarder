@@ -52,6 +52,7 @@ export const GAMES_CONFIG = {
       defaultGameOptions: {
         set: EPexesoSet.COMMON,
         playersCount: 2,
+        sameCardsCount: 2,
       },
     },
   },

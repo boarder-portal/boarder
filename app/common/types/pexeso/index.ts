@@ -25,6 +25,7 @@ export enum EPexesoSet {
 
 export interface IPexesoGameOptions extends ICommonGameOptions {
   set: EPexesoSet;
+  sameCardsCount: number;
 }
 
 export interface IPexesoPlayer extends IPlayer {
