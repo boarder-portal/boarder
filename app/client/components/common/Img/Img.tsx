@@ -7,7 +7,8 @@ interface IImgProps {
   url: string;
   width: number | 'max';
   height: number;
-  onClick?(): void;
+  onClick?(e: React.MouseEvent): void;
+  onContextMenu?(e: React.MouseEvent): void;
 }
 
 const b = block('Img');

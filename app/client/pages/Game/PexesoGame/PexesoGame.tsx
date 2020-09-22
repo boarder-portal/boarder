@@ -31,6 +31,22 @@ const Root = styled(Box)`
   .PexesoGame {
     &__card {
       cursor: pointer;
+
+      &_highlighted {
+        position: relative;
+
+        &:after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background-color: #f00;
+        }
+      }
     }
 
     &__empty {
@@ -65,6 +81,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
   const [cards, setCards] = useState<IPexesoCard[][]>([]);
   const [openedCardsCoords, setOpenedCardsCoords] = useState<IPexesoCardCoords[]>([]);
+  const [highlightedCardsCoords, setHighlightedCardsCoords] = useState<IPexesoCardCoords[]>([]);
   const [players, setPlayers] = useState<IPexesoPlayer[]>([]);
   const imagesRef = useRef<HTMLImageElement[]>([]);
 
@@ -79,8 +96,28 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       return;
     }
 
+    setHighlightedCardsCoords([]);
+
     io.emit(EGameEvent.GAME_EVENT, EPexesoGameEvent.OPEN_CARD, { x, y });
   }, [io, player]);
+
+  const handleCardRightClick = useCallback((e: React.MouseEvent, { x, y }: IPexesoCardCoords) => {
+    e.preventDefault();
+
+    const highlightedIndex = highlightedCardsCoords.findIndex((coords) => coords.x === x && coords.y === y);
+
+    if (highlightedIndex === -1) {
+      setHighlightedCardsCoords([
+        ...highlightedCardsCoords,
+        { x, y },
+      ]);
+    } else {
+      setHighlightedCardsCoords([
+        ...highlightedCardsCoords.slice(0, highlightedIndex),
+        ...highlightedCardsCoords.slice(highlightedIndex + 1),
+      ]);
+    }
+  }, [highlightedCardsCoords]);
 
   useEffect(() => {
     io.emit(EGameEvent.GAME_EVENT, EPexesoGameEvent.GET_GAME_INFO);
@@ -103,6 +140,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
     io.on(EPexesoGameEvent.HIDE_CARDS, () => {
       setOpenedCardsCoords([]);
+      setHighlightedCardsCoords([]);
     });
 
     io.on(EPexesoGameEvent.REMOVE_CARDS, (removedCardsCoords: IPexesoCardCoords[]) => {
@@ -113,6 +151,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
         return cards;
       });
+      setHighlightedCardsCoords([]);
     });
 
     io.on(EPexesoGameEvent.UPDATE_PLAYERS, (players: IPexesoPlayer[]) => {
@@ -149,14 +188,17 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
               card.isInGame ? (
                 <Img
                   key={x}
-                  className={b('card')}
+                  className={b('card', {
+                    highlighted: highlightedCardsCoords.some((coords) => coords.x === x && coords.y === y),
+                  })}
                   width={80}
                   height={80}
-                  url={openedCardsCoords.find((card) => card.x === x && card.y === y) ?
+                  url={openedCardsCoords.some((card) => card.x === x && card.y === y) ?
                     `/pexeso/sets/${set}/${card.id}/0.jpg` :
                     '/pexeso/backs/default/2.jpg'
                   }
                   onClick={() => handleCardClick({ x, y })}
+                  onContextMenu={(e) => handleCardRightClick(e, { x, y })}
                 />
               ) : (
                 <div key={x} className={b('empty')} />
@@ -177,7 +219,6 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         ))}
       </Box>
     </Root>
-
   );
 };
 
