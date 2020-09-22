@@ -128,7 +128,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     times(commonSet.width * commonSet.height / 2, (id) => {
       const image = new Image();
 
-      image.src = `/pexeso/sets/${options.set}/${id + 1}.jpg`;
+      image.src = `/pexeso/sets/${options.set}/${id}/0.jpg`;
 
       imagesRef.current.push(image);
     });
@@ -153,7 +153,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   width={80}
                   height={80}
                   url={openedCardsCoords.find((card) => card.x === x && card.y === y) ?
-                    `/pexeso/sets/${set}/${card.id + 1}.jpg` :
+                    `/pexeso/sets/${set}/${card.id}/0.jpg` :
                     '/pexeso/backs/default/0.jpg'
                   }
                   onClick={() => handleCardClick({ x, y })}
