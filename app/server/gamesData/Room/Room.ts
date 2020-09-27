@@ -67,6 +67,7 @@ class Room<G extends EGame> implements IRoom<G> {
             this.game = new (GAMES_MAP[game] as { new (options: IGameCreateOptions<G>): Game<G> })({
               game,
               options,
+              players: this.players,
             });
           }
 

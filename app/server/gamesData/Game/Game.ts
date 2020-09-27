@@ -12,19 +12,21 @@ import ioInstance from 'server/io';
 export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
   options: TGameOptions<Game>;
+  players: IPlayer[];
 }
 
 abstract class Game<G extends EGame> {
   io: Namespace;
   id: string;
-  players: TGamePlayer<G>[] = [];
+  players: TGamePlayer<G>[];
   options: TGameOptions<G>;
 
   abstract handlers: Partial<Record<TGameEvent<G>, (event: IGameEvent<any>) => void>>;
 
-  protected constructor({ game, options }: IGameCreateOptions<G>) {
+  protected constructor({ game, options, players }: IGameCreateOptions<G>) {
     this.id = uuid();
     this.options = options;
+    this.players = players.map((player) => this.createPlayer(player));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
 
     this.io.use(ioSessionMiddleware as any);
