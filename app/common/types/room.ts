@@ -1,4 +1,4 @@
-import { EGame, TGamePlayer } from 'common/types/index';
+import { EGame, IPlayer } from 'common/types/index';
 import { TGameOptions } from 'common/types/game';
 
 export enum ERoomEvent {
@@ -13,6 +13,6 @@ export interface ICommonGameOptions {
 
 export interface IRoom<Game extends EGame> {
   id: string;
-  players: TGamePlayer<Game>[];
+  players: IPlayer[];
   options: TGameOptions<Game>;
 }

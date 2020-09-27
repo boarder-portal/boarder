@@ -9,9 +9,11 @@ import {
   IPexesoCard,
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
+  IPexesoOpenCardEvent,
+  IPexesoPlayer,
 } from 'common/types/pexeso';
-import { EGame } from 'common/types';
-import { IAuthSocket } from 'server/types';
+import { EGame, IPlayer } from 'common/types';
+import { IGameEvent } from 'server/types';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -29,7 +31,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
   handlers = {
     [EPexesoGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
     [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
-  }
+  };
 
   cards: IPexesoCard[][] = [];
   openedCardsCoords: IPexesoCardCoords[] = [];
@@ -72,7 +74,15 @@ class PexesoGame extends Game<EGame.PEXESO> {
     }));
   }
 
-  onGetGameInfo({ socket }: { socket: IAuthSocket }) {
+  createPlayer(roomPlayer: IPlayer): IPexesoPlayer {
+    return {
+      ...roomPlayer,
+      isActive: false,
+      score: 0,
+    };
+  }
+
+  onGetGameInfo({ socket }: IGameEvent) {
     socket.emit(EPexesoGameEvent.GAME_INFO, {
       options: this.options,
       cards: this.cards,
@@ -81,7 +91,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
     } as IPexesoGameInfoEvent);
   }
 
-  onOpenCard({ data: { x, y } }: { data: { x: number; y: number } }) {
+  onOpenCard({ data: { x, y } }: IGameEvent<IPexesoOpenCardEvent>) {
     if (this.isShowingCards || this.openedCardsCoords.some((cardCoords) => cardCoords.x === x && cardCoords.y === y)) {
       return;
     }

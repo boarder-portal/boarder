@@ -1,5 +1,9 @@
-import { IPexesoGameOptions, IPexesoPlayer } from 'common/types/pexeso';
-import { ISurvivalOnlineGameOptions, ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
+import { EPexesoGameEvent, IPexesoGameOptions, IPexesoPlayer } from 'common/types/pexeso';
+import {
+  ESurvivalOnlineGameEvent,
+  ISurvivalOnlineGameOptions,
+  ISurvivalOnlinePlayer,
+} from 'common/types/survivalOnline';
 
 export enum EGame {
   PEXESO = 'pexeso',
@@ -28,10 +32,12 @@ export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
 
 export interface IGameParams {
   pexeso: {
+    event: EPexesoGameEvent;
     options: IPexesoGameOptions;
     player: IPexesoPlayer;
   };
   survivalOnline: {
+    event: ESurvivalOnlineGameEvent;
     options: ISurvivalOnlineGameOptions;
     player: ISurvivalOnlinePlayer;
   };

@@ -10,3 +10,8 @@ export interface ISession {
 export interface IAuthSocket extends Socket {
   user: IUser | null;
 }
+
+export interface IGameEvent<Data = undefined> {
+  socket: IAuthSocket;
+  data: Data;
+}

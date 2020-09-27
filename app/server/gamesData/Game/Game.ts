@@ -1,9 +1,9 @@
 import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 
-import { IAuthSocket } from 'server/types';
-import { EGame, EPlayerStatus, TGamePlayer } from 'common/types';
-import { EGameEvent, TGameOptions } from 'common/types/game';
+import { IAuthSocket, IGameEvent } from 'server/types';
+import { EGame, EPlayerStatus, IPlayer, TGamePlayer } from 'common/types';
+import { EGameEvent, TGameEvent, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -11,19 +11,19 @@ import ioInstance from 'server/io';
 
 export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
-  players: TGamePlayer<Game>[];
   options: TGameOptions<Game>;
 }
 
-class Game<G extends EGame> {
+abstract class Game<G extends EGame> {
   io: Namespace;
   id: string;
-  players: TGamePlayer<G>[];
+  players: TGamePlayer<G>[] = [];
   options: TGameOptions<G>;
 
-  constructor({ game, players, options }: IGameCreateOptions<G>) {
+  abstract handlers: Partial<Record<TGameEvent<G>, (event: IGameEvent<any>) => void>>;
+
+  protected constructor({ game, options }: IGameCreateOptions<G>) {
     this.id = uuid();
-    this.players = players;
     this.options = options;
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
 
@@ -50,6 +50,8 @@ class Game<G extends EGame> {
       });
     });
   }
+
+  abstract createPlayer(roomPlayer: IPlayer): TGamePlayer<G>;
 
   sendBaseGameInfo() {
     this.io.emit(EGameEvent.UPDATE, {

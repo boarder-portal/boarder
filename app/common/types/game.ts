@@ -5,6 +5,8 @@ export enum EGameEvent {
   GAME_EVENT = 'GAME_EVENT',
 }
 
+export type TGameEvent<Game extends EGame> = IGameParams[Game]['event'];
+
 export interface IGame {
   id: string;
   players: IPlayer[];

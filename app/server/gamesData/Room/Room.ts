@@ -66,11 +66,6 @@ class Room<G extends EGame> implements IRoom<G> {
           if (game in GAMES_MAP) {
             this.game = new (GAMES_MAP[game] as { new (options: IGameCreateOptions<G>): Game<G> })({
               game,
-              players: this.players.map((player) => ({
-                ...player,
-                isActive: false,
-                score: 0,
-              })),
               options,
             });
           }
