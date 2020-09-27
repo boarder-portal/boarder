@@ -46,9 +46,9 @@ for (let y = 1; y < MAP_HEIGHT - 1; y++) {
 
 const START_TREE_COUNT = Math.round(MAP_WIDTH * MAP_HEIGHT * 0.05);
 const START_ZOMBIE_COUNT = Math.round(EDGE_CELLS.length * 0.1);
-const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 1);
+const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 0.25);
 
-const ZOMBIES_MOVE_INTERVAL = 200;
+const ZOMBIES_MOVE_INTERVAL = 500;
 const ZOMBIES_GENERATE_INTERVAL = 30 * 1000;
 
 class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
