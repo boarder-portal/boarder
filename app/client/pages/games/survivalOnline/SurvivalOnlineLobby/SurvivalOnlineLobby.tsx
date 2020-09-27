@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame } from 'common/types';
-import { ISurvivalOnlineGameOptions, ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
+import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
 
 import Lobby from 'client/components/Lobby/Lobby';
 import SurvivalOnlineGameOptions
@@ -26,7 +26,7 @@ const SurvivalOnlineLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<ISurvivalOnlineGameOptions, ISurvivalOnlinePlayer>(EGame.SURVIVAL_ONLINE, options);
+  } = useLobby<EGame.SURVIVAL_ONLINE>(EGame.SURVIVAL_ONLINE, options);
 
   const optionsBlock = useMemo(() => {
     return (

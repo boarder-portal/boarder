@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame } from 'common/types';
-import { IPexesoGameOptions, IPexesoPlayer } from 'common/types/pexeso';
+import { IPexesoGameOptions } from 'common/types/pexeso';
 
 import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
 import Box from 'client/components/common/Box/Box';
@@ -26,7 +26,7 @@ const PexesoLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<IPexesoGameOptions, IPexesoPlayer>(EGame.PEXESO, options);
+  } = useLobby<EGame.PEXESO>(EGame.PEXESO, options);
 
   const optionsBlock = useMemo(() => {
     return (

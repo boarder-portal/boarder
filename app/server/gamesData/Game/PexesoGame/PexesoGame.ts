@@ -9,13 +9,11 @@ import {
   IPexesoCard,
   IPexesoGameInfoEvent,
   IPexesoCardCoords,
-  IPexesoPlayer,
-  IPexesoGameOptions,
 } from 'common/types/pexeso';
 import { EGame } from 'common/types';
 import { IAuthSocket } from 'server/types';
 
-import Game from 'server/gamesData/Game/Game';
+import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
 const {
   games: {
@@ -27,29 +25,18 @@ const {
   },
 } = GAMES_CONFIG;
 
-class PexesoGame extends Game<IPexesoPlayer> {
+class PexesoGame extends Game<EGame.PEXESO> {
   handlers = {
     [EPexesoGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
     [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
   }
 
-  options: IPexesoGameOptions;
   cards: IPexesoCard[][] = [];
   openedCardsCoords: IPexesoCardCoords[] = [];
   isShowingCards = false;
 
-  constructor({
-    game,
-    players,
-    options,
-  }: {
-    game: EGame;
-    players: IPexesoPlayer[];
-    options: IPexesoGameOptions;
-  }) {
-    super({ game, players });
-
-    this.options = options;
+  constructor(options: IGameCreateOptions<EGame.PEXESO>) {
+    super(options);
 
     this.createGameInfo();
   }

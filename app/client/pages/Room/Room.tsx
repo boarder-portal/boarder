@@ -27,7 +27,7 @@ const Room: React.FC = () => {
   const ioRef = useRef<SocketIOClient.Socket>();
   const history = useHistory();
 
-  const [room, setRoom] = useState<IRoom | null>(null);
+  const [room, setRoom] = useState<IRoom<EGame> | null>(null);
 
   const user = useRecoilValue(userAtom);
 
@@ -42,7 +42,7 @@ const Room: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/room/${roomId}`);
 
-    ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoom) => {
+    ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoom<EGame>) => {
       setRoom(roomData);
     });
 

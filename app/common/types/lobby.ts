@@ -1,5 +1,5 @@
 import { IRoom } from 'common/types/room';
-import { IPlayer } from 'common/types/index';
+import { EGame } from 'common/types/index';
 
 export enum ELobbyEvent {
   UPDATE = 'update',
@@ -7,6 +7,6 @@ export enum ELobbyEvent {
   ENTER_ROOM = 'enterRoom',
 }
 
-export interface ILobby<Options, Player extends IPlayer> {
-  rooms: IRoom<Options, Player>[];
+export interface ILobby<Game extends EGame> {
+  rooms: IRoom<Game>[];
 }

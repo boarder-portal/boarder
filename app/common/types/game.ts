@@ -1,5 +1,4 @@
-import { IPlayer } from 'common/types/index';
-import { IPexesoGameOptions } from 'common/types/pexeso';
+import { EGame, IGameParams, IPlayer } from 'common/types/index';
 
 export enum EGameEvent {
   UPDATE = 'UPDATE',
@@ -11,4 +10,4 @@ export interface IGame {
   players: IPlayer[];
 }
 
-export type TGameOptions = IPexesoGameOptions;
+export type TGameOptions<Game extends EGame> = IGameParams[Game]['options'];

@@ -2,9 +2,10 @@ import React from 'react';
 import block from 'bem-cn';
 import styled from 'styled-components';
 
-import { EGame, IPlayer } from 'common/types';
+import { EGame } from 'common/types';
 import typedReactMemo from 'client/types/typedReactMemo';
-import { ICommonGameOptions, IRoom } from 'common/types/room';
+import { IRoom } from 'common/types/room';
+import { TGameOptions } from 'common/types/game';
 
 import Button from 'client/components/common/Button/Button';
 import Box from 'client/components/common/Box/Box';
@@ -13,11 +14,11 @@ import Modal from 'client/components/common/Modal/Modal';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
-interface ILobbyProps<Options, Player extends IPlayer> {
+interface ILobbyProps<Game extends EGame> {
   game: EGame;
-  rooms: IRoom<Options, Player>[];
+  rooms: IRoom<Game>[];
   options: React.ReactNode;
-  renderRoomOptions(options: Options): React.ReactNode;
+  renderRoomOptions(options: TGameOptions<Game>): React.ReactNode;
   onCreateRoom(): void;
   onEnterRoom(roomId: string): void;
 }
@@ -53,7 +54,7 @@ const Root = styled.div`
   }
 `;
 
-const Lobby = <Options extends ICommonGameOptions, Player extends IPlayer>(props: ILobbyProps<Options, Player>) => {
+const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
   const {
     game,
     rooms,

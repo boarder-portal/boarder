@@ -3,13 +3,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
 import { ELobbyEvent, ILobby } from 'common/types/lobby';
-import { EGame, IPlayer } from 'common/types';
+import { EGame } from 'common/types';
+import { TGameOptions } from 'common/types/game';
 
-export default function useLobby<Options, Player extends IPlayer>(game: EGame, gameOptions: Options) {
+export default function useLobby<Game extends EGame>(game: Game, gameOptions: TGameOptions<Game>) {
   const history = useHistory();
   const ioRef = useRef<SocketIOClient.Socket>();
 
-  const [lobby, setLobby] = useState<ILobby<Options, Player> | null>(null);
+  const [lobby, setLobby] = useState<ILobby<Game> | null>(null);
 
   const createRoom = useCallback(() => {
     if (!ioRef.current) {
@@ -32,7 +33,7 @@ export default function useLobby<Options, Player extends IPlayer>(game: EGame, g
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/lobby`);
 
-    ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobby<Options, Player>) => {
+    ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobby<Game>) => {
       setLobby(lobbyData);
     });
 

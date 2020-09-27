@@ -2,24 +2,30 @@ import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 
 import { IAuthSocket } from 'server/types';
-import { EGame, EPlayerStatus, IPlayer } from 'common/types';
-import { ERoomEvent } from 'common/types/room';
+import { EGame, EPlayerStatus, IGameParams, IPlayer } from 'common/types';
+import { ERoomEvent, IRoom } from 'common/types/room';
 import { TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
 import ioInstance from 'server/io';
-import Game from 'server/gamesData/Game/Game';
+import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
+import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
-class Room {
+const GAMES_MAP = {
+  [EGame.PEXESO]: PexesoGame,
+  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
+};
+
+class Room<G extends EGame> implements IRoom<G> {
   io: Namespace;
   id: string;
   players: IPlayer[];
-  game: Game<IPlayer> | null;
-  options: TGameOptions;
+  game: Game<G> | null;
+  options: TGameOptions<G>;
 
-  constructor({ game, options }: { game: EGame; options: TGameOptions }) {
+  constructor({ game, options }: { game: G; options: IGameParams[G]['options'] }) {
     this.id = uuid();
     this.players = [];
     this.options = options;
@@ -57,8 +63,8 @@ class Room {
         this.sendRoomInfo();
 
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
-          if (game === EGame.PEXESO) {
-            this.game = new PexesoGame({
+          if (game in GAMES_MAP) {
+            this.game = new (GAMES_MAP[game] as { new (options: IGameCreateOptions<G>): Game<G> })({
               game,
               players: this.players.map((player) => ({
                 ...player,
