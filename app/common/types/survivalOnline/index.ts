@@ -2,10 +2,11 @@ import { ICommonGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 
 export enum ESurvivalOnlineGameEvent {
-  GAME_INFO = 'GAME_INFO',
   GET_GAME_INFO = 'GET_GAME_INFO',
-  UPDATE_PLAYERS = 'UPDATE_PLAYERS',
-  UPDATE_CELLS = 'UPDATE_CELLS',
+  MOVE_PLAYER = 'MOVE_PLAYER',
+
+  GAME_INFO = 'GAME_INFO',
+  UPDATE_GAME = 'UPDATE_GAME',
 }
 
 export interface ISurvivalOnlineGameOptions extends ICommonGameOptions {
@@ -76,11 +77,11 @@ export interface ISurvivalOnlineCell<Obj extends TSurvivalOnlineObject = TSurviv
   object: Obj | null;
 }
 
-export interface ISurvivalOnlineCellWithObject<Obj extends TSurvivalOnlineObject> extends ISurvivalOnlineCell<Obj> {
+export interface ISurvivalOnlineCellWithObject<Obj extends TSurvivalOnlineObject = TSurvivalOnlineObject> extends ISurvivalOnlineCell<Obj> {
   object: Obj;
 }
 
-export type TSurvivalOnlineMap = ISurvivalOnlineCell<TSurvivalOnlineObject>[][];
+export type TSurvivalOnlineMap = ISurvivalOnlineCell[][];
 
 export interface ISurvivalOnlineGameInfoEvent {
   map: TSurvivalOnlineMap;

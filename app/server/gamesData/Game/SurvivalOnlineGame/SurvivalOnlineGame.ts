@@ -7,6 +7,7 @@ import {
   ESurvivalOnlineGameEvent,
   ESurvivalOnlineObject,
   ISurvivalOnlineBaseObject,
+  ISurvivalOnlineCell,
   ISurvivalOnlineCellWithObject,
   ISurvivalOnlinePlayer,
   TSurvivalOnlineMap,
@@ -21,6 +22,7 @@ const MAP_HEIGHT = 101;
 class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
   handlers = {
     [ESurvivalOnlineGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [ESurvivalOnlineGameEvent.MOVE_PLAYER]: this.onMovePlayer,
   };
 
   map: TSurvivalOnlineMap = [];
@@ -103,6 +105,22 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     }
   }
 
+  getCellInDirection(fromCell: ISurvivalOnlineCell, direction: ESurvivalOnlineDirection): ISurvivalOnlineCell | null {
+    return this.map[fromCell.y + (
+      direction === ESurvivalOnlineDirection.UP
+        ? -1
+        : direction === ESurvivalOnlineDirection.DOWN
+          ? 1
+          : 0
+    )][fromCell.x + (
+      direction === ESurvivalOnlineDirection.LEFT
+        ? -1
+        : direction === ESurvivalOnlineDirection.RIGHT
+          ? 1
+          : 0
+    )] || null;
+  }
+
   onGetGameInfo({ socket }: IGameEvent) {
     socket.emit(ESurvivalOnlineGameEvent.GAME_INFO, {
       map: this.map,
@@ -110,11 +128,47 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     });
   }
 
-  sendCellsUpdate() {
-    this.io.emit(ESurvivalOnlineGameEvent.UPDATE_CELLS, {
-      map: this.map,
-      players: this.players,
-    });
+  onMovePlayer({ socket, data: direction }: IGameEvent<ESurvivalOnlineDirection>) {
+    const player = this.players.find(({ login }) => login === socket.user?.login);
+
+    if (!player) {
+      return;
+    }
+
+    const playerCell = this.map[player.y][player.x];
+
+    if (
+      !playerCell.object
+      || playerCell.object.type !== ESurvivalOnlineObject.PLAYER
+      || playerCell.object.player.login !== player.login
+    ) {
+      return;
+    }
+
+    const cellInDirection = this.getCellInDirection(playerCell, direction);
+    const cellsToUpdate: ISurvivalOnlineCell[] = [];
+
+    if (cellInDirection && !cellInDirection.object) {
+      cellInDirection.object = playerCell.object;
+      playerCell.object = null;
+
+      cellsToUpdate.push(playerCell, cellInDirection);
+    } else if (playerCell.object.direction !== direction) {
+      playerCell.object.direction = direction;
+
+      cellsToUpdate.push(playerCell);
+    }
+
+    this.sendGameUpdate(cellsToUpdate, true);
+  }
+
+  sendGameUpdate(cells: ISurvivalOnlineCell[], withPlayers: boolean) {
+    if (cells.length) {
+      this.io.emit(ESurvivalOnlineGameEvent.UPDATE_GAME, {
+        cells,
+        players: withPlayers ? this.players : null,
+      });
+    }
   }
 }
 
