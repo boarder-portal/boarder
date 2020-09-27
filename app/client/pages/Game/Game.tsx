@@ -6,6 +6,7 @@ import { EGame, EPlayerStatus } from 'common/types';
 import { EGameEvent, IGame } from 'common/types/game';
 
 import PexesoGame from 'client/pages/Game/PexesoGame/PexesoGame';
+import SurvivalOnlineGame from 'client/pages/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
 const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
@@ -40,6 +41,14 @@ const Game: React.FC = () => {
   if (game === EGame.PEXESO) {
     return (
       <PexesoGame
+        io={ioRef.current}
+      />
+    );
+  }
+
+  if (game === EGame.SURVIVAL_ONLINE) {
+    return (
+      <SurvivalOnlineGame
         io={ioRef.current}
       />
     );
