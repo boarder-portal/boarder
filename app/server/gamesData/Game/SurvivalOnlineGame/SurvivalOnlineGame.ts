@@ -112,7 +112,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         : direction === ESurvivalOnlineDirection.DOWN
           ? 1
           : 0
-    )][fromCell.x + (
+    )]?.[fromCell.x + (
       direction === ESurvivalOnlineDirection.LEFT
         ? -1
         : direction === ESurvivalOnlineDirection.RIGHT
@@ -149,6 +149,9 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     const cellsToUpdate: ISurvivalOnlineCell[] = [];
 
     if (cellInDirection && !cellInDirection.object) {
+      player.x = cellInDirection.x;
+      player.y = cellInDirection.y;
+      playerCell.object.direction = direction;
       cellInDirection.object = playerCell.object;
       playerCell.object = null;
 
