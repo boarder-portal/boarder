@@ -9,6 +9,7 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 import { EGameEvent } from 'common/types/game';
 import {
   ESurvivalOnlineBiome,
+  ESurvivalOnlineDirection,
   ESurvivalOnlineGameEvent,
   ESurvivalOnlineObject,
   ISurvivalOnlineCell,
@@ -24,6 +25,8 @@ import userAtom from 'client/atoms/userAtom';
 interface ISurvivalOnlineGameProps {
   io: SocketIOClient.Socket;
 }
+
+const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
 
 const {
   games: {
@@ -75,6 +78,24 @@ function renderZombie(context: CanvasRenderingContext2D, startX: number, startY:
   context.fillRect(startX, startY, cellSize, cellSize);
 }
 
+function renderPlayerEyes(
+  context: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  direction: ESurvivalOnlineDirection,
+) {
+  context.fillStyle = 'white';
+
+  if (direction === ESurvivalOnlineDirection.DOWN) {
+    context.fillRect(startX + cellSize * 0.2, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
+    context.fillRect(startX + cellSize * 0.6, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
+  } else if (direction === ESurvivalOnlineDirection.RIGHT) {
+    context.fillRect(startX + cellSize * 0.6, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
+  } else if (direction === ESurvivalOnlineDirection.LEFT) {
+    context.fillRect(startX + cellSize * 0.2, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
+  }
+}
+
 function renderCell(context: CanvasRenderingContext2D, startX: number, startY: number, cell: ISurvivalOnlineCell | undefined) {
   if (!cell) {
     return;
@@ -86,19 +107,18 @@ function renderCell(context: CanvasRenderingContext2D, startX: number, startY: n
     renderGrass(context, startX, startY);
   }
 
-  const type = object?.type;
-
-  if (!type) {
+  if (!object) {
     return;
   }
 
-  if (type === ESurvivalOnlineObject.TREE) {
+  if (object.type === ESurvivalOnlineObject.TREE) {
     renderTree(context, startX, startY);
-  } else if (type === ESurvivalOnlineObject.PLAYER) {
+  } else if (object.type === ESurvivalOnlineObject.PLAYER) {
     renderPlayer(context, startX, startY);
-  } else if (type === ESurvivalOnlineObject.BASE) {
+    renderPlayerEyes(context, startX, startY, object.direction);
+  } else if (object.type === ESurvivalOnlineObject.BASE) {
     renderBase(context, startX, startY);
-  } else if (type === ESurvivalOnlineObject.ZOMBIE) {
+  } else if (object.type === ESurvivalOnlineObject.ZOMBIE) {
     renderZombie(context, startX, startY);
   }
 }
@@ -112,6 +132,8 @@ function renderMap({
   gameInfo: ISurvivalOnlineGameInfoEvent;
   player: ISurvivalOnlinePlayer;
 }) {
+  context.clearRect(0, 0, viewSize.width * cellSize, viewSize.height * cellSize);
+
   const startX = player.x - Math.floor(viewSize.width / 2);
   const startY = player.y - Math.floor(viewSize.height / 2);
 
@@ -136,6 +158,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const gameInfoRef = useRef<ISurvivalOnlineGameInfoEvent | null>(null);
+  const playerRef = useRef<ISurvivalOnlinePlayer | null>(null);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const user = useRecoilValue(userAtom);
@@ -152,7 +175,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
         return;
       }
 
-      const player = gameInfo.players.find(({ login }) => login === user.login);
+      const player = playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
 
       if (!player) {
         return;
@@ -160,6 +183,40 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
 
       renderMap({ context, gameInfo, player });
     });
+
+    io.on(
+      ESurvivalOnlineGameEvent.UPDATE_GAME,
+      ({ players, cells }: {
+        players: ISurvivalOnlinePlayer[] | null;
+        cells: ISurvivalOnlineCell[];
+      }) => {
+        const context = contextRef.current;
+        const gameInfo = gameInfoRef.current;
+
+        if (!gameInfo || !context || !user) {
+          return;
+        }
+
+        if (players) {
+          gameInfo.players = players;
+
+          playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
+        }
+
+        cells.forEach((cell) => {
+          gameInfo.map[cell.y][cell.x] = cell;
+        });
+
+        if (!playerRef.current) {
+          return;
+        }
+
+        renderMap({
+          context,
+          gameInfo,
+          player: playerRef.current,
+        });
+      });
   }, [io, user]);
 
   useEffect(() => {
@@ -181,7 +238,23 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       width: viewSize.width * cellSize,
       height: viewSize.height * cellSize,
     });
-  }, []);
+
+    document.addEventListener('keydown', (e) => {
+      if (MOVES_KEY_CODES.includes(e.key)) {
+        io.emit(
+          EGameEvent.GAME_EVENT,
+          ESurvivalOnlineGameEvent.MOVE_PLAYER,
+          e.key === 'ArrowUp' ?
+            ESurvivalOnlineDirection.UP :
+            e.key === 'ArrowRight' ?
+              ESurvivalOnlineDirection.RIGHT :
+              e.key === 'ArrowDown' ?
+                ESurvivalOnlineDirection.DOWN :
+                ESurvivalOnlineDirection.LEFT,
+        );
+      }
+    });
+  }, [io]);
 
   return (
     <Root
