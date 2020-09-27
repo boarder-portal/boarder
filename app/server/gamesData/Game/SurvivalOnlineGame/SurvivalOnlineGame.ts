@@ -22,6 +22,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
   handlers = {
     [ESurvivalOnlineGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
+
   map: TSurvivalOnlineMap = [];
   baseCell: ISurvivalOnlineCellWithObject<ISurvivalOnlineBaseObject> = {
     x: Math.floor(MAP_WIDTH / 2),
@@ -95,6 +96,8 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
             type: ESurvivalOnlineObject.TREE,
             hp: 100,
           };
+
+          break;
         }
       }
     }
