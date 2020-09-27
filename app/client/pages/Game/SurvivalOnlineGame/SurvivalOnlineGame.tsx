@@ -173,6 +173,13 @@ function renderMap({
   });
 }
 
+function getCellScreenSize(containerEl: HTMLDivElement) {
+  const cellWidth = containerEl.offsetWidth / viewSize.width;
+  const cellHeight = containerEl.offsetHeight / viewSize.height;
+
+  return Math.floor(Math.min(cellWidth, cellHeight));
+}
+
 const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   const { io } = props;
 
@@ -189,6 +196,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     io.emit(EGameEvent.GAME_EVENT, ESurvivalOnlineGameEvent.GET_GAME_INFO);
 
     io.on(ESurvivalOnlineGameEvent.GAME_INFO, (gameInfo: ISurvivalOnlineGameInfoEvent) => {
+      console.log('GAME_INFO', gameInfo);
+
       gameInfoRef.current = gameInfo;
 
       const context = contextRef.current;
@@ -212,6 +221,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
         players: ISurvivalOnlinePlayer[] | null;
         cells: ISurvivalOnlineCell[];
       }) => {
+        console.log('UPDATE_GAME', { players, cells });
+
         const context = contextRef.current;
         const gameInfo = gameInfoRef.current;
 
@@ -251,10 +262,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
 
     contextRef.current = canvasEl.getContext('2d');
 
-    const cellWidth = containerEl.offsetWidth / viewSize.width;
-    const cellHeight = containerEl.offsetHeight / viewSize.height;
-
-    const cellSize = Math.floor(Math.min(cellWidth, cellHeight));
+    const cellSize = getCellScreenSize(containerEl);
 
     setCanvasSize({
       width: viewSize.width * cellSize,
@@ -275,6 +283,15 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
                 ESurvivalOnlineDirection.LEFT,
         );
       }
+    });
+
+    window.addEventListener('resize', () => {
+      const cellSize = getCellScreenSize(containerEl);
+
+      setCanvasSize({
+        width: viewSize.width * cellSize,
+        height: viewSize.height * cellSize,
+      });
     });
   }, [io]);
 
