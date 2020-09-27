@@ -10,7 +10,7 @@ import { useSetRecoilState } from 'recoil';
 
 import { GET_USER_QUERY } from 'client/graphql/queries';
 
-import { IUser } from 'common/types';
+import { EGame, IUser } from 'common/types';
 
 import Header from 'client/components/Header/Header';
 
@@ -21,6 +21,7 @@ import Room from 'client/pages/Room/Room';
 import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
+import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/SurvivalOnlineLobby';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -101,8 +102,12 @@ const App: React.FC = () => {
             <Login />
           </Route>
 
-          <Route exact path="/pexeso/lobby">
+          <Route exact path={`/${EGame.PEXESO}/lobby`}>
             <PexesoLobby />
+          </Route>
+
+          <Route exact path={`/${EGame.SURVIVAL_ONLINE}/lobby`}>
+            <SurvivalOnlineLobby />
           </Route>
 
           <Route exact path="/:game/room/:roomId">

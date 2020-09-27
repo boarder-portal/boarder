@@ -55,5 +55,13 @@ export const GAMES_CONFIG = {
         sameCardsCount: 2,
       },
     },
+    [EGame.SURVIVAL_ONLINE]: {
+      name: EGame.SURVIVAL_ONLINE,
+      minPlayersCount: 1,
+      maxPlayersCount: 4,
+      defaultGameOptions: {
+        playersCount: 2,
+      },
+    },
   },
 };

@@ -1,5 +1,6 @@
 export enum EGame {
   PEXESO = 'pexeso',
+  SURVIVAL_ONLINE = 'survivalOnline',
 }
 
 export interface IUser {
