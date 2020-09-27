@@ -69,7 +69,7 @@ export type TSurvivalOnlineObject = (
   | ISurvivalOnlineTreeObject
 );
 
-export interface ISurvivalOnlineCell<Obj extends TSurvivalOnlineObject> {
+export interface ISurvivalOnlineCell<Obj extends TSurvivalOnlineObject = TSurvivalOnlineObject> {
   x: number;
   y: number;
   biome: ESurvivalOnlineBiome;

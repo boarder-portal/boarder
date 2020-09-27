@@ -59,6 +59,12 @@ export const GAMES_CONFIG = {
       name: EGame.SURVIVAL_ONLINE,
       minPlayersCount: 1,
       maxPlayersCount: 4,
+      cellSize: 100,
+      viewSize: {
+        width: 21,
+        height: 13,
+      },
+      fieldHeight: 12,
       defaultGameOptions: {
         playersCount: 2,
       },
