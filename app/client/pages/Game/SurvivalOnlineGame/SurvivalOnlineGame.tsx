@@ -15,12 +15,22 @@ import {
   ISurvivalOnlineCell,
   ISurvivalOnlineGameInfoEvent,
   ISurvivalOnlinePlayer,
+  ISurvivalOnlinePlayerObject,
+  ISurvivalOnlineZombieObject,
 } from 'common/types/survivalOnline';
 import { EGame } from 'common/types';
 
 import Box from 'client/components/common/Box/Box';
 
 import userAtom from 'client/atoms/userAtom';
+
+interface IRectInfo {
+  color: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 interface ISurvivalOnlineGameProps {
   io: SocketIOClient.Socket;
@@ -50,50 +60,63 @@ const Root = styled(Box)`
   }
 `;
 
+function renderRect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color: string) {
+  context.fillStyle = color;
+  context.fillRect(x, y, width, height);
+}
+
+function renderRects(context: CanvasRenderingContext2D, startX: number, startY: number, rectsInfo: IRectInfo[]) {
+  rectsInfo.forEach(({ color, x, y, height, width }) => {
+    renderRect(context, startX + cellSize * x, startY + cellSize * y, width * cellSize, height * cellSize, color);
+  });
+}
+
 function renderGrass(context: CanvasRenderingContext2D, startX: number, startY: number) {
-  context.fillStyle = 'yellowgreen';
-  context.fillRect(startX, startY, cellSize, cellSize);
+  renderRects(context, startX, startY, [{ x: 0, y: 0, width: 1, height: 1, color: 'yellowgreen' }]);
 }
 
 function renderTree(context: CanvasRenderingContext2D, startX: number, startY: number) {
-  context.fillStyle = 'green';
-  context.fillRect(startX, startY, cellSize, cellSize * 0.6);
-
-  context.fillStyle = 'brown';
-  context.fillRect(startX + cellSize * 0.3, startY + cellSize * 0.6, cellSize * 0.4, cellSize * 0.4);
+  renderRects(context, startX, startY, [
+    { x: 0, y: 0, width: 1, height: 0.6, color: 'green' },
+    { x: 0.3, y: 0.6, width: 0.4, height: 0.4, color: 'brown' },
+  ]);
 }
 
-function renderPlayer(context: CanvasRenderingContext2D, startX: number, startY: number) {
-  context.fillStyle = 'black';
-  context.fillRect(startX, startY, cellSize, cellSize);
+function renderEyes(context: CanvasRenderingContext2D, startX: number, startY: number, direction: ESurvivalOnlineDirection, color: string) {
+  if (direction === ESurvivalOnlineDirection.DOWN) {
+    renderRects(context, startX, startY, [
+      { x: 0.2, y: 0.2, width: 0.2, height: 0.2, color },
+      { x: 0.6, y: 0.2, width: 0.2, height: 0.2, color },
+    ]);
+  } else if (direction === ESurvivalOnlineDirection.RIGHT) {
+    renderRects(context, startX, startY, [
+      { x: 0.6, y: 0.2, width: 0.2, height: 0.2, color },
+    ]);
+  } else if (direction === ESurvivalOnlineDirection.LEFT) {
+    renderRects(context, startX, startY, [
+      { x: 0.2, y: 0.2, width: 0.2, height: 0.2, color },
+    ]);
+  }
+}
+
+function renderPlayer(context: CanvasRenderingContext2D, startX: number, startY: number, object: ISurvivalOnlinePlayerObject) {
+  renderRects(context, startX, startY, [{ x: 0, y: 0, width: 1, height: 1, color: 'black' }]);
+
+  renderEyes(context, startX, startY, object.direction, '#ffffff');
 }
 
 function renderBase(context: CanvasRenderingContext2D, startX: number, startY: number) {
-  context.fillStyle = 'purple';
-  context.fillRect(startX, startY, cellSize, cellSize);
+  renderRects(context, startX, startY, [
+    { x: 0, y: 0, width: 1, height: 1, color: '#000000' },
+    { x: 0.2, y: 0.2, width: 0.6, height: 0.6, color: '#98643d' },
+    { x: 0.4, y: 0.4, width: 0.2, height: 0.2, color: '#ffc800' },
+  ]);
 }
 
-function renderZombie(context: CanvasRenderingContext2D, startX: number, startY: number) {
-  context.fillStyle = 'red';
-  context.fillRect(startX, startY, cellSize, cellSize);
-}
+function renderZombie(context: CanvasRenderingContext2D, startX: number, startY: number, object: ISurvivalOnlineZombieObject) {
+  renderRects(context, startX, startY, [{ x: 0, y: 0, width: 1, height: 1, color: 'b13f3f' }]);
 
-function renderPlayerEyes(
-  context: CanvasRenderingContext2D,
-  startX: number,
-  startY: number,
-  direction: ESurvivalOnlineDirection,
-) {
-  context.fillStyle = 'white';
-
-  if (direction === ESurvivalOnlineDirection.DOWN) {
-    context.fillRect(startX + cellSize * 0.2, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
-    context.fillRect(startX + cellSize * 0.6, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
-  } else if (direction === ESurvivalOnlineDirection.RIGHT) {
-    context.fillRect(startX + cellSize * 0.6, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
-  } else if (direction === ESurvivalOnlineDirection.LEFT) {
-    context.fillRect(startX + cellSize * 0.2, startY + cellSize * 0.2, cellSize * 0.2, cellSize * 0.2);
-  }
+  renderEyes(context, startX, startY, object.direction, '#ff0000');
 }
 
 function renderCell(context: CanvasRenderingContext2D, startX: number, startY: number, cell: ISurvivalOnlineCell | undefined) {
@@ -114,12 +137,11 @@ function renderCell(context: CanvasRenderingContext2D, startX: number, startY: n
   if (object.type === ESurvivalOnlineObject.TREE) {
     renderTree(context, startX, startY);
   } else if (object.type === ESurvivalOnlineObject.PLAYER) {
-    renderPlayer(context, startX, startY);
-    renderPlayerEyes(context, startX, startY, object.direction);
+    renderPlayer(context, startX, startY, object);
   } else if (object.type === ESurvivalOnlineObject.BASE) {
     renderBase(context, startX, startY);
   } else if (object.type === ESurvivalOnlineObject.ZOMBIE) {
-    renderZombie(context, startX, startY);
+    renderZombie(context, startX, startY, object);
   }
 }
 
