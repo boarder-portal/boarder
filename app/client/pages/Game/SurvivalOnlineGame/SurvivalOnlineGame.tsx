@@ -114,7 +114,7 @@ function renderBase(context: CanvasRenderingContext2D, startX: number, startY: n
 }
 
 function renderZombie(context: CanvasRenderingContext2D, startX: number, startY: number, object: ISurvivalOnlineZombieObject) {
-  renderRects(context, startX, startY, [{ x: 0, y: 0, width: 1, height: 1, color: '#c72e2e' }]);
+  renderRects(context, startX, startY, [{ x: 0, y: 0, width: 1, height: 1, color: '#a52a2a' }]);
 
   renderEyes(context, startX, startY, object.direction, '#ff0000');
 }
