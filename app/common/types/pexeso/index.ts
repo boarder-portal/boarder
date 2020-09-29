@@ -28,6 +28,7 @@ export interface IPexesoGameOptions extends ICommonGameOptions {
   matchingCardsCount: number;
   differentCardsCount: number;
   pickRandomImages: boolean;
+  useImageVariants: boolean;
 }
 
 export interface IPexesoPlayer extends IPlayer {
@@ -36,7 +37,8 @@ export interface IPexesoPlayer extends IPlayer {
 }
 
 export interface IPexesoCard {
-  id: number;
+  imageId: number;
+  imageVariant: number;
   isInGame: boolean;
 }
 

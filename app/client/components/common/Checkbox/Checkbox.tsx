@@ -5,6 +5,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 interface ICheckboxProps {
   className?: string;
   checked: boolean;
+  disabled?: boolean;
   label: string;
   onChange(newValue: boolean): void;
 }
@@ -13,6 +14,7 @@ const Checkbox: React.FC<ICheckboxProps> = (props) => {
   const {
     className,
     checked,
+    disabled,
     label,
     onChange,
   } = props;
@@ -31,6 +33,7 @@ const Checkbox: React.FC<ICheckboxProps> = (props) => {
         />
       }
       label={label}
+      disabled={disabled}
     />
   );
 };

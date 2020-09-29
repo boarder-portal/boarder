@@ -10,33 +10,43 @@ export const GAMES_CONFIG = {
       sets: {
         [EPexesoSet.COMMON]: {
           imagesCount: 33,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.FRIENDS]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.GAME_OF_THRONES]: {
           imagesCount: 84,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.HARRY_POTTER]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.LOST]: {
           imagesCount: 40,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.PHILADELPHIA]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.PIRATES]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.POKER]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.STAR_WARS]: {
           imagesCount: 40,
+          imageVariantsCount: 1,
         },
         [EPexesoSet.DST]: {
           imagesCount: 40,
+          imageVariantsCount: 1,
         },
       },
       matchingCardsCounts: [2, 3, 4, 5, 6],
@@ -89,6 +99,7 @@ export const GAMES_CONFIG = {
         matchingCardsCount: 2,
         differentCardsCount: 30,
         pickRandomImages: false,
+        useImageVariants: false,
       },
     },
     [EGame.SURVIVAL_ONLINE]: {

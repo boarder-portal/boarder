@@ -73,6 +73,13 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
+  const handleUseImageVariantsChange = useCallback((useImageVariants: boolean) => {
+    onOptionsChange({
+      ...options,
+      useImageVariants,
+    });
+  }, [onOptionsChange, options]);
+
   return (
     <Box flex column between={12}>
       <Select
@@ -126,6 +133,13 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Случайные картинки"
         checked={options.pickRandomImages}
         onChange={handlePickRandomImagesChange}
+      />
+
+      <Checkbox
+        label="Вариативные карточки"
+        checked={options.useImageVariants}
+        disabled={!areOptionsValid({ useImageVariants: !options.useImageVariants })}
+        onChange={handleUseImageVariantsChange}
       />
     </Box>
   );

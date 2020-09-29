@@ -14,5 +14,8 @@ const {
 export function arePexesoOptionsValid(options: IPexesoGameOptions): boolean {
   const setOptions = sets[options.set];
 
-  return options.differentCardsCount <= setOptions.imagesCount;
+  return (
+    options.differentCardsCount <= setOptions.imagesCount
+    && (!options.useImageVariants || options.matchingCardsCount <= setOptions.imageVariantsCount)
+  );
 }

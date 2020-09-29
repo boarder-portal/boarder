@@ -192,7 +192,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   width={80}
                   height={80}
                   url={openedCardsCoords.some((card) => card.x === x && card.y === y) ?
-                    `/pexeso/sets/${set}/${card.id}/0.jpg` :
+                    `/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg` :
                     '/pexeso/backs/default/2.jpg'
                   }
                   onClick={() => handleCardClick({ x, y })}

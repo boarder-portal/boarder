@@ -55,7 +55,12 @@ class PexesoGame extends Game<EGame.PEXESO> {
     ).slice(0, this.options.differentCardsCount);
 
     const shuffledIds = shuffle(flatten(
-      ids.map((id) => new Array(this.options.matchingCardsCount).fill(id)),
+      ids.map((imageId) => (
+        times(
+          this.options.matchingCardsCount,
+          (index) => ({ imageId, imageVariant: this.options.useImageVariants ? index : 0 }),
+        )
+      )),
     ));
 
     const {
@@ -68,7 +73,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
       times(width, (x) => {
         cards[y].push({
-          id: shuffledIds[y * width + x],
+          ...shuffledIds[y * width + x],
           isInGame: true,
         });
       });
@@ -117,7 +122,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
       setTimeout(() => {
         const openedCards = this.openedCardsCoords.map(({ x, y }) => this.cards[y][x]);
-        const areOpenedCardsSame = openedCards.every(({ id }) => id === openedCards[0].id);
+        const areOpenedCardsSame = openedCards.every(({ imageId }) => imageId === openedCards[0].imageId);
         const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
         let nextActivePlayerIndex = activePlayerIndex;
 
