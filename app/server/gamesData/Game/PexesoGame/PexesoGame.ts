@@ -46,6 +46,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
     const cards: IPexesoCard[][] = [];
     const {
       imagesCount: setImagesCount,
+      imageVariantsCount,
     } = sets[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (
@@ -53,14 +54,24 @@ class PexesoGame extends Game<EGame.PEXESO> {
         ? shuffle(allIds)
         : allIds
     ).slice(0, this.options.differentCardsCount);
+    const allImageVariants = times(imageVariantsCount);
 
     const shuffledIds = shuffle(flatten(
-      ids.map((imageId) => (
-        times(
-          this.options.matchingCardsCount,
-          (index) => ({ imageId, imageVariant: this.options.useImageVariants ? index : 0 }),
-        )
-      )),
+      ids.map((imageId) => {
+        const imageVariants = this.options.pickRandomImages
+          ? shuffle(allImageVariants)
+          : allImageVariants;
+
+        return (
+          times(
+            this.options.matchingCardsCount,
+            (index) => ({
+              imageId,
+              imageVariant: imageVariants[this.options.useImageVariants ? index : 0],
+            }),
+          )
+        );
+      }),
     ));
 
     const {

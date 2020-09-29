@@ -30,6 +30,7 @@ const b = block('PexesoGame');
 const Root = styled(Box)`
   .PexesoGame {
     &__card {
+      background-size: contain;
       cursor: pointer;
 
       &_highlighted {

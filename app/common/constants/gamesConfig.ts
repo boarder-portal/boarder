@@ -9,8 +9,8 @@ export const GAMES_CONFIG = {
       maxPlayersCount: 4,
       sets: {
         [EPexesoSet.COMMON]: {
-          imagesCount: 33,
-          imageVariantsCount: 1,
+          imagesCount: 30,
+          imageVariantsCount: 2,
         },
         [EPexesoSet.FRIENDS]: {
           imagesCount: 30,
