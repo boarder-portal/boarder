@@ -11,48 +11,59 @@ export const GAMES_CONFIG = {
         [EPexesoSet.COMMON]: {
           width: 10,
           height: 6,
+          imagesCount: 33,
         },
         [EPexesoSet.FRIENDS]: {
           width: 10,
           height: 6,
+          imagesCount: 30,
         },
         [EPexesoSet.GAME_OF_THRONES]: {
           width: 10,
           height: 6,
+          imagesCount: 84,
         },
         [EPexesoSet.HARRY_POTTER]: {
           width: 10,
           height: 6,
+          imagesCount: 30,
         },
         [EPexesoSet.LOST]: {
           width: 10,
           height: 6,
+          imagesCount: 40,
         },
         [EPexesoSet.PHILADELPHIA]: {
           width: 10,
           height: 6,
+          imagesCount: 30,
         },
         [EPexesoSet.PIRATES]: {
           width: 10,
           height: 6,
+          imagesCount: 30,
         },
         [EPexesoSet.POKER]: {
           width: 10,
           height: 6,
+          imagesCount: 30,
         },
         [EPexesoSet.STAR_WARS]: {
           width: 10,
           height: 6,
+          imagesCount: 40,
         },
         [EPexesoSet.DST]: {
           width: 10,
           height: 6,
+          imagesCount: 40,
         },
       },
       defaultGameOptions: {
         set: EPexesoSet.COMMON,
         playersCount: 2,
         sameCardsCount: 2,
+        pickRandomImages: false,
       },
     },
     [EGame.SURVIVAL_ONLINE]: {

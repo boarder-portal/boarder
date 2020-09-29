@@ -7,6 +7,7 @@ import { EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
 
 interface IPexesoGameOptionsProps {
   options: IPexesoGameOptions;
@@ -46,6 +47,13 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
+  const handlePickRandomImagesChange = useCallback((pickRandomImages: boolean) => {
+    onOptionsChange({
+      ...options,
+      pickRandomImages,
+    });
+  }, [onOptionsChange, options]);
+
   return (
     <Box flex column between={12}>
       <Select
@@ -79,6 +87,12 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           text: count,
         }))}
         onChange={handleSameCardsCountChange}
+      />
+
+      <Checkbox
+        label="Случайные картинки"
+        checked={options.pickRandomImages}
+        onChange={handlePickRandomImagesChange}
       />
     </Box>
   );

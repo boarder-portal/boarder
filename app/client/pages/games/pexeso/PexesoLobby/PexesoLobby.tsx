@@ -40,7 +40,7 @@ const PexesoLobby: React.FC = () => {
   const renderRoomOptions = useCallback((roomOptions: IPexesoGameOptions) => {
     return (
       <Box>
-        {roomOptions.set}
+        {roomOptions.set} ({roomOptions.sameCardsCount}{roomOptions.pickRandomImages && ', случайные'})
       </Box>
     );
   }, []);
