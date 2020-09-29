@@ -3,21 +3,24 @@ import { FormControl, InputLabel, MenuItem, Select as MuiSelect } from '@materia
 
 import typedReactMemo from 'client/types/typedReactMemo';
 
-interface ISelectCommonProps {
+interface ISelectCommonProps<Value> {
   label: string;
   name: string;
+  options: {
+    text: React.ReactNode;
+    value: Value;
+    disabled?: boolean;
+  }[];
 }
 
-interface ISelectSingleProps<Value> extends ISelectCommonProps {
+interface ISelectSingleProps<Value> extends ISelectCommonProps<Value> {
   value: Value;
-  options: { text: React.ReactNode; value: Value }[];
   multiple?: false;
   onChange(newValue: Value): void;
 }
 
-interface ISelectMultipleProps<Value> extends ISelectCommonProps {
+interface ISelectMultipleProps<Value> extends ISelectCommonProps<Value> {
   value: Value[];
-  options: { text: React.ReactNode; value: Value }[];
   multiple: true;
   onChange(newValue: Value[]): void;
 }
@@ -53,8 +56,8 @@ const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
         }}
         onChange={handleChange}
       >
-        {options.map(({ text, value }) => (
-          <MenuItem key={value} value={value}>
+        {options.map(({ text, value, disabled }) => (
+          <MenuItem key={value} value={value} disabled={disabled}>
             {text}
           </MenuItem>
         ))}

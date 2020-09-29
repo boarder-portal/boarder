@@ -20,6 +20,7 @@ import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 const {
   games: {
     pexeso: {
+      fieldSizes,
       sets,
     },
   },
@@ -44,21 +45,23 @@ class PexesoGame extends Game<EGame.PEXESO> {
   createGameInfo() {
     const cards: IPexesoCard[][] = [];
     const {
-      width,
-      height,
-      imagesCount: allImagesCount,
+      imagesCount: setImagesCount,
     } = sets[this.options.set];
-    const allIds = times(allImagesCount);
-    const imagesCount = width * height / this.options.sameCardsCount;
+    const allIds = times(setImagesCount);
     const ids = (
       this.options.pickRandomImages
         ? shuffle(allIds)
         : allIds
-    ).slice(0, imagesCount);
+    ).slice(0, this.options.differentCardsCount);
 
     const shuffledIds = shuffle(flatten(
-      ids.map((id) => new Array(this.options.sameCardsCount).fill(id)),
+      ids.map((id) => new Array(this.options.matchingCardsCount).fill(id)),
     ));
+
+    const {
+      width,
+      height,
+    } = fieldSizes[this.options.differentCardsCount * this.options.matchingCardsCount];
 
     times(height, (y) => {
       cards.push([]);
@@ -109,7 +112,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
     this.io.emit(EPexesoGameEvent.OPEN_CARD, { x, y });
 
-    if (this.openedCardsCoords.length === this.options.sameCardsCount) {
+    if (this.openedCardsCoords.length === this.options.matchingCardsCount) {
       this.isShowingCards = true;
 
       setTimeout(() => {

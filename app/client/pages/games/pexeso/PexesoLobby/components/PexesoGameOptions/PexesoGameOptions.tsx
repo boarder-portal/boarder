@@ -4,6 +4,9 @@ import times from 'lodash/times';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
+import { EGame } from 'common/types';
+
+import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
@@ -16,15 +19,24 @@ interface IPexesoGameOptionsProps {
 
 const {
   games: {
-    pexeso: {
+    [EGame.PEXESO]: {
       minPlayersCount,
       maxPlayersCount,
+      matchingCardsCounts,
+      differentCardsCounts,
     },
   },
 } = GAMES_CONFIG;
 
 const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
+
+  const areOptionsValid = <K extends keyof IPexesoGameOptions>(values: Pick<IPexesoGameOptions, K>): boolean => {
+    return arePexesoOptionsValid({
+      ...options,
+      ...values,
+    });
+  };
 
   const handleSetChange = useCallback((updatedSet: EPexesoSet) => {
     onOptionsChange({
@@ -40,10 +52,17 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
-  const handleSameCardsCountChange = useCallback((sameCardsCount: number) => {
+  const handleMatchingCardsCountChange = useCallback((matchingCardsCount: number) => {
     onOptionsChange({
       ...options,
-      sameCardsCount,
+      matchingCardsCount,
+    });
+  }, [onOptionsChange, options]);
+
+  const handleDifferentCardsCountChange = useCallback((differentCardsCount: number) => {
+    onOptionsChange({
+      ...options,
+      differentCardsCount,
     });
   }, [onOptionsChange, options]);
 
@@ -60,9 +79,10 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Сет"
         name="pexesoSet"
         value={options.set}
-        options={Object.values(EPexesoSet).map((name) => ({
-          value: name,
-          text: name,
+        options={Object.values(EPexesoSet).map((set) => ({
+          value: set,
+          text: set,
+          disabled: !areOptionsValid({ set }),
         }))}
         onChange={handleSetChange}
       />
@@ -79,14 +99,27 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       />
 
       <Select
-        label="Количество одинаковых карточек"
-        name="pexesoSameCardsCount"
-        value={options.sameCardsCount}
-        options={[2, 3, 4].map((count) => ({
-          value: count,
-          text: count,
+        label="Количество совпадающих карточек"
+        name="pexesoMatchingCardsCount"
+        value={options.matchingCardsCount}
+        options={matchingCardsCounts.map((matchingCardsCount) => ({
+          value: matchingCardsCount,
+          text: matchingCardsCount,
+          disabled: !areOptionsValid({ matchingCardsCount }),
         }))}
-        onChange={handleSameCardsCountChange}
+        onChange={handleMatchingCardsCountChange}
+      />
+
+      <Select
+        label="Количество разных карточек"
+        name="pexesoDifferentCardsCount"
+        value={options.differentCardsCount}
+        options={differentCardsCounts.map((differentCardsCount) => ({
+          value: differentCardsCount,
+          text: differentCardsCount,
+          disabled: !areOptionsValid({ differentCardsCount }),
+        }))}
+        onChange={handleDifferentCardsCountChange}
       />
 
       <Checkbox

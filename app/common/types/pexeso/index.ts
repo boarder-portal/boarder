@@ -25,7 +25,8 @@ export enum EPexesoSet {
 
 export interface IPexesoGameOptions extends ICommonGameOptions {
   set: EPexesoSet;
-  sameCardsCount: number;
+  matchingCardsCount: number;
+  differentCardsCount: number;
   pickRandomImages: boolean;
 }
 

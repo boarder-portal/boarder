@@ -68,9 +68,7 @@ const Root = styled(Box)`
 const {
   games: {
     pexeso: {
-      sets: {
-        common: commonSet,
-      },
+      sets,
     },
   },
 } = GAMES_CONFIG;
@@ -164,7 +162,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       return;
     }
 
-    times(commonSet.width * commonSet.height / options.sameCardsCount, (id) => {
+    times(sets[options.set].imagesCount, (id) => {
       const image = new Image();
 
       image.src = `/pexeso/sets/${options.set}/${id}/0.jpg`;
