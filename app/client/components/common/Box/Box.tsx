@@ -4,6 +4,8 @@ import styled from 'styled-components';
 export interface IBoxProps {
   className?: string;
   children: React.ReactNode;
+  width?: number;
+  height?: number;
   px?: number;
   py?: number;
   mt?: number;
@@ -17,6 +19,7 @@ export interface IBoxProps {
   alignItems?: 'center' | 'flex-end';
   justifyContent?: 'center';
   withWrap?: boolean;
+  grow?: boolean;
   background?: string;
   innerRef?: React.RefObject<HTMLDivElement>;
   onClick?(e: React.MouseEvent<HTMLDivElement>): void;
@@ -31,11 +34,14 @@ const TEXT_SIZES_MAP = {
 };
 
 const Root = styled.div`
+  ${({ width }: IBoxProps) => width ? `width: ${width}px;` : ''}
+  ${({ height }: IBoxProps) => height ? `height: ${height}px;` : ''}
   ${({ flex }: IBoxProps) => flex ? 'display: flex;' : ''}
   ${({ column }: IBoxProps) => column ? 'flex-direction: column;' : ''}
   ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}
   ${({ justifyContent }: IBoxProps) => justifyContent ? `justify-content: ${justifyContent};` : ''}
   ${({ withWrap }: IBoxProps) => withWrap ? 'flex-wrap: wrap;' : ''}
+  ${({ grow }: IBoxProps) => grow ? 'flex-grow: 1;' : ''}
   ${({ px }: IBoxProps) => px ? `
     padding-left: ${px}px;
     padding-right: ${px}px;

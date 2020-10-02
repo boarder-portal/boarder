@@ -27,15 +27,16 @@ const LobbyRoom: React.FC<ILobbyRoomProps> = (props) => {
       px={32}
       py={16}
       flex
-      column
-      between={8}
+      alignItems="center"
       onClick={onClick}
     >
-      <Box size="l">{title}</Box>
+      <Box flex column between={8}>
+        <Box size="l">{title}</Box>
 
-      <Box>{options}</Box>
+        <Box>{options}</Box>
+      </Box>
 
-      <Box>{`${players}/${maxPlayers}`}</Box>
+      <Box ml="auto" size="xxl">{`${players}/${maxPlayers}`}</Box>
     </Root>
   );
 };

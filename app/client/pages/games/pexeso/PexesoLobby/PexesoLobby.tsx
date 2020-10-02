@@ -8,6 +8,7 @@ import { IPexesoGameOptions } from 'common/types/pexeso';
 import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
 import Box from 'client/components/common/Box/Box';
 import Lobby from 'client/components/Lobby/Lobby';
+import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
 import useLobby from 'client/hooks/useLobby';
 
@@ -40,7 +41,36 @@ const PexesoLobby: React.FC = () => {
   const renderRoomOptions = useCallback((roomOptions: IPexesoGameOptions) => {
     return (
       <Box>
-        {roomOptions.set} ({roomOptions.matchingCardsCount}{roomOptions.pickRandomImages && ', случайные'})
+        {roomOptions.set}
+        <>
+          <DotSeparator />
+
+          {`по ${roomOptions.matchingCardsCount} совпадающих`}
+        </>
+
+        {roomOptions.differentCardsCount && (
+          <>
+            <DotSeparator />
+
+            {`${roomOptions.differentCardsCount} разных`}
+          </>
+        )}
+
+        {roomOptions.pickRandomImages && (
+          <>
+            <DotSeparator />
+
+            случайные
+          </>
+        )}
+
+        {roomOptions.useImageVariants && (
+          <>
+            <DotSeparator />
+
+            вариативные
+          </>
+        )}
       </Box>
     );
   }, []);
