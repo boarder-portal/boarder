@@ -14,6 +14,7 @@ import {
 } from 'common/types/pexeso';
 import { EGame, IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
+import { EGameEvent } from 'common/types/game';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -145,6 +146,14 @@ class PexesoGame extends Game<EGame.PEXESO> {
           this.players[activePlayerIndex].score++;
 
           this.io.emit(EPexesoGameEvent.REMOVE_CARDS, this.openedCardsCoords);
+
+          const isGameEnd = this.cards.every((row) => row.every((card) => !card.isInGame));
+
+          if (isGameEnd) {
+            setTimeout(() => {
+              this.io.emit(EGameEvent.END);
+            }, 1000);
+          }
         } else {
           nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
 

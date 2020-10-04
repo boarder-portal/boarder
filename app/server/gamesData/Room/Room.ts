@@ -24,13 +24,20 @@ class Room<G extends EGame> implements IRoom<G> {
   players: IPlayer[];
   game: Game<G> | null;
   options: TGameOptions<G>;
+  closeRoom: () => void;
 
-  constructor({ game, options }: { game: G; options: IGameParams[G]['options'] }) {
+  constructor({ game, options, closeRoom }: { game: G; options: IGameParams[G]['options']; closeRoom: (id: string) => void }) {
     this.id = uuid();
     this.players = [];
     this.options = options;
     this.io = ioInstance.of(`/${game}/room/${this.id}`);
     this.game = null;
+
+    this.closeRoom = () => {
+      this.io.removeAllListeners();
+
+      closeRoom(this.id);
+    };
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
@@ -68,6 +75,7 @@ class Room<G extends EGame> implements IRoom<G> {
               game,
               options,
               players: this.players,
+              closeRoom: this.closeRoom,
             });
           }
 

@@ -22,6 +22,7 @@ export enum EPlayerStatus {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
   PLAYING = 'PLAYING',
+  DISCONNECTED = 'DISCONNECTED',
 }
 
 export interface IPlayer extends IUser {

@@ -13,6 +13,7 @@ export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
   options: TGameOptions<Game>;
   players: IPlayer[];
+  closeRoom(): void;
 }
 
 abstract class Game<G extends EGame> {
@@ -20,14 +21,16 @@ abstract class Game<G extends EGame> {
   id: string;
   players: TGamePlayer<G>[];
   options: TGameOptions<G>;
+  closeRoom: () => void;
 
   abstract handlers: Partial<Record<TGameEvent<G>, (event: IGameEvent<any>) => void>>;
 
-  protected constructor({ game, options, players }: IGameCreateOptions<G>) {
+  protected constructor({ game, options, players, closeRoom }: IGameCreateOptions<G>) {
     this.id = uuid();
     this.options = options;
     this.players = players.map((player) => this.createPlayer(player));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
+    this.closeRoom = closeRoom;
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
@@ -49,6 +52,28 @@ abstract class Game<G extends EGame> {
           data,
           socket,
         });
+      });
+
+      socket.on('disconnect', () => {
+        if (!user) {
+          return;
+        }
+
+        const player = this.players.find(({ login }) => login === user.login);
+
+        if (!player) {
+          return;
+        }
+
+        player.status = EPlayerStatus.DISCONNECTED;
+
+        this.sendBaseGameInfo();
+
+        if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
+          setTimeout(() => {
+            this.closeRoom();
+          }, 10000);
+        }
       });
     });
   }

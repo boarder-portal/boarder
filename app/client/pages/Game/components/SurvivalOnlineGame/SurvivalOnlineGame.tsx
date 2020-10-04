@@ -15,8 +15,8 @@ import {
 } from 'common/types/survivalOnline';
 import { EGame } from 'common/types';
 
-import renderMap from 'client/pages/Game/SurvivalOnlineGame/utilities/renderMap';
-import getCellScreenSize from 'client/pages/Game/SurvivalOnlineGame/utilities/getCellScreenSize';
+import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
+import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
 
 import Box from 'client/components/common/Box/Box';
 
@@ -24,6 +24,8 @@ import userAtom from 'client/atoms/userAtom';
 
 interface ISurvivalOnlineGameProps {
   io: SocketIOClient.Socket;
+  players: ISurvivalOnlinePlayer[];
+  isGameEnd: boolean;
 }
 
 const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
@@ -44,10 +46,6 @@ const Root = styled(Box)`
   flex-grow: 1;
   width: 100%;
   margin-bottom: 40px;
-
-  .SurvivalOnlineGame {
-
-  }
 `;
 
 const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {

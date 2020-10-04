@@ -4,15 +4,24 @@ import io from 'socket.io-client';
 
 import { EGame, EPlayerStatus } from 'common/types';
 import { EGameEvent, IGame } from 'common/types/game';
+import { IPexesoPlayer } from 'common/types/pexeso';
+import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 
-import PexesoGame from 'client/pages/Game/PexesoGame/PexesoGame';
-import SurvivalOnlineGame from 'client/pages/Game/SurvivalOnlineGame/SurvivalOnlineGame';
+import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
+import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
+
+import { useBoolean } from 'client/hooks/useBoolean';
 
 const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
   const ioRef = useRef<SocketIOClient.Socket>();
 
   const [gameData, setGameData] = useState<IGame | null>(null);
+
+  const {
+    value: isGameEnd,
+    setTrue: endGame,
+  } = useBoolean(false);
 
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
@@ -21,18 +30,24 @@ const Game: React.FC = () => {
       setGameData(updatedGameData);
     });
 
+    ioRef.current.on(EGameEvent.END, () => {
+      console.log('GAME_END');
+
+      endGame();
+    });
+
     return () => {
       if (ioRef.current) {
         ioRef.current.disconnect();
       }
     };
-  }, [game, gameId]);
+  }, [endGame, game, gameId]);
 
   if (!gameData || !ioRef.current) {
     return null;
   }
 
-  if (gameData.players.some(({ status }) => status !== EPlayerStatus.PLAYING)) {
+  if (gameData.players.some(({ status }) => status !== EPlayerStatus.PLAYING && status !== EPlayerStatus.DISCONNECTED)) {
     return (
       <div>Ожидание игроков...</div>
     );
@@ -42,6 +57,8 @@ const Game: React.FC = () => {
     return (
       <PexesoGame
         io={ioRef.current}
+        players={gameData.players as IPexesoPlayer[]}
+        isGameEnd={isGameEnd}
       />
     );
   }
@@ -50,6 +67,8 @@ const Game: React.FC = () => {
     return (
       <SurvivalOnlineGame
         io={ioRef.current}
+        players={gameData.players as ISurvivalOnlinePlayer[]}
+        isGameEnd={isGameEnd}
       />
     );
   }

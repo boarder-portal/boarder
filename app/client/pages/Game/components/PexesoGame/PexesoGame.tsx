@@ -10,19 +10,24 @@ import { EGameEvent } from 'common/types/game';
 import {
   EPexesoGameEvent,
   IPexesoCard,
-  IPexesoGameInfoEvent,
   IPexesoCardCoords,
-  IPexesoPlayer,
+  IPexesoGameInfoEvent,
   IPexesoGameOptions,
+  IPexesoPlayer,
 } from 'common/types/pexeso';
+import { EPlayerStatus, IPlayer } from 'common/types';
 
 import Img from 'client/components/common/Img/Img';
 import Box from 'client/components/common/Box/Box';
+import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
+import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
 import userAtom from 'client/atoms/userAtom';
 
 interface IPexesoGameProps {
   io: SocketIOClient.Socket;
+  players: IPexesoPlayer[];
+  isGameEnd: boolean;
 }
 
 const b = block('PexesoGame');
@@ -75,7 +80,7 @@ const {
 } = GAMES_CONFIG;
 
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
-  const { io } = props;
+  const { io, isGameEnd, players: baseGamePlayers } = props;
 
   const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
   const [cards, setCards] = useState<IPexesoCard[][]>([]);
@@ -159,6 +164,10 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [io]);
 
   useEffect(() => {
+    setPlayers(baseGamePlayers);
+  }, [baseGamePlayers]);
+
+  useEffect(() => {
     if (!options) {
       return;
     }
@@ -171,6 +180,37 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       imagesRef.current.push(image);
     });
   }, [options]);
+
+  const playersBlock = useMemo(() => {
+    return (
+      <Box between={8}>
+        {players.map((localPlayer) => (
+          <Box
+            key={localPlayer.login}
+            className={b('player', { isActive: localPlayer.isActive })}
+            flex
+            alignItems="center"
+          >
+            <span>{`${localPlayer.login} ${localPlayer.score}`}</span>
+
+            {localPlayer.status === EPlayerStatus.DISCONNECTED && (
+              <>
+                <DotSeparator />
+
+                <span>отключен</span>
+              </>
+            )}
+          </Box>
+        ))}
+      </Box>
+    );
+  }, [players]);
+
+  if (isGameEnd) {
+    return (
+      <GameEnd>{playersBlock}</GameEnd>
+    );
+  }
 
   if (!cards.length || !options) {
     return null;
@@ -207,16 +247,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         ))}
       </Box>
 
-      <Box between={8}>
-        {players.map((localPlayer) => (
-          <Box
-            key={localPlayer.login}
-            className={b('player', { isActive: localPlayer.isActive })}
-          >
-            {`${localPlayer.login} ${localPlayer.score}`}
-          </Box>
-        ))}
-      </Box>
+      {playersBlock}
     </Root>
   );
 };

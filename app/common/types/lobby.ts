@@ -8,5 +8,6 @@ export enum ELobbyEvent {
 }
 
 export interface ILobby<Game extends EGame> {
+  game: Game;
   rooms: IRoom<Game>[];
 }

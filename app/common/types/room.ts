@@ -15,4 +15,5 @@ export interface IRoom<Game extends EGame> {
   id: string;
   players: IPlayer[];
   options: TGameOptions<Game>;
+  closeRoom(): void;
 }

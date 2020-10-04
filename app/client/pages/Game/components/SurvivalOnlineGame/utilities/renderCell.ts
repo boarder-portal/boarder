@@ -1,9 +1,9 @@
-import { OBJECT_PIXELS } from 'client/pages/Game/SurvivalOnlineGame/constants/objectPixels';
+import { OBJECT_PIXELS } from 'client/pages/Game/components/SurvivalOnlineGame/constants/objectPixels';
 
 import { ESurvivalOnlineBiome, ESurvivalOnlineObject, ISurvivalOnlineCell } from 'common/types/survivalOnline';
 
-import renderObject from 'client/pages/Game/SurvivalOnlineGame/utilities/renderObject';
-import renderEyes from 'client/pages/Game/SurvivalOnlineGame/utilities/renderEyes';
+import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
+import renderEyes from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderEyes';
 
 export default function renderCell(context: CanvasRenderingContext2D, startX: number, startY: number, cell: ISurvivalOnlineCell | undefined) {
   if (!cell) {

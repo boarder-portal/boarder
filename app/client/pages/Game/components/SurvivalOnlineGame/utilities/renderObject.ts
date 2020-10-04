@@ -2,7 +2,7 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame } from 'common/types';
 
-import renderRect from 'client/pages/Game/SurvivalOnlineGame/utilities/renderRect';
+import renderRect from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderRect';
 
 export interface ISurvivalOnlineRectInfo {
   color: string;

@@ -13,16 +13,18 @@ import ioInstance from 'server/io';
 class Lobby<Game extends EGame> implements ILobby<EGame> {
   rooms: Room<Game>[] = [];
   io: Namespace;
+  game: Game;
 
   constructor({ game }: { game: Game }) {
     this.io = ioInstance.of(`/${game}/lobby`);
+    this.game = game;
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
       this.sendLobbyUpdate();
 
       socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions<Game>) => {
-        this.rooms.push(new Room({ game, options }));
+        this.rooms.push(new Room({ game, options, closeRoom: this.closeRoom }));
 
         this.sendLobbyUpdate();
       });
@@ -51,7 +53,7 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
     });
   }
 
-  sendLobbyUpdate() {
+  sendLobbyUpdate(): void {
     this.io.emit(ELobbyEvent.UPDATE, {
       rooms: this.rooms.map(({ id, players, options }) => ({
         id,
@@ -59,6 +61,23 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
         options,
       })),
     });
+  }
+
+  closeRoom = (id: string): void => {
+    const roomIndex = this.rooms.findIndex(({  id: roomId }) => roomId === id);
+
+    if (roomIndex === -1) {
+      return;
+    }
+
+    this.rooms = [
+      ...this.rooms.slice(0, roomIndex),
+      ...this.rooms.slice(roomIndex + 1),
+    ];
+
+    this.sendLobbyUpdate();
+
+    delete ioInstance.nsps[`/${this.game}/room/${id}`];
   }
 }
 
