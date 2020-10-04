@@ -13,24 +13,28 @@ export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
   options: TGameOptions<Game>;
   players: IPlayer[];
-  closeRoom(): void;
+  onDeleteGame(): void;
 }
 
 abstract class Game<G extends EGame> {
   io: Namespace;
+  game: G;
   id: string;
   players: TGamePlayer<G>[];
   options: TGameOptions<G>;
-  closeRoom: () => void;
+  onDeleteGame: () => void;
 
   abstract handlers: Partial<Record<TGameEvent<G>, (event: IGameEvent<any>) => void>>;
 
-  protected constructor({ game, options, players, closeRoom }: IGameCreateOptions<G>) {
+  protected constructor({ game, options, players, onDeleteGame }: IGameCreateOptions<G>) {
+    this.game = game;
     this.id = uuid();
     this.options = options;
     this.players = players.map((player) => this.createPlayer(player));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
-    this.closeRoom = closeRoom;
+    this.onDeleteGame = onDeleteGame;
+
+    let deleteGameTimeout: number | null = setTimeout(() => this.deleteGame(), 10000);
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
@@ -40,6 +44,12 @@ abstract class Game<G extends EGame> {
         const player = this.players.find(({ login }) => login === user.login);
 
         if (player) {
+          if (deleteGameTimeout) {
+            clearTimeout(deleteGameTimeout);
+
+            deleteGameTimeout = null;
+          }
+
           player.status = EPlayerStatus.PLAYING;
         }
       }
@@ -70,13 +80,7 @@ abstract class Game<G extends EGame> {
         this.sendBaseGameInfo();
 
         if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
-          setTimeout(() => {
-            this.io.removeAllListeners();
-
-            delete ioInstance.nsps[`/${game}/game/${this.id}`];
-
-            this.closeRoom();
-          }, 10000);
+          deleteGameTimeout = setTimeout(() => this.deleteGame(), 10000);
         }
       });
     });
@@ -89,6 +93,14 @@ abstract class Game<G extends EGame> {
       id: this.id,
       players: this.players,
     });
+  }
+
+  deleteGame() {
+    this.io.removeAllListeners();
+
+    delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
+
+    this.onDeleteGame();
   }
 }
 

@@ -24,7 +24,12 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
       this.sendLobbyUpdate();
 
       socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions<Game>) => {
-        this.rooms.push(new Room({ game, options, closeRoom: this.closeRoom }));
+        this.rooms.push(new Room({
+          game,
+          options,
+          onUpdateRoom: this.sendLobbyUpdate,
+          onDeleteRoom: this.deleteRoom,
+        }));
 
         this.sendLobbyUpdate();
       });
@@ -53,7 +58,7 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
     });
   }
 
-  sendLobbyUpdate(): void {
+  sendLobbyUpdate = (): void => {
     this.io.emit(ELobbyEvent.UPDATE, {
       rooms: this.rooms.map(({ id, players, options }) => ({
         id,
@@ -63,7 +68,7 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
     });
   }
 
-  closeRoom = (id: string): void => {
+  deleteRoom = (id: string): void => {
     const roomIndex = this.rooms.findIndex(({  id: roomId }) => roomId === id);
 
     if (roomIndex === -1) {
@@ -76,8 +81,6 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
     ];
 
     this.sendLobbyUpdate();
-
-    delete ioInstance.nsps[`/${this.game}/room/${id}`];
   }
 }
 
