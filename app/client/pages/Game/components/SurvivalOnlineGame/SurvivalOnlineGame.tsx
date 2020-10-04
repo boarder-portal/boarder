@@ -61,7 +61,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   const user = useRecoilValue(userAtom);
 
   useEffect(() => {
-    io.emit(EGameEvent.GAME_EVENT, ESurvivalOnlineGameEvent.GET_GAME_INFO);
+    io.emit(ESurvivalOnlineGameEvent.GET_GAME_INFO);
 
     io.on(ESurvivalOnlineGameEvent.GAME_INFO, (gameInfo: ISurvivalOnlineGameInfoEvent) => {
       console.log('GAME_INFO', gameInfo);
@@ -140,7 +140,6 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     document.addEventListener('keydown', (e) => {
       if (MOVES_KEY_CODES.includes(e.key)) {
         io.emit(
-          EGameEvent.GAME_EVENT,
           ESurvivalOnlineGameEvent.MOVE_PLAYER,
           e.key === 'ArrowUp' ?
             ESurvivalOnlineDirection.UP :

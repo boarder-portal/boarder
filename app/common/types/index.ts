@@ -34,17 +34,17 @@ export interface IPlayer extends IUser {
 export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
 
 export interface IGameParams {
-  pexeso: {
+  [EGame.PEXESO]: {
     event: EPexesoGameEvent;
     options: IPexesoGameOptions;
     player: IPexesoPlayer;
   };
-  survivalOnline: {
+  [EGame.SURVIVAL_ONLINE]: {
     event: ESurvivalOnlineGameEvent;
     options: ISurvivalOnlineGameOptions;
     player: ISurvivalOnlinePlayer;
   };
-  maze: {
+  [EGame.MAZE]: {
     event: EMazeGameEvent;
     options: IMazeGameOptions;
     player: IMazePlayer;

@@ -1,5 +1,6 @@
 import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
+import forEach from 'lodash/forEach';
 
 import { IAuthSocket, IGameEvent } from 'server/types';
 import { EGame, EPlayerStatus, IPlayer, TGamePlayer } from 'common/types';
@@ -56,11 +57,9 @@ abstract class Game<G extends EGame> {
 
       this.sendBaseGameInfo();
 
-      socket.on(EGameEvent.GAME_EVENT, (event: any, data: any) => {
-        // @ts-ignore
-        this.handlers[event].call(this, {
-          data,
-          socket,
+      forEach(this.handlers, (handler, event) => {
+        socket.on(event, (data) => {
+          handler?.call(this, { socket, data });
         });
       });
 

@@ -15,7 +15,7 @@ import {
   IPexesoGameOptions,
   IPexesoPlayer,
 } from 'common/types/pexeso';
-import { EPlayerStatus, IPlayer } from 'common/types';
+import { EGame, EPlayerStatus } from 'common/types';
 
 import Img from 'client/components/common/Img/Img';
 import Box from 'client/components/common/Box/Box';
@@ -73,7 +73,7 @@ const Root = styled(Box)`
 
 const {
   games: {
-    pexeso: {
+    [EGame.PEXESO]: {
       sets,
     },
   },
@@ -102,7 +102,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
     setHighlightedCardsCoords([]);
 
-    io.emit(EGameEvent.GAME_EVENT, EPexesoGameEvent.OPEN_CARD, { x, y });
+    io.emit(EPexesoGameEvent.OPEN_CARD, { x, y });
   }, [io, player]);
 
   const handleCardRightClick = useCallback((e: React.MouseEvent, { x, y }: IPexesoCardCoords) => {
@@ -124,7 +124,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [highlightedCardsCoords]);
 
   useEffect(() => {
-    io.emit(EGameEvent.GAME_EVENT, EPexesoGameEvent.GET_GAME_INFO);
+    io.emit(EPexesoGameEvent.GET_GAME_INFO);
 
     io.on(EPexesoGameEvent.GAME_INFO, ({
       options,

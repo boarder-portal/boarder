@@ -14,7 +14,7 @@ import useLobby from 'client/hooks/useLobby';
 
 const {
   games: {
-    pexeso: {
+    [EGame.PEXESO]: {
       defaultGameOptions,
     },
   },

@@ -51,7 +51,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   const [mazeInfo, setMazeInfo] = useState<IMazeGameInfo | null>(null);
 
   useEffect(() => {
-    io.emit(EGameEvent.GAME_EVENT, EMazeGameEvent.GET_GAME_INFO);
+    io.emit(EMazeGameEvent.GET_GAME_INFO);
 
     io.on(EMazeGameEvent.GAME_INFO, (mazeGameInfo: IMazeGameInfo) => {
       setMazeInfo(mazeGameInfo);
