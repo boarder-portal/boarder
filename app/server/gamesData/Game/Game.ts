@@ -71,6 +71,10 @@ abstract class Game<G extends EGame> {
 
         if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
           setTimeout(() => {
+            this.io.removeAllListeners();
+
+            delete ioInstance.nsps[`/${game}/game/${this.id}`];
+
             this.closeRoom();
           }, 10000);
         }
