@@ -4,7 +4,6 @@ import { EPexesoSet } from 'common/types/pexeso';
 export const GAMES_CONFIG = {
   games: {
     [EGame.PEXESO]: {
-      name: EGame.PEXESO,
       minPlayersCount: 2,
       maxPlayersCount: 4,
       sets: {
@@ -103,7 +102,6 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.SURVIVAL_ONLINE]: {
-      name: EGame.SURVIVAL_ONLINE,
       minPlayersCount: 1,
       maxPlayersCount: 4,
       cellSize: 100,
@@ -125,6 +123,16 @@ export const GAMES_CONFIG = {
         rawSienna: '#D08C60',
         beaver: '#997B66',
         coffee: '#8A5A44',
+      },
+    },
+    [EGame.MAZE]: {
+      mazeWidth: 10,
+      mazeHeight: 6,
+      cellSize: 30,
+      wallThickness: 2,
+      playerSize: 7,
+      defaultGameOptions: {
+        playersCount: 2,
       },
     },
   },

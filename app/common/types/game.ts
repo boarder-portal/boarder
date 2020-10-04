@@ -14,3 +14,8 @@ export interface IGame {
 }
 
 export type TGameOptions<Game extends EGame> = IGameParams[Game]['options'];
+
+export interface ICoords {
+  x: number;
+  y: number;
+}

@@ -14,8 +14,8 @@ import LobbyRoom from 'client/components/Lobby/components/LobbyRoom/LobbyRoom';
 interface ILobbyProps<Game extends EGame> {
   game: EGame;
   rooms: IRoom<Game>[];
-  options: React.ReactNode;
-  renderRoomOptions(options: TGameOptions<Game>): React.ReactNode;
+  options?: React.ReactNode;
+  renderRoomOptions?(options: TGameOptions<Game>): React.ReactNode;
   onCreateRoom(): void;
   onEnterRoom(roomId: string): void;
 }
@@ -50,7 +50,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
                 className={b('room').toString()}
                 key={room.id}
                 title={room.id}
-                options={renderRoomOptions(room.options)}
+                options={renderRoomOptions?.(room.options)}
                 players={room.players.length}
                 maxPlayers={room.options.playersCount}
                 onClick={() => onEnterRoom(room.id)}

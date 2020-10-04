@@ -4,10 +4,12 @@ import {
   ISurvivalOnlineGameOptions,
   ISurvivalOnlinePlayer,
 } from 'common/types/survivalOnline';
+import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze';
 
 export enum EGame {
   PEXESO = 'pexeso',
   SURVIVAL_ONLINE = 'survivalOnline',
+  MAZE = 'maze',
 }
 
 export interface IUser {
@@ -41,5 +43,10 @@ export interface IGameParams {
     event: ESurvivalOnlineGameEvent;
     options: ISurvivalOnlineGameOptions;
     player: ISurvivalOnlinePlayer;
+  };
+  maze: {
+    event: EMazeGameEvent;
+    options: IMazeGameOptions;
+    player: IMazePlayer;
   };
 }

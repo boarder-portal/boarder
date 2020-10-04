@@ -6,9 +6,11 @@ import { EGame, EPlayerStatus } from 'common/types';
 import { EGameEvent, IGame } from 'common/types/game';
 import { IPexesoPlayer } from 'common/types/pexeso';
 import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
+import { IMazePlayer } from 'common/types/maze';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
+import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -68,6 +70,16 @@ const Game: React.FC = () => {
       <SurvivalOnlineGame
         io={ioRef.current}
         players={gameData.players as ISurvivalOnlinePlayer[]}
+        isGameEnd={isGameEnd}
+      />
+    );
+  }
+
+  if (game === EGame.MAZE) {
+    return (
+      <MazeGame
+        io={ioRef.current}
+        players={gameData.players as IMazePlayer[]}
         isGameEnd={isGameEnd}
       />
     );

@@ -12,10 +12,12 @@ import ioInstance from 'server/io';
 import Game from 'server/gamesData/Game/Game';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
+import MazeGame from 'server/gamesData/Game/MazeGame/MazeGame';
 
 const GAMES_MAP = {
   [EGame.PEXESO]: PexesoGame,
   [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
+  [EGame.MAZE]: MazeGame,
 };
 
 class Room<G extends EGame> implements IRoom<G> {

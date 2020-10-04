@@ -30,7 +30,7 @@ abstract class Game<G extends EGame> {
     this.game = game;
     this.id = uuid();
     this.options = options;
-    this.players = players.map((player) => this.createPlayer(player));
+    this.players = players.map((player, index) => this.createPlayer(player, index));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
 
@@ -86,7 +86,7 @@ abstract class Game<G extends EGame> {
     });
   }
 
-  abstract createPlayer(roomPlayer: IPlayer): TGamePlayer<G>;
+  abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<G>;
 
   sendBaseGameInfo() {
     this.io.emit(EGameEvent.UPDATE, {
@@ -101,6 +101,12 @@ abstract class Game<G extends EGame> {
     delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
 
     this.onDeleteGame();
+  }
+
+  end() {
+    setTimeout(() => {
+      this.io.emit(EGameEvent.END);
+    }, 1000);
   }
 }
 

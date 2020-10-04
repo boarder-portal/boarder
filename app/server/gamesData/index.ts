@@ -10,8 +10,8 @@ interface IGameData<Game extends EGame> {
 
 const GAMES_DATA: { [Game in EGame]: IGameData<EGame> } = {} as { [Game in EGame]: IGameData<EGame> };
 
-Object.values(GAMES_CONFIG.games).forEach((game) => {
-  GAMES_DATA[game.name] = {
-    lobby: new Lobby({ game: game.name }),
+Object.keys(GAMES_CONFIG.games).forEach((game) => {
+  GAMES_DATA[game as EGame] = {
+    lobby: new Lobby({ game: game as EGame }),
   };
 });
