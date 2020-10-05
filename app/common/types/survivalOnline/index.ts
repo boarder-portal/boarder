@@ -16,7 +16,7 @@ export interface ISurvivalOnlineGameOptions extends ICommonGameOptions {
 export interface ISurvivalOnlinePlayer extends IPlayer {
   x: number;
   y: number;
-  hp: number;
+  object: ISurvivalOnlinePlayerObject;
 }
 
 export enum ESurvivalOnlineBiome {
@@ -48,8 +48,10 @@ export interface ISurvivalOnlineBaseObject extends ISurvivalOnlineObject {
 
 export interface ISurvivalOnlinePlayerObject extends ISurvivalOnlineObject {
   type: ESurvivalOnlineObject.PLAYER;
-  player: ISurvivalOnlinePlayer;
+  login: string;
+  hp: number;
   direction: ESurvivalOnlineDirection;
+  isMoving: boolean;
 }
 
 export interface ISurvivalOnlineZombieObject extends ISurvivalOnlineObject {

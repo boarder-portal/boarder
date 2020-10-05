@@ -81,6 +81,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
 
   generateZombiesIterationInterval?: NodeJS.Timer;
   moveZombiesIterationInterval?: NodeJS.Timer;
+  movePlayersIterationInterval?: NodeJS.Timer;
 
   constructor(options: IGameCreateOptions<EGame.SURVIVAL_ONLINE>) {
     super(options);
@@ -93,7 +94,13 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
       ...roomPlayer,
       x: 0,
       y: 0,
-      hp: 100,
+      object: {
+        type: ESurvivalOnlineObject.PLAYER,
+        login: roomPlayer.login,
+        hp: 100,
+        direction: ESurvivalOnlineDirection.DOWN,
+        isMoving: false,
+      },
     };
   }
 
@@ -123,11 +130,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     this.players.forEach((player, index) => {
       const cell = cellsAroundBase[index];
 
-      cell.object = {
-        type: ESurvivalOnlineObject.PLAYER,
-        player,
-        direction: ESurvivalOnlineDirection.DOWN,
-      };
+      cell.object = player.object;
 
       player.x = cell.x;
       player.y = cell.y;
@@ -202,8 +205,14 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
       (cell as ISurvivalOnlineCell).object = null;
 
       if (SurvivalOnlineGame.containsObject<ISurvivalOnlinePlayerObject>(cellInDirection, ESurvivalOnlineObject.PLAYER)) {
-        cellInDirection.object.player.x = cellInDirection.x;
-        cellInDirection.object.player.y = cellInDirection.y;
+        const player = this.players.find(
+          ({ login }) => cellInDirection.object.login === login,
+        );
+
+        if (player) {
+          player.x = cellInDirection.x;
+          player.y = cellInDirection.y;
+        }
       }
 
       return [cell, cellInDirection as ISurvivalOnlineCellWithObject<Obj>];
@@ -283,7 +292,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
 
     if (
       !SurvivalOnlineGame.containsObject<ISurvivalOnlinePlayerObject>(playerCell, ESurvivalOnlineObject.PLAYER)
-      || playerCell.object.player.login !== player.login
+      || playerCell.object.login !== player.login
     ) {
       return;
     }
@@ -316,6 +325,22 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         players: withPlayers ? this.players : null,
       });
     }
+  }
+
+  deleteGame() {
+    if (this.moveZombiesIterationInterval) {
+      clearInterval(this.moveZombiesIterationInterval);
+    }
+
+    if (this.movePlayersIterationInterval) {
+      clearInterval(this.movePlayersIterationInterval);
+    }
+
+    if (this.generateZombiesIterationInterval) {
+      clearInterval(this.generateZombiesIterationInterval);
+    }
+
+    super.deleteGame();
   }
 }
 
