@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EMazeGameEvent, IMazeGameInfo, IMazePlayer } from 'common/types/maze';
+import {
+  EMazeGameEvent,
+  EMazePlayerSide,
+  ESide,
+  IMazeGameInfo,
+  IMazePlayer,
+  IMazePlayerMoveEvent,
+  IMazeWall,
+} from 'common/types/maze';
 import { EGame } from 'common/types';
-import { EGameEvent } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
+
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 interface IMazeGameProps {
   io: SocketIOClient.Socket;
@@ -38,9 +47,60 @@ const {
       mazeHeight,
       cellSize,
       wallThickness,
+      playerSize,
     },
   },
 } = GAMES_CONFIG;
+
+const PLAYER_COLORS: Record<EMazePlayerSide, string> = {
+  [EMazePlayerSide.TOP]: '#00f',
+  [EMazePlayerSide.BOTTOM]: '#f00',
+};
+
+const KEY_CODE_DIRECTIONS: Partial<Record<string, ESide>> = {
+  ArrowUp: ESide.TOP,
+  ArrowRight: ESide.RIGHT,
+  ArrowDown: ESide.BOTTOM,
+  ArrowLeft: ESide.LEFT,
+  w: ESide.TOP,
+  d: ESide.RIGHT,
+  s: ESide.BOTTOM,
+  a: ESide.LEFT,
+};
+
+const getDirectionAngle = (directions: ESide[]): number | null => {
+  if (directions.length === 0) {
+    return null;
+  }
+
+  let xProjection = 0;
+  let yProjection = 0;
+
+  directions.forEach((direction) => {
+    if (direction === ESide.TOP) {
+      yProjection = -1;
+    } else if (direction === ESide.BOTTOM) {
+      yProjection = +1;
+    } else if (direction === ESide.LEFT) {
+      xProjection = -1;
+    } else if (direction === ESide.RIGHT) {
+      xProjection = +1;
+    }
+  });
+
+  const atan = Math.atan(yProjection / xProjection);
+
+  return xProjection < 0
+    ? atan + Math.PI
+    : atan;
+};
+
+const getPlayerElementProps = (player: IMazePlayer): { cx: number; cy: number } => {
+  return {
+    cx: player.x * cellSize,
+    cy: player.y * cellSize,
+  };
+};
 
 const MazeGame: React.FC<IMazeGameProps> = (props) => {
   const {
@@ -48,15 +108,94 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     isGameEnd,
   } = props;
 
-  const [mazeInfo, setMazeInfo] = useState<IMazeGameInfo | null>(null);
+  const currentDirections = useRef<ESide[]>([]);
+  const players = useRef<IMazePlayer[]>([]);
+
+  const [walls, setWalls] = useState<IMazeWall[] | null>(null);
+
+  const renderPlayer = (player: IMazePlayer) => {
+    const playerElement = document.getElementById(`player-${player.side}`);
+
+    if (playerElement && playerElement instanceof SVGCircleElement) {
+      const props = getPlayerElementProps(player);
+
+      playerElement.setAttribute('cx', String(props.cx));
+      playerElement.setAttribute('cy', String(props.cy));
+    }
+  };
 
   useEffect(() => {
     io.emit(EMazeGameEvent.GET_GAME_INFO);
 
     io.on(EMazeGameEvent.GAME_INFO, (mazeGameInfo: IMazeGameInfo) => {
-      setMazeInfo(mazeGameInfo);
+      players.current = mazeGameInfo.players;
+
+      players.current.forEach(renderPlayer);
+
+      setWalls(mazeGameInfo.walls);
+    });
+
+    io.on(EMazeGameEvent.PLAYER_MOVED, (moveEvent: IMazePlayerMoveEvent) => {
+      const player = players.current.find(
+        ({ login }) => login === moveEvent.login,
+      );
+
+      if (!player) {
+        return;
+      }
+
+      player.x = moveEvent.x;
+      player.y = moveEvent.y;
+
+      renderPlayer(player);
     });
   }, [io]);
+
+  useGlobalListener('keydown', document, (e) => {
+    const direction = KEY_CODE_DIRECTIONS[e.key];
+
+    if (!direction) {
+      return;
+    }
+
+    const directionIndex = currentDirections.current.indexOf(direction);
+
+    if (directionIndex !== -1) {
+      return;
+    }
+
+    currentDirections.current.push(direction);
+
+    const newDirection = getDirectionAngle(currentDirections.current);
+
+    if (newDirection !== null) {
+      io.emit(EMazeGameEvent.MOVE_PLAYER, newDirection);
+    }
+  });
+
+  useGlobalListener('keyup', document, (e) => {
+    const direction = KEY_CODE_DIRECTIONS[e.key];
+
+    if (!direction) {
+      return;
+    }
+
+    const directionIndex = currentDirections.current.indexOf(direction);
+
+    if (directionIndex === -1) {
+      return;
+    }
+
+    currentDirections.current.splice(directionIndex, 1);
+
+    const newDirection = getDirectionAngle(currentDirections.current);
+
+    if (newDirection === null) {
+      io.emit(EMazeGameEvent.STOP_PLAYER);
+    } else {
+      io.emit(EMazeGameEvent.MOVE_PLAYER, newDirection);
+    }
+  });
 
   if (isGameEnd) {
     return (
@@ -66,11 +205,11 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     );
   }
 
-  if (!mazeInfo) {
+  if (!walls) {
     return null;
   }
 
-  console.log(mazeInfo);
+  // console.log(mazeInfo);
 
   return (
     <Root className={b()}>
@@ -81,19 +220,33 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
           height: mazeHeight * cellSize,
         }}
       >
-        {mazeInfo.walls.map((wall) => (
-          <line
-            key={`${wall.from.x}x${wall.from.y} - ${wall.to.x}x${wall.to.y}`}
-            className={b('wall')}
-            style={{
-              strokeWidth: wallThickness,
-            }}
-            x1={wall.from.x * cellSize}
-            y1={wall.from.y * cellSize}
-            x2={wall.to.x * cellSize}
-            y2={wall.to.y * cellSize}
-          />
-        ))}
+        <g>
+          {walls.map((wall) => (
+            <line
+              key={`${wall.from.x}x${wall.from.y} - ${wall.to.x}x${wall.to.y}`}
+              className={b('wall')}
+              style={{
+                strokeWidth: wallThickness,
+              }}
+              x1={wall.from.x * cellSize}
+              y1={wall.from.y * cellSize}
+              x2={wall.to.x * cellSize}
+              y2={wall.to.y * cellSize}
+            />
+          ))}
+        </g>
+
+        <g>
+          {players.current.map((player) => (
+            <circle
+              key={player.side}
+              id={`player-${player.side}`}
+              r={playerSize}
+              fill={PLAYER_COLORS[player.side]}
+              {...getPlayerElementProps(player)}
+            />
+          ))}
+        </g>
       </svg>
     </Root>
   );

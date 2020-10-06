@@ -126,8 +126,8 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.MAZE]: {
-      mazeWidth: 10,
-      mazeHeight: 6,
+      mazeWidth: 30,
+      mazeHeight: 16,
       cellSize: 30,
       wallThickness: 2,
       playerSize: 7,

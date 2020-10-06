@@ -2,7 +2,17 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame, IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
-import { EMazeGameEvent, ESide, IMazeGameInfo, IMazePlayer, IMazeWall } from 'common/types/maze';
+import {
+  EMazeGameEvent,
+  EMazeMoveEvent,
+  EMazePlayerSide,
+  ESide,
+  IMazeGameInfo,
+  IMazePlayer,
+  IMazePlayerMoveEvent,
+  IMazeWall,
+  TMazeMoveEvent,
+} from 'common/types/maze';
 import { ICoords } from 'common/types/game';
 
 import { getRandomIndex } from 'common/utilities/random';
@@ -20,11 +30,18 @@ const {
   },
 } = GAMES_CONFIG;
 
+const MOVE_PLAYERS_INTERVAL = 40;
+// 1 cells per second
+const BASE_PLAYER_SPEED = 2;
+
 class MazeGame extends Game<EGame.MAZE> {
   handlers = {
     [EMazeGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EMazeGameEvent.MOVE_PLAYER]: this.onMovePlayer,
+    [EMazeGameEvent.STOP_PLAYER]: this.onStopPlayer,
   };
   walls: IMazeWall[] = [];
+  movePlayersInterval?: NodeJS.Timer;
 
   constructor(options: IGameCreateOptions<EGame.MAZE>) {
     super(options);
@@ -106,21 +123,118 @@ class MazeGame extends Game<EGame.MAZE> {
       path.push(neighborCoords);
       visitedCells.push(neighborCoords);
     }
+
+    this.movePlayersInterval = setInterval(() => this.movePlayers(), MOVE_PLAYERS_INTERVAL) as any;
   }
 
   createPlayer(roomPlayer: IPlayer, index: number): IMazePlayer {
+    const isTopPlayer = index === 0;
+
     return {
       ...roomPlayer,
-      side: index === 0 ? 'top' : 'bottom',
+      side: isTopPlayer ? EMazePlayerSide.TOP : EMazePlayerSide.BOTTOM,
+      x: isTopPlayer ? 0.5 : mazeWidth - 0.5,
+      y: isTopPlayer ? 0.5 : mazeHeight - 0.5,
+      directionAngle: isTopPlayer ? Math.PI / 2 : Math.PI * 3 / 2,
+      isMoving: false,
+      moveEventsQueue: [],
+      lastActionTimestamp: 0,
     };
+  }
+
+  movePlayers() {
+    const now = Date.now();
+
+    this.players.forEach((player) => {
+      const moveEventsQueue: TMazeMoveEvent[] = [];
+
+      if (player.isMoving) {
+        moveEventsQueue.push({
+          type: EMazeMoveEvent.MOVE,
+          directionAngle: player.directionAngle,
+          timestamp: player.lastActionTimestamp,
+        });
+      }
+
+      moveEventsQueue.push(
+        ...player.moveEventsQueue,
+        {
+          type: EMazeMoveEvent.STOP,
+          timestamp: now,
+        },
+      );
+
+      moveEventsQueue.forEach((moveEvent, index) => {
+        if (index !== 0 && player.isMoving) {
+          const duration = moveEvent.timestamp - moveEventsQueue[index - 1].timestamp;
+          const distance = BASE_PLAYER_SPEED * duration / 1000;
+
+          player.x += +(distance * Math.cos(player.directionAngle)).toFixed(3);
+          player.y += +(distance * Math.sin(player.directionAngle)).toFixed(3);
+        }
+
+        if (index !== moveEventsQueue.length - 1) {
+          player.isMoving = moveEvent.type === EMazeMoveEvent.MOVE;
+        }
+
+        if (moveEvent.type === EMazeMoveEvent.MOVE) {
+          player.directionAngle = moveEvent.directionAngle;
+        }
+
+        player.lastActionTimestamp = moveEvent.timestamp;
+      });
+
+      const lastMoveEndTimestamp = player.moveEventsQueue.length
+        ? player.moveEventsQueue[0].timestamp
+        : now;
+
+      if (player.isMoving) {
+        const distance = BASE_PLAYER_SPEED * (lastMoveEndTimestamp - player.lastActionTimestamp) / 1000;
+
+        player.x += distance * Math.cos(player.directionAngle);
+        player.y += distance * Math.sin(player.directionAngle);
+      }
+
+      const moveEvent: IMazePlayerMoveEvent = {
+        login: player.login,
+        x: player.x,
+        y: player.y,
+      };
+
+      if (player.isMoving || player.moveEventsQueue.length) {
+        this.io.emit(EMazeGameEvent.PLAYER_MOVED, moveEvent);
+      }
+
+      player.moveEventsQueue = [];
+    });
   }
 
   onGetGameInfo({ socket }: IGameEvent) {
     const gameInfo: IMazeGameInfo = {
       walls: this.walls,
+      players: this.players,
     };
 
     socket.emit(EMazeGameEvent.GAME_INFO, gameInfo);
+  }
+
+  onMovePlayer({ socket, data: angle }: IGameEvent<number>) {
+    const player = this.players.find(({ login }) => login === socket.user?.login);
+
+    player?.moveEventsQueue.push({
+      type: EMazeMoveEvent.MOVE,
+      directionAngle: angle,
+      timestamp: Date.now(),
+    });
+  }
+
+  onStopPlayer({ socket }: IGameEvent) {
+    const player = this.players.find(({ login }) => login === socket.user?.login);
+
+    player?.moveEventsQueue.push({
+      type: EMazeMoveEvent.STOP,
+      timestamp: Date.now(),
+    });
   }
 
   removeWall(wall: IMazeWall) {
@@ -132,6 +246,14 @@ class MazeGame extends Game<EGame.MAZE> {
     if (wallIndex !== -1) {
       this.walls.splice(wallIndex, 1);
     }
+  }
+
+  deleteGame() {
+    if (this.movePlayersInterval) {
+      clearInterval(this.movePlayersInterval);
+    }
+
+    super.deleteGame();
   }
 }
 
