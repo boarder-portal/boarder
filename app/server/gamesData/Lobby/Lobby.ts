@@ -1,6 +1,6 @@
 import { Namespace } from 'socket.io';
 
-import { ELobbyEvent, ILobby } from 'common/types/lobby';
+import { ELobbyEvent, ILobby, ILobbyUpdateEvent } from 'common/types/lobby';
 import { IAuthSocket } from 'server/types';
 import { EGame, EPlayerStatus } from 'common/types';
 import { TGameOptions } from 'common/types/game';
@@ -59,13 +59,16 @@ class Lobby<Game extends EGame> implements ILobby<EGame> {
   }
 
   sendLobbyUpdate = (): void => {
-    this.io.emit(ELobbyEvent.UPDATE, {
-      rooms: this.rooms.map(({ id, players, options }) => ({
+    const updatedData: ILobbyUpdateEvent<Game> = {
+      rooms: this.rooms.map(({ id, players, options, game }) => ({
         id,
         players,
+        gameIsStarted: Boolean(game),
         options,
       })),
-    });
+    };
+
+    this.io.emit(ELobbyEvent.UPDATE, updatedData);
   }
 
   deleteRoom = (id: string): void => {

@@ -106,6 +106,8 @@ class Room<G extends EGame> implements IRoom<G> {
           }
 
           this.io.emit(ERoomEvent.START_GAME, this.game.id);
+
+          this.onUpdateRoom();
         }
       });
 

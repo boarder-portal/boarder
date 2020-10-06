@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 import { EGame } from 'common/types';
 import typedReactMemo from 'client/types/typedReactMemo';
-import { IRoom } from 'common/types/room';
 import { TGameOptions } from 'common/types/game';
+import { ILobbyUpdateEvent } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';
 import Box from 'client/components/common/Box/Box';
@@ -13,7 +13,7 @@ import LobbyRoom from 'client/components/Lobby/components/LobbyRoom/LobbyRoom';
 
 interface ILobbyProps<Game extends EGame> {
   game: EGame;
-  rooms: IRoom<Game>[];
+  rooms: ILobbyUpdateEvent<Game>['rooms'];
   options?: React.ReactNode;
   renderRoomOptions?(options: TGameOptions<Game>): React.ReactNode;
   onCreateRoom(): void;
@@ -53,6 +53,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
                 options={renderRoomOptions?.(room.options)}
                 players={room.players.length}
                 maxPlayers={room.options.playersCount}
+                gameIsStarted={room.gameIsStarted}
                 onClick={() => onEnterRoom(room.id)}
               />
             ))

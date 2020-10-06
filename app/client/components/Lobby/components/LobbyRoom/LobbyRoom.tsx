@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Box from 'client/components/common/Box/Box';
+import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
 interface ILobbyRoomProps {
   className?: string;
@@ -9,6 +10,7 @@ interface ILobbyRoomProps {
   options: React.ReactNode;
   players: number;
   maxPlayers: number;
+  gameIsStarted: boolean;
   onClick(): void;
 }
 
@@ -19,7 +21,7 @@ const Root = styled(Box)`
 `;
 
 const LobbyRoom: React.FC<ILobbyRoomProps> = (props) => {
-  const { className, title, options, players, maxPlayers, onClick } = props;
+  const { className, title, options, players, maxPlayers, gameIsStarted, onClick } = props;
 
   return (
     <Root
@@ -31,7 +33,13 @@ const LobbyRoom: React.FC<ILobbyRoomProps> = (props) => {
       onClick={onClick}
     >
       <Box flex column between={8}>
-        <Box size="l">{title}</Box>
+        <Box size="l">
+          {title}
+
+          <DotSeparator />
+
+          {gameIsStarted ? 'идет игра' : 'ожидание игроков'}
+        </Box>
 
         <Box>{options}</Box>
       </Box>

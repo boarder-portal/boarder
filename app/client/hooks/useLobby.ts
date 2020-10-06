@@ -2,7 +2,7 @@ import { useHistory } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
-import { ELobbyEvent, ILobby } from 'common/types/lobby';
+import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
 import { EGame } from 'common/types';
 import { TGameOptions } from 'common/types/game';
 
@@ -10,7 +10,7 @@ export default function useLobby<Game extends EGame>(game: Game, gameOptions: TG
   const history = useHistory();
   const ioRef = useRef<SocketIOClient.Socket>();
 
-  const [lobby, setLobby] = useState<ILobby<Game> | null>(null);
+  const [lobby, setLobby] = useState<ILobbyUpdateEvent<Game> | null>(null);
 
   const createRoom = useCallback(() => {
     if (!ioRef.current) {
@@ -33,7 +33,7 @@ export default function useLobby<Game extends EGame>(game: Game, gameOptions: TG
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/lobby`);
 
-    ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobby<Game>) => {
+    ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobbyUpdateEvent<Game>) => {
       setLobby(lobbyData);
     });
 
