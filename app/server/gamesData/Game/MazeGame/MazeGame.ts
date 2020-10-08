@@ -18,6 +18,7 @@ import { ICoords } from 'common/types/game';
 import { getRandomIndex } from 'common/utilities/random';
 import { getMazeCellNeighbors, getMazeWallCoords } from 'common/utilities/maze';
 import { equalsCoords, notEqualsCoordsCb } from 'common/utilities/coords';
+import Vector from 'common/utilities/Vector';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -31,8 +32,8 @@ const {
 } = GAMES_CONFIG;
 
 const MOVE_PLAYERS_INTERVAL = 40;
-// 1 cells per second
-const BASE_PLAYER_SPEED = 2;
+// cells per second
+const BASE_PLAYER_SPEED = 3;
 
 class MazeGame extends Game<EGame.MAZE> {
   handlers = {
@@ -47,6 +48,17 @@ class MazeGame extends Game<EGame.MAZE> {
     super(options);
 
     this.createGameInfo();
+  }
+
+  areFloatsEqual(float1: number, float2: number): boolean {
+    return Math.abs(float1 - float2) < 1e5;
+  }
+
+  arePointsEqual(point1: ICoords, point2: ICoords): boolean {
+    return (
+      this.areFloatsEqual(point1.x, point2.x)
+      && this.areFloatsEqual(point1.y, point2.y)
+    );
   }
 
   createGameInfo() {
@@ -156,43 +168,69 @@ class MazeGame extends Game<EGame.MAZE> {
         });
       }
 
-      moveEventsQueue.push(
-        ...player.moveEventsQueue,
-        {
-          type: EMazeMoveEvent.STOP,
-          timestamp: now,
-        },
-      );
+      moveEventsQueue.push(...player.moveEventsQueue);
 
-      moveEventsQueue.forEach((moveEvent, index) => {
-        if (index !== 0 && player.isMoving) {
-          const duration = moveEvent.timestamp - moveEventsQueue[index - 1].timestamp;
-          const distance = BASE_PLAYER_SPEED * duration / 1000;
-
-          player.x += +(distance * Math.cos(player.directionAngle)).toFixed(3);
-          player.y += +(distance * Math.sin(player.directionAngle)).toFixed(3);
-        }
-
-        if (index !== moveEventsQueue.length - 1) {
-          player.isMoving = moveEvent.type === EMazeMoveEvent.MOVE;
-        }
+      for (let i = 0; i < moveEventsQueue.length; i++) {
+        const speed = BASE_PLAYER_SPEED;
+        const moveEvent = moveEventsQueue[i];
+        const nextTimestamp = i === moveEventsQueue.length - 1
+          ? now
+          : moveEventsQueue[i + 1].timestamp;
+        let isMoving = moveEvent.type === EMazeMoveEvent.MOVE;
 
         if (moveEvent.type === EMazeMoveEvent.MOVE) {
-          player.directionAngle = moveEvent.directionAngle;
+          const duration = nextTimestamp - moveEvent.timestamp;
+          const distance = speed * duration / 1000;
+          const collidingWalls: IMazeWall[] = [];
+          const wallsToPossiblyCollide: IMazeWall[] = [];
+
+          // find current colliding walls and walls that could possibly collide during tick
+          this.walls.forEach((wall) => {
+            // currently colliding walls are those that have a common point
+            // walls that could possibly collide are those
+          });
+
+          const moveVector = new Vector({
+            x: distance * Math.cos(player.directionAngle),
+            y: distance * Math.sin(player.directionAngle),
+          });
+
+          // reduce moveVector due to colliding walls
+          collidingWalls.forEach((wall) => {
+
+          });
+
+          if (moveVector.getLength() === 0) {
+            isMoving = false;
+          } else {
+            // find distance to first colliding wall
+            const distanceToFirstCollidingWall = Infinity;
+
+            // find closest wall to collide if there's any
+            wallsToPossiblyCollide.forEach((wall) => {
+
+            });
+
+            const eventualDistance = Math.min(distance, distanceToFirstCollidingWall);
+            const eventualAngle = moveVector.getAngle();
+
+            player.x += +(eventualDistance * Math.cos(eventualAngle)).toFixed(3);
+            player.y += +(eventualDistance * Math.sin(eventualAngle)).toFixed(3);
+
+            player.directionAngle = moveEvent.directionAngle;
+
+            // went up to wall, continue same event
+            if (eventualDistance !== distance) {
+              moveEvent.timestamp += eventualDistance / speed;
+              i--;
+
+              continue;
+            }
+          }
         }
 
-        player.lastActionTimestamp = moveEvent.timestamp;
-      });
-
-      const lastMoveEndTimestamp = player.moveEventsQueue.length
-        ? player.moveEventsQueue[0].timestamp
-        : now;
-
-      if (player.isMoving) {
-        const distance = BASE_PLAYER_SPEED * (lastMoveEndTimestamp - player.lastActionTimestamp) / 1000;
-
-        player.x += distance * Math.cos(player.directionAngle);
-        player.y += distance * Math.sin(player.directionAngle);
+        player.isMoving = isMoving;
+        player.lastActionTimestamp = nextTimestamp;
       }
 
       const moveEvent: IMazePlayerMoveEvent = {

@@ -15,6 +15,8 @@ import {
 } from 'common/types/maze';
 import { EGame } from 'common/types';
 
+import Vector from 'common/utilities/Vector';
+
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 
@@ -88,17 +90,13 @@ const getDirectionAngle = (directions: ESide[]): number | null => {
     }
   });
 
-  const atan = Math.atan(yProjection / xProjection);
-
-  return xProjection < 0
-    ? atan + Math.PI
-    : atan;
+  return new Vector({ x: xProjection, y: yProjection }).getAngle();
 };
 
-const getPlayerElementProps = (player: IMazePlayer): { cx: number; cy: number } => {
+const getPlayerElementProps = (player: IMazePlayer): { x: number; y: number } => {
   return {
-    cx: player.x * cellSize,
-    cy: player.y * cellSize,
+    x: player.x * cellSize - playerSize / 2,
+    y: player.y * cellSize - playerSize / 2,
   };
 };
 
@@ -116,11 +114,11 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   const renderPlayer = (player: IMazePlayer) => {
     const playerElement = document.getElementById(`player-${player.side}`);
 
-    if (playerElement && playerElement instanceof SVGCircleElement) {
+    if (playerElement && playerElement instanceof SVGRectElement) {
       const props = getPlayerElementProps(player);
 
-      playerElement.setAttribute('cx', String(props.cx));
-      playerElement.setAttribute('cy', String(props.cy));
+      playerElement.setAttribute('x', String(props.x));
+      playerElement.setAttribute('y', String(props.y));
     }
   };
 
@@ -238,10 +236,11 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
 
         <g>
           {players.current.map((player) => (
-            <circle
+            <rect
               key={player.side}
               id={`player-${player.side}`}
-              r={playerSize}
+              width={playerSize}
+              height={playerSize}
               fill={PLAYER_COLORS[player.side]}
               {...getPlayerElementProps(player)}
             />
