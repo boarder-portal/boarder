@@ -25,7 +25,7 @@ export const GAMES_CONFIG = {
         },
         [EPexesoSet.LOST]: {
           imagesCount: 40,
-          imageVariantsCount: 1,
+          imageVariantsCount: 2,
         },
         [EPexesoSet.PHILADELPHIA]: {
           imagesCount: 30,
