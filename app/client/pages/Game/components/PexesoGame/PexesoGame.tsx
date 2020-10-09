@@ -172,12 +172,19 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       return;
     }
 
-    times(sets[options.set].imagesCount, (id) => {
-      const image = new Image();
+    const {
+      imagesCount,
+      imageVariantsCount,
+    } = sets[options.set];
 
-      image.src = `/pexeso/sets/${options.set}/${id}/0.jpg`;
+    times(imagesCount, (id) => {
+      times(imageVariantsCount, (variant) => {
+        const image = new Image();
 
-      imagesRef.current.push(image);
+        image.src = `/pexeso/sets/${options.set}/${id}/${variant}.jpg`;
+
+        imagesRef.current.push(image);
+      });
     });
   }, [options]);
 

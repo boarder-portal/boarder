@@ -47,6 +47,10 @@ export const GAMES_CONFIG = {
           imagesCount: 40,
           imageVariantsCount: 1,
         },
+        [EPexesoSet.BUILDINGS]: {
+          imagesCount: 30,
+          imageVariantsCount: 1,
+        },
       },
       matchingCardsCounts: [2, 3, 4, 5, 6],
       differentCardsCounts: [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 48, 54, 60, 72, 84],

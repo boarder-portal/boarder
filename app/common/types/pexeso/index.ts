@@ -21,6 +21,7 @@ export enum EPexesoSet {
   POKER = 'poker',
   STAR_WARS = 'starWars',
   DST = 'dst',
+  BUILDINGS = 'buildings',
 }
 
 export interface IPexesoGameOptions extends ICommonGameOptions {
