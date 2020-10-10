@@ -11,6 +11,7 @@
     "server-start": "ts-node -r tsconfig-paths/register ./app/server/server.ts",
     "server-watch": "ts-node-dev -r tsconfig-paths/register ./app/server/server.ts",
     "init-db": "ts-node -r tsconfig-paths/register ./app/server/db/initDB.ts",
+    "create-pexeso-set": "ts-node scripts/createPexesoSet.ts",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "eslint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"

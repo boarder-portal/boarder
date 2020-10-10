@@ -9,7 +9,7 @@ export const GAMES_CONFIG = {
       sets: {
         [EPexesoSet.COMMON]: {
           imagesCount: 30,
-          imageVariantsCount: 3,
+          imageVariantsCount: 4,
         },
         [EPexesoSet.FRIENDS]: {
           imagesCount: 30,
@@ -49,6 +49,10 @@ export const GAMES_CONFIG = {
         },
         [EPexesoSet.BUILDINGS]: {
           imagesCount: 30,
+          imageVariantsCount: 1,
+        },
+        [EPexesoSet.BREAKING_BAD]: {
+          imagesCount: 20,
           imageVariantsCount: 1,
         },
       },
