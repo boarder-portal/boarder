@@ -13,7 +13,7 @@ export const GAMES_CONFIG = {
         },
         [EPexesoSet.FRIENDS]: {
           imagesCount: 30,
-          imageVariantsCount: 1,
+          imageVariantsCount: 2,
         },
         [EPexesoSet.GAME_OF_THRONES]: {
           imagesCount: 84,
