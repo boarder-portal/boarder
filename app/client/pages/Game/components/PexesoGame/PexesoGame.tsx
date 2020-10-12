@@ -6,7 +6,6 @@ import times from 'lodash/times';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGameEvent } from 'common/types/game';
 import {
   EPexesoGameEvent,
   IPexesoCard,
@@ -17,7 +16,6 @@ import {
 } from 'common/types/pexeso';
 import { EGame, EPlayerStatus } from 'common/types';
 
-import Img from 'client/components/common/Img/Img';
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
@@ -30,17 +28,89 @@ interface IPexesoGameProps {
   isGameEnd: boolean;
 }
 
+interface IPexesoAnimatedCard extends IPexesoCard {
+  opened: boolean;
+  closed: boolean;
+  exited: boolean;
+}
+
 const b = block('PexesoGame');
 
 const Root = styled(Box)`
   .PexesoGame {
     &__card {
-      background-size: contain;
-      cursor: pointer;
+      position: relative;
+      width: 80px;
+      height: 80px;
+
+      .cardBack, .cardContent {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 100%;
+        border-radius: 8px;
+        opacity: 1;
+        animation: 0.3s ease-in-out;
+      }
+
+      .cardBack {
+        width: 100%;
+      }
+
+      .cardContent {
+        width: 0;
+      }
+
+      &_closed {
+        .cardBack {
+          animation-name: open;
+        }
+
+        .cardContent {
+          animation-name: close;
+        }
+      }
+
+      &_opened {
+        .cardBack {
+          animation-name: close;
+        }
+
+        .cardContent {
+          animation-name: open;
+        }
+      }
+
+      &_isOpen {
+        .cardBack {
+          width: 0;
+        }
+
+        .cardContent {
+          width: 100%;
+        }
+      }
+
+      &_isInGame {
+        .cardBack {
+          cursor: pointer;
+        }
+      }
+
+      &:not(.PexesoGame__card_isInGame) {
+        .cardBack, .cardContent {
+          opacity: 0;
+        }
+      }
+
+      &_exited {
+        .cardBack, .cardContent {
+          animation-name: fade;
+        }
+      }
 
       &_highlighted {
-        position: relative;
-
         &:after {
           content: '';
           position: absolute;
@@ -56,9 +126,9 @@ const Root = styled(Box)`
     }
 
     &__empty {
-      width: 80px;
-      height: 80px;
-      background: transparent;
+      position: absolute;
+      width: 100%;
+      height: 100%;
       border: 1px solid black;
       border-radius: 8px;
     }
@@ -67,6 +137,44 @@ const Root = styled(Box)`
       &_isActive {
         font-weight: bold;
       }
+    }
+  }
+
+  @keyframes close {
+    0% {
+      width: 100%;
+    }
+
+    50% {
+      width: 0;
+    }
+
+    100% {
+      width: 0;
+    }
+  }
+
+  @keyframes open {
+    0% {
+      width: 0;
+    }
+
+    50% {
+      width: 0;
+    }
+
+    100% {
+      width: 100%;
+    }
+  }
+
+  @keyframes fade {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
     }
   }
 `;
@@ -83,7 +191,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io, isGameEnd, players: baseGamePlayers } = props;
 
   const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
-  const [cards, setCards] = useState<IPexesoCard[][]>([]);
+  const [cards, setCards] = useState<IPexesoAnimatedCard[][]>([]);
   const [openedCardsCoords, setOpenedCardsCoords] = useState<IPexesoCardCoords[]>([]);
   const [highlightedCardsCoords, setHighlightedCardsCoords] = useState<IPexesoCardCoords[]>([]);
   const [players, setPlayers] = useState<IPexesoPlayer[]>([]);
@@ -133,16 +241,35 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       openedCardsCoords,
     }: IPexesoGameInfoEvent) => {
       setOptions(options);
-      setCards(cards);
+      setCards(cards.map((row) => row.map((card) => ({
+        ...card,
+        opened: false,
+        closed: false,
+        exited: false,
+      }))));
       setOpenedCardsCoords(openedCardsCoords);
       setPlayers(players);
     });
 
     io.on(EPexesoGameEvent.OPEN_CARD, ({ x, y }: IPexesoCardCoords) => {
+      setCards((cards) => {
+        cards[y][x].closed = false;
+        cards[y][x].opened = true;
+
+        return cards;
+      });
       setOpenedCardsCoords((prevOpenedCards) => [...prevOpenedCards, { x, y }]);
     });
 
-    io.on(EPexesoGameEvent.HIDE_CARDS, () => {
+    io.on(EPexesoGameEvent.HIDE_CARDS, (hiddenCardsCoords: IPexesoCardCoords[]) => {
+      setCards((cards) => {
+        hiddenCardsCoords.forEach(({ x, y }) => {
+          cards[y][x].opened = false;
+          cards[y][x].closed = true;
+        });
+
+        return cards;
+      });
       setOpenedCardsCoords([]);
       setHighlightedCardsCoords([]);
     });
@@ -151,6 +278,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setCards((cards) => {
         removedCardsCoords.forEach(({ x, y }) => {
           cards[y][x].isInGame = false;
+          cards[y][x].exited = true;
         });
 
         return cards;
@@ -231,24 +359,31 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         {cards.map((row, y) => (
           <Box key={y} flex between={8}>
             {row.map((card, x) => (
-              card.isInGame ? (
-                <Img
-                  key={x}
-                  className={b('card', {
-                    highlighted: highlightedCardsCoords.some((coords) => coords.x === x && coords.y === y),
-                  })}
-                  width={80}
-                  height={80}
-                  url={openedCardsCoords.some((card) => card.x === x && card.y === y) ?
-                    `/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg` :
-                    '/pexeso/backs/default/2.jpg'
-                  }
+              <div
+                key={x}
+                className={b('card', {
+                  highlighted: highlightedCardsCoords.some((coords) => coords.x === x && coords.y === y),
+                  isOpen: openedCardsCoords.some((card) => card.x === x && card.y === y),
+                  opened: card.opened,
+                  closed: card.closed,
+                  exited: card.exited,
+                  isInGame: card.isInGame,
+                })}
+              >
+                {!card.isInGame && <div key={x} className={b('empty')} />}
+
+                <img
+                  className="cardBack"
+                  src={'/pexeso/backs/default/2.jpg'}
                   onClick={() => handleCardClick({ x, y })}
                   onContextMenu={(e) => handleCardRightClick(e, { x, y })}
                 />
-              ) : (
-                <div key={x} className={b('empty')} />
-              )
+
+                <img
+                  className="cardContent"
+                  src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
+                />
+              </div>
             ))}
           </Box>
         ))}

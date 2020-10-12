@@ -26,6 +26,9 @@ const {
   },
 } = GAMES_CONFIG;
 
+const OPEN_CLOSE_ANIMATION_DURATION = 300;
+const OPEN_DURATION = 1600;
+
 class PexesoGame extends Game<EGame.PEXESO> {
   handlers = {
     [EPexesoGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
@@ -120,7 +123,11 @@ class PexesoGame extends Game<EGame.PEXESO> {
   }
 
   onOpenCard({ data: { x, y } }: IGameEvent<IPexesoOpenCardEvent>) {
-    if (this.isShowingCards || this.openedCardsCoords.some((cardCoords) => cardCoords.x === x && cardCoords.y === y)) {
+    if (
+      this.isShowingCards
+      || this.openedCardsCoords.some((cardCoords) => cardCoords.x === x && cardCoords.y === y)
+      || !this.cards[y][x].isInGame
+    ) {
       return;
     }
 
@@ -154,7 +161,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
         } else {
           nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
 
-          this.io.emit(EPexesoGameEvent.HIDE_CARDS);
+          this.io.emit(EPexesoGameEvent.HIDE_CARDS, this.openedCardsCoords);
         }
 
         this.players.forEach((player, index) => {
@@ -165,7 +172,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
         this.isShowingCards = false;
         this.openedCardsCoords = [];
-      }, 2000);
+      }, OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
     }
   }
 }
