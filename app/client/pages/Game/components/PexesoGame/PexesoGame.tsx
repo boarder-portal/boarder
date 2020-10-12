@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import times from 'lodash/times';
-import chunk from 'lodash/chunk';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import {
+  EPexesoFieldLayout,
   EPexesoGameEvent,
   IPexesoCard,
   IPexesoGameInfoEvent,
@@ -110,7 +110,7 @@ const Root = styled(Box)`
         }
       }
 
-      &_highlighted {
+      &_isHighlighted {
         &:after {
           content: '';
           position: absolute;
@@ -183,7 +183,7 @@ const {
   games: {
     [EGame.PEXESO]: {
       sets,
-      fieldSizes,
+      fieldOptions,
     },
   },
 } = GAMES_CONFIG;
@@ -356,51 +356,80 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     set,
     differentCardsCount,
     matchingCardsCount,
+    layout,
   } = options;
-  const {
-    width: fieldWidth,
-  } = fieldSizes[differentCardsCount * matchingCardsCount];
+  let cardIndexCounter = 0;
+  const renderCard = (): React.ReactNode => {
+    const cardIndex = cardIndexCounter++;
+    const card = cards[cardIndex];
 
-  return (
-    <Root className={b()} flex between={20}>
+    return (
+      <div
+        key={cardIndex}
+        className={b('card', {
+          highlighted: highlightedCardsIndexes.includes(cardIndex),
+          isOpen: openedCardsIndexes.includes(cardIndex),
+          opened: card.opened,
+          closed: card.closed,
+          exited: card.exited,
+          isInGame: card.isInGame,
+          isOut: !card.isInGame,
+        })}
+      >
+        {!card.isInGame && <div className={b('empty')} />}
+
+        <img
+          className="cardBack"
+          src={'/pexeso/backs/default/2.jpg'}
+          onClick={() => handleCardClick(cardIndex)}
+          onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
+        />
+
+        <img
+          className="cardContent"
+          src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
+        />
+      </div>
+    );
+  };
+
+  let cardsLayout: React.ReactNode;
+
+  if (layout === EPexesoFieldLayout.RECT) {
+    const {
+      width: fieldWidth,
+      height: fieldHeight,
+    } = fieldOptions[layout][differentCardsCount * matchingCardsCount];
+
+    cardsLayout = (
       <Box between={8}>
-        {chunk(cards, fieldWidth).map((row, y) => (
+        {times(fieldHeight).map((y) => (
           <Box key={y} flex between={8}>
-            {row.map((card, x) => {
-              const cardIndex = y * fieldWidth + x;
-
-              return (
-                <div
-                  key={x}
-                  className={b('card', {
-                    highlighted: highlightedCardsIndexes.includes(cardIndex),
-                    isOpen: openedCardsIndexes.includes(cardIndex),
-                    opened: card.opened,
-                    closed: card.closed,
-                    exited: card.exited,
-                    isInGame: card.isInGame,
-                    isOut: !card.isInGame,
-                  })}
-                >
-                  {!card.isInGame && <div key={x} className={b('empty')} />}
-
-                  <img
-                    className="cardBack"
-                    src={'/pexeso/backs/default/2.jpg'}
-                    onClick={() => handleCardClick(cardIndex)}
-                    onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
-                  />
-
-                  <img
-                    className="cardContent"
-                    src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
-                  />
-                </div>
-              );
-            })}
+            {times(fieldWidth, renderCard)}
           </Box>
         ))}
       </Box>
+    );
+  } else {
+    const {
+      start,
+      middle,
+    } = fieldOptions[layout][differentCardsCount * matchingCardsCount];
+
+    cardsLayout = (
+      <Box between={8}>
+        {times(2 * (middle - start) + 1, (row) => (
+          <Box key={row} flex between={8} justifyContent="center">
+            {times(row > middle - start ? 2 * middle - start - row : start + row, renderCard)}
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  return (
+    <Root className={b()} flex between={20}>
+      {cardsLayout}
 
       {playersBlock}
     </Root>

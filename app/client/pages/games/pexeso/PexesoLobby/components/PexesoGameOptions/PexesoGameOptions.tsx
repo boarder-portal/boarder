@@ -3,7 +3,7 @@ import times from 'lodash/times';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
+import { EPexesoFieldLayout, EPexesoSet, IPexesoGameOptions } from 'common/types/pexeso';
 import { EGame } from 'common/types';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
@@ -24,6 +24,7 @@ const {
       maxPlayersCount,
       matchingCardsCounts,
       differentCardsCounts,
+      layoutNames,
     },
   },
 } = GAMES_CONFIG;
@@ -63,6 +64,13 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     onOptionsChange({
       ...options,
       differentCardsCount,
+    });
+  }, [onOptionsChange, options]);
+
+  const handleLayoutChange = useCallback((layout: EPexesoFieldLayout) => {
+    onOptionsChange({
+      ...options,
+      layout,
     });
   }, [onOptionsChange, options]);
 
@@ -127,6 +135,18 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           disabled: !areOptionsValid({ differentCardsCount }),
         }))}
         onChange={handleDifferentCardsCountChange}
+      />
+
+      <Select
+        label="Расположение карточек"
+        name="pexesoFieldLayout"
+        value={options.layout}
+        options={[EPexesoFieldLayout.RECT, EPexesoFieldLayout.HEX].map((layout) => ({
+          value: layout,
+          text: layoutNames[layout],
+          disabled: !areOptionsValid({ layout }),
+        }))}
+        onChange={handleLayoutChange}
       />
 
       <Checkbox

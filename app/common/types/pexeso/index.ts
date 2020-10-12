@@ -25,12 +25,18 @@ export enum EPexesoSet {
   BREAKING_BAD = 'breakingBad',
 }
 
+export enum EPexesoFieldLayout {
+  RECT = 'RECT',
+  HEX = 'HEX',
+}
+
 export interface IPexesoGameOptions extends ICommonGameOptions {
   set: EPexesoSet;
   matchingCardsCount: number;
   differentCardsCount: number;
   pickRandomImages: boolean;
   useImageVariants: boolean;
+  layout: EPexesoFieldLayout;
 }
 
 export interface IPexesoPlayer extends IPlayer {
