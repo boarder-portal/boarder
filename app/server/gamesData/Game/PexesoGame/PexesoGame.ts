@@ -8,8 +8,6 @@ import {
   EPexesoGameEvent,
   IPexesoCard,
   IPexesoGameInfoEvent,
-  IPexesoCardCoords,
-  IPexesoOpenCardEvent,
   IPexesoPlayer,
 } from 'common/types/pexeso';
 import { EGame, IPlayer } from 'common/types';
@@ -20,7 +18,6 @@ import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 const {
   games: {
     [EGame.PEXESO]: {
-      fieldSizes,
       sets,
     },
   },
@@ -35,8 +32,8 @@ class PexesoGame extends Game<EGame.PEXESO> {
     [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
   };
 
-  cards: IPexesoCard[][] = [];
-  openedCardsCoords: IPexesoCardCoords[] = [];
+  cards: IPexesoCard[] = [];
+  openedCardsIndexes: number[] = [];
   isShowingCards = false;
 
   constructor(options: IGameCreateOptions<EGame.PEXESO>) {
@@ -46,7 +43,6 @@ class PexesoGame extends Game<EGame.PEXESO> {
   }
 
   createGameInfo() {
-    const cards: IPexesoCard[][] = [];
     const {
       imagesCount: setImagesCount,
       imageVariantsCount,
@@ -77,24 +73,10 @@ class PexesoGame extends Game<EGame.PEXESO> {
       }),
     ));
 
-    const {
-      width,
-      height,
-    } = fieldSizes[this.options.differentCardsCount * this.options.matchingCardsCount];
-
-    times(height, (y) => {
-      cards.push([]);
-
-      times(width, (x) => {
-        cards[y].push({
-          ...shuffledIds[y * width + x],
-          isInGame: true,
-        });
-      });
-    });
-
-    this.cards = cards;
-    this.openedCardsCoords = [];
+    this.cards = shuffledIds.map((card) => ({
+      ...card,
+      isInGame: true,
+    }));
 
     const activePlayerIndex = Math.floor(Math.random() * this.players.length);
 
@@ -114,32 +96,34 @@ class PexesoGame extends Game<EGame.PEXESO> {
   }
 
   onGetGameInfo({ socket }: IGameEvent) {
-    socket.emit(EPexesoGameEvent.GAME_INFO, {
+    const gameInfo: IPexesoGameInfoEvent = {
       options: this.options,
       cards: this.cards,
-      openedCardsCoords: this.openedCardsCoords,
+      openedCardsIndexes: this.openedCardsIndexes,
       players: this.players,
-    } as IPexesoGameInfoEvent);
+    };
+
+    socket.emit(EPexesoGameEvent.GAME_INFO, gameInfo);
   }
 
-  onOpenCard({ data: { x, y } }: IGameEvent<IPexesoOpenCardEvent>) {
+  onOpenCard({ data: cardIndex }: IGameEvent<number>) {
     if (
       this.isShowingCards
-      || this.openedCardsCoords.some((cardCoords) => cardCoords.x === x && cardCoords.y === y)
-      || !this.cards[y][x].isInGame
+      || this.openedCardsIndexes.includes(cardIndex)
+      || !this.cards[cardIndex].isInGame
     ) {
       return;
     }
 
-    this.openedCardsCoords.push({ x, y });
+    this.openedCardsIndexes.push(cardIndex);
 
-    this.io.emit(EPexesoGameEvent.OPEN_CARD, { x, y });
+    this.io.emit(EPexesoGameEvent.OPEN_CARD, cardIndex);
 
-    if (this.openedCardsCoords.length === this.options.matchingCardsCount) {
+    if (this.openedCardsIndexes.length === this.options.matchingCardsCount) {
       this.isShowingCards = true;
 
       setTimeout(() => {
-        const openedCards = this.openedCardsCoords.map(({ x, y }) => this.cards[y][x]);
+        const openedCards = this.openedCardsIndexes.map((cardIndex) => this.cards[cardIndex]);
         const areOpenedCardsSame = openedCards.every(({ imageId }) => imageId === openedCards[0].imageId);
         const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
         let nextActivePlayerIndex = activePlayerIndex;
@@ -151,9 +135,9 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
           this.players[activePlayerIndex].score++;
 
-          this.io.emit(EPexesoGameEvent.REMOVE_CARDS, this.openedCardsCoords);
+          this.io.emit(EPexesoGameEvent.REMOVE_CARDS, this.openedCardsIndexes);
 
-          const isGameEnd = this.cards.every((row) => row.every((card) => !card.isInGame));
+          const isGameEnd = this.cards.every((card) => !card.isInGame);
 
           if (isGameEnd) {
             this.end();
@@ -161,7 +145,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
         } else {
           nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
 
-          this.io.emit(EPexesoGameEvent.HIDE_CARDS, this.openedCardsCoords);
+          this.io.emit(EPexesoGameEvent.HIDE_CARDS, this.openedCardsIndexes);
         }
 
         this.players.forEach((player, index) => {
@@ -171,7 +155,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
         this.io.emit(EPexesoGameEvent.UPDATE_PLAYERS, this.players);
 
         this.isShowingCards = false;
-        this.openedCardsCoords = [];
+        this.openedCardsIndexes = [];
       }, OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
     }
   }

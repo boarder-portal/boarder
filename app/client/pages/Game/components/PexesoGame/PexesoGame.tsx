@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import times from 'lodash/times';
+import chunk from 'lodash/chunk';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import {
   EPexesoGameEvent,
   IPexesoCard,
-  IPexesoCardCoords,
   IPexesoGameInfoEvent,
   IPexesoGameOptions,
   IPexesoPlayer,
@@ -183,6 +183,7 @@ const {
   games: {
     [EGame.PEXESO]: {
       sets,
+      fieldSizes,
     },
   },
 } = GAMES_CONFIG;
@@ -191,9 +192,9 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io, isGameEnd, players: baseGamePlayers } = props;
 
   const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
-  const [cards, setCards] = useState<IPexesoAnimatedCard[][]>([]);
-  const [openedCardsCoords, setOpenedCardsCoords] = useState<IPexesoCardCoords[]>([]);
-  const [highlightedCardsCoords, setHighlightedCardsCoords] = useState<IPexesoCardCoords[]>([]);
+  const [cards, setCards] = useState<IPexesoAnimatedCard[]>([]);
+  const [openedCardsIndexes, setOpenedCardsIndexes] = useState<number[]>([]);
+  const [highlightedCardsIndexes, setHighlightedCardsIndexes] = useState<number[]>([]);
   const [players, setPlayers] = useState<IPexesoPlayer[]>([]);
   const imagesRef = useRef<HTMLImageElement[]>([]);
 
@@ -203,33 +204,33 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     return players.find(({ login }) => login === user?.login);
   }, [players, user]);
 
-  const handleCardClick = useCallback(({ x, y }: IPexesoCardCoords) => {
+  const handleCardClick = useCallback((cardIndex: number) => {
     if (!player?.isActive) {
       return;
     }
 
-    setHighlightedCardsCoords([]);
+    setHighlightedCardsIndexes([]);
 
-    io.emit(EPexesoGameEvent.OPEN_CARD, { x, y });
+    io.emit(EPexesoGameEvent.OPEN_CARD, cardIndex);
   }, [io, player]);
 
-  const handleCardRightClick = useCallback((e: React.MouseEvent, { x, y }: IPexesoCardCoords) => {
+  const handleCardRightClick = useCallback((e: React.MouseEvent, cardIndex: number) => {
     e.preventDefault();
 
-    const highlightedIndex = highlightedCardsCoords.findIndex((coords) => coords.x === x && coords.y === y);
+    const highlightedIndex = highlightedCardsIndexes.indexOf(cardIndex);
 
     if (highlightedIndex === -1) {
-      setHighlightedCardsCoords([
-        ...highlightedCardsCoords,
-        { x, y },
+      setHighlightedCardsIndexes([
+        ...highlightedCardsIndexes,
+        cardIndex,
       ]);
     } else {
-      setHighlightedCardsCoords([
-        ...highlightedCardsCoords.slice(0, highlightedIndex),
-        ...highlightedCardsCoords.slice(highlightedIndex + 1),
+      setHighlightedCardsIndexes([
+        ...highlightedCardsIndexes.slice(0, highlightedIndex),
+        ...highlightedCardsIndexes.slice(highlightedIndex + 1),
       ]);
     }
-  }, [highlightedCardsCoords]);
+  }, [highlightedCardsIndexes]);
 
   useEffect(() => {
     io.emit(EPexesoGameEvent.GET_GAME_INFO);
@@ -238,52 +239,52 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       options,
       cards,
       players,
-      openedCardsCoords,
+      openedCardsIndexes,
     }: IPexesoGameInfoEvent) => {
       setOptions(options);
-      setCards(cards.map((row) => row.map((card) => ({
+      setCards(cards.map((card) => ({
         ...card,
         opened: false,
         closed: false,
         exited: false,
-      }))));
-      setOpenedCardsCoords(openedCardsCoords);
+      })));
+      setOpenedCardsIndexes(openedCardsIndexes);
       setPlayers(players);
     });
 
-    io.on(EPexesoGameEvent.OPEN_CARD, ({ x, y }: IPexesoCardCoords) => {
+    io.on(EPexesoGameEvent.OPEN_CARD, (cardIndex: number) => {
       setCards((cards) => {
-        cards[y][x].closed = false;
-        cards[y][x].opened = true;
+        cards[cardIndex].closed = false;
+        cards[cardIndex].opened = true;
 
         return cards;
       });
-      setOpenedCardsCoords((prevOpenedCards) => [...prevOpenedCards, { x, y }]);
+      setOpenedCardsIndexes((prevOpenedCards) => [...prevOpenedCards, cardIndex]);
     });
 
-    io.on(EPexesoGameEvent.HIDE_CARDS, (hiddenCardsCoords: IPexesoCardCoords[]) => {
+    io.on(EPexesoGameEvent.HIDE_CARDS, (hiddenCardsIndexes: number[]) => {
       setCards((cards) => {
-        hiddenCardsCoords.forEach(({ x, y }) => {
-          cards[y][x].opened = false;
-          cards[y][x].closed = true;
+        hiddenCardsIndexes.forEach((cardIndex) => {
+          cards[cardIndex].opened = false;
+          cards[cardIndex].closed = true;
         });
 
         return cards;
       });
-      setOpenedCardsCoords([]);
-      setHighlightedCardsCoords([]);
+      setOpenedCardsIndexes([]);
+      setHighlightedCardsIndexes([]);
     });
 
-    io.on(EPexesoGameEvent.REMOVE_CARDS, (removedCardsCoords: IPexesoCardCoords[]) => {
+    io.on(EPexesoGameEvent.REMOVE_CARDS, (removedCardsIndexes: number[]) => {
       setCards((cards) => {
-        removedCardsCoords.forEach(({ x, y }) => {
-          cards[y][x].isInGame = false;
-          cards[y][x].exited = true;
+        removedCardsIndexes.forEach((cardIndex) => {
+          cards[cardIndex].isInGame = false;
+          cards[cardIndex].exited = true;
         });
 
         return cards;
       });
-      setHighlightedCardsCoords([]);
+      setHighlightedCardsIndexes([]);
     });
 
     io.on(EPexesoGameEvent.UPDATE_PLAYERS, (players: IPexesoPlayer[]) => {
@@ -351,41 +352,52 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     return null;
   }
 
-  const { set } = options;
+  const {
+    set,
+    differentCardsCount,
+    matchingCardsCount,
+  } = options;
+  const {
+    width: fieldWidth,
+  } = fieldSizes[differentCardsCount * matchingCardsCount];
 
   return (
     <Root className={b()} flex between={20}>
       <Box between={8}>
-        {cards.map((row, y) => (
+        {chunk(cards, fieldWidth).map((row, y) => (
           <Box key={y} flex between={8}>
-            {row.map((card, x) => (
-              <div
-                key={x}
-                className={b('card', {
-                  highlighted: highlightedCardsCoords.some((coords) => coords.x === x && coords.y === y),
-                  isOpen: openedCardsCoords.some((card) => card.x === x && card.y === y),
-                  opened: card.opened,
-                  closed: card.closed,
-                  exited: card.exited,
-                  isInGame: card.isInGame,
-                  isOut: !card.isInGame,
-                })}
-              >
-                {!card.isInGame && <div key={x} className={b('empty')} />}
+            {row.map((card, x) => {
+              const cardIndex = y * fieldWidth + x;
 
-                <img
-                  className="cardBack"
-                  src={'/pexeso/backs/default/2.jpg'}
-                  onClick={() => handleCardClick({ x, y })}
-                  onContextMenu={(e) => handleCardRightClick(e, { x, y })}
-                />
+              return (
+                <div
+                  key={x}
+                  className={b('card', {
+                    highlighted: highlightedCardsIndexes.includes(cardIndex),
+                    isOpen: openedCardsIndexes.includes(cardIndex),
+                    opened: card.opened,
+                    closed: card.closed,
+                    exited: card.exited,
+                    isInGame: card.isInGame,
+                    isOut: !card.isInGame,
+                  })}
+                >
+                  {!card.isInGame && <div key={x} className={b('empty')} />}
 
-                <img
-                  className="cardContent"
-                  src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
-                />
-              </div>
-            ))}
+                  <img
+                    className="cardBack"
+                    src={'/pexeso/backs/default/2.jpg'}
+                    onClick={() => handleCardClick(cardIndex)}
+                    onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
+                  />
+
+                  <img
+                    className="cardContent"
+                    src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
+                  />
+                </div>
+              );
+            })}
           </Box>
         ))}
       </Box>

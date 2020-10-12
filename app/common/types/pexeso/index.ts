@@ -44,19 +44,9 @@ export interface IPexesoCard {
   isInGame: boolean;
 }
 
-export interface IPexesoCardCoords {
-  x: number;
-  y: number;
-}
-
 export interface IPexesoGameInfoEvent {
   options: IPexesoGameOptions;
-  cards: IPexesoCard[][];
-  openedCardsCoords: IPexesoCardCoords[];
+  cards: IPexesoCard[];
+  openedCardsIndexes: number[];
   players: IPexesoPlayer[];
-}
-
-export interface IPexesoOpenCardEvent {
-  x: number;
-  y: number;
 }
