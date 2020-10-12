@@ -367,7 +367,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       <div
         key={cardIndex}
         className={b('card', {
-          highlighted: highlightedCardsIndexes.includes(cardIndex),
+          isHighlighted: highlightedCardsIndexes.includes(cardIndex),
           isOpen: openedCardsIndexes.includes(cardIndex),
           opened: card.opened,
           closed: card.closed,
