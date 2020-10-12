@@ -98,7 +98,7 @@ const Root = styled(Box)`
         }
       }
 
-      &:not(.PexesoGame__card_isInGame) {
+      &_isOut {
         .cardBack, .cardContent {
           opacity: 0;
         }
@@ -368,6 +368,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   closed: card.closed,
                   exited: card.exited,
                   isInGame: card.isInGame,
+                  isOut: !card.isInGame,
                 })}
               >
                 {!card.isInGame && <div key={x} className={b('empty')} />}
