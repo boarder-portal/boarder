@@ -474,6 +474,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
               <img
                 className="cardBack"
+                alt="card"
                 src={'/pexeso/backs/default/2.jpg'}
                 onClick={() => handleCardClick(cardIndex)}
                 onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
@@ -481,6 +482,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
               <img
                 className="cardContent"
+                alt="back"
                 src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
               />
             </div>
