@@ -30,6 +30,20 @@ export enum EPexesoFieldLayout {
   HEX = 'HEX',
 }
 
+export enum EPexesoShuffleType {
+  RANDOM = 'RANDOM',
+  TURNED = 'TURNED',
+}
+
+export type TPexesoShuffleOptions = null | {
+  type: EPexesoShuffleType.RANDOM;
+  afterMovesCount: number;
+  cardsCount: number;
+} | {
+  type: EPexesoShuffleType.TURNED;
+  afterMovesCount: number;
+};
+
 export interface IPexesoGameOptions extends ICommonGameOptions {
   set: EPexesoSet;
   matchingCardsCount: number;
@@ -37,6 +51,7 @@ export interface IPexesoGameOptions extends ICommonGameOptions {
   pickRandomImages: boolean;
   useImageVariants: boolean;
   layout: EPexesoFieldLayout;
+  shuffleOptions: TPexesoShuffleOptions;
 }
 
 export interface IPexesoPlayer extends IPlayer {
@@ -55,4 +70,19 @@ export interface IPexesoGameInfoEvent {
   cards: IPexesoCard[];
   openedCardsIndexes: number[];
   players: IPexesoPlayer[];
+}
+
+export interface IPexesoShuffleCardsIndexes {
+  indexes: number[];
+  permutation: number[];
+}
+
+export interface IPexesoHideCardsEvent {
+  indexes: number[];
+  shuffleIndexes: IPexesoShuffleCardsIndexes | null;
+}
+
+export interface IPexesoRemoveCardsEvent {
+  indexes: number[];
+  shuffleIndexes: IPexesoShuffleCardsIndexes | null;
 }

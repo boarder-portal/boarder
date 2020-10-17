@@ -4,8 +4,8 @@ import styled from 'styled-components';
 export interface IBoxProps {
   className?: string;
   children: React.ReactNode;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   px?: number;
   py?: number;
   mt?: number;
@@ -34,8 +34,8 @@ const TEXT_SIZES_MAP = {
 };
 
 const Root = styled.div`
-  ${({ width }: IBoxProps) => width ? `width: ${width}px;` : ''}
-  ${({ height }: IBoxProps) => height ? `height: ${height}px;` : ''}
+  ${({ width }: IBoxProps) => width ? `width: ${typeof width === 'number' ? `${width}px` : width};` : ''}
+  ${({ height }: IBoxProps) => height ? `height: ${typeof height === 'number' ? `${height}px` : height};` : ''}
   ${({ flex }: IBoxProps) => flex ? 'display: flex;' : ''}
   ${({ column }: IBoxProps) => column ? 'flex-direction: column;' : ''}
   ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}

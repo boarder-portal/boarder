@@ -4,13 +4,14 @@ import { FormControl, InputLabel, MenuItem, Select as MuiSelect } from '@materia
 import typedReactMemo from 'client/types/typedReactMemo';
 
 interface ISelectCommonProps<Value> {
-  label: string;
+  label?: string;
   name: string;
   options: {
     text: React.ReactNode;
     value: Value;
     disabled?: boolean;
   }[];
+  style?: React.CSSProperties;
 }
 
 interface ISelectSingleProps<Value> extends ISelectCommonProps<Value> {
@@ -33,6 +34,7 @@ const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
     name,
     value,
     options,
+    style,
     multiple = false,
     onChange,
   } = props;
@@ -43,8 +45,8 @@ const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
 
   return (
     // FIXME: wtf is fromBlock
-    <FormControl className="fromBlock">
-      <InputLabel id={name}>{label}</InputLabel>
+    <FormControl className="fromBlock" style={style}>
+      {label && (<InputLabel id={name}>{label}</InputLabel>)}
 
       <MuiSelect
         labelId={name}

@@ -58,6 +58,8 @@ export const GAMES_CONFIG = {
       },
       matchingCardsCounts: [2, 3, 4, 5, 6],
       differentCardsCounts: [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 48, 54, 60, 72, 84],
+      shuffleAfterMovesCounts: [1, 2, 3, 4, 5, 6],
+      shuffleCardsCounts: [2, 3, 4, 5, 6],
       fieldOptions: {
         [EPexesoFieldLayout.RECT]: {
           8: { width: 4, height: 2 },
@@ -125,6 +127,7 @@ export const GAMES_CONFIG = {
         layout: EPexesoFieldLayout.RECT,
         pickRandomImages: false,
         useImageVariants: false,
+        shuffleOptions: null,
       },
     },
     [EGame.SURVIVAL_ONLINE]: {
