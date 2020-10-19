@@ -28,6 +28,8 @@ export enum EPexesoSet {
 export enum EPexesoFieldLayout {
   RECT = 'RECT',
   HEX = 'HEX',
+  SPIRAL = 'SPIRAL',
+  SPIRAL_ROTATE = 'SPIRAL_ROTATE',
 }
 
 export enum EPexesoShuffleType {

@@ -240,7 +240,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Расположение карточек"
         name="pexesoFieldLayout"
         value={options.layout}
-        options={[EPexesoFieldLayout.RECT, EPexesoFieldLayout.HEX].map((layout) => ({
+        options={Object.values(EPexesoFieldLayout).map((layout) => ({
           value: layout,
           text: layoutNames[layout],
           disabled: !areOptionsValid({ layout }),

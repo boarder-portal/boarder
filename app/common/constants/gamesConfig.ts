@@ -118,6 +118,8 @@ export const GAMES_CONFIG = {
       layoutNames: {
         [EPexesoFieldLayout.RECT]: 'Прямоугольник',
         [EPexesoFieldLayout.HEX]: 'Шестиугольник',
+        [EPexesoFieldLayout.SPIRAL]: 'Спираль',
+        [EPexesoFieldLayout.SPIRAL_ROTATE]: 'Спираль (поворот)',
       },
       defaultGameOptions: {
         set: EPexesoSet.COMMON,
