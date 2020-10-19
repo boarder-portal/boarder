@@ -90,3 +90,8 @@ export interface ISurvivalOnlineGameInfoEvent {
   players: ISurvivalOnlinePlayer[];
 }
 
+export interface ISurvivalOnlineUpdateGameEvent {
+  players: ISurvivalOnlinePlayer[] | null;
+  cells: ISurvivalOnlineCell[];
+}
+

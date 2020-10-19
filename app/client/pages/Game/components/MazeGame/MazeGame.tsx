@@ -147,6 +147,11 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
 
       renderPlayer(player);
     });
+
+    return () => {
+      io.off(EMazeGameEvent.GAME_INFO);
+      io.off(EMazeGameEvent.PLAYER_MOVED);
+    };
   }, [io]);
 
   useGlobalListener('keydown', document, (e) => {

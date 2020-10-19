@@ -329,6 +329,14 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     io.on(EPexesoGameEvent.UPDATE_PLAYERS, (players: IPexesoPlayer[]) => {
       setPlayers(players);
     });
+
+    return () => {
+      io.off(EPexesoGameEvent.GAME_INFO);
+      io.off(EPexesoGameEvent.OPEN_CARD);
+      io.off(EPexesoGameEvent.HIDE_CARDS);
+      io.off(EPexesoGameEvent.REMOVE_CARDS);
+      io.off(EPexesoGameEvent.UPDATE_PLAYERS);
+    };
   }, [io]);
 
   useEffect(() => {

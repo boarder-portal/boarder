@@ -5,13 +5,12 @@ import { useRecoilValue } from 'recoil';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGameEvent } from 'common/types/game';
 import {
   ESurvivalOnlineDirection,
   ESurvivalOnlineGameEvent,
-  ISurvivalOnlineCell,
   ISurvivalOnlineGameInfoEvent,
   ISurvivalOnlinePlayer,
+  ISurvivalOnlineUpdateGameEvent,
 } from 'common/types/survivalOnline';
 import { EGame } from 'common/types';
 
@@ -83,41 +82,41 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       renderMap({ context, gameInfo, player });
     });
 
-    io.on(
-      ESurvivalOnlineGameEvent.UPDATE_GAME,
-      ({ players, cells }: {
-        players: ISurvivalOnlinePlayer[] | null;
-        cells: ISurvivalOnlineCell[];
-      }) => {
-        console.log('UPDATE_GAME', { players, cells });
+    io.on(ESurvivalOnlineGameEvent.UPDATE_GAME, ({ players, cells }: ISurvivalOnlineUpdateGameEvent) => {
+      console.log('UPDATE_GAME', { players, cells });
 
-        const context = contextRef.current;
-        const gameInfo = gameInfoRef.current;
+      const context = contextRef.current;
+      const gameInfo = gameInfoRef.current;
 
-        if (!gameInfo || !context || !user) {
-          return;
-        }
+      if (!gameInfo || !context || !user) {
+        return;
+      }
 
-        if (players) {
-          gameInfo.players = players;
+      if (players) {
+        gameInfo.players = players;
 
-          playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
-        }
+        playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
+      }
 
-        cells.forEach((cell) => {
-          gameInfo.map[cell.y][cell.x] = cell;
-        });
-
-        if (!playerRef.current) {
-          return;
-        }
-
-        renderMap({
-          context,
-          gameInfo,
-          player: playerRef.current,
-        });
+      cells.forEach((cell) => {
+        gameInfo.map[cell.y][cell.x] = cell;
       });
+
+      if (!playerRef.current) {
+        return;
+      }
+
+      renderMap({
+        context,
+        gameInfo,
+        player: playerRef.current,
+      });
+    });
+
+    return () => {
+      io.off(ESurvivalOnlineGameEvent.GAME_INFO);
+      io.off(ESurvivalOnlineGameEvent.UPDATE_GAME);
+    };
   }, [io, user]);
 
   useEffect(() => {
