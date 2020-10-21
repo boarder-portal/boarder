@@ -474,15 +474,16 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     }
   } else {
     const cardsCount = options.differentCardsCount * options.matchingCardsCount;
-    let angle = 0;
+    const startingAngle = -Math.PI / 2;
+    let angle = startingAngle;
 
     for (let i = 0; i < cardsCount; i++) {
-      const radius = CARD_SIZE * (0.5 + (layout === EPexesoFieldLayout.SPIRAL ? 0.21 : 0.19) * angle);
+      const radius = CARD_SIZE * (0.5 + (layout === EPexesoFieldLayout.SPIRAL ? 0.21 : 0.19) * (angle - startingAngle));
 
       cardsOptions.push({
         x: radius * Math.cos(angle),
         y: radius * Math.sin(angle),
-        angle: layout === EPexesoFieldLayout.SPIRAL_ROTATE ? angle : undefined,
+        angle: layout === EPexesoFieldLayout.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
       });
 
       angle += (CARD_SIZE / radius) * Math.PI / 4;
