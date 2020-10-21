@@ -123,7 +123,6 @@ const Root = styled(Box)`
 
       &_isOut {
         background-color: #fff;
-        z-index: -1;
 
         .cardBack, .cardContent {
           opacity: 0;
@@ -518,6 +517,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                 })}
                 style={{
                   transform: `translate(${x}px, ${y}px)${angle === undefined ? '' : `rotate(${angle}rad)`}`,
+                  zIndex: card.isInGame ? cardIndex : cardIndex - 1e4,
                 }}
               >
                 <img
