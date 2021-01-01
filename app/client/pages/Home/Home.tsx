@@ -21,7 +21,7 @@ const Root = styled.div`
   }
 `;
 
-const GAME_COLORS = ['#9acd32', '#ff0000', '#2929ca'];
+const GAME_COLORS = ['#9acd32', '#ff0000', '#2929ca', '#c500f1'];
 
 const b = block('Home');
 

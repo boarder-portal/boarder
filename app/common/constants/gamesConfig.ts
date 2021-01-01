@@ -166,5 +166,18 @@ export const GAMES_CONFIG = {
         playersCount: 2,
       },
     },
+    [EGame.SET]: {
+      startCardCountToShow: 12,
+      cardsCountToAddIfNoSet: 3,
+      pointsForSet: 1,
+      pointsForWrongSet: -1,
+      pointsForUnderstandingThereAreNoSet: 2,
+      pointsForWrongUnderstandingThereAreNoSet: -1,
+      minPlayersCount: 1,
+      maxPlayersCount: 4,
+      defaultGameOptions: {
+        playersCount: 2,
+      },
+    },
   },
 };

@@ -5,11 +5,13 @@ import {
   ISurvivalOnlinePlayer,
 } from 'common/types/survivalOnline';
 import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze';
+import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
 
 export enum EGame {
   PEXESO = 'pexeso',
   SURVIVAL_ONLINE = 'survivalOnline',
   MAZE = 'maze',
+  SET = 'set',
 }
 
 export interface IUser {
@@ -48,5 +50,10 @@ export interface IGameParams {
     event: EMazeGameEvent;
     options: IMazeGameOptions;
     player: IMazePlayer;
+  };
+  [EGame.SET]: {
+    event: ESetGameEvent;
+    options: ISetGameOptions;
+    player: ISetPlayer;
   };
 }

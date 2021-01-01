@@ -23,6 +23,7 @@ import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
 import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/SurvivalOnlineLobby';
 import MazeLobby from 'client/pages/games/maze/MazeLobby/MazeLobby';
+import SetLobby from 'client/pages/games/set/SetLobby/SetLobby';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -113,6 +114,10 @@ const App: React.FC = () => {
 
           <Route exact path={`/${EGame.MAZE}/lobby`}>
             <MazeLobby />
+          </Route>
+
+          <Route exact path={`/${EGame.SET}/lobby`}>
+            <SetLobby />
           </Route>
 
           <Route exact path="/:game/room/:roomId">

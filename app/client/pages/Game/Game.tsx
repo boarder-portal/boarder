@@ -7,10 +7,12 @@ import { EGameEvent, IGame } from 'common/types/game';
 import { IPexesoPlayer } from 'common/types/pexeso';
 import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IMazePlayer } from 'common/types/maze';
+import { ISetPlayer } from 'common/types/set';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
 import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
+import SetGame from 'client/pages/Game/components/SetGame/SetGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -80,6 +82,16 @@ const Game: React.FC = () => {
       <MazeGame
         io={ioRef.current}
         players={gameData.players as IMazePlayer[]}
+        isGameEnd={isGameEnd}
+      />
+    );
+  }
+
+  if (game === EGame.SET) {
+    return (
+      <SetGame
+        io={ioRef.current}
+        players={gameData.players as ISetPlayer[]}
         isGameEnd={isGameEnd}
       />
     );
