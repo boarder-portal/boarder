@@ -4,10 +4,7 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import chunk from 'lodash/chunk';
 
-import {
-  ESetGameEvent, ISetCard,
-  ISetPlayer,
-} from 'common/types/Set';
+import { ESetGameEvent, ISetCard, ISetPlayer } from 'common/types/set';
 import { ISetGameInfoEvent, ISetSendSetEvent } from 'common/types/set/events';
 
 import Box from 'client/components/common/Box/Box';
