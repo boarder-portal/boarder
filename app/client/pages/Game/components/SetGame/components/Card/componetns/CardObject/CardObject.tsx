@@ -7,7 +7,9 @@ interface ICardObjectProps {
   card: ISetCard;
 }
 
-const BASE_SIZE = 42;
+const isMobile = window.innerWidth < 1000;
+
+const BASE_SIZE = isMobile ? 20 : 42;
 
 const Root = styled.div`
   ${({ card }: ICardObjectProps) => {
@@ -34,7 +36,7 @@ const Root = styled.div`
   ${({ card }: ICardObjectProps) => {
     if (card.fill === ESetCardFill.EMPTY) {
       return `
-        border: 2px solid ${card.color};
+        border: ${isMobile ? 1 : 3}px solid ${card.color};
       `;
     } else if (card.fill === ESetCardFill.FILLED) {
       return `
@@ -43,13 +45,13 @@ const Root = styled.div`
     }
 
     return `
-      border: 2px solid ${card.color};
+      border: ${isMobile ? 1 : 3}px solid ${card.color};
       background: repeating-linear-gradient(
         ${card.shape === ESetCardShape.RHOMBUS ? '45deg' : 'to right'},
         white,
-        white 3px,
-        ${card.color} 3px,
-        ${card.color} 6px
+        white ${isMobile ? 1 : 3}px,
+        ${card.color} ${isMobile ? 1 : 3}px,
+        ${card.color} ${isMobile ? 2 : 6}px
       );
     `;
   }}

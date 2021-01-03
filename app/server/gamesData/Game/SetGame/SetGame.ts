@@ -94,7 +94,7 @@ class SetGame extends Game<EGame.SET> {
     const player = this.players.find(({ login }) => login === socket.user?.login);
 
     if (!player) {
-      throw new Error('There are no player');
+      throw new Error('There is no player');
     }
 
     const cards = cardsIds
@@ -104,20 +104,26 @@ class SetGame extends Game<EGame.SET> {
       .filter(isNotUndefined);
 
     if (isSet(cards)) {
+      const isAnyHiddenCard = this.cardsStack.length > this.maxCardsToShow;
+
       cards.forEach((card) => {
         const cardStackIndex = this.cardsStack.findIndex(({ id }) => id === card.id);
 
         if (cardStackIndex === -1) {
-          throw new Error(`There are no cardStackIndex: ${cardStackIndex}`);
+          throw new Error(`There is no cardStackIndex: ${cardStackIndex}`);
         }
 
-        const lastCard = this.cardsStack.pop();
+        if (isAnyHiddenCard) {
+          const lastCard = this.cardsStack.pop();
 
-        if (!lastCard) {
-          throw new Error('There are no last card');
+          if (!lastCard) {
+            throw new Error('There is no last card');
+          }
+
+          this.cardsStack[cardStackIndex] = lastCard;
+        } else {
+          this.cardsStack.splice(cardStackIndex, 1);
         }
-
-        this.cardsStack[cardStackIndex] = lastCard;
       });
 
       player.score += pointsForSet;
@@ -127,11 +133,11 @@ class SetGame extends Game<EGame.SET> {
       player.score += pointsForWrongSet;
     }
 
+    this.sendGameUpdate();
+
     if (!isAnySet(this.cardsStack)) {
       this.end();
     }
-
-    this.sendGameUpdate();
   }
 
   onSendNoSet({ socket }: IGameEvent) {

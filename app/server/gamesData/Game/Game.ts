@@ -103,9 +103,7 @@ abstract class Game<G extends EGame> {
   }
 
   end() {
-    setTimeout(() => {
-      this.io.emit(EGameEvent.END);
-    }, 1000);
+    this.io.emit(EGameEvent.END);
   }
 }
 
