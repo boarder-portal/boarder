@@ -82,7 +82,7 @@ class SetGame extends Game<EGame.SET> {
   onGetGameInfo({ socket }: IGameEvent) {
     const data: ISetGameInfoEvent = {
       players: this.players,
-      cards: this.cardsStack.slice(-this.maxCardsToShow),
+      cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
 
     socket.emit(ESetGameEvent.GAME_INFO, data);
@@ -111,7 +111,13 @@ class SetGame extends Game<EGame.SET> {
           throw new Error(`There are no cardStackIndex: ${cardStackIndex}`);
         }
 
-        this.cardsStack.splice(cardStackIndex, 1);
+        const lastCard = this.cardsStack.pop();
+
+        if (!lastCard) {
+          throw new Error('There are no last card');
+        }
+
+        this.cardsStack[cardStackIndex] = lastCard;
       });
 
       player.score += pointsForSet;
@@ -135,7 +141,7 @@ class SetGame extends Game<EGame.SET> {
       throw new Error('There are no player');
     }
 
-    if (isAnySet(this.cardsStack.slice(-this.maxCardsToShow))) {
+    if (isAnySet(this.cardsStack.slice(0, this.maxCardsToShow))) {
       player.score += pointsForWrongUnderstandingThereAreNoSet;
     } else {
       player.score += pointsForUnderstandingThereAreNoSet;
@@ -149,7 +155,7 @@ class SetGame extends Game<EGame.SET> {
   sendGameUpdate() {
     const data: ISetGameInfoEvent = {
       players: this.players,
-      cards: this.cardsStack.slice(-this.maxCardsToShow),
+      cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
 
     this.io.emit(ESetGameEvent.GAME_INFO, data);
