@@ -51,7 +51,7 @@
     "apollo-boost": "^0.4.7",
     "apollo-server": "^2.10.1",
     "apollo-server-express": "^2.13.1",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "bem-cn": "^3.0.1",
     "connect-redis": "^5.0.0",
     "core-js": "^3.6.4",
