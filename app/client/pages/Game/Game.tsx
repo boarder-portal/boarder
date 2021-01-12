@@ -13,6 +13,7 @@ import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
 import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
+import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -20,7 +21,7 @@ const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
   const ioRef = useRef<SocketIOClient.Socket>();
 
-  const [gameData, setGameData] = useState<IGame | null>(null);
+  const [gameData, setGameData] = useState<IGame<typeof game> | null>(null);
 
   const {
     value: isGameEnd,
@@ -30,7 +31,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
 
-    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGame) => {
+    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGame<typeof game>) => {
       setGameData(updatedGameData);
     });
 
@@ -92,6 +93,15 @@ const Game: React.FC = () => {
       <SetGame
         io={ioRef.current}
         players={gameData.players as ISetPlayer[]}
+        isGameEnd={isGameEnd}
+      />
+    );
+  }
+
+  if (game === EGame.ONITAMA) {
+    return (
+      <OnitamaGame
+        io={ioRef.current}
         isGameEnd={isGameEnd}
       />
     );

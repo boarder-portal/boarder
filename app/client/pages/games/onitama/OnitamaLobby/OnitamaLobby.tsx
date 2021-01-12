@@ -10,18 +10,18 @@ import useLobby from 'client/hooks/useLobby';
 
 const {
   games: {
-    [EGame.MAZE]: {
+    [EGame.ONITAMA]: {
       defaultGameOptions,
     },
   },
 } = GAMES_CONFIG;
 
-const MazeLobby: React.FC = () => {
+const OnitamaLobby: React.FC = () => {
   const {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.MAZE>(EGame.MAZE, defaultGameOptions);
+  } = useLobby<EGame.ONITAMA>(EGame.ONITAMA, defaultGameOptions);
 
   if (!lobby) {
     return null;
@@ -29,7 +29,7 @@ const MazeLobby: React.FC = () => {
 
   return (
     <Lobby
-      game={EGame.MAZE}
+      game={EGame.ONITAMA}
       rooms={lobby.rooms}
       onEnterRoom={enterRoom}
       onCreateRoom={createRoom}
@@ -37,4 +37,4 @@ const MazeLobby: React.FC = () => {
   );
 };
 
-export default React.memo(MazeLobby);
+export default React.memo(OnitamaLobby);
