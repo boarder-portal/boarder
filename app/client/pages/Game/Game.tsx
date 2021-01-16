@@ -21,7 +21,7 @@ const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
   const ioRef = useRef<SocketIOClient.Socket>();
 
-  const [gameData, setGameData] = useState<IGame<typeof game> | null>(null);
+  const [gameData, setGameData] = useState<IGame | null>(null);
 
   const {
     value: isGameEnd,
@@ -31,7 +31,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
 
-    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGame<typeof game>) => {
+    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGame) => {
       setGameData(updatedGameData);
     });
 
