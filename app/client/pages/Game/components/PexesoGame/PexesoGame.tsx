@@ -18,8 +18,8 @@ import {
   IPexesoRemoveCardsEvent,
   IPexesoShuffleCardsIndexes,
 } from 'common/types/pexeso';
-import { EGame, EPlayerStatus } from 'common/types';
-import { ICoords } from 'common/types/game';
+import { EPlayerStatus, ICoords } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';

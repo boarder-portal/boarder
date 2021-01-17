@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 

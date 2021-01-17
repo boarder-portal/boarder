@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame } from 'common/types';
 import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
+import { EGame } from 'common/types/game';
 
 import Lobby from 'client/components/Lobby/Lobby';
 import SurvivalOnlineGameOptions

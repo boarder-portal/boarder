@@ -10,7 +10,8 @@ import { useSetRecoilState } from 'recoil';
 
 import { GET_USER_QUERY } from 'client/graphql/queries';
 
-import { EGame, IUser } from 'common/types';
+import { IUser } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Header from 'client/components/Header/Header';
 

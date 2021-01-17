@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame } from 'common/types';
 import { IPexesoGameOptions } from 'common/types/pexeso';
+import { EGame } from 'common/types/game';
 
 import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
 import Box from 'client/components/common/Box/Box';

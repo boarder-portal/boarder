@@ -13,7 +13,7 @@ import {
   IMazePlayerMoveEvent,
   IMazeWall,
 } from 'common/types/maze';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Vector from 'common/utilities/Vector';
 

@@ -3,7 +3,7 @@ import times from 'lodash/times';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame, IPlayer } from 'common/types';
+import { IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import {
   ESetCardColor,
@@ -14,6 +14,7 @@ import {
   ISetPlayer,
 } from 'common/types/set';
 import { ISetGameInfoEvent, ISetSendSetEvent } from 'common/types/set/events';
+import { EGame } from 'common/types/game';
 
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import isNotUndefined from 'common/utilities/isNotUndefined';

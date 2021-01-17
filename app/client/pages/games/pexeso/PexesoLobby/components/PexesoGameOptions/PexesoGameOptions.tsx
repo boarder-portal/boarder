@@ -12,7 +12,7 @@ import {
   IPexesoGameOptions,
   TPexesoShuffleOptions,
 } from 'common/types/pexeso';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 

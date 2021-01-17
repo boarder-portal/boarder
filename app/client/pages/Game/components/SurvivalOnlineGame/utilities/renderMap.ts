@@ -3,7 +3,7 @@ import times from 'lodash/times';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { ISurvivalOnlineGameInfoEvent, ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import renderCell from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderCell';
 import renderInventory from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderInventory';

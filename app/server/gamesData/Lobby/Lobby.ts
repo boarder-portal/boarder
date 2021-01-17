@@ -1,16 +1,16 @@
 import { Namespace } from 'socket.io';
 
-import { ELobbyEvent, ILobby, ILobbyUpdateEvent } from 'common/types/lobby';
+import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
 import { IAuthSocket } from 'server/types';
-import { EGame, EPlayerStatus } from 'common/types';
-import { TGameOptions } from 'common/types/game';
+import { EPlayerStatus } from 'common/types';
+import { EGame, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
 import Room from 'server/gamesData/Room/Room';
 import ioInstance from 'server/io';
 
-class Lobby<Game extends EGame> implements ILobby<EGame> {
+class Lobby<Game extends EGame> {
   rooms: Room<Game>[] = [];
   io: Namespace;
   game: Game;

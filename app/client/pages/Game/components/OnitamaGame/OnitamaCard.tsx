@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EOnitamaCardType } from 'common/types/onitama';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 

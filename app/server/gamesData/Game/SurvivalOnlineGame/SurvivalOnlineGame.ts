@@ -1,6 +1,6 @@
 import times from 'lodash/times';
 
-import { EGame, IPlayer } from 'common/types';
+import { IPlayer } from 'common/types';
 import {
   ESurvivalOnlineBiome,
   ESurvivalOnlineDirection,
@@ -16,6 +16,7 @@ import {
   TSurvivalOnlineObject,
 } from 'common/types/survivalOnline';
 import { IGameEvent } from 'server/types';
+import { EGame } from 'common/types/game';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 

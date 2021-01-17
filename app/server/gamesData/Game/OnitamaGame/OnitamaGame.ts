@@ -10,8 +10,9 @@ import {
   IOnitamaMovePieceEvent,
   IOnitamaPlayer,
 } from 'common/types/onitama';
-import { EGame, IPlayer } from 'common/types';
+import { IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
+import { EGame } from 'common/types/game';
 
 import { equalsCoords } from 'common/utilities/coords';
 

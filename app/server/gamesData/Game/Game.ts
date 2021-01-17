@@ -3,8 +3,8 @@ import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 
 import { IAuthSocket, IGameEvent } from 'server/types';
-import { EGame, EPlayerStatus, IPlayer, TGamePlayer } from 'common/types';
-import { EGameEvent, TGameEvent, TGameOptions } from 'common/types/game';
+import { EPlayerStatus, IPlayer } from 'common/types';
+import { EGame, EGameEvent, IGameUpdateEvent, TGameEvent, TGameOptions, TGamePlayer } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -17,17 +17,17 @@ export interface IGameCreateOptions<Game extends EGame> {
   onDeleteGame(): void;
 }
 
-abstract class Game<G extends EGame> {
+abstract class Game<Game extends EGame> {
   io: Namespace;
-  game: G;
+  game: Game;
   id: string;
-  players: TGamePlayer<G>[];
-  options: TGameOptions<G>;
+  players: TGamePlayer<Game>[];
+  options: TGameOptions<Game>;
   onDeleteGame: () => void;
 
-  abstract handlers: Partial<Record<TGameEvent<G>, (event: IGameEvent<any>) => void>>;
+  abstract handlers: Partial<Record<TGameEvent<Game>, (event: IGameEvent<any>) => void>>;
 
-  protected constructor({ game, options, players, onDeleteGame }: IGameCreateOptions<G>) {
+  protected constructor({ game, options, players, onDeleteGame }: IGameCreateOptions<Game>) {
     this.game = game;
     this.id = uuid();
     this.options = options;
@@ -85,13 +85,15 @@ abstract class Game<G extends EGame> {
     });
   }
 
-  abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<G>;
+  abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<Game>;
 
   sendBaseGameInfo() {
-    this.io.emit(EGameEvent.UPDATE, {
+    const updatedData: IGameUpdateEvent = {
       id: this.id,
       players: this.players,
-    });
+    };
+
+    this.io.emit(EGameEvent.UPDATE, updatedData);
   }
 
   deleteGame() {

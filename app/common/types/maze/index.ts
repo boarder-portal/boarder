@@ -1,6 +1,5 @@
 import { ICommonGameOptions } from 'common/types/room';
-import { IPlayer } from 'common/types';
-import { ICoords } from 'common/types/game';
+import { ICoords, IPlayer } from 'common/types';
 
 export enum EMazeGameEvent {
   // client events

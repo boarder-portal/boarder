@@ -1,6 +1,6 @@
-import { EGame } from 'common/types';
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
 import { EOnitamaCardType } from 'common/types/onitama';
+import { EGame } from 'common/types/game';
 
 export const GAMES_CONFIG = {
   games: {

@@ -1,5 +1,6 @@
-import { EGame, IPlayer } from 'common/types/index';
-import { TGameOptions } from 'common/types/game';
+import { EGame } from 'common/types/game';
+
+import Room from 'server/gamesData/Room/Room';
 
 export enum ERoomEvent {
   UPDATE = 'UPDATE',
@@ -11,9 +12,8 @@ export interface ICommonGameOptions {
   playersCount: number;
 }
 
-export interface IRoom<Game extends EGame> {
-  id: string;
-  players: IPlayer[];
-  options: TGameOptions<Game>;
-  deleteRoom(): void;
+export interface IRoomUpdateEvent<Game extends EGame> {
+  id: Room<Game>['id'];
+  players: Room<Game>['players'];
+  options: Room<Game>['options'];
 }

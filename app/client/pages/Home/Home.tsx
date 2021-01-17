@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import block from 'bem-cn';
 
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 

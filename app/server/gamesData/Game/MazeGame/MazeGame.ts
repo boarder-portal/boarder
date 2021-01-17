@@ -1,6 +1,6 @@
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame, IPlayer } from 'common/types';
+import { ICoords, IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import {
   EMazeGameEvent,
@@ -13,7 +13,7 @@ import {
   IMazeWall,
   TMazeMoveEvent,
 } from 'common/types/maze';
-import { ICoords } from 'common/types/game';
+import { EGame} from 'common/types/game';
 
 import { getRandomIndex } from 'common/utilities/random';
 import { getMazeCellNeighbors, getMazeWallCoords } from 'common/utilities/maze';

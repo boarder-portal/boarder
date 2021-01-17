@@ -3,8 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
 import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
-import { EGame } from 'common/types';
-import { TGameOptions } from 'common/types/game';
+import { EGame, TGameOptions } from 'common/types/game';
 
 export default function useLobby<Game extends EGame>(game: Game, gameOptions: TGameOptions<Game>) {
   const history = useHistory();

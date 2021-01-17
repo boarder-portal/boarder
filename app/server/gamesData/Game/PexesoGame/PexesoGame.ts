@@ -14,8 +14,9 @@ import {
   IPexesoRemoveCardsEvent,
   IPexesoShuffleCardsIndexes,
 } from 'common/types/pexeso';
-import { EGame, IPlayer } from 'common/types';
+import { IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
+import { EGame } from 'common/types/game';
 
 import { getRandomElement } from 'common/utilities/random';
 

@@ -3,8 +3,8 @@ import times from 'lodash/times';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame } from 'common/types';
 import { ISetGameOptions } from 'common/types/set';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';

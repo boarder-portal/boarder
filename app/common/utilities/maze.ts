@@ -1,8 +1,8 @@
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { ICoords } from 'common/types/game';
+import { EGame } from 'common/types/game';
 import { ESide } from 'common/types/maze';
-import { EGame } from 'common/types';
+import { ICoords } from 'common/types';
 
 const {
   games: {

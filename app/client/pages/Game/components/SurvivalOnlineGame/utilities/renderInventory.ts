@@ -3,7 +3,7 @@ import times from 'lodash/times';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 import { OBJECT_PIXELS } from 'client/pages/Game/components/SurvivalOnlineGame/constants/objectPixels';
 
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 

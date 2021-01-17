@@ -2,9 +2,9 @@ import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 
 import { IAuthSocket } from 'server/types';
-import { EGame, EPlayerStatus, IGameParams, IPlayer } from 'common/types';
-import { ERoomEvent, IRoom } from 'common/types/room';
-import { TGameOptions } from 'common/types/game';
+import { EPlayerStatus, IPlayer } from 'common/types';
+import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
+import { EGame, IGameParams, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -24,7 +24,7 @@ const GAMES_MAP = {
   [EGame.ONITAMA]: OnitamaGame,
 };
 
-class Room<G extends EGame> implements IRoom<G> {
+class Room<G extends EGame> {
   io: Namespace;
   id: string;
   players: IPlayer[];
@@ -96,7 +96,6 @@ class Room<G extends EGame> implements IRoom<G> {
 
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
           if (game in GAMES_MAP) {
-            // this.game = new (GAMES_MAP[game] as { new (options: IGameCreateOptions<G>): Game<G> })({
             this.game = new (GAMES_MAP[game] as any)({
               game,
               options,
@@ -140,11 +139,13 @@ class Room<G extends EGame> implements IRoom<G> {
   sendRoomInfo() {
     this.onUpdateRoom();
 
-    this.io.emit(ERoomEvent.UPDATE, {
+    const updatedData: IRoomUpdateEvent<G> = {
       id: this.id,
       players: this.players,
       options: this.options,
-    });
+    };
+
+    this.io.emit(ERoomEvent.UPDATE, updatedData);
   }
 }
 

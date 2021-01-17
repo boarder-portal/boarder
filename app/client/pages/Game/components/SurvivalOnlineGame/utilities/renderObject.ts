@@ -1,6 +1,6 @@
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import renderRect from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderRect';
 

@@ -1,4 +1,4 @@
-import { ICoords } from 'common/types/game';
+import { ICoords } from 'common/types';
 
 export function equalsCoords(coords1: ICoords, coords2: ICoords): boolean {
   return coords1.x === coords2.x && coords1.y === coords2.y;

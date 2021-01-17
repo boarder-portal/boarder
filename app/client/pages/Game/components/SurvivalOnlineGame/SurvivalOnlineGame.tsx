@@ -12,7 +12,7 @@ import {
   ISurvivalOnlinePlayer,
   ISurvivalOnlineUpdateGameEvent,
 } from 'common/types/survivalOnline';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';

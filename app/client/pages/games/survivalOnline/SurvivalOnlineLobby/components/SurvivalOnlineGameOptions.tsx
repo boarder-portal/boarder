@@ -4,7 +4,7 @@ import times from 'lodash/times';
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';

@@ -1,7 +1,7 @@
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EPexesoFieldLayout, IPexesoGameOptions } from 'common/types/pexeso';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 const {
   games: {

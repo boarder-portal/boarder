@@ -1,4 +1,4 @@
-import { ICoords } from 'common/types/game';
+import { ICoords } from 'common/types';
 
 class Vector {
   from: ICoords;

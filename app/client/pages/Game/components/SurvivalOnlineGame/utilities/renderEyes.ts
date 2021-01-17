@@ -1,7 +1,7 @@
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { ESurvivalOnlineDirection } from 'common/types/survivalOnline';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import renderObject, { ISurvivalOnlineRectInfo } from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 

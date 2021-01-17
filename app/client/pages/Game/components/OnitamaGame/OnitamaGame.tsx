@@ -14,8 +14,8 @@ import {
   IOnitamaMovePieceEvent,
   IOnitamaPlayer,
 } from 'common/types/onitama';
-import { ICoords } from 'common/types/game';
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
+import { ICoords } from 'common/types';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 

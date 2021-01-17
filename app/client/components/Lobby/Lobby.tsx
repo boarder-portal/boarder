@@ -2,9 +2,8 @@ import React from 'react';
 import block from 'bem-cn';
 import styled from 'styled-components';
 
-import { EGame } from 'common/types';
 import typedReactMemo from 'client/types/typedReactMemo';
-import { TGameOptions } from 'common/types/game';
+import { EGame, TGameOptions } from 'common/types/game';
 import { ILobbyUpdateEvent } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';

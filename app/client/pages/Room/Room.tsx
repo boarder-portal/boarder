@@ -5,8 +5,8 @@ import { useRecoilValue } from 'recoil';
 import block from 'bem-cn';
 import styled from 'styled-components';
 
-import { EGame } from 'common/types';
-import { ERoomEvent, IRoom } from 'common/types/room';
+import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 
@@ -27,7 +27,7 @@ const Room: React.FC = () => {
   const ioRef = useRef<SocketIOClient.Socket>();
   const history = useHistory();
 
-  const [room, setRoom] = useState<IRoom<EGame> | null>(null);
+  const [room, setRoom] = useState<IRoomUpdateEvent<EGame> | null>(null);
 
   const user = useRecoilValue(userAtom);
 
@@ -42,7 +42,7 @@ const Room: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/room/${roomId}`);
 
-    ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoom<EGame>) => {
+    ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoomUpdateEvent<EGame>) => {
       setRoom(roomData);
     });
 

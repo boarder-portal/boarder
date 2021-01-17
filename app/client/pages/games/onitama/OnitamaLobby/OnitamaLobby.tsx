@@ -2,7 +2,7 @@ import React from 'react';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
-import { EGame } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Lobby from 'client/components/Lobby/Lobby';
 

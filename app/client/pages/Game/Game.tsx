@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
-import { EGame, EPlayerStatus } from 'common/types';
-import { EGameEvent, IGame } from 'common/types/game';
+import { EPlayerStatus } from 'common/types';
+import { EGame, EGameEvent, IGameUpdateEvent } from 'common/types/game';
 import { IPexesoPlayer } from 'common/types/pexeso';
 import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IMazePlayer } from 'common/types/maze';
@@ -21,7 +21,7 @@ const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
   const ioRef = useRef<SocketIOClient.Socket>();
 
-  const [gameData, setGameData] = useState<IGame | null>(null);
+  const [gameData, setGameData] = useState<IGameUpdateEvent | null>(null);
 
   const {
     value: isGameEnd,
@@ -31,7 +31,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
 
-    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGame) => {
+    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
       setGameData(updatedGameData);
     });
 
