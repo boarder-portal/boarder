@@ -63,7 +63,7 @@
     "lodash": "^4.17.20",
     "multer": "^1.4.2",
     "parcel": "^2.0.0-beta.1",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
