@@ -1,6 +1,32 @@
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
 import { EOnitamaCardType } from 'common/types/onitama';
 import { EGame } from 'common/types/game';
+import { ECarcassoneCardObject, ICarcassoneCard } from 'common/types/carcassone';
+
+const CARCASSONE_CARDS: ICarcassoneCard[] = [{
+  id: 0,
+  count: 4,
+  objects: [
+    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2] },
+    { type: ECarcassoneCardObject.FIELD, sides: [3, 11], cities: [0] },
+    { type: ECarcassoneCardObject.ROAD, sides: [4, 10] },
+    { type: ECarcassoneCardObject.FIELD, sides: [5, 6, 7, 8, 9] },
+  ],
+}, {
+  id: 1,
+  count: 2,
+  objects: [
+    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11], shields: 1 },
+    { type: ECarcassoneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
+  ],
+}, {
+  id: 2,
+  count: 3,
+  objects: [
+    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11] },
+    { type: ECarcassoneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
+  ],
+}];
 
 export const GAMES_CONFIG = {
   games: {
@@ -270,6 +296,18 @@ export const GAMES_CONFIG = {
           [-1, +1],
         ],
       },
+    },
+    [EGame.CARCASSONE]: {
+      defaultGameOptions: {
+        playersCount: 2,
+      },
+      board: {
+        size: {
+          x: 11,
+          y: 11,
+        },
+      },
+      cards: CARCASSONE_CARDS,
     },
   },
 };

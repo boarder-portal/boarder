@@ -8,6 +8,7 @@ import {
 import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze';
 import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
 import { EOnitamaGameEvent, IOnitamaGameOptions, IOnitamaPlayer } from 'common/types/onitama';
+import { ECarcassoneGameEvent, ICarcassoneGameOptions, ICarcassonePlayer } from 'common/types/carcassone';
 
 export enum EGameEvent {
   UPDATE = 'UPDATE',
@@ -20,6 +21,7 @@ export enum EGame {
   MAZE = 'maze',
   SET = 'set',
   ONITAMA = 'onitama',
+  CARCASSONE = 'carcassone',
 }
 
 export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
@@ -49,6 +51,11 @@ export interface IGameParams {
     event: EOnitamaGameEvent;
     options: IOnitamaGameOptions;
     player: IOnitamaPlayer;
+  };
+  [EGame.CARCASSONE]: {
+    event: ECarcassoneGameEvent;
+    options: ICarcassoneGameOptions;
+    player: ICarcassonePlayer;
   };
 }
 
