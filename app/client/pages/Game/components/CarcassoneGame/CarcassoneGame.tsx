@@ -50,6 +50,7 @@ const Root = styled(Box)`
     &__cardImage {
       width: 100%;
       height: 100%;
+      pointer-events: none;
     }
   }
 `;
@@ -171,22 +172,15 @@ const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
         return;
       }
 
-      const newZoom = boardZoomRef.current - 0.1 * Math.sign(e.deltaY);
+      const viewPortHeight = boardWrapperRef.current.offsetHeight;
+      const viewPortWidth = boardWrapperRef.current.offsetWidth;
 
-      const oldViewBoxX = boardWrapperRef.current.offsetWidth / boardZoomRef.current;
-      const oldViewBoxY = boardWrapperRef.current.offsetHeight / boardZoomRef.current;
-      const newViewBoxX = boardWrapperRef.current.offsetWidth / newZoom;
-      const newViewBoxY = boardWrapperRef.current.offsetHeight / newZoom;
+      const oldZoom = boardZoomRef.current;
+      const newZoom = oldZoom * (1 - 0.1 * Math.sign(e.deltaY));
 
-      const newTransformX = boardTranslateRef.current.x + (newViewBoxX - oldViewBoxX) / 2;
-      const newTransformY = boardTranslateRef.current.y + (newViewBoxY - oldViewBoxY) / 2;
+      const newTransformY = (((Math.abs(boardTranslateRef.current.y) + viewPortHeight / 2)) * newZoom / oldZoom - viewPortHeight / 2) * -1;
 
-      // const newTransformX = boardTranslateRef.current.x - boardWrapperRef.current.offsetWidth / 2 * (1 / newZoom - 1 / boardZoomRef.current);
-      // const newTransformY = boardTranslateRef.current.y - boardWrapperRef.current.offsetHeight / 2 * (1 / newZoom - 1 / boardZoomRef.current);
-
-      console.log(boardZoomRef.current, newZoom);
-      console.log(oldViewBoxX, newViewBoxX);
-      console.log(boardTranslateRef.current.x, newTransformX);
+      const newTransformX = (((Math.abs(boardTranslateRef.current.x) + viewPortWidth / 2)) * newZoom / oldZoom - viewPortWidth / 2) * -1;
 
       boardZoomRef.current = newZoom;
       boardTranslateRef.current = {

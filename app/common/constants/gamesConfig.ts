@@ -303,8 +303,8 @@ export const GAMES_CONFIG = {
       },
       board: {
         size: {
-          x: 11,
-          y: 11,
+          x: 41,
+          y: 41,
         },
       },
       cards: CARCASSONE_CARDS,
