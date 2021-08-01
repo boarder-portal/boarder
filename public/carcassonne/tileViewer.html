@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tile Viewer</title>
+
+  <style>
+    #grid {
+      display: grid;
+      grid-template:
+        ".    top     ." max-content
+        "left card    right" 300px
+        ".    bottom  ." max-content
+        ".    buttons ." max-content
+        / max-content 300px max-content;
+      justify-content: center;
+    }
+
+    .side, .buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+
+      padding: 10px;
+
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .left, .right {
+      flex-direction: column;
+      padding: 0 10px;
+    }
+
+    .top, .bottom {
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+<div id="grid">
+  <div style="grid-area: card">
+    <img id="card">
+  </div>
+  <div class="side top" style="grid-area: top">
+    <span>0</span>
+    <span>1</span>
+    <span>2</span>
+  </div>
+  <div class="side left" style="grid-area: left">
+    <span>11</span>
+    <span>10</span>
+    <span>9</span>
+  </div>
+  <div class="side right" style="grid-area: right">
+    <span>3</span>
+    <span>4</span>
+    <span>5</span>
+  </div>
+  <div class="side bottom" style="grid-area: bottom">
+    <span>8</span>
+    <span>7</span>
+    <span>6</span>
+  </div>
+  <div class="buttons" style="grid-area: buttons">
+    <button onclick="window.cardId--; setSrc();">&lt;</button>
+    <button onclick="window.cardId++; setSrc();">&gt;</button>
+  </div>
+</div>
+<script>
+  const card = document.getElementById('card');
+
+  window.cardId = +new URLSearchParams(location.search).get('cardId') || 0;
+
+  setSrc();
+
+  function setSrc() {
+    card.src = `/carcassonne/tiles/${cardId}.jpg`;
+
+    const newUrl = new URL(location);
+
+    newUrl.searchParams.set('cardId', cardId);
+
+    history.replaceState(null, null, newUrl.toString());
+  }
+</script>
+</body>
+</html>
