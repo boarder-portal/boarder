@@ -14,7 +14,7 @@ import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/
 import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
 import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
-import CarcassoneGame from 'client/pages/Game/components/CarcassoneGame/CarcassoneGame';
+import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/CarcassonneGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -108,9 +108,9 @@ const Game: React.FC = () => {
     );
   }
 
-  if (game === EGame.CARCASSONE) {
+  if (game === EGame.CARCASSONNE) {
     return (
-      <CarcassoneGame
+      <CarcassonneGame
         io={ioRef.current}
         isGameEnd={isGameEnd}
       />

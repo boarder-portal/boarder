@@ -10,18 +10,18 @@ import useLobby from 'client/hooks/useLobby';
 
 const {
   games: {
-    [EGame.CARCASSONE]: {
+    [EGame.CARCASSONNE]: {
       defaultGameOptions,
     },
   },
 } = GAMES_CONFIG;
 
-const CarcassoneLobby: React.FC = () => {
+const CarcassonneLobby: React.FC = () => {
   const {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.CARCASSONE>(EGame.CARCASSONE, defaultGameOptions);
+  } = useLobby<EGame.CARCASSONNE>(EGame.CARCASSONNE, defaultGameOptions);
 
   if (!lobby) {
     return null;
@@ -29,7 +29,7 @@ const CarcassoneLobby: React.FC = () => {
 
   return (
     <Lobby
-      game={EGame.CARCASSONE}
+      game={EGame.CARCASSONNE}
       rooms={lobby.rooms}
       onEnterRoom={enterRoom}
       onCreateRoom={createRoom}
@@ -37,4 +37,4 @@ const CarcassoneLobby: React.FC = () => {
   );
 };
 
-export default React.memo(CarcassoneLobby);
+export default React.memo(CarcassonneLobby);

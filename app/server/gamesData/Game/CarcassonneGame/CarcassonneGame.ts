@@ -7,44 +7,44 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 import {
-  ECarcassoneGameEvent,
-  ICarcassoneCard,
-  ICarcassoneGameInfoEvent,
-  ICarcassonePlayer,
-  ICarcassoneTile,
-} from 'common/types/carcassone';
+  ECarcassonneGameEvent,
+  ICarcassonneCard,
+  ICarcassonneGameInfoEvent,
+  ICarcassonnePlayer,
+  ICarcassonneTile,
+} from 'common/types/carcassonne';
 import { IPlayer } from 'common/types';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
 const {
   games: {
-    [EGame.CARCASSONE]: {
+    [EGame.CARCASSONNE]: {
       cards,
       board,
     },
   },
 } = GAMES_CONFIG;
 
-class CarcassoneGame extends Game<EGame.CARCASSONE> {
+class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {
-    [ECarcassoneGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [ECarcassonneGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
 
-  cards: ICarcassoneCard[] = cloneDeep(cards).map((card) => times(card.count, () => card)).flat();
-  board: ICarcassoneTile[][] = times(board.size.y, (y) => times(board.size.x, (x) => ({
+  cards: ICarcassonneCard[] = cloneDeep(cards).map((card) => times(card.count, () => card)).flat();
+  board: ICarcassonneTile[][] = times(board.size.y, (y) => times(board.size.x, (x) => ({
     x,
     y,
     card: null,
   })));
 
-  constructor(options: IGameCreateOptions<EGame.CARCASSONE>) {
+  constructor(options: IGameCreateOptions<EGame.CARCASSONNE>) {
     super(options);
 
     this.createGameInfo();
   }
 
-  createPlayer(roomPlayer: IPlayer): ICarcassonePlayer {
+  createPlayer(roomPlayer: IPlayer): ICarcassonnePlayer {
     return {
       ...roomPlayer,
       isActive: false,
@@ -66,13 +66,13 @@ class CarcassoneGame extends Game<EGame.CARCASSONE> {
   }
 
   onGetGameInfo({ socket }: IGameEvent) {
-    const gameInfo: ICarcassoneGameInfoEvent = {
+    const gameInfo: ICarcassonneGameInfoEvent = {
       players: this.players,
       board: this.board,
     };
 
-    socket.emit(ECarcassoneGameEvent.GAME_INFO, gameInfo);
+    socket.emit(ECarcassonneGameEvent.GAME_INFO, gameInfo);
   }
 }
 
-export default CarcassoneGame;
+export default CarcassonneGame;

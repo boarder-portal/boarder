@@ -1,30 +1,30 @@
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
 import { EOnitamaCardType } from 'common/types/onitama';
 import { EGame } from 'common/types/game';
-import { ECarcassoneCardObject, ICarcassoneCard } from 'common/types/carcassone';
+import { ECarcassonneCardObject, ICarcassonneCard } from 'common/types/carcassonne';
 
-const CARCASSONE_CARDS: ICarcassoneCard[] = [{
+const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   id: 0,
   count: 4,
   objects: [
-    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2] },
-    { type: ECarcassoneCardObject.FIELD, sides: [3, 11], cities: [0] },
-    { type: ECarcassoneCardObject.ROAD, sides: [4, 10] },
-    { type: ECarcassoneCardObject.FIELD, sides: [5, 6, 7, 8, 9] },
+    { type: ECarcassonneCardObject.CITY, sides: [0, 1, 2] },
+    { type: ECarcassonneCardObject.FIELD, sides: [3, 11], cities: [0] },
+    { type: ECarcassonneCardObject.ROAD, sides: [4, 10] },
+    { type: ECarcassonneCardObject.FIELD, sides: [5, 6, 7, 8, 9] },
   ],
 }, {
   id: 1,
   count: 2,
   objects: [
-    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11], shields: 1 },
-    { type: ECarcassoneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
+    { type: ECarcassonneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11], shields: 1 },
+    { type: ECarcassonneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
   ],
 }, {
   id: 2,
   count: 3,
   objects: [
-    { type: ECarcassoneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11] },
-    { type: ECarcassoneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
+    { type: ECarcassonneCardObject.CITY, sides: [0, 1, 2, 9, 10, 11] },
+    { type: ECarcassonneCardObject.FIELD, sides: [3, 4, 5, 6, 7, 8], cities: [0] },
   ],
 }];
 
@@ -297,7 +297,7 @@ export const GAMES_CONFIG = {
         ],
       },
     },
-    [EGame.CARCASSONE]: {
+    [EGame.CARCASSONNE]: {
       defaultGameOptions: {
         playersCount: 2,
       },
@@ -307,7 +307,7 @@ export const GAMES_CONFIG = {
           y: 41,
         },
       },
-      cards: CARCASSONE_CARDS,
+      cards: CARCASSONNE_CARDS,
     },
   },
 };

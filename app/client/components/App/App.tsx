@@ -26,7 +26,7 @@ import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlin
 import MazeLobby from 'client/pages/games/maze/MazeLobby/MazeLobby';
 import SetLobby from 'client/pages/games/set/SetLobby/SetLobby';
 import OnitamaLobby from 'client/pages/games/onitama/OnitamaLobby/OnitamaLobby';
-import CarcassoneLobby from 'client/pages/games/carcassone/CarcassoneLobby/CarcassoneLobby';
+import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -127,8 +127,8 @@ const App: React.FC = () => {
             <OnitamaLobby />
           </Route>
 
-          <Route exact path={`/${EGame.CARCASSONE}/lobby`}>
-            <CarcassoneLobby />
+          <Route exact path={`/${EGame.CARCASSONNE}/lobby`}>
+            <CarcassonneLobby />
           </Route>
 
           <Route exact path="/:game/room/:roomId">

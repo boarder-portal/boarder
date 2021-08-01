@@ -7,11 +7,11 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame } from 'common/types/game';
 import {
-  ECarcassoneGameEvent,
-  ICarcassoneGameInfoEvent,
-  ICarcassonePlayer,
-  ICarcassoneTile,
-} from 'common/types/carcassone';
+  ECarcassonneGameEvent,
+  ICarcassonneGameInfoEvent,
+  ICarcassonnePlayer,
+  ICarcassonneTile,
+} from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
 import Box from 'client/components/common/Box/Box';
@@ -19,17 +19,17 @@ import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 
 import userAtom from 'client/atoms/userAtom';
 
-interface ICarcassoneGameProps {
+interface ICarcassonneGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
 
-const b = block('CarcassoneGame');
+const b = block('CarcassonneGame');
 
 const BASE_CARD_SIZE = 100;
 
 const Root = styled(Box)`
-  .CarcassoneGame {
+  .CarcassonneGame {
     &__boardWrapper {
       height: calc(100vh - 48px);
       overflow: hidden;
@@ -57,7 +57,7 @@ const Root = styled(Box)`
 
 const {
   games: {
-    [EGame.CARCASSONE]: {
+    [EGame.CARCASSONNE]: {
       board: {
         size: BOARD_SIZE,
       },
@@ -65,11 +65,11 @@ const {
   },
 } = GAMES_CONFIG;
 
-const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
+const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const { io, isGameEnd } = props;
 
-  const [players, setPlayers] = useState<ICarcassonePlayer[]>([]);
-  const [board, setBoard] = useState<ICarcassoneTile[][]>([]);
+  const [players, setPlayers] = useState<ICarcassonnePlayer[]>([]);
+  const [board, setBoard] = useState<ICarcassonneTile[][]>([]);
 
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -131,21 +131,21 @@ const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    io.emit(ECarcassoneGameEvent.GET_GAME_INFO);
+    io.emit(ECarcassonneGameEvent.GET_GAME_INFO);
 
-    io.on(ECarcassoneGameEvent.GAME_INFO, (gameInfo: ICarcassoneGameInfoEvent) => {
+    io.on(ECarcassonneGameEvent.GAME_INFO, (gameInfo: ICarcassonneGameInfoEvent) => {
       if (!user) {
         return;
       }
 
-      console.log(ECarcassoneGameEvent.GAME_INFO, gameInfo);
+      console.log(ECarcassonneGameEvent.GAME_INFO, gameInfo);
 
       setPlayers(gameInfo.players);
       setBoard(gameInfo.board);
     });
 
     return () => {
-      io.off(ECarcassoneGameEvent.GAME_INFO);
+      io.off(ECarcassonneGameEvent.GAME_INFO);
     };
   }, [io, user]);
 
@@ -178,9 +178,8 @@ const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
       const oldZoom = boardZoomRef.current;
       const newZoom = oldZoom * (1 - 0.1 * Math.sign(e.deltaY));
 
-      const newTransformY = (((Math.abs(boardTranslateRef.current.y) + viewPortHeight / 2)) * newZoom / oldZoom - viewPortHeight / 2) * -1;
-
-      const newTransformX = (((Math.abs(boardTranslateRef.current.x) + viewPortWidth / 2)) * newZoom / oldZoom - viewPortWidth / 2) * -1;
+      const newTransformY = viewPortHeight / 2 - (viewPortHeight / 2 - boardTranslateRef.current.y) * newZoom / oldZoom;
+      const newTransformX = viewPortWidth / 2 - (viewPortWidth / 2 - boardTranslateRef.current.x) * newZoom / oldZoom;
 
       boardZoomRef.current = newZoom;
       boardTranslateRef.current = {
@@ -217,7 +216,7 @@ const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
                 {tiles.map((tile, x) => (
                   <div className={b('card')} key={x}>
                     {tile.card && (
-                      <img className={b('cardImage')} src={`/carcassone/tiles/${tile.card.id}.jpg`} />
+                      <img className={b('cardImage')} src={`/carcassonne/tiles/${tile.card.id}.jpg`} />
                     )}
                   </div>
                 ))}
@@ -230,4 +229,4 @@ const CarcassoneGame: React.FC<ICarcassoneGameProps> = (props) => {
   );
 };
 
-export default React.memo(CarcassoneGame);
+export default React.memo(CarcassonneGame);
