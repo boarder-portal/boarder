@@ -16,10 +16,18 @@ export enum ECarcassonneCardObject {
 
 export type ECarcassonneCardSide = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
+export enum ECarcassonneCityGoods {
+  WHEAT = 'WHEAT',
+  FABRIC = 'FABRIC',
+  WINE = 'WINE',
+}
+
 export interface ICarcassonneCardCity {
   type: ECarcassonneCardObject.CITY;
   sides: ECarcassonneCardSide[];
   shields?: number;
+  cathedral?: true;
+  goods?: ECarcassonneCityGoods;
 }
 
 export interface ICarcassonneCardField {
@@ -31,9 +39,14 @@ export interface ICarcassonneCardField {
 export interface ICarcassonneCardRoad {
   type: ECarcassonneCardObject.ROAD;
   sides: ECarcassonneCardSide[];
+  inn?: true;
 }
 
-export type TCarcassonneCardObject = ICarcassonneCardCity | ICarcassonneCardField | ICarcassonneCardRoad;
+export interface ICarcassonneCardMonastery {
+  type: ECarcassonneCardObject.MONASTERY;
+}
+
+export type TCarcassonneCardObject = ICarcassonneCardCity | ICarcassonneCardField | ICarcassonneCardRoad | ICarcassonneCardMonastery;
 
 export interface ICarcassonneCard {
   id: number;
