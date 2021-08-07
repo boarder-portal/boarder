@@ -28,7 +28,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 3,
-  count: 0,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.CITY, sideParts: [9, 10, 11] },
@@ -36,27 +36,27 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 4,
-  count: 0,
+  count: 1,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 9, 10, 11], shields: 1 },
     { type: ECarcassonneCardObject.FIELD, sideParts: [6, 7, 8], cities: [0] },
   ],
 }, {
   id: 5,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 9, 10, 11] },
     { type: ECarcassonneCardObject.FIELD, sideParts: [6, 7, 8], cities: [0] },
   ],
 }, {
   id: 6,
-  count: 0,
+  count: 1,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], shields: 1 },
   ],
 }, {
   id: 7,
-  count: 0,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 9, 10, 11], shields: 1 },
     { type: ECarcassonneCardObject.ROAD, sideParts: [7] },
@@ -65,7 +65,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 8,
-  count: 0,
+  count: 1,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 9, 10, 11] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [7] },
@@ -74,7 +74,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 9,
-  count: 0,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 9, 10, 11], shields: 1 },
     { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7] },
@@ -83,7 +83,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 10,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 9, 10, 11] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7] },
@@ -92,7 +92,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 11,
-  count: 0,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [3, 4, 5, 9, 10, 11], shields: 1 },
     { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2], cities: [0] },
@@ -100,7 +100,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 12,
-  count: 0,
+  count: 1,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [3, 4, 5, 9, 10, 11] },
     { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2], cities: [0] },
@@ -108,7 +108,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 13,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.CITY, sideParts: [6, 7, 8] },
@@ -116,7 +116,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 14,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7] },
@@ -125,7 +125,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 15,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [4] },
@@ -137,14 +137,14 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 16,
-  count: 0,
+  count: 4,
   objects: [
     { type: ECarcassonneCardObject.MONASTERY },
     { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
   ],
 }, {
   id: 17,
-  count: 0,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.MONASTERY },
     { type: ECarcassonneCardObject.ROAD, sideParts: [7] },
@@ -152,14 +152,14 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 18,
-  count: 0,
+  count: 5,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.FIELD, sideParts: [3, 4, 5, 6, 7, 8, 9, 10, 11], cities: [0] },
   ],
 }, {
   id: 19,
-  count: 0,
+  count: 8,
   objects: [
     { type: ECarcassonneCardObject.ROAD, sideParts: [4, 10] },
     { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2, 3, 11] },
@@ -167,7 +167,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 20,
-  count: 0,
+  count: 9,
   objects: [
     { type: ECarcassonneCardObject.ROAD, sideParts: [7, 10] },
     { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2, 3, 4, 5, 6, 11] },
@@ -175,7 +175,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 21,
-  count: 0,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [7, 10] },
@@ -184,7 +184,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 22,
-  count: 0,
+  count: 4,
   objects: [
     { type: ECarcassonneCardObject.ROAD, sideParts: [4] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [7] },
@@ -195,7 +195,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 23,
-  count: 0,
+  count: 1,
   objects: [
     { type: ECarcassonneCardObject.ROAD, sideParts: [1] },
     { type: ECarcassonneCardObject.ROAD, sideParts: [4] },

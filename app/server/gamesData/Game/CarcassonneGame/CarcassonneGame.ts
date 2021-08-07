@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
+import forEach from 'lodash/forEach';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
@@ -8,11 +9,12 @@ import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 import {
   ECarcassonneCardObject,
+  ECarcassonneCityGoods,
   ECarcassonneGameEvent,
+  ICarcassonneAttachCardEvent,
   ICarcassonneCard,
   ICarcassonneGameCard,
   ICarcassonneGameInfoEvent,
-  ICarcassonneObjectEnd,
   ICarcassonnePlayer,
   TCarcassonneBoard,
   TCarcassonneGameObject,
@@ -20,7 +22,16 @@ import {
 } from 'common/types/carcassonne';
 import { ICoords, IPlayer } from 'common/types';
 
-import { isCity, isField, isRoad, isSideObject } from 'common/utilities/carcassonne';
+import {
+  getAttachedObjectId,
+  isCardCity,
+  isCardField,
+  isCardRoad,
+  isGameCity,
+  isGameField,
+  isGameRoad,
+  isSideObject,
+} from 'common/utilities/carcassonne';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -28,6 +39,7 @@ const {
   games: {
     [EGame.CARCASSONNE]: {
       cards,
+      cardsInHand,
     },
   },
 } = GAMES_CONFIG;
@@ -35,6 +47,7 @@ const {
 class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {
     [ECarcassonneGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [ECarcassonneGameEvent.ATTACH_CARD]: this.onAttachCard,
   };
 
   deck: ICarcassonneCard[] = cloneDeep(cards).map((card) => times(card.count, () => card)).flat();
@@ -57,67 +70,90 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     };
 
     card.objects.forEach((object) => {
-      let isNewObject = true;
+      let gameObject: TCarcassonneGameObject | undefined;
 
       if (isSideObject(object)) {
+        const attachedObjectIds = new Set<number>();
+
         object.sideParts.forEach((sidePart) => {
-          const objectId = this.getAttachedObjectId({ card: coords, sidePart });
+          const rotatedSidePart = (sidePart + 3 * rotation) % 12;
+          const objectId = getAttachedObjectId({ card: coords, sidePart: rotatedSidePart }, this.board);
 
           if (objectId) {
-            gameCard.objectsBySideParts[sidePart] = objectId;
-            isNewObject = false;
-
-            // TODO: add merge logic, calc ends
+            attachedObjectIds.add(objectId);
           }
         });
+
+        if (attachedObjectIds.size > 0) {
+          const objectId = [...attachedObjectIds][0];
+
+          gameObject = this.objects[objectId];
+
+          if (gameObject) {
+            for (const objectId of attachedObjectIds) {
+              const object = this.objects[objectId];
+
+              if (object && object !== gameObject) {
+                this.mergeObjects(gameObject, object);
+
+                delete this.objects[objectId];
+              }
+            }
+          }
+        }
       }
 
-      if (isNewObject) {
+      if (!gameObject) {
         const newId = this.lastId++;
-        let newObject: TCarcassonneGameObject;
 
-        if (isCity(object)) {
-          newObject = {
+        if (isCardCity(object)) {
+          gameObject = {
             id: newId,
             type: ECarcassonneCardObject.CITY,
-            cards: [coords],
+            cards: [],
             shields: object.shields ?? 0,
             cathedral: object.cathedral ?? false,
             goods: object.goods ? { [object.goods]: 1 } : {},
             // TODO: calc ends
             ends: [],
           };
-        } else if (isField(object)) {
-          newObject = {
+        } else if (isCardField(object)) {
+          gameObject = {
             id: newId,
             type: ECarcassonneCardObject.FIELD,
-            cards: [coords],
+            cards: [],
             // TODO: calc cities
             cities: [],
           };
-        } else if (isRoad(object)) {
-          newObject = {
+        } else if (isCardRoad(object)) {
+          gameObject = {
             id: newId,
             type: ECarcassonneCardObject.ROAD,
-            cards: [coords],
+            cards: [],
             inn: object.inn ?? false,
             // TODO: calc ends
             ends: [],
           };
         } else {
-          newObject = {
-            id: this.lastId++,
+          gameObject = {
+            id: newId,
             type: ECarcassonneCardObject.MONASTERY,
-            cards: [coords],
+            cards: [],
           };
         }
 
-        this.objects[newId] = newObject;
+        this.objects[newId] = gameObject;
+      }
+
+      if (gameObject) {
+        gameObject.cards.push(coords);
 
         if (isSideObject(object)) {
-          object.sideParts.forEach((sidePart) => {
-            gameCard.objectsBySideParts[sidePart] = newId;
-          });
+          for (const sidePart of object.sideParts) {
+            const rotatedSidePart = (sidePart + 3 * rotation) % 12;
+
+            gameCard.objectsBySideParts[rotatedSidePart] = gameObject.id;
+          }
         }
       }
     });
@@ -128,6 +164,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       ...roomPlayer,
       isActive: false,
       score: 0,
+      cards: [],
     };
   }
 
@@ -142,49 +179,112 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
 
     this.deck = shuffle(this.deck);
 
-    const activePlayerIndex = Math.floor(Math.random() * this.players.length);
+    this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
 
-    this.players = this.players.map((player, index) => ({
-      ...player,
-      isActive: index === activePlayerIndex,
-    }));
+    this.players.forEach((player) => {
+      times(cardsInHand, () => {
+        const card = this.deck.pop();
+
+        if (card) {
+          player.cards.push(card);
+        }
+      });
+    });
   }
 
-  getAttachedObjectId(end: ICarcassonneObjectEnd): number | null {
-    const card = this.board[end.card.y]?.[end.card.x];
-
-    if (!card) {
-      return null;
-    }
-
-    const rotatedSidePart = (end.sidePart + card.rotation * 3) % 12;
-    const rotatedSide = Math.floor(rotatedSidePart / 3);
-    const delta: ICoords = {
-      x: (2 - rotatedSide) % 2,
-      y: (rotatedSide - 1) % 2,
+  mergeObjects(targetObject: TCarcassonneGameObject, mergedObject: TCarcassonneGameObject) {
+    const mergeCards = () => {
+      targetObject.cards = [...new Set([...targetObject.cards, ...mergedObject.cards])];
     };
 
-    const neighborCard = this.board[card.y + delta.y]?.[card.x + delta.x];
+    if (isGameField(targetObject) && isGameField(mergedObject)) {
+      targetObject.cities = [...new Set([...targetObject.cities, ...mergedObject.cities])];
 
-    if (!neighborCard) {
-      return null;
+      mergeCards();
+    } else if (isGameRoad(targetObject) && isGameRoad(mergedObject)) {
+      // TODO: merge ends
+
+      targetObject.inn ||= mergedObject.inn;
+
+      mergeCards();
+    } else if (isGameCity(targetObject) && isGameCity(mergedObject)) {
+      // TODO: merge ends
+
+      targetObject.shields += mergedObject.shields;
+      targetObject.cathedral ||= mergedObject.cathedral;
+
+      forEach(mergedObject.goods, (count, goodsType) => {
+        targetObject.goods[goodsType as ECarcassonneCityGoods] = (targetObject.goods[goodsType as ECarcassonneCityGoods] || 0) + (count || 0);
+      });
+
+      mergeCards();
+
+      forEach(this.objects, (object) => {
+        if (!object || !isGameField(object)) {
+          return;
+        }
+
+        if (object.cities.includes(mergedObject.id)) {
+          object.cities = object.cities.filter((cityId) => cityId !== targetObject.id);
+
+          if (!object.cities.includes(targetObject.id)) {
+            object.cities.push(targetObject.id);
+          }
+        }
+      });
+
+      forEach(this.board, (row) => {
+        forEach(row, (card) => {
+          if (!card) {
+            return;
+          }
+
+          card.objectsBySideParts.forEach((objectId, sidePart) => {
+            if (objectId === mergedObject.id) {
+              card.objectsBySideParts[sidePart] = targetObject.id;
+            }
+          });
+        });
+      });
     }
-
-    const sidePart = rotatedSide === 0 || rotatedSide === 2
-      ? 8 - rotatedSidePart
-      : 14 - rotatedSidePart;
-
-    return neighborCard.objectsBySideParts[sidePart];
   }
 
   onGetGameInfo({ socket }: IGameEvent) {
-    const gameInfo: ICarcassonneGameInfoEvent = {
+    socket.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
+  onAttachCard({ data }: IGameEvent<ICarcassonneAttachCardEvent>) {
+    const { card, coords, rotation } = data;
+    const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
+    const activePlayer = this.players[activePlayerIndex];
+
+    this.attachCard(card, coords, rotation);
+
+    const nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
+    const newCard = this.deck.pop();
+
+    const cardIndex = activePlayer.cards.findIndex(({ id }) => id === card.id);
+
+    if (cardIndex !== -1) {
+      activePlayer.cards.splice(cardIndex, 1);
+    }
+
+    if (newCard) {
+      activePlayer.cards.push(newCard);
+    }
+
+    activePlayer.isActive = false;
+    this.players[nextActivePlayerIndex].isActive = true;
+
+    this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
+  getGameInfoEvent(): ICarcassonneGameInfoEvent {
+    return {
       players: this.players,
       board: this.board,
       objects: this.objects,
     };
-
-    socket.emit(ECarcassonneGameEvent.GAME_INFO, gameInfo);
   }
 }
 

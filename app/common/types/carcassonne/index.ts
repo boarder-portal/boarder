@@ -3,6 +3,7 @@ import { ICoords, IPlayer } from 'common/types';
 
 export enum ECarcassonneGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
+  ATTACH_CARD = 'ATTACH_CARD',
 
   GAME_INFO = 'GAME_INFO',
 }
@@ -105,10 +106,17 @@ export interface ICarcassonneGameOptions extends ICommonGameOptions {
 export interface ICarcassonnePlayer extends IPlayer {
   isActive: boolean;
   score: number;
+  cards: ICarcassonneCard[];
 }
 
 export interface ICarcassonneGameInfoEvent {
   players: ICarcassonnePlayer[];
   board: TCarcassonneBoard;
   objects: TCarcassonneObjects;
+}
+
+export interface ICarcassonneAttachCardEvent {
+  card: ICarcassonneCard;
+  coords: ICoords;
+  rotation: number;
 }

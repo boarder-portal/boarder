@@ -116,13 +116,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
       isInGame: true,
     }));
 
-    const activePlayerIndex = Math.floor(Math.random() * this.players.length);
-
-    this.players = this.players.map((player, index) => ({
-      ...player,
-      isActive: index === activePlayerIndex,
-      score: 0,
-    }));
+    this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
   }
 
   createPlayer(roomPlayer: IPlayer): IPexesoPlayer {
