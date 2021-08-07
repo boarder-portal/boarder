@@ -13,7 +13,7 @@ import {
   IMazeWall,
   TMazeMoveEvent,
 } from 'common/types/maze';
-import { EGame} from 'common/types/game';
+import { EGame } from 'common/types/game';
 
 import { getRandomIndex } from 'common/utilities/random';
 import { getMazeCellNeighbors, getMazeWallCoords } from 'common/utilities/maze';

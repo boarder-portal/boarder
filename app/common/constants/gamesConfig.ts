@@ -3,9 +3,8 @@ import CARCASSONNE_CARDS from 'common/constants/carcassonne/cards';
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
 import { EOnitamaCardType } from 'common/types/onitama';
 import { EGame } from 'common/types/game';
-import { ECarcassonneCardSide } from 'common/types/carcassonne';
 
-const CARCASSONNE_ALL_SIDES: ECarcassonneCardSide[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const CARCASSONNE_ALL_SIDE_PARTS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export const GAMES_CONFIG = {
   games: {
@@ -280,14 +279,8 @@ export const GAMES_CONFIG = {
       defaultGameOptions: {
         playersCount: 2,
       },
-      board: {
-        size: {
-          x: 41,
-          y: 41,
-        },
-      },
       cards: CARCASSONNE_CARDS,
-      allSides: CARCASSONNE_ALL_SIDES,
+      allSides: CARCASSONNE_ALL_SIDE_PARTS,
     },
   },
 };

@@ -35,7 +35,7 @@ export function isValidCard(card: ICarcassonneCard): boolean {
   // every side is present only once
   if (
     GAMES_CONFIG.games[EGame.CARCASSONNE].allSides.some((side) => (
-      card.objects.filter(isSideObject).filter(({ sides }) => sides.includes(side)).length !== 1
+      card.objects.filter(isSideObject).filter(({ sideParts }) => sideParts.includes(side)).length !== 1
     ))
   ) {
     return false;
@@ -55,7 +55,7 @@ export function isValidCard(card: ICarcassonneCard): boolean {
     card.objects.some((object, id) => (
       isCity(object)
       && (
-        object.sides.length % 3 !== 0
+        object.sideParts.length % 3 !== 0
         || card.objects.filter(isField).every(({ cities = [] }) => !cities.includes(id))
       )
     ))

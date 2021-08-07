@@ -1,5 +1,5 @@
 import { ICommonGameOptions } from 'common/types/room';
-import { IPlayer } from 'common/types';
+import { ICoords, IPlayer } from 'common/types';
 
 export enum ECarcassonneGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -14,8 +14,6 @@ export enum ECarcassonneCardObject {
   MONASTERY = 'MONASTERY',
 }
 
-export type ECarcassonneCardSide = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
-
 export enum ECarcassonneCityGoods {
   WHEAT = 'WHEAT',
   FABRIC = 'FABRIC',
@@ -24,7 +22,7 @@ export enum ECarcassonneCityGoods {
 
 export interface ICarcassonneCardCity {
   type: ECarcassonneCardObject.CITY;
-  sides: ECarcassonneCardSide[];
+  sideParts: number[];
   shields?: number;
   cathedral?: true;
   goods?: ECarcassonneCityGoods;
@@ -32,13 +30,13 @@ export interface ICarcassonneCardCity {
 
 export interface ICarcassonneCardField {
   type: ECarcassonneCardObject.FIELD;
-  sides: ECarcassonneCardSide[];
+  sideParts: number[];
   cities?: number[];
 }
 
 export interface ICarcassonneCardRoad {
   type: ECarcassonneCardObject.ROAD;
-  sides: ECarcassonneCardSide[];
+  sideParts: number[];
   inn?: true;
 }
 
@@ -54,11 +52,51 @@ export interface ICarcassonneCard {
   objects: TCarcassonneCardObject[];
 }
 
-export interface ICarcassonneTile {
-  x: number;
-  y: number;
-  card: ICarcassonneCard | null;
+export interface ICarcassonneObjectEnd {
+  card: ICoords;
+  sidePart: number;
 }
+
+export interface ICarcassonneGameObject {
+  id: number;
+  type: ECarcassonneCardObject;
+  cards: ICoords[];
+}
+
+export interface ICarcassonneGameCity extends ICarcassonneGameObject {
+  type: ECarcassonneCardObject.CITY;
+  shields: number;
+  cathedral: boolean;
+  goods: Partial<Record<ECarcassonneCityGoods, number>>;
+  ends: ICarcassonneObjectEnd[];
+}
+
+export interface ICarcassonneGameField extends ICarcassonneGameObject {
+  type: ECarcassonneCardObject.FIELD;
+  cities: number[];
+}
+
+export interface ICarcassonneGameRoad extends ICarcassonneGameObject {
+  type: ECarcassonneCardObject.ROAD;
+  inn: boolean;
+  ends: ICarcassonneObjectEnd[];
+}
+
+export interface ICarcassonneGameMonastery extends ICarcassonneGameObject {
+  type: ECarcassonneCardObject.MONASTERY;
+}
+
+export type TCarcassonneGameObject = ICarcassonneGameCity | ICarcassonneGameField | ICarcassonneGameRoad | ICarcassonneGameMonastery;
+
+export type TCarcassonneObjects = Partial<Record<number, TCarcassonneGameObject>>;
+
+export interface ICarcassonneGameCard extends ICoords {
+  id: number;
+  rotation: number;
+  objectsBySideParts: number[];
+}
+
+export type TCarcassonneBoard = Partial<Record<number, Partial<Record<number, ICarcassonneGameCard>>>>;
 
 export interface ICarcassonneGameOptions extends ICommonGameOptions {
 
@@ -71,5 +109,6 @@ export interface ICarcassonnePlayer extends IPlayer {
 
 export interface ICarcassonneGameInfoEvent {
   players: ICarcassonnePlayer[];
-  board: ICarcassonneTile[][];
+  board: TCarcassonneBoard;
+  objects: TCarcassonneObjects;
 }

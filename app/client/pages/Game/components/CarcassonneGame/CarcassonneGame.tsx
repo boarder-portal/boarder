@@ -2,15 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
+import { map } from 'lodash';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
-
-import { EGame } from 'common/types/game';
 import {
   ECarcassonneGameEvent,
   ICarcassonneGameInfoEvent,
   ICarcassonnePlayer,
-  ICarcassonneTile,
+  TCarcassonneBoard,
+  TCarcassonneObjects,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
@@ -55,21 +54,12 @@ const Root = styled(Box)`
   }
 `;
 
-const {
-  games: {
-    [EGame.CARCASSONNE]: {
-      board: {
-        size: BOARD_SIZE,
-      },
-    },
-  },
-} = GAMES_CONFIG;
-
 const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const { io, isGameEnd } = props;
 
   const [players, setPlayers] = useState<ICarcassonnePlayer[]>([]);
-  const [board, setBoard] = useState<ICarcassonneTile[][]>([]);
+  const [board, setBoard] = useState<TCarcassonneBoard>({});
+  const [objects, setObjects] = useState<TCarcassonneObjects>({});
 
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -90,7 +80,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       return;
     }
 
-    boardRef.current.style.transform = `translate(${boardTranslateRef.current.x}px, ${boardTranslateRef.current.y}px) scale(${boardZoomRef.current})`;
+    boardRef.current.style.transform = `
+      translate(${boardTranslateRef.current.x}px, ${boardTranslateRef.current.y}px)
+      scale(${boardZoomRef.current})
+    `;
   }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -142,6 +135,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
       setPlayers(gameInfo.players);
       setBoard(gameInfo.board);
+      setObjects(gameInfo.objects);
     });
 
     return () => {
@@ -154,10 +148,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       return;
     }
 
-    const dy = Math.round((BOARD_SIZE.y * BASE_CARD_SIZE - boardWrapperRef.current.offsetHeight) / 2);
-    const dx = Math.round((BOARD_SIZE.x * BASE_CARD_SIZE - boardWrapperRef.current.offsetWidth) / 2);
+    const dy = Math.round((boardWrapperRef.current.offsetHeight - BASE_CARD_SIZE) / 2);
+    const dx = Math.round((boardWrapperRef.current.offsetWidth - BASE_CARD_SIZE) / 2);
 
-    boardTranslateRef.current = { x: -dx, y: -dy };
+    boardTranslateRef.current = { x: dx, y: dy };
 
     transformBoard();
   }, [transformBoard]);
@@ -210,19 +204,24 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
           className={b('board')}
           ref={boardRef}
         >
-          {board.map((tiles, y) => {
-            return (
-              <Box key={y} flex>
-                {tiles.map((tile, x) => (
-                  <div className={b('card')} key={x}>
-                    {tile.card && (
-                      <img className={b('cardImage')} src={`/carcassonne/tiles/${tile.card.id}.jpg`} />
-                    )}
-                  </div>
-                ))}
-              </Box>
-            );
-          })}
+          {map(board, (row) => (
+            map(row, (card) => {
+              return card && (
+                <div
+                  className={b('card')}
+                  key={`${card.y}-${card.x}`}
+                  style={{
+                    transform: `
+                    translate(${card.x * BASE_CARD_SIZE}px, ${card.y * BASE_CARD_SIZE}px)
+                    rotate(${card.rotation * 90}deg)
+                  `,
+                  }}
+                >
+                  <img className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+                </div>
+              );
+            })
+          ))}
         </div>
       </div>
     </Root>
