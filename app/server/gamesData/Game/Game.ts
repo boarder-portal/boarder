@@ -42,7 +42,7 @@ abstract class Game<Game extends EGame> {
       const user = socket.user;
 
       if (user) {
-        const player = this.players.find(({ login }) => login === user.login);
+        const player = this.getPlayerByLogin(user.login);
 
         if (player) {
           if (deleteGameTimeout) {
@@ -68,7 +68,7 @@ abstract class Game<Game extends EGame> {
           return;
         }
 
-        const player = this.players.find(({ login }) => login === user.login);
+        const player = this.getPlayerByLogin(user.login);
 
         if (!player) {
           return;
@@ -86,6 +86,10 @@ abstract class Game<Game extends EGame> {
   }
 
   abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<Game>;
+
+  getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
+    return this.players.find((player) => player.login === login);
+  }
 
   sendBaseGameInfo() {
     const updatedData: IGameUpdateEvent = {

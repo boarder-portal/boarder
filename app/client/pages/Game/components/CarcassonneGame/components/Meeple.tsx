@@ -8,8 +8,10 @@ import Box from 'client/components/common/Box/Box';
 
 interface IMeepleProps {
   className?: string;
+  style?: React.CSSProperties;
   type: ECarcassonneMeepleType;
   color: ECarcassonnePlayerColor;
+  onClick?(): void;
 }
 
 const b = block('Meeple');
@@ -44,10 +46,17 @@ const Root = styled(Box)`
 `;
 
 const Meeple: React.FC<IMeepleProps> = (props) => {
-  const { className, type, color } = props;
+  const { className, style, type, color, onClick } = props;
 
   return (
-    <Root className={b.mix(className)} flex alignItems="center" justifyContent="center">
+    <Root
+      className={b.mix(className)}
+      style={style}
+      flex
+      alignItems="center"
+      justifyContent="center"
+      onClick={onClick}
+    >
       <div
         className={b('meeple', { type })}
         style={{ backgroundColor: color }}

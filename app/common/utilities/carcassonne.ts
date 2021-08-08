@@ -9,8 +9,8 @@ import {
   ICarcassonneCardRoad,
   ICarcassonneGameCity,
   ICarcassonneGameField,
+  ICarcassonneGameMonastery,
   ICarcassonneGameRoad,
-  ICarcassonneObjectEnd,
   TCarcassonneBoard,
   TCarcassonneCardObject,
   TCarcassonneGameObject,
@@ -43,6 +43,10 @@ export function isGameField(object: TCarcassonneGameObject): object is ICarcasso
 }
 
 export function isCardMonastery(object: TCarcassonneCardObject): object is ICarcassonneCardMonastery {
+  return object.type === ECarcassonneCardObject.MONASTERY;
+}
+
+export function isGameMonastery(object: TCarcassonneGameObject): object is ICarcassonneGameMonastery {
   return object.type === ECarcassonneCardObject.MONASTERY;
 }
 
@@ -106,18 +110,18 @@ export function getNeighborCoords(coords: ICoords, side: number): ICoords {
   };
 }
 
-export function getAttachedObjectId(end: ICarcassonneObjectEnd, board: TCarcassonneBoard): number | null {
-  const side = Math.floor(end.sidePart / 3);
-  const neighborCoords = getNeighborCoords(end.card, side);
+export function getAttachedObjectId(coords: ICoords, sidePart: number, board: TCarcassonneBoard): number | null {
+  const side = Math.floor(sidePart / 3);
+  const neighborCoords = getNeighborCoords(coords, side);
   const neighborCard = board[neighborCoords.y]?.[neighborCoords.x];
 
   if (!neighborCard) {
     return null;
   }
 
-  const sidePart = side === 0 || side === 2
-    ? 8 - end.sidePart
-    : 14 - end.sidePart;
+  const attachedSidePart = side === 0 || side === 2
+    ? 8 - sidePart
+    : 14 - sidePart;
 
-  return neighborCard.objectsBySideParts[sidePart];
+  return neighborCard.objectsBySideParts[attachedSidePart];
 }

@@ -74,15 +74,11 @@ export interface ICarcassonneCard {
   objects: TCarcassonneCardObject[];
 }
 
-export interface ICarcassonneObjectEnd {
-  card: ICoords;
-  sidePart: number;
-}
-
 export interface ICarcassonneGameObject {
   id: number;
   type: ECarcassonneCardObject;
   cards: ICoords[];
+  meeples: Partial<Record<string, Partial<Record<ECarcassonneMeepleType, number>>>>;
 }
 
 export interface ICarcassonneGameCity extends ICarcassonneGameObject {
@@ -90,7 +86,7 @@ export interface ICarcassonneGameCity extends ICarcassonneGameObject {
   shields: number;
   cathedral: boolean;
   goods: Partial<Record<ECarcassonneCityGoods, number>>;
-  ends: ICarcassonneObjectEnd[];
+  isFinished: boolean;
 }
 
 export interface ICarcassonneGameField extends ICarcassonneGameObject {
@@ -101,7 +97,7 @@ export interface ICarcassonneGameField extends ICarcassonneGameObject {
 export interface ICarcassonneGameRoad extends ICarcassonneGameObject {
   type: ECarcassonneCardObject.ROAD;
   inn: boolean;
-  ends: ICarcassonneObjectEnd[];
+  isFinished: boolean;
 }
 
 export interface ICarcassonneGameMonastery extends ICarcassonneGameObject {
@@ -116,7 +112,8 @@ export interface ICarcassonneGameCard extends ICoords {
   id: number;
   rotation: number;
   objectsBySideParts: number[];
-  meeple: IPlacedMeepleWithColor | null;
+  monasteryId: number | null;
+  meeple: IGamePlacedMeeple | null;
 }
 
 export type TCarcassonneBoard = Partial<Record<number, Partial<Record<number, ICarcassonneGameCard>>>>;
@@ -140,17 +137,19 @@ export interface ICarcassonnePlayer extends IPlayer {
 
 export interface IPlacedMeeple {
   type: ECarcassonneMeepleType;
-  objectId: number;
+  cardObjectId: number;
 }
 
-export interface IPlacedMeepleWithColor extends IPlacedMeeple {
+export interface IGamePlacedMeeple extends IPlacedMeeple {
   color: ECarcassonnePlayerColor;
+  gameObjectId: number;
 }
 
 export interface ICarcassonneGameInfoEvent {
   players: ICarcassonnePlayer[];
   board: TCarcassonneBoard;
   objects: TCarcassonneObjects;
+  cardsLeft: number;
 }
 
 export interface ICarcassonneAttachCardEvent {

@@ -4,11 +4,14 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
+import isEmpty from 'lodash/isEmpty';
 
-import { BASE_CARD_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
+import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
+import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import {
   ECarcassonneGameEvent,
+  ECarcassonneMeepleType,
   ICarcassonneAttachCardEvent,
   ICarcassonneCard,
   ICarcassonneGameInfoEvent,
@@ -18,12 +21,21 @@ import {
   TCarcassonneObjects,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
+import { EGame } from 'common/types/game';
 
-import { getAttachedObjectId, getNeighborCoords, isSideObject } from 'common/utilities/carcassonne';
+import {
+  getAttachedObjectId,
+  getNeighborCoords,
+  isCardCity,
+  isCardField,
+  isCardMonastery,
+  isCardRoad,
+  isSideObject,
+} from 'common/utilities/carcassonne';
 
 import Box from 'client/components/common/Box/Box';
-import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Players';
+import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
 import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 
 import userAtom from 'client/atoms/userAtom';
@@ -33,6 +45,14 @@ interface ICarcassonneGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
+
+const {
+  games: {
+    [EGame.CARCASSONNE]: {
+      cards: allCards,
+    },
+  },
+} = GAMES_CONFIG;
 
 const b = block('CarcassonneGame');
 
@@ -67,6 +87,14 @@ const Root = styled(Box)`
       user-select: none;
     }
 
+    &__meeple {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+    }
+
     &__hand {
       position: absolute;
       bottom: 0;
@@ -90,6 +118,14 @@ const Root = styled(Box)`
     &__handCardImage {
       width: 100%;
       height: 100%;
+    }
+
+    &__cardsLeft {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      padding: 4px;
+      background-color: #fff;
     }
 
     &__draggingCard {
@@ -145,7 +181,21 @@ const Root = styled(Box)`
       width: 20px;
       height: 20px;
       border-radius: 50%;
+      border: 1px solid #000;
       background-color: #0005;
+    }
+
+    &__allowedMeeples {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      transform-origin: ${MEEPLE_SIZE / 2}px ${MEEPLE_SIZE / 2}px;
+    }
+
+    &__allowedMeeple {
+      width: ${MEEPLE_SIZE}px;
+      height: ${MEEPLE_SIZE}px;
     }
 
     &__allowedMeeplePlace {
@@ -156,6 +206,10 @@ const Root = styled(Box)`
       &:hover {
         .${b()}__allowedMeeplePlaceCircle {
           background-color: #000a;
+        }
+
+        .${b()}__allowedMeeples {
+          display: flex;
         }
       }
     }
@@ -168,9 +222,11 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const [players, setPlayers] = useState<ICarcassonnePlayer[]>([]);
   const [board, setBoard] = useState<TCarcassonneBoard>({});
   const [objects, setObjects] = useState<TCarcassonneObjects>({});
+  const [cardsLeft, setCardsLeft] = useState<number>(0);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [placedCardCoords, setPlacedCardCoords] = useState<ICoords | null>(null);
   const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
+  const [allowedMeeples, setAllowedMeeples] = useState<(ECarcassonneMeepleType[] | null)[]>();
 
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
@@ -216,10 +272,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
           const isMatching = selectedCard.objects.filter(isSideObject).every((object) => {
             return object.sideParts.every((sidePart) => {
               const rotatedSidePart = (sidePart + 3 * selectedCardRotationRef.current) % 12;
-              const attachedObjectId = getAttachedObjectId({
-                card: neighborCoords,
-                sidePart: rotatedSidePart,
-              }, board);
+              const attachedObjectId = getAttachedObjectId(neighborCoords, rotatedSidePart, board);
 
               if (!attachedObjectId) {
                 return true;
@@ -279,8 +332,72 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     }
   }, []);
 
+  const placeCard = useCallback((coords: ICoords) => {
+    if (!selectedCard || !player || placedCardCoords || !isAbleToPlaceCard) {
+      return;
+    }
+
+    setPlacedCardCoords(coords);
+
+    const allowedMeeples = selectedCard.objects.map((object, objectId) => {
+      if (isCardMonastery(object)) {
+        return [ECarcassonneMeepleType.COMMON, ECarcassonneMeepleType.FAT];
+      }
+
+      let isOccupied = false;
+      let hasOurMeeple = false;
+
+      object.sideParts.forEach((sidePart) => {
+        const rotatedSidePart = (sidePart + 3 * selectedCardRotationRef.current) % 12;
+        const attachedObjectId = getAttachedObjectId(coords, rotatedSidePart, board);
+
+        if (!attachedObjectId) {
+          return;
+        }
+
+        const attachedObject = objects[attachedObjectId];
+
+        if (!attachedObject) {
+          return;
+        }
+
+        if (!isEmpty(attachedObject.meeples)) {
+          isOccupied = true;
+        }
+
+        if (player.login in attachedObject.meeples) {
+          hasOurMeeple = true;
+        }
+      });
+
+      if (!isOccupied) {
+        return [ECarcassonneMeepleType.COMMON, ECarcassonneMeepleType.FAT];
+      }
+
+      if ((isCardCity(object) || isCardRoad(object)) && hasOurMeeple) {
+        return [ECarcassonneMeepleType.BUILDER];
+      }
+
+      if (isCardField(object) && hasOurMeeple) {
+        return [ECarcassonneMeepleType.PIG];
+      }
+
+      return null;
+    });
+
+    setAllowedMeeples(
+      allowedMeeples.map((meepleTypes) => {
+        const filteredMeepleTypes = meepleTypes && meepleTypes.filter((meepleType) => player.meeples[meepleType] > 0);
+
+        return filteredMeepleTypes && filteredMeepleTypes.length > 0
+          ? filteredMeepleTypes
+          : null;
+      }),
+    );
+  }, [board, isAbleToPlaceCard, objects, placedCardCoords, player, selectedCard]);
+
   const attachCard = useCallback((placedMeeple: IPlacedMeeple | null) => {
-    if (!selectedCard || !isAbleToPlaceCard || !player || !placedCardCoords) {
+    if (!selectedCard || !player || !placedCardCoords) {
       return;
     }
 
@@ -297,9 +414,11 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       id: selectedCard.id,
       rotation,
       objectsBySideParts: [],
+      monasteryId: null,
       meeple: placedMeeple && {
         ...placedMeeple,
         color: player.color,
+        gameObjectId: 0,
       },
     };
 
@@ -310,17 +429,21 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     hideSelectedCard();
 
     io.emit(ECarcassonneGameEvent.ATTACH_CARD, attachCardEvent);
-  }, [board, hideSelectedCard, io, isAbleToPlaceCard, placedCardCoords, player, selectedCard, selectedCardIndex]);
+  }, [board, hideSelectedCard, io, placedCardCoords, player, selectedCard, selectedCardIndex]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+
+    if (placedCardCoords) {
+      return;
+    }
 
     selectedCardRotationRef.current = (selectedCardRotationRef.current + 1) % 4;
 
     hideSelectedCard();
     calculateAllowedMoves(selectedCard);
     transformDraggingCard(e, boardZoomRef.current);
-  }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, selectedCard, transformDraggingCard]);
+  }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, placedCardCoords, selectedCard, transformDraggingCard]);
 
   const onHandCardClick = useCallback((e: React.MouseEvent, index: number) => {
     if (!player?.isActive) {
@@ -363,6 +486,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     hideSelectedCard();
   }, [hideSelectedCard]);
 
+  const onPlaceMeepleClick = useCallback((placedMeeple: IPlacedMeeple) => {
+    attachCard(placedMeeple);
+  }, [attachCard]);
+
   useGlobalListener('mousemove', document, (e) => {
     if (selectedCard && !placedCardCoords) {
       transformDraggingCard(e, boardZoomRef.current);
@@ -382,18 +509,13 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       setPlayers(gameInfo.players);
       setBoard(gameInfo.board);
       setObjects(gameInfo.objects);
+      setCardsLeft(gameInfo.cardsLeft);
     });
 
     return () => {
       io.off(ECarcassonneGameEvent.GAME_INFO);
     };
   }, [io, user]);
-
-  if (isGameEnd) {
-    return (
-      <GameEnd />
-    );
-  }
 
   return (
     <Root className={b()}>
@@ -412,6 +534,8 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         >
           {map(board, (row) => (
             map(row, (card) => {
+              const meepleCoords = card?.meeple && allCards[card.id].objects[card.meeple.cardObjectId].meepleCoords;
+
               return card && (
                 <div
                   className={b('card')}
@@ -424,6 +548,23 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                   }}
                 >
                   <img className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+
+                  {card.meeple && meepleCoords && (
+                    <Meeple
+                      className={b('meeple')}
+                      type={card.meeple.type}
+                      color={card.meeple.color}
+                      style={{
+                        transform: `
+                          translate(
+                            calc(${meepleCoords.x * BASE_CARD_SIZE}px - 50%),
+                            calc(${meepleCoords.y * BASE_CARD_SIZE}px - 50%)
+                          )
+                          rotate(-${card.rotation * 90}deg)
+                        `,
+                      }}
+                    />
+                  )}
                 </div>
               );
             })
@@ -439,7 +580,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                 }}
                 onMouseEnter={placedCardCoords ? undefined : () => onAllowedMoveEnter(coords)}
                 onMouseLeave={placedCardCoords ? undefined : () => onAllowedMoveLeave()}
-                onClick={() => setPlacedCardCoords(coords)}
+                onClick={() => placeCard(coords)}
               />
             );
           })}
@@ -456,10 +597,16 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                   src={`/carcassonne/tiles/${selectedCard.id}.jpg`}
                 />
 
-                {placedCardCoords && selectedCard.objects.map(({ meepleCoords }, index) => {
+                {placedCardCoords && selectedCard.objects.map(({ meepleCoords }, objectId) => {
+                  const objectAllowedMeeples = allowedMeeples?.[objectId];
+
+                  if (!objectAllowedMeeples) {
+                    return;
+                  }
+
                   return (
                     <div
-                      key={index}
+                      key={objectId}
                       className={b('allowedMeeplePlace')}
                       style={{
                         transform: `translate(
@@ -467,12 +614,34 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                           calc(${meepleCoords.y * BASE_CARD_SIZE}px - 50%)
                         )`,
                       }}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className={b('allowedMeeplePlaceCircle')} />
 
-                      <Box className={b('')} flex>
-
-                      </Box>
+                      {player && (
+                        <Box
+                          className={b('allowedMeeples')}
+                          flex
+                          style={{
+                            transform: `
+                              rotate(-${selectedCardRotationRef.current * 90}deg)
+                              translate(calc(${MEEPLE_SIZE / 2}px - 50%), -100%)
+                            `,
+                          }}
+                        >
+                          {objectAllowedMeeples.map((meepleType) => {
+                            return (
+                              <Meeple
+                                key={meepleType}
+                                className={b('allowedMeeple')}
+                                type={meepleType}
+                                color={player.color}
+                                onClick={() => onPlaceMeepleClick({ type: meepleType, cardObjectId: objectId })}
+                              />
+                            );
+                          })}
+                        </Box>
+                      )}
                     </div>
                   );
                 })}
@@ -500,6 +669,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       </Box>
 
       <Players className={b('players')} players={players} />
+
+      <div className={b('cardsLeft')}>
+        {cardsLeft}
+      </div>
 
       <div className={b('draggingCard')} ref={draggingCardRef}>
         {selectedCard && (

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 export interface IBoxProps {
   className?: string;
   children: React.ReactNode;
+  style?: React.CSSProperties;
   width?: number | string;
   height?: number | string;
   px?: number;
@@ -65,10 +66,10 @@ const Root = styled.div`
 `;
 
 const Box: React.FC<IBoxProps> = (props) => {
-  const { className, children, innerRef } = props;
+  const { innerRef } = props;
 
   return (
-    <Root className={className} ref={innerRef} {...props}>{children}</Root>
+    <Root ref={innerRef} {...props} />
   );
 };
 

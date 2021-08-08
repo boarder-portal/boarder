@@ -257,7 +257,7 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   onMovePlayer({ socket, data: angle }: IGameEvent<number>) {
-    const player = this.players.find(({ login }) => login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
       type: EMazeMoveEvent.MOVE,
@@ -267,7 +267,7 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   onStopPlayer({ socket }: IGameEvent) {
-    const player = this.players.find(({ login }) => login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
       type: EMazeMoveEvent.STOP,

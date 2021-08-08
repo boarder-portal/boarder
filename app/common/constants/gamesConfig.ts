@@ -277,11 +277,11 @@ export const GAMES_CONFIG = {
     },
     [EGame.CARCASSONNE]: {
       defaultGameOptions: {
-        playersCount: 2,
+        playersCount: 4,
       },
       cards: CARCASSONNE_CARDS,
       allSideParts: CARCASSONNE_ALL_SIDE_PARTS,
-      cardsInHand: 7,
+      cardsInHand: 3,
     },
   },
 };

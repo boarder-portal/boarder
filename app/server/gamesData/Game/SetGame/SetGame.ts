@@ -92,7 +92,7 @@ class SetGame extends Game<EGame.SET> {
   onSendSet({ socket, data }: IGameEvent<ISetSendSetEvent>) {
     const { cardsIds } = data;
 
-    const player = this.players.find(({ login }) => login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
       throw new Error('There is no player');
@@ -142,7 +142,7 @@ class SetGame extends Game<EGame.SET> {
   }
 
   onSendNoSet({ socket }: IGameEvent) {
-    const player = this.players.find(({ login }) => login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
       throw new Error('There are no player');

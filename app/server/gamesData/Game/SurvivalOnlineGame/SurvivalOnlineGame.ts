@@ -206,9 +206,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
       (cell as ISurvivalOnlineCell).object = null;
 
       if (SurvivalOnlineGame.containsObject<ISurvivalOnlinePlayerObject>(cellInDirection, ESurvivalOnlineObject.PLAYER)) {
-        const player = this.players.find(
-          ({ login }) => cellInDirection.object.login === login,
-        );
+        const player = this.getPlayerByLogin(cellInDirection.object.login);
 
         if (player) {
           player.x = cellInDirection.x;
@@ -283,7 +281,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
   }
 
   onMovePlayer({ socket, data: direction }: IGameEvent<ESurvivalOnlineDirection>) {
-    const player = this.players.find(({ login }) => login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
       return;
