@@ -4,6 +4,8 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import { forEach, map } from 'lodash';
 
+import { BASE_CARD_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
+
 import {
   ECarcassonneGameEvent,
   ICarcassonneAttachCardEvent,
@@ -19,6 +21,7 @@ import { getAttachedObjectId, getNeighborCoords, isSideObject } from 'common/uti
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
+import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 
 import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
@@ -29,8 +32,6 @@ interface ICarcassonneGameProps {
 }
 
 const b = block('CarcassonneGame');
-
-const BASE_CARD_SIZE = 100;
 
 const Root = styled(Box)`
   .CarcassonneGame {
@@ -129,8 +130,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
 
-  const boardWrapperRef = useRef<HTMLDivElement | null>(null);
-  const boardRef = useRef<HTMLDivElement | null>(null);
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
 
@@ -140,10 +139,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     return players.find(({ login }) => login === user?.login);
   }, [players, user]);
 
-  const boardTranslateRef = useRef<ICoords>({ x: 0, y: 0 });
-  const boardZoomRef = useRef<number>(1);
-  const lastDragPointRef = useRef<ICoords | null>(null);
-  const isDraggingRef = useRef<boolean>(false);
   const selectedCardRotationRef = useRef<number>(0);
 
   const selectedCard = player?.cards[selectedCardIndex];
@@ -202,18 +197,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     setAllowedMoves(allowedMoves);
   }, [board, objects]);
 
-  const transformBoard = useCallback(() => {
-    if (!boardRef.current || !boardTranslateRef.current) {
-      return;
-    }
-
-    boardRef.current.style.transform = `
-      translate(${boardTranslateRef.current.x}px, ${boardTranslateRef.current.y}px)
-      scale(${boardZoomRef.current})
-    `;
-  }, []);
-
-  const transformDraggingCard = useCallback((e: React.MouseEvent | MouseEvent) => {
+  const transformDraggingCard = useCallback((e: React.MouseEvent | MouseEvent, zoom: number) => {
     const draggingCardElem = draggingCardRef.current;
 
     if (!draggingCardElem) {
@@ -222,10 +206,20 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     draggingCardElem.style.transform = `
       translate(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%))
-      scale(${boardZoomRef.current})
+      scale(${zoom})
       rotate(${selectedCardRotationRef.current * 90}deg)
     `;
   }, []);
+
+  const {
+    boardWrapperRef,
+    boardRef,
+    zoomRef: boardZoomRef,
+    handleMouseDown: handleBoardMouseDown,
+    handleMouseMove: handleBoardMouseMove,
+    handleMouseUp: handleBoardMouseUp,
+    handleMouseWheel: handleBoardMouseWheel,
+  } = useBoardControl({ onZoom: transformDraggingCard });
 
   const hideSelectedCard = useCallback(() => {
     const selectedCardElem = selectedCardRef.current;
@@ -256,67 +250,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     io.emit(ECarcassonneGameEvent.ATTACH_CARD, attachCardEvent);
   }, [io, selectedCard]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDraggingRef.current = true;
-    lastDragPointRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDraggingRef.current || !lastDragPointRef.current || !boardRef.current) {
-      return;
-    }
-
-    const dx = e.clientX - lastDragPointRef.current.x;
-    const dy = e.clientY - lastDragPointRef.current.y;
-
-    const currentTranslateX = boardTranslateRef.current.x + dx;
-    const currentTranslateY = boardTranslateRef.current.y + dy;
-
-    boardTranslateRef.current = {
-      x: currentTranslateX,
-      y: currentTranslateY,
-    };
-
-    lastDragPointRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-
-    transformBoard();
-  }, [transformBoard]);
-
-  const handleMouseUp = useCallback(() => {
-    isDraggingRef.current = false;
-    lastDragPointRef.current = null;
-  }, []);
-
-  const handleMouseWheel = useCallback((e: React.WheelEvent) => {
-    if (!boardWrapperRef.current || !boardTranslateRef.current) {
-      return;
-    }
-
-    const viewPortHeight = boardWrapperRef.current.offsetHeight;
-    const viewPortWidth = boardWrapperRef.current.offsetWidth;
-
-    const oldZoom = boardZoomRef.current;
-    const newZoom = oldZoom * (1 - 0.1 * Math.sign(e.deltaY));
-
-    const newTransformY = viewPortHeight / 2 - (viewPortHeight / 2 - boardTranslateRef.current.y) * newZoom / oldZoom;
-    const newTransformX = viewPortWidth / 2 - (viewPortWidth / 2 - boardTranslateRef.current.x) * newZoom / oldZoom;
-
-    boardZoomRef.current = newZoom;
-    boardTranslateRef.current = {
-      x: newTransformX,
-      y: newTransformY,
-    };
-
-    transformBoard();
-    transformDraggingCard(e);
-  }, [transformBoard, transformDraggingCard]);
-
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
 
@@ -324,16 +257,16 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     hideSelectedCard();
     calculateAllowedMoves(selectedCard);
-    transformDraggingCard(e);
-  }, [calculateAllowedMoves, hideSelectedCard, selectedCard, transformDraggingCard]);
+    transformDraggingCard(e, boardZoomRef.current);
+  }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, selectedCard, transformDraggingCard]);
 
   const selectCard = useCallback((e: React.MouseEvent, index: number) => {
     selectedCardRotationRef.current = 0;
 
     setSelectedCardIndex(index);
     calculateAllowedMoves(player?.cards[index]);
-    transformDraggingCard(e);
-  }, [calculateAllowedMoves, player, transformDraggingCard]);
+    transformDraggingCard(e, boardZoomRef.current);
+  }, [boardZoomRef, calculateAllowedMoves, player, transformDraggingCard]);
 
   const onAllowedMoveEnter = useCallback(({ x, y }: ICoords) => {
     const selectedCardElem = selectedCardRef.current;
@@ -358,7 +291,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
   useGlobalListener('mousemove', document, (e) => {
     if (selectedCard) {
-      transformDraggingCard(e);
+      transformDraggingCard(e, boardZoomRef.current);
     }
   });
 
@@ -382,19 +315,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     };
   }, [io, user]);
 
-  useEffect(() => {
-    if (!boardWrapperRef.current || !boardRef.current) {
-      return;
-    }
-
-    const dy = Math.round((boardWrapperRef.current.offsetHeight - BASE_CARD_SIZE) / 2);
-    const dx = Math.round((boardWrapperRef.current.offsetWidth - BASE_CARD_SIZE) / 2);
-
-    boardTranslateRef.current = { x: dx, y: dy };
-
-    transformBoard();
-  }, [transformBoard]);
-
   if (isGameEnd) {
     return (
       <GameEnd />
@@ -406,10 +326,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       <div
         className={b('boardWrapper')}
         ref={boardWrapperRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onWheel={handleMouseWheel}
+        onMouseDown={handleBoardMouseDown}
+        onMouseMove={handleBoardMouseMove}
+        onMouseUp={handleBoardMouseUp}
+        onWheel={handleBoardMouseWheel}
         onContextMenu={handleContextMenu}
       >
         <div
