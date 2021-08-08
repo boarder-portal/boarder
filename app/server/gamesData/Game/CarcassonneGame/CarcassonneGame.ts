@@ -32,6 +32,7 @@ import {
   isGameField,
   isGameRoad,
   isSideObject,
+  isValidCard,
 } from 'common/utilities/carcassonne';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
@@ -44,6 +45,8 @@ const {
     },
   },
 } = GAMES_CONFIG;
+
+// console.log(cards.map(isValidCard));
 
 class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {

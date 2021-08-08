@@ -16,6 +16,8 @@ const sessionSettings: SessionOptions = {
     client: redisClient,
     prefix: 'boarder',
   }),
+  resave: false,
+  saveUninitialized: false,
 };
 
 export default sessionSettings;

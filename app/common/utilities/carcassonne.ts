@@ -51,10 +51,14 @@ export function isSideObject(object: TCarcassonneCardObject): object is ICarcass
 }
 
 export function isValidCard(card: ICarcassonneCard): boolean {
-  // every side is present only once
+  const getObjectsBySidePart = (sidePart: number) => (
+    card.objects.filter(isSideObject).filter(({ sideParts }) => sideParts.includes(sidePart))
+  );
+
+  // every side part is present only once
   if (
-    GAMES_CONFIG.games[EGame.CARCASSONNE].allSides.some((side) => (
-      card.objects.filter(isSideObject).filter(({ sideParts }) => sideParts.includes(side)).length !== 1
+    GAMES_CONFIG.games[EGame.CARCASSONNE].allSideParts.some((sidePart) => (
+      getObjectsBySidePart(sidePart).length !== 1
     ))
   ) {
     return false;
@@ -69,14 +73,24 @@ export function isValidCard(card: ICarcassonneCard): boolean {
     return false;
   }
 
-  // all cities are on some field and have 3x sides
+  // all cities are on some field and have 3x side parts
   if (
-    card.objects.some((object, id) => (
-      isCardCity(object)
-      && (
-        object.sideParts.length % 3 !== 0
-        || card.objects.filter(isCardField).every(({ cities = [] }) => !cities.includes(id))
-      )
+    card.objects.some(isCardField)
+    && card.objects.filter(isCardCity).some((object, id) => (
+      object.sideParts.length % 3 !== 0
+      || card.objects.filter(isCardField).every(({ cities = [] }) => !cities.includes(id))
+    ))
+  ) {
+    return false;
+  }
+
+  if (
+    card.objects.filter(isCardRoad).some((object) => (
+      object.sideParts.some((sidePart) => (
+        sidePart % 3 !== 1
+        || !isCardField(getObjectsBySidePart(sidePart - 1)[0])
+        || !isCardField(getObjectsBySidePart(sidePart + 1)[0])
+      ))
     ))
   ) {
     return false;

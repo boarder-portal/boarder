@@ -279,13 +279,19 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     transformDraggingCard(e, boardZoomRef.current);
   }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, selectedCard, transformDraggingCard]);
 
-  const selectCard = useCallback((e: React.MouseEvent, index: number) => {
-    selectedCardRotationRef.current = 0;
+  const onHandCardClick = useCallback((e: React.MouseEvent, index: number) => {
+    if (index === selectedCardIndex) {
+      setSelectedCardIndex(-1);
+      setAllowedMoves([]);
+      hideSelectedCard();
+    } else {
+      selectedCardRotationRef.current = 0;
 
-    setSelectedCardIndex(index);
-    calculateAllowedMoves(player?.cards[index]);
-    transformDraggingCard(e, boardZoomRef.current);
-  }, [boardZoomRef, calculateAllowedMoves, player, transformDraggingCard]);
+      setSelectedCardIndex(index);
+      calculateAllowedMoves(player?.cards[index]);
+      transformDraggingCard(e, boardZoomRef.current);
+    }
+  }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, player, selectedCardIndex, transformDraggingCard]);
 
   const onAllowedMoveEnter = useCallback(({ x, y }: ICoords) => {
     const selectedCardElem = selectedCardRef.current;
@@ -406,7 +412,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
             <div
               key={index}
               className={b('handCard', { selected: index === selectedCardIndex })}
-              onClick={(e) => selectCard(e, index)}
+              onClick={(e) => onHandCardClick(e, index)}
             >
               <img
                 className={b('handCardImage')}

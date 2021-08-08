@@ -203,7 +203,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
     { type: ECarcassonneCardObject.FIELD, sideParts: [2, 3], meepleCoords: { x: 0.83, y: 0.29 } },
     { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6], meepleCoords: { x: 0.78, y: 0.83 } },
     { type: ECarcassonneCardObject.FIELD, sideParts: [8, 9], meepleCoords: { x: 0.21, y: 0.81 } },
-    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 10], meepleCoords: { x: 0.26, y: 0.22 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 11], meepleCoords: { x: 0.26, y: 0.22 } },
   ],
 }];
 
