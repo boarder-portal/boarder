@@ -21,6 +21,22 @@ export enum ECarcassonneCityGoods {
   WINE = 'WINE',
 }
 
+export enum ECarcassonneMeepleType {
+  COMMON = 'COMMON',
+  FAT = 'FAT',
+  BUILDER = 'BUILDER',
+  PIG = 'PIG',
+}
+
+export enum ECarcassonnePlayerColor {
+  RED = 'RED',
+  BLUE = 'BLUE',
+  GREEN = 'GREEN',
+  BLACK = 'BLACK',
+  YELLOW = 'YELLOW',
+  GREY = 'GREY',
+}
+
 export interface ICarcassonneCardObject {
   type: ECarcassonneCardObject;
   meepleCoords: ICoords;
@@ -100,6 +116,7 @@ export interface ICarcassonneGameCard extends ICoords {
   id: number;
   rotation: number;
   objectsBySideParts: number[];
+  meeple: IPlacedMeepleWithColor | null;
 }
 
 export type TCarcassonneBoard = Partial<Record<number, Partial<Record<number, ICarcassonneGameCard>>>>;
@@ -114,9 +131,20 @@ export interface ICarcassonneObjectScore {
 }
 
 export interface ICarcassonnePlayer extends IPlayer {
+  color: ECarcassonnePlayerColor;
   isActive: boolean;
   score: ICarcassonneObjectScore[];
   cards: ICarcassonneCard[];
+  meeples: Record<ECarcassonneMeepleType, number>;
+}
+
+export interface IPlacedMeeple {
+  type: ECarcassonneMeepleType;
+  objectId: number;
+}
+
+export interface IPlacedMeepleWithColor extends IPlacedMeeple {
+  color: ECarcassonnePlayerColor;
 }
 
 export interface ICarcassonneGameInfoEvent {
@@ -126,7 +154,8 @@ export interface ICarcassonneGameInfoEvent {
 }
 
 export interface ICarcassonneAttachCardEvent {
-  card: ICarcassonneCard;
+  cardIndex: number;
   coords: ICoords;
   rotation: number;
+  meeple: IPlacedMeeple | null;
 }

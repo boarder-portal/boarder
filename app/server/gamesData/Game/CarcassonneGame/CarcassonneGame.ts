@@ -11,11 +11,14 @@ import {
   ECarcassonneCardObject,
   ECarcassonneCityGoods,
   ECarcassonneGameEvent,
+  ECarcassonneMeepleType,
+  ECarcassonnePlayerColor,
   ICarcassonneAttachCardEvent,
   ICarcassonneCard,
   ICarcassonneGameCard,
   ICarcassonneGameInfoEvent,
   ICarcassonnePlayer,
+  IPlacedMeepleWithColor,
   TCarcassonneBoard,
   TCarcassonneCardObject,
   TCarcassonneGameObject,
@@ -32,7 +35,6 @@ import {
   isGameField,
   isGameRoad,
   isSideObject,
-  isValidCard,
 } from 'common/utilities/carcassonne';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
@@ -65,12 +67,13 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     this.createGameInfo();
   }
 
-  attachCard(card: ICarcassonneCard, coords: ICoords, rotation: number) {
+  attachCard(card: ICarcassonneCard, coords: ICoords, rotation: number, meeple: IPlacedMeepleWithColor | null) {
     const gameCard: ICarcassonneGameCard = (this.board[coords.y] ||= {})[coords.x] = {
       ...coords,
       id: card.id,
       rotation,
       objectsBySideParts: times(12, () => 0),
+      meeple,
     };
     const idsMap = new Map<number, number>();
 
@@ -199,9 +202,16 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   createPlayer(roomPlayer: IPlayer): ICarcassonnePlayer {
     return {
       ...roomPlayer,
+      color: ECarcassonnePlayerColor.RED,
       isActive: false,
       score: [],
       cards: [],
+      meeples: {
+        [ECarcassonneMeepleType.COMMON]: 7,
+        [ECarcassonneMeepleType.FAT]: 1,
+        [ECarcassonneMeepleType.BUILDER]: 1,
+        [ECarcassonneMeepleType.PIG]: 1,
+      },
     };
   }
 
@@ -212,13 +222,17 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       throw new Error('No cards');
     }
 
-    this.attachCard(firstCard, { x: 0, y: 0 }, 0);
+    this.attachCard(firstCard, { x: 0, y: 0 }, 0, null);
+
+    const colors = shuffle(Object.values(ECarcassonnePlayerColor));
 
     this.deck = shuffle(this.deck);
 
     this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
 
-    this.players.forEach((player) => {
+    this.players.forEach((player, index) => {
+      player.color = colors[index];
+
       times(cardsInHand, () => {
         const card = this.deck.pop();
 
@@ -319,23 +333,24 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   }
 
   onAttachCard({ data }: IGameEvent<ICarcassonneAttachCardEvent>) {
-    const { card, coords, rotation } = data;
+    const { cardIndex, coords, rotation, meeple } = data;
     const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
     const activePlayer = this.players[activePlayerIndex];
 
-    this.attachCard(card, coords, rotation);
+    console.log(data);
+
+    this.attachCard(activePlayer.cards[cardIndex], coords, rotation, meeple && {
+      ...meeple,
+      color: activePlayer.color,
+    });
 
     const nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
     const newCard = this.deck.pop();
 
-    const cardIndex = activePlayer.cards.findIndex(({ id }) => id === card.id);
-
-    if (cardIndex !== -1) {
-      activePlayer.cards.splice(cardIndex, 1);
-    }
+    activePlayer.cards.splice(cardIndex, 1);
 
     if (newCard) {
-      activePlayer.cards.push(newCard);
+      activePlayer.cards.splice(cardIndex, 0, newCard);
     }
 
     activePlayer.isActive = false;

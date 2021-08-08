@@ -118,7 +118,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.5, y: 0.12 } },
-    { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7], meepleCoords: { x: 0.62, y: 0.66 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7], meepleCoords: { x: 0.63, y: 0.63 } },
     { type: ECarcassonneCardObject.FIELD, sideParts: [3, 8, 9, 10, 11], cities: [0], meepleCoords: { x: 0.27, y: 0.57 } },
     { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6], meepleCoords: { x: 0.79, y: 0.8 } },
   ],
