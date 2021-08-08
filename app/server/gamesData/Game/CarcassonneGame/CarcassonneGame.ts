@@ -17,6 +17,7 @@ import {
   ICarcassonneGameInfoEvent,
   ICarcassonnePlayer,
   TCarcassonneBoard,
+  TCarcassonneCardObject,
   TCarcassonneGameObject,
   TCarcassonneObjects,
 } from 'common/types/carcassonne';
@@ -68,8 +69,9 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       rotation,
       objectsBySideParts: times(12, () => 0),
     };
+    const idsMap = new Map<number, number>();
 
-    card.objects.forEach((object) => {
+    card.objects.forEach((object, objectId) => {
       let gameObject: TCarcassonneGameObject | undefined;
 
       if (isSideObject(object)) {
@@ -94,7 +96,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
               const object = this.objects[objectId];
 
               if (object && object !== gameObject) {
-                this.mergeObjects(gameObject, object);
+                this.mergeGameObject(gameObject, object);
 
                 delete this.objects[objectId];
               }
@@ -111,9 +113,9 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
             id: newId,
             type: ECarcassonneCardObject.CITY,
             cards: [],
-            shields: object.shields ?? 0,
-            cathedral: object.cathedral ?? false,
-            goods: object.goods ? { [object.goods]: 1 } : {},
+            shields: 0,
+            cathedral: false,
+            goods: {},
             // TODO: calc ends
             ends: [],
           };
@@ -130,7 +132,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
             id: newId,
             type: ECarcassonneCardObject.ROAD,
             cards: [],
-            inn: object.inn ?? false,
+            inn: false,
             // TODO: calc ends
             ends: [],
           };
@@ -146,7 +148,13 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       }
 
       if (gameObject) {
-        gameObject.cards.push(coords);
+        idsMap.set(objectId, gameObject.id);
+
+        this.mergeCardObject(gameObject, object);
+
+        if (!gameObject.cards.includes(coords)) {
+          gameObject.cards.push(coords);
+        }
 
         if (isSideObject(object)) {
           for (const sidePart of object.sideParts) {
@@ -157,13 +165,39 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         }
       }
     });
+
+    card.objects.forEach((field, objectId) => {
+      if (!isCardField(field)) {
+        return;
+      }
+
+      const gameId = idsMap.get(objectId);
+
+      if (!gameId) {
+        return;
+      }
+
+      const gameField = this.objects[gameId];
+
+      if (!gameField || !isGameField(gameField)) {
+        return;
+      }
+
+      field.cities?.forEach((cardCityId) => {
+        const gameCityId = idsMap.get(cardCityId);
+
+        if (gameCityId && !gameField.cities.includes(gameCityId)) {
+          gameField.cities.push(gameCityId);
+        }
+      });
+    });
   }
 
   createPlayer(roomPlayer: IPlayer): ICarcassonnePlayer {
     return {
       ...roomPlayer,
       isActive: false,
-      score: 0,
+      score: [],
       cards: [],
     };
   }
@@ -192,7 +226,22 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     });
   }
 
-  mergeObjects(targetObject: TCarcassonneGameObject, mergedObject: TCarcassonneGameObject) {
+  mergeCardObject(targetObject: TCarcassonneGameObject, mergedObject: TCarcassonneCardObject) {
+    if (isGameRoad(targetObject) && isCardRoad(mergedObject)) {
+      targetObject.inn ||= mergedObject.inn ?? false;
+    } else if (isGameCity(targetObject) && isCardCity(mergedObject)) {
+      // TODO: merge ends
+
+      targetObject.shields += mergedObject.shields ?? 0;
+      targetObject.cathedral ||= mergedObject.cathedral ?? false;
+
+      if (mergedObject.goods) {
+        targetObject.goods[mergedObject.goods] = (targetObject.goods[mergedObject.goods] || 0) + 1;
+      }
+    }
+  }
+
+  mergeGameObject(targetObject: TCarcassonneGameObject, mergedObject: TCarcassonneGameObject) {
     const mergeCards = () => {
       targetObject.cards = [...new Set([...targetObject.cards, ...mergedObject.cards])];
     };
@@ -225,28 +274,41 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         }
 
         if (object.cities.includes(mergedObject.id)) {
-          object.cities = object.cities.filter((cityId) => cityId !== targetObject.id);
+          object.cities = object.cities.filter((cityId) => cityId !== mergedObject.id);
 
           if (!object.cities.includes(targetObject.id)) {
             object.cities.push(targetObject.id);
           }
         }
       });
+    }
 
-      forEach(this.board, (row) => {
-        forEach(row, (card) => {
-          if (!card) {
-            return;
+    forEach(this.board, (row) => {
+      forEach(row, (card) => {
+        if (!card) {
+          return;
+        }
+
+        card.objectsBySideParts.forEach((objectId, sidePart) => {
+          if (objectId === mergedObject.id) {
+            card.objectsBySideParts[sidePart] = targetObject.id;
           }
-
-          card.objectsBySideParts.forEach((objectId, sidePart) => {
-            if (objectId === mergedObject.id) {
-              card.objectsBySideParts[sidePart] = targetObject.id;
-            }
-          });
         });
       });
-    }
+    });
+  }
+
+  traverseNeighbors(coords: ICoords, callback: (card: ICarcassonneGameCard | undefined) => void) {
+    const getCard = (coords: ICoords) => this.board[coords.y]?.[coords.x];
+
+    callback(getCard({ x: coords.x, y: coords.y - 1 }));
+    callback(getCard({ x: coords.x + 1, y: coords.y - 1 }));
+    callback(getCard({ x: coords.x + 1, y: coords.y }));
+    callback(getCard({ x: coords.x + 1, y: coords.y + 1 }));
+    callback(getCard({ x: coords.x, y: coords.y + 1 }));
+    callback(getCard({ x: coords.x - 1, y: coords.y + 1 }));
+    callback(getCard({ x: coords.x - 1, y: coords.y }));
+    callback(getCard({ x: coords.x - 1, y: coords.y - 1 }));
   }
 
   onGetGameInfo({ socket }: IGameEvent) {

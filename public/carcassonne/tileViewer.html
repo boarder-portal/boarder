@@ -40,7 +40,7 @@
 <body>
 <div id="grid">
   <div style="grid-area: card">
-    <img id="card">
+    <img id="card" onclick="onClick()">
   </div>
   <div class="side top" style="grid-area: top">
     <span>0</span>
@@ -82,6 +82,16 @@
     newUrl.searchParams.set('cardId', cardId);
 
     history.replaceState(null, null, newUrl.toString());
+  }
+
+  function onClick() {
+    const { x, y, width, height } = card.getBoundingClientRect();
+    const coords = {
+      x: +(event.offsetX / width).toFixed(2),
+      y: +(event.offsetY / height).toFixed(2),
+    };
+
+    navigator.clipboard.writeText(`, meepleCoords: ${JSON.stringify(coords)}`);
   }
 </script>
 </body>

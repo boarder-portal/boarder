@@ -21,7 +21,12 @@ export enum ECarcassonneCityGoods {
   WINE = 'WINE',
 }
 
-export interface ICarcassonneCardCity {
+export interface ICarcassonneCardObject {
+  type: ECarcassonneCardObject;
+  meepleCoords: ICoords;
+}
+
+export interface ICarcassonneCardCity extends ICarcassonneCardObject {
   type: ECarcassonneCardObject.CITY;
   sideParts: number[];
   shields?: number;
@@ -29,19 +34,19 @@ export interface ICarcassonneCardCity {
   goods?: ECarcassonneCityGoods;
 }
 
-export interface ICarcassonneCardField {
+export interface ICarcassonneCardField extends ICarcassonneCardObject {
   type: ECarcassonneCardObject.FIELD;
   sideParts: number[];
   cities?: number[];
 }
 
-export interface ICarcassonneCardRoad {
+export interface ICarcassonneCardRoad extends ICarcassonneCardObject {
   type: ECarcassonneCardObject.ROAD;
   sideParts: number[];
   inn?: true;
 }
 
-export interface ICarcassonneCardMonastery {
+export interface ICarcassonneCardMonastery extends ICarcassonneCardObject {
   type: ECarcassonneCardObject.MONASTERY;
 }
 
@@ -103,9 +108,14 @@ export interface ICarcassonneGameOptions extends ICommonGameOptions {
 
 }
 
+export interface ICarcassonneObjectScore {
+  objectId: number;
+  score: number;
+}
+
 export interface ICarcassonnePlayer extends IPlayer {
   isActive: boolean;
-  score: number;
+  score: ICarcassonneObjectScore[];
   cards: ICarcassonneCard[];
 }
 

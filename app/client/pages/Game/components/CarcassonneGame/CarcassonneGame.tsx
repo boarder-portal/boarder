@@ -40,6 +40,7 @@ const Root = styled(Box)`
     &__boardWrapper {
       height: calc(100vh - 48px);
       overflow: hidden;
+      background-color: #faefe0;
     }
 
     &__board {
@@ -68,6 +69,9 @@ const Root = styled(Box)`
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
+      padding: 4px;
+      border: 1px solid black;
+      background-color: #fff;
     }
 
     &__handCard {
@@ -112,6 +116,7 @@ const Root = styled(Box)`
       width: ${BASE_CARD_SIZE}px;
       height: ${BASE_CARD_SIZE}px;
       pointer-events: none;
+      border: 1px solid #ddd;
     }
 
     &__selectedCardImage {
@@ -167,6 +172,10 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
           traversedCoords.add(key);
 
+          if (board[neighborCoords.y]?.[neighborCoords.x]) {
+            return;
+          }
+
           const isMatching = selectedCard.objects.filter(isSideObject).every((object) => {
             return object.sideParts.every((sidePart) => {
               const rotatedSidePart = (sidePart + 3 * selectedCardRotationRef.current) % 12;
@@ -192,8 +201,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       });
     });
 
-    console.log(allowedMoves);
-
     setAllowedMoves(allowedMoves);
   }, [board, objects]);
 
@@ -215,6 +222,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     boardWrapperRef,
     boardRef,
     zoomRef: boardZoomRef,
+    isAbleToPlaceCard,
     handleMouseDown: handleBoardMouseDown,
     handleMouseMove: handleBoardMouseMove,
     handleMouseUp: handleBoardMouseUp,
@@ -235,20 +243,31 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   }, []);
 
   const attachCard = useCallback((coords: ICoords) => {
-    if (!selectedCard) {
+    if (!selectedCard || !isAbleToPlaceCard) {
       return;
     }
 
+    const rotation = selectedCardRotationRef.current;
     const attachCardEvent: ICarcassonneAttachCardEvent = {
       card: selectedCard,
       coords,
-      rotation: selectedCardRotationRef.current,
+      rotation,
+    };
+
+    (board[coords.y] ||= {})[coords.x] = {
+      ...coords,
+      id: selectedCard.id,
+      rotation,
+      objectsBySideParts: [],
     };
 
     setSelectedCardIndex(-1);
+    setAllowedMoves([]);
+
+    hideSelectedCard();
 
     io.emit(ECarcassonneGameEvent.ATTACH_CARD, attachCardEvent);
-  }, [io, selectedCard]);
+  }, [board, hideSelectedCard, io, isAbleToPlaceCard, selectedCard]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -381,7 +400,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         </div>
       </div>
 
-      <Box className={b('hand')} flex>
+      <Box className={b('hand')} flex between={4}>
         {player?.cards.map((card, index) => {
           return (
             <div

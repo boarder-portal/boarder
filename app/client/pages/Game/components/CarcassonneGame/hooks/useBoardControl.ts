@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { BASE_CARD_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 
@@ -12,12 +12,15 @@ export default function useBoardControl({
   boardWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
   boardRef: React.MutableRefObject<HTMLDivElement | null>;
   zoomRef: React.MutableRefObject<number>;
+  isAbleToPlaceCard: boolean;
 
   handleMouseDown(e: React.MouseEvent): void;
   handleMouseUp(e: React.MouseEvent): void;
   handleMouseMove(e: React.MouseEvent): void;
   handleMouseWheel(e: React.WheelEvent): void;
 } {
+  const [isAbleToPlaceCard, setIsInteractable] = useState(true);
+
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,11 +71,14 @@ export default function useBoardControl({
     };
 
     transformBoard();
+    setIsInteractable(false);
   }, [transformBoard]);
 
   const handleMouseUp = useCallback(() => {
     isDraggingRef.current = false;
     lastDragPointRef.current = null;
+
+    setTimeout(() => setIsInteractable(true), 200);
   }, []);
 
   const handleMouseWheel = useCallback((e: React.WheelEvent) => {
@@ -117,6 +123,7 @@ export default function useBoardControl({
     boardRef,
 
     zoomRef,
+    isAbleToPlaceCard,
 
     handleMouseDown,
     handleMouseUp,
