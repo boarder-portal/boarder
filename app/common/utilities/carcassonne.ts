@@ -65,6 +65,8 @@ export function isValidCard(card: ICarcassonneCard): boolean {
       getObjectsBySidePart(sidePart).length !== 1
     ))
   ) {
+    console.log('sides error');
+
     return false;
   }
 
@@ -74,17 +76,24 @@ export function isValidCard(card: ICarcassonneCard): boolean {
       cities.some((id) => !card.objects[id] || !isCardCity(card.objects[id]))
     ))
   ) {
+    console.log('field cities error');
+
     return false;
   }
 
   // all cities are on some field and have 3x side parts
   if (
     card.objects.some(isCardField)
-    && card.objects.filter(isCardCity).some((object, id) => (
-      object.sideParts.length % 3 !== 0
-      || card.objects.filter(isCardField).every(({ cities = [] }) => !cities.includes(id))
+    && card.objects.some((object, id) => (
+      isCardCity(object)
+      && (
+        object.sideParts.length % 3 !== 0
+        || card.objects.filter(isCardField).every(({ cities = [] }) => !cities.includes(id))
+      )
     ))
   ) {
+    console.log('cities on fields error');
+
     return false;
   }
 
@@ -97,6 +106,8 @@ export function isValidCard(card: ICarcassonneCard): boolean {
       ))
     ))
   ) {
+    console.log('road/fields error');
+
     return false;
   }
 

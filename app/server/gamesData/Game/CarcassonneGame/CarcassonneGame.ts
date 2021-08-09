@@ -37,6 +37,7 @@ import {
   isGameMonastery,
   isGameRoad,
   isSideObject,
+  isValidCard,
 } from 'common/utilities/carcassonne';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
@@ -58,7 +59,7 @@ const {
   },
 } = GAMES_CONFIG;
 
-// console.log(cards.map(isValidCard));
+// console.log(cards.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
 class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {
