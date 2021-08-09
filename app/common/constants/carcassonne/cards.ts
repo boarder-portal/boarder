@@ -654,6 +654,124 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
     { type: ECarcassonneCardObject.FIELD, sideParts: [11], cities: [0], meepleCoords: { x: 0.21, y: 0.35 } },
   ],
 },
+
+// abbot & mayor
+
+{
+  id: 70,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [9, 10, 11], shields: 1, meepleCoords: { x: 0.29, y: 0.48 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2], cities: [0], meepleCoords: { x: 0.44, y: 0.09 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [3, 4, 5], cities: [0], meepleCoords: { x: 0.91, y: 0.49 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [6, 7, 8], cities: [0], meepleCoords: { x: 0.41, y: 0.89 } },
+  ],
+}, {
+  id: 71,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], shields: 2, meepleCoords: { x: 0.54, y: 0.57 } },
+  ],
+}, {
+  id: 72,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], shields: 1, meepleCoords: { x: 0.4, y: 0.42 } },
+    { type: ECarcassonneCardObject.CITY, sideParts: [3, 4, 5, 9, 10, 11], meepleCoords: { x: 0.72, y: 0.46 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [6, 7, 8], cities: [0, 1], meepleCoords: { x: 0.7, y: 0.84 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [], cities: [0, 1], meepleCoords: { x: 0.73, y: 0.21 } },
+  ],
+}, {
+  id: 73,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 6, 7, 8], shields: 1, meepleCoords: { x: 0.4, y: 0.42 } },
+    { type: ECarcassonneCardObject.CITY, sideParts: [3, 4, 5, 9, 10, 11], meepleCoords: { x: 0.72, y: 0.46 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [], cities: [0, 1], meepleCoords: { x: 0.74, y: 0.19 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [], cities: [0, 1], meepleCoords: { x: 0.72, y: 0.74 } },
+  ],
+}, {
+  id: 74,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.47, y: 0.12 } },
+    { type: ECarcassonneCardObject.CITY, sideParts: [9, 10, 11], meepleCoords: { x: 0.05, y: 0.57 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [4], meepleCoords: { x: 0.74, y: 0.49 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [7], meepleCoords: { x: 0.42, y: 0.76 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [3], cities: [0], meepleCoords: { x: 0.83, y: 0.31 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6], cities: [0, 1], meepleCoords: { x: 0.69, y: 0.77 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [8], cities: [1], meepleCoords: { x: 0.27, y: 0.89 } },
+  ],
+}, {
+  id: 75,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [3, 4, 5, 9, 10, 11], shields: 1, meepleCoords: { x: 0.77, y: 0.46 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [1, 7], meepleCoords: { x: 0.53, y: 0.26 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0], cities: [0], meepleCoords: { x: 0.35, y: 0.06 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [2], cities: [0], meepleCoords: { x: 0.74, y: 0.07 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [6, 8], cities: [0], meepleCoords: { x: 0.72, y: 0.87 } },
+  ],
+}, {
+  id: 76,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.49, y: 0.14 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [4, 7], meepleCoords: { x: 0.44, y: 0.54 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [3], cities: [0], meepleCoords: { x: 0.88, y: 0.28 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6], meepleCoords: { x: 0.69, y: 0.71 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [8, 9, 10, 11], cities: [0], meepleCoords: { x: 0.18, y: 0.5 } },
+  ],
+}, {
+  id: 77,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.MONASTERY, meepleCoords: { x: 0.48, y: 0.51 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [1], meepleCoords: { x: 0.47, y: 0.15 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [4], meepleCoords: { x: 0.89, y: 0.54 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [7], meepleCoords: { x: 0.43, y: 0.84 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [10], meepleCoords: { x: 0.13, y: 0.52 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 11], meepleCoords: { x: 0.22, y: 0.25 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [2, 3], meepleCoords: { x: 0.76, y: 0.27 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6], meepleCoords: { x: 0.76, y: 0.82 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [8, 9], meepleCoords: { x: 0.17, y: 0.79 } },
+  ],
+}, {
+  id: 78,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.ROAD, sideParts: [7], meepleCoords: { x: 0.52, y: 0.75 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11], meepleCoords: { x: 0.75, y: 0.33 } },
+  ],
+}, {
+  id: 79,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.45, y: 0.11 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [10], meepleCoords: { x: 0.29, y: 0.53 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [3, 4, 5, 6, 7, 8, 9], cities: [0], meepleCoords: { x: 0.7, y: 0.69 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [11], cities: [0], meepleCoords: { x: 0.19, y: 0.36 } },
+  ],
+}, {
+  id: 80,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.45, y: 0.11 } },
+    { type: ECarcassonneCardObject.ROAD, sideParts: [7, 10], meepleCoords: { x: 0.56, y: 0.53 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [3, 4, 5, 6], cities: [0], meepleCoords: { x: 0.79, y: 0.57 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [8, 9], meepleCoords: { x: 0.28, y: 0.7 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [11], cities: [0], meepleCoords: { x: 0.1, y: 0.27 } },
+  ],
+}, {
+  id: 81,
+  count: 1,
+  objects: [
+    { type: ECarcassonneCardObject.ROAD, sideParts: [1, 4, 10], meepleCoords: { x: 0.65, y: 0.51 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [0, 11], meepleCoords: { x: 0.21, y: 0.22 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [2, 3], meepleCoords: { x: 0.77, y: 0.26 } },
+    { type: ECarcassonneCardObject.FIELD, sideParts: [5, 6, 7, 8, 9], meepleCoords: { x: 0.64, y: 0.84 } },
+  ],
+},
 ];
 
 export default CARCASSONNE_CARDS;
