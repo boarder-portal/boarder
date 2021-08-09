@@ -307,7 +307,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   ],
 }, {
   id: 34,
-  count: 20,
+  count: 2,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], cathedral: true, meepleCoords: { x: 0.46, y: 0.5 } },
   ],
