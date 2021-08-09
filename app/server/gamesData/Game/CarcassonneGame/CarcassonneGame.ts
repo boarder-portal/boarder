@@ -528,7 +528,6 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       player: activePlayer,
     });
 
-    let nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
     const newCard = this.deck.pop();
 
     activePlayer.cards.splice(cardIndex, 1);
@@ -599,15 +598,15 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       }
     }
 
+    let nextActivePlayerIndex: number;
+
     if (attachedToBuilder && !this.isBuilderMove) {
       this.isBuilderMove = true;
+      nextActivePlayerIndex = activePlayerIndex;
     } else {
       this.isBuilderMove = false;
-      activePlayer.isActive = false;
-      this.players[nextActivePlayerIndex].isActive = true;
+      nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
     }
-
-    let isGameEnd = false;
 
     while (this.players[nextActivePlayerIndex].cards.length === 0) {
       this.isBuilderMove = false;
@@ -615,16 +614,17 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
 
       // TODO: check for impossible cards
 
-      if (nextActivePlayerIndex === (activePlayerIndex + 1) % this.players.length) {
-        isGameEnd = true;
-
+      if (nextActivePlayerIndex === activePlayerIndex) {
         break;
       }
     }
 
+    activePlayer.isActive = false;
+    this.players[nextActivePlayerIndex].isActive = true;
+
     this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
 
-    if (isGameEnd) {
+    if (this.players.every(({ cards }) => cards.length === 0)) {
       this.end();
 
       forEach(this.objects, (object) => {
