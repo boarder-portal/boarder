@@ -279,7 +279,7 @@ export const GAMES_CONFIG = {
       defaultGameOptions: {
         playersCount: 4,
       },
-      cards: CARCASSONNE_CARDS,
+      allCards: CARCASSONNE_CARDS,
       allSideParts: CARCASSONNE_ALL_SIDE_PARTS,
       cardsInHand: 3,
     },

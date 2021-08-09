@@ -49,7 +49,7 @@ interface ICarcassonneGameProps {
 const {
   games: {
     [EGame.CARCASSONNE]: {
-      cards: allCards,
+      allCards,
     },
   },
 } = GAMES_CONFIG;

@@ -4,7 +4,7 @@ const CARCASSONNE_CARDS: ICarcassonneCard[] = [{
   // base cards
 
   id: 0,
-  count: 4,
+  count: 3,
   objects: [
     { type: ECarcassonneCardObject.CITY, sideParts: [0, 1, 2], meepleCoords: { x: 0.56, y: 0.13 } },
     { type: ECarcassonneCardObject.FIELD, sideParts: [3, 11], cities: [0], meepleCoords: { x: 0.14, y: 0.31 } },

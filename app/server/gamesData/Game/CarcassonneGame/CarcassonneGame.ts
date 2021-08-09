@@ -53,7 +53,7 @@ interface IAttachCardOptions {
 const {
   games: {
     [EGame.CARCASSONNE]: {
-      cards,
+      allCards,
       cardsInHand,
     },
   },
@@ -67,7 +67,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     [ECarcassonneGameEvent.ATTACH_CARD]: this.onAttachCard,
   };
 
-  deck: ICarcassonneCard[] = cloneDeep(cards).map((card) => times(card.count, () => card)).flat();
+  deck: ICarcassonneCard[] = cloneDeep(allCards).map((card) => times(card.count, () => card)).flat();
   board: TCarcassonneBoard = {};
   objects: TCarcassonneObjects = {};
   lastId = 1;
@@ -283,14 +283,8 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   }
 
   createGameInfo(): void {
-    const firstCard = this.deck.shift();
-
-    if (!firstCard) {
-      throw new Error('No cards');
-    }
-
     this.attachCard({
-      card: firstCard,
+      card: allCards[0],
       coords: { x: 0, y: 0 },
       rotation: 0,
       meeple: null,
