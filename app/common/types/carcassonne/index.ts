@@ -127,12 +127,20 @@ export interface ICarcassonneObjectScore {
   score: number;
 }
 
+export interface ICarcassonneGoodsScore {
+  goods: ECarcassonneCityGoods;
+  score: number;
+}
+
+export type TCarcassonneScore = ICarcassonneObjectScore | ICarcassonneGoodsScore;
+
 export interface ICarcassonnePlayer extends IPlayer {
   color: ECarcassonnePlayerColor;
   isActive: boolean;
-  score: ICarcassonneObjectScore[];
+  score: TCarcassonneScore[];
   cards: ICarcassonneCard[];
   meeples: Record<ECarcassonneMeepleType, number>;
+  goods: Record<ECarcassonneCityGoods, number>;
 }
 
 export interface IPlacedMeeple {

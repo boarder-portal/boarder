@@ -23,6 +23,7 @@ import {
   TCarcassonneCardObject,
   TCarcassonneGameObject,
   TCarcassonneObjects,
+  TCarcassonneScore,
 } from 'common/types/carcassonne';
 import { ICoords, IPlayer } from 'common/types';
 
@@ -272,6 +273,11 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         [ECarcassonneMeepleType.BUILDER]: 1,
         [ECarcassonneMeepleType.PIG]: 1,
       },
+      goods: {
+        [ECarcassonneCityGoods.WHEAT]: 0,
+        [ECarcassonneCityGoods.FABRIC]: 0,
+        [ECarcassonneCityGoods.WINE]: 0,
+      },
     };
   }
 
@@ -313,8 +319,6 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     if (isGameRoad(targetObject) && isCardRoad(mergedObject)) {
       targetObject.inn ||= mergedObject.inn ?? false;
     } else if (isGameCity(targetObject) && isCardCity(mergedObject)) {
-      // TODO: merge ends
-
       targetObject.shields += mergedObject.shields ?? 0;
       targetObject.cathedral ||= mergedObject.cathedral ?? false;
 
@@ -334,14 +338,10 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
 
       mergeCards();
     } else if (isGameRoad(targetObject) && isGameRoad(mergedObject)) {
-      // TODO: merge ends
-
       targetObject.inn ||= mergedObject.inn;
 
       mergeCards();
     } else if (isGameCity(targetObject) && isGameCity(mergedObject)) {
-      // TODO: merge ends
-
       targetObject.shields += mergedObject.shields;
       targetObject.cathedral ||= mergedObject.cathedral;
 
@@ -417,12 +417,18 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     );
   }
 
+  addScore(player: ICarcassonnePlayer, score: TCarcassonneScore): void {
+    if (score.score) {
+      player.score.push(score);
+    }
+  }
+
   addObjectScore(object: TCarcassonneGameObject): void {
     const addScore = (login: string, score: number): void => {
       const player = this.getPlayerByLogin(login);
 
       if (player) {
-        player.score.push({
+        this.addScore(player, {
           objectId: object.id,
           score,
         });
@@ -578,6 +584,12 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       if ((isGameCity(object) || isGameRoad(object)) && object.isFinished) {
         this.addObjectScore(object);
         this.returnMeeples(object);
+
+        if (isGameCity(object)) {
+          forEach(object.goods, (count, goodsType) => {
+            activePlayer.goods[goodsType as ECarcassonneCityGoods] += count || 0;
+          });
+        }
       }
     }
 
@@ -638,6 +650,32 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         ) {
           this.addObjectScore(object);
         }
+      });
+
+      const maxGoods: Record<ECarcassonneCityGoods, number> = {
+        [ECarcassonneCityGoods.WHEAT]: 0,
+        [ECarcassonneCityGoods.FABRIC]: 0,
+        [ECarcassonneCityGoods.WINE]: 0,
+      };
+
+      forEach(this.players, ({ goods }) => {
+        forEach(goods, (count, goodsType) => {
+          maxGoods[goodsType as ECarcassonneCityGoods] = Math.max(
+            maxGoods[goodsType as ECarcassonneCityGoods],
+            count,
+          );
+        });
+      });
+
+      forEach(this.players, (player) => {
+        forEach(player.goods, (count, goodsType) => {
+          if (count && maxGoods[goodsType as ECarcassonneCityGoods] === count) {
+            this.addScore(player, {
+              goods: goodsType as ECarcassonneCityGoods,
+              score: 15,
+            });
+          }
+        });
       });
 
       this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
