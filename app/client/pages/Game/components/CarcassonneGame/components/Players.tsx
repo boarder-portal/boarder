@@ -5,7 +5,7 @@ import map from 'lodash/map';
 import times from 'lodash/times';
 import sumBy from 'lodash/sumBy';
 
-import { ECarcassonneMeepleType, ICarcassonnePlayer } from 'common/types/carcassonne';
+import { ECarcassonneCityGoods, ECarcassonneMeepleType, ICarcassonnePlayer } from 'common/types/carcassonne';
 
 import Box from 'client/components/common/Box/Box';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
@@ -54,6 +54,12 @@ const Players: React.FC<IPlayersProps> = (props) => {
 
             <div>
               {sumBy(player.score, ({ score }) => score)}
+            </div>
+
+            <div>
+              Пшено: {player.goods[ECarcassonneCityGoods.WHEAT]},
+              Ткань: {player.goods[ECarcassonneCityGoods.FABRIC]},
+              Вино: {player.goods[ECarcassonneCityGoods.WINE]}
             </div>
 
             <Box flex between={2}>
