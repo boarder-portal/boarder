@@ -59,7 +59,9 @@ const placedCardAudio = new Audio('/sounds/pop.wav');
 const b = block('CarcassonneGame');
 
 const Root = styled(Box)`
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
 
   .CarcassonneGame {
     &__boardWrapper {
