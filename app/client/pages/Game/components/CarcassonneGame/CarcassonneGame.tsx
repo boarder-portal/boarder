@@ -54,6 +54,8 @@ const {
   },
 } = GAMES_CONFIG;
 
+const placedCardAudio = new Audio('/sounds/pop.wav');
+
 const b = block('CarcassonneGame');
 
 const Root = styled(Box)`
@@ -230,6 +232,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
+  const boardCardsCountRef = useRef<number | null>(null);
 
   const user = useRecoilValue(userAtom);
 
@@ -510,6 +513,14 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       setBoard(gameInfo.board);
       setObjects(gameInfo.objects);
       setCardsLeft(gameInfo.cardsLeft);
+
+      const boardCardsCount = gameInfo.cardsLeft + gameInfo.players.reduce((playersCardsCount, p) => playersCardsCount + p.cards.length, 0);
+
+      if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
+        placedCardAudio.play();
+      }
+
+      boardCardsCountRef.current = boardCardsCount;
     });
 
     return () => {
