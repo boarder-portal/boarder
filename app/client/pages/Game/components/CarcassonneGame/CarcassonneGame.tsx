@@ -32,6 +32,7 @@ import {
   isCardRoad,
   isSideObject,
 } from 'common/utilities/carcassonne';
+import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
 
 import Box from 'client/components/common/Box/Box';
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Players';
@@ -78,7 +79,6 @@ const Root = styled(Box)`
       position: absolute;
       top: 0;
       left: 0;
-      flex-shrink: 0;
       width: ${BASE_CARD_SIZE}px;
       height: ${BASE_CARD_SIZE}px;
       border: 1px solid #ddd;
@@ -216,6 +216,21 @@ const Root = styled(Box)`
           display: flex;
         }
       }
+    }
+
+    &__lastMoveContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: ${BASE_CARD_SIZE}px;
+      height: ${BASE_CARD_SIZE}px;
+      border: 1px solid rgba(0, 0, 0, 0);
+    }
+
+    &__lastMove {
+      width: 100%;
+      height: 100%;
+      border: 3px solid;
     }
   }
 `;
@@ -547,8 +562,6 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         >
           {map(board, (row) => (
             map(row, (card) => {
-              const meepleCoords = card?.meeple && allCards[card.id].objects[card.meeple.cardObjectId].meepleCoords;
-
               return card && (
                 <div
                   className={b('card')}
@@ -561,24 +574,57 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                   }}
                 >
                   <img className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
-
-                  {card.meeple && meepleCoords && (
-                    <Meeple
-                      className={b('meeple')}
-                      type={card.meeple.type}
-                      color={card.meeple.color}
-                      style={{
-                        transform: `
-                          translate(
-                            calc(${meepleCoords.x * BASE_CARD_SIZE}px - 50%),
-                            calc(${meepleCoords.y * BASE_CARD_SIZE}px - 50%)
-                          )
-                          rotate(-${card.rotation * 90}deg)
-                        `,
-                      }}
-                    />
-                  )}
                 </div>
+              );
+            })
+          ))}
+
+          {players.map(({ color, lastMoves }) => (
+            lastMoves.map((coords, index) => {
+              return (
+                <div
+                  key={index}
+                  className={b('lastMoveContainer')}
+                  style={{
+                    transform: `translate(${coords.x * BASE_CARD_SIZE}px, ${coords.y * BASE_CARD_SIZE}px)`,
+                  }}
+                >
+                  <div
+                    className={b('lastMove')}
+                    style={{
+                      borderColor: color,
+                    }}
+                  />
+                </div>
+              );
+            })
+          ))}
+
+          {map(board, (row) => (
+            map(row, (card) => {
+              const meepleCoords = card?.meeple && allCards[card.id].objects[card.meeple.cardObjectId].meepleCoords;
+
+              if (!card?.meeple || !meepleCoords) {
+                return;
+              }
+
+              const rotatedCoords = getRotatedCoords(meepleCoords, card.rotation);
+
+              return (
+                <Meeple
+                  key={card.x}
+                  className={b('meeple')}
+                  type={card.meeple.type}
+                  color={card.meeple.color}
+                  style={{
+                    transform: `
+                      translate(
+                        calc(${(card.x + rotatedCoords.x) * BASE_CARD_SIZE}px - 50%),
+                        calc(${(card.y + rotatedCoords.y) * BASE_CARD_SIZE}px - 50%)
+                      )
+                    `,
+                  }}
+                />
               );
             })
           ))}

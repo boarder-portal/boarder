@@ -141,6 +141,7 @@ export interface ICarcassonnePlayer extends IPlayer {
   cards: ICarcassonneCard[];
   meeples: Record<ECarcassonneMeepleType, number>;
   goods: Record<ECarcassonneCityGoods, number>;
+  lastMoves: ICoords[];
 }
 
 export interface IPlacedMeeple {

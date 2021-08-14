@@ -279,6 +279,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         [ECarcassonneCityGoods.FABRIC]: 0,
         [ECarcassonneCityGoods.WINE]: 0,
       },
+      lastMoves: [],
     };
   }
 
@@ -540,6 +541,12 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     if (meeple) {
       activePlayer.meeples[meeple.type]--;
     }
+
+    if (!this.isBuilderMove) {
+      activePlayer.lastMoves = [];
+    }
+
+    activePlayer.lastMoves.push(coords);
 
     this.traverseNeighbors(coords, (card) => {
       if (!card?.monasteryId) {
