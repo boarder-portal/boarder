@@ -72,6 +72,8 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   objects: TCarcassonneObjects = {};
   lastId = 1;
   isBuilderMove = false;
+  endTurnTimeout: number | null = null;
+  endTurnTimeoutEndsAt: number | null = null;
 
   constructor(options: IGameCreateOptions<EGame.CARCASSONNE>) {
     super(options);
@@ -309,6 +311,8 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
         }
       });
     });
+
+    this.setEndTurnTimer();
   }
 
   mergeCardObject(targetObject: TCarcassonneGameObject, mergedObject: TCarcassonneCardObject): void {
@@ -511,6 +515,57 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     });
   }
 
+  getPlayerIndexWithCards(currentPlayerIndex: number): number | null {
+    let nextPlayerIndexWithCards = currentPlayerIndex;
+
+    while (this.players[currentPlayerIndex].cards.length === 0) {
+      nextPlayerIndexWithCards = (nextPlayerIndexWithCards + 1) % this.players.length;
+
+      // TODO: check for impossible cards
+
+      if (nextPlayerIndexWithCards === currentPlayerIndex) {
+        return null;
+      }
+    }
+
+    return nextPlayerIndexWithCards;
+  }
+
+  setEndTurnTimer(): void {
+    if (this.endTurnTimeout) {
+      clearTimeout(this.endTurnTimeout);
+
+      this.endTurnTimeout = null;
+      this.endTurnTimeoutEndsAt = null;
+    }
+
+    const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
+
+    const placedCardsCount = Object.values(this.board).reduce((accCount, boardRow) => accCount + (boardRow ? Object.keys(boardRow).length : 0), 0);
+
+    const turnDuration = 30000 + placedCardsCount * 1000;
+
+    this.endTurnTimeout = setTimeout(() => {
+      const nextPlayerIndex = (activePlayerIndex + 1) % this.players.length;
+
+      const nextPlayerIndexWithCards = this.getPlayerIndexWithCards(nextPlayerIndex);
+
+      this.players[activePlayerIndex].isActive = false;
+
+      if (nextPlayerIndexWithCards !== null) {
+        this.players[nextPlayerIndexWithCards].isActive = true;
+      }
+
+      this.isBuilderMove = false;
+
+      this.setEndTurnTimer();
+
+      this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
+    }, turnDuration);
+
+    this.endTurnTimeoutEndsAt = Date.now() + turnDuration;
+  }
+
   onGetGameInfo({ socket }: IGameEvent): void {
     socket.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
@@ -622,24 +677,29 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
     }
 
-    while (this.players[nextActivePlayerIndex].cards.length === 0) {
+    const nextActivePlayerIndexWithCards = this.getPlayerIndexWithCards(nextActivePlayerIndex);
+
+    if (nextActivePlayerIndexWithCards !== nextActivePlayerIndex) {
       this.isBuilderMove = false;
-      nextActivePlayerIndex = (nextActivePlayerIndex + 1) % this.players.length;
-
-      // TODO: check for impossible cards
-
-      if (nextActivePlayerIndex === activePlayerIndex) {
-        break;
-      }
     }
 
     activePlayer.isActive = false;
-    this.players[nextActivePlayerIndex].isActive = true;
+
+    if (nextActivePlayerIndexWithCards !== null) {
+      this.players[nextActivePlayerIndexWithCards].isActive = true;
+    }
 
     this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
 
     if (this.players.every(({ cards }) => cards.length === 0)) {
       this.end();
+
+      if (this.endTurnTimeout) {
+        clearTimeout(this.endTurnTimeout);
+
+        this.endTurnTimeout = null;
+        this.endTurnTimeoutEndsAt = null;
+      }
 
       forEach(this.objects, (object) => {
         if (
@@ -681,6 +741,14 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       });
 
       this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
+
+      return;
+    }
+
+    if (nextActivePlayerIndexWithCards !== activePlayerIndex) {
+      this.setEndTurnTimer();
+
+      this.io.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
     }
   }
 
@@ -690,7 +758,16 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
       board: this.board,
       objects: this.objects,
       cardsLeft: this.deck.length,
+      turnEndsAt: this.endTurnTimeoutEndsAt,
     };
+  }
+
+  deleteGame(): void {
+    if (this.endTurnTimeout) {
+      clearTimeout(this.endTurnTimeout);
+    }
+
+    super.deleteGame();
   }
 }
 

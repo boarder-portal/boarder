@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import block from 'bem-cn';
 import styled from 'styled-components';
 import map from 'lodash/map';
@@ -13,6 +13,7 @@ import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meep
 interface IPlayersProps {
   className?: string;
   players: ICarcassonnePlayer[];
+  turnEndsAt: number | null;
 }
 
 const b = block('Players');
@@ -43,14 +44,31 @@ const Root = styled(Box)`
 `;
 
 const Players: React.FC<IPlayersProps> = (props) => {
-  const { className, players } = props;
+  const { className, players, turnEndsAt } = props;
+
+  const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - Date.now()) / 1000) : 0;
+
+      setTurnSecondsLeft(secondsLeft);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [turnEndsAt]);
 
   return (
     <Root flex column className={b.mix(className)}>
       {players.map((player) => {
         return (
           <div key={player.login} className={b('player', { active: player.isActive })}>
-            <div>{player.login}</div>
+            <div>
+              <span>{player.login}</span>
+              {player.isActive && <span> {turnSecondsLeft}</span>}
+            </div>
 
             <div>
               {sumBy(player.score, ({ score }) => score)}

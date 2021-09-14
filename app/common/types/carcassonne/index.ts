@@ -159,6 +159,7 @@ export interface ICarcassonneGameInfoEvent {
   board: TCarcassonneBoard;
   objects: TCarcassonneObjects;
   cardsLeft: number;
+  turnEndsAt: number | null;
 }
 
 export interface ICarcassonneAttachCardEvent {

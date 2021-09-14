@@ -242,6 +242,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const [board, setBoard] = useState<TCarcassonneBoard>({});
   const [objects, setObjects] = useState<TCarcassonneObjects>({});
   const [cardsLeft, setCardsLeft] = useState<number>(0);
+  const [turnEndsAt, setTurnEndsAt] = useState<number | null>(null);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [placedCardCoords, setPlacedCardCoords] = useState<ICoords | null>(null);
   const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
@@ -530,6 +531,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       setBoard(gameInfo.board);
       setObjects(gameInfo.objects);
       setCardsLeft(gameInfo.cardsLeft);
+      setTurnEndsAt(gameInfo.turnEndsAt);
 
       const boardCardsCount = gameInfo.cardsLeft + gameInfo.players.reduce((playersCardsCount, p) => playersCardsCount + p.cards.length, 0);
 
@@ -727,7 +729,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         })}
       </Box>
 
-      <Players className={b('players')} players={players} />
+      <Players className={b('players')} players={players} turnEndsAt={turnEndsAt} />
 
       <div className={b('cardsLeft')}>
         {cardsLeft}
