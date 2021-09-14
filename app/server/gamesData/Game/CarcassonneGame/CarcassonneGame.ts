@@ -570,10 +570,14 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     socket.emit(ECarcassonneGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
 
-  onAttachCard({ data }: IGameEvent<ICarcassonneAttachCardEvent>): void {
+  onAttachCard({ data, socket }: IGameEvent<ICarcassonneAttachCardEvent>): void {
     const { cardIndex, coords, rotation, meeple } = data;
     const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
     const activePlayer = this.players[activePlayerIndex];
+
+    if (socket.user?.login !== activePlayer.login) {
+      return;
+    }
 
     console.log(data);
 
