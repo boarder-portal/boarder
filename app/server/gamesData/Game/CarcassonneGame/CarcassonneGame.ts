@@ -37,7 +37,6 @@ import {
   isGameMonastery,
   isGameRoad,
   isSideObject,
-  isValidCard,
 } from 'common/utilities/carcassonne';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
@@ -543,7 +542,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
 
     const placedCardsCount = Object.values(this.board).reduce((accCount, boardRow) => accCount + (boardRow ? Object.keys(boardRow).length : 0), 0);
 
-    const turnDuration = 30000 + placedCardsCount * 1000;
+    const turnDuration = 45000 + placedCardsCount * 700;
 
     this.endTurnTimeout = setTimeout(() => {
       const nextPlayerIndex = (activePlayerIndex + 1) % this.players.length;
@@ -578,8 +577,6 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     if (socket.user?.login !== activePlayer.login) {
       return;
     }
-
-    console.log(data);
 
     const gameCard = this.attachCard({
       card: activePlayer.cards[cardIndex],
