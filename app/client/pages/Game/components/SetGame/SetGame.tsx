@@ -12,6 +12,7 @@ import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
 import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 interface ISetGameProps {
   io: SocketIOClient.Socket;
@@ -46,45 +47,45 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
 
   const [cards, setCards] = useState<ISetCard[]>([]);
   const [players, setPlayers] = useState<ISetPlayer[]>([]);
-  const [selectedCardsIds, setSelectedCardsIds] = useState<number[]>([]);
+  const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
 
   const playerRef = useRef<ISetPlayer | null>(null);
 
   const user = useRecoilValue(userAtom);
 
-  const handleCardClick = useCallback((card: ISetCard) => {
+  const handleCardClick = useImmutableCallback((card: ISetCard) => {
     if (isGameEnd) {
       return;
     }
 
-    const selectedCardsIdsIndex = selectedCardsIds
-      .findIndex((id) => id === card.id);
+    const updatedSelectedCardsIds = new Set(selectedCardsIds);
 
-    if (selectedCardsIdsIndex === -1) {
-      if (selectedCardsIds.length === 3) {
+    const isSelected = selectedCardsIds.has(card.id);
+
+    if (isSelected) {
+      updatedSelectedCardsIds.delete(card.id);
+
+      setSelectedCardsIds(updatedSelectedCardsIds);
+    } else {
+      if (selectedCardsIds.size === 3) {
         return;
       }
 
-      const updatedSelectedCardsIds = [...selectedCardsIds, card.id];
+      updatedSelectedCardsIds.add(card.id);
 
       setSelectedCardsIds(updatedSelectedCardsIds);
 
-      if (updatedSelectedCardsIds.length === 3) {
+      if (updatedSelectedCardsIds.size === 3) {
         const data: ISetSendSetEvent = {
-          cardsIds: updatedSelectedCardsIds,
+          cardsIds: [...updatedSelectedCardsIds],
         };
 
         console.log('SEND_SET', data);
 
         io.emit(ESetGameEvent.SEND_SET, data);
       }
-    } else {
-      setSelectedCardsIds([
-        ...selectedCardsIds.slice(0, selectedCardsIdsIndex),
-        ...selectedCardsIds.slice(selectedCardsIdsIndex + 1),
-      ]);
     }
-  }, [io, isGameEnd, selectedCardsIds]);
+  });
 
   const handleNoSetClick = useCallback(() => {
     io.emit(ESetGameEvent.SEND_NO_SET);
@@ -108,7 +109,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
 
       setCards(gameInfo.cards);
       setPlayers(gameInfo.players);
-      setSelectedCardsIds([]);
+      setSelectedCardsIds(new Set());
     });
 
     return () => {
@@ -140,8 +141,8 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
               <Card
                 key={cardRowIndex}
                 card={card}
-                isSelected={selectedCardsIds.includes(card.id)}
-                onClick={handleCardClick.bind(null, card)}
+                isSelected={selectedCardsIds.has(card.id)}
+                onClick={handleCardClick}
               />
             ))}
           </Box>

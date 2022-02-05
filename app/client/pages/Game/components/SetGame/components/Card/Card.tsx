@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import times from 'lodash/times';
 import styled from 'styled-components';
 
@@ -10,7 +10,7 @@ import Box from 'client/components/common/Box/Box';
 interface ICardProps {
   card: ISetCard;
   isSelected: boolean;
-  onClick(): void;
+  onClick(card: ISetCard): void;
 }
 
 const BASE_SIZE = window.innerWidth < 1000 ? 80 : 130;
@@ -18,13 +18,17 @@ const BASE_SIZE = window.innerWidth < 1000 ? 80 : 130;
 const Root = styled(Box)`
   width: ${BASE_SIZE}px;
   height: ${BASE_SIZE * 1.5}px;
-  border: ${({ isSelected }: ICardProps) => isSelected ? 2 : 1}px solid black;
+  border: ${({ isSelected }: Pick<ICardProps, 'isSelected'>) => isSelected ? 2 : 1}px solid black;
   border-radius: 8px;
   cursor: pointer;
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
-  const { card } = props;
+  const { card, isSelected, onClick } = props;
+
+  const handleClick = useCallback(() => {
+    onClick(card);
+  }, [card, onClick]);
 
   return (
     <Root
@@ -33,7 +37,8 @@ const Card: React.FC<ICardProps> = (props) => {
       column
       alignItems="center"
       justifyContent="center"
-      {...props}
+      isSelected={isSelected}
+      onClick={handleClick}
     >
       {times(card.count).map((objIndex) => (
         <CardObject
