@@ -10,8 +10,8 @@ import {
 } from 'common/types/sevenWonders/index';
 
 export interface ISevenWondersGain {
-  points: number;
-  coins: number;
+  points?: number;
+  coins?: number;
 }
 
 export enum ISevenWondersEffect {
