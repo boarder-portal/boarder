@@ -2,7 +2,7 @@ import { ESevenWonderCardId, ESevenWondersCardType, ISevenWondersCard } from 'co
 import { ISevenWondersEffect } from 'common/types/sevenWonders/effects';
 import { ESevenWondersNeighbor, ESevenWondersResource, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
 
-export const CARDS_BY_AGE: ISevenWondersCard[][] = [
+const CARDS_BY_AGE: ISevenWondersCard[][] = [
   [{
     // manufactured goods
     id: ESevenWonderCardId.LOOM,
@@ -385,3 +385,5 @@ export const CARDS_BY_AGE: ISevenWondersCard[][] = [
 
   ],
 ];
+
+export default CARDS_BY_AGE;

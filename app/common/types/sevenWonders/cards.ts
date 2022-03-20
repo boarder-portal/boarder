@@ -1,5 +1,5 @@
 import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
-import { ISevenWondersResource } from 'common/types/sevenWonders/index';
+import { ISevenWondersPrice } from 'common/types/sevenWonders/index';
 
 export enum ESevenWonderCardId {
   // manufactured goods
@@ -65,9 +65,7 @@ export enum ESevenWondersCardType {
   LEADER = 'LEADER',
 }
 
-export interface ISevenWondersCardPrice {
-  resources?: ISevenWondersResource[];
-  coins?: number;
+export interface ISevenWondersCardPrice extends ISevenWondersPrice {
   buildings?: ESevenWonderCardId[];
 }
 
