@@ -24,7 +24,7 @@ export enum ISevenWondersEffect {
   SCIENTIFIC_SYMBOLS = 'SCIENTIFIC_SYMBOLS',
   WINS = 'WINS',
   LOSSES = 'LOSSES',
-  FREE_CARD = 'FREE_CARD',
+  BUILD_CARD = 'BUILD_CARD',
   COPY_CARD = 'COPY_CARD',
 }
 
@@ -96,12 +96,13 @@ export enum ESevenWondersFreeCardSource {
   DISCARD = 'DISCARD',
 }
 
-export interface ISevenWondersFreeCardEffect {
-  type: ISevenWondersEffect.FREE_CARD;
+export interface ISevenWondersBuildCardEffect {
+  type: ISevenWondersEffect.BUILD_CARD;
   period: ESevenWondersFreeCardPeriod;
   count: number;
   cardTypes: ESevenWondersCardType[];
   source: ESevenWondersFreeCardSource;
+  isFree: boolean;
 }
 
 export interface ISevenWondersCopyCardEffect {
@@ -120,5 +121,5 @@ export type TSevenWondersEffect =
  | ISevenWondersScientificSymbolsEffect
  | ISevenWondersWinsEffect
  | ISevenWondersLossesEffect
- | ISevenWondersFreeCardEffect
+ | ISevenWondersBuildCardEffect
  | ISevenWondersCopyCardEffect
