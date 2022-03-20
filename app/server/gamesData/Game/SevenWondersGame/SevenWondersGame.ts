@@ -28,6 +28,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   createPlayer(roomPlayer: IPlayer): ISevenWondersPlayer {
     return {
       ...roomPlayer,
+      hand: [],
+      builtCards: [],
     };
   }
 
