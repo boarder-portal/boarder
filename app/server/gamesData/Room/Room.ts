@@ -16,6 +16,7 @@ import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
 import SetGame from 'server/gamesData/Game/SetGame/SetGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
 const GAMES_MAP = {
   [EGame.PEXESO]: PexesoGame,
@@ -24,6 +25,7 @@ const GAMES_MAP = {
   [EGame.SET]: SetGame,
   [EGame.ONITAMA]: OnitamaGame,
   [EGame.CARCASSONNE]: CarcassonneGame,
+  [EGame.SEVEN_WONDERS]: SevenWondersGame,
 };
 
 class Room<G extends EGame> {

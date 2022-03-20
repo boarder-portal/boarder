@@ -9,6 +9,7 @@ import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze
 import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
 import { EOnitamaGameEvent, IOnitamaGameOptions, IOnitamaPlayer } from 'common/types/onitama';
 import { ECarcassonneGameEvent, ICarcassonneGameOptions, ICarcassonnePlayer } from 'common/types/carcassonne';
+import { ESevenWondersGameEvent, ISevenWondersGameOptions, ISevenWondersPlayer } from 'common/types/sevenWonders';
 
 export enum EGameEvent {
   UPDATE = 'UPDATE',
@@ -22,6 +23,7 @@ export enum EGame {
   SET = 'set',
   ONITAMA = 'onitama',
   CARCASSONNE = 'carcassonne',
+  SEVEN_WONDERS = 'sevenWonders',
 }
 
 export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
@@ -56,6 +58,11 @@ export interface IGameParams {
     event: ECarcassonneGameEvent;
     options: ICarcassonneGameOptions;
     player: ICarcassonnePlayer;
+  };
+  [EGame.SEVEN_WONDERS]: {
+    event: ESevenWondersGameEvent;
+    options: ISevenWondersGameOptions;
+    player: ISevenWondersPlayer;
   };
 }
 

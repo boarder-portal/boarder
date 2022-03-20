@@ -15,6 +15,7 @@ import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
 import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
 import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/CarcassonneGame';
+import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/SevenWondersGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -111,6 +112,15 @@ const Game: React.FC = () => {
   if (game === EGame.CARCASSONNE) {
     return (
       <CarcassonneGame
+        io={ioRef.current}
+        isGameEnd={isGameEnd}
+      />
+    );
+  }
+
+  if (game === EGame.SEVEN_WONDERS) {
+    return (
+      <SevenWondersGame
         io={ioRef.current}
         isGameEnd={isGameEnd}
       />

@@ -283,5 +283,10 @@ export const GAMES_CONFIG = {
       allSideParts: CARCASSONNE_ALL_SIDE_PARTS,
       cardsInHand: 3,
     },
+    [EGame.SEVEN_WONDERS]: {
+      defaultGameOptions: {
+        playersCount: 3,
+      },
+    },
   },
 };
