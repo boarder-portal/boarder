@@ -32,19 +32,25 @@ export interface ISevenWondersWonder {
   effects: TSevenWondersEffect[];
 }
 
-export interface ISevenWondersCity {
-  type: ESevenWondersCity;
+export interface ISevenWondersCitySide {
   effect: TSevenWondersEffect;
   wonders: ISevenWondersWonder[];
 }
 
+export interface ISevenWondersCity {
+  sides: ISevenWondersCitySide[];
+}
+
 export interface ISevenWondersPlayer extends IPlayer {
+  points: number;
   builtCards: ISevenWondersCard[];
   hand: ISevenWondersCard[];
   city: ESevenWondersCity;
+  citySide: number;
   builtWondersIndexes: number[];
   coins: number;
-  warTokensPoints: number[];
+  victoryTokens: number[];
+  defeatTokens: number[];
 }
 
 export interface ISevenWondersGameInfoEvent {
@@ -65,11 +71,6 @@ export enum ESevenWondersResource {
 
 export interface ISevenWondersResource {
   type: ESevenWondersResource;
-  count: number;
-}
-
-export interface ISevenWondersScientificSymbol {
-  type: ESevenWondersScientificSymbol;
   count: number;
 }
 

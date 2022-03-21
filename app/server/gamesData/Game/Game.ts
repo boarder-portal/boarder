@@ -1,6 +1,7 @@
 import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
+import shuffle from 'lodash/shuffle';
 
 import { IAuthSocket, IGameEvent } from 'server/types';
 import { EPlayerStatus, IPlayer } from 'common/types';
@@ -34,6 +35,8 @@ abstract class Game<Game extends EGame> {
     this.players = players.map((player, index) => this.createPlayer(player, index));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
+
+    this.players = shuffle(this.players);
 
     let deleteGameTimeout: number | null = setTimeout(() => this.deleteGame(), 10000);
 

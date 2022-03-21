@@ -1,5 +1,6 @@
 import CARCASSONNE_CARDS from 'common/constants/carcassonne/cards';
 import SEVEN_WONDERS_CARDS from 'common/constants/sevenWonders/cards';
+import SEVEN_WONDERS_CITIES from 'common/constants/sevenWonders/cities';
 
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
 import { EOnitamaCardType } from 'common/types/onitama';
@@ -289,6 +290,7 @@ export const GAMES_CONFIG = {
         playersCount: 3,
       },
       cardsByAge: SEVEN_WONDERS_CARDS,
+      allCities: SEVEN_WONDERS_CITIES,
     },
   },
 };

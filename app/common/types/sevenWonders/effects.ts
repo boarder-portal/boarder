@@ -1,12 +1,11 @@
 import {
   ESevenWondersCardType,
   ESevenWondersPlayerDirection,
-
 } from 'common/types/sevenWonders/cards';
 import {
   ESevenWondersNeighbor,
   ISevenWondersResource,
-  ISevenWondersScientificSymbol,
+  ESevenWondersScientificSymbol,
 } from 'common/types/sevenWonders/index';
 
 export interface ISevenWondersGain {
@@ -69,7 +68,7 @@ export interface ISevenWondersShieldsEffect {
 
 export interface ISevenWondersScientificSymbolsEffect {
   type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS;
-  variants: ISevenWondersScientificSymbol[];
+  variants: ESevenWondersScientificSymbol[];
 }
 
 export interface ISevenWondersWinsEffect {
