@@ -243,10 +243,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       case ISevenWondersEffect.WONDER_LEVELS: {
-        const gain: ISevenWondersGain = {
-          points: 0,
-          coins: 0,
-        };
+        const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
           this.mergeGains(gain, effect.gain, player.builtWondersIndexes.length);
@@ -256,10 +253,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       case ISevenWondersEffect.WINS: {
-        const gain: ISevenWondersGain = {
-          points: 0,
-          coins: 0,
-        };
+        const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
           this.mergeGains(gain, effect.gain, player.victoryTokens.length);
@@ -269,10 +263,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       case ISevenWondersEffect.LOSSES: {
-        const gain: ISevenWondersGain = {
-          points: 0,
-          coins: 0,
-        };
+        const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
           this.mergeGains(gain, effect.gain, player.defeatTokens.length);
