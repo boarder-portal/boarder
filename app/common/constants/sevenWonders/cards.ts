@@ -335,10 +335,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
       type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [{
-        type: ESevenWondersScientificSymbol.COMPASS,
-        count: 1,
-      }],
+      variants: [ESevenWondersScientificSymbol.COMPASS],
     }],
     price: {
       resources: [{
@@ -352,10 +349,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
       type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [{
-        type: ESevenWondersScientificSymbol.GEAR,
-        count: 1,
-      }],
+      variants: [ESevenWondersScientificSymbol.GEAR],
     }],
     price: {
       resources: [{
@@ -369,10 +363,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
       type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [{
-        type: ESevenWondersScientificSymbol.TABLET,
-        count: 1,
-      }],
+      variants: [ESevenWondersScientificSymbol.TABLET],
     }],
     price: {
       resources: [{
