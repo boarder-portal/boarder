@@ -12,6 +12,7 @@ import {
   ESevenWondersGameEvent,
   ESevenWondersNeighbor,
   ESevenWondersScientificSymbol,
+  ISevenWondersBuildCardEvent,
   ISevenWondersCitySide,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
@@ -43,10 +44,12 @@ const {
 } = GAMES_CONFIG;
 
 const ALL_CITIES = Object.values(ESevenWondersCity);
+const BOTS_COUNT = 4;
 
 class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
     [ESevenWondersGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [ESevenWondersGameEvent.BUILD_CARD]: this.onBuildCard,
   };
 
   age = -1;
@@ -70,19 +73,22 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       coins: 3,
       victoryTokens: [],
       defeatTokens: [],
+      isBot: false,
+      madeBaseActionWithCard: false,
     };
   }
 
   createGameInfo(): void {
     const shuffledCities = shuffle(ALL_CITIES);
 
-    times(2, (index) => {
-      this.players.push(
-        this.createPlayer({
+    times(BOTS_COUNT, (index) => {
+      this.players.push({
+        ...this.createPlayer({
           status: EPlayerStatus.PLAYING,
           login: `bot-${index}`,
         }),
-      );
+        isBot: true,
+      });
     });
 
     this.players.forEach((player, playerIndex) => {
@@ -122,6 +128,33 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   endTurn(): void {
     console.log('end turn');
+
+    this.players.forEach((player) => {
+      if (player.isBot) {
+        // TODO: строить карточку, которую может построить
+        const builtCard = player.hand.pop();
+
+        if (builtCard) {
+          player.builtCards.push(builtCard);
+        }
+      }
+    });
+
+    const hands = this.players.map(({ hand }) => hand);
+
+    this.players.forEach((player, index) => {
+      player.madeBaseActionWithCard = false;
+
+      // TODO: направление в зависимости от эпохи
+      player.hand = hands[(index + 1) % this.players.length];
+    });
+
+    // TODO: У Вавилона в конце может быть 0 карт
+    if (this.players.every(({ hand }) => hand.length === 1)) {
+      this.endAge();
+    }
+
+    this.sendGameInfo();
   }
 
   endAge(): void {
@@ -298,8 +331,30 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
   }
 
+  sendGameInfo(): void {
+    this.io.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
   onGetGameInfo({ socket }: IGameEvent): void {
     socket.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
+  onBuildCard({ socket, data }: IGameEvent<ISevenWondersBuildCardEvent>): void {
+    const player = this.players.find((player) => player.login === socket.user?.login);
+
+    if (!player) {
+      return;
+    }
+
+    const { card: builtCard } = data;
+
+    player.builtCards.push(builtCard);
+    player.hand = player.hand.filter((card) =>  card.id !== builtCard.id);
+    player.madeBaseActionWithCard = true;
+
+    if (this.players.every((p) => p.madeBaseActionWithCard || p.isBot)) {
+      this.endTurn();
+    }
   }
 
   getGameInfoEvent(): ISevenWondersGameInfoEvent {
