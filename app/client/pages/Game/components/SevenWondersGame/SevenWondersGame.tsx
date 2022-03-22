@@ -16,6 +16,7 @@ import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
+import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -49,16 +50,12 @@ const Root = styled(Box)`
       grid-column-gap: 20px;
     }
 
-    &__otherPlayerCity {
-      width: 100%;
-    }
-
-    &__ownBoard {
+    &__mainBoard {
       margin-top: auto;
     }
 
-    &__city {
-      max-width: 700px;
+    &__mainWonder {
+      max-width: 500px;
     }
   }
 `;
@@ -110,18 +107,16 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         style={{ gridTemplateColumns: `repeat(${otherPlayers.length}, 1fr)` }}
       >
         {otherPlayers.map((otherPlayer) => (
-          <div key={otherPlayer.login} className={b('otherPlayer')}>
-            <img className={b('otherPlayerCity')} src={`/sevenWonders/cities/${otherPlayer.city}/${otherPlayer.citySide}.png`} />
-          </div>
+          <Wonder key={otherPlayer.login} player={otherPlayer} />
         ))}
       </div>
 
-      <Box className={b('ownBoard')} flex alignItems="center" column between={20}>
-        <img className={b('city')} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
+      <Box className={b('mainBoard')} flex alignItems="center" column between={20}>
+        <Wonder className={b('mainWonder')} player={player} />
 
         <Box flex between={-35}>
           {player.hand.map((card, index) => (
-            <Card key={index} card={card} onBuild={handleBuildCard} />
+            <Card key={index} card={card} isBuilt={false} onBuild={handleBuildCard} />
           ))}
         </Box>
       </Box>

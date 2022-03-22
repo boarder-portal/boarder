@@ -1,15 +1,21 @@
-import React, { useCallback } from 'react';
+import React, { CSSProperties, useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ESevenWonderCardId, ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import Box from 'client/components/common/Box/Box';
 
 interface ICardProps {
+  className?: string;
+  style?: CSSProperties;
   card: ISevenWondersCard;
-  onBuild(card: ISevenWondersCard): void;
+  isBuilt: boolean;
+  width?: number;
+  onBuild?(card: ISevenWondersCard): void;
 }
+
+interface IRootProps extends Pick<ICardProps, 'width' | 'isBuilt'>{}
 
 const b = block('Card');
 
@@ -17,19 +23,19 @@ const CARD_WIDTH = 110;
 const CARD_PROPORTION = 0.6547;
 
 const Root = styled(Box)`
-  width: ${CARD_WIDTH}px;
-  height: ${CARD_WIDTH / CARD_PROPORTION}px;
+  width: ${({ width }: IRootProps) => width || CARD_WIDTH}px;
+  height: ${({ width }: IRootProps) => (width || CARD_WIDTH) / CARD_PROPORTION}px;
 
   &:hover {
     position: relative;
-    z-index: 2;
+    z-index: 21 !important;
 
-    .Card {
-      &__zoomWrapper {
+    &.Card_built_no {
+      .Card__zoomWrapper {
         transform: scale(1.5) translateY(-50px);
       }
 
-      &__options {
+      .Card__options {
         position: relative;
         visibility: visible;
       }
@@ -62,22 +68,24 @@ const Root = styled(Box)`
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
-  const { card, onBuild } = props;
+  const { className, style, card, isBuilt, width, onBuild } = props;
 
   const handleBuild = useCallback(() => {
-    onBuild(card);
+    onBuild?.(card);
   }, [card, onBuild]);
 
   return (
-    <Root className={b()}>
+    <Root className={b({ built: isBuilt ? 'yes' : 'no' }).mix(className)} style={style} width={width} isBuilt={isBuilt}>
       <div className={b('zoomWrapper')}>
         <img className={b('img')} src={`/sevenWonders/cards/${card.id}.png`} />
 
-        <Box className={b('options')} flex column between={20} alignItems="center">
-          <div onClick={handleBuild}>Построить</div>
-          <div>Заложить</div>
-          <div>Продать</div>
-        </Box>
+        {!isBuilt && (
+          <Box className={b('options')} flex column between={20} alignItems="center">
+            <div onClick={handleBuild}>Построить</div>
+            <div>Заложить</div>
+            <div>Продать</div>
+          </Box>
+        )}
       </div>
     </Root>
   );

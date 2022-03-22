@@ -18,7 +18,7 @@ export interface IBoxProps {
   flex?: boolean;
   column?: boolean;
   alignItems?: 'center' | 'flex-start' | 'flex-end';
-  justifyContent?: 'center';
+  justifyContent?: 'center' | 'space-between';
   withWrap?: boolean;
   grow?: boolean;
   background?: string;
