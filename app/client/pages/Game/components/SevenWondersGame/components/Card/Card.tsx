@@ -71,7 +71,7 @@ const Card: React.FC<ICardProps> = (props) => {
   return (
     <Root className={b()}>
       <div className={b('zoomWrapper')}>
-        <img className={b('img')} src={`/sevenWonders/cards/${ESevenWonderCardId.LUMBER_YARD}.png`} />
+        <img className={b('img')} src={`/sevenWonders/cards/${card.id}.png`} />
 
         <Box className={b('options')} flex column between={20} alignItems="center">
           <div onClick={handleBuild}>Построить</div>
