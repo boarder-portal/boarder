@@ -3,7 +3,7 @@ import {
   ESevenWondersPlayerDirection,
 } from 'common/types/sevenWonders/cards';
 import {
-  ESevenWondersNeighbor,
+  ESevenWondersNeighborSide,
   ISevenWondersResource,
   ESevenWondersScientificSymbol,
 } from 'common/types/sevenWonders/index';
@@ -39,7 +39,7 @@ export interface ISevenWondersResourcesEffect {
 
 export interface ISevenWondersTradeEffect {
   type: ISevenWondersEffect.TRADE;
-  neighbors: ESevenWondersNeighbor[];
+  neighbors: ESevenWondersNeighborSide[];
   price: number;
   resource: ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS;
 }

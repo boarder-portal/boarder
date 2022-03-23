@@ -42,18 +42,23 @@ export interface ISevenWondersCity {
   sides: ISevenWondersCitySide[];
 }
 
+export interface ISevenWondersBuiltStage {
+  index: number;
+  card: ISevenWondersCard;
+}
+
 export interface ISevenWondersPlayer extends IPlayer {
   points: number;
   builtCards: ISevenWondersCard[];
   hand: ISevenWondersCard[];
   city: ESevenWondersCity;
   citySide: number;
-  builtWondersIndexes: number[];
+  buildStages: ISevenWondersBuiltStage[];
   coins: number;
-  victoryTokens: number[];
-  defeatTokens: number[];
+  victoryPoints: number[];
+  defeatPoints: number[];
   isBot: boolean;
-  madeBaseActionWithCard: boolean;
+  chosenMainAction: TSevenWondersAction | null;
 }
 
 export interface ISevenWondersGameInfoEvent {
@@ -61,8 +66,35 @@ export interface ISevenWondersGameInfoEvent {
   discard: ISevenWondersCard[];
 }
 
+export enum ESevenWondersCardActionType {
+  BUILD_STRUCTURE = 'BUILD_STRUCTURE',
+  BUILD_WONDER_STAGE = 'BUILD_WONDER_STAGE',
+  DISCARD = 'DISCARD',
+}
+
+export interface ISevenWondersBuildStructureAction {
+  type: ESevenWondersCardActionType.BUILD_STRUCTURE;
+}
+
+export interface ISevenWondersBuildWonderStageAction {
+  type: ESevenWondersCardActionType.BUILD_WONDER_STAGE;
+  stageIndex: number;
+}
+
+export interface ISevenWondersDiscardAction {
+  type: ESevenWondersCardActionType.DISCARD;
+}
+
+export type TSevenWondersAction = (
+  | ISevenWondersBuildStructureAction
+  | ISevenWondersBuildWonderStageAction
+  | ISevenWondersDiscardAction
+);
+
 export interface ISevenWondersBuildCardEvent {
   card: ISevenWondersCard;
+  action: TSevenWondersAction;
+  payments: Record<ESevenWondersNeighborSide, number>;
 }
 
 export enum ESevenWondersResource {
@@ -81,7 +113,7 @@ export interface ISevenWondersResource {
   count: number;
 }
 
-export enum ESevenWondersNeighbor {
+export enum ESevenWondersNeighborSide {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }

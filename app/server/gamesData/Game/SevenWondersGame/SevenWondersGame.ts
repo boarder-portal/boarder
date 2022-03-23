@@ -8,12 +8,12 @@ import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 import { EPlayerStatus, IPlayer } from 'common/types';
 import {
+  ESevenWondersCardActionType,
   ESevenWondersCity,
   ESevenWondersGameEvent,
-  ESevenWondersNeighbor,
+  ESevenWondersNeighborSide,
   ESevenWondersScientificSymbol,
   ISevenWondersBuildCardEvent,
-  ISevenWondersCitySide,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
@@ -30,7 +30,9 @@ import {
 } from 'common/types/sevenWonders/effects';
 
 import { getAllCombinations } from 'common/utilities/combinations';
-import { isScientificSymbolsEffect } from 'common/utilities/sevenWonders';
+import { isShieldsEffect, isScientificSymbolsEffect } from 'common/utilities/sevenWonders/isEffect';
+import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -69,12 +71,12 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       builtCards: [],
       city: ESevenWondersCity.RHODOS,
       citySide: Number(Math.random() > 0.5),
-      builtWondersIndexes: [],
+      buildStages: [],
       coins: 3,
-      victoryTokens: [],
-      defeatTokens: [],
+      victoryPoints: [],
+      defeatPoints: [],
       isBot: false,
-      madeBaseActionWithCard: false,
+      chosenMainAction: null,
     };
   }
 
@@ -94,9 +96,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     this.players.forEach((player, playerIndex) => {
       player.city = shuffledCities[playerIndex];
 
-      const citySide = this.getPlayerCitySide(player);
-
-      player.coins += this.calculateEffectGain(citySide.effect, playerIndex)?.coins ?? 0;
+      getAllPlayerEffects(player).forEach((effect) => {
+        player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
+      });
     });
 
     this.startAge();
@@ -127,7 +129,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endTurn(): void {
-    console.log('end turn');
+    const neighborSide = this.getAgeNeighborSide();
 
     this.players.forEach((player) => {
       if (player.isBot) {
@@ -142,15 +144,15 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     const hands = this.players.map(({ hand }) => hand);
 
-    this.players.forEach((player, index) => {
-      player.madeBaseActionWithCard = false;
+    this.players.forEach((player, playerIndex) => {
+      player.chosenMainAction = null;
 
-      // TODO: направление в зависимости от эпохи
-      player.hand = hands[(index + 1) % this.players.length];
+      const neighbor = this.getNeighbor(player, neighborSide);
+
+      neighbor.hand = hands[playerIndex];
     });
 
-    // TODO: У Вавилона в конце может быть 0 карт
-    if (this.players.every(({ hand }) => hand.length === 1)) {
+    if (this.players.some(({ hand }) => hand.length === 1)) {
       this.endAge();
     }
 
@@ -158,38 +160,45 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endAge(): void {
-    if (this.age === 2) {
+    const ageVictoryPoints = 2 * this.age + 1;
+
+    this.players.forEach((player) => {
+      const playerShieldsCount = this.getPlayerShieldsCount(player);
+
+      [
+        this.getNeighbor(player, ESevenWondersNeighborSide.LEFT),
+        this.getNeighbor(player, ESevenWondersNeighborSide.RIGHT),
+      ].forEach((neighbor) => {
+        const neighborShieldsCount = this.getPlayerShieldsCount(neighbor);
+
+        if (playerShieldsCount > neighborShieldsCount) {
+          player.victoryPoints.push(ageVictoryPoints);
+        } else if (playerShieldsCount < neighborShieldsCount) {
+          player.defeatPoints.push(-1);
+        }
+      });
+    });
+
+    if (this.age === 0) {
       this.endGame();
-
-      return;
+    } else {
+      this.startAge();
     }
-
-    this.startAge();
   }
 
   endGame(): void {
-    this.players.forEach((player, playerIndex) => {
-      let effects: TSevenWondersEffect[] = [];
-
-      player.builtCards.forEach((card) => {
-        effects = [...effects, ...card.effects];
-      });
-
-      player.builtWondersIndexes.forEach((wonderIndex) => {
-        const citySide = this.getPlayerCitySide(player);
-
-        effects = [...effects, ...citySide.wonders[wonderIndex].effects];
-      });
+    this.players.forEach((player) => {
+      const effects = getAllPlayerEffects(player);
 
       // effect points
       effects.forEach((effect) => {
-        const gain = this.calculateEffectGain(effect, playerIndex);
+        const gain = this.calculateEffectGain(effect, player);
 
         player.points += gain?.points ?? 0;
       });
 
       // war points
-      [...player.victoryTokens, ...player.defeatTokens].forEach((points) => {
+      [...player.victoryPoints, ...player.defeatPoints].forEach((points) => {
         player.points += points;
       });
 
@@ -203,14 +212,18 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     });
   }
 
-  getNeighborIndex(playerIndex: number, neighborDirection: ESevenWondersNeighbor): number {
-    return neighborDirection === ESevenWondersNeighbor.LEFT
-      ? (playerIndex - 1 + this.players.length) % this.players.length
-      : (playerIndex + 1) % this.players.length;
+  getAgeNeighborSide(): ESevenWondersNeighborSide {
+    return this.age % 2
+      ? ESevenWondersNeighborSide.LEFT
+      : ESevenWondersNeighborSide.RIGHT;
+  }
+
+  getNeighbor(player: ISevenWondersPlayer, neighborSide: ESevenWondersNeighborSide): ISevenWondersPlayer {
+    return getNeighbor(this.players, player, neighborSide);
   }
 
   getDirectionsPlayers(
-    playerIndex: number,
+    player: ISevenWondersPlayer,
     directions: ESevenWondersPlayerDirection[],
   ): ISevenWondersPlayer[] {
     if (directions.includes(ESevenWondersPlayerDirection.ALL)) {
@@ -218,28 +231,32 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     }
 
     return directions.reduce<ISevenWondersPlayer[]>((players, direction) => {
-      let addedPlayerIndex = -1;
+      let addedPlayer: ISevenWondersPlayer | undefined;
 
       if (direction === ESevenWondersPlayerDirection.SELF) {
-        addedPlayerIndex = playerIndex;
+        addedPlayer = player;
       } else if (direction === ESevenWondersPlayerDirection.LEFT) {
-        addedPlayerIndex = this.getNeighborIndex(playerIndex, ESevenWondersNeighbor.LEFT);
+        addedPlayer = this.getNeighbor(player, ESevenWondersNeighborSide.LEFT);
       } else if (direction === ESevenWondersPlayerDirection.RIGHT) {
-        addedPlayerIndex = this.getNeighborIndex(playerIndex, ESevenWondersNeighbor.RIGHT);
+        addedPlayer = this.getNeighbor(player, ESevenWondersNeighborSide.RIGHT);
       }
 
-      return addedPlayerIndex > -1
-        ? [...players, this.players[addedPlayerIndex]]
+      return addedPlayer
+        ? [...players, addedPlayer]
         : players;
     }, []);
   }
 
-  getPlayerCitySide(player: ISevenWondersPlayer): ISevenWondersCitySide {
-    return allCities[player.city].sides[player.citySide];
-  }
-
   getPlayerTypeCards(player: ISevenWondersPlayer, cardType: ESevenWondersCardType): ISevenWondersCard[] {
     return player.builtCards.filter((card) => card.type === cardType);
+  }
+
+  getPlayerShieldsCount(player: ISevenWondersPlayer): number {
+    return getAllPlayerEffects(player)
+      .filter(isShieldsEffect)
+      .reduce((shieldsCount, effect) => {
+        return shieldsCount + effect.count;
+      }, 0);
   }
 
   mergeGains(target: ISevenWondersGain, source: ISevenWondersGain, coefficient: number): void {
@@ -252,7 +269,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     }
   }
 
-  calculateEffectGain(effect: TSevenWondersEffect, playerIndex: number): ISevenWondersGain | null {
+  calculateEffectGain(effect: TSevenWondersEffect, player: ISevenWondersPlayer): ISevenWondersGain | null {
     switch (effect.type) {
       case ISevenWondersEffect.GAIN: {
         return effect.gain;
@@ -261,7 +278,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       case ISevenWondersEffect.CARDS_TYPE: {
         const gain: ISevenWondersGain = {};
 
-        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
+        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
           effect.sources.forEach((source) => {
             const cardTypeCardCounts = source.cardTypes.map((cardType) => {
               return this.getPlayerTypeCards(player, cardType).length;
@@ -278,8 +295,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       case ISevenWondersEffect.WONDER_LEVELS: {
         const gain: ISevenWondersGain = {};
 
-        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.builtWondersIndexes.length);
+        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
+          this.mergeGains(gain, effect.gain, player.buildStages.length);
         });
 
         return gain;
@@ -288,8 +305,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       case ISevenWondersEffect.WINS: {
         const gain: ISevenWondersGain = {};
 
-        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.victoryTokens.length);
+        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
+          this.mergeGains(gain, effect.gain, player.victoryPoints.length);
         });
 
         return gain;
@@ -298,8 +315,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       case ISevenWondersEffect.LOSSES: {
         const gain: ISevenWondersGain = {};
 
-        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.defeatTokens.length);
+        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
+          this.mergeGains(gain, effect.gain, player.defeatPoints.length);
         });
 
         return gain;
@@ -340,19 +357,40 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   onBuildCard({ socket, data }: IGameEvent<ISevenWondersBuildCardEvent>): void {
-    const player = this.players.find((player) => player.login === socket.user?.login);
+    const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
       return;
     }
 
-    const { card: builtCard } = data;
+    const { card, action, payments } = data;
 
-    player.builtCards.push(builtCard);
-    player.hand = player.hand.filter((card) =>  card.id !== builtCard.id);
-    player.madeBaseActionWithCard = true;
+    if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
+      player.builtCards.push(card);
+    } else if (action.type === ESevenWondersCardActionType.BUILD_WONDER_STAGE) {
+      player.buildStages.push({
+        index: action.stageIndex,
+        card,
+      });
+    } else if (action.type === ESevenWondersCardActionType.DISCARD) {
+      player.coins += 3;
 
-    if (this.players.every((p) => p.madeBaseActionWithCard || p.isBot)) {
+      this.discard.push(card);
+    }
+
+    player.hand = player.hand.filter(({ id }) => id !== card.id);
+    player.chosenMainAction = action;
+
+    (
+      Object.entries(payments) as [ESevenWondersNeighborSide, number][]
+    ).forEach(([neighborSide, payment]) => {
+      const neighbor = this.getNeighbor(player, neighborSide);
+
+      neighbor.coins += payment;
+      player.coins -= payment;
+    });
+
+    if (this.players.every((p) => p.chosenMainAction || p.isBot)) {
       this.endTurn();
     }
   }

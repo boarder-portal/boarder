@@ -7,7 +7,9 @@ import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
 import { EGame } from 'common/types/game';
 import {
+  ESevenWondersCardActionType,
   ESevenWondersGameEvent,
+  ESevenWondersNeighborSide,
   ISevenWondersBuildCardEvent,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
@@ -94,6 +96,13 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const handleBuildCard = useCallback((card: ISevenWondersCard) => {
     const data: ISevenWondersBuildCardEvent = {
       card,
+      action: {
+        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+      },
+      payments: {
+        [ESevenWondersNeighborSide.LEFT]: 0,
+        [ESevenWondersNeighborSide.RIGHT]: 0,
+      },
     };
 
     io.emit(ESevenWondersGameEvent.BUILD_CARD, data);

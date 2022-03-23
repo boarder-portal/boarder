@@ -1,6 +1,6 @@
 import { ESevenWonderCardId, ESevenWondersCardType, ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersEffect } from 'common/types/sevenWonders/effects';
-import { ESevenWondersNeighbor, ESevenWondersResource, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
+import { ESevenWondersNeighborSide, ESevenWondersResource, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
 
 const CARDS_BY_AGE: ISevenWondersCard[][] = [
   [{
@@ -255,7 +255,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighbor.RIGHT],
+      neighbors: [ESevenWondersNeighborSide.RIGHT],
       price: 1,
       resource: ESevenWondersCardType.RAW_MATERIAL,
     }],
@@ -265,7 +265,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighbor.LEFT],
+      neighbors: [ESevenWondersNeighborSide.LEFT],
       price: 1,
       resource: ESevenWondersCardType.RAW_MATERIAL,
     }],
@@ -275,7 +275,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighbor.LEFT, ESevenWondersNeighbor.RIGHT],
+      neighbors: [ESevenWondersNeighborSide.LEFT, ESevenWondersNeighborSide.RIGHT],
       price: 1,
       resource: ESevenWondersCardType.MANUFACTURED_GOODS,
     }],
