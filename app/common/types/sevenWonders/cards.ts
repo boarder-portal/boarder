@@ -22,7 +22,7 @@ export enum ESevenWonderCardId {
 
   // civilian
   // age 1
-  PAWN_SHOP = 'PAWN_SHOP',
+  PAWNSHOP = 'PAWNSHOP',
   BATHS = 'BATHS',
   ALTAR = 'ALTAR',
   THEATER = 'THEATER',

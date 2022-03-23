@@ -46,8 +46,11 @@ const Root = styled(Box)`
 
   .SevenWondersGame {
     &__otherPlayers {
-      display: grid;
-      grid-column-gap: 20px;
+      display: flex;
+    }
+
+    &__otherPlayerWonder {
+      flex: 1 0 400px;
     }
 
     &__mainBoard {
@@ -102,14 +105,15 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
 
   return (
     <Root className={b()} flex column>
-      <div
+      <Box
         className={b('otherPlayers')}
-        style={{ gridTemplateColumns: `repeat(${otherPlayers.length}, 1fr)` }}
+        flex
+        between={20}
       >
         {otherPlayers.map((otherPlayer) => (
-          <Wonder key={otherPlayer.login} player={otherPlayer} />
+          <Wonder key={otherPlayer.login} className={b('otherPlayerWonder')} player={otherPlayer} />
         ))}
-      </div>
+      </Box>
 
       <Box className={b('mainBoard')} flex alignItems="center" column between={20}>
         <Wonder className={b('mainWonder')} player={player} />

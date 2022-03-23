@@ -77,7 +77,7 @@ const Card: React.FC<ICardProps> = (props) => {
   return (
     <Root className={b({ built: isBuilt ? 'yes' : 'no' }).mix(className)} style={style} width={width} isBuilt={isBuilt}>
       <div className={b('zoomWrapper')}>
-        <img className={b('img')} src={`/sevenWonders/cards/${card.id}.png`} />
+        <img className={b('img')} src={`/sevenWonders/cards/${card.id}.jpg`} />
 
         {!isBuilt && (
           <Box className={b('options')} flex column between={20} alignItems="center">

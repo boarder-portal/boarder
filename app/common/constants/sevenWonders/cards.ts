@@ -191,7 +191,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   // civilian
 
   {
-    id: ESevenWonderCardId.PAWN_SHOP,
+    id: ESevenWonderCardId.PAWNSHOP,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
       type: ISevenWondersEffect.GAIN,
