@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
@@ -43,21 +43,32 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const purchaseVariants = useMemo(() => getCardPurchaseVariants(card, resourcePools), [card, resourcePools]);
 
+  const handleBuild = useCallback(() => {
+    onBuild(card);
+    close();
+  }, [card, close, onBuild]);
+
   const purchaseModalContent = useMemo(() => {
+    if (!card.price?.resources) {
+      return (
+        <div onClick={handleBuild}>Построить бесплатно</div>
+      );
+    }
+
     if (!purchaseVariants.length) {
       return (
-        <div onClick={() => onBuild(card)}>Построить бесплатно</div>
+        <div>Нельзя построить</div>
       );
     }
 
     return purchaseVariants.map((purchaseVariant, index) => (
       <Box key={index} flex between={8}>
         {purchaseVariant.map((ownResource, index) => (
-          <div key={index} onClick={() => onBuild(card)}>{`${ownResource.type} ${ownResource.owner.login}`}</div>
+          <div key={index} onClick={handleBuild}>{`${ownResource.type} ${ownResource.owner.login}`}</div>
         ))}
       </Box>
     ));
-  }, [card, onBuild, purchaseVariants]);
+  }, [card, handleBuild, purchaseVariants]);
 
   return (
     <Root className={b()}>

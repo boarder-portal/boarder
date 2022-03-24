@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
-  ESevenWondersGameEvent,
+  ESevenWondersCardActionType,
+  ESevenWondersGameEvent, ESevenWondersNeighborSide,
   ISevenWondersBuildCardEvent,
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
@@ -46,6 +47,13 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const handleBuildCard = useCallback((card: ISevenWondersCard) => {
     const data: ISevenWondersBuildCardEvent = {
       card,
+      action: {
+        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+      },
+      payments: {
+        [ESevenWondersNeighborSide.LEFT]: 0,
+        [ESevenWondersNeighborSide.RIGHT]: 0,
+      },
     };
 
     io.emit(ESevenWondersGameEvent.BUILD_CARD, data);
