@@ -93,6 +93,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     });
 
+    this.players = shuffle(this.players);
+
     this.players.forEach((player, playerIndex) => {
       player.city = shuffledCities[playerIndex];
 

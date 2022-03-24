@@ -1,14 +1,12 @@
-import React, { useMemo } from 'react';
+import React  from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
-import { groupBy } from 'lodash';
-import sortBy from 'lodash/sortBy';
 
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
-import { ESevenWondersCardType, ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
+import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
 
 interface IWonderProps {
   className?: string;
@@ -43,24 +41,7 @@ const Root = styled(Box)`
 const Wonder: React.FC<IWonderProps> = (props) => {
   const { className, player } = props;
 
-  const cardGroups = useMemo(() => {
-    const groupedCards = Object.entries(groupBy(
-      player.builtCards,
-      ({ type }) =>
-        type === ESevenWondersCardType.RAW_MATERIAL ||
-        type === ESevenWondersCardType.MANUFACTURED_GOODS ? 'resources' : type,
-    )) as [ESevenWondersCardType | 'resources', ISevenWondersCard[]][];
-
-    const sortedGroups = sortBy(groupedCards, ([type, group]) => {
-      if (type === 'resources') {
-        return -Infinity;
-      }
-
-      return -group.length;
-    });
-
-    return sortedGroups.map(([, group]) => group);
-  }, [player.builtCards]);
+  const cardGroups = useCardGroups(player);
 
   return (
     <Root className={b.mix(className)}>

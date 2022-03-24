@@ -1,24 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
-
-import { EGame } from 'common/types/game';
 import {
-  ESevenWondersCardActionType,
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
-  ISevenWondersBuildCardEvent,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+
+import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
 import Box from 'client/components/common/Box/Box';
-import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
+import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -26,14 +22,6 @@ interface ISevenWondersGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
-
-const {
-  games: {
-    [EGame.SEVEN_WONDERS]: {
-
-    },
-  },
-} = GAMES_CONFIG;
 
 const b = block('SevenWondersGame');
 
@@ -58,22 +46,33 @@ const Root = styled(Box)`
     &__mainBoard {
       margin-top: auto;
     }
-
-    &__mainWonder {
-      max-width: 500px;
-    }
   }
 `;
 
 const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
-  const { io, isGameEnd } = props;
+  const { io } = props;
 
   const [players, setPlayers] = useState<ISevenWondersPlayer[]>([]);
 
   const user = useRecoilValue(userAtom);
 
   const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
-  const otherPlayers = useMemo(() => players.filter((p) => p !== player), [player, players]);
+
+  const otherPlayers = useMemo(() => {
+    if (!player) {
+      return null;
+    }
+
+    const playerIndex = players.findIndex(({ login }) => login === player.login);
+
+    return [
+      ...players.slice(playerIndex + 1),
+      ...players.slice(0, playerIndex),
+    ].reverse();
+  }, [player, players]);
+
+  const leftNeighbor = useMemo(() => player ? getNeighbor(players, player, ESevenWondersNeighborSide.LEFT) : null, [player, players]);
+  const rightNeighbor = useMemo(() => player ? getNeighbor(players, player, ESevenWondersNeighborSide.RIGHT) : null, [player, players]);
 
   useEffect(() => {
     io.emit(ESevenWondersGameEvent.GET_GAME_INFO);
@@ -93,22 +92,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
     };
   }, [io, user]);
 
-  const handleBuildCard = useCallback((card: ISevenWondersCard) => {
-    const data: ISevenWondersBuildCardEvent = {
-      card,
-      action: {
-        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
-      },
-      payments: {
-        [ESevenWondersNeighborSide.LEFT]: 0,
-        [ESevenWondersNeighborSide.RIGHT]: 0,
-      },
-    };
-
-    io.emit(ESevenWondersGameEvent.BUILD_CARD, data);
-  }, [io]);
-
-  if (!player) {
+  if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {
     return null;
   }
 
@@ -124,15 +108,13 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         ))}
       </Box>
 
-      <Box className={b('mainBoard')} flex alignItems="center" column between={20}>
-        <Wonder className={b('mainWonder')} player={player} />
-
-        <Box flex between={-35}>
-          {player.hand.map((card, index) => (
-            <Card key={index} card={card} isBuilt={false} onBuild={handleBuildCard} />
-          ))}
-        </Box>
-      </Box>
+      <MainBoard
+        className={b('mainBoard')}
+        io={io}
+        player={player}
+        leftNeighbor={leftNeighbor}
+        rightNeighbor={rightNeighbor}
+      />
     </Root>
   );
 };

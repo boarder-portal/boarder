@@ -6,6 +6,7 @@ import block from 'bem-cn';
 
 interface IModalProps {
   children: React.ReactNode;
+  open: boolean;
   onClose(): void;
 }
 
@@ -33,6 +34,7 @@ const Root = styled(MuiModal)`
 const Modal: React.FC<IModalProps> = (props) => {
   const {
     children,
+    open,
     onClose,
   } = props;
 
@@ -61,7 +63,7 @@ const Modal: React.FC<IModalProps> = (props) => {
   return (
     <Root
       className={b.toString()}
-      open
+      open={open}
       onClose={onClose}
     >
       <div className={b('container')}>
