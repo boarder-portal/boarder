@@ -11,7 +11,7 @@ export function isResourceEffect(effect: TSevenWondersEffect): effect is ISevenW
 }
 
 export function isShieldsEffect(effect: TSevenWondersEffect): effect is ISevenWondersShieldsEffect {
-  return effect.type === ISevenWondersEffect.SCIENTIFIC_SYMBOLS;
+  return effect.type === ISevenWondersEffect.SHIELDS;
 }
 
 export function isScientificSymbolsEffect(effect: TSevenWondersEffect): effect is ISevenWondersScientificSymbolsEffect {
