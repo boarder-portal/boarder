@@ -26,10 +26,10 @@ export default function useWonderLevelBuildInfo(
   return useMemo(() => {
     const city = getCity(player.city, player.citySide);
 
-    if (player.buildStages.length === city.wonders.length) {
+    if (player.builtStages.length === city.wonders.length) {
       wonderLevelBuildInfo.type = EBuildType.ALREADY_BUILT;
     }
 
     return wonderLevelBuildInfo;
-  }, [player.buildStages.length, player.city, player.citySide, wonderLevelBuildInfo]);
+  }, [player.builtStages.length, player.city, player.citySide, wonderLevelBuildInfo]);
 }

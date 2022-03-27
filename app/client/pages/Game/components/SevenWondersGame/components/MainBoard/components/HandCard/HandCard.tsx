@@ -105,9 +105,10 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const cardBuildInfo = useBuildInfo(cardPrice, resourcePools, resourceTradePrices, player);
 
-  const buildCard = useCallback((payments?: TSevenWondersPayments) => {
+  const buildCard = useCallback((payments: TSevenWondersPayments | undefined, isFree: boolean) => {
     onCardAction(card, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+      isFree,
     }, payments);
     close();
   }, [card, close, onCardAction]);
@@ -115,10 +116,10 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   const buildWonderLevel = useCallback((payments?: TSevenWondersPayments) => {
     onCardAction(card, {
       type: ESevenWondersCardActionType.BUILD_WONDER_STAGE,
-      stageIndex: player.buildStages.length,
+      stageIndex: player.builtStages.length,
     }, payments);
     close();
-  }, [card, close, onCardAction, player.buildStages.length]);
+  }, [card, close, onCardAction, player.builtStages.length]);
 
   const discardCard = useCallback(() => {
     onCardAction(card, {
@@ -132,7 +133,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
       cardBuildInfo.type === EBuildType.FOR_BUILDING ||
       cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
     ) {
-      buildCard();
+      buildCard(undefined, cardBuildInfo.type === EBuildType.FREE || cardBuildInfo.type === EBuildType.FOR_BUILDING);
     } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
       setTradeModalType('card');
       open();

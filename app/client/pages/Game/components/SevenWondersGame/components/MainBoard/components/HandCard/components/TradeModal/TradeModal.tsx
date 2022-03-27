@@ -16,7 +16,7 @@ import ResourcesAndPrice
 interface ITradeModalProps {
   isVisible: boolean;
   tradeVariants: ITradeVariant[];
-  onBuild(payments: TSevenWondersPayments): void;
+  onBuild(payments: TSevenWondersPayments, isFree: false): void;
   onClose(): void;
 }
 
@@ -59,7 +59,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
       <Box flex column between={8} mt={8}>
         {tradeVariants.map((tradeVariant, index) => (
-          <Box className={b('tradeVariant')} key={index} flex justifyContent="space-between" onClick={() => onBuild(tradeVariant.payments)}>
+          <Box className={b('tradeVariant')} key={index} flex justifyContent="space-between" onClick={() => onBuild(tradeVariant.payments, false)}>
             <ResourcesAndPrice
               price={tradeVariant.payments.LEFT}
               resources={tradeVariant.resources.filter((resource) => resource.owner === ESevenWondersNeighborSide.LEFT)}

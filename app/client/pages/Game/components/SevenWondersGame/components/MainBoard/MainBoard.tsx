@@ -78,7 +78,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
   const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
 
-  const wonderLevelPrice = useMemo(() => city.wonders[player.buildStages.length]?.price || null, [city.wonders, player.buildStages.length]);
+  const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
 
   const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, resourcePools, resourceTradePrices, player);
 
