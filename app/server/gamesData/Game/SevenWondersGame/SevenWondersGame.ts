@@ -182,7 +182,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     });
 
-    if (this.age === 0) {
+    if (this.age === 1) {
       this.endGame();
     } else {
       this.startAge();
