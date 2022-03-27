@@ -3,11 +3,10 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
-  ESevenWondersCardActionType,
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
   ISevenWondersBuildCardEvent,
-  ISevenWondersPlayer, TSevenWondersPayments,
+  ISevenWondersPlayer, TSevenWondersAction, TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
@@ -22,10 +21,13 @@ import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffec
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 import getResourceTradePrices
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getCity from 'common/utilities/sevenWonders/getCity';
 
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+import useWonderLevelBuildInfo
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/hooks/useWonderLevelBuildInfo';
 
 interface IMainBoardProps {
   className?: string;
@@ -49,14 +51,12 @@ const Root = styled(Box)`
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const { className, io, player, leftNeighbor, rightNeighbor } = props;
 
-  const handleBuildCard = useCallback((card: ISevenWondersCard, payments?: TSevenWondersPayments) => {
+  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
+
+  const handleCardAction = useCallback((card: ISevenWondersCard, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     const data: ISevenWondersBuildCardEvent = {
       card,
-      action: {
-        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
-        // TODO: add support for free building (buildings / free build effects)
-        isFree: false,
-      },
+      action,
       payments,
     };
 
@@ -76,8 +76,11 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [leftNeighbor, player, rightNeighbor]);
 
   const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
-
   const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
+
+  const wonderLevelPrice = useMemo(() => city.wonders[player.buildStages.length]?.price || null, [city.wonders, player.buildStages.length]);
+
+  const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, resourcePools, resourceTradePrices, player);
 
   return (
     <Root className={b.mix(className)} flex alignItems="center" column between={12}>
@@ -91,9 +94,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
             player={player}
             resourcePools={resourcePools}
             resourceTradePrices={resourceTradePrices}
-            leftNeighbor={leftNeighbor}
-            rightNeighbor={rightNeighbor}
-            onBuild={handleBuildCard}
+            wonderLevelBuildInfo={wonderLevelBuildInfo}
+            onCardAction={handleCardAction}
           />
         ))}
       </Box>

@@ -14,7 +14,7 @@ export interface ITradeVariant {
   payments: TSevenWondersPayments;
 }
 
-export default function getTradeVariants(purchaseVariants: IOwnerResource[][], resourceTradePrices: TResourceTradePrices): ITradeVariant[] {
+export default function getTradeVariantsByPurchaseVariants(purchaseVariants: IOwnerResource[][], resourceTradePrices: TResourceTradePrices): ITradeVariant[] {
   const tradeVariants = purchaseVariants.map((purchaseVariant) => {
     const payments: TSevenWondersPayments = {
       [ESevenWondersNeighborSide.LEFT]: 0,

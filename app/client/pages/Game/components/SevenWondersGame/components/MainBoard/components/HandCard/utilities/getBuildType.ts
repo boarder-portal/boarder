@@ -1,40 +1,27 @@
 import { first } from 'lodash';
 
-import { ISevenWondersCardPrice } from 'common/types/sevenWonders/cards';
-import { ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ISevenWondersPlayer, ISevenWondersPrice } from 'common/types/sevenWonders';
 
 import {
   ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariants';
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 export default function getBuildType(
-  cardPrice: ISevenWondersCardPrice | undefined,
+  price: ISevenWondersPrice,
   player: ISevenWondersPlayer,
   tradeVariants: ITradeVariant[],
 ): EBuildType {
-  if (!cardPrice) {
-    return EBuildType.FREE;
-  }
-
-  if (cardPrice.buildings &&
-    player.builtCards
-      .some((builtCard) =>
-        cardPrice.buildings?.some((id) => id === builtCard.id))
-  ) {
-    return EBuildType.FOR_BUILDING;
-  }
-
-  const enoughCoins = !cardPrice.coins || player.coins >= cardPrice.coins;
+  const enoughCoins = !price.coins || player.coins >= price.coins;
 
   if (!enoughCoins) {
     return EBuildType.NOT_AVAILABLE;
   }
 
-  if (!cardPrice.resources) {
+  if (!price.resources) {
     return EBuildType.OWN_RESOURCES_AND_COINS;
   }
 

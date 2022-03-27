@@ -6,7 +6,7 @@ import { ESevenWondersNeighborSide, TSevenWondersPayments } from 'common/types/s
 
 import {
   ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariants';
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import Box from 'client/components/common/Box/Box';
 import Modal from 'client/components/common/Modal/Modal';

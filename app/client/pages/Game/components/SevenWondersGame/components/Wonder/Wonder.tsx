@@ -54,7 +54,6 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                 className={b('card')}
                 style={{ top: `${(125 - 33 * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
                 card={card}
-                isBuilt
                 width={100}
               />
             ))}

@@ -2,7 +2,7 @@ import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
-export default function getBuildTitle(buildType: EBuildType): string {
+export default function getCardBuildTitle(buildType: EBuildType): string {
   switch (buildType) {
     case EBuildType.FREE:
     case EBuildType.FOR_BUILDING:
@@ -14,7 +14,7 @@ export default function getBuildTitle(buildType: EBuildType): string {
       return 'Построить c торговлей';
     }
 
-    case EBuildType.NOT_AVAILABLE: {
+    default: {
       return 'Нельзя построить';
     }
   }

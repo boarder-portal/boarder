@@ -1,28 +1,32 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
-import { first } from 'lodash';
 
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ISevenWondersPlayer, TSevenWondersPayments } from 'common/types/sevenWonders';
+import {
+  ESevenWondersCardActionType,
+  ISevenWondersPlayer,
+  TSevenWondersAction,
+  TSevenWondersPayments,
+} from 'common/types/sevenWonders';
 
-import getCardPurchaseVariants
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getCardPurchaseVariants';
 import {
   TResourceTradePrices,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getTradeVariants
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariants';
-import getBuildType
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
-import getBuildTitle
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildTitle';
+import getCardBuildTitle
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildTitle';
+import getWonderLevelBuildTitle
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getWonderLevelBuildTitle';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import TradeModal
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
+import useBuildInfo
+, {
+  IBuildInfo,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useBuildInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -31,9 +35,8 @@ interface IHandCardProps {
   player: ISevenWondersPlayer;
   resourcePools: IOwnerResource[][];
   resourceTradePrices: TResourceTradePrices;
-  leftNeighbor: ISevenWondersPlayer;
-  rightNeighbor: ISevenWondersPlayer;
-  onBuild(card: ISevenWondersCard, payments?: TSevenWondersPayments): void;
+  wonderLevelBuildInfo: IBuildInfo;
+  onCardAction(card: ISevenWondersCard, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
 }
 
 export enum EBuildType {
@@ -42,6 +45,7 @@ export enum EBuildType {
   OWN_RESOURCES_AND_COINS = 'OWN_RESOURCES_AND_COINS',
   WITH_TRADE = 'WITH_TRADE',
   NOT_AVAILABLE = 'NOT_AVAILABLE',
+  ALREADY_BUILT = 'ALREADY_BUILT',
 }
 
 const b = block('HandCard');
@@ -49,7 +53,32 @@ const b = block('HandCard');
 const Root = styled(Box)`
 
   .HandCard {
+    &__cardWrapper {
+      position: relative;
 
+      &:hover {
+        z-index: 21;
+
+        .HandCard__actions {
+          opacity: 1;
+          z-index: 22;
+        }
+      }
+    }
+
+    &__actions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 20px;
+      opacity: 0;
+      transition: 200ms;
+
+      & > div {
+        color: white;
+        cursor: pointer;
+      }
+    }
   }
 `;
 
@@ -62,7 +91,8 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     player,
     resourcePools,
     resourceTradePrices,
-    onBuild,
+    wonderLevelBuildInfo,
+    onCardAction,
   } = props;
 
   const {
@@ -71,39 +101,72 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     setFalse: close,
   } = useBoolean(false);
 
-  const purchaseVariants = useMemo(() => getCardPurchaseVariants(card, resourcePools), [card, resourcePools]);
+  const [tradeModalType, setTradeModalType] = useState<'card' | 'wonderLevel'>('card');
 
-  const tradeVariants = useMemo(() => getTradeVariants(purchaseVariants, resourceTradePrices), [purchaseVariants, resourceTradePrices]);
+  const cardBuildInfo = useBuildInfo(cardPrice, resourcePools, resourceTradePrices, player);
 
   const buildCard = useCallback((payments?: TSevenWondersPayments) => {
-    onBuild(card, payments);
+    onCardAction(card, {
+      type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+    }, payments);
     close();
-  }, [card, close, onBuild]);
+  }, [card, close, onCardAction]);
 
-  const buildType = useMemo((): EBuildType => getBuildType(cardPrice, player, tradeVariants), [cardPrice, player, tradeVariants]);
+  const buildWonderLevel = useCallback((payments?: TSevenWondersPayments) => {
+    onCardAction(card, {
+      type: ESevenWondersCardActionType.BUILD_WONDER_STAGE,
+      stageIndex: player.buildStages.length,
+    }, payments);
+    close();
+  }, [card, close, onCardAction, player.buildStages.length]);
 
-  const buildTitle = useMemo(() => getBuildTitle(buildType), [buildType]);
+  const discardCard = useCallback(() => {
+    onCardAction(card, {
+      type: ESevenWondersCardActionType.DISCARD,
+    });
+  }, [card, onCardAction]);
 
   const handleCardBuild = useCallback(() => {
     if (
-      buildType === EBuildType.FREE ||
-      buildType === EBuildType.FOR_BUILDING ||
-      buildType === EBuildType.OWN_RESOURCES_AND_COINS
+      cardBuildInfo.type === EBuildType.FREE ||
+      cardBuildInfo.type === EBuildType.FOR_BUILDING ||
+      cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
     ) {
       buildCard();
-    } else if (buildType === EBuildType.WITH_TRADE) {
+    } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
+      setTradeModalType('card');
       open();
     }
-  }, [buildType, buildCard, open]);
+  }, [buildCard, cardBuildInfo.type, open]);
+
+  const handleBuildWonderLevel = useCallback(() => {
+    if (
+      cardBuildInfo.type === EBuildType.FREE ||
+      cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
+    ) {
+      buildWonderLevel();
+    } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
+      setTradeModalType('wonderLevel');
+      open();
+    }
+  }, [buildWonderLevel, cardBuildInfo.type, open]);
 
   return (
     <Root className={b()}>
-      <Card card={card} isBuilt={false} buildTitle={buildTitle} onBuild={handleCardBuild} />
+      <div className={b('cardWrapper')}>
+        <Card card={card} />
+
+        <Box className={b('actions')} flex column between={20} alignItems="center">
+          <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type)}</Box>
+          <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>
+          <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
+        </Box>
+      </div>
 
       <TradeModal
         isVisible={isVisible}
-        tradeVariants={tradeVariants}
-        onBuild={buildCard}
+        tradeVariants={tradeModalType === 'card' ? cardBuildInfo.tradeVariants : wonderLevelBuildInfo.tradeVariants}
+        onBuild={tradeModalType === 'card' ? buildCard : buildWonderLevel}
         onClose={close}
       />
     </Root>
