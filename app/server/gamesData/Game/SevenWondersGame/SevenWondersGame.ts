@@ -42,7 +42,6 @@ const {
   games: {
     [EGame.SEVEN_WONDERS]: {
       cardsByAge,
-      allCities,
     },
   },
 } = GAMES_CONFIG;
@@ -73,7 +72,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       builtCards: [],
       city: ESevenWondersCity.RHODOS,
       citySide: Number(Math.random() > 0.5),
-      buildStages: [],
+      builtStages: [],
       coins: 3,
       victoryPoints: [],
       defeatPoints: [],
@@ -300,7 +299,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.buildStages.length);
+          this.mergeGains(gain, effect.gain, player.builtStages.length);
         });
 
         return gain;
@@ -373,18 +372,21 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
       player.builtCards.push(card);
-      player.coins -= card.price?.coins || 0;
+
+      if (!action.isFree) {
+        player.coins -= card.price?.coins ?? 0;
+      }
 
       newEffects.push(...card.effects);
     } else if (action.type === ESevenWondersCardActionType.BUILD_WONDER_STAGE) {
       const city = getCity(player.city, player.citySide);
-      const wonderLevel = city.wonders[player.buildStages.length];
+      const wonderLevel = city.wonders[action.stageIndex];
 
-      player.buildStages.push({
+      player.builtStages.push({
         index: action.stageIndex,
         card,
       });
-      player.coins -= wonderLevel.price.coins || 0;
+      player.coins -= wonderLevel.price.coins ?? 0;
 
       newEffects.push(...wonderLevel.effects);
     } else if (action.type === ESevenWondersCardActionType.DISCARD) {
@@ -398,14 +400,16 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     player.hand.splice(handCardIndex, 1);
     player.chosenMainAction = action;
 
-    (
-      Object.entries(payments || {}) as [ESevenWondersNeighborSide, number][]
-    ).forEach(([neighborSide, payment]) => {
-      const neighbor = this.getNeighbor(player, neighborSide);
+    if (payments) {
+      (
+        Object.entries(payments) as [ESevenWondersNeighborSide, number][]
+      ).forEach(([neighborSide, payment]) => {
+        const neighbor = this.getNeighbor(player, neighborSide);
 
-      neighbor.coins += payment;
-      player.coins -= payment;
-    });
+        neighbor.coins += payment;
+        player.coins -= payment;
+      });
+    }
 
     newEffects.forEach((effect) => {
       player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;

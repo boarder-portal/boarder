@@ -16,8 +16,8 @@ export default function getAllPlayerEffects(player: ISevenWondersPlayer): TSeven
   const citySide = allCities[player.city].sides[player.citySide];
 
   return [
-    ...player.builtCards.map(({ effects }) => effects).flat(),
-    ...player.buildStages.map(({ index }) => citySide.wonders[index].effects).flat(),
+    ...player.builtCards.map(({ effects }) => effects),
+    ...player.builtStages.map(({ index }) => citySide.wonders[index].effects),
     citySide.effect,
-  ];
+  ].flat();
 }

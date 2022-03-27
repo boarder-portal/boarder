@@ -54,6 +54,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       card,
       action: {
         type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+        // TODO: add support for free building (buildings / free build effects)
+        isFree: false,
       },
       payments,
     };

@@ -53,7 +53,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   hand: ISevenWondersCard[];
   city: ESevenWondersCity;
   citySide: number;
-  buildStages: ISevenWondersBuiltStage[];
+  builtStages: ISevenWondersBuiltStage[];
   coins: number;
   victoryPoints: number[];
   defeatPoints: number[];
@@ -74,6 +74,7 @@ export enum ESevenWondersCardActionType {
 
 export interface ISevenWondersBuildStructureAction {
   type: ESevenWondersCardActionType.BUILD_STRUCTURE;
+  isFree: boolean;
 }
 
 export interface ISevenWondersBuildWonderStageAction {
