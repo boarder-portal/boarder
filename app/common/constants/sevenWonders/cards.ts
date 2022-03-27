@@ -3,6 +3,7 @@ import { ISevenWondersEffect } from 'common/types/sevenWonders/effects';
 import { ESevenWondersNeighborSide, ESevenWondersResource, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
 
 const CARDS_BY_AGE: ISevenWondersCard[][] = [
+  // age 1
   [{
     // manufactured goods
     id: ESevenWonderCardId.LOOM,
@@ -372,9 +373,9 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
       }],
     },
     minPlayersCounts: [3, 4],
-  },
+  }],
 
-  ],
+  // age 2
 ];
 
 export default CARDS_BY_AGE;

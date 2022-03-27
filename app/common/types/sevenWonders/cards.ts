@@ -3,6 +3,7 @@ import { ISevenWondersPrice } from 'common/types/sevenWonders/index';
 
 export enum ESevenWonderCardId {
   // manufactured goods
+  // age 1 & 2
   LOOM = 'LOOM',
   GLASSWORKS = 'GLASSWORKS',
   PRESS = 'PRESS',
@@ -19,6 +20,11 @@ export enum ESevenWonderCardId {
   TIMBER_YARD = 'TIMBER_YARD',
   FOREST_CAVE = 'FOREST_CAVE',
   MINE = 'MINE',
+  // age 2
+  SAWMILL = 'SAWMILL',
+  QUARRY = 'QUARRY',
+  BRICKYARD = 'BRICKYARD',
+  FOUNDRY = 'FOUNDRY',
 
   // civilian
   // age 1
@@ -26,6 +32,11 @@ export enum ESevenWonderCardId {
   BATHS = 'BATHS',
   ALTAR = 'ALTAR',
   THEATER = 'THEATER',
+  // age 2
+  AQUEDUCT = 'AQUEDUCT',
+  TEMPLE = 'TEMPLE',
+  STATUE = 'STATUE',
+  COURTHOUSE = 'COURTHOUSE',
 
   // commercial
   // age 1
@@ -33,18 +44,33 @@ export enum ESevenWonderCardId {
   EAST_TRADING_POST = 'EAST_TRADING_POST',
   WEST_TRADING_POST = 'WEST_TRADING_POST',
   MARKETPLACE = 'MARKETPLACE',
+  // age 2
+  FORUM = 'FORUM',
+  CARAVANSERY = 'CARAVANSERY',
+  VINEYARD = 'VINEYARD',
+  BAZAR = 'BAZAR',
 
   // military
   // age 1
   STOCKADE = 'STOCKADE',
   BARRACKS = 'BARRACKS',
   GUARD_TOWER = 'GUARD_TOWER',
+  // age 2
+  WALLS = 'WALLS',
+  TRAINING_GROUND = 'TRAINING_GROUND',
+  STABLES = 'STABLES',
+  ARCHERY_RANGE = 'ARCHERY_RANGE',
 
   // scientific
   // age 1
   APOTHECARY = 'APOTHECARY',
   WORKSHOP = 'WORKSHOP',
   SCRIPTORIUM = 'SCRIPTORIUM',
+  // age 2
+  DISPENSARY = 'DISPENSARY',
+  LABORATORY = 'LABORATORY',
+  LIBRARY = 'LIBRARY',
+  SCHOOL = 'SCHOOL',
 }
 
 export enum ESevenWondersPlayerDirection {
