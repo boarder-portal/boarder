@@ -63,6 +63,10 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       </Box>
 
       <img className={b('wonderCard')} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
+
+      <Box flex between={8}>
+        <div>{`Монет: ${player.coins}`}</div>
+      </Box>
     </Root>
   );
 };

@@ -1,8 +1,8 @@
 import { ISevenWondersPlayer, ISevenWondersResource } from 'common/types/sevenWonders';
 import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 
-import { isResourceEffect } from 'common/utilities/sevenWonders/isResourceEffect';
 import getCity from 'common/utilities/sevenWonders/getCity';
+import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 
 /**
  * Если есть карточка WOOD / STONE, CLAY * 2 и ресурс города - GLASS

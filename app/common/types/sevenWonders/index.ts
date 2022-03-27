@@ -91,10 +91,12 @@ export type TSevenWondersAction = (
   | ISevenWondersDiscardAction
 );
 
+export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
+
 export interface ISevenWondersBuildCardEvent {
   card: ISevenWondersCard;
   action: TSevenWondersAction;
-  payments: Record<ESevenWondersNeighborSide, number>;
+  payments?: TSevenWondersPayments;
 }
 
 export enum ESevenWondersResource {

@@ -11,6 +11,7 @@ interface ICardProps {
   style?: CSSProperties;
   card: ISevenWondersCard;
   isBuilt: boolean;
+  buildTitle?: string;
   width?: number;
   onBuild?(card: ISevenWondersCard): void;
 }
@@ -68,7 +69,7 @@ const Root = styled(Box)`
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
-  const { className, style, card, isBuilt, width, onBuild } = props;
+  const { className, style, card, isBuilt, buildTitle, width, onBuild } = props;
 
   const handleBuild = useCallback(() => {
     onBuild?.(card);
@@ -81,9 +82,9 @@ const Card: React.FC<ICardProps> = (props) => {
 
         {!isBuilt && (
           <Box className={b('options')} flex column between={20} alignItems="center">
-            <div onClick={handleBuild}>Построить</div>
-            <div>Заложить</div>
-            <div>Продать</div>
+            <Box size="s" textAlign="center" mt={40} onClick={handleBuild}>{buildTitle}</Box>
+            <Box size="s" textAlign="center">Заложить</Box>
+            <Box size="s" textAlign="center">Продать</Box>
           </Box>
         )}
       </div>

@@ -1,6 +1,7 @@
 import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
 import times from 'lodash/times';
+import { last } from 'lodash';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
@@ -33,6 +34,7 @@ import { getAllCombinations } from 'common/utilities/combinations';
 import { isShieldsEffect, isScientificSymbolsEffect } from 'common/utilities/sevenWonders/isEffect';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import getCity from 'common/utilities/sevenWonders/getCity';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -367,13 +369,24 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     const { card, action, payments } = data;
 
+    const newEffects: TSevenWondersEffect[] = [];
+
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
       player.builtCards.push(card);
+      player.coins -= card.price?.coins || 0;
+
+      newEffects.push(...card.effects);
     } else if (action.type === ESevenWondersCardActionType.BUILD_WONDER_STAGE) {
+      const city = getCity(player.city, player.citySide);
+      const wonderLevel = city.wonders[player.buildStages.length];
+
       player.buildStages.push({
         index: action.stageIndex,
         card,
       });
+      player.coins -= wonderLevel.price.coins || 0;
+
+      newEffects.push(...wonderLevel.effects);
     } else if (action.type === ESevenWondersCardActionType.DISCARD) {
       player.coins += 3;
 
@@ -384,12 +397,16 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     player.chosenMainAction = action;
 
     (
-      Object.entries(payments) as [ESevenWondersNeighborSide, number][]
+      Object.entries(payments || {}) as [ESevenWondersNeighborSide, number][]
     ).forEach(([neighborSide, payment]) => {
       const neighbor = this.getNeighbor(player, neighborSide);
 
       neighbor.coins += payment;
       player.coins -= payment;
+    });
+
+    newEffects.forEach((effect) => {
+      player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
     });
 
     if (this.players.every((p) => p.chosenMainAction || p.isBot)) {

@@ -5,6 +5,8 @@ import { useHistory } from 'react-router-dom';
 import block from 'bem-cn';
 
 interface IModalProps {
+  className?: string;
+  containerClassName?: string;
   children: React.ReactNode;
   open: boolean;
   onClose(): void;
@@ -33,40 +35,20 @@ const Root = styled(MuiModal)`
 
 const Modal: React.FC<IModalProps> = (props) => {
   const {
+    className,
+    containerClassName,
     children,
     open,
     onClose,
   } = props;
 
-  const history = useHistory();
-
-  useEffect(() => {
-    history.push(history.location);
-
-    let isBackButtonClicked = false;
-
-    const removeListener = history.listen(() => {
-      isBackButtonClicked = true;
-
-      onClose();
-    });
-
-    return () => {
-      removeListener();
-
-      if (!isBackButtonClicked) {
-        history.goBack();
-      }
-    };
-  }, [history, onClose]);
-
   return (
     <Root
-      className={b.toString()}
+      className={b.mix(className)}
       open={open}
       onClose={onClose}
     >
-      <div className={b('container')}>
+      <div className={b('container').mix(containerClassName)}>
         {children}
       </div>
     </Root>

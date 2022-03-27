@@ -15,8 +15,10 @@ export interface IBoxProps {
   between?: number;
   bold?: boolean;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
+  textAlign?: 'center'
   flex?: boolean;
   column?: boolean;
+  reverseDirection?: boolean;
   alignItems?: 'center' | 'flex-start' | 'flex-end';
   justifyContent?: 'center' | 'space-between';
   withWrap?: boolean;
@@ -34,11 +36,31 @@ const TEXT_SIZES_MAP = {
   xxl: 36,
 };
 
+function getBetweenMarginDirection(isFlex?: boolean, isColumn?: boolean, isReverse?: boolean): 'top' | 'bottom' | 'left' | 'right' {
+  if (!isFlex) {
+    return 'top';
+  }
+
+  if (isColumn) {
+    return isReverse ? 'bottom' : 'top';
+  }
+
+  return isReverse ? 'right' : 'left';
+}
+
 const Root = styled.div`
   ${({ width }: IBoxProps) => width ? `width: ${typeof width === 'number' ? `${width}px` : width};` : ''}
   ${({ height }: IBoxProps) => height ? `height: ${typeof height === 'number' ? `${height}px` : height};` : ''}
   ${({ flex }: IBoxProps) => flex ? 'display: flex;' : ''}
-  ${({ column }: IBoxProps) => column ? 'flex-direction: column;' : ''}
+  ${({ reverseDirection, column }: IBoxProps) => {
+    if (column) {
+      return `flex-direction: column${reverseDirection ? '-reverse' : ''};`;
+    }
+
+    if (reverseDirection) {
+      return 'flex-direction: row-reverse;';
+    }
+  }}
   ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}
   ${({ justifyContent }: IBoxProps) => justifyContent ? `justify-content: ${justifyContent};` : ''}
   ${({ withWrap }: IBoxProps) => withWrap ? 'flex-wrap: wrap;' : ''}
@@ -54,14 +76,15 @@ const Root = styled.div`
   ${({ mt }: IBoxProps) => mt ? `margin-top: ${mt}px;` : ''}
   ${({ mb }: IBoxProps) => mb ? `margin-bottom: ${mb}px;` : ''}
   ${({ ml }: IBoxProps) => ml ? `margin-left: ${ml === 'auto' ? 'auto' : `${ml}px`};` : ''}
-  ${({ between, flex, column }: IBoxProps) => between ?
-    `& > *:not(:first-child) { margin-${flex ? column ? 'top' : 'left' : 'top'}: ${between}px; }`
+  ${({ between, flex, column, reverseDirection }: IBoxProps) => between ?
+    `& > *:not(:first-child) { margin-${getBetweenMarginDirection(flex, column, reverseDirection)}: ${between}px; }`
     : ''}
   ${({ bold }: IBoxProps) => bold ? 'font-weight: bold;' : ''}
   ${({ size = 'm' }: IBoxProps) => size ? `
     font-size: ${TEXT_SIZES_MAP[size]}px;
     line-height: 1.2;
   ` : ''}
+  ${({ textAlign }: IBoxProps) => textAlign ? `text-align: ${textAlign};` : ''}
   ${({ background }: IBoxProps) => background ? `background-color: ${background};` : ''}
 `;
 
