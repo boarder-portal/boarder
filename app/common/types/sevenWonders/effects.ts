@@ -99,7 +99,7 @@ export interface ISevenWondersBuildCardEffect {
   type: ISevenWondersEffect.BUILD_CARD;
   period: ESevenWondersFreeCardPeriod;
   count: number;
-  cardTypes: ESevenWondersCardType[];
+  cardTypes?: ESevenWondersCardType[];
   source: ESevenWondersFreeCardSource;
   isFree: boolean;
 }
