@@ -18,7 +18,7 @@ const b = block('Wonder');
 const Root = styled(Box)`
   .Wonder {
     &__cardGroups {
-      height: 150px;
+      height: 125px;
     }
 
     &__cardGroup {
@@ -52,7 +52,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
               <Card
                 key={cardIndex}
                 className={b('card')}
-                style={{ bottom: `${-(100 - 20 * (cardIndex + 1))}%`, zIndex: 10 - cardIndex }}
+                style={{ top: `${(125 - 33 * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
                 card={card}
                 isBuilt
                 width={100}
@@ -65,7 +65,10 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       <img className={b('wonderCard')} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
 
       <Box flex between={8}>
+        {player.points > 0 && <div>{`Очки: ${player.points}`}</div>}
         <div>{`Монет: ${player.coins}`}</div>
+        {Boolean(player.victoryPoints.length) && <div>{`Победы: ${player.victoryPoints.join(', ')}`}</div>}
+        {Boolean(player.defeatPoints.length) && <div>{`Поражения: ${player.defeatPoints.join(', ')}`}</div>}
       </Box>
     </Root>
   );

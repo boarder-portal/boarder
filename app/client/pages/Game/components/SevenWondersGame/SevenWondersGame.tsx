@@ -27,10 +27,11 @@ const b = block('SevenWondersGame');
 
 const Root = styled(Box)`
   position: absolute;
-  top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  top: 48px;
   width: 100%;
-  height: 100%;
   background: beige;
   padding: 12px;
 

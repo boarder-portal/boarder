@@ -393,7 +393,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       this.discard.push(card);
     }
 
-    player.hand = player.hand.filter(({ id }) => id !== card.id);
+    const handCardIndex = player.hand.findIndex(({ id }) => id === card.id);
+
+    player.hand.splice(handCardIndex, 1);
     player.chosenMainAction = action;
 
     (
