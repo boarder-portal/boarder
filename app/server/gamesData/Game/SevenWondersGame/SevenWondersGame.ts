@@ -137,6 +137,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     this.players.forEach((player) => {
       if (player.isBot) {
         // TODO: строить карточку, которую может построить
+        player.hand = shuffle(player.hand);
+
         const builtCard = player.hand.pop();
 
         if (builtCard) {
@@ -337,7 +339,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     return symbolsCombinations.reduce((maxScore, symbols) => {
       return Math.max(maxScore, this.calculateScientificCardsPoints(symbols));
-    }, -1);
+    }, 0);
   }
 
   calculateScientificCardsPoints(symbols: ESevenWondersScientificSymbol[]): number {
@@ -385,6 +387,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       player.builtStages.push({
         index: action.stageIndex,
         card,
+        cardAge: this.age + 1,
       });
       player.coins -= wonderLevel.price.coins ?? 0;
 

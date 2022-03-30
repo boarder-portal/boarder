@@ -142,15 +142,15 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const handleBuildWonderLevel = useCallback(() => {
     if (
-      cardBuildInfo.type === EBuildType.FREE ||
-      cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
+      wonderLevelBuildInfo.type === EBuildType.FREE ||
+      wonderLevelBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
     ) {
       buildWonderLevel();
-    } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
+    } else if (wonderLevelBuildInfo.type === EBuildType.WITH_TRADE) {
       setTradeModalType('wonderLevel');
       open();
     }
-  }, [buildWonderLevel, cardBuildInfo.type, open]);
+  }, [buildWonderLevel, open, wonderLevelBuildInfo.type]);
 
   return (
     <Root className={b()}>

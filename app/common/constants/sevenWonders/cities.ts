@@ -705,7 +705,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         price: {
           resources: [{
             type: ESevenWondersResource.WOOD,
-            count: 2,
+            count: 3,
           }],
         },
         effects: [{

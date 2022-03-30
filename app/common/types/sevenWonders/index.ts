@@ -45,6 +45,7 @@ export interface ISevenWondersCity {
 export interface ISevenWondersBuiltStage {
   index: number;
   card: ISevenWondersCard;
+  cardAge: number;
 }
 
 export interface ISevenWondersPlayer extends IPlayer {

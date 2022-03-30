@@ -41,7 +41,7 @@ const Root = styled(Box)`
     }
 
     &__otherPlayerWonder {
-      flex: 1 0 400px;
+      flex: 0 0 400px;
     }
 
     &__mainBoard {
@@ -103,6 +103,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         className={b('otherPlayers')}
         flex
         between={20}
+        justifyContent="center"
       >
         {otherPlayers.map((otherPlayer) => (
           <Wonder key={otherPlayer.login} className={b('otherPlayerWonder')} player={otherPlayer} />

@@ -1,8 +1,8 @@
 import { ISevenWondersPlayer, ISevenWondersResource } from 'common/types/sevenWonders';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 
-import getCity from 'common/utilities/sevenWonders/getCity';
 import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTradeResources';
 
 /**
  * Если есть карточка WOOD / STONE, CLAY * 2 и ресурс города - GLASS
@@ -14,17 +14,9 @@ import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
  * ]
  */
 export function getPlayerResources(player: ISevenWondersPlayer, onlyTradableResources?: boolean): ISevenWondersResource[][]  {
-  const builtCardsResourceVariants = player.builtCards
-    .filter((builtCard) => onlyTradableResources ?
-      builtCard.type === ESevenWondersCardType.RAW_MATERIAL || builtCard.type === ESevenWondersCardType.MANUFACTURED_GOODS :
-      true,
-    )
-    .flatMap((builtCard) => builtCard.effects.filter(isResourceEffect))
-    .map((effect) => effect.variants);
-
-  const { effect: cityEffect } = getCity(player.city, player.citySide);
-
-  const cityResourceVariants = isResourceEffect(cityEffect) ? cityEffect.variants : [];
-
-  return [...builtCardsResourceVariants, cityResourceVariants];
+  return onlyTradableResources ?
+    getPlayerTradeResources(player) :
+    getAllPlayerEffects(player)
+      .filter(isResourceEffect)
+      .map((resourceEffect) => resourceEffect.variants);
 }
