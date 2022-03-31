@@ -16,10 +16,13 @@ interface IWonderProps {
 
 const b = block('Wonder');
 
+const GROUP_HEIGHT = 125;
+const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
+
 const Root = styled(Box)`
   .Wonder {
     &__cardGroups {
-      height: 125px;
+      height: ${GROUP_HEIGHT}px;
     }
 
     &__cardGroup {
@@ -56,19 +59,23 @@ const Wonder: React.FC<IWonderProps> = (props) => {
   return (
     <Root className={b.mix(className)}>
       <Box className={b('cardGroups')} flex justifyContent="space-between">
-        {cardGroups.map((group, index) => (
-          <div className={b('cardGroup')} key={index}>
-            {group.map((card, cardIndex) => (
-              <Card
-                key={cardIndex}
-                className={b('card')}
-                style={{ top: `${(125 - 33 * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
-                card={card}
-                width={100}
-              />
-            ))}
-          </div>
-        ))}
+        {cardGroups.map((group, index) => {
+          const cardVerticalSpace = Math.min(GROUP_HEIGHT / group.length, CARD_DEFAULT_GROUP_VERTICAL_SPACE);
+
+          return (
+            <div className={b('cardGroup')} key={index}>
+              {group.map((card, cardIndex) => (
+                <Card
+                  key={cardIndex}
+                  className={b('card')}
+                  style={{ top: `${(GROUP_HEIGHT - cardVerticalSpace * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
+                  card={card}
+                  width={100}
+                />
+              ))}
+            </div>
+          );
+        })}
       </Box>
 
       <div className={b('wonderImageWrapper')}>
