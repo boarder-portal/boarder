@@ -5,6 +5,8 @@ import sortBy from 'lodash/sortBy';
 import { ESevenWondersCardType, ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
 
+const GROUPS_COUNT = 4;
+
 export default function useCardGroups(player: ISevenWondersPlayer): ISevenWondersCard[][] {
   return useMemo(() => {
     const groupedCards = Object.entries(groupBy(
@@ -20,8 +22,14 @@ export default function useCardGroups(player: ISevenWondersPlayer): ISevenWonder
       }
 
       return -group.length;
+    }).map(([, group]) => group);
+
+    const extraGroups = sortedGroups.slice(GROUPS_COUNT).reverse();
+
+    extraGroups.forEach((extraGroup, index) => {
+      sortedGroups[3 - index % (GROUPS_COUNT - 1)].push(...extraGroup);
     });
 
-    return sortedGroups.map(([, group]) => group);
+    return sortedGroups.slice(0, GROUPS_COUNT);
   }, [player.builtCards]);
 }
