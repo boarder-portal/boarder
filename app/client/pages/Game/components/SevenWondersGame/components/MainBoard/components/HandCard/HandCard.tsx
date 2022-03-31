@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
@@ -32,11 +32,14 @@ import { useBoolean } from 'client/hooks/useBoolean';
 
 interface IHandCardProps {
   card: ISevenWondersCard;
+  cardIndex: number;
   player: ISevenWondersPlayer;
   resourcePools: IOwnerResource[][];
   resourceTradePrices: TResourceTradePrices;
   wonderLevelBuildInfo: IBuildInfo;
-  onCardAction(card: ISevenWondersCard, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  isChosen: boolean;
+  isDisabled: boolean;
+  onCardAction(card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
 }
 
 export enum EBuildType {
@@ -55,15 +58,6 @@ const Root = styled(Box)`
   .HandCard {
     &__cardWrapper {
       position: relative;
-
-      &:hover {
-        z-index: 21;
-
-        .HandCard__actions {
-          opacity: 1;
-          z-index: 22;
-        }
-      }
     }
 
     &__actions {
@@ -72,12 +66,48 @@ const Root = styled(Box)`
       right: 0;
       bottom: 20px;
       opacity: 0;
+      pointer-events: none;
       transition: 200ms;
 
       & > div {
         color: white;
         cursor: pointer;
         text-shadow: 1px 1px 2px black;
+      }
+    }
+  }
+
+  &.HandCard {
+    &_isChosen {
+      box-shadow: green 0 5px 15px;
+      z-index: 22;
+    }
+
+    &_isDisabled {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(220, 220, 220, 0.6);
+      }
+    }
+  }
+
+  :not(.HandCard_isDisabled) {
+    .HandCard__cardWrapper {
+      &:hover {
+        z-index: 21;
+
+        .HandCard__actions {
+          opacity: 1;
+          pointer-events: all;
+          z-index: 22;
+        }
       }
     }
   }
@@ -89,10 +119,13 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     card: {
       price: cardPrice,
     },
+    cardIndex,
     player,
     resourcePools,
     resourceTradePrices,
     wonderLevelBuildInfo,
+    isChosen,
+    isDisabled,
     onCardAction,
   } = props;
 
@@ -107,26 +140,26 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   const cardBuildInfo = useBuildInfo(cardPrice, resourcePools, resourceTradePrices, player);
 
   const buildCard = useCallback((payments: TSevenWondersPayments | undefined, isFree: boolean) => {
-    onCardAction(card, {
+    onCardAction(card, cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       isFree,
     }, payments);
     close();
-  }, [card, close, onCardAction]);
+  }, [card, cardIndex, close, onCardAction]);
 
   const buildWonderLevel = useCallback((payments?: TSevenWondersPayments) => {
-    onCardAction(card, {
+    onCardAction(card, cardIndex, {
       type: ESevenWondersCardActionType.BUILD_WONDER_STAGE,
       stageIndex: player.builtStages.length,
     }, payments);
     close();
-  }, [card, close, onCardAction, player.builtStages.length]);
+  }, [card, cardIndex, close, onCardAction, player.builtStages.length]);
 
   const discardCard = useCallback(() => {
-    onCardAction(card, {
+    onCardAction(card, cardIndex, {
       type: ESevenWondersCardActionType.DISCARD,
     });
-  }, [card, onCardAction]);
+  }, [card, cardIndex, onCardAction]);
 
   const handleCardBuild = useCallback(() => {
     if (
@@ -153,15 +186,29 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     }
   }, [buildWonderLevel, open, wonderLevelBuildInfo.type]);
 
+  const actions = useMemo(() => {
+    if (isChosen) {
+      return (
+        <Box size="s" textAlign="center">Отменить</Box>
+      );
+    }
+
+    return (
+      <>
+        <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type)}</Box>
+        <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>
+        <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
+      </>
+    );
+  }, [cardBuildInfo.type, discardCard, handleBuildWonderLevel, handleCardBuild, isChosen, wonderLevelBuildInfo.type]);
+
   return (
-    <Root className={b()}>
+    <Root className={b({ isChosen, isDisabled })}>
       <div className={b('cardWrapper')}>
         <Card card={card} />
 
         <Box className={b('actions')} flex column between={20} alignItems="center">
-          <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type)}</Box>
-          <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>
-          <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
+          {actions}
         </Box>
       </div>
 

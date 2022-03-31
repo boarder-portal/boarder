@@ -53,9 +53,12 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
 
-  const handleCardAction = useCallback((card: ISevenWondersCard, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+  const chosenCardIndex = player.actions[0]?.cardIndex;
+
+  const handleCardAction = useCallback((card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     const data: ISevenWondersBuildCardEvent = {
       card,
+      cardIndex,
       action,
       payments,
     };
@@ -79,7 +82,6 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
 
   const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
-
   const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, resourcePools, resourceTradePrices, player);
 
   return (
@@ -91,10 +93,13 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
           <HandCard
             key={index}
             card={card}
+            cardIndex={index}
             player={player}
             resourcePools={resourcePools}
             resourceTradePrices={resourceTradePrices}
             wonderLevelBuildInfo={wonderLevelBuildInfo}
+            isChosen={index === chosenCardIndex}
+            isDisabled={chosenCardIndex !== undefined && index !== chosenCardIndex}
             onCardAction={handleCardAction}
           />
         ))}

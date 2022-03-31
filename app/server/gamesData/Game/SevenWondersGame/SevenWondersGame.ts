@@ -77,7 +77,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       victoryPoints: [],
       defeatPoints: [],
       isBot: false,
-      chosenMainAction: null,
+      actions: [],
     };
   }
 
@@ -132,11 +132,18 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endTurn(): void {
-    const neighborSide = this.getAgeNeighborSide();
+    this.players.forEach((player) => {
+      const action = player.actions.shift();
+
+      if (!action) {
+        return;
+      }
+
+      this.buildPlayerCard(player, action);
+    });
 
     this.players.forEach((player) => {
       if (player.isBot) {
-        // TODO: строить карточку, которую может построить
         player.hand = shuffle(player.hand);
 
         const builtCard = player.hand.pop();
@@ -150,9 +157,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const hands = this.players.map(({ hand }) => hand);
 
     this.players.forEach((player, playerIndex) => {
-      player.chosenMainAction = null;
-
-      const neighbor = this.getNeighbor(player, neighborSide);
+      const neighbor = this.getNeighbor(player, this.getAgeNeighborSide());
 
       neighbor.hand = hands[playerIndex];
     });
@@ -361,14 +366,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     socket.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
 
-  onBuildCard({ socket, data }: IGameEvent<ISevenWondersBuildCardEvent>): void {
-    const player = this.getPlayerByLogin(socket.user?.login);
-
-    if (!player) {
-      return;
-    }
-
-    const { card, action, payments } = data;
+  buildPlayerCard(player: ISevenWondersPlayer, buildCardAction: ISevenWondersBuildCardEvent): void {
+    const { card, action, payments } = buildCardAction;
 
     const newEffects: TSevenWondersEffect[] = [];
 
@@ -401,7 +400,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const handCardIndex = player.hand.findIndex(({ id }) => id === card.id);
 
     player.hand.splice(handCardIndex, 1);
-    player.chosenMainAction = action;
 
     if (payments) {
       (
@@ -417,9 +415,21 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     newEffects.forEach((effect) => {
       player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
     });
+  }
 
-    if (this.players.every((p) => p.chosenMainAction || p.isBot)) {
+  onBuildCard({ socket, data }: IGameEvent<ISevenWondersBuildCardEvent>): void {
+    const player = this.getPlayerByLogin(socket.user?.login);
+
+    if (!player) {
+      return;
+    }
+
+    player.actions.push(data);
+
+    if (this.players.every((p) => p.actions.length === 1 || p.isBot)) {
       this.endTurn();
+    } else {
+      this.sendGameInfo();
     }
   }
 

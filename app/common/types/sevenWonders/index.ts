@@ -59,7 +59,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
-  chosenMainAction: TSevenWondersAction | null;
+  actions: ISevenWondersBuildCardEvent[];
 }
 
 export interface ISevenWondersGameInfoEvent {
@@ -97,6 +97,7 @@ export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
 
 export interface ISevenWondersBuildCardEvent {
   card: ISevenWondersCard;
+  cardIndex: number;
   action: TSevenWondersAction;
   payments?: TSevenWondersPayments;
 }
