@@ -9,6 +9,7 @@ import {
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
+import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
@@ -54,6 +55,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const { io } = props;
 
   const [players, setPlayers] = useState<ISevenWondersPlayer[]>([]);
+  const [discard, setDiscard] = useState<ISevenWondersCard[]>([]);
 
   const user = useRecoilValue(userAtom);
 
@@ -86,6 +88,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
       console.log(ESevenWondersGameEvent.GAME_INFO, gameInfo);
 
       setPlayers(gameInfo.players);
+      setDiscard(gameInfo.discard);
     });
 
     return () => {
@@ -114,6 +117,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         className={b('mainBoard')}
         io={io}
         player={player}
+        discard={discard}
         leftNeighbor={leftNeighbor}
         rightNeighbor={rightNeighbor}
       />

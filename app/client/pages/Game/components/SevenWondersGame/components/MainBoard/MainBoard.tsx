@@ -3,10 +3,13 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
+  EAdditionalActionType,
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
   ISevenWondersExecuteActionEvent,
-  ISevenWondersPlayer, TSevenWondersAction, TSevenWondersPayments,
+  ISevenWondersPlayer,
+  TSevenWondersAction,
+  TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
@@ -33,6 +36,7 @@ interface IMainBoardProps {
   className?: string;
   io: SocketIOClient.Socket;
   player: ISevenWondersPlayer;
+  discard: ISevenWondersCard[];
   leftNeighbor: ISevenWondersPlayer;
   rightNeighbor: ISevenWondersPlayer;
 }
@@ -49,7 +53,7 @@ const Root = styled(Box)`
 `;
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
-  const { className, io, player, leftNeighbor, rightNeighbor } = props;
+  const { className, io, player, discard, leftNeighbor, rightNeighbor } = props;
 
   const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
 
@@ -69,6 +73,14 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const cancelCard = useCallback(() => {
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
+
+  const hand = useMemo(() => {
+    if (player.waitingAdditionalActionType === EAdditionalActionType.BUILD_FROM_DISCARD) {
+      return discard;
+    }
+
+    return player.hand;
+  }, [discard, player.hand, player.waitingAdditionalActionType]);
 
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');
@@ -93,7 +105,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       <Wonder className={b('wonder')} player={player} />
 
       <Box flex between={-35}>
-        {player.hand.map((card, index) => (
+        {hand.map((card, index) => (
           <HandCard
             key={index}
             card={card}
