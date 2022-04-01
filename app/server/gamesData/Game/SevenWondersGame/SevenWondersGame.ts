@@ -53,6 +53,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
     [ESevenWondersGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
     [ESevenWondersGameEvent.EXECUTE_ACTION]: this.onExecuteAction,
+    [ESevenWondersGameEvent.CANCEL_ACTION]: this.onCancelAction,
   };
 
   age = -1;
@@ -132,16 +133,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endTurn(): void {
-    this.players.forEach((player) => {
-      const action = player.actions.shift();
-
-      if (!action) {
-        return;
-      }
-
-      this.executePlayerAction(player, action);
-    });
-
     this.players.forEach((player) => {
       if (player.isBot) {
         player.hand = shuffle(player.hand);
@@ -358,14 +349,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
   }
 
-  sendGameInfo(): void {
-    this.io.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
-  }
-
-  onGetGameInfo({ socket }: IGameEvent): void {
-    socket.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
-  }
-
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
     const { card, action, payments } = executeActionEvent;
 
@@ -417,6 +400,26 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     });
   }
 
+  executeMainActions(): void {
+    this.players.forEach((player) => {
+      const action = player.actions.shift();
+
+      if (!action) {
+        return;
+      }
+
+      this.executePlayerAction(player, action);
+    });
+  }
+
+  sendGameInfo(): void {
+    this.io.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
+  onGetGameInfo({ socket }: IGameEvent): void {
+    socket.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
+  }
+
   onExecuteAction({ socket, data }: IGameEvent<ISevenWondersExecuteActionEvent>): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
@@ -427,10 +430,21 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     player.actions.push(data);
 
     if (this.players.every((p) => p.actions.length === 1 || p.isBot)) {
+      this.executeMainActions();
       this.endTurn();
     } else {
       this.sendGameInfo();
     }
+  }
+
+  onCancelAction({ socket }: IGameEvent): void {
+    const player = this.getPlayerByLogin(socket.user?.login);
+
+    if (!player) {
+      return;
+    }
+
+    player.actions.pop();
   }
 
   getGameInfoEvent(): ISevenWondersGameInfoEvent {
