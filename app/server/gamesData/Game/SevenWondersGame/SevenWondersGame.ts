@@ -32,7 +32,12 @@ import {
 } from 'common/types/sevenWonders/effects';
 
 import { getAllCombinations } from 'common/utilities/combinations';
-import { isBuildCardEffect, isScientificSymbolsEffect, isShieldsEffect } from 'common/utilities/sevenWonders/isEffect';
+import {
+  isBuildCardEffect,
+  isCopyEffect,
+  isScientificSymbolsEffect,
+  isShieldsEffect,
+} from 'common/utilities/sevenWonders/isEffect';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getCity from 'common/utilities/sevenWonders/getCity';
@@ -174,9 +179,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     });
 
     const hands = this.players.map(({ hand }) => hand);
+    const ageDirection = this.getAgeDirection();
 
     this.players.forEach((player, playerIndex) => {
-      const neighbor = this.getNeighbor(player, this.getAgeNeighborSide());
+      const neighbor = this.getNeighbor(player, ageDirection);
 
       neighbor.hand = hands[playerIndex];
 
@@ -223,27 +229,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   endGame(): void {
     this.players.forEach((player) => {
-      const effects = getAllPlayerEffects(player);
-
-      // effect points
-      effects.forEach((effect) => {
-        const gain = this.calculateEffectGain(effect, player);
-
-        player.points += gain?.points ?? 0;
-      });
-
-      // war points
-      [...player.victoryPoints, ...player.defeatPoints].forEach((points) => {
-        player.points += points;
-      });
-
-      // science points
-      const scientificEffects = effects.filter(isScientificSymbolsEffect);
-
-      player.points += this.calculateScientificEffectsMaxPoints(scientificEffects);
-
-      // coins points
-      player.points += Math.floor(player.coins / 3);
+      player.points = this.calculatePlayerMaxPoints(player);
     });
   }
 
@@ -255,7 +241,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return this.players.some(({ waitingAdditionalAction }) => waitingAdditionalAction);
   }
 
-  getAgeNeighborSide(): ESevenWondersNeighborSide {
+  getAgeDirection(): ESevenWondersNeighborSide {
     return this.age % 2
       ? ESevenWondersNeighborSide.LEFT
       : ESevenWondersNeighborSide.RIGHT;
@@ -375,8 +361,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const symbols = effects.map((effect) => effect.variants);
     const symbolsCombinations = getAllCombinations(symbols);
 
-    return symbolsCombinations.reduce((maxScore, symbols) => {
-      return Math.max(maxScore, this.calculateScientificCardsPoints(symbols));
+    return symbolsCombinations.reduce((maxPoints, symbols) => {
+      return Math.max(maxPoints, this.calculateScientificCardsPoints(symbols));
     }, 0);
   }
 
@@ -389,6 +375,55 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const setsCount = Math.min(...symbolsCounts);
 
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
+  }
+
+  calculatePlayerPoints(player: ISevenWondersPlayer, builtCards: ISevenWondersCard[]): number {
+    const effects = getAllPlayerEffects(player, builtCards);
+    let allPoints = 0;
+
+    // effect points
+    effects.forEach((effect) => {
+      const gain = this.calculateEffectGain(effect, player);
+
+      allPoints += gain?.points ?? 0;
+    });
+
+    // war points
+    [...player.victoryPoints, ...player.defeatPoints].forEach((points) => {
+      allPoints += points;
+    });
+
+    // science points
+    const scientificEffects = effects.filter(isScientificSymbolsEffect);
+
+    allPoints += this.calculateScientificEffectsMaxPoints(scientificEffects);
+
+    // coins points
+    allPoints += Math.floor(player.coins / 3);
+
+    return allPoints;
+  }
+
+  calculatePlayerMaxPoints(player: ISevenWondersPlayer): number {
+    const builtCardVariants = player.builtCards.map((card) => {
+      const copyEffect = card.effects.find(isCopyEffect);
+
+      if (!copyEffect) {
+        return [card];
+      }
+
+      return copyEffect.neighbors
+        .map((neighborSide) => {
+          return this.getNeighbor(player, neighborSide).builtCards
+            .filter(({ type }) => type === copyEffect.cardType);
+        })
+        .flat();
+    });
+    const cardCombinations = getAllCombinations(builtCardVariants);
+
+    return cardCombinations.reduce((maxPoints, builtCards) => {
+      return Math.max(maxPoints, this.calculatePlayerPoints(player, builtCards));
+    }, 0);
   }
 
   usePlayerBuildEffect(player: ISevenWondersPlayer, effectIndex: number): void {

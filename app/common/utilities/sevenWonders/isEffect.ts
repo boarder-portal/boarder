@@ -1,5 +1,6 @@
 import {
   ISevenWondersBuildCardEffect,
+  ISevenWondersCopyCardEffect,
   ISevenWondersEffect,
   ISevenWondersResourcesEffect,
   ISevenWondersScientificSymbolsEffect,
@@ -26,4 +27,8 @@ export function isTradeEffect(effect: TSevenWondersEffect): effect is ISevenWond
 
 export function isBuildCardEffect(effect: TSevenWondersEffect): effect is ISevenWondersBuildCardEffect {
   return effect.type === ISevenWondersEffect.BUILD_CARD;
+}
+
+export function isCopyEffect(effect: TSevenWondersEffect): effect is ISevenWondersCopyCardEffect {
+  return effect.type === ISevenWondersEffect.COPY_CARD;
 }

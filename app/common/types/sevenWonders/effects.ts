@@ -106,7 +106,7 @@ export interface ISevenWondersBuildCardEffect {
 
 export interface ISevenWondersCopyCardEffect {
   type: ISevenWondersEffect.COPY_CARD;
-  directions: ESevenWondersPlayerDirection[];
+  neighbors: ESevenWondersNeighborSide[];
   cardType: ESevenWondersCardType;
 }
 
