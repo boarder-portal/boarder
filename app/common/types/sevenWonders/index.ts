@@ -5,7 +5,7 @@ import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
 
 export enum ESevenWondersGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
-  BUILD_CARD = 'BUILD_CARD',
+  EXECUTE_ACTION = 'EXECUTE_ACTION',
   CANCEL_ACTION = 'CANCEL_ACTION',
 
   GAME_INFO = 'GAME_INFO',
@@ -60,7 +60,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
-  actions: ISevenWondersBuildCardEvent[];
+  actions: ISevenWondersExecuteActionEvent[];
 }
 
 export interface ISevenWondersGameInfoEvent {
@@ -96,7 +96,7 @@ export type TSevenWondersAction = (
 
 export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
 
-export interface ISevenWondersBuildCardEvent {
+export interface ISevenWondersExecuteActionEvent {
   card: ISevenWondersCard;
   cardIndex: number;
   action: TSevenWondersAction;

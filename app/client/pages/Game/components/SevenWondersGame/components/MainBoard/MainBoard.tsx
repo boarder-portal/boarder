@@ -5,7 +5,7 @@ import block from 'bem-cn';
 import {
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
-  ISevenWondersBuildCardEvent,
+  ISevenWondersExecuteActionEvent,
   ISevenWondersPlayer, TSevenWondersAction, TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
@@ -56,14 +56,14 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const chosenCardIndex = player.actions[0]?.cardIndex;
 
   const handleCardAction = useCallback((card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
-    const data: ISevenWondersBuildCardEvent = {
+    const data: ISevenWondersExecuteActionEvent = {
       card,
       cardIndex,
       action,
       payments,
     };
 
-    io.emit(ESevenWondersGameEvent.BUILD_CARD, data);
+    io.emit(ESevenWondersGameEvent.EXECUTE_ACTION, data);
   }, [io]);
 
   const resourcePools = useMemo(() => {

@@ -14,7 +14,7 @@ import {
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
   ESevenWondersScientificSymbol,
-  ISevenWondersBuildCardEvent,
+  ISevenWondersExecuteActionEvent,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
@@ -52,7 +52,7 @@ const BOTS_COUNT = 4;
 class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
     [ESevenWondersGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [ESevenWondersGameEvent.BUILD_CARD]: this.onBuildCard,
+    [ESevenWondersGameEvent.EXECUTE_ACTION]: this.onExecuteAction,
   };
 
   age = -1;
@@ -139,7 +139,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         return;
       }
 
-      this.buildPlayerCard(player, action);
+      this.executePlayerAction(player, action);
     });
 
     this.players.forEach((player) => {
@@ -366,8 +366,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     socket.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
 
-  buildPlayerCard(player: ISevenWondersPlayer, buildCardAction: ISevenWondersBuildCardEvent): void {
-    const { card, action, payments } = buildCardAction;
+  executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
+    const { card, action, payments } = executeActionEvent;
 
     const newEffects: TSevenWondersEffect[] = [];
 
@@ -417,7 +417,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     });
   }
 
-  onBuildCard({ socket, data }: IGameEvent<ISevenWondersBuildCardEvent>): void {
+  onExecuteAction({ socket, data }: IGameEvent<ISevenWondersExecuteActionEvent>): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
