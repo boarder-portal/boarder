@@ -25,6 +25,7 @@ import {
 } from 'common/types/sevenWonders/cards';
 import {
   ESevenWondersFreeCardPeriod,
+  ESevenWondersFreeCardSource,
   ISevenWondersEffect,
   ISevenWondersGain,
   ISevenWondersScientificSymbolsEffect,
@@ -127,6 +128,11 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     this.age++;
 
     const ageCards = cardsByAge[this.age];
+    const addedGuildCards = shuffle(
+      ageCards
+        .filter(({ type }) => type === ESevenWondersCardType.GUILD)
+        .slice(this.players.length + 2),
+    );
     const usedCards = ageCards.reduce<ISevenWondersCard[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
         if (cardPlayersCount > this.players.length) {
@@ -138,7 +144,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
           card,
         ];
       }, cards);
-    }, []);
+    }, addedGuildCards);
 
     const shuffledCards = chunk(shuffle(usedCards), usedCards.length / this.players.length);
 
@@ -535,6 +541,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     this.players.forEach((player) => {
       const buildCardEffectIndex = player.buildCardEffects.findIndex((effect) => (
         effect.period === ESevenWondersFreeCardPeriod.NOW
+        && (
+          effect.source === ESevenWondersFreeCardSource.HAND
+          || this.discard.length > 0
+        )
       ));
 
       if (buildCardEffectIndex !== -1) {
