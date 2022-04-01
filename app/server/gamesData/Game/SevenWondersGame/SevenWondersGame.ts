@@ -111,9 +111,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
       });
 
-      if (player.login === '123') {
-        player.city = ESevenWondersCity.BABYLON;
-      }
+      // player.city = ESevenWondersCity.OLYMPIA;
+      // player.citySide = 0;
     });
 
     this.startAge();

@@ -7,9 +7,10 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
 import {
   ESevenWondersCardActionType,
   ISevenWondersPlayer,
-  TSevenWondersAction,
+  TSevenWondersAction, TSevenWondersBuildType,
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
+import { ESevenWondersFreeCardPeriod } from 'common/types/sevenWonders/effects';
 
 import {
   TResourceTradePrices,
@@ -47,6 +48,7 @@ export enum EBuildType {
   FREE = 'FREE',
   FREE_WITH_EFFECT = 'FREE_WITH_EFFECT',
   FOR_BUILDING = 'FOR_BUILDING',
+  OWN_RESOURCES = 'OWN_RESOURCES',
   OWN_RESOURCES_AND_COINS = 'OWN_RESOURCES_AND_COINS',
   WITH_TRADE = 'WITH_TRADE',
   NOT_AVAILABLE = 'NOT_AVAILABLE',
@@ -142,11 +144,27 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const cardBuildInfo = useBuildInfo(cardPrice, resourcePools, resourceTradePrices, player);
 
-  const buildCard = useCallback((payments: TSevenWondersPayments | undefined, isFree: boolean) => {
+  const buildEffectIndex = useMemo(() => {
+    if (
+      cardBuildInfo.type === EBuildType.FREE ||
+      cardBuildInfo.type === EBuildType.FOR_BUILDING ||
+      cardBuildInfo.type === EBuildType.ALREADY_BUILT ||
+      cardBuildInfo.type === EBuildType.OWN_RESOURCES
+    ) {
+      return -1;
+    }
+
+    const ageBuildCardEffects = player.buildCardEffects.filter((effect) => effect.period === ESevenWondersFreeCardPeriod.AGE);
+
+    return ageBuildCardEffects.findIndex((effect) =>
+      effect.cardTypes?.includes(card.type) ?? true,
+    );
+  }, [card.type, cardBuildInfo.type, player.buildCardEffects]);
+
+  const buildCard = useCallback((payments: TSevenWondersPayments | undefined, freeBuildType?: TSevenWondersBuildType | null) => {
     onCardAction(card, cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
-      isFree,
-      freeBuildType: null,
+      freeBuildType: freeBuildType || null,
     }, payments);
     close();
   }, [card, cardIndex, close, onCardAction]);
@@ -165,13 +183,26 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     });
   }, [card, cardIndex, onCardAction]);
 
+  const handleBuildCardWithEffect = useCallback(() => {
+    onCardAction(card, cardIndex, {
+      type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+      freeBuildType: {
+        type: EBuildType.FREE_WITH_EFFECT,
+        effectIndex: buildEffectIndex,
+      },
+    });
+  }, [buildEffectIndex, card, cardIndex, onCardAction]);
+
   const handleCardBuild = useCallback(() => {
     if (
       cardBuildInfo.type === EBuildType.FREE ||
       cardBuildInfo.type === EBuildType.FOR_BUILDING ||
+      cardBuildInfo.type === EBuildType.OWN_RESOURCES ||
       cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
     ) {
-      buildCard(undefined, cardBuildInfo.type === EBuildType.FREE || cardBuildInfo.type === EBuildType.FOR_BUILDING);
+      buildCard(undefined, cardBuildInfo.type === EBuildType.FOR_BUILDING ? {
+        type: EBuildType.FOR_BUILDING,
+      } : null);
     } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
       setTradeModalType('card');
       open();
@@ -181,6 +212,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   const handleBuildWonderLevel = useCallback(() => {
     if (
       wonderLevelBuildInfo.type === EBuildType.FREE ||
+      wonderLevelBuildInfo.type === EBuildType.OWN_RESOURCES ||
       wonderLevelBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS
     ) {
       buildWonderLevel();
@@ -200,11 +232,12 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     return (
       <>
         <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type)}</Box>
+        {buildEffectIndex !== -1 && <Box size="s" textAlign="center" onClick={handleBuildCardWithEffect}>Построить бесплатно с эффектом</Box>}
         <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>
         <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
       </>
     );
-  }, [cardBuildInfo.type, discardCard, handleBuildWonderLevel, handleCardBuild, isChosen, onCancelCard, wonderLevelBuildInfo.type]);
+  }, [buildEffectIndex, cardBuildInfo.type, discardCard, handleBuildCardWithEffect, handleBuildWonderLevel, handleCardBuild, isChosen, onCancelCard, wonderLevelBuildInfo.type]);
 
   return (
     <Root className={b({ isChosen, isDisabled })}>

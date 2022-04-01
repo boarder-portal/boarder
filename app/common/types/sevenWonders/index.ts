@@ -106,7 +106,6 @@ export type TSevenWondersBuildType =
 
 export interface ISevenWondersBuildStructureAction {
   type: ESevenWondersCardActionType.BUILD_STRUCTURE;
-  isFree: boolean;
   freeBuildType: TSevenWondersBuildType | null;
 }
 

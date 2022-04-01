@@ -34,6 +34,10 @@ export default function getBuildType(
   const tradeVariantPrice = cheapestTradeVariant.payments.LEFT + cheapestTradeVariant.payments.RIGHT;
 
   if (!tradeVariantPrice) {
+    if (!price.coins) {
+      return EBuildType.OWN_RESOURCES;
+    }
+
     return EBuildType.OWN_RESOURCES_AND_COINS;
   }
 

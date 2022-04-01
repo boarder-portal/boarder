@@ -1,5 +1,3 @@
-import { first } from 'lodash';
-
 import { ISevenWondersCardPrice } from 'common/types/sevenWonders/cards';
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
 
