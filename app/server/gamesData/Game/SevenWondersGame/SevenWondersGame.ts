@@ -534,6 +534,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     if (isLastAgeTurn) {
       this.players.forEach((player) => {
         this.discard.push(...player.hand);
+
+        player.hand = [];
       });
     }
 
