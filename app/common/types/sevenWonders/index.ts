@@ -59,7 +59,7 @@ export enum ESevenWondersAdditionalActionType {
 
 export interface ISevenWondersAdditionalBuildCardAction {
   type: ESevenWondersAdditionalActionType.BUILD_CARD;
-  effect: ISevenWondersBuildCardEffect;
+  effectIndex: number;
 }
 
 export type TSevenWondersAdditionalAction = ISevenWondersAdditionalBuildCardAction;

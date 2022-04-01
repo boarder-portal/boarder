@@ -76,15 +76,16 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [io]);
 
   const hand = useMemo(() => {
-    if (
-      player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD
-      && player.waitingAdditionalAction.effect.source === ESevenWondersFreeCardSource.DISCARD
-    ) {
-      return discard;
+    if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
+      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.effectIndex];
+
+      if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
+        return discard;
+      }
     }
 
     return player.hand;
-  }, [discard, player.hand, player.waitingAdditionalAction]);
+  }, [discard, player.buildCardEffects, player.hand, player.waitingAdditionalAction]);
 
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');

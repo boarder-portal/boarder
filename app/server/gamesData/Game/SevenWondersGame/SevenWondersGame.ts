@@ -391,6 +391,15 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
   }
 
+  usePlayerBuildEffect(player: ISevenWondersPlayer, effectIndex: number): void {
+    const usedEffect = player.buildCardEffects[effectIndex];
+
+    // TODO: use or remove count
+    if (usedEffect.period !== ESevenWondersFreeCardPeriod.ETERNITY) {
+      player.buildCardEffects.splice(effectIndex, 1);
+    }
+  }
+
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
     const { card, action, payments } = executeActionEvent;
 
@@ -404,11 +413,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       if (action.freeBuildType?.type === EBuildType.FREE_WITH_EFFECT) {
-        const usedEffect = player.buildCardEffects[action.freeBuildType.effectIndex];
-
-        if (usedEffect.period !== ESevenWondersFreeCardPeriod.ETERNITY) {
-          player.buildCardEffects.splice(action.freeBuildType.effectIndex, 1);
-        }
+        this.usePlayerBuildEffect(player, action.freeBuildType.effectIndex);
       }
 
       newEffects.push(...card.effects);
@@ -434,6 +439,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     player.hand.splice(handCardIndex, 1);
 
+    if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
+      this.usePlayerBuildEffect(player, player.waitingAdditionalAction.effectIndex);
+    }
+
     player.waitingAdditionalAction = null;
 
     if (payments) {
@@ -458,26 +467,24 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   setAdditionalActions(): void {
     const isLastAgeTurn = this.isLastAgeTurn();
+    let someoneBuildsLastCard = false;
 
     if (isLastAgeTurn) {
       this.players.forEach((player) => {
-        const buildLastCardEffect = player.buildCardEffects.find((effect) => (
+        const buildLastCardEffectIndex = player.buildCardEffects.findIndex((effect) => (
           effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
         ));
 
-        if (buildLastCardEffect) {
+        if (buildLastCardEffectIndex !== -1) {
           player.waitingAdditionalAction = {
             type: ESevenWondersAdditionalActionType.BUILD_CARD,
-            effect: buildLastCardEffect,
+            effectIndex: buildLastCardEffectIndex,
           };
+
+          someoneBuildsLastCard = true;
         }
       });
     }
-
-    const someoneBuildsLastCard = this.players.some(({ waitingAdditionalAction }) => (
-      waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD
-      && waitingAdditionalAction.effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
-    ));
 
     if (someoneBuildsLastCard) {
       return;
@@ -491,14 +498,14 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     // TODO: prioritize Halicarnassus over Solomon
     this.players.forEach((player) => {
-      const buildCardEffect = player.buildCardEffects.find((effect) => (
+      const buildCardEffectIndex = player.buildCardEffects.findIndex((effect) => (
         effect.period === ESevenWondersFreeCardPeriod.NOW
       ));
 
-      if (buildCardEffect) {
+      if (buildCardEffectIndex !== -1) {
         player.waitingAdditionalAction = {
           type: ESevenWondersAdditionalActionType.BUILD_CARD,
-          effect: buildCardEffect,
+          effectIndex: buildCardEffectIndex,
         };
       }
     });
