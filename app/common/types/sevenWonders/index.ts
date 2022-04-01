@@ -61,6 +61,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   defeatPoints: number[];
   isBot: boolean;
   actions: ISevenWondersExecuteActionEvent[];
+  waitingForAdditionalAction: boolean;
 }
 
 export interface ISevenWondersGameInfoEvent {
