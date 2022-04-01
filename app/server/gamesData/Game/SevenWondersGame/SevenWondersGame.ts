@@ -79,7 +79,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       defeatPoints: [],
       isBot: false,
       actions: [],
-      waitingForAdditionalAction: false,
+      waitingAdditionalActionType: null,
     };
   }
 
