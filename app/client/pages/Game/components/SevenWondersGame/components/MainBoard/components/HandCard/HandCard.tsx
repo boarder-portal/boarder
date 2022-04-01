@@ -11,6 +11,9 @@ import {
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ESevenWondersFreeCardPeriod } from 'common/types/sevenWonders/effects';
+import {
+  IBuildInfo,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 import {
   TResourceTradePrices,
@@ -24,10 +27,8 @@ import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import TradeModal
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
-import useBuildInfo
-, {
-  IBuildInfo,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useBuildInfo';
+import useCardBuildInfo
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -142,7 +143,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const [tradeModalType, setTradeModalType] = useState<'card' | 'wonderLevel'>('card');
 
-  const cardBuildInfo = useBuildInfo(cardPrice, resourcePools, resourceTradePrices, player);
+  const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player);
 
   const buildEffectIndex = useMemo(() => {
     if (

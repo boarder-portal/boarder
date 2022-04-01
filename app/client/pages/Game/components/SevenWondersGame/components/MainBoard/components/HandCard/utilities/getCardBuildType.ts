@@ -1,4 +1,4 @@
-import { ISevenWondersCardPrice } from 'common/types/sevenWonders/cards';
+import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
 
 import {
@@ -12,21 +12,27 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 export default function getCardBuildType(
-  cardPrice: ISevenWondersCardPrice | undefined,
+  card: ISevenWondersCard,
   player: ISevenWondersPlayer,
   tradeVariants: ITradeVariant[],
 ): EBuildType {
-  if (!cardPrice) {
+  if (player.builtCards.some((builtCard) => builtCard.id === card.id)) {
+    return EBuildType.ALREADY_BUILT;
+  }
+
+  const { price } = card;
+
+  if (!price) {
     return EBuildType.FREE;
   }
 
-  if (cardPrice.buildings &&
+  if (price.buildings &&
     player.builtCards
       .some((builtCard) =>
-        cardPrice.buildings?.some((id) => id === builtCard.id))
+        price.buildings?.includes(builtCard.id))
   ) {
     return EBuildType.FOR_BUILDING;
   }
 
-  return getBuildType(cardPrice, player, tradeVariants);
+  return getBuildType(price, player, tradeVariants);
 }

@@ -31,7 +31,7 @@ import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import useWonderLevelBuildInfo
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/hooks/useWonderLevelBuildInfo';
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useWonderLevelBuildInfo';
 
 interface IMainBoardProps {
   className?: string;

@@ -2,34 +2,43 @@ import { useMemo } from 'react';
 
 import { ISevenWondersPlayer, ISevenWondersPrice } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import {
+  IBuildInfo,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
+import getTradeVariants
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
 import {
   TResourceTradePrices,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getBuildType
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
 import getCity from 'common/utilities/sevenWonders/getCity';
 
-import useBuildInfo, {
-  IBuildInfo,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useBuildInfo';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 export default function useWonderLevelBuildInfo(
-  price: ISevenWondersPrice | undefined,
+  price: ISevenWondersPrice,
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
   player: ISevenWondersPlayer,
 ): IBuildInfo {
-  const wonderLevelBuildInfo = useBuildInfo(price, resourcePools, resourceTradePrices, player);
+  const tradeVariants = useMemo(() => getTradeVariants(price, resourcePools, resourceTradePrices), [price, resourcePools, resourceTradePrices]);
 
-  return useMemo(() => {
+  const type = useMemo(() => {
     const city = getCity(player.city, player.citySide);
 
     if (player.builtStages.length === city.wonders.length) {
-      wonderLevelBuildInfo.type = EBuildType.ALREADY_BUILT;
+      return EBuildType.ALREADY_BUILT;
     }
 
-    return wonderLevelBuildInfo;
-  }, [player.builtStages.length, player.city, player.citySide, wonderLevelBuildInfo]);
+    return getBuildType(price, player, tradeVariants);
+  }, [price, player, tradeVariants]);
+
+  return useMemo(() => ({
+    type,
+    tradeVariants,
+  }), [tradeVariants, type]);
 }
