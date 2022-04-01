@@ -6,6 +6,7 @@ import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
 export enum ESevenWondersGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   BUILD_CARD = 'BUILD_CARD',
+  CANCEL_ACTION = 'CANCEL_ACTION',
 
   GAME_INFO = 'GAME_INFO',
 }
