@@ -59,6 +59,10 @@ const GlobalStyle = createGlobalStyle`
     color: inherit;
     text-decoration: none;
   }
+
+  img {
+    display: block;
+  }
 `;
 
 const Root = styled(Container)`
