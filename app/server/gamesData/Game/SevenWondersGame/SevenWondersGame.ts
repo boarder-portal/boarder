@@ -547,9 +547,13 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       return;
     }
 
-    player.actions.pop();
+    const beforeMainActions = this.players.some(({ actions }) => actions.length === 0);
 
-    this.sendGameInfo();
+    if (beforeMainActions) {
+      player.actions.pop();
+
+      this.sendGameInfo();
+    }
   }
 
   getGameInfoEvent(): ISevenWondersGameInfoEvent {
