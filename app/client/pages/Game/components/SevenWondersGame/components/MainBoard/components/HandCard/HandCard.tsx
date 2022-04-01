@@ -40,6 +40,7 @@ interface IHandCardProps {
   isChosen: boolean;
   isDisabled: boolean;
   onCardAction(card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCancelCard(): void;
 }
 
 export enum EBuildType {
@@ -127,6 +128,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     isChosen,
     isDisabled,
     onCardAction,
+    onCancelCard,
   } = props;
 
   const {
@@ -189,7 +191,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   const actions = useMemo(() => {
     if (isChosen) {
       return (
-        <Box size="s" textAlign="center">Отменить</Box>
+        <Box size="s" textAlign="center" onClick={onCancelCard}>Отменить</Box>
       );
     }
 
@@ -200,7 +202,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
         <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
       </>
     );
-  }, [cardBuildInfo.type, discardCard, handleBuildWonderLevel, handleCardBuild, isChosen, wonderLevelBuildInfo.type]);
+  }, [cardBuildInfo.type, discardCard, handleBuildWonderLevel, handleCardBuild, isChosen, onCancelCard, wonderLevelBuildInfo.type]);
 
   return (
     <Root className={b({ isChosen, isDisabled })}>

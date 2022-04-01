@@ -66,6 +66,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     io.emit(ESevenWondersGameEvent.EXECUTE_ACTION, data);
   }, [io]);
 
+  const cancelCard = useCallback(() => {
+    io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
+  }, [io]);
+
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');
     const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ESevenWondersNeighborSide.LEFT);
@@ -101,6 +105,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
             isChosen={index === chosenCardIndex}
             isDisabled={chosenCardIndex !== undefined && index !== chosenCardIndex}
             onCardAction={handleCardAction}
+            onCancelCard={cancelCard}
           />
         ))}
       </Box>
