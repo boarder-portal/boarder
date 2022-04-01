@@ -53,10 +53,16 @@ export interface ISevenWondersBuiltStage {
   cardAge: number;
 }
 
-export enum EAdditionalActionType {
-  BUILD_FROM_DISCARD = 'BUILD_FROM_DISCARD',
-  BUILD_LAST_AGE_CARD = 'BUILD_LAST_AGE_CARD',
+export enum ESevenWondersAdditionalActionType {
+  BUILD_CARD = 'BUILD_CARD',
 }
+
+export interface ISevenWondersAdditionalBuildCardAction {
+  type: ESevenWondersAdditionalActionType.BUILD_CARD;
+  effect: ISevenWondersBuildCardEffect;
+}
+
+export type TSevenWondersAdditionalAction = ISevenWondersAdditionalBuildCardAction;
 
 export interface ISevenWondersPlayer extends IPlayer {
   points: number;
@@ -70,7 +76,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   defeatPoints: number[];
   isBot: boolean;
   actions: ISevenWondersExecuteActionEvent[];
-  waitingAdditionalActionType: EAdditionalActionType | null;
+  waitingAdditionalAction: TSevenWondersAdditionalAction | null;
   buildCardEffects: ISevenWondersBuildCardEffect[];
 }
 

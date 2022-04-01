@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
-  EAdditionalActionType,
+  ESevenWondersAdditionalActionType,
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
   ISevenWondersExecuteActionEvent,
@@ -12,6 +12,7 @@ import {
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
 
 import {
   getPlayerResources,
@@ -75,12 +76,15 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [io]);
 
   const hand = useMemo(() => {
-    if (player.waitingAdditionalActionType === EAdditionalActionType.BUILD_FROM_DISCARD) {
+    if (
+      player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD
+      && player.waitingAdditionalAction.effect.source === ESevenWondersFreeCardSource.DISCARD
+    ) {
       return discard;
     }
 
     return player.hand;
-  }, [discard, player.hand, player.waitingAdditionalActionType]);
+  }, [discard, player.hand, player.waitingAdditionalAction]);
 
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');

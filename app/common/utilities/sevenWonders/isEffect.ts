@@ -1,8 +1,10 @@
 import {
+  ISevenWondersBuildCardEffect,
   ISevenWondersEffect,
   ISevenWondersResourcesEffect,
   ISevenWondersScientificSymbolsEffect,
-  ISevenWondersShieldsEffect, ISevenWondersTradeEffect,
+  ISevenWondersShieldsEffect,
+  ISevenWondersTradeEffect,
   TSevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
 
@@ -20,4 +22,8 @@ export function isScientificSymbolsEffect(effect: TSevenWondersEffect): effect i
 
 export function isTradeEffect(effect: TSevenWondersEffect): effect is ISevenWondersTradeEffect {
   return effect.type === ISevenWondersEffect.TRADE;
+}
+
+export function isBuildCardEffect(effect: TSevenWondersEffect): effect is ISevenWondersBuildCardEffect {
+  return effect.type === ISevenWondersEffect.BUILD_CARD;
 }

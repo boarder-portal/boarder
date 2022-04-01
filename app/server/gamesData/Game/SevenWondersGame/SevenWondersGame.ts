@@ -1,7 +1,6 @@
 import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
 import times from 'lodash/times';
-import { last } from 'lodash';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
@@ -9,6 +8,7 @@ import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 import { EPlayerStatus, IPlayer } from 'common/types';
 import {
+  ESevenWondersAdditionalActionType,
   ESevenWondersCardActionType,
   ESevenWondersCity,
   ESevenWondersGameEvent,
@@ -24,6 +24,7 @@ import {
   ISevenWondersCard,
 } from 'common/types/sevenWonders/cards';
 import {
+  ESevenWondersFreeCardPeriod,
   ISevenWondersEffect,
   ISevenWondersGain,
   ISevenWondersScientificSymbolsEffect,
@@ -31,10 +32,14 @@ import {
 } from 'common/types/sevenWonders/effects';
 
 import { getAllCombinations } from 'common/utilities/combinations';
-import { isShieldsEffect, isScientificSymbolsEffect } from 'common/utilities/sevenWonders/isEffect';
+import { isBuildCardEffect, isScientificSymbolsEffect, isShieldsEffect } from 'common/utilities/sevenWonders/isEffect';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getCity from 'common/utilities/sevenWonders/getCity';
+
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -79,7 +84,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       defeatPoints: [],
       isBot: false,
       actions: [],
-      waitingAdditionalActionType: null,
+      waitingAdditionalAction: null,
       buildCardEffects: [],
     };
   }
@@ -105,6 +110,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       getAllPlayerEffects(player).forEach((effect) => {
         player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
       });
+
+      if (player.login === '123') {
+        player.city = ESevenWondersCity.BABYLON;
+      }
     });
 
     this.startAge();
@@ -131,7 +140,25 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     this.players.forEach((player, index) => {
       player.hand = shuffledCards[index];
+
+      getAllPlayerEffects(player).filter(isBuildCardEffect).forEach((effect) => {
+        if (
+          effect.period === ESevenWondersFreeCardPeriod.AGE
+          || effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
+        ) {
+          player.buildCardEffects.push(effect);
+        }
+      });
     });
+  }
+
+  tryToEndTurn(): void {
+    if (this.isWaitingForAdditionalActions()) {
+      // TODO: conditionally send info
+      this.sendGameInfo();
+    } else {
+      this.endTurn();
+    }
   }
 
   endTurn(): void {
@@ -153,9 +180,11 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       const neighbor = this.getNeighbor(player, this.getAgeNeighborSide());
 
       neighbor.hand = hands[playerIndex];
+
+      player.actions = [];
     });
 
-    if (this.players.some(({ hand }) => hand.length === 1)) {
+    if (this.isLastAgeTurn()) {
       this.endAge();
     }
 
@@ -180,6 +209,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
           player.defeatPoints.push(-1);
         }
       });
+
+      player.buildCardEffects = player.buildCardEffects.filter(({ period }) => (
+        period === ESevenWondersFreeCardPeriod.ETERNITY
+      ));
     });
 
     if (this.age === 1) {
@@ -213,6 +246,14 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       // coins points
       player.points += Math.floor(player.coins / 3);
     });
+  }
+
+  isLastAgeTurn(): boolean {
+    return this.players.some(({ hand }) => hand.length <= 1);
+  }
+
+  isWaitingForAdditionalActions(): boolean {
+    return this.players.some(({ waitingAdditionalAction }) => waitingAdditionalAction);
   }
 
   getAgeNeighborSide(): ESevenWondersNeighborSide {
@@ -359,8 +400,16 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
       player.builtCards.push(card);
 
-      if (!action.isFree) {
+      if (!action.freeBuildType) {
         player.coins -= card.price?.coins ?? 0;
+      }
+
+      if (action.freeBuildType?.type === EBuildType.FREE_WITH_EFFECT) {
+        const usedEffect = player.buildCardEffects[action.freeBuildType.effectIndex];
+
+        if (usedEffect.period !== ESevenWondersFreeCardPeriod.ETERNITY) {
+          player.buildCardEffects.splice(action.freeBuildType.effectIndex, 1);
+        }
       }
 
       newEffects.push(...card.effects);
@@ -386,6 +435,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     player.hand.splice(handCardIndex, 1);
 
+    player.waitingAdditionalAction = null;
+
     if (payments) {
       (
         Object.entries(payments) as [ESevenWondersNeighborSide, number][]
@@ -399,18 +450,58 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     newEffects.forEach((effect) => {
       player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
+
+      if (isBuildCardEffect(effect)) {
+        player.buildCardEffects.push(effect);
+      }
     });
   }
 
-  executeMainActions(): void {
+  setAdditionalActions(): void {
+    const isLastAgeTurn = this.isLastAgeTurn();
+
+    if (isLastAgeTurn) {
+      this.players.forEach((player) => {
+        const buildLastCardEffect = player.buildCardEffects.find((effect) => (
+          effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
+        ));
+
+        if (buildLastCardEffect) {
+          player.waitingAdditionalAction = {
+            type: ESevenWondersAdditionalActionType.BUILD_CARD,
+            effect: buildLastCardEffect,
+          };
+        }
+      });
+    }
+
+    const someoneBuildsLastCard = this.players.some(({ waitingAdditionalAction }) => (
+      waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD
+      && waitingAdditionalAction.effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
+    ));
+
+    if (someoneBuildsLastCard) {
+      return;
+    }
+
+    if (isLastAgeTurn) {
+      this.players.forEach((player) => {
+        this.discard.push(...player.hand);
+      });
+    }
+
+    // TODO: prioritize Halicarnassus over Solomon
     this.players.forEach((player) => {
-      const action = player.actions.shift();
+      const buildCardEffect = player.buildCardEffects.find((effect) => (
+        effect.period === ESevenWondersFreeCardPeriod.NOW
+      ));
 
-      if (!action) {
-        return;
+      if (buildCardEffect) {
+        player.waitingAdditionalAction = {
+          type: ESevenWondersAdditionalActionType.BUILD_CARD,
+          effect: buildCardEffect,
+        };
       }
-
-      this.executePlayerAction(player, action);
     });
   }
 
@@ -431,9 +522,19 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     player.actions.push(data);
 
-    if (this.players.every((p) => p.actions.length === 1 || p.isBot)) {
-      this.executeMainActions();
-      this.endTurn();
+    if (this.isWaitingForAdditionalActions()) {
+      this.executePlayerAction(player, data);
+      this.setAdditionalActions();
+      this.tryToEndTurn();
+    } else if (this.players.every((p) => p.actions.length === 1 || p.isBot)) {
+      this.players.forEach((player) => {
+        player.actions.forEach((action) => {
+          this.executePlayerAction(player, action);
+        });
+      });
+
+      this.setAdditionalActions();
+      this.tryToEndTurn();
     } else {
       this.sendGameInfo();
     }
