@@ -80,6 +80,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       isBot: false,
       actions: [],
       waitingAdditionalActionType: null,
+      buildCardEffects: [],
     };
   }
 

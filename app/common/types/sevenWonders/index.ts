@@ -1,7 +1,7 @@
 import { ICommonGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
+import { ISevenWondersBuildCardEffect, TSevenWondersEffect } from 'common/types/sevenWonders/effects';
 
 export enum ESevenWondersGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -67,6 +67,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   isBot: boolean;
   actions: ISevenWondersExecuteActionEvent[];
   waitingAdditionalActionType: EAdditionalActionType | null;
+  buildCardEffects: ISevenWondersBuildCardEffect[];
 }
 
 export interface ISevenWondersGameInfoEvent {
