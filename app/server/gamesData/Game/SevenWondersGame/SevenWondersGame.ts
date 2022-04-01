@@ -475,7 +475,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     player.hand.splice(handCardIndex, 1);
 
     if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
-      this.usePlayerBuildEffect(player, player.waitingAdditionalAction.effectIndex);
+      this.usePlayerBuildEffect(player, player.waitingAdditionalAction.buildEffectIndex);
     }
 
     player.waitingAdditionalAction = null;
@@ -513,7 +513,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         if (buildLastCardEffectIndex !== -1) {
           player.waitingAdditionalAction = {
             type: ESevenWondersAdditionalActionType.BUILD_CARD,
-            effectIndex: buildLastCardEffectIndex,
+            buildEffectIndex: buildLastCardEffectIndex,
           };
 
           someoneBuildsLastCard = true;
@@ -540,7 +540,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       if (buildCardEffectIndex !== -1) {
         player.waitingAdditionalAction = {
           type: ESevenWondersAdditionalActionType.BUILD_CARD,
-          effectIndex: buildCardEffectIndex,
+          buildEffectIndex: buildCardEffectIndex,
         };
       }
     });

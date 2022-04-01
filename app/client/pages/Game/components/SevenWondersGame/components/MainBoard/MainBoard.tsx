@@ -58,7 +58,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
 
-  const chosenCardIndex = player.actions[0]?.cardIndex;
+  const chosenCardIndex = player.waitingAdditionalAction ? undefined : player.actions[0]?.cardIndex;
 
   const handleCardAction = useCallback((card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     const data: ISevenWondersExecuteActionEvent = {
@@ -77,7 +77,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const hand = useMemo(() => {
     if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
-      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.effectIndex];
+      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.buildEffectIndex];
 
       if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
         return discard;
