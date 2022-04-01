@@ -3,6 +3,10 @@ import { IPlayer } from 'common/types';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersBuildCardEffect, TSevenWondersEffect } from 'common/types/sevenWonders/effects';
 
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+
 export enum ESevenWondersGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   EXECUTE_ACTION = 'EXECUTE_ACTION',
@@ -81,9 +85,23 @@ export enum ESevenWondersCardActionType {
   DISCARD = 'DISCARD',
 }
 
+export interface ISevenWondersBuildingBuildType {
+  type: EBuildType.FOR_BUILDING;
+}
+
+export interface ISevenWondersBuildEffectBuildType {
+  type: EBuildType.FREE_WITH_EFFECT;
+  effectIndex: number;
+}
+
+export type TSevenWondersBuildType =
+  | ISevenWondersBuildingBuildType
+  | ISevenWondersBuildEffectBuildType;
+
 export interface ISevenWondersBuildStructureAction {
   type: ESevenWondersCardActionType.BUILD_STRUCTURE;
   isFree: boolean;
+  freeBuildType: TSevenWondersBuildType | null;
 }
 
 export interface ISevenWondersBuildWonderStageAction {

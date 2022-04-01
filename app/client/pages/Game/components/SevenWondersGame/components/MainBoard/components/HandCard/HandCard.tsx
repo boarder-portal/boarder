@@ -45,6 +45,7 @@ interface IHandCardProps {
 
 export enum EBuildType {
   FREE = 'FREE',
+  FREE_WITH_EFFECT = 'FREE_WITH_EFFECT',
   FOR_BUILDING = 'FOR_BUILDING',
   OWN_RESOURCES_AND_COINS = 'OWN_RESOURCES_AND_COINS',
   WITH_TRADE = 'WITH_TRADE',
@@ -145,6 +146,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     onCardAction(card, cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       isFree,
+      freeBuildType: null,
     }, payments);
     close();
   }, [card, cardIndex, close, onCardAction]);
