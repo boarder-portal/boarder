@@ -199,7 +199,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // civilian
-
   {
     id: ESevenWonderCardId.PAWNSHOP,
     type: ESevenWondersCardType.CIVILIAN,
@@ -249,7 +248,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // commercial
-
   {
     id: ESevenWonderCardId.TAVERN,
     type: ESevenWondersCardType.COMMERCIAL,
@@ -293,7 +291,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // military
-
   {
     id: ESevenWonderCardId.STOCKADE,
     type: ESevenWondersCardType.MILITARY,
@@ -339,7 +336,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // scientific
-
   {
     id: ESevenWonderCardId.APOTHECARY,
     type: ESevenWondersCardType.SCIENTIFIC,
@@ -481,7 +477,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // civilian
-
   {
     id: ESevenWonderCardId.AQUEDUCT,
     type: ESevenWondersCardType.CIVILIAN,
@@ -565,7 +560,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // commercial
-
   {
     id: ESevenWonderCardId.FORUM,
     type: ESevenWondersCardType.COMMERCIAL,
@@ -648,7 +642,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // military
-
   {
     id: ESevenWonderCardId.WALLS,
     type: ESevenWondersCardType.MILITARY,
@@ -722,7 +715,6 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
   },
 
   // scientific
-
   {
     id: ESevenWonderCardId.DISPENSARY,
     type: ESevenWondersCardType.SCIENTIFIC,
@@ -794,6 +786,709 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
       }],
     },
     minPlayersCounts: [3, 7],
+  }],
+
+  // age 3
+  [{
+    // civilian
+    id: ESevenWonderCardId.PANTHEON,
+    type: ESevenWondersCardType.CIVILIAN,
+    effects: [{
+      type: ISevenWondersEffect.GAIN,
+      gain: {
+        points: 7,
+      },
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.CLAY,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.TEMPLE],
+    },
+    minPlayersCounts: [3, 6],
+  }, {
+    id: ESevenWonderCardId.GARDENS,
+    type: ESevenWondersCardType.CIVILIAN,
+    effects: [{
+      type: ISevenWondersEffect.GAIN,
+      gain: {
+        points: 5,
+      },
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 2,
+      }],
+      buildings: [ESevenWonderCardId.STATUE],
+    },
+    minPlayersCounts: [3, 4],
+  }, {
+    id: ESevenWonderCardId.TOWN_HALL,
+    type: ESevenWondersCardType.CIVILIAN,
+    effects: [{
+      type: ISevenWondersEffect.GAIN,
+      gain: {
+        points: 6,
+      },
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 2,
+      }],
+    },
+    minPlayersCounts: [3, 5, 6],
+  }, {
+    id: ESevenWonderCardId.PALACE,
+    type: ESevenWondersCardType.CIVILIAN,
+    effects: [{
+      type: ISevenWondersEffect.GAIN,
+      gain: {
+        points: 8,
+      },
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [3, 7],
+  }, {
+    id: ESevenWonderCardId.SENATE,
+    type: ESevenWondersCardType.CIVILIAN,
+    effects: [{
+      type: ISevenWondersEffect.GAIN,
+      gain: {
+        points: 6,
+      },
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 2,
+      }],
+      buildings: [ESevenWonderCardId.LIBRARY],
+    },
+    minPlayersCounts: [3, 5],
+  },
+
+  // commercial
+  {
+    id: ESevenWonderCardId.HAVEN,
+    type: ESevenWondersCardType.COMMERCIAL,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+        gain: {
+          points: 1,
+          coins: 1,
+        },
+      }],
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.FORUM],
+    },
+    minPlayersCounts: [3, 4],
+  }, {
+    id: ESevenWonderCardId.LIGHTHOUSE,
+    type: ESevenWondersCardType.COMMERCIAL,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.COMMERCIAL],
+        gain: {
+          points: 1,
+          coins: 1,
+        },
+      }],
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.CARAVANSERY],
+    },
+    minPlayersCounts: [3, 6],
+  }, {
+    id: ESevenWonderCardId.CHAMBER_OF_COMMERCE,
+    type: ESevenWondersCardType.COMMERCIAL,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+        gain: {
+          points: 2,
+          coins: 2,
+        },
+      }],
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.CLAY,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [4, 6],
+  }, {
+    id: ESevenWonderCardId.ARENA,
+    type: ESevenWondersCardType.COMMERCIAL,
+    effects: [{
+      type: ISevenWondersEffect.WONDER_LEVELS,
+      gain: {
+        points: 1,
+        coins: 3,
+      },
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 2,
+      }],
+      buildings: [ESevenWonderCardId.DISPENSARY],
+    },
+    minPlayersCounts: [3, 5, 7],
+  },
+
+  // military
+  {
+    id: ESevenWonderCardId.FORTIFICATIONS,
+    type: ESevenWondersCardType.MILITARY,
+    effects: [{
+      type: ISevenWondersEffect.SHIELDS,
+      count: 3,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 3,
+      }],
+      buildings: [ESevenWonderCardId.WALLS],
+    },
+    minPlayersCounts: [3, 7],
+  }, {
+    id: ESevenWonderCardId.CIRCUS,
+    type: ESevenWondersCardType.MILITARY,
+    effects: [{
+      type: ISevenWondersEffect.SHIELDS,
+      count: 3,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.TRAINING_GROUND],
+    },
+    minPlayersCounts: [4, 5, 6],
+  }, {
+    id: ESevenWonderCardId.ARSENAL,
+    type: ESevenWondersCardType.MILITARY,
+    effects: [{
+      type: ISevenWondersEffect.SHIELDS,
+      count: 3,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [3, 4, 7],
+  }, {
+    id: ESevenWonderCardId.SIEGE_WORKSHOP,
+    type: ESevenWondersCardType.MILITARY,
+    effects: [{
+      type: ISevenWondersEffect.SHIELDS,
+      count: 3,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 3,
+      }],
+      buildings: [ESevenWonderCardId.LABORATORY],
+    },
+    minPlayersCounts: [3, 5],
+  },
+
+  // scientific
+  {
+    id: ESevenWonderCardId.LODGE,
+    type: ESevenWondersCardType.SCIENTIFIC,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [ESevenWondersScientificSymbol.COMPASS],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.CLAY,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.DISPENSARY],
+    },
+    minPlayersCounts: [3, 6],
+  }, {
+    id: ESevenWonderCardId.OBSERVATORY,
+    type: ESevenWondersCardType.SCIENTIFIC,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [ESevenWondersScientificSymbol.GEAR],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.OBSERVATORY],
+    },
+    minPlayersCounts: [3, 7],
+  }, {
+    id: ESevenWonderCardId.UNIVERSITY,
+    type: ESevenWondersCardType.SCIENTIFIC,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [ESevenWondersScientificSymbol.TABLET],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.LIBRARY],
+    },
+    minPlayersCounts: [3, 4],
+  }, {
+    id: ESevenWonderCardId.ACADEMY,
+    type: ESevenWondersCardType.SCIENTIFIC,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [ESevenWondersScientificSymbol.COMPASS],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.SCHOOL],
+    },
+    minPlayersCounts: [3, 7],
+  }, {
+    id: ESevenWonderCardId.STUDY,
+    type: ESevenWondersCardType.SCIENTIFIC,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [ESevenWondersScientificSymbol.GEAR],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+      buildings: [ESevenWonderCardId.SCHOOL],
+    },
+    minPlayersCounts: [3, 5],
+  },
+
+  // guilds
+  {
+    id: ESevenWonderCardId.WORKERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.CRAFTSMENS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+        gain: {
+          points: 2,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 2,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.TRADERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.COMMERCIAL],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.PHILOSOPHERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.SCIENTIFIC],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.CLAY,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.SPIES_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.MILITARY],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.CLAY,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.STRATEGISTS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.LOSSES,
+      gain: {
+        points: 1,
+      },
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.SHIPOWNERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+        gain: {
+          points: 1,
+        },
+      }, {
+        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+        gain: {
+          points: 1,
+        },
+      }, {
+        cardTypes: [ESevenWondersCardType.GUILD],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.SCIENTISTS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      variants: [
+        ESevenWondersScientificSymbol.GEAR,
+        ESevenWondersScientificSymbol.COMPASS,
+        ESevenWondersScientificSymbol.TABLET,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.MAGISTRATES_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.CARDS_TYPE,
+      sources: [{
+        cardTypes: [ESevenWondersCardType.CIVILIAN],
+        gain: {
+          points: 1,
+        },
+      }],
+      directions: [
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.BUILDERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ISevenWondersEffect.WONDER_LEVELS,
+      gain: {
+        points: 1,
+      },
+      directions: [
+        ESevenWondersPlayerDirection.SELF,
+        ESevenWondersPlayerDirection.LEFT,
+        ESevenWondersPlayerDirection.RIGHT,
+      ],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 2,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
   }],
 ];
 
