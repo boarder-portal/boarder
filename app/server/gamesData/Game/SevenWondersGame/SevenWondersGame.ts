@@ -32,6 +32,9 @@ import {
   ISevenWondersScientificSymbolsEffect,
   TSevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 import { getAllCombinations } from 'common/utilities/combinations';
 import {
@@ -43,10 +46,7 @@ import {
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getCity from 'common/utilities/sevenWonders/getCity';
-
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -196,7 +196,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   endTurn(): void {
     const hands = this.players.map(({ hand }) => hand);
-    const ageDirection = this.getAgeDirection();
+    const ageDirection = getAgeDirection(this.age);
 
     this.players.forEach((player, playerIndex) => {
       const neighbor = this.getNeighbor(player, ageDirection);
@@ -258,12 +258,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   isWaitingForAdditionalActions(): boolean {
     return this.players.some(({ waitingAdditionalAction }) => waitingAdditionalAction);
-  }
-
-  getAgeDirection(): ESevenWondersNeighborSide {
-    return this.age % 2
-      ? ESevenWondersNeighborSide.LEFT
-      : ESevenWondersNeighborSide.RIGHT;
   }
 
   getNeighbor(player: ISevenWondersPlayer, neighborSide: ESevenWondersNeighborSide): ISevenWondersPlayer {
@@ -631,6 +625,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return {
       players: this.players,
       discard: this.discard,
+      age: this.age,
     };
   }
 

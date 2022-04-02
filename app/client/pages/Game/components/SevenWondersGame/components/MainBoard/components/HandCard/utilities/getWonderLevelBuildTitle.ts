@@ -1,6 +1,6 @@
 import {
   EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 export default function getWonderLevelBuildTitle(buildType: EBuildType): string {
   switch (buildType) {

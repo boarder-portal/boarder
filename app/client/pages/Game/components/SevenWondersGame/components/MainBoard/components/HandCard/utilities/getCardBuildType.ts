@@ -1,15 +1,14 @@
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 import {
   ITradeVariant,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 import getBuildType
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
-
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 export default function getCardBuildType(
   card: ISevenWondersCard,

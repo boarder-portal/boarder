@@ -56,6 +56,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
 
   const [players, setPlayers] = useState<ISevenWondersPlayer[]>([]);
   const [discard, setDiscard] = useState<ISevenWondersCard[]>([]);
+  const [age, setAge] = useState<number>(0);
 
   const user = useRecoilValue(userAtom);
 
@@ -89,6 +90,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
 
       setPlayers(gameInfo.players);
       setDiscard(gameInfo.discard);
+      setAge(gameInfo.age);
     });
 
     return () => {
@@ -118,6 +120,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         io={io}
         player={player}
         discard={discard}
+        age={age}
         leftNeighbor={leftNeighbor}
         rightNeighbor={rightNeighbor}
       />

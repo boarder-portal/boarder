@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { ISevenWondersPlayer, ISevenWondersPrice } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import {
+  EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
@@ -14,10 +15,6 @@ import {
 import getBuildType
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
 import getCity from 'common/utilities/sevenWonders/getCity';
-
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 
 export default function useWonderLevelBuildInfo(
   price: ISevenWondersPrice,

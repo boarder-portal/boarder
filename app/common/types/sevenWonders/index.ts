@@ -2,10 +2,9 @@ import { ICommonGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersBuildCardEffect, TSevenWondersEffect } from 'common/types/sevenWonders/effects';
-
 import {
   EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 export enum ESevenWondersGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -83,6 +82,7 @@ export interface ISevenWondersPlayer extends IPlayer {
 export interface ISevenWondersGameInfoEvent {
   players: ISevenWondersPlayer[];
   discard: ISevenWondersCard[];
+  age: number;
 }
 
 export enum ESevenWondersCardActionType {

@@ -10,7 +10,7 @@ import {
   ESevenWondersFreeCardSource,
   ISevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
-import { ESevenWondersCardType, ESevenWondersPlayerDirection } from 'common/types/sevenWonders/cards';
+import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 
 const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.RHODOS]: {
@@ -551,9 +551,9 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         },
         effects: [{
           type: ISevenWondersEffect.COPY_CARD,
-          directions: [
-            ESevenWondersPlayerDirection.LEFT,
-            ESevenWondersPlayerDirection.RIGHT,
+          neighbors: [
+            ESevenWondersNeighborSide.LEFT,
+            ESevenWondersNeighborSide.RIGHT,
           ],
           cardType: ESevenWondersCardType.GUILD,
         }],

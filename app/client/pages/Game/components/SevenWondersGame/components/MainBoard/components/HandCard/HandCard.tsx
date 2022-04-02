@@ -7,11 +7,13 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
 import {
   ESevenWondersCardActionType,
   ISevenWondersPlayer,
-  TSevenWondersAction, TSevenWondersBuildType,
+  TSevenWondersAction,
+  TSevenWondersBuildType,
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ESevenWondersFreeCardPeriod } from 'common/types/sevenWonders/effects';
 import {
+  EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
@@ -45,23 +47,12 @@ interface IHandCardProps {
   onCancelCard(): void;
 }
 
-export enum EBuildType {
-  FREE = 'FREE',
-  FREE_WITH_EFFECT = 'FREE_WITH_EFFECT',
-  FOR_BUILDING = 'FOR_BUILDING',
-  OWN_RESOURCES = 'OWN_RESOURCES',
-  OWN_RESOURCES_AND_COINS = 'OWN_RESOURCES_AND_COINS',
-  WITH_TRADE = 'WITH_TRADE',
-  NOT_AVAILABLE = 'NOT_AVAILABLE',
-  ALREADY_BUILT = 'ALREADY_BUILT',
-}
-
 const b = block('HandCard');
 
 const Root = styled(Box)`
-
   .HandCard {
     &__cardWrapper {
+      transition: 200ms;
       position: relative;
     }
 
@@ -84,21 +75,23 @@ const Root = styled(Box)`
 
   &.HandCard {
     &_isChosen {
-      box-shadow: green 0 5px 15px;
-      z-index: 22;
+      .HandCard__cardWrapper {
+        box-shadow: green 0 5px 15px;
+        z-index: 22;
+      }
     }
 
     &_isDisabled {
-      position: relative;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(220, 220, 220, 0.6);
+      .HandCard__cardWrapper {
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(220, 220, 220, 0.6);
+        }
       }
     }
   }
@@ -106,6 +99,7 @@ const Root = styled(Box)`
   :not(.HandCard_isDisabled) {
     .HandCard__cardWrapper {
       &:hover {
+        transform: translateY(-100px);
         z-index: 21;
 
         .HandCard__actions {
@@ -240,7 +234,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   return (
     <Root className={b({ isChosen, isDisabled })}>
       <div className={b('cardWrapper')}>
-        <Card card={card} />
+        <Card card={card} width={150} />
 
         <Box className={b('actions')} flex column between={20} alignItems="center">
           {actions}
