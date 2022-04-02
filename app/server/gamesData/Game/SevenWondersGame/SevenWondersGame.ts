@@ -47,6 +47,7 @@ import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
+import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -118,8 +119,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
       });
 
-      // player.city = ESevenWondersCity.OLYMPIA;
-      // player.citySide = 0;
+      // if (player.login === 'atooxa') {
+      //   player.city = ESevenWondersCity.HALIKARNASSOS;
+      //   player.citySide = 1;
+      // }
     });
 
     this.startAge();
@@ -451,7 +454,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
     const { cardIndex, action, payments } = executeActionEvent;
 
-    const card = player.hand[cardIndex];
+    const card = getPlayerHandCards(player, this.discard)[cardIndex];
     const newEffects: TSevenWondersEffect[] = [];
 
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {

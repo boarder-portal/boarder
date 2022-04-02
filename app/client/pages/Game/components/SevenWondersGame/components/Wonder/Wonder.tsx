@@ -1,8 +1,9 @@
-import React  from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ESevenWondersAdditionalActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
@@ -56,6 +57,24 @@ const Wonder: React.FC<IWonderProps> = (props) => {
 
   const cardGroups = useCardGroups(player);
 
+  const currentAction = useMemo(() => {
+    if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
+      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.buildEffectIndex];
+
+      if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
+        return 'Выбор из сброса';
+      }
+
+      return 'Строительство последней карты';
+    }
+
+    if (!player.actions.length) {
+      return 'Выбирает карту';
+    }
+
+    return 'Ожидает';
+  }, [player]);
+
   return (
     <Root className={b.mix(className)}>
       <Box className={b('cardGroups')} flex justifyContent="space-between">
@@ -89,8 +108,8 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       <Box flex between={8} mt={16}>
         {player.points > 0 && <div>{`Очки: ${player.points}`}</div>}
         <div>{`Монет: ${player.coins}`}</div>
-        {Boolean(player.victoryPoints.length) && <div>{`Победы: ${player.victoryPoints.join(', ')}`}</div>}
-        {Boolean(player.defeatPoints.length) && <div>{`Поражения: ${player.defeatPoints.join(', ')}`}</div>}
+        <div>{`Война ${[...player.victoryPoints, ...player.defeatPoints].join(', ')}`}</div>
+        <div>{currentAction}</div>
       </Box>
     </Root>
   );

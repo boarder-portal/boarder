@@ -28,6 +28,7 @@ import getResourceTradePrices
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
+import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
@@ -101,17 +102,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
 
-  const hand = useMemo(() => {
-    if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
-      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.buildEffectIndex];
-
-      if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
-        return discard;
-      }
-    }
-
-    return player.hand;
-  }, [discard, player.buildCardEffects, player.hand, player.waitingAdditionalAction]);
+  const hand = useMemo(() => getPlayerHandCards(player, discard), [discard, player]);
 
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');
