@@ -496,6 +496,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.STONE,
         count: 3,
       }],
+      buildings: [ESevenWonderCardId.BATHS],
     },
     minPlayersCounts: [3, 7],
   }, {
@@ -518,6 +519,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.GLASS,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.ALTAR],
     },
     minPlayersCounts: [3, 6],
   }, {
@@ -537,6 +539,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.ORE,
         count: 2,
       }],
+      buildings: [ESevenWonderCardId.THEATER],
     },
     minPlayersCounts: [3, 7],
   }, {
@@ -556,6 +559,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.LOOM,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.SCRIPTORIUM],
     },
     minPlayersCounts: [3, 5],
   },
@@ -583,6 +587,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.CLAY,
         count: 2,
       }],
+      buildings: [ESevenWonderCardId.EAST_TRADING_POST, ESevenWonderCardId.WEST_TRADING_POST],
     },
     minPlayersCounts: [3, 6, 7],
   }, {
@@ -609,6 +614,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.WOOD,
         count: 2,
       }],
+      buildings: [ESevenWonderCardId.MARKETPLACE],
     },
     minPlayersCounts: [3, 5, 6],
   }, {
@@ -692,6 +698,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.WOOD,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.APOTHECARY],
     },
     minPlayersCounts: [3, 5],
   }, {
@@ -709,6 +716,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.ORE,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.WORKSHOP],
     },
     minPlayersCounts: [3, 6],
   },
@@ -730,6 +738,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.GLASS,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.APOTHECARY],
     },
     minPlayersCounts: [3, 4],
   }, {
@@ -747,6 +756,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.PAPYRUS,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.WORKSHOP],
     },
     minPlayersCounts: [3, 5],
   }, {
@@ -764,6 +774,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         type: ESevenWondersResource.LOOM,
         count: 1,
       }],
+      buildings: [ESevenWonderCardId.SCRIPTORIUM],
     },
     minPlayersCounts: [3, 6],
   }, {
