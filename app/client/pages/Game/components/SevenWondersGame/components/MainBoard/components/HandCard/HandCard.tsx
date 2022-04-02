@@ -41,7 +41,7 @@ interface IHandCardProps {
   wonderLevelBuildInfo: IBuildInfo;
   isChosen: boolean;
   isDisabled: boolean;
-  onCardAction(card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
   onCancelCard(): void;
 }
 
@@ -121,9 +121,6 @@ const Root = styled(Box)`
 const HandCard: React.FC<IHandCardProps> = (props) => {
   const {
     card,
-    card: {
-      price: cardPrice,
-    },
     cardIndex,
     player,
     resourcePools,
@@ -163,36 +160,36 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   }, [card.type, cardBuildInfo.type, player.buildCardEffects]);
 
   const buildCard = useCallback((payments: TSevenWondersPayments | undefined, freeBuildType?: TSevenWondersBuildType | null) => {
-    onCardAction(card, cardIndex, {
+    onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType: freeBuildType || null,
     }, payments);
     close();
-  }, [card, cardIndex, close, onCardAction]);
+  }, [cardIndex, close, onCardAction]);
 
   const buildWonderLevel = useCallback((payments?: TSevenWondersPayments) => {
-    onCardAction(card, cardIndex, {
+    onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_WONDER_STAGE,
       stageIndex: player.builtStages.length,
     }, payments);
     close();
-  }, [card, cardIndex, close, onCardAction, player.builtStages.length]);
+  }, [cardIndex, close, onCardAction, player.builtStages.length]);
 
   const discardCard = useCallback(() => {
-    onCardAction(card, cardIndex, {
+    onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.DISCARD,
     });
-  }, [card, cardIndex, onCardAction]);
+  }, [cardIndex, onCardAction]);
 
   const handleBuildCardWithEffect = useCallback(() => {
-    onCardAction(card, cardIndex, {
+    onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType: {
         type: EBuildType.FREE_WITH_EFFECT,
         effectIndex: buildEffectIndex,
       },
     });
-  }, [buildEffectIndex, card, cardIndex, onCardAction]);
+  }, [buildEffectIndex, cardIndex, onCardAction]);
 
   const handleCardBuild = useCallback(() => {
     if (

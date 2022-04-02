@@ -60,9 +60,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const chosenCardIndex = player.waitingAdditionalAction ? undefined : player.actions[0]?.cardIndex;
 
-  const handleCardAction = useCallback((card: ISevenWondersCard, cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+  const handleCardAction = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     const data: ISevenWondersExecuteActionEvent = {
-      card,
       cardIndex,
       action,
       payments,

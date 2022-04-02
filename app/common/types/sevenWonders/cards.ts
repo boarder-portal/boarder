@@ -37,6 +37,12 @@ export enum ESevenWonderCardId {
   TEMPLE = 'TEMPLE',
   STATUE = 'STATUE',
   COURTHOUSE = 'COURTHOUSE',
+  // age 3
+  PANTHEON = 'PANTHEON',
+  GARDENS = 'GARDENS',
+  TOWN_HALL = 'TOWN_HALL',
+  PALACE = 'PALACE',
+  SENATE = 'SENATE',
 
   // commercial
   // age 1
@@ -49,6 +55,11 @@ export enum ESevenWonderCardId {
   CARAVANSERY = 'CARAVANSERY',
   VINEYARD = 'VINEYARD',
   BAZAR = 'BAZAR',
+  // age 3
+  HAVEN = 'HAVEN',
+  LIGHTHOUSE = 'LIGHTHOUSE',
+  CHAMBER_OF_COMMERCE = 'CHAMBER_OF_COMMERCE',
+  ARENA = 'ARENA',
 
   // military
   // age 1

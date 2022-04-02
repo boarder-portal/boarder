@@ -127,7 +127,6 @@ export type TSevenWondersAction = (
 export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
 
 export interface ISevenWondersExecuteActionEvent {
-  card: ISevenWondersCard;
   cardIndex: number;
   action: TSevenWondersAction;
   payments?: TSevenWondersPayments;

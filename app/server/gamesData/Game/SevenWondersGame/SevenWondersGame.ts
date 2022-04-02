@@ -1,6 +1,7 @@
 import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
 import times from 'lodash/times';
+import random from 'lodash/random';
 
 import { GAMES_CONFIG } from 'common/constants/gamesConfig';
 
@@ -160,6 +161,28 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         }
       });
     });
+
+    this.startTurn();
+  }
+
+  startTurn(): void {
+    this.players.forEach((player) => {
+      if (player.isBot) {
+        setTimeout(() => {
+          player.hand = shuffle(player.hand);
+
+          this.onPlayerExecuteAction(player, {
+            cardIndex: 0,
+            action: {
+              type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+              freeBuildType: {
+                type: EBuildType.FOR_BUILDING,
+              },
+            },
+          });
+        }, random(1000, 5000, true));
+      }
+    });
   }
 
   tryToEndTurn(): void {
@@ -172,18 +195,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endTurn(): void {
-    this.players.forEach((player) => {
-      if (player.isBot) {
-        player.hand = shuffle(player.hand);
-
-        const builtCard = player.hand.pop();
-
-        if (builtCard) {
-          player.builtCards.push(builtCard);
-        }
-      }
-    });
-
     const hands = this.players.map(({ hand }) => hand);
     const ageDirection = this.getAgeDirection();
 
@@ -197,6 +208,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     if (this.isLastAgeTurn()) {
       this.endAge();
+    } else {
+      this.startTurn();
     }
 
     this.sendGameInfo();
@@ -442,8 +455,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
-    const { card, action, payments } = executeActionEvent;
+    const { cardIndex, action, payments } = executeActionEvent;
 
+    const card = player.hand[cardIndex];
     const newEffects: TSevenWondersEffect[] = [];
 
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
@@ -558,6 +572,27 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     });
   }
 
+  onPlayerExecuteAction(player: ISevenWondersPlayer, action: ISevenWondersExecuteActionEvent): void {
+    player.actions.push(action);
+
+    if (this.isWaitingForAdditionalActions()) {
+      this.executePlayerAction(player, action);
+      this.setAdditionalActions();
+      this.tryToEndTurn();
+    } else if (this.players.every((p) => p.actions.length === 1)) {
+      this.players.forEach((player) => {
+        player.actions.forEach((action) => {
+          this.executePlayerAction(player, action);
+        });
+      });
+
+      this.setAdditionalActions();
+      this.tryToEndTurn();
+    } else {
+      this.sendGameInfo();
+    }
+  }
+
   sendGameInfo(): void {
     this.io.emit(ESevenWondersGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
@@ -573,24 +608,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       return;
     }
 
-    player.actions.push(data);
-
-    if (this.isWaitingForAdditionalActions()) {
-      this.executePlayerAction(player, data);
-      this.setAdditionalActions();
-      this.tryToEndTurn();
-    } else if (this.players.every((p) => p.actions.length === 1 || p.isBot)) {
-      this.players.forEach((player) => {
-        player.actions.forEach((action) => {
-          this.executePlayerAction(player, action);
-        });
-      });
-
-      this.setAdditionalActions();
-      this.tryToEndTurn();
-    } else {
-      this.sendGameInfo();
-    }
+    this.onPlayerExecuteAction(player, data);
   }
 
   onCancelAction({ socket }: IGameEvent): void {
