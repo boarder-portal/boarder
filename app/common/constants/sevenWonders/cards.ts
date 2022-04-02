@@ -617,12 +617,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
       directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.SELF, ESevenWondersPlayerDirection.RIGHT],
-      sources: [{
-        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
-        gain: {
-          coins: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+      gain: {
+        coins: 1,
+      },
     }],
     minPlayersCounts: [3, 6],
   }, {
@@ -631,12 +629,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
       directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.SELF, ESevenWondersPlayerDirection.RIGHT],
-      sources: [{
-        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
-        gain: {
-          coins: 2,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+      gain: {
+        coins: 2,
+      },
     }],
     minPlayersCounts: [4, 7],
   },
@@ -926,13 +922,11 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
-        gain: {
-          points: 1,
-          coins: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+      gain: {
+        points: 1,
+        coins: 1,
+      },
       directions: [ESevenWondersPlayerDirection.SELF],
     }],
     price: {
@@ -954,13 +948,11 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.COMMERCIAL],
-        gain: {
-          points: 1,
-          coins: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.COMMERCIAL],
+      gain: {
+        points: 1,
+        coins: 1,
+      },
       directions: [ESevenWondersPlayerDirection.SELF],
     }],
     price: {
@@ -979,13 +971,11 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
-        gain: {
-          points: 2,
-          coins: 2,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+      gain: {
+        points: 2,
+        coins: 2,
+      },
       directions: [ESevenWondersPlayerDirection.SELF],
     }],
     price: {
@@ -1210,12 +1200,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+      gain: {
+        points: 1,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,
@@ -1242,12 +1230,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
-        gain: {
-          points: 2,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+      gain: {
+        points: 2,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,
@@ -1268,12 +1254,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.COMMERCIAL],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.COMMERCIAL],
+      gain: {
+        points: 1,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,
@@ -1297,12 +1281,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.SCIENTIFIC],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.SCIENTIFIC],
+      gain: {
+        points: 1,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,
@@ -1326,12 +1308,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.MILITARY],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.MILITARY],
+      gain: {
+        points: 1,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,
@@ -1378,22 +1358,24 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
-        gain: {
-          points: 1,
-        },
-      }, {
-        cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
-        gain: {
-          points: 1,
-        },
-      }, {
-        cardTypes: [ESevenWondersCardType.GUILD],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
+      gain: {
+        points: 1,
+      },
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }, {
+      type: ISevenWondersEffect.CARDS_TYPE,
+      cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
+      gain: {
+        points: 1,
+      },
+      directions: [ESevenWondersPlayerDirection.SELF],
+    }, {
+      type: ISevenWondersEffect.CARDS_TYPE,
+      cardTypes: [ESevenWondersCardType.GUILD],
+      gain: {
+        points: 1,
+      },
       directions: [ESevenWondersPlayerDirection.SELF],
     }],
     price: {
@@ -1438,12 +1420,10 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.GUILD,
     effects: [{
       type: ISevenWondersEffect.CARDS_TYPE,
-      sources: [{
-        cardTypes: [ESevenWondersCardType.CIVILIAN],
-        gain: {
-          points: 1,
-        },
-      }],
+      cardTypes: [ESevenWondersCardType.CIVILIAN],
+      gain: {
+        points: 1,
+      },
       directions: [
         ESevenWondersPlayerDirection.LEFT,
         ESevenWondersPlayerDirection.RIGHT,

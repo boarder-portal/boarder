@@ -44,14 +44,10 @@ export interface ISevenWondersTradeEffect {
   resource: ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS;
 }
 
-export interface ISevenWondersCardsTypeEffectSource {
-  cardTypes: ESevenWondersCardType[];
-  gain: ISevenWondersGain;
-}
-
 export interface ISevenWondersCardsTypeEffect {
   type: ISevenWondersEffect.CARDS_TYPE;
-  sources: ISevenWondersCardsTypeEffectSource[];
+  cardTypes: ESevenWondersCardType[];
+  gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
 

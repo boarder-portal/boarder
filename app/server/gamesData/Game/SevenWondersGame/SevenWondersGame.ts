@@ -325,14 +325,12 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
-          effect.sources.forEach((source) => {
-            const cardTypeCardCounts = source.cardTypes.map((cardType) => {
-              return this.getPlayerTypeCards(player, cardType).length;
-            });
-            const setsCount = Math.min(...cardTypeCardCounts);
-
-            this.mergeGains(gain, source.gain, setsCount);
+          const cardTypeCardCounts = effect.cardTypes.map((cardType) => {
+            return this.getPlayerTypeCards(player, cardType).length;
           });
+          const setsCount = Math.min(...cardTypeCardCounts);
+
+          this.mergeGains(gain, effect.gain, setsCount);
         });
 
         return gain;
@@ -394,8 +392,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
   }
 
-  calculatePlayerPoints(player: ISevenWondersPlayer, builtCards: ISevenWondersCard[]): number {
-    const effects = getAllPlayerEffects(player, builtCards);
+  calculatePlayerPoints(player: ISevenWondersPlayer, effects: TSevenWondersEffect[]): number {
     let allPoints = 0;
 
     // effect points
@@ -422,24 +419,23 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   calculatePlayerMaxPoints(player: ISevenWondersPlayer): number {
-    const builtCardVariants = player.builtCards.map((card) => {
-      const copyEffect = card.effects.find(isCopyEffect);
-
-      if (!copyEffect) {
-        return [card];
+    const effectsVariants = getAllPlayerEffects(player).map((effect) => {
+      if (!isCopyEffect(effect)) {
+        return [[effect]];
       }
 
-      return copyEffect.neighbors
+      return effect.neighbors
         .map((neighborSide) => {
           return this.getNeighbor(player, neighborSide).builtCards
-            .filter(({ type }) => type === copyEffect.cardType);
+            .filter(({ type }) => type === effect.cardType)
+            .map(({ effects }) => effects);
         })
         .flat();
     });
-    const cardCombinations = getAllCombinations(builtCardVariants);
+    const effectsCombinations = getAllCombinations(effectsVariants);
 
-    return cardCombinations.reduce((maxPoints, builtCards) => {
-      return Math.max(maxPoints, this.calculatePlayerPoints(player, builtCards));
+    return effectsCombinations.reduce((maxPoints, effects) => {
+      return Math.max(maxPoints, this.calculatePlayerPoints(player, effects.flat()));
     }, 0);
   }
 

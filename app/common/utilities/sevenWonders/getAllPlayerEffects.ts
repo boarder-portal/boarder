@@ -12,14 +12,11 @@ const {
   },
 } = GAMES_CONFIG;
 
-export default function getAllPlayerEffects(
-  player: ISevenWondersPlayer,
-  builtCards = player.builtCards,
-): TSevenWondersEffect[] {
+export default function getAllPlayerEffects(player: ISevenWondersPlayer): TSevenWondersEffect[] {
   const citySide = allCities[player.city].sides[player.citySide];
 
   return [
-    ...builtCards.map(({ effects }) => effects),
+    ...player.builtCards.map(({ effects }) => effects),
     ...player.builtStages.map(({ index }) => citySide.wonders[index].effects),
     citySide.effect,
   ].flat();
