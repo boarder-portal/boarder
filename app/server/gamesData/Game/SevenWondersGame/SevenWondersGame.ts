@@ -48,6 +48,7 @@ import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffec
 import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
+import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -119,7 +120,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
       });
 
-      // if (player.login === 'atooxa') {
+      // if (!player.isBot) {
       //   player.city = ESevenWondersCity.HALIKARNASSOS;
       //   player.citySide = 1;
       // }
@@ -135,7 +136,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const addedGuildCards = shuffle(
       ageCards
         .filter(({ type }) => type === ESevenWondersCardType.GUILD)
-        .slice(this.players.length + 2),
+        .slice(0, this.players.length + 2),
     );
     const usedCards = ageCards.reduce<ISevenWondersCard[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
@@ -242,7 +243,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       ));
     });
 
-    if (this.age === 1) {
+    if (this.age === 2) {
       this.endGame();
     } else {
       this.startAge();
@@ -454,13 +455,15 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
     const { cardIndex, action, payments } = executeActionEvent;
 
-    const card = getPlayerHandCards(player, this.discard)[cardIndex];
+    const playerHandCards = getPlayerHandCards(player, this.discard);
+    const card = playerHandCards[cardIndex];
+    const waitingBuildEffect = getWaitingBuildEffect(player);
     const newEffects: TSevenWondersEffect[] = [];
 
     if (action.type === ESevenWondersCardActionType.BUILD_STRUCTURE) {
       player.builtCards.push(card);
 
-      if (!action.freeBuildType) {
+      if (!action.freeBuildType && !waitingBuildEffect?.isFree) {
         player.coins -= card.price?.coins ?? 0;
       }
 
@@ -487,9 +490,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       this.discard.push(card);
     }
 
-    const handCardIndex = player.hand.findIndex(({ id }) => id === card.id);
-
-    player.hand.splice(handCardIndex, 1);
+    playerHandCards.splice(cardIndex, 1);
 
     if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
       this.usePlayerBuildEffect(player, player.waitingAdditionalAction.buildEffectIndex);

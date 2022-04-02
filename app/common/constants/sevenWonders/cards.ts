@@ -453,7 +453,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
       type: ISevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.CLAY,
-        count: 1,
+        count: 2,
       }],
     }],
     price: {
