@@ -4,7 +4,6 @@ import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import {
-  ESevenWondersAdditionalActionType,
   ESevenWondersGameEvent,
   ESevenWondersNeighborSide,
   ISevenWondersExecuteActionEvent,
@@ -13,7 +12,6 @@ import {
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
 
 import {
   getPlayerResources,
@@ -29,6 +27,7 @@ import getResourceTradePrices
 import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
+import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
@@ -104,6 +103,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const hand = useMemo(() => getPlayerHandCards(player, discard), [discard, player]);
 
+  const waitingBuildEffect = useMemo(() => getWaitingBuildEffect(player), [player]);
+
   const resourcePools = useMemo(() => {
     const playerResources = getOwnerResources(getPlayerResources(player), 'own');
     const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ESevenWondersNeighborSide.LEFT);
@@ -139,6 +140,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               wonderLevelBuildInfo={wonderLevelBuildInfo}
               isChosen={index === chosenCardIndex}
               isDisabled={chosenCardIndex !== undefined && index !== chosenCardIndex}
+              waitingBuildEffect={waitingBuildEffect}
               onCardAction={handleCardAction}
               onCancelCard={cancelCard}
             />

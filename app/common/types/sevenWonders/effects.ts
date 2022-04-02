@@ -5,7 +5,7 @@ import {
 import {
   ESevenWondersNeighborSide,
   ISevenWondersResource,
-  ESevenWondersScientificSymbol,
+  ESevenWondersScientificSymbol, ESevenWondersCardActionType,
 } from 'common/types/sevenWonders/index';
 
 export interface ISevenWondersGain {
@@ -102,6 +102,7 @@ export interface ISevenWondersBuildCardEffect {
   cardTypes?: ESevenWondersCardType[];
   source: ESevenWondersFreeCardSource;
   isFree: boolean;
+  possibleActions: ESevenWondersCardActionType[];
 }
 
 export interface ISevenWondersCopyCardEffect {

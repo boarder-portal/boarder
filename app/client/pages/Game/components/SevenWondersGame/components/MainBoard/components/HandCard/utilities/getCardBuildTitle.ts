@@ -1,8 +1,13 @@
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { ISevenWondersBuildCardEffect } from 'common/types/sevenWonders/effects';
 
-export default function getCardBuildTitle(buildType: EBuildType): string {
+export default function getCardBuildTitle(buildType: EBuildType, waitingBuildEffect: ISevenWondersBuildCardEffect | null): string {
+  if (waitingBuildEffect?.isFree) {
+    return 'Построить';
+  }
+
   switch (buildType) {
     case EBuildType.FREE:
     case EBuildType.FOR_BUILDING:

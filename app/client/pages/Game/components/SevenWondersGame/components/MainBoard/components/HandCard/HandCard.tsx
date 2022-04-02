@@ -11,7 +11,7 @@ import {
   TSevenWondersBuildType,
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
-import { ESevenWondersFreeCardPeriod } from 'common/types/sevenWonders/effects';
+import { ESevenWondersFreeCardPeriod, ISevenWondersBuildCardEffect } from 'common/types/sevenWonders/effects';
 import {
   EBuildType,
   IBuildInfo,
@@ -43,6 +43,7 @@ interface IHandCardProps {
   wonderLevelBuildInfo: IBuildInfo;
   isChosen: boolean;
   isDisabled: boolean;
+  waitingBuildEffect: ISevenWondersBuildCardEffect | null;
   onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
   onCancelCard(): void;
 }
@@ -122,6 +123,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     wonderLevelBuildInfo,
     isChosen,
     isDisabled,
+    waitingBuildEffect,
     onCardAction,
     onCancelCard,
   } = props;
@@ -186,6 +188,12 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   }, [buildEffectIndex, cardIndex, onCardAction]);
 
   const handleCardBuild = useCallback(() => {
+    if (waitingBuildEffect?.isFree) {
+      buildCard(undefined);
+
+      return;
+    }
+
     if (
       cardBuildInfo.type === EBuildType.FREE ||
       cardBuildInfo.type === EBuildType.FOR_BUILDING ||
@@ -199,7 +207,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
       setTradeModalType('card');
       open();
     }
-  }, [buildCard, cardBuildInfo.type, open]);
+  }, [buildCard, cardBuildInfo.type, open, waitingBuildEffect]);
 
   const handleBuildWonderLevel = useCallback(() => {
     if (
@@ -221,15 +229,23 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
       );
     }
 
+    const possibleActions = waitingBuildEffect?.possibleActions ?? Object.values(ESevenWondersCardActionType);
+
+    const buildActionAvailable = possibleActions.includes(ESevenWondersCardActionType.BUILD_STRUCTURE);
+    const buildWonderLevelAvailable = possibleActions.includes(ESevenWondersCardActionType.BUILD_WONDER_STAGE);
+    const discardAvailable = possibleActions.includes(ESevenWondersCardActionType.DISCARD);
+
     return (
       <>
-        <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type)}</Box>
-        {buildEffectIndex !== -1 && <Box size="s" textAlign="center" onClick={handleBuildCardWithEffect}>Построить бесплатно с эффектом</Box>}
-        <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>
-        <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>
+        {buildActionAvailable && <Box size="s" textAlign="center" onClick={handleCardBuild}>{getCardBuildTitle(cardBuildInfo.type, waitingBuildEffect)}</Box>}
+        {!waitingBuildEffect?.isFree && buildActionAvailable && buildEffectIndex !== -1 && (
+          <Box size="s" textAlign="center" onClick={handleBuildCardWithEffect}>Построить бесплатно с эффектом</Box>
+        )}
+        {buildWonderLevelAvailable && <Box size="s" textAlign="center" onClick={handleBuildWonderLevel}>{getWonderLevelBuildTitle(wonderLevelBuildInfo.type)}</Box>}
+        {discardAvailable && <Box size="s" textAlign="center" onClick={discardCard}>Продать</Box>}
       </>
     );
-  }, [buildEffectIndex, cardBuildInfo.type, discardCard, handleBuildCardWithEffect, handleBuildWonderLevel, handleCardBuild, isChosen, onCancelCard, wonderLevelBuildInfo.type]);
+  }, [buildEffectIndex, cardBuildInfo.type, discardCard, handleBuildCardWithEffect, handleBuildWonderLevel, handleCardBuild, isChosen, onCancelCard, waitingBuildEffect, wonderLevelBuildInfo.type]);
 
   return (
     <Root className={b({ isChosen, isDisabled })}>

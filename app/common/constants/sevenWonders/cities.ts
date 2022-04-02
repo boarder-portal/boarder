@@ -1,4 +1,5 @@
 import {
+  ESevenWondersCardActionType,
   ESevenWondersCity,
   ESevenWondersNeighborSide,
   ESevenWondersResource,
@@ -430,6 +431,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.HAND,
           isFree: false,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE, ESevenWondersCardActionType.BUILD_WONDER_STAGE, ESevenWondersCardActionType.DISCARD],
         }],
       }, {
         price: {
@@ -487,6 +489,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.HAND,
           isFree: true,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }, {
         price: {
@@ -595,6 +598,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }, {
         price: {
@@ -636,6 +640,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }, {
         price: {
@@ -655,6 +660,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }, {
         price: {
@@ -675,6 +681,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }],
     }],
