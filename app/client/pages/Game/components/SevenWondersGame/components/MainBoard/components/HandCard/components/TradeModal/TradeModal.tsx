@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
@@ -16,7 +16,7 @@ import ResourcesAndPrice
 interface ITradeModalProps {
   isVisible: boolean;
   tradeVariants: ITradeVariant[];
-  onBuild(payments: TSevenWondersPayments): void;
+  onBuild(payments?: TSevenWondersPayments): void;
   onClose(): void;
 }
 
@@ -48,6 +48,11 @@ const Root = styled(Modal)`
 const TradeModal: React.FC<ITradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
 
+  const handleSelectTradeVariant = useCallback((payments: TSevenWondersPayments) => {
+    onBuild(payments);
+    onClose();
+  }, [onBuild, onClose]);
+
   return (
     <Root className={b()} containerClassName={b('container')} open={isVisible} onClose={onClose}>
       <Box className={b('title')} size="xxl" bold>Торговые варианты</Box>
@@ -59,7 +64,13 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
       <Box flex column between={8} mt={8}>
         {tradeVariants.map((tradeVariant, index) => (
-          <Box className={b('tradeVariant')} key={index} flex justifyContent="space-between" onClick={() => onBuild(tradeVariant.payments)}>
+          <Box
+            className={b('tradeVariant')}
+            key={index}
+            flex
+            justifyContent="space-between"
+            onClick={handleSelectTradeVariant.bind(null, tradeVariant.payments)}
+          >
             <ResourcesAndPrice
               price={tradeVariant.payments.LEFT}
               resources={tradeVariant.resources.filter((resource) => resource.owner === ESevenWondersNeighborSide.LEFT)}

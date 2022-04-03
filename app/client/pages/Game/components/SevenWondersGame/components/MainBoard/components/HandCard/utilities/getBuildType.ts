@@ -17,7 +17,7 @@ export default function getBuildType(
   const enoughCoins = !price.coins || player.coins >= price.coins;
 
   if (!enoughCoins) {
-    return EBuildType.NOT_AVAILABLE;
+    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
   if (!price.resources) {
@@ -27,21 +27,21 @@ export default function getBuildType(
   const cheapestTradeVariant = first(tradeVariants);
 
   if (!cheapestTradeVariant) {
-    return EBuildType.NOT_AVAILABLE;
+    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
   const tradeVariantPrice = cheapestTradeVariant.payments.LEFT + cheapestTradeVariant.payments.RIGHT;
 
   if (!tradeVariantPrice) {
     if (!price.coins) {
-      return EBuildType.OWN_RESOURCES;
+      return EBuildType.FREE_BY_OWN_RESOURCES;
     }
 
     return EBuildType.OWN_RESOURCES_AND_COINS;
   }
 
   if (tradeVariantPrice > player.coins) {
-    return EBuildType.NOT_AVAILABLE;
+    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
   return EBuildType.WITH_TRADE;

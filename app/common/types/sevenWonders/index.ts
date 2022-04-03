@@ -92,7 +92,7 @@ export enum ESevenWondersCardActionType {
 }
 
 export interface ISevenWondersBuildingBuildType {
-  type: EBuildType.FOR_BUILDING;
+  type: EBuildType.FREE_BY_BUILDING;
 }
 
 export interface ISevenWondersBuildEffectBuildType {

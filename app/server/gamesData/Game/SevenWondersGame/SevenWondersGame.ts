@@ -180,7 +180,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
             action: {
               type: ESevenWondersCardActionType.BUILD_STRUCTURE,
               freeBuildType: {
-                type: EBuildType.FOR_BUILDING,
+                type: EBuildType.FREE_BY_BUILDING,
               },
             },
           });
