@@ -505,6 +505,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     }
 
+    // FIXME: this should be called after all moves
     newEffects.forEach((effect) => {
       player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
 
