@@ -5,6 +5,8 @@ import block from 'bem-cn';
 import { ESevenWondersAdditionalActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
 import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
 
+import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
+
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
@@ -13,6 +15,7 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 interface IWonderProps {
   className?: string;
   player: ISevenWondersPlayer;
+  isOtherPlayer?: boolean;
 }
 
 const b = block('Wonder');
@@ -53,7 +56,7 @@ const Root = styled(Box)`
 `;
 
 const Wonder: React.FC<IWonderProps> = (props) => {
-  const { className, player } = props;
+  const { className, player, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
 
@@ -75,6 +78,8 @@ const Wonder: React.FC<IWonderProps> = (props) => {
     return 'Ожидает';
   }, [player]);
 
+  const warPoints = useMemo(() => [...player.victoryPoints, ...player.defeatPoints], [player.defeatPoints, player.victoryPoints]);
+
   return (
     <Root className={b.mix(className)}>
       <Box className={b('cardGroups')} flex justifyContent="space-between">
@@ -89,6 +94,8 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                   className={b('card')}
                   style={{ top: `${(GROUP_HEIGHT - cardVerticalSpace * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
                   card={card}
+                  flip={isOtherPlayer && card.effects.some((effect) =>
+                    isTradeEffect(effect) && effect.neighbors.length === 1)}
                   width={100}
                 />
               ))}
@@ -106,9 +113,10 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       </div>
 
       <Box flex between={8} mt={16}>
+        <div>{player.login}</div>
         {player.points > 0 && <div>{`Очки: ${player.points}`}</div>}
         <div>{`Монет: ${player.coins}`}</div>
-        <div>{`Война ${[...player.victoryPoints, ...player.defeatPoints].join(', ')}`}</div>
+        {warPoints.length ? <div>{`Война ${warPoints.join(', ')}`}</div> : null}
         <div>{currentAction}</div>
       </Box>
     </Root>
