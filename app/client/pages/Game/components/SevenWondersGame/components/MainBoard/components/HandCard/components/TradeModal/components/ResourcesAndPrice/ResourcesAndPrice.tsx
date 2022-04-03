@@ -15,9 +15,10 @@ interface IResourcesAndPriceProps {
 const b = block('ResourcesAndPrice');
 
 const Root = styled(Box)`
-
   .ResourcesAndPrice {
-
+    &__resource {
+      width: 35px;
+    }
   }
 `;
 
@@ -25,15 +26,15 @@ const ResourcesAndPrice: React.FC<IResourcesAndPriceProps> = (props) => {
   const { price, resources, reverse } = props;
 
   return (
-    <Root className={b()} flex between={12} reverseDirection={reverse}>
+    <Root className={b()} flex alignItems="center" between={12} reverseDirection={reverse}>
       <div>Монет: {price}</div>
 
       {Boolean(resources.length) && (
-        <div>
+        <Box flex alignItems="center" between={4}>
           {resources.map((resource, index) => (
-            <div key={index}>{resource.type}</div>
+            <img key={index} className={b('resource')} src={`/sevenWonders/resources/${resource.type}.png`} />
           ))}
-        </div>
+        </Box>
       )}
     </Root>
   );
