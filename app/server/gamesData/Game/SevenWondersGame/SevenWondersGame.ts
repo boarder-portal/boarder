@@ -61,7 +61,7 @@ const {
 } = GAMES_CONFIG;
 
 const ALL_CITIES = Object.values(ESevenWondersCity);
-const BOTS_COUNT = 4;
+const BOTS_COUNT = 1;
 
 class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
