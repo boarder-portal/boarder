@@ -198,6 +198,12 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     return isChosen;
   }, [isChosen]);
 
+  const availableTradeVariants = useMemo(() => {
+    const tradeVariants = tradeModalType === 'card' ? cardBuildInfo.tradeVariants : wonderLevelBuildInfo.tradeVariants;
+
+    return tradeVariants.filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.coins);
+  }, [cardBuildInfo.tradeVariants, player.coins, tradeModalType, wonderLevelBuildInfo.tradeVariants]);
+
   return (
     <Root className={b({ isChosen, isDisabled })}>
       <div className={b('cardWrapper')}>
@@ -214,7 +220,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
       <TradeModal
         isVisible={isVisible}
-        tradeVariants={tradeModalType === 'card' ? cardBuildInfo.tradeVariants : wonderLevelBuildInfo.tradeVariants}
+        tradeVariants={availableTradeVariants}
         onBuild={tradeModalType === 'card' ?
           cardBuildInfo.onBuild.bind(null, cardIndex, null) :
           wonderLevelBuildInfo.onBuild.bind(null, cardIndex, null)}

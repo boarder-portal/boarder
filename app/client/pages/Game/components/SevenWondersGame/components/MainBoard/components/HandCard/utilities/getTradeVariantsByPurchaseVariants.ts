@@ -14,6 +14,23 @@ export interface ITradeVariant {
   payments: TSevenWondersPayments;
 }
 
+function getActualTradeVariants(variants: ITradeVariant[]): ITradeVariant[] {
+  const actualTradeVariants: ITradeVariant[] = [];
+
+  variants.forEach((variant) => {
+    if (
+      actualTradeVariants.some((actualTradeVariant) =>
+        actualTradeVariant.payments.LEFT <= variant.payments.LEFT && actualTradeVariant.payments.RIGHT <= variant.payments.RIGHT)
+    ) {
+      return;
+    }
+
+    actualTradeVariants.push(variant);
+  });
+
+  return actualTradeVariants;
+}
+
 export default function getTradeVariantsByPurchaseVariants(purchaseVariants: IOwnerResource[][], resourceTradePrices: TResourceTradePrices): ITradeVariant[] {
   const tradeVariants = purchaseVariants.map((purchaseVariant) => {
     const payments: TSevenWondersPayments = {
@@ -35,5 +52,7 @@ export default function getTradeVariantsByPurchaseVariants(purchaseVariants: IOw
 
   const uniqTradeVariants = uniqBy(tradeVariants, ({ payments }) => `left_${payments.LEFT}_right_${payments.RIGHT}`);
 
-  return sortBy(uniqTradeVariants, ({ payments }) => payments.LEFT + payments.RIGHT + Math.abs(payments.LEFT - payments.RIGHT) / 100);
+  const sortedTradeVariants = sortBy(uniqTradeVariants, ({ payments }) => payments.LEFT + payments.RIGHT + Math.abs(payments.LEFT - payments.RIGHT) / 100);
+
+  return getActualTradeVariants(sortedTradeVariants);
 }
