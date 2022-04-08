@@ -13,6 +13,8 @@ import Modal from 'client/components/common/Modal/Modal';
 import ResourcesAndPrice
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
 
+import { HOVER_SOUND, playSound } from 'client/sounds';
+
 interface ITradeModalProps {
   isVisible: boolean;
   tradeVariants: ITradeVariant[];
@@ -53,6 +55,10 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
     onClose();
   }, [onBuild, onClose]);
 
+  const handleHoverTradeVariant = useCallback(() => {
+    playSound(HOVER_SOUND);
+  }, []);
+
   return (
     <Root className={b()} containerClassName={b('container')} open={isVisible} onClose={onClose}>
       <Box className={b('title')} size="xxl" bold>Торговые варианты</Box>
@@ -69,6 +75,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
             key={index}
             flex
             justifyContent="space-between"
+            onMouseEnter={handleHoverTradeVariant}
             onClick={handleSelectTradeVariant.bind(null, tradeVariant.payments)}
           >
             <ResourcesAndPrice

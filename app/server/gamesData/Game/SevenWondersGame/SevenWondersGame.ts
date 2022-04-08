@@ -61,7 +61,6 @@ const {
 } = GAMES_CONFIG;
 
 const ALL_CITIES = Object.values(ESevenWondersCity);
-const BOTS_COUNT = 0;
 
 class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
@@ -101,7 +100,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   createGameInfo(): void {
     const shuffledCities = shuffle(ALL_CITIES);
 
-    times(BOTS_COUNT, (index) => {
+    times(this.options.playersCount - this.players.length, (index) => {
       this.players.push({
         ...this.createPlayer({
           status: EPlayerStatus.PLAYING,

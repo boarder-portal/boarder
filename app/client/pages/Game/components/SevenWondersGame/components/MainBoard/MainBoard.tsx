@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
@@ -28,6 +28,9 @@ import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Won
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import useWonderLevelBuildInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useWonderLevelBuildInfo';
+
+import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
+import { usePrevious } from 'client/hooks/usePrevious';
 
 interface IMainBoardProps {
   className?: string;
@@ -82,6 +85,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const chosenCardIndex = player.waitingAdditionalAction ? undefined : player.actions[0]?.cardIndex;
 
   const handleCardAction = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+    playSound(SELECT_SOUND);
+
     const data: ISevenWondersExecuteActionEvent = {
       cardIndex,
       action,
@@ -94,10 +99,13 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [io]);
 
   const cancelCard = useCallback(() => {
+    playSound(SELECT_SOUND);
+
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
 
   const hand = useMemo(() => getPlayerHandCards(player, discard), [discard, player]);
+  const prevHand = usePrevious(hand);
 
   const resourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor), [leftNeighbor, player, rightNeighbor]);
 
@@ -106,6 +114,12 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
   const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, resourcePools, resourceTradePrices, player, handleCardAction);
+
+  useEffect(() => {
+    if (hand.length !== prevHand.length && document.hidden) {
+      playSound(NEW_TURN);
+    }
+  }, [hand.length, prevHand.length]);
 
   return (
     <Root className={b.mix(className)} flex alignItems="center" column between={12}>

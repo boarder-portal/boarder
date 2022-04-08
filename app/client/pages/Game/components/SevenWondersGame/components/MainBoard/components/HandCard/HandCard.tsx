@@ -26,6 +26,7 @@ import useCardBuildFreeWithEffectInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
+import { HOVER_SOUND, playSound } from 'client/sounds';
 
 interface IHandCardProps {
   card: ISevenWondersCard;
@@ -204,9 +205,15 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     return tradeVariants.filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.coins);
   }, [cardBuildInfo.tradeVariants, player.coins, tradeModalType, wonderLevelBuildInfo.tradeVariants]);
 
+  const handleCardHover = useCallback(() => {
+    if (!isDisabled) {
+      playSound(HOVER_SOUND);
+    }
+  }, [isDisabled]);
+
   return (
     <Root className={b({ isChosen, isDisabled })}>
-      <div className={b('cardWrapper')}>
+      <div className={b('cardWrapper')} onMouseEnter={handleCardHover}>
         <Card card={card} width={150} />
 
         <Box className={b('actions')} flex column between={20} alignItems="center">

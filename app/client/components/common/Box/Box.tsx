@@ -25,6 +25,7 @@ export interface IBoxProps {
   grow?: boolean;
   background?: string;
   innerRef?: React.RefObject<HTMLDivElement>;
+  onMouseEnter?(e: React.MouseEvent<HTMLDivElement>): void;
   onClick?(e: React.MouseEvent<HTMLDivElement>): void;
 }
 
