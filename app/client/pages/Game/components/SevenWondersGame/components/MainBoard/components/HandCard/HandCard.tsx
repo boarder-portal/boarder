@@ -99,7 +99,7 @@ const Root = styled(Box)`
         .HandCard__actions {
           opacity: 1;
           pointer-events: all;
-          z-index: 22;
+          z-index: 30;
         }
       }
     }

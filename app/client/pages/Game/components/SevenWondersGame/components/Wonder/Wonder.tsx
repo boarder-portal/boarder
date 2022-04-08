@@ -97,6 +97,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                   flip={isOtherPlayer && card.effects.some((effect) =>
                     isTradeEffect(effect) && effect.neighbors.length === 1)}
                   width={100}
+                  zoomOnHover
                 />
               ))}
             </div>

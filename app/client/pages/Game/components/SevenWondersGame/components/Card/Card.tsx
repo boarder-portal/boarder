@@ -10,6 +10,7 @@ interface ICardProps {
   card: ISevenWondersCard;
   flip?: boolean
   width?: number;
+  zoomOnHover?: boolean;
 }
 
 interface IRootProps extends Pick<ICardProps, 'width'>{}
@@ -25,19 +26,38 @@ const Root = styled.img`
     &_flip {
       transform: scaleX(-1);
     }
+
+    &_zoomOnHover {
+      &:hover {
+        animation-name: show;
+        animation-delay: 0.7s;
+        animation-duration: 0.2s;
+        animation-fill-mode: forwards;
+      }
+    }
   }
 
   &:hover {
     position: relative;
-    z-index: 21 !important;
+    z-index: 25 !important;
+  }
+
+  @keyframes show {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(3) translateY(20px);
+    }
   }
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
-  const { className, style, card, flip, width } = props;
+  const { className, style, card, flip, width, zoomOnHover } = props;
 
   return (
-    <Root className={b({ flip }).mix(className)} style={style} width={width} src={`/sevenWonders/cards/${card.id}.jpg`} />
+    <Root className={b({ flip, zoomOnHover }).mix(className)} style={style} width={width} src={`/sevenWonders/cards/${card.id}.jpg`} />
   );
 };
 
