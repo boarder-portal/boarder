@@ -3,10 +3,11 @@ import {
   ESevenWondersPlayerDirection,
 } from 'common/types/sevenWonders/cards';
 import {
+  ESevenWondersCardActionType,
   ESevenWondersNeighborSide,
   ISevenWondersResource,
-  ESevenWondersScientificSymbol, ESevenWondersCardActionType,
-} from 'common/types/sevenWonders/index';
+  ESevenWondersScientificSymbol,
+} from 'common/types/sevenWonders';
 
 export interface ISevenWondersGain {
   points?: number;
