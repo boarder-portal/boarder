@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import block from 'bem-cn';
@@ -7,8 +7,10 @@ import styled from 'styled-components';
 
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
 import { EGame } from 'common/types/game';
+import { EPlayerStatus } from 'common/types';
 
 import Box from 'client/components/common/Box/Box';
+import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -17,7 +19,13 @@ const b = block('RoomPage');
 const Root = styled.div`
   .RoomPage {
     &__user {
-      cursor: pointer;
+      box-shadow: 0 1px 5px rgb(0 0 0 / 15%);
+      border-radius: 8px;
+      padding: 16px 32px;
+    }
+
+    &__changeReadyStatusButton {
+      margin-left: auto;
     }
   }
 `;
@@ -43,6 +51,8 @@ const Room: React.FC = () => {
     ioRef.current = io.connect(`/${game}/room/${roomId}`);
 
     ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoomUpdateEvent<EGame>) => {
+      console.log(ERoomEvent.UPDATE, roomData);
+
       setRoom(roomData);
     });
 
@@ -65,14 +75,27 @@ const Room: React.FC = () => {
     <Root className={b()}>
       <Box size="xxl" bold>Комната {game}</Box>
 
-      <Box mt={20} between={8}>
+      <Box mt={20} between={12}>
         {room.players.map(({ login, status }) => (
           <Box
             key={login}
-            className={login === user.login ? b('user') : ''}
-            onClick={login === user.login ? handleUserClick : undefined}
+            className={b('user')}
+            flex
+            alignItems="center"
+            between={8}
           >
-            {`${login} ${status}`}
+            <div>{login}</div>
+            <div>{status === EPlayerStatus.NOT_READY ? 'Не готов' : 'Готов'}</div>
+
+            {login === user.login && (
+              <Button
+                className={b('changeReadyStatusButton').toString()}
+                type={status === EPlayerStatus.NOT_READY ? 'primary' : 'secondary'}
+                onClick={handleUserClick}
+              >
+                {status === EPlayerStatus.NOT_READY ? 'Готов' : 'Не готов'}
+              </Button>
+            )}
           </Box>
         ))}
       </Box>
