@@ -9,7 +9,7 @@ import {
 import {
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ISevenWondersEffect,
+  ESevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
 import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 
@@ -17,7 +17,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.RHODOS]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.ORE,
           count: 1,
@@ -31,7 +31,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -44,7 +44,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.SHIELDS,
+          type: ESevenWondersEffect.SHIELDS,
           count: 2,
         }],
       }, {
@@ -55,7 +55,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -63,7 +63,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.ORE,
           count: 1,
@@ -77,10 +77,10 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.SHIELDS,
+          type: ESevenWondersEffect.SHIELDS,
           count: 1,
         }, {
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
             coins: 3,
@@ -94,10 +94,10 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.SHIELDS,
+          type: ESevenWondersEffect.SHIELDS,
           count: 1,
         }, {
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 4,
             coins: 4,
@@ -109,7 +109,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.ALEXANDRIA]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.GLASS,
           count: 1,
@@ -123,7 +123,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -136,7 +136,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.RESOURCES,
+          type: ESevenWondersEffect.RESOURCES,
           variants: [{
             type: ESevenWondersResource.CLAY,
             count: 1,
@@ -159,7 +159,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -167,7 +167,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.GLASS,
           count: 1,
@@ -181,7 +181,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.RESOURCES,
+          type: ESevenWondersEffect.RESOURCES,
           variants: [{
             type: ESevenWondersResource.WOOD,
             count: 1,
@@ -204,7 +204,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.RESOURCES,
+          type: ESevenWondersEffect.RESOURCES,
           variants: [{
             type: ESevenWondersResource.GLASS,
             count: 1,
@@ -224,7 +224,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -235,7 +235,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.EPHESOS]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.PAPYRUS,
           count: 1,
@@ -249,7 +249,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -262,7 +262,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             coins: 9,
           },
@@ -275,7 +275,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -283,7 +283,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.PAPYRUS,
           count: 1,
@@ -297,7 +297,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 2,
             coins: 4,
@@ -311,7 +311,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
             coins: 4,
@@ -331,7 +331,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 5,
             coins: 4,
@@ -343,7 +343,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.BABYLON]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.CLAY,
           count: 1,
@@ -357,7 +357,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -370,7 +370,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+          type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
           variants: [
             ESevenWondersScientificSymbol.TABLET,
             ESevenWondersScientificSymbol.COMPASS,
@@ -385,7 +385,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -393,7 +393,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.CLAY,
           count: 1,
@@ -410,7 +410,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -426,7 +426,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.LAST_AGE_TURN,
           count: 1,
           source: ESevenWondersFreeCardSource.HAND,
@@ -444,7 +444,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+          type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
           variants: [
             ESevenWondersScientificSymbol.TABLET,
             ESevenWondersScientificSymbol.COMPASS,
@@ -457,7 +457,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.OLYMPIA]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.WOOD,
           count: 1,
@@ -471,7 +471,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -484,7 +484,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.AGE,
           count: 1,
           source: ESevenWondersFreeCardSource.HAND,
@@ -499,7 +499,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -507,7 +507,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.WOOD,
           count: 1,
@@ -521,7 +521,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.TRADE,
+          type: ESevenWondersEffect.TRADE,
           neighbors: [
             ESevenWondersNeighborSide.LEFT,
             ESevenWondersNeighborSide.RIGHT,
@@ -537,7 +537,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 5,
           },
@@ -553,7 +553,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.COPY_CARD,
+          type: ESevenWondersEffect.COPY_CARD,
           neighbors: [
             ESevenWondersNeighborSide.LEFT,
             ESevenWondersNeighborSide.RIGHT,
@@ -566,7 +566,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.HALIKARNASSOS]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.LOOM,
           count: 1,
@@ -580,7 +580,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -593,7 +593,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.NOW,
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
@@ -608,7 +608,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -616,7 +616,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.LOOM,
           count: 1,
@@ -630,12 +630,12 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 2,
           },
         }, {
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.NOW,
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
@@ -650,12 +650,12 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 1,
           },
         }, {
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.NOW,
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
@@ -676,7 +676,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.BUILD_CARD,
+          type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.NOW,
           count: 1,
           source: ESevenWondersFreeCardSource.DISCARD,
@@ -689,7 +689,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.GIZAH]: {
     sides: [{
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.STONE,
           count: 1,
@@ -703,7 +703,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -716,7 +716,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 5,
           },
@@ -729,7 +729,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },
@@ -737,7 +737,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }, {
       effect: {
-        type: ISevenWondersEffect.RESOURCES,
+        type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.STONE,
           count: 1,
@@ -751,7 +751,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 3,
           },
@@ -764,7 +764,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 5,
           },
@@ -777,7 +777,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 5,
           },
@@ -793,7 +793,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           }],
         },
         effects: [{
-          type: ISevenWondersEffect.GAIN,
+          type: ESevenWondersEffect.GAIN,
           gain: {
             points: 7,
           },

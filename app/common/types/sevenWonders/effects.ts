@@ -13,7 +13,7 @@ export interface ISevenWondersGain {
   coins?: number;
 }
 
-export enum ISevenWondersEffect {
+export enum ESevenWondersEffect {
   GAIN = 'GAIN',
   RESOURCES = 'RESOURCES',
   TRADE = 'TRADE',
@@ -28,53 +28,53 @@ export enum ISevenWondersEffect {
 }
 
 export interface ISevenWondersGainEffect {
-  type: ISevenWondersEffect.GAIN;
+  type: ESevenWondersEffect.GAIN;
   gain: ISevenWondersGain;
 }
 
 export interface ISevenWondersResourcesEffect {
-  type: ISevenWondersEffect.RESOURCES;
+  type: ESevenWondersEffect.RESOURCES;
   variants: ISevenWondersResource[];
 }
 
 export interface ISevenWondersTradeEffect {
-  type: ISevenWondersEffect.TRADE;
+  type: ESevenWondersEffect.TRADE;
   neighbors: ESevenWondersNeighborSide[];
   price: number;
   resource: ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS;
 }
 
 export interface ISevenWondersCardsTypeEffect {
-  type: ISevenWondersEffect.CARDS_TYPE;
+  type: ESevenWondersEffect.CARDS_TYPE;
   cardTypes: ESevenWondersCardType[];
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
 
 export interface ISevenWondersWonderLevelsEffect {
-  type: ISevenWondersEffect.WONDER_LEVELS;
+  type: ESevenWondersEffect.WONDER_LEVELS;
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
 
 export interface ISevenWondersShieldsEffect {
-  type: ISevenWondersEffect.SHIELDS;
+  type: ESevenWondersEffect.SHIELDS;
   count: number;
 }
 
 export interface ISevenWondersScientificSymbolsEffect {
-  type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS;
+  type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS;
   variants: ESevenWondersScientificSymbol[];
 }
 
 export interface ISevenWondersWinsEffect {
-  type: ISevenWondersEffect.WINS;
+  type: ESevenWondersEffect.WINS;
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
 
 export interface ISevenWondersLossesEffect {
-  type: ISevenWondersEffect.LOSSES;
+  type: ESevenWondersEffect.LOSSES;
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
@@ -92,7 +92,7 @@ export enum ESevenWondersFreeCardSource {
 }
 
 export interface ISevenWondersBuildCardEffect {
-  type: ISevenWondersEffect.BUILD_CARD;
+  type: ESevenWondersEffect.BUILD_CARD;
   period: ESevenWondersFreeCardPeriod;
   count: number;
   cardTypes?: ESevenWondersCardType[];
@@ -102,7 +102,7 @@ export interface ISevenWondersBuildCardEffect {
 }
 
 export interface ISevenWondersCopyCardEffect {
-  type: ISevenWondersEffect.COPY_CARD;
+  type: ESevenWondersEffect.COPY_CARD;
   neighbors: ESevenWondersNeighborSide[];
   cardType: ESevenWondersCardType;
 }

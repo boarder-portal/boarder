@@ -4,7 +4,7 @@ import {
   ESevenWondersPlayerDirection,
   ISevenWondersCard,
 } from 'common/types/sevenWonders/cards';
-import { ISevenWondersEffect } from 'common/types/sevenWonders/effects';
+import { ESevenWondersEffect } from 'common/types/sevenWonders/effects';
 import {
   ESevenWondersNeighborSide,
   ESevenWondersResource,
@@ -18,7 +18,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LOOM,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.LOOM,
         count: 1,
@@ -29,7 +29,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.GLASSWORKS,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.GLASS,
         count: 1,
@@ -40,7 +40,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PRESS,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.PAPYRUS,
         count: 1,
@@ -54,7 +54,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LUMBER_YARD,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.WOOD,
         count: 1,
@@ -65,7 +65,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STONE_PIT,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.STONE,
         count: 1,
@@ -76,7 +76,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CLAY_POOL,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.CLAY,
         count: 1,
@@ -87,7 +87,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ORE_VEIN,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.ORE,
         count: 1,
@@ -98,7 +98,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TREE_FARM,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.WOOD,
         count: 1,
@@ -115,7 +115,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.EXCAVATION,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.STONE,
         count: 1,
@@ -132,7 +132,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CLAY_PIT,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.CLAY,
         count: 1,
@@ -149,7 +149,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TIMBER_YARD,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.STONE,
         count: 1,
@@ -166,7 +166,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.FOREST_CAVE,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.WOOD,
         count: 1,
@@ -183,7 +183,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.MINE,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.ORE,
         count: 1,
@@ -203,7 +203,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PAWNSHOP,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 3,
       },
@@ -213,7 +213,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.BATHS,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 3,
       },
@@ -229,7 +229,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ALTAR,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 2,
       },
@@ -239,7 +239,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.THEATER,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 2,
       },
@@ -252,7 +252,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TAVERN,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         coins: 5,
       },
@@ -262,7 +262,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.EAST_TRADING_POST,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.TRADE,
+      type: ESevenWondersEffect.TRADE,
       neighbors: [ESevenWondersNeighborSide.RIGHT],
       price: 1,
       resource: ESevenWondersCardType.RAW_MATERIAL,
@@ -272,7 +272,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.WEST_TRADING_POST,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.TRADE,
+      type: ESevenWondersEffect.TRADE,
       neighbors: [ESevenWondersNeighborSide.LEFT],
       price: 1,
       resource: ESevenWondersCardType.RAW_MATERIAL,
@@ -282,7 +282,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.MARKETPLACE,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.TRADE,
+      type: ESevenWondersEffect.TRADE,
       neighbors: [ESevenWondersNeighborSide.LEFT, ESevenWondersNeighborSide.RIGHT],
       price: 1,
       resource: ESevenWondersCardType.MANUFACTURED_GOODS,
@@ -295,7 +295,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STOCKADE,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 1,
     }],
     price: {
@@ -309,7 +309,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.BARRACKS,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 1,
     }],
     price: {
@@ -323,7 +323,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.GUARD_TOWER,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 1,
     }],
     price: {
@@ -340,7 +340,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.APOTHECARY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.COMPASS],
     }],
     price: {
@@ -354,7 +354,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.WORKSHOP,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.GEAR],
     }],
     price: {
@@ -368,7 +368,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SCRIPTORIUM,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.TABLET],
     }],
     price: {
@@ -386,7 +386,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LOOM,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.LOOM,
         count: 1,
@@ -397,7 +397,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.GLASSWORKS,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.GLASS,
         count: 1,
@@ -408,7 +408,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PRESS,
     type: ESevenWondersCardType.MANUFACTURED_GOODS,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.PAPYRUS,
         count: 1,
@@ -422,7 +422,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SAWMILL,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.WOOD,
         count: 2,
@@ -436,7 +436,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.QUARRY,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.STONE,
         count: 2,
@@ -450,7 +450,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.BRICKYARD,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.CLAY,
         count: 2,
@@ -464,7 +464,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.FOUNDRY,
     type: ESevenWondersCardType.RAW_MATERIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.ORE,
         count: 2,
@@ -481,7 +481,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.AQUEDUCT,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 5,
       },
@@ -498,7 +498,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TEMPLE,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 3,
       },
@@ -521,7 +521,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STATUE,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 4,
       },
@@ -541,7 +541,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.COURTHOUSE,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 4,
       },
@@ -564,7 +564,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.FORUM,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.LOOM,
         count: 1,
@@ -588,7 +588,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CARAVANSERY,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.RESOURCES,
+      type: ESevenWondersEffect.RESOURCES,
       variants: [{
         type: ESevenWondersResource.CLAY,
         count: 1,
@@ -615,7 +615,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.VINEYARD,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.SELF, ESevenWondersPlayerDirection.RIGHT],
       cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
       gain: {
@@ -627,7 +627,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.BAZAR,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.SELF, ESevenWondersPlayerDirection.RIGHT],
       cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
       gain: {
@@ -642,7 +642,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.WALLS,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 2,
     }],
     price: {
@@ -656,7 +656,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TRAINING_GROUND,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 2,
     }],
     price: {
@@ -673,7 +673,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STABLES,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 2,
     }],
     price: {
@@ -694,7 +694,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ARCHERY_RANGE,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 2,
     }],
     price: {
@@ -715,7 +715,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.DISPENSARY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.COMPASS],
     }],
     price: {
@@ -733,7 +733,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LABORATORY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.GEAR],
     }],
     price: {
@@ -751,7 +751,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LIBRARY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.TABLET],
     }],
     price: {
@@ -769,7 +769,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SCHOOL,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.TABLET],
     }],
     price: {
@@ -790,7 +790,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PANTHEON,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 7,
       },
@@ -819,7 +819,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.GARDENS,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 5,
       },
@@ -839,7 +839,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TOWN_HALL,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 6,
       },
@@ -861,7 +861,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PALACE,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 8,
       },
@@ -895,7 +895,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SENATE,
     type: ESevenWondersCardType.CIVILIAN,
     effects: [{
-      type: ISevenWondersEffect.GAIN,
+      type: ESevenWondersEffect.GAIN,
       gain: {
         points: 6,
       },
@@ -921,7 +921,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.HAVEN,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
       gain: {
         points: 1,
@@ -947,7 +947,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LIGHTHOUSE,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.COMMERCIAL],
       gain: {
         points: 1,
@@ -970,7 +970,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CHAMBER_OF_COMMERCE,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
       gain: {
         points: 2,
@@ -992,7 +992,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ARENA,
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
-      type: ISevenWondersEffect.WONDER_LEVELS,
+      type: ESevenWondersEffect.WONDER_LEVELS,
       gain: {
         points: 1,
         coins: 3,
@@ -1017,7 +1017,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.FORTIFICATIONS,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 3,
     }],
     price: {
@@ -1035,7 +1035,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CIRCUS,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 3,
     }],
     price: {
@@ -1053,7 +1053,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ARSENAL,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 3,
     }],
     price: {
@@ -1073,7 +1073,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SIEGE_WORKSHOP,
     type: ESevenWondersCardType.MILITARY,
     effects: [{
-      type: ISevenWondersEffect.SHIELDS,
+      type: ESevenWondersEffect.SHIELDS,
       count: 3,
     }],
     price: {
@@ -1094,7 +1094,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.LODGE,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.COMPASS],
     }],
     price: {
@@ -1115,7 +1115,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.OBSERVATORY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.GEAR],
     }],
     price: {
@@ -1136,7 +1136,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.UNIVERSITY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.TABLET],
     }],
     price: {
@@ -1157,7 +1157,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.ACADEMY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.COMPASS],
     }],
     price: {
@@ -1175,7 +1175,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STUDY,
     type: ESevenWondersCardType.SCIENTIFIC,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [ESevenWondersScientificSymbol.GEAR],
     }],
     price: {
@@ -1199,7 +1199,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.WORKERS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
       gain: {
         points: 1,
@@ -1229,7 +1229,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.CRAFTSMENS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
       gain: {
         points: 2,
@@ -1253,7 +1253,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.TRADERS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.COMMERCIAL],
       gain: {
         points: 1,
@@ -1280,7 +1280,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.PHILOSOPHERS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.SCIENTIFIC],
       gain: {
         points: 1,
@@ -1307,7 +1307,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SPIES_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.MILITARY],
       gain: {
         points: 1,
@@ -1331,7 +1331,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.STRATEGISTS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.LOSSES,
+      type: ESevenWondersEffect.LOSSES,
       gain: {
         points: 1,
       },
@@ -1357,21 +1357,21 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SHIPOWNERS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
       gain: {
         points: 1,
       },
       directions: [ESevenWondersPlayerDirection.SELF],
     }, {
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
       gain: {
         points: 1,
       },
       directions: [ESevenWondersPlayerDirection.SELF],
     }, {
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.GUILD],
       gain: {
         points: 1,
@@ -1395,7 +1395,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.SCIENTISTS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.SCIENTIFIC_SYMBOLS,
+      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
       variants: [
         ESevenWondersScientificSymbol.GEAR,
         ESevenWondersScientificSymbol.COMPASS,
@@ -1419,7 +1419,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.MAGISTRATES_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.CARDS_TYPE,
+      type: ESevenWondersEffect.CARDS_TYPE,
       cardTypes: [ESevenWondersCardType.CIVILIAN],
       gain: {
         points: 1,
@@ -1446,7 +1446,7 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     id: ESevenWonderCardId.BUILDERS_GUILD,
     type: ESevenWondersCardType.GUILD,
     effects: [{
-      type: ISevenWondersEffect.WONDER_LEVELS,
+      type: ESevenWondersEffect.WONDER_LEVELS,
       gain: {
         points: 1,
       },

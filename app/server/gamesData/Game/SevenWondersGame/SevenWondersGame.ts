@@ -27,7 +27,7 @@ import {
 import {
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ISevenWondersEffect,
+  ESevenWondersEffect,
   ISevenWondersGain,
   ISevenWondersScientificSymbolsEffect,
   TSevenWondersEffect,
@@ -316,11 +316,11 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
   calculateEffectGain(effect: TSevenWondersEffect, player: ISevenWondersPlayer): ISevenWondersGain | null {
     switch (effect.type) {
-      case ISevenWondersEffect.GAIN: {
+      case ESevenWondersEffect.GAIN: {
         return effect.gain;
       }
 
-      case ISevenWondersEffect.CARDS_TYPE: {
+      case ESevenWondersEffect.CARDS_TYPE: {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
@@ -335,7 +335,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         return gain;
       }
 
-      case ISevenWondersEffect.WONDER_LEVELS: {
+      case ESevenWondersEffect.WONDER_LEVELS: {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
@@ -345,7 +345,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         return gain;
       }
 
-      case ISevenWondersEffect.WINS: {
+      case ESevenWondersEffect.WINS: {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
@@ -355,7 +355,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         return gain;
       }
 
-      case ISevenWondersEffect.LOSSES: {
+      case ESevenWondersEffect.LOSSES: {
         const gain: ISevenWondersGain = {};
 
         this.getDirectionsPlayers(player, effect.directions).forEach((player) => {

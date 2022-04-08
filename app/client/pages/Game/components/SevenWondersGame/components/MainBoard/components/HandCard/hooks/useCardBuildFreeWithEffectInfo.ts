@@ -13,7 +13,7 @@ import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import {
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ISevenWondersEffect,
+  ESevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
 
 import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
@@ -48,7 +48,7 @@ export default function useCardBuildFreeWithEffectInfo(
       return false;
     }
 
-    if (waitingBuildEffect.type === ISevenWondersEffect.BUILD_CARD) {
+    if (waitingBuildEffect.type === ESevenWondersEffect.BUILD_CARD) {
       if (waitingBuildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
         return true;
       }
@@ -66,7 +66,7 @@ export default function useCardBuildFreeWithEffectInfo(
       return true;
     }
 
-    if (waitingBuildEffect.type === ISevenWondersEffect.BUILD_CARD) {
+    if (waitingBuildEffect.type === ESevenWondersEffect.BUILD_CARD) {
       if (waitingBuildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
         return false;
       }
