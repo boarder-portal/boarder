@@ -48,6 +48,7 @@ export interface ISevenWondersTradeEffect {
 export interface ISevenWondersCardsTypeEffect {
   type: ESevenWondersEffect.CARDS_TYPE;
   cardTypes: ESevenWondersCardType[];
+  isCombo?: boolean;
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }

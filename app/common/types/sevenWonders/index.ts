@@ -30,6 +30,8 @@ export enum ESevenWondersCity {
   OLYMPIA = 'OLYMPIA',
   HALIKARNASSOS = 'HALIKARNASSOS',
   GIZAH = 'GIZAH',
+  // leaders
+  ROMA = 'ROMA',
 }
 
 export interface ISevenWondersWonder {

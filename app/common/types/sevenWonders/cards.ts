@@ -2,6 +2,44 @@ import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
 import { ISevenWondersPrice } from 'common/types/sevenWonders/index';
 
 export enum ESevenWonderCardId {
+  // leaders
+  AMYTIS = 'AMYTIS',
+  MIDAS = 'MIDAS',
+  ALEXANDER = 'ALEXANDER',
+  BILKIS = 'BILKIS',
+  ARISTOTLE = 'ARISTOTLE',
+  MAECENAS = 'MAECENAS',
+  JUSTINIAN = 'JUSTINIAN',
+  PLATO = 'PLATO',
+  RAMSES = 'RAMSES',
+  TOMYRIS = 'TOMYRIS',
+  HANNIBAL = 'HANNIBAL',
+  CAESAR = 'CAESAR',
+  HATSHEPSUT = 'HATSHEPSUT',
+  NERO = 'NERO',
+  XENOPHON = 'XENOPHON',
+  VITRUVIUS = 'VITRUVIUS',
+  SOLOMON = 'SOLOMON',
+  CROESUS = 'CROESUS',
+  HYPATIA = 'HYPATIA',
+  NEBUCHADNEZZAR = 'NEBUCHADNEZZAR',
+  PHIDIAS = 'PHIDIAS',
+  VARRO = 'VARRO',
+  PERICLES = 'PERICLES',
+  PRAXITELES = 'PRAXITELES',
+  HIRAM = 'HIRAM',
+  SAPPHO = 'SAPPHO',
+  ZENOBIA = 'ZENOBIA',
+  NEFERTITI = 'NEFERTITI',
+  CLEOPATRA = 'CLEOPATRA',
+  ARCHIMEDES = 'ARCHIMEDES',
+  LEONIDAS = 'LEONIDAS',
+  HAMMURABI = 'HAMMURABI',
+  IMHOTEP = 'IMHOTEP',
+  EUCLID = 'EUCLID',
+  PTOLEMY = 'PTOLEMY',
+  PYTHAGORAS = 'PYTHAGORAS',
+
   // manufactured goods
   // age 1 & 2
   LOOM = 'LOOM',
@@ -105,6 +143,11 @@ export enum ESevenWonderCardId {
   SCIENTISTS_GUILD = 'SCIENTISTS_GUILD',
   MAGISTRATES_GUILD = 'MAGISTRATES_GUILD',
   BUILDERS_GUILD = 'BUILDERS_GUILD',
+  // leaders guilds
+  GAMERS_GUILD = 'GAMERS_GUILD',
+  COURTESANS_GUILD = 'COURTESANS_GUILD',
+  DIPLOMATS_GUILD = 'DIPLOMATS_GUILD',
+  ARCHITECTS_GUILD = 'ARCHITECTS_GUILD',
 }
 
 export enum ESevenWondersPlayerDirection {
@@ -115,6 +158,7 @@ export enum ESevenWondersPlayerDirection {
 }
 
 export enum ESevenWondersCardType {
+  LEADER = 'LEADER',
   RAW_MATERIAL = 'RAW_MATERIAL',
   MANUFACTURED_GOODS = 'MANUFACTURED_GOODS',
   CIVILIAN = 'CIVILIAN',
@@ -122,7 +166,6 @@ export enum ESevenWondersCardType {
   COMMERCIAL = 'COMMERCIAL',
   MILITARY = 'MILITARY',
   GUILD = 'GUILD',
-  LEADER = 'LEADER',
 }
 
 export interface ISevenWondersCardPrice extends ISevenWondersPrice {
