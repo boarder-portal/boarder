@@ -4,7 +4,12 @@ import block from 'bem-cn';
 
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ISevenWondersPlayer, TSevenWondersAction, TSevenWondersPayments } from 'common/types/sevenWonders';
+import {
+  ESevenWondersGamePhase,
+  ISevenWondersPlayer,
+  TSevenWondersAction,
+  TSevenWondersPayments,
+} from 'common/types/sevenWonders';
 import {
   EBuildType,
   IBuildInfo,
@@ -24,6 +29,8 @@ import useDiscardInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useDiscardInfo';
 import useCardBuildFreeWithEffectInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
+import usePickLeaderInfo
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/usePickLeaderInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import { HOVER_SOUND, playSound } from 'client/sounds';
@@ -32,6 +39,7 @@ interface IHandCardProps {
   card: ISevenWondersCard;
   cardIndex: number;
   player: ISevenWondersPlayer;
+  gamePhase: ESevenWondersGamePhase;
   resourcePools: IOwnerResource[][];
   resourceTradePrices: TResourceTradePrices;
   wonderLevelBuildInfo: IBuildInfo;
@@ -111,6 +119,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     card,
     cardIndex,
     player,
+    gamePhase,
     resourcePools,
     resourceTradePrices,
     wonderLevelBuildInfo,
@@ -128,6 +137,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const [tradeModalType, setTradeModalType] = useState<'card' | 'wonderLevel'>('card');
 
+  const pickLeaderInfo = usePickLeaderInfo(gamePhase, onCardAction);
   const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, onCardAction);
   const cardFreeBuildWithEffectInfo = useCardBuildFreeWithEffectInfo(card, player, onCardAction);
   const discardInfo = useDiscardInfo(player, onCardAction);
@@ -151,8 +161,12 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     };
   }, [cardBuildInfo.type, cardIndex, open]);
 
+  const isPickLeaderActionAvailable = useMemo(() => {
+    return !isChosen && gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS;
+  }, [gamePhase, isChosen]);
+
   const isBuildActionAvailable = useMemo(() => {
-    if (isChosen) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
       return false;
     }
 
@@ -163,10 +177,15 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     }
 
     return true;
-  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, isChosen]);
+  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen]);
 
   const isBuildFreeWithEffectActionAvailable = useMemo(() => {
-    if (isChosen || !cardFreeBuildWithEffectInfo.isAvailable || cardBuildInfo.type === EBuildType.ALREADY_BUILT) {
+    if (
+      isChosen ||
+      !cardFreeBuildWithEffectInfo.isAvailable ||
+      cardBuildInfo.type === EBuildType.ALREADY_BUILT ||
+      gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS
+    ) {
       return false;
     }
 
@@ -177,23 +196,23 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     }
 
     return true;
-  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo, isChosen]);
+  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen]);
 
   const isBuildWonderLevelAvailable = useMemo(() => {
-    if (isChosen) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
       return false;
     }
 
     return wonderLevelBuildInfo.type !== EBuildType.ALREADY_BUILT && wonderLevelBuildInfo.type !== EBuildType.NOT_ALLOWED;
-  }, [isChosen, wonderLevelBuildInfo.type]);
+  }, [gamePhase, isChosen, wonderLevelBuildInfo.type]);
 
   const isDiscardActionAvailable = useMemo(() => {
-    if (isChosen) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
       return false;
     }
 
     return discardInfo.isAvailable;
-  }, [discardInfo.isAvailable, isChosen]);
+  }, [discardInfo.isAvailable, gamePhase, isChosen]);
 
   const isCancelActionAvailable = useMemo(() => {
     return isChosen;
@@ -217,6 +236,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
         <Card card={card} width={150} />
 
         <Box className={b('actions')} flex column between={20} alignItems="center">
+          {isPickLeaderActionAvailable && <Box size="s" textAlign="center" onClick={pickLeaderInfo.onClick.bind(null, cardIndex)}>{pickLeaderInfo.title}</Box>}
           {isBuildActionAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('card', cardBuildInfo)}>{cardBuildInfo.title}</Box>}
           {isBuildFreeWithEffectActionAvailable && <Box size="s" textAlign="center" onClick={cardFreeBuildWithEffectInfo.onBuild.bind(null, cardIndex)}>{cardFreeBuildWithEffectInfo.title}</Box>}
           {isBuildWonderLevelAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('wonderLevel', wonderLevelBuildInfo)}>{wonderLevelBuildInfo.title}</Box>}

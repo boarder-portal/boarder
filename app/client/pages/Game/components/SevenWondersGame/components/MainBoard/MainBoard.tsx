@@ -134,6 +134,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               card={card}
               cardIndex={index}
               player={player}
+              gamePhase={gamePhase}
               resourcePools={resourcePools}
               resourceTradePrices={resourceTradePrices}
               wonderLevelBuildInfo={wonderLevelBuildInfo}
