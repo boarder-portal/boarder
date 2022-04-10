@@ -20,7 +20,10 @@ function getActualTradeVariants(variants: ITradeVariant[]): ITradeVariant[] {
   variants.forEach((variant) => {
     if (
       actualTradeVariants.some((actualTradeVariant) =>
-        actualTradeVariant.payments.LEFT <= variant.payments.LEFT && actualTradeVariant.payments.RIGHT <= variant.payments.RIGHT)
+        actualTradeVariant.payments.LEFT <= variant.payments.LEFT &&
+        actualTradeVariant.payments.RIGHT <= variant.payments.RIGHT &&
+        actualTradeVariant.payments.bank <= variant.payments.bank,
+      )
     ) {
       return;
     }
@@ -36,11 +39,12 @@ export default function getTradeVariantsByPurchaseVariants(purchaseVariants: IOw
     const payments: TSevenWondersPayments = {
       [ESevenWondersNeighborSide.LEFT]: 0,
       [ESevenWondersNeighborSide.RIGHT]: 0,
+      bank: 0,
     };
 
     purchaseVariant.forEach((resource) => {
-      if (resource.owner === ESevenWondersNeighborSide.LEFT || resource.owner === ESevenWondersNeighborSide.RIGHT) {
-        payments[resource.owner] += resourceTradePrices[resource.owner][getResourceType(resource.type)];
+      if (resource.owner === ESevenWondersNeighborSide.LEFT || resource.owner === ESevenWondersNeighborSide.RIGHT || resource.owner === 'bank') {
+        payments[resource.owner] += resource.owner === 'bank' ? 1 : resourceTradePrices[resource.owner][getResourceType(resource.type)];
       }
     });
 
@@ -50,9 +54,11 @@ export default function getTradeVariantsByPurchaseVariants(purchaseVariants: IOw
     };
   });
 
-  const uniqTradeVariants = uniqBy(tradeVariants, ({ payments }) => `left_${payments.LEFT}_right_${payments.RIGHT}`);
+  const uniqTradeVariants = uniqBy(tradeVariants, ({ payments }) => `left_${payments.LEFT}_right_${payments.RIGHT}_bank_${payments.bank}`);
 
-  const sortedTradeVariants = sortBy(uniqTradeVariants, ({ payments }) => payments.LEFT + payments.RIGHT + Math.abs(payments.LEFT - payments.RIGHT) / 100);
+  const sortedTradeVariants = sortBy(uniqTradeVariants, ({ payments }) =>
+    payments.LEFT + payments.RIGHT + payments.bank + Math.abs(payments.LEFT - payments.RIGHT) / 100,
+  );
 
   return getActualTradeVariants(sortedTradeVariants);
 }

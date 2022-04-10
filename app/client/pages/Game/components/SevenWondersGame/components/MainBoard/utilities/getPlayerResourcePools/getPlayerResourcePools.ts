@@ -1,4 +1,7 @@
-import { ESevenWondersNeighborSide, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import {
+  ESevenWondersNeighborSide,
+  ISevenWondersPlayer,
+} from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getOwnerResources
@@ -8,6 +11,8 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResources';
 import getResourcePools
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getResourcePools';
+import getBankResources
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getBankResources';
 
 /**
  * [
@@ -33,10 +38,12 @@ export default function getPlayerResourcePools(player: ISevenWondersPlayer, left
   const playerResources = getOwnerResources(getPlayerResources(player), 'own');
   const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ESevenWondersNeighborSide.LEFT);
   const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), ESevenWondersNeighborSide.RIGHT);
+  const bankResources = getBankResources(player);
 
   return getResourcePools([
     ...playerResources,
     ...leftNeighborResources,
     ...rightNeighborResources,
+    ...bankResources,
   ]);
 }

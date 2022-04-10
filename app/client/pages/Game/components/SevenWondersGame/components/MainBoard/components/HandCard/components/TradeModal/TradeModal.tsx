@@ -40,6 +40,14 @@ const Root = styled(Modal)`
       padding: 12px 20px;
       margin: 0 -20px;
 
+      & > div {
+        flex: 0 0 33.33%;
+
+        &:nth-child(2) {
+          justify-content: center;
+        }
+      }
+
       &:hover {
         background: #eee;
       }
@@ -65,6 +73,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
       <Box flex justifyContent="space-between" mt={20}>
         <Box bold size="l">Left</Box>
+        <Box bold size="l">Bank</Box>
         <Box bold size="l">Right</Box>
       </Box>
 
@@ -74,13 +83,17 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
             className={b('tradeVariant')}
             key={index}
             flex
-            justifyContent="space-between"
             onMouseEnter={handleHoverTradeVariant}
             onClick={handleSelectTradeVariant.bind(null, tradeVariant.payments)}
           >
             <ResourcesAndPrice
               price={tradeVariant.payments.LEFT}
               resources={tradeVariant.resources.filter((resource) => resource.owner === ESevenWondersNeighborSide.LEFT)}
+            />
+
+            <ResourcesAndPrice
+              price={tradeVariant.payments.bank}
+              resources={tradeVariant.resources.filter((resource) => resource.owner === 'bank')}
             />
 
             <ResourcesAndPrice

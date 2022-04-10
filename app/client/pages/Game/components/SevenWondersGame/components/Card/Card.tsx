@@ -30,7 +30,7 @@ const Root = styled.img`
     &_zoomOnHover {
       &:hover {
         animation-name: show;
-        animation-delay: 0.7s;
+        animation-delay: 0.4s;
         animation-duration: 0.2s;
         animation-fill-mode: forwards;
       }

@@ -137,7 +137,7 @@ export type TSevenWondersAction = (
   | ISevenWondersPickLeaderAction
 );
 
-export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
+export type TSevenWondersPayments = Record<ESevenWondersNeighborSide | 'bank', number>;
 
 export interface ISevenWondersExecuteActionEvent {
   cardIndex: number;

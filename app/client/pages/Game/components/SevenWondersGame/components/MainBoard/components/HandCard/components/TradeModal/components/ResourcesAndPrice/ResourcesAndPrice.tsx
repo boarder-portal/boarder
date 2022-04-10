@@ -25,6 +25,10 @@ const Root = styled(Box)`
 const ResourcesAndPrice: React.FC<IResourcesAndPriceProps> = (props) => {
   const { price, resources, reverse } = props;
 
+  if (!price) {
+    return <div />;
+  }
+
   return (
     <Root className={b()} flex alignItems="center" between={12} reverseDirection={reverse}>
       <div>Монет: {price}</div>

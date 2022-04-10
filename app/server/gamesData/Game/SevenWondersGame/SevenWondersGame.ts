@@ -21,6 +21,7 @@ import {
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
 import {
+  ESevenWonderCardId,
   ESevenWondersCardType,
   ESevenWondersPlayerDirection,
   ISevenWondersCard,
