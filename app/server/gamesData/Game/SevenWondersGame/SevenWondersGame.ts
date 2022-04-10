@@ -220,7 +220,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
               },
             },
           });
-        }, random(1000, 5000, true));
+        }, random(200, 1000, true));
       }
     });
   }
