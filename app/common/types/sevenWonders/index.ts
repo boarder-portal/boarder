@@ -81,6 +81,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   buildCardEffects: ISevenWondersBuildCardEffect[];
   leadersHand: ISevenWondersCard[];
   leadersPool: ISevenWondersCard[];
+  copiedCard: ISevenWondersCard | null;
 }
 
 export interface ISevenWondersGameInfoEvent {
@@ -113,6 +114,7 @@ export type TSevenWondersBuildType =
 export interface ISevenWondersBuildStructureAction {
   type: ESevenWondersCardActionType.BUILD_STRUCTURE;
   freeBuildType: TSevenWondersBuildType | null;
+  copiedCard?: ISevenWondersCard;
 }
 
 export interface ISevenWondersBuildWonderStageAction {

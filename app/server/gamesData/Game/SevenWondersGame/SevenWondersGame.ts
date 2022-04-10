@@ -30,6 +30,7 @@ import {
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
   ISevenWondersGain,
+  ISevenWondersScientificSetEffect,
   ISevenWondersScientificSymbolsEffect,
   TSevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
@@ -40,9 +41,15 @@ import {
 import { getAllCombinations } from 'common/utilities/combinations';
 import {
   isBuildCardEffect,
+  isCommercialCardsPassiveEffect,
   isCopyEffect,
+  isDrawLeadersEffect,
+  isReturnDefeatsEffect,
+  isScientificSetEffect,
   isScientificSymbolsEffect,
   isShieldsEffect,
+  isStructureInheritancePassiveEffect,
+  isVictoryTokensCoinPassiveEffect,
 } from 'common/utilities/sevenWonders/isEffect';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
@@ -100,6 +107,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       buildCardEffects: [],
       leadersHand: [],
       leadersPool: [],
+      copiedCard: null,
     };
   }
 
@@ -263,6 +271,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const ageVictoryPoints = 2 * this.age + 1;
 
     this.players.forEach((player) => {
+      const effects = getAllPlayerEffects(player);
       const playerShieldsCount = this.getPlayerShieldsCount(player);
 
       [
@@ -273,8 +282,16 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
         if (playerShieldsCount > neighborShieldsCount) {
           player.victoryPoints.push(ageVictoryPoints);
+
+          effects.filter(isVictoryTokensCoinPassiveEffect).forEach((effect) => {
+            player.coins += effect.count;
+          });
         } else if (playerShieldsCount < neighborShieldsCount) {
-          player.defeatPoints.push(-1);
+          const defeatTokenTarget = effects.some(isReturnDefeatsEffect)
+            ? neighbor
+            : player;
+
+          defeatTokenTarget.defeatPoints.push(-1);
         }
       });
 
@@ -345,7 +362,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }, 0);
   }
 
-  mergeGains(target: ISevenWondersGain, source: ISevenWondersGain, coefficient: number): void {
+  mergeGains(target: ISevenWondersGain, source: ISevenWondersGain, coefficient: number): ISevenWondersGain {
     if (source.points) {
       target.points = (target.points ?? 0) + source.points * coefficient;
     }
@@ -353,6 +370,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     if (source.coins) {
       target.coins = (target.coins ?? 0) + source.coins * coefficient;
     }
+
+    return target;
   }
 
   calculateEffectGain(effect: TSevenWondersEffect, player: ISevenWondersPlayer): ISevenWondersGain | null {
@@ -406,22 +425,32 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         return gain;
       }
 
+      case ESevenWondersEffect.GAIN_BY_COINS: {
+        return this.mergeGains({}, effect.gain, Math.floor(player.coins / effect.count));
+      }
+
       default: {
         return null;
       }
     }
   }
 
-  calculateScientificEffectsMaxPoints(effects: ISevenWondersScientificSymbolsEffect[]): number {
+  calculateScientificEffectsMaxPoints(
+    effects: ISevenWondersScientificSymbolsEffect[],
+    setsEffects: ISevenWondersScientificSetEffect[],
+  ): number {
     const symbols = effects.map((effect) => effect.variants);
     const symbolsCombinations = getAllCombinations(symbols);
+    const setValue = setsEffects.reduce((setValue, setEffect) => {
+      return setValue + (setEffect.gain.points ?? 0);
+    }, 7);
 
     return symbolsCombinations.reduce((maxPoints, symbols) => {
-      return Math.max(maxPoints, this.calculateScientificCardsPoints(symbols));
+      return Math.max(maxPoints, this.calculateScientificCardsPoints(symbols, setValue));
     }, 0);
   }
 
-  calculateScientificCardsPoints(symbols: ESevenWondersScientificSymbol[]): number {
+  calculateScientificCardsPoints(symbols: ESevenWondersScientificSymbol[], setValue: number): number {
     const symbolsCounts = [
       ESevenWondersScientificSymbol.GEAR,
       ESevenWondersScientificSymbol.COMPASS,
@@ -429,7 +458,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     ].map((symbol) => symbols.filter((s) => s === symbol).length);
     const setsCount = Math.min(...symbolsCounts);
 
-    return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * 7);
+    return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * setValue);
   }
 
   calculatePlayerPoints(player: ISevenWondersPlayer, effects: TSevenWondersEffect[]): number {
@@ -449,8 +478,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     // science points
     const scientificEffects = effects.filter(isScientificSymbolsEffect);
+    const scientificSetEffects = effects.filter(isScientificSetEffect);
 
-    allPoints += this.calculateScientificEffectsMaxPoints(scientificEffects);
+    allPoints += this.calculateScientificEffectsMaxPoints(scientificEffects, scientificSetEffects);
 
     // coins points
     allPoints += Math.floor(player.coins / 3);
@@ -514,6 +544,26 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       newEffects.push(...card.effects);
+
+      const effects = getAllPlayerEffects(player);
+
+      if (card.type === ESevenWondersCardType.COMMERCIAL) {
+        effects.filter(isCommercialCardsPassiveEffect).forEach((effect) => {
+          player.coins += effect.count;
+        });
+      }
+
+      if (action.freeBuildType?.type === EBuildType.FREE_BY_BUILDING) {
+        effects.filter(isStructureInheritancePassiveEffect).forEach((effect) => {
+          player.coins += effect.count;
+        });
+      }
+
+      if (action.copiedCard) {
+        player.copiedCard = action.copiedCard;
+
+        newEffects.push(...action.copiedCard.effects);
+      }
     } else if (action.type === ESevenWondersCardActionType.BUILD_WONDER_STAGE) {
       const city = getCity(player.city, player.citySide);
       const wonderLevel = city.wonders[action.stageIndex];
@@ -557,6 +607,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
       if (isBuildCardEffect(effect)) {
         player.buildCardEffects.push(effect);
+      } else if (isDrawLeadersEffect(effect)) {
+        player.leadersHand.push(...this.leadersDeck.splice(-effect.count));
       }
     });
   }

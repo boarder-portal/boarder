@@ -890,7 +890,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
             coins: 5,
           },
         }, {
-          type: ESevenWondersEffect.ADD_LEADERS,
+          type: ESevenWondersEffect.DRAW_LEADERS,
           count: 4,
         }],
       }, {

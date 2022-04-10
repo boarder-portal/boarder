@@ -203,7 +203,7 @@ const LEADERS: ISevenWondersCard[] = [
     type: ESevenWondersCardType.LEADER,
     effects: [{
       type: ESevenWondersEffect.COIN_PASSIVE,
-      source: ESevenWondersCoinPassiveSource.WINS,
+      source: ESevenWondersCoinPassiveSource.VICTORY_TOKENS,
       count: 2,
     }],
     price: {

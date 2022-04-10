@@ -1,8 +1,13 @@
 import {
-  ISevenWondersBuildCardEffect,
-  ISevenWondersCopyCardEffect,
+  ESevenWondersCoinPassiveSource,
   ESevenWondersEffect,
+  ISevenWondersBuildCardEffect,
+  ISevenWondersCoinPassiveEffect,
+  ISevenWondersCopyCardEffect,
+  ISevenWondersDrawLeadersEffect,
   ISevenWondersResourcesEffect,
+  ISevenWondersReturnDefeatsEffect,
+  ISevenWondersScientificSetEffect,
   ISevenWondersScientificSymbolsEffect,
   ISevenWondersShieldsEffect,
   ISevenWondersTradeEffect,
@@ -31,4 +36,36 @@ export function isBuildCardEffect(effect: TSevenWondersEffect): effect is ISeven
 
 export function isCopyEffect(effect: TSevenWondersEffect): effect is ISevenWondersCopyCardEffect {
   return effect.type === ESevenWondersEffect.COPY_CARD;
+}
+
+export function isScientificSetEffect(effect: TSevenWondersEffect): effect is ISevenWondersScientificSetEffect {
+  return effect.type === ESevenWondersEffect.SCIENTIFIC_SET;
+}
+
+export function isReturnDefeatsEffect(effect: TSevenWondersEffect): effect is ISevenWondersReturnDefeatsEffect {
+  return effect.type === ESevenWondersEffect.RETURN_DEFEATS;
+}
+
+export function isCoinPassiveEffect(effect: TSevenWondersEffect): effect is ISevenWondersCoinPassiveEffect {
+  return effect.type === ESevenWondersEffect.COIN_PASSIVE;
+}
+
+export function isTradeCoinPassiveEffect(effect: TSevenWondersEffect): effect is ISevenWondersCoinPassiveEffect {
+  return isCoinPassiveEffect(effect) && effect.source === ESevenWondersCoinPassiveSource.TRADE;
+}
+
+export function isVictoryTokensCoinPassiveEffect(effect: TSevenWondersEffect): effect is ISevenWondersCoinPassiveEffect {
+  return isCoinPassiveEffect(effect) && effect.source === ESevenWondersCoinPassiveSource.VICTORY_TOKENS;
+}
+
+export function isCommercialCardsPassiveEffect(effect: TSevenWondersEffect): effect is ISevenWondersCoinPassiveEffect {
+  return isCoinPassiveEffect(effect) && effect.source === ESevenWondersCoinPassiveSource.COMMERCIAL_CARDS;
+}
+
+export function isStructureInheritancePassiveEffect(effect: TSevenWondersEffect): effect is ISevenWondersCoinPassiveEffect {
+  return isCoinPassiveEffect(effect) && effect.source === ESevenWondersCoinPassiveSource.STRUCTURE_INHERITANCE;
+}
+
+export function isDrawLeadersEffect(effect: TSevenWondersEffect): effect is ISevenWondersDrawLeadersEffect {
+  return effect.type === ESevenWondersEffect.DRAW_LEADERS;
 }

@@ -19,5 +19,6 @@ export default function getAllPlayerEffects(player: ISevenWondersPlayer): TSeven
     ...player.builtCards.map(({ effects }) => effects),
     ...player.builtStages.map(({ index }) => citySide.wonders[index].effects),
     ...citySide.effects,
+    ...(player.copiedCard?.effects ?? []),
   ].flat();
 }

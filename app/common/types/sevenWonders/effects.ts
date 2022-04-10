@@ -31,7 +31,7 @@ export enum ESevenWondersEffect {
   REDUCED_PRICE = 'REDUCED_PRICE',
   COIN_PASSIVE = 'COIN_PASSIVE',
   RETURN_DEFEATS = 'RETURN_DEFEATS',
-  ADD_LEADERS = 'ADD_LEADERS',
+  DRAW_LEADERS = 'DRAW_LEADERS',
   SCIENTIFIC_SET = 'SCIENTIFIC_SET',
 }
 
@@ -135,7 +135,7 @@ export interface ISevenWondersReducedPriceEffect {
 
 export enum ESevenWondersCoinPassiveSource {
   TRADE = 'TRADE',
-  WINS = 'WINS',
+  VICTORY_TOKENS = 'VICTORY_TOKENS',
   COMMERCIAL_CARDS = 'COMMERCIAL_CARDS',
   STRUCTURE_INHERITANCE = 'STRUCTURE_INHERITANCE',
 }
@@ -150,8 +150,8 @@ export interface ISevenWondersReturnDefeatsEffect {
   type: ESevenWondersEffect.RETURN_DEFEATS;
 }
 
-export interface ISevenWondersAddLeadersEffect {
-  type: ESevenWondersEffect.ADD_LEADERS;
+export interface ISevenWondersDrawLeadersEffect {
+  type: ESevenWondersEffect.DRAW_LEADERS;
   count: number;
 }
 
@@ -176,5 +176,5 @@ export type TSevenWondersEffect =
  | ISevenWondersReducedPriceEffect
  | ISevenWondersCoinPassiveEffect
  | ISevenWondersReturnDefeatsEffect
- | ISevenWondersAddLeadersEffect
+ | ISevenWondersDrawLeadersEffect
  | ISevenWondersScientificSetEffect
