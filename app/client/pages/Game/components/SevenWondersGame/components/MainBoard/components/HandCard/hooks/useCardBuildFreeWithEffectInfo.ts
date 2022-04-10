@@ -30,17 +30,25 @@ export default function useCardBuildFreeWithEffectInfo(
 } {
   const waitingBuildEffect = useMemo(() => getWaitingBuildEffect(player), [player]);
 
-  // Now only for Olympia
-  const ageBuildEffectIndex = useMemo(() => {
-    const ageBuildCardEffects = player.buildCardEffects.filter((effect) => effect.period === ESevenWondersFreeCardPeriod.AGE);
-
-    return ageBuildCardEffects.findIndex((effect) =>
-      effect.cardTypes?.includes(card.type) ?? true,
-    );
+  const infinityBuildEffectIndex = useMemo(() => {
+    return player.buildCardEffects
+      .filter((effect) => effect.count === undefined)
+      .findIndex((effect) => effect.cardTypes?.includes(card.type) ?? true);
   }, [card.type, player.buildCardEffects]);
 
+  const buildEffectIndex = useMemo(() => {
+    if (infinityBuildEffectIndex !== -1) {
+      return infinityBuildEffectIndex;
+    }
+
+    return player.buildCardEffects
+      .findIndex((effect) =>
+        effect.period === ESevenWondersFreeCardPeriod.AGE && (effect.cardTypes?.includes(card.type) ?? true),
+      );
+  }, [card.type, infinityBuildEffectIndex, player.buildCardEffects]);
+
   const isAvailable = useMemo(() => {
-    if (ageBuildEffectIndex !== -1) {
+    if (buildEffectIndex !== -1) {
       return true;
     }
 
@@ -53,15 +61,19 @@ export default function useCardBuildFreeWithEffectInfo(
         return true;
       }
 
-      if (ageBuildEffectIndex !== -1) {
+      if (buildEffectIndex !== -1) {
         return true;
       }
     }
 
     return false;
-  }, [ageBuildEffectIndex, waitingBuildEffect]);
+  }, [buildEffectIndex, waitingBuildEffect]);
 
   const isPurchaseAvailable = useMemo(() => {
+    if (infinityBuildEffectIndex !== -1) {
+      return false;
+    }
+
     if (!waitingBuildEffect) {
       return true;
     }
@@ -73,19 +85,19 @@ export default function useCardBuildFreeWithEffectInfo(
     }
 
     return true;
-  }, [waitingBuildEffect]);
+  }, [infinityBuildEffectIndex, waitingBuildEffect]);
 
   const title = useMemo(() => isAvailable ? 'Построить бесплатно с эффектом' : 'Нет эффекта', [isAvailable]);
 
   const onBuild = useCallback((cardIndex: number) => {
     onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
-      freeBuildType: ageBuildEffectIndex === -1 ? null : {
+      freeBuildType: buildEffectIndex === -1 ? null : {
         type: EBuildType.FREE_WITH_EFFECT,
-        effectIndex: ageBuildEffectIndex,
+        effectIndex: buildEffectIndex,
       },
     });
-  }, [ageBuildEffectIndex, onCardAction]);
+  }, [buildEffectIndex, onCardAction]);
 
   return useMemo(() => ({
     isAvailable,

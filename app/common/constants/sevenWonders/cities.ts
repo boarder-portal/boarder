@@ -7,9 +7,9 @@ import {
   ISevenWondersCity,
 } from 'common/types/sevenWonders';
 import {
+  ESevenWondersEffect,
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ESevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
 import { ESevenWondersCardType, ESevenWondersPlayerDirection } from 'common/types/sevenWonders/cards';
 
@@ -487,6 +487,15 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           type: ESevenWondersEffect.BUILD_CARD,
           period: ESevenWondersFreeCardPeriod.AGE,
           count: 1,
+          cardTypes: [
+            ESevenWondersCardType.RAW_MATERIAL,
+            ESevenWondersCardType.MANUFACTURED_GOODS,
+            ESevenWondersCardType.CIVILIAN,
+            ESevenWondersCardType.COMMERCIAL,
+            ESevenWondersCardType.SCIENTIFIC,
+            ESevenWondersCardType.MILITARY,
+            ESevenWondersCardType.GUILD,
+          ],
           source: ESevenWondersFreeCardSource.HAND,
           isFree: true,
           possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
@@ -808,7 +817,6 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         period: ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT,
         cardTypes: [ESevenWondersCardType.LEADER],
         isFree: true,
-        count: Infinity,
         source: ESevenWondersFreeCardSource.LEADERS,
         possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
       }],
@@ -918,11 +926,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           source: ESevenWondersFreeCardSource.LEADERS,
           count: 1,
           isFree: false,
-          possibleActions: [
-            ESevenWondersCardActionType.BUILD_STRUCTURE,
-            ESevenWondersCardActionType.BUILD_WONDER_STAGE,
-            ESevenWondersCardActionType.DISCARD,
-          ],
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }, {
         price: {
@@ -946,11 +950,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           isFree: false,
           source: ESevenWondersFreeCardSource.LEADERS,
           count: 1,
-          possibleActions: [
-            ESevenWondersCardActionType.BUILD_STRUCTURE,
-            ESevenWondersCardActionType.BUILD_WONDER_STAGE,
-            ESevenWondersCardActionType.DISCARD,
-          ],
+          possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
         }],
       }],
     }],

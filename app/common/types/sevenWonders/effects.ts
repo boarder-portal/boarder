@@ -110,7 +110,7 @@ export enum ESevenWondersFreeCardSource {
 export interface ISevenWondersBuildCardEffect {
   type: ESevenWondersEffect.BUILD_CARD;
   period: ESevenWondersFreeCardPeriod;
-  count: number;
+  count?: number;
   cardTypes?: ESevenWondersCardType[];
   source: ESevenWondersFreeCardSource;
   isFree: boolean;

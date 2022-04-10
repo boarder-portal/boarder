@@ -6,9 +6,9 @@ import {
 } from 'common/types/sevenWonders/cards';
 import {
   ESevenWondersCoinPassiveSource,
+  ESevenWondersEffect,
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ESevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
 import { ESevenWondersCardActionType, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
 
@@ -93,7 +93,6 @@ const LEADERS: ISevenWondersCard[] = [
       type: ESevenWondersEffect.BUILD_CARD,
       source: ESevenWondersFreeCardSource.LEADERS,
       cardTypes: [ESevenWondersCardType.LEADER],
-      count: Infinity,
       isFree: true,
       period: ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT,
       possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
@@ -153,8 +152,8 @@ const LEADERS: ISevenWondersCard[] = [
     effects: [{
       type: ESevenWondersEffect.BUILD_CARD,
       source: ESevenWondersFreeCardSource.HAND,
+      cardTypes: [ESevenWondersCardType.GUILD],
       isFree: true,
-      count: Infinity,
       period: ESevenWondersFreeCardPeriod.ETERNITY,
       possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
     }],
