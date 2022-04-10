@@ -91,6 +91,7 @@ export enum ESevenWondersFreeCardPeriod {
 export enum ESevenWondersFreeCardSource {
   HAND = 'HAND',
   DISCARD = 'DISCARD',
+  LEADERS = 'LEADERS',
 }
 
 export interface ISevenWondersBuildCardEffect {

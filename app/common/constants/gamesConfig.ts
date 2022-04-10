@@ -1,5 +1,6 @@
 import CARCASSONNE_CARDS from 'common/constants/carcassonne/cards';
 import SEVEN_WONDERS_CARDS from 'common/constants/sevenWonders/cards';
+import SEVEN_WONDERS_LEADERS from 'common/constants/sevenWonders/leaders';
 import SEVEN_WONDERS_CITIES from 'common/constants/sevenWonders/cities';
 
 import { EPexesoFieldLayout, EPexesoSet } from 'common/types/pexeso';
@@ -290,6 +291,7 @@ export const GAMES_CONFIG = {
         playersCount: 3,
       },
       cardsByAge: SEVEN_WONDERS_CARDS,
+      allLeaders: SEVEN_WONDERS_LEADERS,
       allCities: SEVEN_WONDERS_CITIES,
     },
   },

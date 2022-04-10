@@ -79,18 +79,22 @@ export interface ISevenWondersPlayer extends IPlayer {
   actions: ISevenWondersExecuteActionEvent[];
   waitingAdditionalAction: TSevenWondersAdditionalAction | null;
   buildCardEffects: ISevenWondersBuildCardEffect[];
+  leadersHand: ISevenWondersCard[];
+  leadersPool: ISevenWondersCard[];
 }
 
 export interface ISevenWondersGameInfoEvent {
   players: ISevenWondersPlayer[];
   discard: ISevenWondersCard[];
   age: number;
+  phase: ESevenWondersGamePhase;
 }
 
 export enum ESevenWondersCardActionType {
   BUILD_STRUCTURE = 'BUILD_STRUCTURE',
   BUILD_WONDER_STAGE = 'BUILD_WONDER_STAGE',
   DISCARD = 'DISCARD',
+  DRAFT_LEADER = 'DRAFT_LEADER',
 }
 
 export interface ISevenWondersBuildingBuildType {
@@ -120,10 +124,15 @@ export interface ISevenWondersDiscardAction {
   type: ESevenWondersCardActionType.DISCARD;
 }
 
+export interface ISevenWondersDraftLeaderAction {
+  type: ESevenWondersCardActionType.DRAFT_LEADER;
+}
+
 export type TSevenWondersAction = (
   | ISevenWondersBuildStructureAction
   | ISevenWondersBuildWonderStageAction
   | ISevenWondersDiscardAction
+  | ISevenWondersDraftLeaderAction
 );
 
 export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
@@ -158,4 +167,10 @@ export enum ESevenWondersNeighborSide {
 export interface ISevenWondersPrice {
   resources?: ISevenWondersResource[];
   coins?: number;
+}
+
+export enum ESevenWondersGamePhase {
+  DRAFT_LEADERS = 'DRAFT_LEADERS',
+  RECRUIT_LEADERS = 'RECRUIT_LEADERS',
+  BUILD_STRUCTURES = 'BUILD_STRUCTURES',
 }
