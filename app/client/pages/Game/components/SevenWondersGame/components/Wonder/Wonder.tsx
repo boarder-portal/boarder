@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ESevenWondersAdditionalActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ESevenWondersWaitingActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
 import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
@@ -61,21 +61,35 @@ const Wonder: React.FC<IWonderProps> = (props) => {
   const cardGroups = useCardGroups(player);
 
   const currentAction = useMemo(() => {
-    if (player.waitingAdditionalAction?.type === ESevenWondersAdditionalActionType.BUILD_CARD) {
-      const buildEffect = player.buildCardEffects[player.waitingAdditionalAction.buildEffectIndex];
+    if (player.chosenActionEvent || !player.waitingForAction) {
+      return 'Ожидает';
+    }
+
+    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.EFFECT_BUILD_CARD) {
+      const buildEffect = player.buildCardEffects[player.waitingForAction.buildEffectIndex];
 
       if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
         return 'Выбор из сброса';
       }
 
+      if (buildEffect.source === ESevenWondersFreeCardSource.LEADERS) {
+        return 'Найм лидера';
+      }
+
       return 'Строительство последней карты';
     }
 
-    if (!player.actions.length) {
-      return 'Выбирает карту';
+    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.PICK_LEADER) {
+      return 'Выбирает лидера';
     }
 
-    return 'Ожидает';
+    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.RECRUIT_LEADER) {
+      return 'Нанимает лидера';
+    }
+
+    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.BUILD_CARD) {
+      return 'Выбирает карту';
+    }
   }, [player]);
 
   const warPoints = useMemo(() => [...player.victoryPoints, ...player.defeatPoints], [player.defeatPoints, player.victoryPoints]);

@@ -94,7 +94,7 @@ abstract class Game<Game extends EGame> {
     return this.players.find((player) => player.login === login);
   }
 
-  sendBaseGameInfo() {
+  sendBaseGameInfo(): void {
     const updatedData: IGameUpdateEvent = {
       id: this.id,
       players: this.players,
@@ -103,7 +103,7 @@ abstract class Game<Game extends EGame> {
     this.io.emit(EGameEvent.UPDATE, updatedData);
   }
 
-  deleteGame() {
+  deleteGame(): void {
     this.io.removeAllListeners();
 
     delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
@@ -111,7 +111,7 @@ abstract class Game<Game extends EGame> {
     this.onDeleteGame();
   }
 
-  end() {
+  end(): void {
     this.io.emit(EGameEvent.END);
   }
 }

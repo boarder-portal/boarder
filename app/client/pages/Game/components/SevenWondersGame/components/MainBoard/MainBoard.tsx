@@ -83,7 +83,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
   const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
 
-  const chosenCardIndex = player.waitingAdditionalAction ? undefined : player.actions[0]?.cardIndex;
+  const chosenCardIndex = player.chosenActionEvent?.cardIndex;
 
   const handleCardAction = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     playSound(SELECT_SOUND);
@@ -139,7 +139,11 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               resourceTradePrices={resourceTradePrices}
               wonderLevelBuildInfo={wonderLevelBuildInfo}
               isChosen={index === chosenCardIndex}
-              isDisabled={chosenCardIndex !== undefined && index !== chosenCardIndex}
+              isDisabled={
+                chosenCardIndex === undefined
+                  ? !player.waitingForAction
+                  : index !== chosenCardIndex
+              }
               onCardAction={handleCardAction}
               onCancelCard={cancelCard}
             />

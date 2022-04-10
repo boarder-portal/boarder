@@ -54,16 +54,35 @@ export interface ISevenWondersBuiltStage {
   cardAge: number;
 }
 
-export enum ESevenWondersAdditionalActionType {
+export enum ESevenWondersWaitingActionType {
+  PICK_LEADER = 'PICK_LEADER',
+  RECRUIT_LEADER = 'RECRUIT_LEADER',
   BUILD_CARD = 'BUILD_CARD',
+  EFFECT_BUILD_CARD = 'EFFECT_BUILD_CARD',
 }
 
-export interface ISevenWondersAdditionalBuildCardAction {
-  type: ESevenWondersAdditionalActionType.BUILD_CARD;
+export interface ISevenWondersWaitingPickLeaderAction {
+  type: ESevenWondersWaitingActionType.PICK_LEADER;
+}
+
+export interface ISevenWondersWaitingRecruitLeaderAction {
+  type: ESevenWondersWaitingActionType.RECRUIT_LEADER;
+}
+
+export interface ISevenWondersWaitingBuildCardAction {
+  type: ESevenWondersWaitingActionType.BUILD_CARD;
+}
+
+export interface ISevenWondersWaitingEffectBuildCardAction {
+  type: ESevenWondersWaitingActionType.EFFECT_BUILD_CARD;
   buildEffectIndex: number;
 }
 
-export type TSevenWondersAdditionalAction = ISevenWondersAdditionalBuildCardAction;
+export type TSevenWondersWaitingAction =
+  | ISevenWondersWaitingPickLeaderAction
+  | ISevenWondersWaitingRecruitLeaderAction
+  | ISevenWondersWaitingBuildCardAction
+  | ISevenWondersWaitingEffectBuildCardAction;
 
 export interface ISevenWondersPlayer extends IPlayer {
   points: number;
@@ -76,8 +95,8 @@ export interface ISevenWondersPlayer extends IPlayer {
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
-  actions: ISevenWondersExecuteActionEvent[];
-  waitingAdditionalAction: TSevenWondersAdditionalAction | null;
+  chosenActionEvent: ISevenWondersExecuteActionEvent | null;
+  waitingForAction: TSevenWondersWaitingAction | null;
   buildCardEffects: ISevenWondersBuildCardEffect[];
   leadersHand: ISevenWondersCard[];
   leadersPool: ISevenWondersCard[];

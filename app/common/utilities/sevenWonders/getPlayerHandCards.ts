@@ -9,18 +9,21 @@ export default function getPlayerHandCards(
   discard: ISevenWondersCard[],
   phase: ESevenWondersGamePhase,
 ): ISevenWondersCard[] {
-  if (phase === ESevenWondersGamePhase.DRAFT_LEADERS) {
-    return player.leadersPool;
-  }
-
-  if (phase === ESevenWondersGamePhase.RECRUIT_LEADERS) {
-    return player.leadersHand;
-  }
-
   const buildEffect = getWaitingBuildEffect(player);
 
   if (buildEffect?.source === ESevenWondersFreeCardSource.DISCARD) {
     return discard;
+  }
+
+  if (
+    buildEffect?.source === ESevenWondersFreeCardSource.LEADERS
+    || phase === ESevenWondersGamePhase.RECRUIT_LEADERS
+  ) {
+    return player.leadersHand;
+  }
+
+  if (phase === ESevenWondersGamePhase.DRAFT_LEADERS) {
+    return player.leadersPool;
   }
 
   return player.hand;
