@@ -145,7 +145,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       // if (!player.isBot) {
       //   player.city = ESevenWondersCity.HALIKARNASSOS;
       //   player.citySide = 1;
-      //   player.leadersHand.push(...allLeaders.filter(({ id }) => id === ESevenWonderCardId.NERO));
+      //   player.leadersHand.push(...allLeaders.filter(({ id }) => id === ESevenWonderCardId.MAECENAS));
       // }
     });
 
@@ -184,6 +184,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         if (
           effect.period === ESevenWondersFreeCardPeriod.AGE
           || effect.period === ESevenWondersFreeCardPeriod.LAST_AGE_TURN
+          || effect.period === ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT
         ) {
           player.buildCardEffects.push(effect);
         }
@@ -261,6 +262,12 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     if (this.phase === ESevenWondersGamePhase.RECRUIT_LEADERS) {
       this.phase = ESevenWondersGamePhase.BUILD_STRUCTURES;
+
+      this.players.forEach((player) => {
+        player.buildCardEffects = player.buildCardEffects.filter(({ period }) => (
+          period !== ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT
+        ));
+      });
 
       this.startTurn();
 
