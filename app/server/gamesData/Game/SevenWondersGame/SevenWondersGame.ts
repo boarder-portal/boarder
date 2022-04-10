@@ -26,9 +26,9 @@ import {
   ISevenWondersCard,
 } from 'common/types/sevenWonders/cards';
 import {
+  ESevenWondersEffect,
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
-  ESevenWondersEffect,
   ISevenWondersGain,
   ISevenWondersScientificSymbolsEffect,
   TSevenWondersEffect,
@@ -497,7 +497,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       return;
     }
 
-    const playerHandCards = getPlayerHandCards(player, this.discard);
+    const playerHandCards = getPlayerHandCards(player, this.discard, this.phase);
     const card = playerHandCards[cardIndex];
     const waitingBuildEffect = getWaitingBuildEffect(player);
     const newEffects: TSevenWondersEffect[] = [];

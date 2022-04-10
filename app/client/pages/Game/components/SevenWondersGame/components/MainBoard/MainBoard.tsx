@@ -4,7 +4,7 @@ import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import {
-  ESevenWondersGameEvent,
+  ESevenWondersGameEvent, ESevenWondersGamePhase,
   ESevenWondersNeighborSide,
   ISevenWondersExecuteActionEvent,
   ISevenWondersPlayer,
@@ -38,6 +38,7 @@ interface IMainBoardProps {
   player: ISevenWondersPlayer;
   discard: ISevenWondersCard[];
   age: number;
+  gamePhase: ESevenWondersGamePhase;
   leftNeighbor: ISevenWondersPlayer;
   rightNeighbor: ISevenWondersPlayer;
 }
@@ -77,7 +78,7 @@ const Root = styled(Box)`
 `;
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
-  const { className, io, player, discard, age, leftNeighbor, rightNeighbor } = props;
+  const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
 
   const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
   const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
@@ -104,7 +105,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
 
-  const hand = useMemo(() => getPlayerHandCards(player, discard), [discard, player]);
+  const hand = useMemo(() => getPlayerHandCards(player, discard, gamePhase), [discard, gamePhase, player]);
   const prevHand = usePrevious(hand);
 
   const resourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor), [leftNeighbor, player, rightNeighbor]);

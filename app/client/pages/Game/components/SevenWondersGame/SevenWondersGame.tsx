@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 
 import {
   ESevenWondersGameEvent,
+  ESevenWondersGamePhase,
   ESevenWondersNeighborSide,
   ISevenWondersGameInfoEvent,
   ISevenWondersPlayer,
@@ -57,6 +58,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const [players, setPlayers] = useState<ISevenWondersPlayer[]>([]);
   const [discard, setDiscard] = useState<ISevenWondersCard[]>([]);
   const [age, setAge] = useState<number>(0);
+  const [gamePhase, setGamePhase] = useState<ESevenWondersGamePhase>(ESevenWondersGamePhase.DRAFT_LEADERS);
 
   const user = useRecoilValue(userAtom);
 
@@ -91,6 +93,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
       setPlayers(gameInfo.players);
       setDiscard(gameInfo.discard);
       setAge(gameInfo.age);
+      setGamePhase(gameInfo.phase);
     });
 
     return () => {
@@ -121,6 +124,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         player={player}
         discard={discard}
         age={age}
+        gamePhase={gamePhase}
         leftNeighbor={leftNeighbor}
         rightNeighbor={rightNeighbor}
       />
