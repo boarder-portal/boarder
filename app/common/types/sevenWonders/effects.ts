@@ -115,6 +115,7 @@ export interface ISevenWondersBuildCardEffect {
   source: ESevenWondersFreeCardSource;
   isFree: boolean;
   possibleActions: ESevenWondersCardActionType[];
+  priority?: number;
 }
 
 export interface ISevenWondersCopyCardEffect {

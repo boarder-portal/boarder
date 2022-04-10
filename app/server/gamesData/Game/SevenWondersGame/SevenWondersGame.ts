@@ -656,6 +656,20 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     }
 
+    this.players.forEach((player) => {
+      const buildNowEffectIndex = player.buildCardEffects.findIndex((effect) => (
+        effect.period === ESevenWondersFreeCardPeriod.NOW
+        && effect.source !== ESevenWondersFreeCardSource.DISCARD
+      ));
+
+      if (buildNowEffectIndex !== -1) {
+        player.waitingForAction = {
+          type: ESevenWondersWaitingActionType.EFFECT_BUILD_CARD,
+          buildEffectIndex: buildNowEffectIndex,
+        };
+      }
+    });
+
     if (someoneBuildsLastCard) {
       return;
     }
@@ -666,23 +680,39 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     }
 
-    // TODO: prioritize Halicarnassus over Solomon
-    this.players.forEach((player) => {
-      const buildCardEffectIndex = player.buildCardEffects.findIndex((effect) => (
-        effect.period === ESevenWondersFreeCardPeriod.NOW
-        && (
-          effect.source !== ESevenWondersFreeCardSource.DISCARD
-          || this.discard.length > 0
-        )
-      ));
+    if (this.discard.length > 0) {
+      let maxDiscardPriority = -Infinity;
+      let highestDiscardTarget: {
+        player: ISevenWondersPlayer;
+        effectIndex: number;
+      } | undefined;
 
-      if (buildCardEffectIndex !== -1) {
-        player.waitingForAction = {
+      this.players.forEach((player) => {
+        const buildFromDiscardEffectIndex = player.buildCardEffects.findIndex((effect) => (
+          effect.period === ESevenWondersFreeCardPeriod.NOW
+          && effect.source === ESevenWondersFreeCardSource.DISCARD
+        ));
+
+        if (buildFromDiscardEffectIndex !== -1) {
+          const priority = player.buildCardEffects[buildFromDiscardEffectIndex].priority ?? -1;
+
+          if (priority > maxDiscardPriority) {
+            highestDiscardTarget = {
+              player,
+              effectIndex: buildFromDiscardEffectIndex,
+            };
+            maxDiscardPriority = priority;
+          }
+        }
+      });
+
+      if (highestDiscardTarget) {
+        highestDiscardTarget.player.waitingForAction = {
           type: ESevenWondersWaitingActionType.EFFECT_BUILD_CARD,
-          buildEffectIndex: buildCardEffectIndex,
+          buildEffectIndex: highestDiscardTarget.effectIndex,
         };
       }
-    });
+    }
   }
 
   onPlayerExecuteAction(player: ISevenWondersPlayer, action: ISevenWondersExecuteActionEvent): void {

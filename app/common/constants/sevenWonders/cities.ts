@@ -608,6 +608,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
           possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+          priority: 100,
         }],
       }, {
         price: {
@@ -650,6 +651,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
           possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+          priority: 100,
         }],
       }, {
         price: {
@@ -670,6 +672,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
           possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+          priority: 100,
         }],
       }, {
         price: {
@@ -691,6 +694,7 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
           source: ESevenWondersFreeCardSource.DISCARD,
           isFree: true,
           possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+          priority: 100,
         }],
       }],
     }],

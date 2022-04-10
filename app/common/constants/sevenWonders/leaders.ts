@@ -246,6 +246,7 @@ const LEADERS: ISevenWondersCard[] = [
       count: 1,
       period: ESevenWondersFreeCardPeriod.NOW,
       possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+      priority: 0,
     }],
     price: {
       coins: 3,
