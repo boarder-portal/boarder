@@ -5,6 +5,7 @@ import {
   ISevenWondersCard,
 } from 'common/types/sevenWonders/cards';
 import {
+  ESevenWondersCoinPassiveSource,
   ESevenWondersFreeCardPeriod,
   ESevenWondersFreeCardSource,
   ISevenWondersEffect,
@@ -28,6 +29,21 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [3],
   },
   {
+    id: ESevenWonderCardId.MIDAS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.GAIN_BY_COINS,
+      gain: {
+        points: 1,
+      },
+      count: 3,
+    }],
+    price: {
+      coins: 3,
+    },
+    minPlayersCounts: [3],
+  },
+  {
     id: ESevenWonderCardId.ALEXANDER,
     type: ESevenWondersCardType.LEADER,
     effects: [{
@@ -43,6 +59,51 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [3],
   },
   {
+    id: ESevenWonderCardId.BILKIS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.TRADE,
+      price: 1,
+      resources: [ESevenWondersCardType.RAW_MATERIAL, ESevenWondersCardType.MANUFACTURED_GOODS],
+      sources: ['bank'],
+    }],
+    price: {
+      coins: 3,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.ARISTOTLE,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.SCIENTIFIC_SET,
+      gain: {
+        points: 3,
+      },
+    }],
+    price: {
+      coins: 3,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.MAECENAS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.BUILD_CARD,
+      source: ESevenWondersFreeCardSource.LEADERS,
+      cardTypes: [ESevenWondersCardType.LEADER],
+      count: Infinity,
+      isFree: true,
+      period: ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT,
+      possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+    }],
+    price: {
+      coins: 1,
+    },
+    minPlayersCounts: [3],
+  },
+  {
     id: ESevenWonderCardId.JUSTINIAN,
     type: ESevenWondersCardType.LEADER,
     effects: [{
@@ -52,7 +113,6 @@ const LEADERS: ISevenWondersCard[] = [
         ESevenWondersCardType.MILITARY,
         ESevenWondersCardType.SCIENTIFIC,
       ],
-      isCombo: true,
       gain: {
         points: 3,
       },
@@ -77,7 +137,6 @@ const LEADERS: ISevenWondersCard[] = [
         ESevenWondersCardType.MILITARY,
         ESevenWondersCardType.GUILD,
       ],
-      isCombo: true,
       gain: {
         points: 7,
       },
@@ -105,6 +164,17 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [3],
   },
   {
+    id: ESevenWonderCardId.TOMYRIS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.RETURN_DEFEATS,
+    }],
+    price: {
+      coins: 4,
+    },
+    minPlayersCounts: [3],
+  },
+  {
     id: ESevenWonderCardId.HANNIBAL,
     type: ESevenWondersCardType.LEADER,
     effects: [{
@@ -125,6 +195,45 @@ const LEADERS: ISevenWondersCard[] = [
     }],
     price: {
       coins: 5,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.NERO,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.COIN_PASSIVE,
+      source: ESevenWondersCoinPassiveSource.WINS,
+      count: 2,
+    }],
+    price: {
+      coins: 1,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.XENOPHON,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.COIN_PASSIVE,
+      source: ESevenWondersCoinPassiveSource.COMMERCIAL_CARDS,
+      count: 2,
+    }],
+    price: {
+      coins: 2,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.VITRUVIUS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.COIN_PASSIVE,
+      source: ESevenWondersCoinPassiveSource.STRUCTURE_INHERITANCE,
+      count: 2,
+    }],
+    price: {
+      coins: 1,
     },
     minPlayersCounts: [3],
   },
@@ -326,7 +435,70 @@ const LEADERS: ISevenWondersCard[] = [
     },
     minPlayersCounts: [3],
   },
-
+  {
+    id: ESevenWonderCardId.ARCHIMEDES,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.REDUCED_PRICE,
+      objectType: ESevenWondersCardType.SCIENTIFIC,
+      direction: ESevenWondersPlayerDirection.SELF,
+      discount: {
+        resources: 1,
+      },
+    }],
+    price: {
+      coins: 4,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.LEONIDAS,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.REDUCED_PRICE,
+      objectType: ESevenWondersCardType.MILITARY,
+      direction: ESevenWondersPlayerDirection.SELF,
+      discount: {
+        resources: 1,
+      },
+    }],
+    price: {
+      coins: 2,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.HAMMURABI,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.REDUCED_PRICE,
+      objectType: ESevenWondersCardType.CIVILIAN,
+      direction: ESevenWondersPlayerDirection.SELF,
+      discount: {
+        resources: 1,
+      },
+    }],
+    price: {
+      coins: 2,
+    },
+    minPlayersCounts: [3],
+  },
+  {
+    id: ESevenWonderCardId.IMHOTEP,
+    type: ESevenWondersCardType.LEADER,
+    effects: [{
+      type: ISevenWondersEffect.REDUCED_PRICE,
+      objectType: 'wonderLevel',
+      direction: ESevenWondersPlayerDirection.SELF,
+      discount: {
+        resources: 1,
+      },
+    }],
+    price: {
+      coins: 3,
+    },
+    minPlayersCounts: [3],
+  },
   {
     id: ESevenWonderCardId.EUCLID,
     type: ESevenWondersCardType.LEADER,

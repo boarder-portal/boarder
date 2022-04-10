@@ -3,6 +3,7 @@ import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 
 import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 import getCity from 'common/utilities/sevenWonders/getCity';
+import isNotUndefined from 'common/utilities/isNotUndefined';
 
 export default function getPlayerTradeResources(player: ISevenWondersPlayer): ISevenWondersResource[][] {
   const builtCardsResourceVariants = player.builtCards
@@ -10,9 +11,11 @@ export default function getPlayerTradeResources(player: ISevenWondersPlayer): IS
     .flatMap((builtCard) => builtCard.effects.filter(isResourceEffect))
     .map((effect) => effect.variants);
 
-  const { effect: cityEffect } = getCity(player.city, player.citySide);
+  const { effects: cityEffects } = getCity(player.city, player.citySide);
 
-  const cityResourceVariants = isResourceEffect(cityEffect) ? cityEffect.variants : [];
+  const cityResourceVariants = cityEffects
+    .map((effect) => isResourceEffect(effect) ? effect.variants : undefined)
+    .filter(isNotUndefined);
 
-  return [...builtCardsResourceVariants, cityResourceVariants];
+  return [...builtCardsResourceVariants, ...cityResourceVariants];
 }

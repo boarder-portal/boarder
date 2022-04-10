@@ -1,7 +1,5 @@
-import { ESevenWondersNeighborSide, ISevenWondersResource } from 'common/types/sevenWonders';
-
-export type TResourceOwner = ESevenWondersNeighborSide | 'own' | 'bank';
+import { ISevenWondersResource, TSevenWondersResourceOwner } from 'common/types/sevenWonders';
 
 export interface IOwnerResource extends ISevenWondersResource {
-  owner: TResourceOwner;
+  owner: TSevenWondersResourceOwner;
 }

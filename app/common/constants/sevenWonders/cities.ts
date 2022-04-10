@@ -11,18 +11,18 @@ import {
   ESevenWondersFreeCardSource,
   ESevenWondersEffect,
 } from 'common/types/sevenWonders/effects';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
+import { ESevenWondersCardType, ESevenWondersPlayerDirection } from 'common/types/sevenWonders/cards';
 
 const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   [ESevenWondersCity.RHODOS]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.ORE,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -62,13 +62,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.ORE,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -108,13 +108,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.ALEXANDRIA]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.GLASS,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -166,13 +166,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.GLASS,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -234,13 +234,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.EPHESOS]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.PAPYRUS,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -282,13 +282,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.PAPYRUS,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -342,13 +342,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.BABYLON]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.CLAY,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -392,13 +392,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.CLAY,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -456,13 +456,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.OLYMPIA]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.WOOD,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -506,13 +506,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.WOOD,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -522,12 +522,12 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         },
         effects: [{
           type: ESevenWondersEffect.TRADE,
-          neighbors: [
+          sources: [
             ESevenWondersNeighborSide.LEFT,
             ESevenWondersNeighborSide.RIGHT,
           ],
           price: 1,
-          resource: ESevenWondersCardType.RAW_MATERIAL,
+          resources: [ESevenWondersCardType.RAW_MATERIAL],
         }],
       }, {
         price: {
@@ -565,13 +565,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.HALIKARNASSOS]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.LOOM,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -615,13 +615,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.LOOM,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -688,13 +688,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
   },
   [ESevenWondersCity.GIZAH]: {
     sides: [{
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.STONE,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -736,13 +736,13 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
         }],
       }],
     }, {
-      effect: {
+      effects: [{
         type: ESevenWondersEffect.RESOURCES,
         variants: [{
           type: ESevenWondersResource.STONE,
           count: 1,
         }],
-      },
+      }],
       wonders: [{
         price: {
           resources: [{
@@ -801,7 +801,160 @@ const CITIES: Record<ESevenWondersCity, ISevenWondersCity> = {
       }],
     }],
   },
-
+  [ESevenWondersCity.ROMA]: {
+    sides: [{
+      effects: [{
+        type: ESevenWondersEffect.BUILD_CARD,
+        period: ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT,
+        cardTypes: [ESevenWondersCardType.LEADER],
+        isFree: true,
+        count: Infinity,
+        source: ESevenWondersFreeCardSource.LEADERS,
+        possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+      }],
+      wonders: [{
+        price: {
+          resources: [{
+            type: ESevenWondersResource.CLAY,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.WOOD,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.ORE,
+            count: 1,
+          }],
+        },
+        effects: [{
+          type: ESevenWondersEffect.GAIN,
+          gain: {
+            points: 4,
+          },
+        }],
+      }, {
+        price: {
+          resources: [{
+            type: ESevenWondersResource.STONE,
+            count: 2,
+          }, {
+            type: ESevenWondersResource.CLAY,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.LOOM,
+            count: 1,
+          }],
+        },
+        effects: [{
+          type: ESevenWondersEffect.GAIN,
+          gain: {
+            points: 6,
+          },
+        }],
+      }],
+    }, {
+      effects: [{
+        type: ESevenWondersEffect.REDUCED_PRICE,
+        objectType: ESevenWondersCardType.LEADER,
+        discount: {
+          coins: 1,
+        },
+        direction: ESevenWondersPlayerDirection.LEFT,
+      }, {
+        type: ESevenWondersEffect.REDUCED_PRICE,
+        objectType: ESevenWondersCardType.LEADER,
+        discount: {
+          coins: 2,
+        },
+        direction: ESevenWondersPlayerDirection.SELF,
+      }, {
+        type: ESevenWondersEffect.REDUCED_PRICE,
+        objectType: ESevenWondersCardType.LEADER,
+        discount: {
+          coins: 1,
+        },
+        direction: ESevenWondersPlayerDirection.RIGHT,
+      }],
+      wonders: [{
+        price: {
+          resources: [{
+            type: ESevenWondersResource.CLAY,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.WOOD,
+            count: 1,
+          }],
+        },
+        effects: [{
+          type: ESevenWondersEffect.GAIN,
+          gain: {
+            coins: 5,
+          },
+        }, {
+          type: ESevenWondersEffect.ADD_LEADERS,
+          count: 4,
+        }],
+      }, {
+        price: {
+          resources: [{
+            type: ESevenWondersResource.LOOM,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.STONE,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.CLAY,
+            count: 1,
+          }],
+        },
+        effects: [{
+          type: ESevenWondersEffect.GAIN,
+          gain: {
+            points: 3,
+          },
+        }, {
+          type: ESevenWondersEffect.BUILD_CARD,
+          period: ESevenWondersFreeCardPeriod.NOW,
+          cardTypes: [ESevenWondersCardType.LEADER],
+          source: ESevenWondersFreeCardSource.LEADERS,
+          count: 1,
+          isFree: false,
+          possibleActions: [
+            ESevenWondersCardActionType.BUILD_STRUCTURE,
+            ESevenWondersCardActionType.BUILD_WONDER_STAGE,
+            ESevenWondersCardActionType.DISCARD,
+          ],
+        }],
+      }, {
+        price: {
+          resources: [{
+            type: ESevenWondersResource.PAPYRUS,
+            count: 1,
+          }, {
+            type: ESevenWondersResource.STONE,
+            count: 2,
+          }],
+        },
+        effects: [{
+          type: ESevenWondersEffect.GAIN,
+          gain: {
+            points: 3,
+          },
+        }, {
+          type: ESevenWondersEffect.BUILD_CARD,
+          period: ESevenWondersFreeCardPeriod.NOW,
+          cardTypes: [ESevenWondersCardType.LEADER],
+          isFree: false,
+          source: ESevenWondersFreeCardSource.LEADERS,
+          count: 1,
+          possibleActions: [
+            ESevenWondersCardActionType.BUILD_STRUCTURE,
+            ESevenWondersCardActionType.BUILD_WONDER_STAGE,
+            ESevenWondersCardActionType.DISCARD,
+          ],
+        }],
+      }],
+    }],
+  },
 };
 
 export default CITIES;

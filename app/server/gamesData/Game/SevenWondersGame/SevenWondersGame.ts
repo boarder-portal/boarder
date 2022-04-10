@@ -491,7 +491,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
     const { cardIndex, action, payments } = executeActionEvent;
 
-    if (action.type === ESevenWondersCardActionType.DRAFT_LEADER) {
+    if (action.type === ESevenWondersCardActionType.PICK_LEADER) {
       player.leadersHand.push(...player.leadersPool.splice(cardIndex, 1));
 
       return;

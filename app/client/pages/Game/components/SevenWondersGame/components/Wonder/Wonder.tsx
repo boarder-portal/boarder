@@ -95,7 +95,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                   style={{ top: `${(GROUP_HEIGHT - cardVerticalSpace * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
                   card={card}
                   flip={isOtherPlayer && card.effects.some((effect) =>
-                    isTradeEffect(effect) && effect.neighbors.length === 1)}
+                    isTradeEffect(effect) && effect.sources.length === 1)}
                   width={100}
                   zoomOnHover
                 />

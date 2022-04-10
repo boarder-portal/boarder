@@ -14,11 +14,17 @@ export default function getResourceTradePrices(tradeEffects: ISevenWondersTradeE
     accTradeResourcePrices,
     tradeEffect,
   ) => {
-    tradeEffect.neighbors.forEach((neighborSide) => {
-      accTradeResourcePrices[neighborSide][tradeEffect.resource] = Math.min(
-        accTradeResourcePrices[neighborSide][tradeEffect.resource],
-        tradeEffect.price,
-      );
+    tradeEffect.sources.forEach((resourceOwner) => {
+      if (resourceOwner !== ESevenWondersNeighborSide.LEFT && resourceOwner !== ESevenWondersNeighborSide.RIGHT) {
+        return;
+      }
+
+      tradeEffect.resources.forEach((resource) => {
+        accTradeResourcePrices[resourceOwner][resource] = Math.min(
+          accTradeResourcePrices[resourceOwner][resource],
+          tradeEffect.price,
+        );
+      });
     });
 
     return accTradeResourcePrices;

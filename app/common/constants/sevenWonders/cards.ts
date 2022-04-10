@@ -263,9 +263,9 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ESevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighborSide.RIGHT],
+      sources: [ESevenWondersNeighborSide.RIGHT],
       price: 1,
-      resource: ESevenWondersCardType.RAW_MATERIAL,
+      resources: [ESevenWondersCardType.RAW_MATERIAL],
     }],
     minPlayersCounts: [3, 7],
   }, {
@@ -273,9 +273,9 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ESevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighborSide.LEFT],
+      sources: [ESevenWondersNeighborSide.LEFT],
       price: 1,
-      resource: ESevenWondersCardType.RAW_MATERIAL,
+      resources: [ESevenWondersCardType.RAW_MATERIAL],
     }],
     minPlayersCounts: [3, 7],
   }, {
@@ -283,9 +283,9 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
     type: ESevenWondersCardType.COMMERCIAL,
     effects: [{
       type: ESevenWondersEffect.TRADE,
-      neighbors: [ESevenWondersNeighborSide.LEFT, ESevenWondersNeighborSide.RIGHT],
+      sources: [ESevenWondersNeighborSide.LEFT, ESevenWondersNeighborSide.RIGHT],
       price: 1,
-      resource: ESevenWondersCardType.MANUFACTURED_GOODS,
+      resources: [ESevenWondersCardType.MANUFACTURED_GOODS],
     }],
     minPlayersCounts: [3, 6],
   },
@@ -1465,6 +1465,110 @@ const CARDS_BY_AGE: ISevenWondersCard[][] = [
         count: 2,
       }, {
         type: ESevenWondersResource.GLASS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.GAMERS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ESevenWondersEffect.GAIN_BY_COINS,
+      gain: {
+        points: 1,
+      },
+      count: 3,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.ORE,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.COURTESANS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ESevenWondersEffect.COPY_CARD,
+      neighbors: [ESevenWondersNeighborSide.LEFT, ESevenWondersNeighborSide.RIGHT],
+      cardType: ESevenWondersCardType.LEADER,
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.DIPLOMATS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ESevenWondersEffect.CARDS_TYPE,
+      cardTypes: [ESevenWondersCardType.LEADER],
+      gain: {
+        points: 1,
+      },
+      directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.RIGHT],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.STONE,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.WOOD,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.GLASS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }],
+    },
+    minPlayersCounts: [],
+  }, {
+    id: ESevenWonderCardId.ARCHITECTS_GUILD,
+    type: ESevenWondersCardType.GUILD,
+    effects: [{
+      type: ESevenWondersEffect.CARDS_TYPE,
+      cardTypes: [ESevenWondersCardType.GUILD],
+      gain: {
+        points: 3,
+      },
+      directions: [ESevenWondersPlayerDirection.LEFT, ESevenWondersPlayerDirection.RIGHT],
+    }],
+    price: {
+      resources: [{
+        type: ESevenWondersResource.ORE,
+        count: 3,
+      }, {
+        type: ESevenWondersResource.CLAY,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.PAPYRUS,
+        count: 1,
+      }, {
+        type: ESevenWondersResource.LOOM,
         count: 1,
       }],
     },

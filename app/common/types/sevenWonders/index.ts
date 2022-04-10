@@ -40,7 +40,7 @@ export interface ISevenWondersWonder {
 }
 
 export interface ISevenWondersCitySide {
-  effect: TSevenWondersEffect;
+  effects: TSevenWondersEffect[];
   wonders: ISevenWondersWonder[];
 }
 
@@ -94,7 +94,7 @@ export enum ESevenWondersCardActionType {
   BUILD_STRUCTURE = 'BUILD_STRUCTURE',
   BUILD_WONDER_STAGE = 'BUILD_WONDER_STAGE',
   DISCARD = 'DISCARD',
-  DRAFT_LEADER = 'DRAFT_LEADER',
+  PICK_LEADER = 'PICK_LEADER',
 }
 
 export interface ISevenWondersBuildingBuildType {
@@ -124,15 +124,15 @@ export interface ISevenWondersDiscardAction {
   type: ESevenWondersCardActionType.DISCARD;
 }
 
-export interface ISevenWondersDraftLeaderAction {
-  type: ESevenWondersCardActionType.DRAFT_LEADER;
+export interface ISevenWondersPickLeaderAction {
+  type: ESevenWondersCardActionType.PICK_LEADER;
 }
 
 export type TSevenWondersAction = (
   | ISevenWondersBuildStructureAction
   | ISevenWondersBuildWonderStageAction
   | ISevenWondersDiscardAction
-  | ISevenWondersDraftLeaderAction
+  | ISevenWondersPickLeaderAction
 );
 
 export type TSevenWondersPayments = Record<ESevenWondersNeighborSide, number>;
@@ -168,6 +168,8 @@ export interface ISevenWondersPrice {
   resources?: ISevenWondersResource[];
   coins?: number;
 }
+
+export type TSevenWondersResourceOwner = ESevenWondersNeighborSide | 'own' | 'bank';
 
 export enum ESevenWondersGamePhase {
   DRAFT_LEADERS = 'DRAFT_LEADERS',

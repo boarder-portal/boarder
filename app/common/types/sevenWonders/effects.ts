@@ -7,7 +7,8 @@ import {
   ESevenWondersNeighborSide,
   ISevenWondersResource,
   ESevenWondersScientificSymbol,
-} from 'common/types/sevenWonders';
+  TSevenWondersResourceOwner,
+} from 'common/types/sevenWonders/index';
 
 export interface ISevenWondersGain {
   points?: number;
@@ -24,8 +25,14 @@ export enum ESevenWondersEffect {
   SCIENTIFIC_SYMBOLS = 'SCIENTIFIC_SYMBOLS',
   WINS = 'WINS',
   LOSSES = 'LOSSES',
+  GAIN_BY_COINS = 'GAIN_BY_COINS',
   BUILD_CARD = 'BUILD_CARD',
   COPY_CARD = 'COPY_CARD',
+  REDUCED_PRICE = 'REDUCED_PRICE',
+  COIN_PASSIVE = 'COIN_PASSIVE',
+  RETURN_DEFEATS = 'RETURN_DEFEATS',
+  ADD_LEADERS = 'ADD_LEADERS',
+  SCIENTIFIC_SET = 'SCIENTIFIC_SET',
 }
 
 export interface ISevenWondersGainEffect {
@@ -40,15 +47,14 @@ export interface ISevenWondersResourcesEffect {
 
 export interface ISevenWondersTradeEffect {
   type: ESevenWondersEffect.TRADE;
-  neighbors: ESevenWondersNeighborSide[];
+  sources: TSevenWondersResourceOwner[];
   price: number;
-  resource: ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS;
+  resources: (ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS)[];
 }
 
 export interface ISevenWondersCardsTypeEffect {
   type: ESevenWondersEffect.CARDS_TYPE;
   cardTypes: ESevenWondersCardType[];
-  isCombo?: boolean;
   gain: ISevenWondersGain;
   directions: ESevenWondersPlayerDirection[];
 }
@@ -81,11 +87,18 @@ export interface ISevenWondersLossesEffect {
   directions: ESevenWondersPlayerDirection[];
 }
 
+export interface ISevenWondersGainByCoinsEffect {
+  type: ESevenWondersEffect.GAIN_BY_COINS;
+  count: number;
+  gain: ISevenWondersGain;
+}
+
 export enum ESevenWondersFreeCardPeriod {
   NOW = 'NOW',
   AGE = 'AGE',
   LAST_AGE_TURN = 'LAST_AGE_TURN',
   ETERNITY = 'ETERNITY',
+  LEADER_RECRUITMENT = 'LEADER_RECRUITMENT',
 }
 
 export enum ESevenWondersFreeCardSource {
@@ -110,6 +123,43 @@ export interface ISevenWondersCopyCardEffect {
   cardType: ESevenWondersCardType;
 }
 
+export interface ISevenWondersReducedPriceEffect {
+  type: ESevenWondersEffect.REDUCED_PRICE;
+  objectType: ESevenWondersCardType | 'wonderLevel';
+  discount: {
+    coins?: number;
+    resources?: number;
+  };
+  direction: ESevenWondersPlayerDirection;
+}
+
+export enum ESevenWondersCoinPassiveSource {
+  TRADE = 'TRADE',
+  WINS = 'WINS',
+  COMMERCIAL_CARDS = 'COMMERCIAL_CARDS',
+  STRUCTURE_INHERITANCE = 'STRUCTURE_INHERITANCE',
+}
+
+export interface ISevenWondersCoinPassiveEffect {
+  type: ESevenWondersEffect.COIN_PASSIVE;
+  source: ESevenWondersCoinPassiveSource;
+  count: number;
+}
+
+export interface ISevenWondersReturnDefeatsEffect {
+  type: ESevenWondersEffect.RETURN_DEFEATS;
+}
+
+export interface ISevenWondersAddLeadersEffect {
+  type: ESevenWondersEffect.ADD_LEADERS;
+  count: number;
+}
+
+export interface ISevenWondersScientificSetEffect {
+  type: ESevenWondersEffect.SCIENTIFIC_SET;
+  gain: ISevenWondersGain;
+}
+
 export type TSevenWondersEffect =
  | ISevenWondersGainEffect
  | ISevenWondersResourcesEffect
@@ -120,5 +170,11 @@ export type TSevenWondersEffect =
  | ISevenWondersScientificSymbolsEffect
  | ISevenWondersWinsEffect
  | ISevenWondersLossesEffect
+ | ISevenWondersGainByCoinsEffect
  | ISevenWondersBuildCardEffect
  | ISevenWondersCopyCardEffect
+ | ISevenWondersReducedPriceEffect
+ | ISevenWondersCoinPassiveEffect
+ | ISevenWondersReturnDefeatsEffect
+ | ISevenWondersAddLeadersEffect
+ | ISevenWondersScientificSetEffect
