@@ -100,6 +100,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       citySide: Number(Math.random() > 0.5),
       builtStages: [],
       coins: 6,
+      receivedCoinsDuringTurn: 0,
       victoryPoints: [],
       defeatPoints: [],
       isBot: false,
@@ -146,6 +147,22 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       //   player.city = ESevenWondersCity.HALIKARNASSOS;
       //   player.citySide = 1;
       //   player.leadersHand.push(...allLeaders.filter(({ id }) => id === ESevenWonderCardId.MAECENAS));
+      // }
+
+      // if (player.login === '123') {
+      //   player.city = ESevenWondersCity.ROMA;
+      //   player.citySide = 1;
+      //   player.leadersHand.push(...allLeaders.filter(({ id }) => id === ESevenWonderCardId.SOLOMON));
+      // }
+      //
+      // if (player.login === '234') {
+      //   player.city = ESevenWondersCity.BABYLON;
+      //   player.citySide = 1;
+      // }
+      //
+      // if (player.login === '345') {
+      //   player.city = ESevenWondersCity.HALIKARNASSOS;
+      //   player.citySide = 1;
       // }
     });
 
@@ -256,11 +273,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       } else {
         this.startTurn();
       }
-
-      return;
-    }
-
-    if (this.phase === ESevenWondersGamePhase.RECRUIT_LEADERS) {
+    } else if (this.phase === ESevenWondersGamePhase.RECRUIT_LEADERS) {
       this.phase = ESevenWondersGamePhase.BUILD_STRUCTURES;
 
       this.players.forEach((player) => {
@@ -269,24 +282,25 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         ));
       });
 
+      this.withdrawPlayersCoins();
       this.startTurn();
-
-      return;
-    }
-
-    const hands = this.players.map(({ hand }) => hand);
-    const ageDirection = getAgeDirection(this.age);
-
-    this.players.forEach((player, playerIndex) => {
-      const neighbor = this.getNeighbor(player, ageDirection);
-
-      neighbor.hand = hands[playerIndex];
-    });
-
-    if (this.isLastAgeTurn()) {
-      this.endAge();
     } else {
-      this.startTurn();
+      const hands = this.players.map(({ hand }) => hand);
+      const ageDirection = getAgeDirection(this.age);
+
+      this.players.forEach((player, playerIndex) => {
+        const neighbor = this.getNeighbor(player, ageDirection);
+
+        neighbor.hand = hands[playerIndex];
+      });
+
+      this.withdrawPlayersCoins();
+
+      if (this.isLastAgeTurn()) {
+        this.endAge();
+      } else {
+        this.startTurn();
+      }
     }
   }
 
@@ -543,13 +557,23 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     }
   }
 
-  executePlayerAction(player: ISevenWondersPlayer, executeActionEvent: ISevenWondersExecuteActionEvent): void {
+  withdrawPlayersCoins(): void {
+    this.players.forEach((player) => {
+      player.coins += player.receivedCoinsDuringTurn;
+      player.receivedCoinsDuringTurn = 0;
+    });
+  }
+
+  executePlayerAction(
+    player: ISevenWondersPlayer,
+    executeActionEvent: ISevenWondersExecuteActionEvent,
+  ): TSevenWondersEffect[] {
     const { cardIndex, action, payments } = executeActionEvent;
 
     if (action.type === ESevenWondersCardActionType.PICK_LEADER) {
       player.leadersHand.push(...player.leadersPool.splice(cardIndex, 1));
 
-      return;
+      return [];
     }
 
     const playerHandCards = getPlayerHandCards(player, this.discard, this.phase);
@@ -621,21 +645,20 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       ).forEach(([neighborSide, payment]) => {
         const neighbor = this.getNeighbor(player, neighborSide);
 
-        neighbor.coins += payment;
+        neighbor.receivedCoinsDuringTurn += payment;
         player.coins -= payment;
       });
     }
 
-    // FIXME: this should be called after all moves
     newEffects.forEach((effect) => {
-      player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
-
       if (isBuildCardEffect(effect)) {
         player.buildCardEffects.push(effect);
       } else if (isDrawLeadersEffect(effect)) {
         player.leadersHand.push(...this.leadersDeck.splice(-effect.count));
       }
     });
+
+    return newEffects;
   }
 
   setWaitingActions(): void {
@@ -728,13 +751,27 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     if (this.isWaitingForActions()) {
       this.sendGameInfo();
     } else {
+      const newPlayersEffects: {
+        player: ISevenWondersPlayer;
+        effects: TSevenWondersEffect[];
+      }[] = [];
+
       this.players.forEach((player) => {
         if (player.chosenActionEvent) {
-          this.executePlayerAction(player, player.chosenActionEvent);
+          newPlayersEffects.push({
+            player,
+            effects: this.executePlayerAction(player, player.chosenActionEvent),
+          });
         }
 
         player.waitingForAction = null;
         player.chosenActionEvent = null;
+      });
+
+      newPlayersEffects.forEach(({ player, effects }) => {
+        effects.forEach((effect) => {
+          player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
+        });
       });
 
       this.setWaitingActions();

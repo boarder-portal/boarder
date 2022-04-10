@@ -92,6 +92,7 @@ export interface ISevenWondersPlayer extends IPlayer {
   citySide: number;
   builtStages: ISevenWondersBuiltStage[];
   coins: number;
+  receivedCoinsDuringTurn: number;
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
