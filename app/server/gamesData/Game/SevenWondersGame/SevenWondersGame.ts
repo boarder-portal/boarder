@@ -146,10 +146,13 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       //   player.citySide = 1;
       // }
     });
+
+    this.startTurn();
   }
 
   startAge(): void {
     this.age++;
+    this.phase = ESevenWondersGamePhase.RECRUIT_LEADERS;
 
     const ageCards = cardsByAge[this.age];
     const addedGuildCards = shuffle(
@@ -193,10 +196,14 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       if (player.isBot) {
         setTimeout(() => {
           player.hand = shuffle(player.hand);
+          player.leadersHand = shuffle(player.leadersHand);
+          player.leadersPool = shuffle(player.leadersPool);
 
           this.onPlayerExecuteAction(player, {
             cardIndex: 0,
-            action: {
+            action: this.phase === ESevenWondersGamePhase.DRAFT_LEADERS ? {
+              type: ESevenWondersCardActionType.PICK_LEADER,
+            } : {
               type: ESevenWondersCardActionType.BUILD_STRUCTURE,
               freeBuildType: {
                 type: EBuildType.FREE_BY_BUILDING,
@@ -218,6 +225,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   endTurn(): void {
+    this.players.forEach((player) => {
+      player.actions = [];
+    });
+
     if (this.phase === ESevenWondersGamePhase.DRAFT_LEADERS) {
       const leadersPools = this.players.map(({ leadersPool }) => leadersPool);
       const isLastPhaseTurn = leadersPools.some((pool) => pool.length === 1);
@@ -235,9 +246,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
 
       if (isLastPhaseTurn) {
-        this.phase = ESevenWondersGamePhase.RECRUIT_LEADERS;
-
         this.startAge();
+      } else {
+        this.startTurn();
       }
 
       return;
@@ -245,6 +256,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     if (this.phase === ESevenWondersGamePhase.RECRUIT_LEADERS) {
       this.phase = ESevenWondersGamePhase.BUILD_STRUCTURES;
+
+      this.startTurn();
 
       return;
     }
@@ -256,8 +269,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       const neighbor = this.getNeighbor(player, ageDirection);
 
       neighbor.hand = hands[playerIndex];
-
-      player.actions = [];
     });
 
     if (this.isLastAgeTurn()) {
