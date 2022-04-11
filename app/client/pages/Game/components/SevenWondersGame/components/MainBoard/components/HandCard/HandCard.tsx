@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import {
   ESevenWondersGamePhase,
   ISevenWondersPlayer,
@@ -15,9 +14,13 @@ import {
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-import {
-  TResourceTradePrices,
+import getResourceTradePrices, {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getPlayerResourcePools
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
+import getCity from 'common/utilities/sevenWonders/getCity';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
@@ -31,6 +34,8 @@ import useCardBuildFreeWithEffectInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
 import usePickLeaderInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/usePickLeaderInfo';
+import useWonderLevelBuildInfo
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useWonderLevelBuildInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import { HOVER_SOUND, playSound } from 'client/sounds';
@@ -40,9 +45,8 @@ interface IHandCardProps {
   cardIndex: number;
   player: ISevenWondersPlayer;
   gamePhase: ESevenWondersGamePhase;
-  resourcePools: IOwnerResource[][];
-  resourceTradePrices: TResourceTradePrices;
-  wonderLevelBuildInfo: IBuildInfo;
+  leftNeighbor: ISevenWondersPlayer;
+  rightNeighbor: ISevenWondersPlayer;
   isChosen: boolean;
   isDisabled: boolean;
   onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
@@ -120,9 +124,8 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     cardIndex,
     player,
     gamePhase,
-    resourcePools,
-    resourceTradePrices,
-    wonderLevelBuildInfo,
+    leftNeighbor,
+    rightNeighbor,
     isChosen,
     isDisabled,
     onCardAction,
@@ -136,6 +139,17 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   } = useBoolean(false);
 
   const [tradeModalType, setTradeModalType] = useState<'card' | 'wonderLevel'>('card');
+
+  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
+
+  const resourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor, card.type), [card, leftNeighbor, player, rightNeighbor]);
+  const wonderLevelResourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor, 'wonderLevel'), [leftNeighbor, player, rightNeighbor]);
+
+  const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
+  const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
+
+  const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
+  const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, wonderLevelResourcePools, resourceTradePrices, player, onCardAction);
 
   const pickLeaderInfo = usePickLeaderInfo(gamePhase, onCardAction);
   const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, onCardAction);

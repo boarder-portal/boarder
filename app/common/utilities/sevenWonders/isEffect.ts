@@ -5,6 +5,7 @@ import {
   ISevenWondersCoinPassiveEffect,
   ISevenWondersCopyCardEffect,
   ISevenWondersDrawLeadersEffect,
+  ISevenWondersReducedPriceEffect,
   ISevenWondersResourcesEffect,
   ISevenWondersReturnDefeatsEffect,
   ISevenWondersScientificSetEffect,
@@ -68,4 +69,8 @@ export function isStructureInheritancePassiveEffect(effect: TSevenWondersEffect)
 
 export function isDrawLeadersEffect(effect: TSevenWondersEffect): effect is ISevenWondersDrawLeadersEffect {
   return effect.type === ESevenWondersEffect.DRAW_LEADERS;
+}
+
+export function isReducesPriceEffect(effect: TSevenWondersEffect): effect is ISevenWondersReducedPriceEffect {
+  return effect.type === ESevenWondersEffect.REDUCED_PRICE;
 }

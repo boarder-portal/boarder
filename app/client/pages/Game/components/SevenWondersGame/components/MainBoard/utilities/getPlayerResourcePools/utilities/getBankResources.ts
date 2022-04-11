@@ -21,17 +21,17 @@ export default function getBankResources(player: ISevenWondersPlayer): IOwnerRes
       return undefined;
     }
 
-    const resources: ISevenWondersResource[] = [];
+    const resourceVariant: ISevenWondersResource[] = [];
 
     effect.resources.forEach((resourceType) => {
       if (resourceType === ESevenWondersCardType.RAW_MATERIAL) {
-        resources.push(...ANY_RAW_RESOURCE_VARIANT);
+        resourceVariant.push(...ANY_RAW_RESOURCE_VARIANT);
       } else if (resourceType === ESevenWondersCardType.MANUFACTURED_GOODS) {
-        resources.push(...ANY_MANUFACTURED_GOOD_RESOURCE_VARIANT);
+        resourceVariant.push(...ANY_MANUFACTURED_GOOD_RESOURCE_VARIANT);
       }
     });
 
-    return resources;
+    return resourceVariant;
   }).filter(isNotUndefined);
 
   return getOwnerResources(bankTradeResources, 'bank');

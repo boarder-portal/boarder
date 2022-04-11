@@ -13,21 +13,12 @@ import {
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
-import getResourceTradePrices
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
-import getPlayerResourcePools
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
 
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
-import useWonderLevelBuildInfo
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useWonderLevelBuildInfo';
 
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 import { usePrevious } from 'client/hooks/usePrevious';
@@ -80,7 +71,6 @@ const Root = styled(Box)`
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
 
-  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
   const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
 
   const chosenCardIndex = player.chosenActionEvent?.cardIndex;
@@ -108,14 +98,6 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const hand = useMemo(() => getPlayerHandCards(player, discard, gamePhase), [discard, gamePhase, player]);
   const prevHand = usePrevious(hand);
 
-  const resourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor), [leftNeighbor, player, rightNeighbor]);
-
-  const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
-  const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
-
-  const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
-  const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, resourcePools, resourceTradePrices, player, handleCardAction);
-
   useEffect(() => {
     if (hand.length !== prevHand.length && document.hidden) {
       playSound(NEW_TURN);
@@ -135,9 +117,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               cardIndex={index}
               player={player}
               gamePhase={gamePhase}
-              resourcePools={resourcePools}
-              resourceTradePrices={resourceTradePrices}
-              wonderLevelBuildInfo={wonderLevelBuildInfo}
+              leftNeighbor={leftNeighbor}
+              rightNeighbor={rightNeighbor}
               isChosen={index === chosenCardIndex}
               isDisabled={
                 chosenCardIndex === undefined
