@@ -114,7 +114,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         justifyContent="center"
       >
         {otherPlayers.map((otherPlayer) => (
-          <Wonder key={otherPlayer.login} className={b('otherPlayerWonder')} player={otherPlayer} isOtherPlayer />
+          <Wonder key={otherPlayer.login} className={b('otherPlayerWonder')} player={otherPlayer} copiedLeaderId={player.copiedCard?.id} isOtherPlayer />
         ))}
       </Box>
 

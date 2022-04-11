@@ -4,6 +4,7 @@ import block from 'bem-cn';
 
 import { ESevenWondersWaitingActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
 import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
+import { ESevenWonderCardId } from 'common/types/sevenWonders/cards';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
@@ -15,6 +16,7 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 interface IWonderProps {
   className?: string;
   player: ISevenWondersPlayer;
+  copiedLeaderId?: ESevenWonderCardId;
   isOtherPlayer?: boolean;
 }
 
@@ -56,7 +58,7 @@ const Root = styled(Box)`
 `;
 
 const Wonder: React.FC<IWonderProps> = (props) => {
-  const { className, player, isOtherPlayer } = props;
+  const { className, player, copiedLeaderId, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
 
@@ -111,6 +113,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                   flip={isOtherPlayer && card.effects.some((effect) =>
                     isTradeEffect(effect) && effect.sources.length === 1)}
                   width={100}
+                  isCopiedLeader={card.id === copiedLeaderId}
                   zoomOnHover
                 />
               ))}

@@ -13,6 +13,9 @@ import {
   EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import {
+  ISevenWondersCourtesansBuildInfo,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getResourceTradePrices, {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
@@ -36,6 +39,8 @@ import usePickLeaderInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/usePickLeaderInfo';
 import useWonderLevelBuildInfo
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useWonderLevelBuildInfo';
+import useSelectGuildToCopyInfo
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useSelectGuildToCopyInfo';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import { HOVER_SOUND, playSound } from 'client/sounds';
@@ -47,10 +52,12 @@ interface IHandCardProps {
   gamePhase: ESevenWondersGamePhase;
   leftNeighbor: ISevenWondersPlayer;
   rightNeighbor: ISevenWondersPlayer;
+  courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
   isChosen: boolean;
   isDisabled: boolean;
   onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
   onCancelCard(): void;
+  onStartCopyingLeader(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
 }
 
 const b = block('HandCard');
@@ -126,10 +133,12 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     gamePhase,
     leftNeighbor,
     rightNeighbor,
+    courtesansBuildInfo,
     isChosen,
     isDisabled,
     onCardAction,
     onCancelCard,
+    onStartCopyingLeader,
   } = props;
 
   const {
@@ -151,9 +160,10 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
   const wonderLevelBuildInfo = useWonderLevelBuildInfo(wonderLevelPrice, wonderLevelResourcePools, resourceTradePrices, player, onCardAction);
 
+  const selectGuildToCopyInfo = useSelectGuildToCopyInfo(courtesansBuildInfo, onCardAction);
   const pickLeaderInfo = usePickLeaderInfo(gamePhase, onCardAction);
-  const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, onCardAction);
-  const cardFreeBuildWithEffectInfo = useCardBuildFreeWithEffectInfo(card, player, onCardAction);
+  const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, onCardAction, onStartCopyingLeader);
+  const cardFreeBuildWithEffectInfo = useCardBuildFreeWithEffectInfo(card, player, onCardAction, onStartCopyingLeader);
   const discardInfo = useDiscardInfo(player, onCardAction);
 
   const getBuildHandler = useCallback((type: 'card' | 'wonderLevel', buildInfo: IBuildInfo) => {
@@ -175,12 +185,16 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     };
   }, [cardBuildInfo.type, cardIndex, open]);
 
+  const isCopyingLeaderActionAvailable = useMemo(() => {
+    return Boolean(courtesansBuildInfo);
+  }, [courtesansBuildInfo]);
+
   const isPickLeaderActionAvailable = useMemo(() => {
     return !isChosen && gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS;
   }, [gamePhase, isChosen]);
 
   const isBuildActionAvailable = useMemo(() => {
-    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS || isCopyingLeaderActionAvailable) {
       return false;
     }
 
@@ -191,14 +205,15 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     }
 
     return true;
-  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen]);
+  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen, isCopyingLeaderActionAvailable]);
 
   const isBuildFreeWithEffectActionAvailable = useMemo(() => {
     if (
       isChosen ||
       !cardFreeBuildWithEffectInfo.isAvailable ||
       cardBuildInfo.type === EBuildType.ALREADY_BUILT ||
-      gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS
+      gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS ||
+      isCopyingLeaderActionAvailable
     ) {
       return false;
     }
@@ -210,23 +225,23 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     }
 
     return true;
-  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen]);
+  }, [cardBuildInfo.type, cardFreeBuildWithEffectInfo.isAvailable, cardFreeBuildWithEffectInfo.isPurchaseAvailable, gamePhase, isChosen, isCopyingLeaderActionAvailable]);
 
   const isBuildWonderLevelAvailable = useMemo(() => {
-    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS || isCopyingLeaderActionAvailable) {
       return false;
     }
 
     return wonderLevelBuildInfo.type !== EBuildType.ALREADY_BUILT && wonderLevelBuildInfo.type !== EBuildType.NOT_ALLOWED;
-  }, [gamePhase, isChosen, wonderLevelBuildInfo.type]);
+  }, [gamePhase, isChosen, isCopyingLeaderActionAvailable, wonderLevelBuildInfo.type]);
 
   const isDiscardActionAvailable = useMemo(() => {
-    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS) {
+    if (isChosen || gamePhase === ESevenWondersGamePhase.DRAFT_LEADERS || isCopyingLeaderActionAvailable) {
       return false;
     }
 
     return discardInfo.isAvailable;
-  }, [discardInfo.isAvailable, gamePhase, isChosen]);
+  }, [discardInfo.isAvailable, gamePhase, isChosen, isCopyingLeaderActionAvailable]);
 
   const isCancelActionAvailable = useMemo(() => {
     return isChosen;
@@ -250,6 +265,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
         <Card card={card} width={150} />
 
         <Box className={b('actions')} flex column between={20} alignItems="center">
+          {isCopyingLeaderActionAvailable && <Box size="s" textAlign="center" onClick={selectGuildToCopyInfo.onClick.bind(null, card)}>{selectGuildToCopyInfo.title}</Box>}
           {isPickLeaderActionAvailable && <Box size="s" textAlign="center" onClick={pickLeaderInfo.onClick.bind(null, cardIndex)}>{pickLeaderInfo.title}</Box>}
           {isBuildActionAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('card', cardBuildInfo)}>{cardBuildInfo.title}</Box>}
           {isBuildFreeWithEffectActionAvailable && <Box size="s" textAlign="center" onClick={cardFreeBuildWithEffectInfo.onBuild.bind(null, cardIndex)}>{cardFreeBuildWithEffectInfo.title}</Box>}

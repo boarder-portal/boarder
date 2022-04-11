@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
@@ -12,9 +12,12 @@ import {
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import {
+  ISevenWondersCourtesansBuildInfo,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
-import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
+import getHand from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getHand';
 
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
@@ -71,12 +74,23 @@ const Root = styled(Box)`
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
 
+  const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
+
   const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
 
   const chosenCardIndex = player.chosenActionEvent?.cardIndex;
 
+  const handleStartCopyingLeader = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+    setCourtesansBuildInfo({
+      cardIndex,
+      action,
+      payments,
+    });
+  }, []);
+
   const handleCardAction = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
     playSound(SELECT_SOUND);
+    setCourtesansBuildInfo(null);
 
     const data: ISevenWondersExecuteActionEvent = {
       cardIndex,
@@ -95,7 +109,14 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
 
-  const hand = useMemo(() => getPlayerHandCards(player, discard, gamePhase), [discard, gamePhase, player]);
+  const hand = useMemo(() => getHand(
+    player,
+    discard,
+    gamePhase,
+    Boolean(courtesansBuildInfo),
+    leftNeighbor,
+    rightNeighbor,
+  ), [discard, gamePhase, courtesansBuildInfo, leftNeighbor, player, rightNeighbor]);
   const prevHand = usePrevious(hand);
 
   useEffect(() => {
@@ -119,6 +140,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               gamePhase={gamePhase}
               leftNeighbor={leftNeighbor}
               rightNeighbor={rightNeighbor}
+              courtesansBuildInfo={courtesansBuildInfo}
               isChosen={index === chosenCardIndex}
               isDisabled={
                 chosenCardIndex === undefined
@@ -127,6 +149,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               }
               onCardAction={handleCardAction}
               onCancelCard={cancelCard}
+              onStartCopyingLeader={handleStartCopyingLeader}
             />
           ))}
         </Box>

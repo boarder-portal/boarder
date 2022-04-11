@@ -10,6 +10,7 @@ interface ICardProps {
   card: ISevenWondersCard;
   flip?: boolean
   width?: number;
+  isCopiedLeader?: boolean;
   zoomOnHover?: boolean;
 }
 
@@ -35,6 +36,10 @@ const Root = styled.img`
         animation-fill-mode: forwards;
       }
     }
+
+    &_isCopiedLeader {
+      border: 2px solid green;
+    }
   }
 
   &:hover {
@@ -54,10 +59,10 @@ const Root = styled.img`
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
-  const { className, style, card, flip, width, zoomOnHover } = props;
+  const { className, style, card, flip, width, isCopiedLeader, zoomOnHover } = props;
 
   return (
-    <Root className={b({ flip, zoomOnHover }).mix(className)} style={style} width={width} src={`/sevenWonders/cards/${card.id}.jpg`} />
+    <Root className={b({ flip, zoomOnHover, isCopiedLeader }).mix(className)} style={style} width={width} src={`/sevenWonders/cards/${card.id}.jpg`} />
   );
 };
 

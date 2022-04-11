@@ -3,7 +3,8 @@ import { useCallback, useMemo } from 'react';
 import {
   ESevenWondersCardActionType,
   ISevenWondersPlayer,
-  TSevenWondersAction, TSevenWondersBuildType,
+  TSevenWondersAction,
+  TSevenWondersBuildType,
   TSevenWondersPayments,
 } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
@@ -11,7 +12,7 @@ import {
   EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ESevenWonderCardId, ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import getTradeVariants
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
@@ -52,6 +53,7 @@ export default function useCardBuildInfo(
   resourceTradePrices: TResourceTradePrices,
   player: ISevenWondersPlayer,
   onCardAction: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
+  onStartCopyingLeader: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
 ): IBuildInfo {
   const { price: cardPrice } = card;
 
@@ -61,11 +63,20 @@ export default function useCardBuildInfo(
   const title = useMemo(() => getTitle(type), [type]);
 
   const onBuild = useCallback((cardIndex: number, freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments) => {
+    if (card.id === ESevenWonderCardId.COURTESANS_GUILD) {
+      onStartCopyingLeader(cardIndex, {
+        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+        freeBuildType,
+      }, payments);
+
+      return;
+    }
+
     onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType,
     }, payments);
-  }, [onCardAction]);
+  }, [card.id, onCardAction, onStartCopyingLeader]);
 
   return useMemo(() => ({
     type,
