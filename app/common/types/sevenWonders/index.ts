@@ -135,6 +135,7 @@ export interface ISevenWondersBuildStructureAction {
   type: ESevenWondersCardActionType.BUILD_STRUCTURE;
   freeBuildType: TSevenWondersBuildType | null;
   copiedCard?: ISevenWondersCard;
+  discount?: number;
 }
 
 export interface ISevenWondersBuildWonderStageAction {
