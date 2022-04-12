@@ -585,7 +585,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       player.builtCards.push(card);
 
       if (!action.freeBuildType && !waitingBuildEffect?.isFree) {
-        player.coins -= card.price?.coins ?? 0;
+        player.coins -= Math.max(0, (card.price?.coins ?? 0) - (action.discount ?? 0));
       }
 
       if (action.freeBuildType?.type === EBuildType.FREE_WITH_EFFECT) {
