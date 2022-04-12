@@ -162,7 +162,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
 
   const selectGuildToCopyInfo = useSelectGuildToCopyInfo(courtesansBuildInfo, onCardAction);
   const pickLeaderInfo = usePickLeaderInfo(gamePhase, onCardAction);
-  const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, onCardAction, onStartCopyingLeader);
+  const cardBuildInfo = useCardBuildInfo(card, resourcePools, resourceTradePrices, player, leftNeighbor, rightNeighbor, onCardAction, onStartCopyingLeader);
   const cardFreeBuildWithEffectInfo = useCardBuildFreeWithEffectInfo(card, player, onCardAction, onStartCopyingLeader);
   const discardInfo = useDiscardInfo(player, onCardAction);
 

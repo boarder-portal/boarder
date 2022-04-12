@@ -71,6 +71,6 @@ export function isDrawLeadersEffect(effect: TSevenWondersEffect): effect is ISev
   return effect.type === ESevenWondersEffect.DRAW_LEADERS;
 }
 
-export function isReducesPriceEffect(effect: TSevenWondersEffect): effect is ISevenWondersReducedPriceEffect {
+export function isReducedPriceEffect(effect: TSevenWondersEffect): effect is ISevenWondersReducedPriceEffect {
   return effect.type === ESevenWondersEffect.REDUCED_PRICE;
 }

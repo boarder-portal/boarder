@@ -13,8 +13,10 @@ export default function getBuildType(
   price: ISevenWondersPrice,
   player: ISevenWondersPlayer,
   tradeVariants: ITradeVariant[],
+  discount: number,
 ): EBuildType {
-  const enoughCoins = !price.coins || player.coins >= price.coins;
+  const cardCoinsPrice = price.coins ? price.coins - discount : 0;
+  const enoughCoins = player.coins >= cardCoinsPrice;
 
   if (!enoughCoins) {
     return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
@@ -33,7 +35,7 @@ export default function getBuildType(
   const tradeVariantPrice = cheapestTradeVariant.payments.LEFT + cheapestTradeVariant.payments.RIGHT + cheapestTradeVariant.payments.bank;
 
   if (!tradeVariantPrice) {
-    if (!price.coins) {
+    if (!cardCoinsPrice) {
       return EBuildType.FREE_BY_OWN_RESOURCES;
     }
 

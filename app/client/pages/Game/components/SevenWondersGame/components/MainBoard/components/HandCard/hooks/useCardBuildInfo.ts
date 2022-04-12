@@ -12,7 +12,7 @@ import {
   EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ESevenWonderCardId, ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ESevenWonderCardId, ESevenWondersPlayerDirection, ISevenWondersCard } from 'common/types/sevenWonders/cards';
 
 import getTradeVariants
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
@@ -21,6 +21,8 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getCardBuildType
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import { isReducedPriceEffect } from 'common/utilities/sevenWonders/isEffect';
 
 function getTitle(buildType: EBuildType): string {
   switch (buildType) {
@@ -47,18 +49,39 @@ function getTitle(buildType: EBuildType): string {
   }
 }
 
+function getPlayerDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer, direction: ESevenWondersPlayerDirection): number {
+  return Math.max(
+    ...getAllPlayerEffects(player)
+      .filter(isReducedPriceEffect)
+      .filter((effect) => effect.objectType === card.type && effect.direction === direction)
+      .map((effect) => effect.discount.coins || 0),
+    0,
+  );
+}
+
+function getDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer, leftNeighbor: ISevenWondersPlayer, rightNeighbor: ISevenWondersPlayer): number {
+  return Math.max(
+    getPlayerDiscount(card, player, ESevenWondersPlayerDirection.SELF),
+    getPlayerDiscount(card, leftNeighbor, ESevenWondersPlayerDirection.RIGHT),
+    getPlayerDiscount(card, rightNeighbor, ESevenWondersPlayerDirection.LEFT),
+  );
+}
+
 export default function useCardBuildInfo(
   card: ISevenWondersCard,
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
   player: ISevenWondersPlayer,
+  leftNeighbor: ISevenWondersPlayer,
+  rightNeighbor: ISevenWondersPlayer,
   onCardAction: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
   onStartCopyingLeader: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
 ): IBuildInfo {
   const { price: cardPrice } = card;
 
   const tradeVariants = useMemo(() => getTradeVariants(cardPrice, resourcePools, resourceTradePrices), [cardPrice, resourcePools, resourceTradePrices]);
-  const type = useMemo(() => getCardBuildType(card, player, tradeVariants), [card, player, tradeVariants]);
+  const discount = useMemo(() => getDiscount(card, player, leftNeighbor, rightNeighbor), [card, leftNeighbor, player, rightNeighbor]);
+  const type = useMemo(() => getCardBuildType(card, player, tradeVariants, discount), [card, discount, player, tradeVariants]);
 
   const title = useMemo(() => getTitle(type), [type]);
 
@@ -75,8 +98,9 @@ export default function useCardBuildInfo(
     onCardAction(cardIndex, {
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType,
+      discount,
     }, payments);
-  }, [card.id, onCardAction, onStartCopyingLeader]);
+  }, [card.id, discount, onCardAction, onStartCopyingLeader]);
 
   return useMemo(() => ({
     type,

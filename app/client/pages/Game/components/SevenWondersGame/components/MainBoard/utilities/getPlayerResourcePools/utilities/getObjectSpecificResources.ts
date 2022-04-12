@@ -8,7 +8,7 @@ import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isReducesPriceEffect } from 'common/utilities/sevenWonders/isEffect';
+import { isReducedPriceEffect } from 'common/utilities/sevenWonders/isEffect';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import getOwnerResources
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
@@ -17,7 +17,7 @@ export default function getObjectSpecificResources(
   player: ISevenWondersPlayer,
   objectType: ESevenWondersCardType | 'wonderLevel',
 ): IOwnerResource[][] {
-  const reducedPriceEffects = getAllPlayerEffects(player).filter(isReducesPriceEffect);
+  const reducedPriceEffects = getAllPlayerEffects(player).filter(isReducedPriceEffect);
 
   const reducesPriceResources = reducedPriceEffects.map((effect): ISevenWondersResource[] | undefined => {
     if (effect.objectType !== objectType) {

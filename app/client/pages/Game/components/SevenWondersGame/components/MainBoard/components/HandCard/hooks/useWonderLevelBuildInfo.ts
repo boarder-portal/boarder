@@ -69,7 +69,7 @@ export default function useWonderLevelBuildInfo(
       return EBuildType.NOT_ALLOWED;
     }
 
-    return getBuildType(price, player, tradeVariants);
+    return getBuildType(price, player, tradeVariants, 0);
   }, [player, price, tradeVariants, possibleBuildActions]);
 
   const title = useMemo(() => getTitle(type), [type]);

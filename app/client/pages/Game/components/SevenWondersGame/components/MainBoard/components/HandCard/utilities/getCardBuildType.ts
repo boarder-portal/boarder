@@ -15,6 +15,7 @@ export default function getCardBuildType(
   card: ISevenWondersCard,
   player: ISevenWondersPlayer,
   tradeVariants: ITradeVariant[],
+  discount: number,
 ): EBuildType {
   const possibleBuildActions = getPossibleBuildActions(player);
 
@@ -40,5 +41,5 @@ export default function getCardBuildType(
     return EBuildType.FREE_BY_BUILDING;
   }
 
-  return getBuildType(price, player, tradeVariants);
+  return getBuildType(price, player, tradeVariants, discount);
 }
