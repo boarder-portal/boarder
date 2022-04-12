@@ -51,7 +51,7 @@ export interface ISevenWondersCity {
 export interface ISevenWondersBuiltStage {
   index: number;
   card: ISevenWondersCard;
-  cardAge: number;
+  cardType: number | 'leader';
 }
 
 export enum ESevenWondersWaitingActionType {

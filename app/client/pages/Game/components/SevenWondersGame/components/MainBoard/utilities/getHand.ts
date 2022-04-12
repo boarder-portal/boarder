@@ -10,7 +10,12 @@ export default function getHand(
   isCopyingLeader: boolean,
   leftNeighbor: ISevenWondersPlayer,
   rightNeighbor: ISevenWondersPlayer,
+  isViewingLeaders: boolean,
 ): ISevenWondersCard[] {
+  if (isViewingLeaders) {
+    return player.leadersHand;
+  }
+
   if (isCopyingLeader) {
     return [...leftNeighbor.builtCards, ...rightNeighbor.builtCards].filter((card) => card.type === ESevenWondersCardType.LEADER);
   }

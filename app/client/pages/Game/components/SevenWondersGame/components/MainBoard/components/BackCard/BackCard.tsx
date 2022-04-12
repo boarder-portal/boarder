@@ -5,7 +5,8 @@ import block from 'bem-cn';
 interface IBackCardProps {
   className?: string;
   style?: React.CSSProperties;
-  age: number;
+  type: number | 'leader';
+  onClick?(): void;
 }
 
 const b = block('BackCard');
@@ -15,10 +16,10 @@ const Root = styled.img`
 `;
 
 const BackCard: React.FC<IBackCardProps> = (props) => {
-  const { className, style, age } = props;
+  const { className, style, type, onClick } = props;
 
   return (
-    <Root className={b.mix(className)} src={`/sevenWonders/cards/backs/${age}.png`} style={style} />
+    <Root className={b.mix(className)} src={`/sevenWonders/cards/backs/${type}.png`} style={style} onClick={onClick} />
   );
 };
 

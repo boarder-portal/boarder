@@ -21,7 +21,6 @@ import {
   ISevenWondersPlayer,
 } from 'common/types/sevenWonders';
 import {
-  ESevenWonderCardId,
   ESevenWondersCardType,
   ESevenWondersPlayerDirection,
   ISevenWondersCard,
@@ -620,7 +619,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       player.builtStages.push({
         index: action.stageIndex,
         card,
-        cardAge: this.age + 1,
+        cardType: card.type === ESevenWondersCardType.LEADER ? 'leader' : this.age,
       });
       player.coins -= wonderLevel.price.coins ?? 0;
 

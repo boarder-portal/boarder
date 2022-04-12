@@ -126,7 +126,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
         <img className={b('wonderCard')} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
 
         {player.builtStages.map((builtStage, index) => (
-          <BackCard key={index} className={b('builtStage')} age={builtStage.cardAge} style={{ left: `${9 + 30 * index}%` }} />
+          <BackCard key={index} className={b('builtStage')} type={builtStage.cardType} style={{ left: `${9 + 30 * index}%` }} />
         ))}
       </div>
 

@@ -4,7 +4,8 @@ import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import {
-  ESevenWondersGameEvent, ESevenWondersGamePhase,
+  ESevenWondersGameEvent,
+  ESevenWondersGamePhase,
   ESevenWondersNeighborSide,
   ISevenWondersExecuteActionEvent,
   ISevenWondersPlayer,
@@ -22,6 +23,7 @@ import getHand from 'client/pages/Game/components/SevenWondersGame/components/Ma
 import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
 
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 import { usePrevious } from 'client/hooks/usePrevious';
@@ -43,8 +45,16 @@ const Root = styled(Box)`
   padding-bottom: 125px;
 
   .MainBoard {
-    &__wonder {
+    &__wonderWrapper {
+      position: relative;
       max-width: 500px;
+    }
+
+    &__switchHand {
+      position: absolute;
+      left: -140px;
+      top: 150px;
+      cursor: pointer;
     }
 
     &__handWrapper {
@@ -74,6 +84,7 @@ const Root = styled(Box)`
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
 
+  const [isViewingLeaders, setIsViewingLeaders] = useState(false);
   const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
 
   const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
@@ -109,6 +120,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
   }, [io]);
 
+  const handleClickHandSwitcher = useCallback(() => {
+    setIsViewingLeaders((v) => !v);
+  }, []);
+
   const hand = useMemo(() => getHand(
     player,
     discard,
@@ -116,7 +131,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     Boolean(courtesansBuildInfo),
     leftNeighbor,
     rightNeighbor,
-  ), [discard, gamePhase, courtesansBuildInfo, leftNeighbor, player, rightNeighbor]);
+    isViewingLeaders,
+  ), [player, discard, gamePhase, courtesansBuildInfo, leftNeighbor, rightNeighbor, isViewingLeaders]);
   const prevHand = usePrevious(hand);
 
   useEffect(() => {
@@ -127,7 +143,17 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   return (
     <Root className={b.mix(className)} flex alignItems="center" column between={12}>
-      <Wonder className={b('wonder')} player={player} />
+      <div className={b('wonderWrapper')}>
+        <Wonder className={b('wonder')} player={player} />
+
+        {gamePhase !== ESevenWondersGamePhase.RECRUIT_LEADERS && (
+          <BackCard
+            className={b('switchHand')}
+            type={isViewingLeaders && gamePhase === ESevenWondersGamePhase.BUILD_STRUCTURES ? age : 'leader'}
+            onClick={handleClickHandSwitcher}
+          />
+        )}
+      </div>
 
       <Box className={b('handWrapper')}>
         <Box flex between={-35}>
@@ -147,6 +173,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
                   ? !player.waitingForAction
                   : index !== chosenCardIndex
               }
+              isViewingLeaders={isViewingLeaders}
               onCardAction={handleCardAction}
               onCancelCard={cancelCard}
               onStartCopyingLeader={handleStartCopyingLeader}

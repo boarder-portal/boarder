@@ -55,6 +55,7 @@ interface IHandCardProps {
   courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
   isChosen: boolean;
   isDisabled: boolean;
+  isViewingLeaders: boolean;
   onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
   onCancelCard(): void;
   onStartCopyingLeader(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
@@ -136,6 +137,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     courtesansBuildInfo,
     isChosen,
     isDisabled,
+    isViewingLeaders,
     onCardAction,
     onCancelCard,
     onStartCopyingLeader,
@@ -264,15 +266,17 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
       <div className={b('cardWrapper')} onMouseEnter={handleCardHover}>
         <Card card={card} width={150} />
 
-        <Box className={b('actions')} flex column between={20} alignItems="center">
-          {isCopyingLeaderActionAvailable && <Box size="s" textAlign="center" onClick={selectGuildToCopyInfo.onClick.bind(null, card)}>{selectGuildToCopyInfo.title}</Box>}
-          {isPickLeaderActionAvailable && <Box size="s" textAlign="center" onClick={pickLeaderInfo.onClick.bind(null, cardIndex)}>{pickLeaderInfo.title}</Box>}
-          {isBuildActionAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('card', cardBuildInfo)}>{cardBuildInfo.title}</Box>}
-          {isBuildFreeWithEffectActionAvailable && <Box size="s" textAlign="center" onClick={cardFreeBuildWithEffectInfo.onBuild.bind(null, cardIndex)}>{cardFreeBuildWithEffectInfo.title}</Box>}
-          {isBuildWonderLevelAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('wonderLevel', wonderLevelBuildInfo)}>{wonderLevelBuildInfo.title}</Box>}
-          {isDiscardActionAvailable && <Box size="s" textAlign="center" onClick={discardInfo.onClick.bind(null, cardIndex)}>{discardInfo.title}</Box>}
-          {isCancelActionAvailable && <Box size="s" textAlign="center" onClick={onCancelCard}>Отменить</Box>}
-        </Box>
+        {!isViewingLeaders && (
+          <Box className={b('actions')} flex column between={20} alignItems="center">
+            {isCopyingLeaderActionAvailable && <Box size="s" textAlign="center" onClick={selectGuildToCopyInfo.onClick.bind(null, card)}>{selectGuildToCopyInfo.title}</Box>}
+            {isPickLeaderActionAvailable && <Box size="s" textAlign="center" onClick={pickLeaderInfo.onClick.bind(null, cardIndex)}>{pickLeaderInfo.title}</Box>}
+            {isBuildActionAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('card', cardBuildInfo)}>{cardBuildInfo.title}</Box>}
+            {isBuildFreeWithEffectActionAvailable && <Box size="s" textAlign="center" onClick={cardFreeBuildWithEffectInfo.onBuild.bind(null, cardIndex)}>{cardFreeBuildWithEffectInfo.title}</Box>}
+            {isBuildWonderLevelAvailable && <Box size="s" textAlign="center" onClick={getBuildHandler('wonderLevel', wonderLevelBuildInfo)}>{wonderLevelBuildInfo.title}</Box>}
+            {isDiscardActionAvailable && <Box size="s" textAlign="center" onClick={discardInfo.onClick.bind(null, cardIndex)}>{discardInfo.title}</Box>}
+            {isCancelActionAvailable && <Box size="s" textAlign="center" onClick={onCancelCard}>Отменить</Box>}
+          </Box>
+        )}
       </div>
 
       <TradeModal
