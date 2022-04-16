@@ -68,7 +68,7 @@ const LEADERS: ISevenWondersCard[] = [
       sources: ['bank'],
     }],
     price: {
-      coins: 3,
+      coins: 4,
     },
     minPlayersCounts: [3],
   },
