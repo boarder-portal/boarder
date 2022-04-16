@@ -20,7 +20,7 @@ export interface IBoxProps {
   column?: boolean;
   reverseDirection?: boolean;
   alignItems?: 'center' | 'flex-start' | 'flex-end';
-  justifyContent?: 'center' | 'space-between';
+  justifyContent?: 'center' | 'space-between' | 'flex-start';
   withWrap?: boolean;
   grow?: boolean;
   background?: string;
