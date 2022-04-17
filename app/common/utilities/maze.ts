@@ -1,17 +1,7 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { MAZE_HEIGHT, MAZE_WIDTH } from 'common/constants/games/maze';
 
-import { EGame } from 'common/types/game';
 import { ESide } from 'common/types/maze';
 import { ICoords } from 'common/types';
-
-const {
-  games: {
-    [EGame.MAZE]: {
-      mazeWidth,
-      mazeHeight,
-    },
-  },
-} = GAMES_CONFIG;
 
 export function getMazeCellNeighbors<Side extends ESide>(cellCoords: ICoords): Record<Side, ICoords> {
   const neighbors = {} as Record<Side, ICoords>;
@@ -20,7 +10,7 @@ export function getMazeCellNeighbors<Side extends ESide>(cellCoords: ICoords): R
     neighbors[ESide.LEFT as Side] = { x: cellCoords.x - 1, y: cellCoords.y };
   }
 
-  if (cellCoords.x < mazeWidth - 1) {
+  if (cellCoords.x < MAZE_WIDTH - 1) {
     neighbors[ESide.RIGHT as Side] = { x: cellCoords.x + 1, y: cellCoords.y };
   }
 
@@ -28,7 +18,7 @@ export function getMazeCellNeighbors<Side extends ESide>(cellCoords: ICoords): R
     neighbors[ESide.TOP as Side] = { x: cellCoords.x, y: cellCoords.y - 1 };
   }
 
-  if (cellCoords.y < mazeHeight - 1) {
+  if (cellCoords.y < MAZE_HEIGHT - 1) {
     neighbors[ESide.BOTTOM as Side] = { x: cellCoords.x, y: cellCoords.y + 1 };
   }
 

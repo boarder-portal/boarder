@@ -1,4 +1,4 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { MAZE_HEIGHT, MAZE_WIDTH } from 'common/constants/games/maze';
 
 import { ICoords, IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
@@ -21,15 +21,6 @@ import { equalsCoords, notEqualsCoordsCb } from 'common/utilities/coords';
 import Vector from 'common/utilities/Vector';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
-
-const {
-  games: {
-    [EGame.MAZE]: {
-      mazeWidth,
-      mazeHeight,
-    },
-  },
-} = GAMES_CONFIG;
 
 const MOVE_PLAYERS_INTERVAL = 40;
 // cells per second
@@ -61,9 +52,9 @@ class MazeGame extends Game<EGame.MAZE> {
     );
   }
 
-  createGameInfo() {
-    for (let y = 0; y < mazeHeight; y++) {
-      for (let x = 0; x < mazeWidth; x++) {
+  createGameInfo(): void {
+    for (let y = 0; y < MAZE_HEIGHT; y++) {
+      for (let x = 0; x < MAZE_WIDTH; x++) {
         const coords: ICoords = { x, y };
 
         this.walls.push(
@@ -71,11 +62,11 @@ class MazeGame extends Game<EGame.MAZE> {
           getMazeWallCoords(coords, ESide.LEFT),
         );
 
-        if (x === mazeWidth - 1) {
+        if (x === MAZE_WIDTH - 1) {
           this.walls.push(getMazeWallCoords(coords, ESide.RIGHT));
         }
 
-        if (y === mazeHeight - 1) {
+        if (y === MAZE_HEIGHT - 1) {
           this.walls.push(getMazeWallCoords(coords, ESide.BOTTOM));
         }
       }
@@ -86,18 +77,18 @@ class MazeGame extends Game<EGame.MAZE> {
       to: { x: 1, y: 0 },
     });
     this.removeWall({
-      from: { x: mazeWidth - 1, y: mazeHeight },
-      to: { x: mazeWidth, y: mazeHeight },
+      from: { x: MAZE_WIDTH - 1, y: MAZE_HEIGHT },
+      to: { x: MAZE_WIDTH, y: MAZE_HEIGHT },
     });
 
     const startCell: ICoords = {
-      x: getRandomIndex(mazeWidth),
-      y: getRandomIndex(mazeHeight),
+      x: getRandomIndex(MAZE_WIDTH),
+      y: getRandomIndex(MAZE_HEIGHT),
     };
     const visitedCells: ICoords[] = [startCell];
     const path: ICoords[] = [startCell];
 
-    while (visitedCells.length < mazeWidth * mazeHeight) {
+    while (visitedCells.length < MAZE_WIDTH * MAZE_HEIGHT) {
       let lastCellWithUnvisitedNeighborsIndex = path.length - 1;
 
       for (let i = path.length - 1; i >= 0; i--) {
@@ -145,8 +136,8 @@ class MazeGame extends Game<EGame.MAZE> {
     return {
       ...roomPlayer,
       side: isTopPlayer ? EMazePlayerSide.TOP : EMazePlayerSide.BOTTOM,
-      x: isTopPlayer ? 0.5 : mazeWidth - 0.5,
-      y: isTopPlayer ? 0.5 : mazeHeight - 0.5,
+      x: isTopPlayer ? 0.5 : MAZE_WIDTH - 0.5,
+      y: isTopPlayer ? 0.5 : MAZE_HEIGHT - 0.5,
       directionAngle: isTopPlayer ? Math.PI / 2 : Math.PI * 3 / 2,
       isMoving: false,
       moveEventsQueue: [],
@@ -154,7 +145,7 @@ class MazeGame extends Game<EGame.MAZE> {
     };
   }
 
-  movePlayers() {
+  movePlayers(): void {
     const now = Date.now();
 
     this.players.forEach((player) => {
@@ -247,7 +238,7 @@ class MazeGame extends Game<EGame.MAZE> {
     });
   }
 
-  onGetGameInfo({ socket }: IGameEvent) {
+  onGetGameInfo({ socket }: IGameEvent): void {
     const gameInfo: IMazeGameInfo = {
       walls: this.walls,
       players: this.players,
@@ -256,7 +247,7 @@ class MazeGame extends Game<EGame.MAZE> {
     socket.emit(EMazeGameEvent.GAME_INFO, gameInfo);
   }
 
-  onMovePlayer({ socket, data: angle }: IGameEvent<number>) {
+  onMovePlayer({ socket, data: angle }: IGameEvent<number>): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
@@ -266,7 +257,7 @@ class MazeGame extends Game<EGame.MAZE> {
     });
   }
 
-  onStopPlayer({ socket }: IGameEvent) {
+  onStopPlayer({ socket }: IGameEvent): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
@@ -275,7 +266,7 @@ class MazeGame extends Game<EGame.MAZE> {
     });
   }
 
-  removeWall(wall: IMazeWall) {
+  removeWall(wall: IMazeWall): void {
     const wallIndex = this.walls.findIndex(({ from, to }) => (
       equalsCoords(wall.from, from)
       && equalsCoords(wall.to, to)
@@ -286,7 +277,7 @@ class MazeGame extends Game<EGame.MAZE> {
     }
   }
 
-  deleteGame() {
+  deleteGame(): void {
     if (this.movePlayersInterval) {
       clearInterval(this.movePlayersInterval);
     }

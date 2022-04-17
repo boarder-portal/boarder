@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import {
+  CELL_SIZE,
+  MAZE_HEIGHT,
+  MAZE_WIDTH,
+  PLAYER_SIZE,
+  WALL_THICKNESS,
+} from 'common/constants/games/maze';
 
 import {
   EMazeGameEvent,
@@ -13,7 +19,6 @@ import {
   IMazePlayerMoveEvent,
   IMazeWall,
 } from 'common/types/maze';
-import { EGame } from 'common/types/game';
 
 import Vector from 'common/utilities/Vector';
 
@@ -41,18 +46,6 @@ const Root = styled(Box)`
     }
   }
 `;
-
-const {
-  games: {
-    [EGame.MAZE]: {
-      mazeWidth,
-      mazeHeight,
-      cellSize,
-      wallThickness,
-      playerSize,
-    },
-  },
-} = GAMES_CONFIG;
 
 const PLAYER_COLORS: Record<EMazePlayerSide, string> = {
   [EMazePlayerSide.TOP]: '#00f',
@@ -95,8 +88,8 @@ const getDirectionAngle = (directions: ESide[]): number | null => {
 
 const getPlayerElementProps = (player: IMazePlayer): { x: number; y: number } => {
   return {
-    x: player.x * cellSize - playerSize / 2,
-    y: player.y * cellSize - playerSize / 2,
+    x: player.x * CELL_SIZE - PLAYER_SIZE / 2,
+    y: player.y * CELL_SIZE - PLAYER_SIZE / 2,
   };
 };
 
@@ -219,8 +212,8 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
       <svg
         className={b('maze')}
         style={{
-          width: mazeWidth * cellSize,
-          height: mazeHeight * cellSize,
+          width: MAZE_WIDTH * CELL_SIZE,
+          height: MAZE_HEIGHT * CELL_SIZE,
         }}
       >
         <g>
@@ -229,12 +222,12 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
               key={`${wall.from.x}x${wall.from.y} - ${wall.to.x}x${wall.to.y}`}
               className={b('wall')}
               style={{
-                strokeWidth: wallThickness,
+                strokeWidth: WALL_THICKNESS,
               }}
-              x1={wall.from.x * cellSize}
-              y1={wall.from.y * cellSize}
-              x2={wall.to.x * cellSize}
-              y2={wall.to.y * cellSize}
+              x1={wall.from.x * CELL_SIZE}
+              y1={wall.from.y * CELL_SIZE}
+              x2={wall.to.x * CELL_SIZE}
+              y2={wall.to.y * CELL_SIZE}
             />
           ))}
         </g>
@@ -244,8 +237,8 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
             <rect
               key={player.side}
               id={`player-${player.side}`}
-              width={playerSize}
-              height={playerSize}
+              width={PLAYER_SIZE}
+              height={PLAYER_SIZE}
               fill={PLAYER_COLORS[player.side]}
               {...getPlayerElementProps(player)}
             />

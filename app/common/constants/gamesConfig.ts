@@ -10,40 +10,6 @@ const CARCASSONNE_ALL_SIDE_PARTS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
 
 export const GAMES_CONFIG = {
   games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      minPlayersCount: 1,
-      maxPlayersCount: 4,
-      cellSize: 100,
-      viewSize: {
-        width: 21,
-        height: 13,
-      },
-      inventoryItemsCount: 7,
-      defaultGameOptions: {
-        playersCount: 2,
-      },
-      colors: {
-        bananaMania: '#F1DCA7',
-        pistachio: '#90BE6D',
-        budGreen: '#90BE6D',
-        laurenGreen: '#A3B18A',
-        fernGreen: '#588157',
-        hunterGreen: '#3A5A40',
-        rawSienna: '#D08C60',
-        beaver: '#997B66',
-        coffee: '#8A5A44',
-      },
-    },
-    [EGame.MAZE]: {
-      mazeWidth: 30,
-      mazeHeight: 16,
-      cellSize: 30,
-      wallThickness: 2,
-      playerSize: 7,
-      defaultGameOptions: {
-        playersCount: 2,
-      },
-    },
     [EGame.SET]: {
       startCardCountToShow: 12,
       cardsCountToAddIfNoSet: 3,
