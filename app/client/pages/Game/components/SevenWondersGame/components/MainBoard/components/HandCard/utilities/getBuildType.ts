@@ -1,6 +1,6 @@
 import { first } from 'lodash';
 
-import { ISevenWondersPlayer, ISevenWondersPrice } from 'common/types/sevenWonders';
+import { IPlayer, IPrice } from 'common/types/sevenWonders';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
@@ -10,8 +10,8 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 export default function getBuildType(
-  price: ISevenWondersPrice,
-  player: ISevenWondersPlayer,
+  price: IPrice,
+  player: IPlayer,
   tradeVariants: ITradeVariant[],
   discount: number,
 ): EBuildType {

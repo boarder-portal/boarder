@@ -1,26 +1,26 @@
-import { ESevenWondersResource, ISevenWondersResource } from 'common/types/sevenWonders';
+import { EResource, IResource } from 'common/types/sevenWonders';
 
-export const ANY_RAW_RESOURCE_VARIANT: ISevenWondersResource[] = [{
-  type: ESevenWondersResource.WOOD,
+export const ANY_RAW_RESOURCE_VARIANT: IResource[] = [{
+  type: EResource.WOOD,
   count: 1,
 }, {
-  type: ESevenWondersResource.ORE,
+  type: EResource.ORE,
   count: 1,
 }, {
-  type: ESevenWondersResource.CLAY,
+  type: EResource.CLAY,
   count: 1,
 }, {
-  type: ESevenWondersResource.STONE,
+  type: EResource.STONE,
   count: 1,
 }];
 
-export const ANY_MANUFACTURED_GOOD_RESOURCE_VARIANT: ISevenWondersResource[] = [{
-  type: ESevenWondersResource.GLASS,
+export const ANY_MANUFACTURED_GOOD_RESOURCE_VARIANT: IResource[] = [{
+  type: EResource.GLASS,
   count: 1,
 }, {
-  type: ESevenWondersResource.LOOM,
+  type: EResource.LOOM,
   count: 1,
 }, {
-  type: ESevenWondersResource.PAPYRUS,
+  type: EResource.PAPYRUS,
   count: 1,
 }];

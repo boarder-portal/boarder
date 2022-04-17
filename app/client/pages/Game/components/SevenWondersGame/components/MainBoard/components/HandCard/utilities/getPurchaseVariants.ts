@@ -1,8 +1,7 @@
 import { groupBy } from 'lodash';
 
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { ISevenWondersPrice } from 'common/types/sevenWonders';
+import { IPrice } from 'common/types/sevenWonders';
 
 import getUniqCombinationsByN from 'common/utilities/getUniqCombinationsByN';
 import { getAllCombinations } from 'common/utilities/combinations';
@@ -40,7 +39,7 @@ import { getAllCombinations } from 'common/utilities/combinations';
  *    [{ type: 'WOOD', count: 1, ownerA }, { type: 'CLAY', count: 1, ownerA }, { type: 'CLAY', count: 1, ownerC }]
  * ]
  */
-export default function getPurchaseVariants(price: ISevenWondersPrice | undefined, resourcePools:  IOwnerResource[][]): IOwnerResource[][] {
+export default function getPurchaseVariants(price: IPrice | undefined, resourcePools:  IOwnerResource[][]): IOwnerResource[][] {
   const cardResourcePrice = price?.resources;
 
   if (!cardResourcePrice) {

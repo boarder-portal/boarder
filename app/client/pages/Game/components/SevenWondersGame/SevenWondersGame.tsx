@@ -4,13 +4,13 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
 import {
-  ESevenWondersGameEvent,
-  ESevenWondersGamePhase,
-  ESevenWondersNeighborSide,
-  ISevenWondersGameInfoEvent,
-  ISevenWondersPlayer,
+  EGameEvent,
+  EGamePhase,
+  ENeighborSide,
+  IGameInfoEvent,
+  IPlayer,
 } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ICard } from 'common/types/sevenWonders/cards';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
@@ -55,10 +55,10 @@ const Root = styled(Box)`
 const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const { io } = props;
 
-  const [players, setPlayers] = useState<ISevenWondersPlayer[]>([]);
-  const [discard, setDiscard] = useState<ISevenWondersCard[]>([]);
+  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [discard, setDiscard] = useState<ICard[]>([]);
   const [age, setAge] = useState<number>(0);
-  const [gamePhase, setGamePhase] = useState<ESevenWondersGamePhase>(ESevenWondersGamePhase.DRAFT_LEADERS);
+  const [gamePhase, setGamePhase] = useState<EGamePhase>(EGamePhase.DRAFT_LEADERS);
 
   const user = useRecoilValue(userAtom);
 
@@ -77,18 +77,18 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
     ].reverse();
   }, [player, players]);
 
-  const leftNeighbor = useMemo(() => player ? getNeighbor(players, player, ESevenWondersNeighborSide.LEFT) : null, [player, players]);
-  const rightNeighbor = useMemo(() => player ? getNeighbor(players, player, ESevenWondersNeighborSide.RIGHT) : null, [player, players]);
+  const leftNeighbor = useMemo(() => player ? getNeighbor(players, player, ENeighborSide.LEFT) : null, [player, players]);
+  const rightNeighbor = useMemo(() => player ? getNeighbor(players, player, ENeighborSide.RIGHT) : null, [player, players]);
 
   useEffect(() => {
-    io.emit(ESevenWondersGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(ESevenWondersGameEvent.GAME_INFO, (gameInfo: ISevenWondersGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
       if (!user) {
         return;
       }
 
-      console.log(ESevenWondersGameEvent.GAME_INFO, gameInfo);
+      console.log(EGameEvent.GAME_INFO, gameInfo);
 
       setPlayers(gameInfo.players);
       setDiscard(gameInfo.discard);
@@ -97,7 +97,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
     });
 
     return () => {
-      io.off(ESevenWondersGameEvent.GAME_INFO);
+      io.off(EGameEvent.GAME_INFO);
     };
   }, [io, user]);
 

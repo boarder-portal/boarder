@@ -1,4 +1,4 @@
-import { TSevenWondersBuildType, TSevenWondersPayments } from 'common/types/sevenWonders';
+import { TBuildType, TPayments } from 'common/types/sevenWonders';
 
 import {
   ITradeVariant,
@@ -20,5 +20,5 @@ export interface IBuildInfo {
   type: EBuildType;
   title: string;
   tradeVariants: ITradeVariant[];
-  onBuild(freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments): void;
+  onBuild(freeBuildType: TBuildType | null, payments?: TPayments): void;
 }

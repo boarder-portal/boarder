@@ -1,4 +1,4 @@
-import { ISevenWondersPlayer, ISevenWondersResource } from 'common/types/sevenWonders';
+import { IPlayer, IResource } from 'common/types/sevenWonders';
 
 import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
@@ -13,7 +13,7 @@ import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTrad
  *    [{ type: 'GLASS', count: 1 }],
  * ]
  */
-export function getPlayerResources(player: ISevenWondersPlayer, onlyTradableResources?: boolean): ISevenWondersResource[][]  {
+export function getPlayerResources(player: IPlayer, onlyTradableResources?: boolean): IResource[][]  {
   return onlyTradableResources ?
     getPlayerTradeResources(player) :
     getAllPlayerEffects(player)

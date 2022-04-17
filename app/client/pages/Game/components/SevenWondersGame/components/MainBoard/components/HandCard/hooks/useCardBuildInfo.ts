@@ -1,18 +1,19 @@
 import { useCallback, useMemo } from 'react';
 
 import {
-  ESevenWondersCardActionType,
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersBuildType,
-  TSevenWondersPayments,
+  ECardActionType,
+  EPlayerDirection,
+  IPlayer,
+  TAction,
+  TBuildType,
+  TPayments,
 } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import {
   EBuildType,
   IBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ESevenWonderCardId, ESevenWondersPlayerDirection, ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ECardId, ICard } from 'common/types/sevenWonders/cards';
 
 import getTradeVariants
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
@@ -52,7 +53,7 @@ function getTitle(buildType: EBuildType): string {
   }
 }
 
-function getPlayerDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer, direction: ESevenWondersPlayerDirection): number {
+function getPlayerDiscount(card: ICard, player: IPlayer, direction: EPlayerDirection): number {
   return Math.max(
     ...getAllPlayerEffects(player)
       .filter(isReducedPriceEffect)
@@ -62,24 +63,24 @@ function getPlayerDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer,
   );
 }
 
-function getDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer, leftNeighbor: ISevenWondersPlayer, rightNeighbor: ISevenWondersPlayer): number {
+function getDiscount(card: ICard, player: IPlayer, leftNeighbor: IPlayer, rightNeighbor: IPlayer): number {
   return Math.max(
-    getPlayerDiscount(card, player, ESevenWondersPlayerDirection.SELF),
-    getPlayerDiscount(card, leftNeighbor, ESevenWondersPlayerDirection.RIGHT),
-    getPlayerDiscount(card, rightNeighbor, ESevenWondersPlayerDirection.LEFT),
+    getPlayerDiscount(card, player, EPlayerDirection.SELF),
+    getPlayerDiscount(card, leftNeighbor, EPlayerDirection.RIGHT),
+    getPlayerDiscount(card, rightNeighbor, EPlayerDirection.LEFT),
   );
 }
 
 export default function useCardBuildInfo(
-  card: ISevenWondersCard,
+  card: ICard,
   cardIndex: number,
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
-  player: ISevenWondersPlayer,
-  leftNeighbor: ISevenWondersPlayer,
-  rightNeighbor: ISevenWondersPlayer,
-  onCardAction: (action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
-  onStartCopyingLeader: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
+  player: IPlayer,
+  leftNeighbor: IPlayer,
+  rightNeighbor: IPlayer,
+  onCardAction: (action: TAction, payments?: TPayments) => void,
+  onStartCopyingLeader: (cardIndex: number, action: TAction, payments?: TPayments) => void,
 ): IBuildInfo {
   const { price: cardPrice } = card;
 
@@ -89,10 +90,10 @@ export default function useCardBuildInfo(
 
   const title = useMemo(() => getTitle(type), [type]);
 
-  const onBuild = useCallback((freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments) => {
-    if (card.id === ESevenWonderCardId.COURTESANS_GUILD) {
+  const onBuild = useCallback((freeBuildType: TBuildType | null, payments?: TPayments) => {
+    if (card.id === ECardId.COURTESANS_GUILD) {
       onStartCopyingLeader(cardIndex, {
-        type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+        type: ECardActionType.BUILD_STRUCTURE,
         freeBuildType,
       }, payments);
 
@@ -100,7 +101,7 @@ export default function useCardBuildInfo(
     }
 
     onCardAction({
-      type: ESevenWondersCardActionType.BUILD_STRUCTURE,
+      type: ECardActionType.BUILD_STRUCTURE,
       freeBuildType,
       discount,
     }, payments);

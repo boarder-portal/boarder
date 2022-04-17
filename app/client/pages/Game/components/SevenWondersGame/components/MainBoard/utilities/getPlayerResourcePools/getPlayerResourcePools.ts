@@ -1,6 +1,6 @@
-import { ESevenWondersNeighborSide, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
+import { ECardType } from 'common/types/sevenWonders/cards';
 
 import getOwnerResources
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
@@ -34,14 +34,14 @@ import getObjectSpecificResources from 'client/pages/Game/components/SevenWonder
  * ]
  */
 export default function getPlayerResourcePools(
-  player: ISevenWondersPlayer,
-  leftNeighbor: ISevenWondersPlayer,
-  rightNeighbor: ISevenWondersPlayer,
-  objectType: ESevenWondersCardType | 'wonderLevel',
+  player: IPlayer,
+  leftNeighbor: IPlayer,
+  rightNeighbor: IPlayer,
+  objectType: ECardType | 'wonderLevel',
 ): IOwnerResource[][]  {
   const playerResources = getOwnerResources(getPlayerResources(player), 'own');
-  const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ESevenWondersNeighborSide.LEFT);
-  const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), ESevenWondersNeighborSide.RIGHT);
+  const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ENeighborSide.LEFT);
+  const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), ENeighborSide.RIGHT);
   const bankResources = getBankResources(player);
   const objectSpecificResources = getObjectSpecificResources(player, objectType);
 

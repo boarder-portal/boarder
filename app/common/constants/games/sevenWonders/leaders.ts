@@ -1,27 +1,26 @@
 import {
-  ESevenWonderCardId,
-  ESevenWondersCardType,
-  ESevenWondersPlayerDirection,
-  ISevenWondersCard,
+  ECardId,
+  ECardType,
+  ICard,
 } from 'common/types/sevenWonders/cards';
 import {
-  ESevenWondersCoinPassiveSource,
-  ESevenWondersEffect,
-  ESevenWondersFreeCardPeriod,
-  ESevenWondersFreeCardSource,
+  ECoinPassiveSource,
+  EEffect,
+  EFreeCardPeriod,
+  EFreeCardSource,
 } from 'common/types/sevenWonders/effects';
-import { ESevenWondersCardActionType, ESevenWondersScientificSymbol } from 'common/types/sevenWonders';
+import { ECardActionType, EPlayerDirection, EScientificSymbol } from 'common/types/sevenWonders';
 
-const LEADERS: ISevenWondersCard[] = [
+const LEADERS: ICard[] = [
   {
-    id: ESevenWonderCardId.AMYTIS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.AMYTIS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.WONDER_LEVELS,
+      type: EEffect.WONDER_LEVELS,
       gain: {
         points: 2,
       },
-      directions: [ESevenWondersPlayerDirection.SELF],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 4,
@@ -29,10 +28,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.MIDAS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.MIDAS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN_BY_COINS,
+      type: EEffect.GAIN_BY_COINS,
       gain: {
         points: 1,
       },
@@ -44,14 +43,14 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.ALEXANDER,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.ALEXANDER,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.WINS,
+      type: EEffect.WINS,
       gain: {
         points: 1,
       },
-      directions: [ESevenWondersPlayerDirection.SELF],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -59,12 +58,12 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.BILKIS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.BILKIS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.TRADE,
+      type: EEffect.TRADE,
       price: 1,
-      resources: [ESevenWondersCardType.RAW_MATERIAL, ESevenWondersCardType.MANUFACTURED_GOODS],
+      resources: [ECardType.RAW_MATERIAL, ECardType.MANUFACTURED_GOODS],
       sources: ['bank'],
     }],
     price: {
@@ -73,10 +72,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.ARISTOTLE,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.ARISTOTLE,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SCIENTIFIC_SET,
+      type: EEffect.SCIENTIFIC_SET,
       gain: {
         points: 3,
       },
@@ -87,15 +86,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.MAECENAS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.MAECENAS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.BUILD_CARD,
-      source: ESevenWondersFreeCardSource.LEADERS,
-      cardTypes: [ESevenWondersCardType.LEADER],
+      type: EEffect.BUILD_CARD,
+      source: EFreeCardSource.LEADERS,
+      cardTypes: [ECardType.LEADER],
       isFree: true,
-      period: ESevenWondersFreeCardPeriod.LEADER_RECRUITMENT,
-      possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+      period: EFreeCardPeriod.LEADER_RECRUITMENT,
+      possibleActions: [ECardActionType.BUILD_STRUCTURE],
     }],
     price: {
       coins: 1,
@@ -103,19 +102,19 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.JUSTINIAN,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.JUSTINIAN,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       cardTypes: [
-        ESevenWondersCardType.CIVILIAN,
-        ESevenWondersCardType.MILITARY,
-        ESevenWondersCardType.SCIENTIFIC,
+        ECardType.CIVILIAN,
+        ECardType.MILITARY,
+        ECardType.SCIENTIFIC,
       ],
       gain: {
         points: 3,
       },
-      directions: [ESevenWondersPlayerDirection.SELF],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -123,23 +122,23 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PLATO,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PLATO,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       cardTypes: [
-        ESevenWondersCardType.RAW_MATERIAL,
-        ESevenWondersCardType.MANUFACTURED_GOODS,
-        ESevenWondersCardType.CIVILIAN,
-        ESevenWondersCardType.COMMERCIAL,
-        ESevenWondersCardType.SCIENTIFIC,
-        ESevenWondersCardType.MILITARY,
-        ESevenWondersCardType.GUILD,
+        ECardType.RAW_MATERIAL,
+        ECardType.MANUFACTURED_GOODS,
+        ECardType.CIVILIAN,
+        ECardType.COMMERCIAL,
+        ECardType.SCIENTIFIC,
+        ECardType.MILITARY,
+        ECardType.GUILD,
       ],
       gain: {
         points: 7,
       },
-      directions: [ESevenWondersPlayerDirection.SELF],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 4,
@@ -147,15 +146,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.RAMSES,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.RAMSES,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.BUILD_CARD,
-      source: ESevenWondersFreeCardSource.HAND,
-      cardTypes: [ESevenWondersCardType.GUILD],
+      type: EEffect.BUILD_CARD,
+      source: EFreeCardSource.HAND,
+      cardTypes: [ECardType.GUILD],
       isFree: true,
-      period: ESevenWondersFreeCardPeriod.ETERNITY,
-      possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+      period: EFreeCardPeriod.ETERNITY,
+      possibleActions: [ECardActionType.BUILD_STRUCTURE],
     }],
     price: {
       coins: 5,
@@ -163,10 +162,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.TOMYRIS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.TOMYRIS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.RETURN_DEFEATS,
+      type: EEffect.RETURN_DEFEATS,
     }],
     price: {
       coins: 4,
@@ -174,10 +173,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.HANNIBAL,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.HANNIBAL,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SHIELDS,
+      type: EEffect.SHIELDS,
       count: 1,
     }],
     price: {
@@ -186,10 +185,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.CAESAR,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.CAESAR,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SHIELDS,
+      type: EEffect.SHIELDS,
       count: 2,
     }],
     price: {
@@ -198,11 +197,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.NERO,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.NERO,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.COIN_PASSIVE,
-      source: ESevenWondersCoinPassiveSource.VICTORY_TOKENS,
+      type: EEffect.COIN_PASSIVE,
+      source: ECoinPassiveSource.VICTORY_TOKENS,
       count: 2,
     }],
     price: {
@@ -211,11 +210,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.XENOPHON,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.XENOPHON,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.COIN_PASSIVE,
-      source: ESevenWondersCoinPassiveSource.COMMERCIAL_CARDS,
+      type: EEffect.COIN_PASSIVE,
+      source: ECoinPassiveSource.COMMERCIAL_CARDS,
       count: 2,
     }],
     price: {
@@ -224,11 +223,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.VITRUVIUS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.VITRUVIUS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.COIN_PASSIVE,
-      source: ESevenWondersCoinPassiveSource.STRUCTURE_INHERITANCE,
+      type: EEffect.COIN_PASSIVE,
+      source: ECoinPassiveSource.STRUCTURE_INHERITANCE,
       count: 2,
     }],
     price: {
@@ -237,15 +236,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.SOLOMON,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.SOLOMON,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.BUILD_CARD,
-      source: ESevenWondersFreeCardSource.DISCARD,
+      type: EEffect.BUILD_CARD,
+      source: EFreeCardSource.DISCARD,
       isFree: true,
       count: 1,
-      period: ESevenWondersFreeCardPeriod.NOW,
-      possibleActions: [ESevenWondersCardActionType.BUILD_STRUCTURE],
+      period: EFreeCardPeriod.NOW,
+      possibleActions: [ECardActionType.BUILD_STRUCTURE],
       priority: 0,
     }],
     price: {
@@ -254,10 +253,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.CROESUS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.CROESUS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN,
+      type: EEffect.GAIN,
       gain: {
         coins: 6,
       },
@@ -268,15 +267,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.HYPATIA,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.HYPATIA,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 1,
       },
-      cardTypes: [ESevenWondersCardType.SCIENTIFIC],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.SCIENTIFIC],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 4,
@@ -284,15 +283,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.NEBUCHADNEZZAR,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.NEBUCHADNEZZAR,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 1,
       },
-      cardTypes: [ESevenWondersCardType.CIVILIAN],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.CIVILIAN],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 4,
@@ -300,15 +299,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PHIDIAS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PHIDIAS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 1,
       },
-      cardTypes: [ESevenWondersCardType.RAW_MATERIAL],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.RAW_MATERIAL],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -316,15 +315,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.VARRO,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.VARRO,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 1,
       },
-      cardTypes: [ESevenWondersCardType.COMMERCIAL],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.COMMERCIAL],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -332,15 +331,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PERICLES,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PERICLES,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 2,
       },
-      cardTypes: [ESevenWondersCardType.MILITARY],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.MILITARY],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 6,
@@ -348,15 +347,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PRAXITELES,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PRAXITELES,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 2,
       },
-      cardTypes: [ESevenWondersCardType.MANUFACTURED_GOODS],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.MANUFACTURED_GOODS],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -364,15 +363,15 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.HIRAM,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.HIRAM,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.CARDS_TYPE,
+      type: EEffect.CARDS_TYPE,
       gain: {
         points: 2,
       },
-      cardTypes: [ESevenWondersCardType.GUILD],
-      directions: [ESevenWondersPlayerDirection.SELF],
+      cardTypes: [ECardType.GUILD],
+      directions: [EPlayerDirection.SELF],
     }],
     price: {
       coins: 3,
@@ -380,10 +379,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.SAPPHO,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.SAPPHO,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN,
+      type: EEffect.GAIN,
       gain: {
         points: 2,
       },
@@ -394,10 +393,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.ZENOBIA,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.ZENOBIA,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN,
+      type: EEffect.GAIN,
       gain: {
         points: 3,
       },
@@ -408,10 +407,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.NEFERTITI,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.NEFERTITI,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN,
+      type: EEffect.GAIN,
       gain: {
         points: 4,
       },
@@ -422,10 +421,10 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.CLEOPATRA,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.CLEOPATRA,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.GAIN,
+      type: EEffect.GAIN,
       gain: {
         points: 5,
       },
@@ -436,12 +435,12 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.ARCHIMEDES,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.ARCHIMEDES,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.REDUCED_PRICE,
-      objectType: ESevenWondersCardType.SCIENTIFIC,
-      direction: ESevenWondersPlayerDirection.SELF,
+      type: EEffect.REDUCED_PRICE,
+      objectType: ECardType.SCIENTIFIC,
+      direction: EPlayerDirection.SELF,
       discount: {
         resources: 1,
       },
@@ -452,12 +451,12 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.LEONIDAS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.LEONIDAS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.REDUCED_PRICE,
-      objectType: ESevenWondersCardType.MILITARY,
-      direction: ESevenWondersPlayerDirection.SELF,
+      type: EEffect.REDUCED_PRICE,
+      objectType: ECardType.MILITARY,
+      direction: EPlayerDirection.SELF,
       discount: {
         resources: 1,
       },
@@ -468,12 +467,12 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.HAMMURABI,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.HAMMURABI,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.REDUCED_PRICE,
-      objectType: ESevenWondersCardType.CIVILIAN,
-      direction: ESevenWondersPlayerDirection.SELF,
+      type: EEffect.REDUCED_PRICE,
+      objectType: ECardType.CIVILIAN,
+      direction: EPlayerDirection.SELF,
       discount: {
         resources: 1,
       },
@@ -484,12 +483,12 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.IMHOTEP,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.IMHOTEP,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.REDUCED_PRICE,
+      type: EEffect.REDUCED_PRICE,
       objectType: 'wonderLevel',
-      direction: ESevenWondersPlayerDirection.SELF,
+      direction: EPlayerDirection.SELF,
       discount: {
         resources: 1,
       },
@@ -500,11 +499,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.EUCLID,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.EUCLID,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [ESevenWondersScientificSymbol.COMPASS],
+      type: EEffect.SCIENTIFIC_SYMBOLS,
+      variants: [EScientificSymbol.COMPASS],
     }],
     price: {
       coins: 5,
@@ -512,11 +511,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PTOLEMY,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PTOLEMY,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [ESevenWondersScientificSymbol.TABLET],
+      type: EEffect.SCIENTIFIC_SYMBOLS,
+      variants: [EScientificSymbol.TABLET],
     }],
     price: {
       coins: 5,
@@ -524,11 +523,11 @@ const LEADERS: ISevenWondersCard[] = [
     minPlayersCounts: [],
   },
   {
-    id: ESevenWonderCardId.PYTHAGORAS,
-    type: ESevenWondersCardType.LEADER,
+    id: ECardId.PYTHAGORAS,
+    type: ECardType.LEADER,
     effects: [{
-      type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS,
-      variants: [ESevenWondersScientificSymbol.GEAR],
+      type: EEffect.SCIENTIFIC_SYMBOLS,
+      variants: [EScientificSymbol.GEAR],
     }],
     price: {
       coins: 5,

@@ -1,7 +1,7 @@
 import { ALL_CITIES } from 'common/constants/games/sevenWonders';
 
-import { ESevenWondersCity, ISevenWondersCitySide } from 'common/types/sevenWonders';
+import { ECity, ICitySide } from 'common/types/sevenWonders';
 
-export default function getCity(cityId: ESevenWondersCity, citySide: number): ISevenWondersCitySide {
+export default function getCity(cityId: ECity, citySide: number): ICitySide {
   return ALL_CITIES[cityId].sides[citySide];
 }

@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ESevenWondersWaitingActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
-import { ESevenWondersFreeCardSource } from 'common/types/sevenWonders/effects';
-import { ESevenWonderCardId } from 'common/types/sevenWonders/cards';
+import { EWaitingActionType, IPlayer } from 'common/types/sevenWonders';
+import { EFreeCardSource } from 'common/types/sevenWonders/effects';
+import { ECardId } from 'common/types/sevenWonders/cards';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
@@ -15,8 +15,8 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 
 interface IWonderProps {
   className?: string;
-  player: ISevenWondersPlayer;
-  copiedLeaderId?: ESevenWonderCardId;
+  player: IPlayer;
+  copiedLeaderId?: ECardId;
   isOtherPlayer?: boolean;
 }
 
@@ -67,29 +67,29 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       return 'Ожидает';
     }
 
-    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.EFFECT_BUILD_CARD) {
+    if (player.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
       const buildEffect = player.buildCardEffects[player.waitingForAction.buildEffectIndex];
 
-      if (buildEffect.source === ESevenWondersFreeCardSource.DISCARD) {
+      if (buildEffect.source === EFreeCardSource.DISCARD) {
         return 'Выбор из сброса';
       }
 
-      if (buildEffect.source === ESevenWondersFreeCardSource.LEADERS) {
+      if (buildEffect.source === EFreeCardSource.LEADERS) {
         return 'Найм лидера';
       }
 
       return 'Строительство последней карты';
     }
 
-    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.PICK_LEADER) {
+    if (player.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
       return 'Выбирает лидера';
     }
 
-    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.RECRUIT_LEADER) {
+    if (player.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
       return 'Нанимает лидера';
     }
 
-    if (player.waitingForAction?.type === ESevenWondersWaitingActionType.BUILD_CARD) {
+    if (player.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
       return 'Выбирает карту';
     }
   }, [player]);

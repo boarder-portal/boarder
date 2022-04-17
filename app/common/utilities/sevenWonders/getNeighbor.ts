@@ -1,13 +1,13 @@
-import { ESevenWondersNeighborSide, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 
 export default function getNeighbor(
-  players: ISevenWondersPlayer[],
-  player: ISevenWondersPlayer,
-  neighborSide: ESevenWondersNeighborSide,
-): ISevenWondersPlayer {
+  players: IPlayer[],
+  player: IPlayer,
+  neighborSide: ENeighborSide,
+): IPlayer {
   const playerIndex = players.findIndex(({ login }) => login === player.login);
 
-  return players[neighborSide === ESevenWondersNeighborSide.LEFT
+  return players[neighborSide === ENeighborSide.LEFT
     ? (playerIndex - 1 + players.length) % players.length
     : (playerIndex + 1) % players.length];
 }

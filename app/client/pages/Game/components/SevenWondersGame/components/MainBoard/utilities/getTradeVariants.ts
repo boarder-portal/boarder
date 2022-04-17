@@ -1,4 +1,4 @@
-import { ISevenWondersPrice } from 'common/types/sevenWonders';
+import { IPrice } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getPurchaseVariants
@@ -12,7 +12,7 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
 export default function getTradeVariants(
-  price: ISevenWondersPrice | undefined,
+  price: IPrice | undefined,
   resourcePools:  IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
 ): ITradeVariant[] {

@@ -5,16 +5,16 @@ import block from 'bem-cn';
 import {
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { TSevenWondersAction, TSevenWondersPayments } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { TAction, TPayments } from 'common/types/sevenWonders';
+import { ICard } from 'common/types/sevenWonders/cards';
 
 import Box from 'client/components/common/Box/Box';
 
 interface ICourtesanActionProps {
   className?: string;
-  card: ISevenWondersCard;
+  card: ICard;
   courtesansBuildInfo: ISevenWondersCourtesansBuildInfo;
-  onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
 const b = block('CourtesanAction');
@@ -32,7 +32,7 @@ const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
     onCardAction(courtesansBuildInfo.cardIndex, {
       ...courtesansBuildInfo.action,
       copiedCard: card,
-    } as TSevenWondersAction, courtesansBuildInfo.payments);
+    } as TAction, courtesansBuildInfo.payments);
   }, [card, courtesansBuildInfo.action, courtesansBuildInfo.cardIndex, courtesansBuildInfo.payments, onCardAction]);
 
   return (

@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ESevenWondersNeighborSide, TSevenWondersPayments } from 'common/types/sevenWonders';
+import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
 
 import {
   ITradeVariant,
@@ -18,7 +18,7 @@ import { HOVER_SOUND, playSound } from 'client/sounds';
 interface ITradeModalProps {
   isVisible: boolean;
   tradeVariants: ITradeVariant[];
-  onBuild(payments?: TSevenWondersPayments): void;
+  onBuild(payments?: TPayments): void;
   onClose(): void;
 }
 
@@ -58,7 +58,7 @@ const Root = styled(Modal)`
 const TradeModal: React.FC<ITradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
 
-  const handleSelectTradeVariant = useCallback((payments: TSevenWondersPayments) => {
+  const handleSelectTradeVariant = useCallback((payments: TPayments) => {
     onBuild(payments);
     onClose();
   }, [onBuild, onClose]);
@@ -88,7 +88,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
           >
             <ResourcesAndPrice
               price={tradeVariant.payments.LEFT}
-              resources={tradeVariant.resources.filter((resource) => resource.owner === ESevenWondersNeighborSide.LEFT)}
+              resources={tradeVariant.resources.filter((resource) => resource.owner === ENeighborSide.LEFT)}
             />
 
             <ResourcesAndPrice
@@ -98,7 +98,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
             <ResourcesAndPrice
               price={tradeVariant.payments.RIGHT}
-              resources={tradeVariant.resources.filter((resource) => resource.owner === ESevenWondersNeighborSide.RIGHT)}
+              resources={tradeVariant.resources.filter((resource) => resource.owner === ENeighborSide.RIGHT)}
               reverse
             />
           </Box>

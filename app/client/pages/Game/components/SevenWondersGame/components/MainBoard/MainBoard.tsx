@@ -4,15 +4,15 @@ import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import {
-  ESevenWondersGameEvent,
-  ESevenWondersGamePhase,
-  ESevenWondersNeighborSide,
-  ISevenWondersExecuteActionEvent,
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersPayments,
+  EGameEvent,
+  EGamePhase,
+  ENeighborSide,
+  IExecuteActionEvent,
+  IPlayer,
+  TAction,
+  TPayments,
 } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ICard } from 'common/types/sevenWonders/cards';
 import {
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
@@ -31,12 +31,12 @@ import { usePrevious } from 'client/hooks/usePrevious';
 interface IMainBoardProps {
   className?: string;
   io: SocketIOClient.Socket;
-  player: ISevenWondersPlayer;
-  discard: ISevenWondersCard[];
+  player: IPlayer;
+  discard: ICard[];
   age: number;
-  gamePhase: ESevenWondersGamePhase;
-  leftNeighbor: ISevenWondersPlayer;
-  rightNeighbor: ISevenWondersPlayer;
+  gamePhase: EGamePhase;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
 }
 
 const b = block('MainBoard');
@@ -91,7 +91,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const chosenCardIndex = player.chosenActionEvent?.cardIndex;
 
-  const handleStartCopyingLeader = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+  const handleStartCopyingLeader = useCallback((cardIndex: number, action: TAction, payments?: TPayments) => {
     setCourtesansBuildInfo({
       cardIndex,
       action,
@@ -99,25 +99,25 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     });
   }, []);
 
-  const handleCardAction = useCallback((cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => {
+  const handleCardAction = useCallback((cardIndex: number, action: TAction, payments?: TPayments) => {
     playSound(SELECT_SOUND);
     setCourtesansBuildInfo(null);
 
-    const data: ISevenWondersExecuteActionEvent = {
+    const data: IExecuteActionEvent = {
       cardIndex,
       action,
       payments,
     };
 
-    console.log(ESevenWondersGameEvent.EXECUTE_ACTION, data);
+    console.log(EGameEvent.EXECUTE_ACTION, data);
 
-    io.emit(ESevenWondersGameEvent.EXECUTE_ACTION, data);
+    io.emit(EGameEvent.EXECUTE_ACTION, data);
   }, [io]);
 
   const cancelCard = useCallback(() => {
     playSound(SELECT_SOUND);
 
-    io.emit(ESevenWondersGameEvent.CANCEL_ACTION);
+    io.emit(EGameEvent.CANCEL_ACTION);
   }, [io]);
 
   const handleClickHandSwitcher = useCallback(() => {
@@ -146,10 +146,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       <div className={b('wonderWrapper')}>
         <Wonder className={b('wonder')} player={player} />
 
-        {gamePhase !== ESevenWondersGamePhase.RECRUIT_LEADERS && (
+        {gamePhase !== EGamePhase.RECRUIT_LEADERS && (
           <BackCard
             className={b('switchHand')}
-            type={isViewingLeaders && gamePhase === ESevenWondersGamePhase.BUILD_STRUCTURES ? age : 'leader'}
+            type={isViewingLeaders && gamePhase === EGamePhase.BUILD_STRUCTURES ? age : 'leader'}
             onClick={handleClickHandSwitcher}
           />
         )}
@@ -181,7 +181,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
           ))}
         </Box>
 
-        {cardsDirection === ESevenWondersNeighborSide.LEFT ?
+        {cardsDirection === ENeighborSide.LEFT ?
           <ArrowLeft className={b('leftArrow').toString()} /> :
           <ArrowRight className={b('rightArrow').toString()} />}
       </Box>

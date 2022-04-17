@@ -1,16 +1,16 @@
 import {
-  ISevenWondersResource,
-  TSevenWondersAction,
-  TSevenWondersPayments,
-  TSevenWondersResourceOwner,
+  IResource,
+  TAction,
+  TPayments,
+  TResourceOwner,
 } from 'common/types/sevenWonders';
 
-export interface IOwnerResource extends ISevenWondersResource {
-  owner: TSevenWondersResourceOwner;
+export interface IOwnerResource extends IResource {
+  owner: TResourceOwner;
 }
 
 export interface ISevenWondersCourtesansBuildInfo {
   cardIndex: number;
-  action: TSevenWondersAction;
-  payments?: TSevenWondersPayments
+  action: TAction;
+  payments?: TPayments
 }

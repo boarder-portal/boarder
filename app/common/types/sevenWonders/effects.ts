@@ -1,21 +1,19 @@
+import { ECardType } from 'common/types/sevenWonders/cards';
 import {
-  ESevenWondersCardType,
-  ESevenWondersPlayerDirection,
-} from 'common/types/sevenWonders/cards';
-import {
-  ESevenWondersCardActionType,
-  ESevenWondersNeighborSide,
-  ISevenWondersResource,
-  ESevenWondersScientificSymbol,
-  TSevenWondersResourceOwner,
-} from 'common/types/sevenWonders/index';
+  ECardActionType,
+  ENeighborSide,
+  EPlayerDirection,
+  EScientificSymbol,
+  IResource,
+  TResourceOwner,
+} from 'common/types/sevenWonders';
 
-export interface ISevenWondersGain {
+export interface IGain {
   points?: number;
   coins?: number;
 }
 
-export enum ESevenWondersEffect {
+export enum EEffect {
   GAIN = 'GAIN',
   RESOURCES = 'RESOURCES',
   TRADE = 'TRADE',
@@ -35,65 +33,65 @@ export enum ESevenWondersEffect {
   SCIENTIFIC_SET = 'SCIENTIFIC_SET',
 }
 
-export interface ISevenWondersGainEffect {
-  type: ESevenWondersEffect.GAIN;
-  gain: ISevenWondersGain;
+export interface IGainEffect {
+  type: EEffect.GAIN;
+  gain: IGain;
 }
 
-export interface ISevenWondersResourcesEffect {
-  type: ESevenWondersEffect.RESOURCES;
-  variants: ISevenWondersResource[];
+export interface IResourcesEffect {
+  type: EEffect.RESOURCES;
+  variants: IResource[];
 }
 
-export interface ISevenWondersTradeEffect {
-  type: ESevenWondersEffect.TRADE;
-  sources: TSevenWondersResourceOwner[];
+export interface ITradeEffect {
+  type: EEffect.TRADE;
+  sources: TResourceOwner[];
   price: number;
-  resources: (ESevenWondersCardType.RAW_MATERIAL | ESevenWondersCardType.MANUFACTURED_GOODS)[];
+  resources: (ECardType.RAW_MATERIAL | ECardType.MANUFACTURED_GOODS)[];
 }
 
-export interface ISevenWondersCardsTypeEffect {
-  type: ESevenWondersEffect.CARDS_TYPE;
-  cardTypes: ESevenWondersCardType[];
-  gain: ISevenWondersGain;
-  directions: ESevenWondersPlayerDirection[];
+export interface ICardsTypeEffect {
+  type: EEffect.CARDS_TYPE;
+  cardTypes: ECardType[];
+  gain: IGain;
+  directions: EPlayerDirection[];
 }
 
-export interface ISevenWondersWonderLevelsEffect {
-  type: ESevenWondersEffect.WONDER_LEVELS;
-  gain: ISevenWondersGain;
-  directions: ESevenWondersPlayerDirection[];
+export interface IWonderLevelsEffect {
+  type: EEffect.WONDER_LEVELS;
+  gain: IGain;
+  directions: EPlayerDirection[];
 }
 
-export interface ISevenWondersShieldsEffect {
-  type: ESevenWondersEffect.SHIELDS;
+export interface IShieldsEffect {
+  type: EEffect.SHIELDS;
   count: number;
 }
 
-export interface ISevenWondersScientificSymbolsEffect {
-  type: ESevenWondersEffect.SCIENTIFIC_SYMBOLS;
-  variants: ESevenWondersScientificSymbol[];
+export interface IScientificSymbolsEffect {
+  type: EEffect.SCIENTIFIC_SYMBOLS;
+  variants: EScientificSymbol[];
 }
 
-export interface ISevenWondersWinsEffect {
-  type: ESevenWondersEffect.WINS;
-  gain: ISevenWondersGain;
-  directions: ESevenWondersPlayerDirection[];
+export interface IWinsEffect {
+  type: EEffect.WINS;
+  gain: IGain;
+  directions: EPlayerDirection[];
 }
 
-export interface ISevenWondersLossesEffect {
-  type: ESevenWondersEffect.LOSSES;
-  gain: ISevenWondersGain;
-  directions: ESevenWondersPlayerDirection[];
+export interface ILossesEffect {
+  type: EEffect.LOSSES;
+  gain: IGain;
+  directions: EPlayerDirection[];
 }
 
-export interface ISevenWondersGainByCoinsEffect {
-  type: ESevenWondersEffect.GAIN_BY_COINS;
+export interface IGainByCoinsEffect {
+  type: EEffect.GAIN_BY_COINS;
   count: number;
-  gain: ISevenWondersGain;
+  gain: IGain;
 }
 
-export enum ESevenWondersFreeCardPeriod {
+export enum EFreeCardPeriod {
   NOW = 'NOW',
   AGE = 'AGE',
   LAST_AGE_TURN = 'LAST_AGE_TURN',
@@ -101,81 +99,81 @@ export enum ESevenWondersFreeCardPeriod {
   LEADER_RECRUITMENT = 'LEADER_RECRUITMENT',
 }
 
-export enum ESevenWondersFreeCardSource {
+export enum EFreeCardSource {
   HAND = 'HAND',
   DISCARD = 'DISCARD',
   LEADERS = 'LEADERS',
 }
 
-export interface ISevenWondersBuildCardEffect {
-  type: ESevenWondersEffect.BUILD_CARD;
-  period: ESevenWondersFreeCardPeriod;
+export interface IBuildCardEffect {
+  type: EEffect.BUILD_CARD;
+  period: EFreeCardPeriod;
   count?: number;
-  cardTypes?: ESevenWondersCardType[];
-  source: ESevenWondersFreeCardSource;
+  cardTypes?: ECardType[];
+  source: EFreeCardSource;
   isFree: boolean;
-  possibleActions: ESevenWondersCardActionType[];
+  possibleActions: ECardActionType[];
   priority?: number;
 }
 
-export interface ISevenWondersCopyCardEffect {
-  type: ESevenWondersEffect.COPY_CARD;
-  neighbors: ESevenWondersNeighborSide[];
-  cardType: ESevenWondersCardType;
+export interface ICopyCardEffect {
+  type: EEffect.COPY_CARD;
+  neighbors: ENeighborSide[];
+  cardType: ECardType;
 }
 
-export interface ISevenWondersReducedPriceEffect {
-  type: ESevenWondersEffect.REDUCED_PRICE;
-  objectType: ESevenWondersCardType | 'wonderLevel';
+export interface IReducedPriceEffect {
+  type: EEffect.REDUCED_PRICE;
+  objectType: ECardType | 'wonderLevel';
   discount: {
     coins?: number;
     resources?: number;
   };
-  direction: ESevenWondersPlayerDirection;
+  direction: EPlayerDirection;
 }
 
-export enum ESevenWondersCoinPassiveSource {
+export enum ECoinPassiveSource {
   TRADE = 'TRADE',
   VICTORY_TOKENS = 'VICTORY_TOKENS',
   COMMERCIAL_CARDS = 'COMMERCIAL_CARDS',
   STRUCTURE_INHERITANCE = 'STRUCTURE_INHERITANCE',
 }
 
-export interface ISevenWondersCoinPassiveEffect {
-  type: ESevenWondersEffect.COIN_PASSIVE;
-  source: ESevenWondersCoinPassiveSource;
+export interface ICoinPassiveEffect {
+  type: EEffect.COIN_PASSIVE;
+  source: ECoinPassiveSource;
   count: number;
 }
 
-export interface ISevenWondersReturnDefeatsEffect {
-  type: ESevenWondersEffect.RETURN_DEFEATS;
+export interface IReturnDefeatsEffect {
+  type: EEffect.RETURN_DEFEATS;
 }
 
-export interface ISevenWondersDrawLeadersEffect {
-  type: ESevenWondersEffect.DRAW_LEADERS;
+export interface IDrawLeadersEffect {
+  type: EEffect.DRAW_LEADERS;
   count: number;
 }
 
-export interface ISevenWondersScientificSetEffect {
-  type: ESevenWondersEffect.SCIENTIFIC_SET;
-  gain: ISevenWondersGain;
+export interface IScientificSetEffect {
+  type: EEffect.SCIENTIFIC_SET;
+  gain: IGain;
 }
 
-export type TSevenWondersEffect =
- | ISevenWondersGainEffect
- | ISevenWondersResourcesEffect
- | ISevenWondersTradeEffect
- | ISevenWondersCardsTypeEffect
- | ISevenWondersWonderLevelsEffect
- | ISevenWondersShieldsEffect
- | ISevenWondersScientificSymbolsEffect
- | ISevenWondersWinsEffect
- | ISevenWondersLossesEffect
- | ISevenWondersGainByCoinsEffect
- | ISevenWondersBuildCardEffect
- | ISevenWondersCopyCardEffect
- | ISevenWondersReducedPriceEffect
- | ISevenWondersCoinPassiveEffect
- | ISevenWondersReturnDefeatsEffect
- | ISevenWondersDrawLeadersEffect
- | ISevenWondersScientificSetEffect
+export type TEffect =
+ | IGainEffect
+ | IResourcesEffect
+ | ITradeEffect
+ | ICardsTypeEffect
+ | IWonderLevelsEffect
+ | IShieldsEffect
+ | IScientificSymbolsEffect
+ | IWinsEffect
+ | ILossesEffect
+ | IGainByCoinsEffect
+ | IBuildCardEffect
+ | ICopyCardEffect
+ | IReducedPriceEffect
+ | ICoinPassiveEffect
+ | IReturnDefeatsEffect
+ | IDrawLeadersEffect
+ | IScientificSetEffect

@@ -5,8 +5,8 @@ import block from 'bem-cn';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ISevenWondersPlayer, TSevenWondersAction, TSevenWondersPayments } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
+import { ICard } from 'common/types/sevenWonders/cards';
 
 import getPlayerResourcePools
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
@@ -25,14 +25,14 @@ import TradeModal
 import { useBoolean } from 'client/hooks/useBoolean';
 
 interface IBuildCardActionsProps {
-  card: ISevenWondersCard;
+  card: ICard;
   cardIndex: number;
-  player: ISevenWondersPlayer
-  leftNeighbor: ISevenWondersPlayer
-  rightNeighbor: ISevenWondersPlayer
+  player: IPlayer
+  leftNeighbor: IPlayer
+  rightNeighbor: IPlayer
   resourceTradePrices: TResourceTradePrices;
-  onCardAction(action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
-  onStartCopyingLeader(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(action: TAction, payments?: TPayments): void;
+  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
 const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
@@ -73,7 +73,7 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     }
   }, [cardBuildInfo, openTradeModal]);
 
-  const trade = useCallback((payments?: TSevenWondersPayments) => {
+  const trade = useCallback((payments?: TPayments) => {
     cardBuildInfo.onBuild(null, payments);
   }, [cardBuildInfo]);
 

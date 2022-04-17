@@ -1,7 +1,7 @@
-import { ESevenWondersNeighborSide } from 'common/types/sevenWonders';
+import { ENeighborSide } from 'common/types/sevenWonders';
 
-export default function getAgeDirection(age: number): ESevenWondersNeighborSide {
+export default function getAgeDirection(age: number): ENeighborSide {
   return age % 2
-    ? ESevenWondersNeighborSide.RIGHT
-    : ESevenWondersNeighborSide.LEFT;
+    ? ENeighborSide.RIGHT
+    : ENeighborSide.LEFT;
 }

@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ESevenWondersCardActionType, TSevenWondersAction, TSevenWondersPayments } from 'common/types/sevenWonders';
+import { ECardActionType, TAction, TPayments } from 'common/types/sevenWonders';
 
 import Box from 'client/components/common/Box/Box';
 
 interface IDraftLeaderActionProps {
   className?: string;
-  onCardAction(action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(action: TAction, payments?: TPayments): void;
 }
 
 const b = block('DraftLeaderAction');
@@ -24,7 +24,7 @@ const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
 
   const handleSelect = useCallback(() => {
     onCardAction({
-      type: ESevenWondersCardActionType.PICK_LEADER,
+      type: ECardActionType.PICK_LEADER,
     });
   }, [onCardAction]);
 

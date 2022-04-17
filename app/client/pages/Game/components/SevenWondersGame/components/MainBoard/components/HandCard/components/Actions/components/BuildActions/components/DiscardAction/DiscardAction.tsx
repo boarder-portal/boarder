@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
-  ESevenWondersCardActionType,
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersPayments,
+  ECardActionType,
+  IPlayer,
+  TAction,
+  TPayments,
 } from 'common/types/sevenWonders';
 
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
@@ -14,8 +14,8 @@ import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBu
 import Box from 'client/components/common/Box/Box';
 
 interface IDiscardActionProps {
-  player: ISevenWondersPlayer;
-  onCardAction(action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  player: IPlayer;
+  onCardAction(action: TAction, payments?: TPayments): void;
 }
 
 const b = block('DiscardAction');
@@ -32,14 +32,14 @@ const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
   const possibleBuildActions = getPossibleBuildActions(player);
 
   const isAvailable = useMemo(() => {
-    return possibleBuildActions.includes(ESevenWondersCardActionType.DISCARD);
+    return possibleBuildActions.includes(ECardActionType.DISCARD);
   }, [possibleBuildActions]);
 
   const title = useMemo(() => isAvailable ? 'Продать' : 'Нельзя продать', [isAvailable]);
 
   const onClick = useCallback(() => {
     onCardAction({
-      type: ESevenWondersCardActionType.DISCARD,
+      type: ECardActionType.DISCARD,
     });
   }, [onCardAction]);
 

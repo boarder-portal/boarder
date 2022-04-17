@@ -9,7 +9,7 @@ import * as MazeTypes from 'common/types/maze';
 import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
-import { ESevenWondersGameEvent, ISevenWondersGameOptions, ISevenWondersPlayer } from 'common/types/sevenWonders';
+import * as SevenWondersTypes from 'common/types/sevenWonders';
 
 export enum EGameEvent {
   UPDATE = 'UPDATE',
@@ -60,9 +60,9 @@ export interface IGameParams {
     player: CarcassonneTypes.IPlayer;
   };
   [EGame.SEVEN_WONDERS]: {
-    event: ESevenWondersGameEvent;
-    options: ISevenWondersGameOptions;
-    player: ISevenWondersPlayer;
+    event: SevenWondersTypes.EGameEvent;
+    options: SevenWondersTypes.IGameOptions;
+    player: SevenWondersTypes.IPlayer;
   };
 }
 

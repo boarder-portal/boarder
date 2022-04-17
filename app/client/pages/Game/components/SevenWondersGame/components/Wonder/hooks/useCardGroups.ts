@@ -2,19 +2,19 @@ import { useMemo } from 'react';
 import { groupBy } from 'lodash';
 import sortBy from 'lodash/sortBy';
 
-import { ESevenWondersCardType, ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { ISevenWondersPlayer } from 'common/types/sevenWonders';
+import { ECardType, ICard } from 'common/types/sevenWonders/cards';
+import { IPlayer } from 'common/types/sevenWonders';
 
 const GROUPS_COUNT = 4;
 
-export default function useCardGroups(player: ISevenWondersPlayer): ISevenWondersCard[][] {
+export default function useCardGroups(player: IPlayer): ICard[][] {
   return useMemo(() => {
     const groupedCards = Object.entries(groupBy(
       player.builtCards,
       ({ type }) =>
-        type === ESevenWondersCardType.RAW_MATERIAL ||
-        type === ESevenWondersCardType.MANUFACTURED_GOODS ? 'resources' : type,
-    )) as [ESevenWondersCardType | 'resources', ISevenWondersCard[]][];
+        type === ECardType.RAW_MATERIAL ||
+        type === ECardType.MANUFACTURED_GOODS ? 'resources' : type,
+    )) as [ECardType | 'resources', ICard[]][];
 
     const sortedGroups = sortBy(groupedCards, ([type, group]) => {
       if (type === 'resources') {

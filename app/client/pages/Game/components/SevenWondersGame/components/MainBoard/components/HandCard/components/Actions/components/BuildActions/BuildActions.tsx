@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 
 import {
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersPayments,
+  IPlayer,
+  TAction,
+  TPayments,
 } from 'common/types/sevenWonders';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ICard } from 'common/types/sevenWonders/cards';
 
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
@@ -25,12 +25,12 @@ import BuildCardActions
 interface IBuildActionsProps {
   className?: string;
   cardIndex: number;
-  card: ISevenWondersCard;
-  player: ISevenWondersPlayer;
-  leftNeighbor: ISevenWondersPlayer;
-  rightNeighbor: ISevenWondersPlayer;
-  onCardAction(action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
-  onStartCopyingLeader(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  card: ICard;
+  player: IPlayer;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
+  onCardAction(action: TAction, payments?: TPayments): void;
+  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
 const b = block('BuildActions');

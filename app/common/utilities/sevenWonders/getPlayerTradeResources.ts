@@ -1,13 +1,13 @@
-import { ISevenWondersPlayer, ISevenWondersResource } from 'common/types/sevenWonders';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
+import { IPlayer, IResource } from 'common/types/sevenWonders';
+import { ECardType } from 'common/types/sevenWonders/cards';
 
 import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 import getCity from 'common/utilities/sevenWonders/getCity';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 
-export default function getPlayerTradeResources(player: ISevenWondersPlayer): ISevenWondersResource[][] {
+export default function getPlayerTradeResources(player: IPlayer): IResource[][] {
   const builtCardsResourceVariants = player.builtCards
-    .filter((builtCard) => builtCard.type === ESevenWondersCardType.RAW_MATERIAL || builtCard.type === ESevenWondersCardType.MANUFACTURED_GOODS)
+    .filter((builtCard) => builtCard.type === ECardType.RAW_MATERIAL || builtCard.type === ECardType.MANUFACTURED_GOODS)
     .flatMap((builtCard) => builtCard.effects.filter(isResourceEffect))
     .map((effect) => effect.variants);
 

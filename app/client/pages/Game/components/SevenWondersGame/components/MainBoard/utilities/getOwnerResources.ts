@@ -1,4 +1,4 @@
-import { ISevenWondersResource, TSevenWondersResourceOwner } from 'common/types/sevenWonders';
+import { IResource, TResourceOwner } from 'common/types/sevenWonders';
 import {
   IOwnerResource,
 
@@ -19,7 +19,7 @@ import {
  *    [{ type: 'GLASS', count: 1, owner }],
  * ]
  */
-export default function getOwnerResources(resources: ISevenWondersResource[][], owner: TSevenWondersResourceOwner): IOwnerResource[][] {
+export default function getOwnerResources(resources: IResource[][], owner: TResourceOwner): IOwnerResource[][] {
   return resources
     .map((resource) =>
       resource.map((resourceVariant) => ({

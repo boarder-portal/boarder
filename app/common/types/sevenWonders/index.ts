@@ -1,12 +1,12 @@
-import { IGameOptions } from 'common/types/room';
-import { IPlayer } from 'common/types';
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
-import { ISevenWondersBuildCardEffect, TSevenWondersEffect } from 'common/types/sevenWonders/effects';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { IPlayer as ICommonPlayer } from 'common/types';
+import { ICard } from 'common/types/sevenWonders/cards';
+import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-export enum ESevenWondersGameEvent {
+export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   EXECUTE_ACTION = 'EXECUTE_ACTION',
   CANCEL_ACTION = 'CANCEL_ACTION',
@@ -14,15 +14,15 @@ export enum ESevenWondersGameEvent {
   GAME_INFO = 'GAME_INFO',
 }
 
-export enum ESevenWondersScientificSymbol {
+export enum EScientificSymbol {
   GEAR = 'GEAR',
   COMPASS = 'COMPASS',
   TABLET = 'TABLET',
 }
 
-export interface ISevenWondersGameOptions extends IGameOptions {}
+export interface IGameOptions extends ICommonGameOptions {}
 
-export enum ESevenWondersCity {
+export enum ECity {
   RHODOS = 'RHODOS',
   ALEXANDRIA = 'ALEXANDRIA',
   EPHESOS = 'EPHESOS',
@@ -34,139 +34,139 @@ export enum ESevenWondersCity {
   ROMA = 'ROMA',
 }
 
-export interface ISevenWondersWonder {
-  price: ISevenWondersPrice;
-  effects: TSevenWondersEffect[];
+export interface IWonder {
+  price: IPrice;
+  effects: TEffect[];
 }
 
-export interface ISevenWondersCitySide {
-  effects: TSevenWondersEffect[];
-  wonders: ISevenWondersWonder[];
+export interface ICitySide {
+  effects: TEffect[];
+  wonders: IWonder[];
 }
 
-export interface ISevenWondersCity {
-  sides: ISevenWondersCitySide[];
+export interface ICity {
+  sides: ICitySide[];
 }
 
-export interface ISevenWondersBuiltStage {
+export interface IWonderBuiltStage {
   index: number;
-  card: ISevenWondersCard;
+  card: ICard;
   cardType: number | 'leader';
 }
 
-export enum ESevenWondersWaitingActionType {
+export enum EWaitingActionType {
   PICK_LEADER = 'PICK_LEADER',
   RECRUIT_LEADER = 'RECRUIT_LEADER',
   BUILD_CARD = 'BUILD_CARD',
   EFFECT_BUILD_CARD = 'EFFECT_BUILD_CARD',
 }
 
-export interface ISevenWondersWaitingPickLeaderAction {
-  type: ESevenWondersWaitingActionType.PICK_LEADER;
+export interface IWaitingPickLeaderAction {
+  type: EWaitingActionType.PICK_LEADER;
 }
 
-export interface ISevenWondersWaitingRecruitLeaderAction {
-  type: ESevenWondersWaitingActionType.RECRUIT_LEADER;
+export interface IWaitingRecruitLeaderAction {
+  type: EWaitingActionType.RECRUIT_LEADER;
 }
 
-export interface ISevenWondersWaitingBuildCardAction {
-  type: ESevenWondersWaitingActionType.BUILD_CARD;
+export interface IWaitingBuildCardAction {
+  type: EWaitingActionType.BUILD_CARD;
 }
 
-export interface ISevenWondersWaitingEffectBuildCardAction {
-  type: ESevenWondersWaitingActionType.EFFECT_BUILD_CARD;
+export interface IWaitingEffectBuildCardAction {
+  type: EWaitingActionType.EFFECT_BUILD_CARD;
   buildEffectIndex: number;
 }
 
-export type TSevenWondersWaitingAction =
-  | ISevenWondersWaitingPickLeaderAction
-  | ISevenWondersWaitingRecruitLeaderAction
-  | ISevenWondersWaitingBuildCardAction
-  | ISevenWondersWaitingEffectBuildCardAction;
+export type TWaitingAction =
+  | IWaitingPickLeaderAction
+  | IWaitingRecruitLeaderAction
+  | IWaitingBuildCardAction
+  | IWaitingEffectBuildCardAction;
 
-export interface ISevenWondersPlayer extends IPlayer {
+export interface IPlayer extends ICommonPlayer {
   points: number;
-  builtCards: ISevenWondersCard[];
-  hand: ISevenWondersCard[];
-  city: ESevenWondersCity;
+  builtCards: ICard[];
+  hand: ICard[];
+  city: ECity;
   citySide: number;
-  builtStages: ISevenWondersBuiltStage[];
+  builtStages: IWonderBuiltStage[];
   coins: number;
   receivedCoinsDuringTurn: number;
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
-  chosenActionEvent: ISevenWondersExecuteActionEvent | null;
-  waitingForAction: TSevenWondersWaitingAction | null;
-  buildCardEffects: ISevenWondersBuildCardEffect[];
-  leadersHand: ISevenWondersCard[];
-  leadersPool: ISevenWondersCard[];
-  copiedCard: ISevenWondersCard | null;
+  chosenActionEvent: IExecuteActionEvent | null;
+  waitingForAction: TWaitingAction | null;
+  buildCardEffects: IBuildCardEffect[];
+  leadersHand: ICard[];
+  leadersPool: ICard[];
+  copiedCard: ICard | null;
 }
 
-export interface ISevenWondersGameInfoEvent {
-  players: ISevenWondersPlayer[];
-  discard: ISevenWondersCard[];
+export interface IGameInfoEvent {
+  players: IPlayer[];
+  discard: ICard[];
   age: number;
-  phase: ESevenWondersGamePhase;
+  phase: EGamePhase;
 }
 
-export enum ESevenWondersCardActionType {
+export enum ECardActionType {
   BUILD_STRUCTURE = 'BUILD_STRUCTURE',
   BUILD_WONDER_STAGE = 'BUILD_WONDER_STAGE',
   DISCARD = 'DISCARD',
   PICK_LEADER = 'PICK_LEADER',
 }
 
-export interface ISevenWondersBuildingBuildType {
+export interface IBuildingBuildType {
   type: EBuildType.FREE_BY_BUILDING;
 }
 
-export interface ISevenWondersBuildEffectBuildType {
+export interface IBuildEffectBuildType {
   type: EBuildType.FREE_WITH_EFFECT;
   effectIndex: number;
 }
 
-export type TSevenWondersBuildType =
-  | ISevenWondersBuildingBuildType
-  | ISevenWondersBuildEffectBuildType;
+export type TBuildType =
+  | IBuildingBuildType
+  | IBuildEffectBuildType;
 
-export interface ISevenWondersBuildStructureAction {
-  type: ESevenWondersCardActionType.BUILD_STRUCTURE;
-  freeBuildType: TSevenWondersBuildType | null;
-  copiedCard?: ISevenWondersCard;
+export interface IBuildStructureAction {
+  type: ECardActionType.BUILD_STRUCTURE;
+  freeBuildType: TBuildType | null;
+  copiedCard?: ICard;
   discount?: number;
 }
 
-export interface ISevenWondersBuildWonderStageAction {
-  type: ESevenWondersCardActionType.BUILD_WONDER_STAGE;
+export interface IBuildWonderStageAction {
+  type: ECardActionType.BUILD_WONDER_STAGE;
   stageIndex: number;
 }
 
-export interface ISevenWondersDiscardAction {
-  type: ESevenWondersCardActionType.DISCARD;
+export interface IDiscardAction {
+  type: ECardActionType.DISCARD;
 }
 
-export interface ISevenWondersPickLeaderAction {
-  type: ESevenWondersCardActionType.PICK_LEADER;
+export interface IPickLeaderAction {
+  type: ECardActionType.PICK_LEADER;
 }
 
-export type TSevenWondersAction = (
-  | ISevenWondersBuildStructureAction
-  | ISevenWondersBuildWonderStageAction
-  | ISevenWondersDiscardAction
-  | ISevenWondersPickLeaderAction
+export type TAction = (
+  | IBuildStructureAction
+  | IBuildWonderStageAction
+  | IDiscardAction
+  | IPickLeaderAction
 );
 
-export type TSevenWondersPayments = Record<ESevenWondersNeighborSide | 'bank', number>;
+export type TPayments = Record<ENeighborSide | 'bank', number>;
 
-export interface ISevenWondersExecuteActionEvent {
+export interface IExecuteActionEvent {
   cardIndex: number;
-  action: TSevenWondersAction;
-  payments?: TSevenWondersPayments;
+  action: TAction;
+  payments?: TPayments;
 }
 
-export enum ESevenWondersResource {
+export enum EResource {
   WOOD = 'WOOD',
   ORE = 'ORE',
   CLAY = 'CLAY',
@@ -177,24 +177,31 @@ export enum ESevenWondersResource {
   PAPYRUS = 'PAPYRUS',
 }
 
-export interface ISevenWondersResource {
-  type: ESevenWondersResource;
+export interface IResource {
+  type: EResource;
   count: number;
 }
 
-export enum ESevenWondersNeighborSide {
+export enum ENeighborSide {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
 
-export interface ISevenWondersPrice {
-  resources?: ISevenWondersResource[];
+export enum EPlayerDirection {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  SELF = 'SELF',
+  ALL = 'ALL',
+}
+
+export interface IPrice {
+  resources?: IResource[];
   coins?: number;
 }
 
-export type TSevenWondersResourceOwner = ESevenWondersNeighborSide | 'own' | 'bank';
+export type TResourceOwner = ENeighborSide | 'own' | 'bank';
 
-export enum ESevenWondersGamePhase {
+export enum EGamePhase {
   DRAFT_LEADERS = 'DRAFT_LEADERS',
   RECRUIT_LEADERS = 'RECRUIT_LEADERS',
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',

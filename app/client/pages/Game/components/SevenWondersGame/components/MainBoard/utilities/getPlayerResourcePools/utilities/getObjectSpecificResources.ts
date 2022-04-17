@@ -3,8 +3,8 @@ import {
   ANY_RAW_RESOURCE_VARIANT,
 } from 'client/pages/Game/components/SevenWondersGame/constants';
 
-import { ISevenWondersPlayer, ISevenWondersResource } from 'common/types/sevenWonders';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
+import { IPlayer, IResource } from 'common/types/sevenWonders';
+import { ECardType } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
@@ -14,12 +14,12 @@ import getOwnerResources
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
 
 export default function getObjectSpecificResources(
-  player: ISevenWondersPlayer,
-  objectType: ESevenWondersCardType | 'wonderLevel',
+  player: IPlayer,
+  objectType: ECardType | 'wonderLevel',
 ): IOwnerResource[][] {
   const reducedPriceEffects = getAllPlayerEffects(player).filter(isReducedPriceEffect);
 
-  const reducesPriceResources = reducedPriceEffects.map((effect): ISevenWondersResource[] | undefined => {
+  const reducesPriceResources = reducedPriceEffects.map((effect): IResource[] | undefined => {
     if (effect.objectType !== objectType) {
       return undefined;
     }

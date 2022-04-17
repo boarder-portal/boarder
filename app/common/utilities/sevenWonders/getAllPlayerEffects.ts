@@ -1,9 +1,9 @@
-import { ISevenWondersPlayer } from 'common/types/sevenWonders';
-import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
+import { IPlayer } from 'common/types/sevenWonders';
+import { TEffect } from 'common/types/sevenWonders/effects';
 
 import getCity from 'common/utilities/sevenWonders/getCity';
 
-export default function getAllPlayerEffects(player: ISevenWondersPlayer): TSevenWondersEffect[] {
+export default function getAllPlayerEffects(player: IPlayer): TEffect[] {
   const citySide = getCity(player.city, player.citySide);
 
   return [

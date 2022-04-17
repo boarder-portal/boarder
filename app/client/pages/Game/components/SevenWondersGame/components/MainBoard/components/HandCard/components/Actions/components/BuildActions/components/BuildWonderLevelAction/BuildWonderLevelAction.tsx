@@ -6,10 +6,10 @@ import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import {
-  ESevenWondersCardActionType,
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersPayments,
+  ECardActionType,
+  IPlayer,
+  TAction,
+  TPayments,
 } from 'common/types/sevenWonders';
 
 import getPlayerResourcePools
@@ -31,11 +31,11 @@ import Box from 'client/components/common/Box/Box';
 import { useBoolean } from 'client/hooks/useBoolean';
 
 interface IBuildWonderLevelActionProps {
-  player: ISevenWondersPlayer;
-  leftNeighbor: ISevenWondersPlayer;
-  rightNeighbor: ISevenWondersPlayer;
+  player: IPlayer;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
   resourceTradePrices: TResourceTradePrices;
-  onCardAction(action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(action: TAction, payments?: TPayments): void;
 }
 
 function getTitle(buildType: EBuildType): string {
@@ -104,16 +104,16 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
       return EBuildType.ALREADY_BUILT;
     }
 
-    if (!getPossibleBuildActions(player).includes(ESevenWondersCardActionType.BUILD_WONDER_STAGE)) {
+    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
       return EBuildType.NOT_ALLOWED;
     }
 
     return getBuildType(wonderLevelPrice, player, availableTradeVariants, 0);
   }, [availableTradeVariants, city.wonders.length, player, wonderLevelPrice]);
 
-  const build = useCallback((payments?: TSevenWondersPayments) => {
+  const build = useCallback((payments?: TPayments) => {
     onCardAction({
-      type: ESevenWondersCardActionType.BUILD_WONDER_STAGE,
+      type: ECardActionType.BUILD_WONDER_STAGE,
       stageIndex: player.builtStages.length,
     }, payments);
   }, [onCardAction, player.builtStages.length]);

@@ -1,21 +1,21 @@
-import { ISevenWondersTradeEffect } from 'common/types/sevenWonders/effects';
-import { ESevenWondersNeighborSide } from 'common/types/sevenWonders';
-import { ESevenWondersCardType } from 'common/types/sevenWonders/cards';
+import { ITradeEffect } from 'common/types/sevenWonders/effects';
+import { ENeighborSide } from 'common/types/sevenWonders';
+import { ECardType } from 'common/types/sevenWonders/cards';
 
 const BASE_RESOURCE_PRICE = 2;
 
-export type TResourceTradePrices = Record<ESevenWondersNeighborSide, {
-  [ESevenWondersCardType.RAW_MATERIAL]: number,
-  [ESevenWondersCardType.MANUFACTURED_GOODS]: number,
+export type TResourceTradePrices = Record<ENeighborSide, {
+  [ECardType.RAW_MATERIAL]: number,
+  [ECardType.MANUFACTURED_GOODS]: number,
 }>;
 
-export default function getResourceTradePrices(tradeEffects: ISevenWondersTradeEffect[]): TResourceTradePrices {
+export default function getResourceTradePrices(tradeEffects: ITradeEffect[]): TResourceTradePrices {
   return tradeEffects.reduce((
     accTradeResourcePrices,
     tradeEffect,
   ) => {
     tradeEffect.sources.forEach((resourceOwner) => {
-      if (resourceOwner !== ESevenWondersNeighborSide.LEFT && resourceOwner !== ESevenWondersNeighborSide.RIGHT) {
+      if (resourceOwner !== ENeighborSide.LEFT && resourceOwner !== ENeighborSide.RIGHT) {
         return;
       }
 
@@ -29,13 +29,13 @@ export default function getResourceTradePrices(tradeEffects: ISevenWondersTradeE
 
     return accTradeResourcePrices;
   }, {
-    [ESevenWondersNeighborSide.LEFT]: {
-      [ESevenWondersCardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
-      [ESevenWondersCardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
+    [ENeighborSide.LEFT]: {
+      [ECardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
+      [ECardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
     },
-    [ESevenWondersNeighborSide.RIGHT]: {
-      [ESevenWondersCardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
-      [ESevenWondersCardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
+    [ENeighborSide.RIGHT]: {
+      [ECardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
+      [ECardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
     },
   });
 }

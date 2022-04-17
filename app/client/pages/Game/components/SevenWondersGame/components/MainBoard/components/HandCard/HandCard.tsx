@@ -2,12 +2,12 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ICard } from 'common/types/sevenWonders/cards';
 import {
-  ESevenWondersGamePhase,
-  ISevenWondersPlayer,
-  TSevenWondersAction,
-  TSevenWondersPayments,
+  EGamePhase,
+  IPlayer,
+  TAction,
+  TPayments,
 } from 'common/types/sevenWonders';
 import {
   ISevenWondersCourtesansBuildInfo,
@@ -21,19 +21,19 @@ import Actions
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
 interface IHandCardProps {
-  card: ISevenWondersCard;
+  card: ICard;
   cardIndex: number;
-  player: ISevenWondersPlayer;
-  gamePhase: ESevenWondersGamePhase;
-  leftNeighbor: ISevenWondersPlayer;
-  rightNeighbor: ISevenWondersPlayer;
+  player: IPlayer;
+  gamePhase: EGamePhase;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
   courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
   isChosen: boolean;
   isDisabled: boolean;
   isViewingLeaders: boolean;
-  onCardAction(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
   onCancelCard(): void;
-  onStartCopyingLeader(cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments): void;
+  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
 const b = block('HandCard');

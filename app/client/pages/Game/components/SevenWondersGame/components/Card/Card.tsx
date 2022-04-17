@@ -2,12 +2,12 @@ import React, { CSSProperties } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
+import { ICard } from 'common/types/sevenWonders/cards';
 
 interface ICardProps {
   className?: string;
   style?: CSSProperties;
-  card: ISevenWondersCard;
+  card: ICard;
   flip?: boolean
   width?: number;
   isCopiedLeader?: boolean;
