@@ -1,4 +1,4 @@
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 
 export enum ESetGameEvent {
@@ -9,7 +9,7 @@ export enum ESetGameEvent {
   GAME_INFO = 'GAME_INFO',
 }
 
-export interface ISetGameOptions extends ICommonGameOptions {
+export interface ISetGameOptions extends IGameOptions {
 
 }
 

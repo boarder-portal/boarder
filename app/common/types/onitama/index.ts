@@ -1,4 +1,4 @@
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 import { ICoords, IPlayer } from 'common/types';
 
 export enum EOnitamaGameEvent {
@@ -8,7 +8,7 @@ export enum EOnitamaGameEvent {
   GAME_INFO = 'GAME_INFO',
 }
 
-export interface IOnitamaGameOptions extends ICommonGameOptions {
+export interface IOnitamaGameOptions extends IGameOptions {
 
 }
 

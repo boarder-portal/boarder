@@ -8,7 +8,7 @@ import {
 import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze';
 import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
 import { EOnitamaGameEvent, IOnitamaGameOptions, IOnitamaPlayer } from 'common/types/onitama';
-import { ECarcassonneGameEvent, ICarcassonneGameOptions, ICarcassonnePlayer } from 'common/types/carcassonne';
+import * as CarcassonneTypes from 'common/types/carcassonne';
 import { ESevenWondersGameEvent, ISevenWondersGameOptions, ISevenWondersPlayer } from 'common/types/sevenWonders';
 
 export enum EGameEvent {
@@ -55,9 +55,9 @@ export interface IGameParams {
     player: IOnitamaPlayer;
   };
   [EGame.CARCASSONNE]: {
-    event: ECarcassonneGameEvent;
-    options: ICarcassonneGameOptions;
-    player: ICarcassonnePlayer;
+    event: CarcassonneTypes.EGameEvent;
+    options: CarcassonneTypes.IGameOptions;
+    player: CarcassonneTypes.IPlayer;
   };
   [EGame.SEVEN_WONDERS]: {
     event: ESevenWondersGameEvent;

@@ -1,34 +1,34 @@
-import { ICommonGameOptions } from 'common/types/room';
-import { ICoords, IPlayer } from 'common/types';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
 
-export enum ECarcassonneGameEvent {
+export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   ATTACH_CARD = 'ATTACH_CARD',
 
   GAME_INFO = 'GAME_INFO',
 }
 
-export enum ECarcassonneCardObject {
+export enum ECardObject {
   CITY = 'CITY',
   ROAD = 'ROAD',
   FIELD = 'FIELD',
   MONASTERY = 'MONASTERY',
 }
 
-export enum ECarcassonneCityGoods {
+export enum ECityGoods {
   WHEAT = 'WHEAT',
   FABRIC = 'FABRIC',
   WINE = 'WINE',
 }
 
-export enum ECarcassonneMeepleType {
+export enum EMeepleType {
   COMMON = 'COMMON',
   FAT = 'FAT',
   BUILDER = 'BUILDER',
   PIG = 'PIG',
 }
 
-export enum ECarcassonnePlayerColor {
+export enum EPlayerColor {
   RED = 'RED',
   BLUE = 'BLUE',
   GREEN = 'GREEN',
@@ -37,78 +37,78 @@ export enum ECarcassonnePlayerColor {
   GREY = 'GREY',
 }
 
-export interface ICarcassonneCardObject {
-  type: ECarcassonneCardObject;
+export interface ICardObject {
+  type: ECardObject;
   meepleCoords: ICoords;
 }
 
-export interface ICarcassonneCardCity extends ICarcassonneCardObject {
-  type: ECarcassonneCardObject.CITY;
+export interface ICardCity extends ICardObject {
+  type: ECardObject.CITY;
   sideParts: number[];
   shields?: number;
   cathedral?: true;
-  goods?: ECarcassonneCityGoods;
+  goods?: ECityGoods;
 }
 
-export interface ICarcassonneCardField extends ICarcassonneCardObject {
-  type: ECarcassonneCardObject.FIELD;
+export interface ICardField extends ICardObject {
+  type: ECardObject.FIELD;
   sideParts: number[];
   cities?: number[];
 }
 
-export interface ICarcassonneCardRoad extends ICarcassonneCardObject {
-  type: ECarcassonneCardObject.ROAD;
+export interface ICardRoad extends ICardObject {
+  type: ECardObject.ROAD;
   sideParts: number[];
   inn?: true;
 }
 
-export interface ICarcassonneCardMonastery extends ICarcassonneCardObject {
-  type: ECarcassonneCardObject.MONASTERY;
+export interface ICardMonastery extends ICardObject {
+  type: ECardObject.MONASTERY;
 }
 
-export type TCarcassonneCardObject = ICarcassonneCardCity | ICarcassonneCardField | ICarcassonneCardRoad | ICarcassonneCardMonastery;
+export type TCardObject = ICardCity | ICardField | ICardRoad | ICardMonastery;
 
-export interface ICarcassonneCard {
+export interface ICard {
   id: number;
   count: number;
-  objects: TCarcassonneCardObject[];
+  objects: TCardObject[];
 }
 
-export interface ICarcassonneGameObject {
+export interface IGameObject {
   id: number;
-  type: ECarcassonneCardObject;
+  type: ECardObject;
   cards: ICoords[];
-  meeples: Partial<Record<string, Partial<Record<ECarcassonneMeepleType, number>>>>;
+  meeples: Partial<Record<string, Partial<Record<EMeepleType, number>>>>;
 }
 
-export interface ICarcassonneGameCity extends ICarcassonneGameObject {
-  type: ECarcassonneCardObject.CITY;
+export interface IGameCity extends IGameObject {
+  type: ECardObject.CITY;
   shields: number;
   cathedral: boolean;
-  goods: Partial<Record<ECarcassonneCityGoods, number>>;
+  goods: Partial<Record<ECityGoods, number>>;
   isFinished: boolean;
 }
 
-export interface ICarcassonneGameField extends ICarcassonneGameObject {
-  type: ECarcassonneCardObject.FIELD;
+export interface IGameField extends IGameObject {
+  type: ECardObject.FIELD;
   cities: number[];
 }
 
-export interface ICarcassonneGameRoad extends ICarcassonneGameObject {
-  type: ECarcassonneCardObject.ROAD;
+export interface IGameRoad extends IGameObject {
+  type: ECardObject.ROAD;
   inn: boolean;
   isFinished: boolean;
 }
 
-export interface ICarcassonneGameMonastery extends ICarcassonneGameObject {
-  type: ECarcassonneCardObject.MONASTERY;
+export interface IGameMonastery extends IGameObject {
+  type: ECardObject.MONASTERY;
 }
 
-export type TCarcassonneGameObject = ICarcassonneGameCity | ICarcassonneGameField | ICarcassonneGameRoad | ICarcassonneGameMonastery;
+export type TGameObject = IGameCity | IGameField | IGameRoad | IGameMonastery;
 
-export type TCarcassonneObjects = Partial<Record<number, TCarcassonneGameObject>>;
+export type TObjects = Partial<Record<number, TGameObject>>;
 
-export interface ICarcassonneGameCard extends ICoords {
+export interface IGameCard extends ICoords {
   id: number;
   rotation: number;
   objectsBySideParts: number[];
@@ -116,53 +116,53 @@ export interface ICarcassonneGameCard extends ICoords {
   meeple: IGamePlacedMeeple | null;
 }
 
-export type TCarcassonneBoard = Partial<Record<number, Partial<Record<number, ICarcassonneGameCard>>>>;
+export type TBoard = Partial<Record<number, Partial<Record<number, IGameCard>>>>;
 
-export interface ICarcassonneGameOptions extends ICommonGameOptions {
+export interface IGameOptions extends ICommonGameOptions {
 
 }
 
-export interface ICarcassonneObjectScore {
+export interface IObjectScore {
   objectId: number;
   score: number;
 }
 
-export interface ICarcassonneGoodsScore {
-  goods: ECarcassonneCityGoods;
+export interface IGoodsScore {
+  goods: ECityGoods;
   score: number;
 }
 
-export type TCarcassonneScore = ICarcassonneObjectScore | ICarcassonneGoodsScore;
+export type TScore = IObjectScore | IGoodsScore;
 
-export interface ICarcassonnePlayer extends IPlayer {
-  color: ECarcassonnePlayerColor;
+export interface IPlayer extends ICommonPlayer {
+  color: EPlayerColor;
   isActive: boolean;
-  score: TCarcassonneScore[];
-  cards: ICarcassonneCard[];
-  meeples: Record<ECarcassonneMeepleType, number>;
-  goods: Record<ECarcassonneCityGoods, number>;
+  score: TScore[];
+  cards: ICard[];
+  meeples: Record<EMeepleType, number>;
+  goods: Record<ECityGoods, number>;
   lastMoves: ICoords[];
 }
 
 export interface IPlacedMeeple {
-  type: ECarcassonneMeepleType;
+  type: EMeepleType;
   cardObjectId: number;
 }
 
 export interface IGamePlacedMeeple extends IPlacedMeeple {
-  color: ECarcassonnePlayerColor;
+  color: EPlayerColor;
   gameObjectId: number;
 }
 
-export interface ICarcassonneGameInfoEvent {
-  players: ICarcassonnePlayer[];
-  board: TCarcassonneBoard;
-  objects: TCarcassonneObjects;
+export interface IGameInfoEvent {
+  players: IPlayer[];
+  board: TBoard;
+  objects: TObjects;
   cardsLeft: number;
   turnEndsAt: number | null;
 }
 
-export interface ICarcassonneAttachCardEvent {
+export interface IAttachCardEvent {
   cardIndex: number;
   coords: ICoords;
   rotation: number;

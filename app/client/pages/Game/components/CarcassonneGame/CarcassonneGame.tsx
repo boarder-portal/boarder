@@ -10,15 +10,15 @@ import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/Carcas
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import {
-  ECarcassonneGameEvent,
-  ECarcassonneMeepleType,
-  ICarcassonneAttachCardEvent,
-  ICarcassonneCard,
-  ICarcassonneGameInfoEvent,
-  ICarcassonnePlayer,
+  EGameEvent,
+  EMeepleType,
+  IAttachCardEvent,
+  ICard,
+  IGameInfoEvent,
   IPlacedMeeple,
-  TCarcassonneBoard,
-  TCarcassonneObjects,
+  IPlayer,
+  TBoard,
+  TObjects,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
@@ -229,15 +229,15 @@ const Root = styled(Box)`
 const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const { io } = props;
 
-  const [players, setPlayers] = useState<ICarcassonnePlayer[]>([]);
-  const [board, setBoard] = useState<TCarcassonneBoard>({});
-  const [objects, setObjects] = useState<TCarcassonneObjects>({});
+  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [board, setBoard] = useState<TBoard>({});
+  const [objects, setObjects] = useState<TObjects>({});
   const [cardsLeft, setCardsLeft] = useState<number>(0);
   const [turnEndsAt, setTurnEndsAt] = useState<number | null>(null);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [placedCardCoords, setPlacedCardCoords] = useState<ICoords | null>(null);
   const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
-  const [allowedMeeples, setAllowedMeeples] = useState<(ECarcassonneMeepleType[] | null)[]>();
+  const [allowedMeeples, setAllowedMeeples] = useState<(EMeepleType[] | null)[]>();
 
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
@@ -253,7 +253,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
   const selectedCard = player?.cards[selectedCardIndex];
 
-  const calculateAllowedMoves = useCallback((selectedCard: ICarcassonneCard | undefined) => {
+  const calculateAllowedMoves = useCallback((selectedCard: ICard | undefined) => {
     if (!selectedCard) {
       return;
     }
@@ -353,7 +353,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     const allowedMeeples = selectedCard.objects.map((object) => {
       if (isCardMonastery(object)) {
-        return [ECarcassonneMeepleType.COMMON, ECarcassonneMeepleType.FAT];
+        return [EMeepleType.COMMON, EMeepleType.FAT];
       }
 
       let isOccupied = false;
@@ -383,15 +383,15 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       });
 
       if (!isOccupied) {
-        return [ECarcassonneMeepleType.COMMON, ECarcassonneMeepleType.FAT];
+        return [EMeepleType.COMMON, EMeepleType.FAT];
       }
 
       if ((isCardCity(object) || isCardRoad(object)) && hasOurMeeple) {
-        return [ECarcassonneMeepleType.BUILDER];
+        return [EMeepleType.BUILDER];
       }
 
       if (isCardField(object) && hasOurMeeple) {
-        return [ECarcassonneMeepleType.PIG];
+        return [EMeepleType.PIG];
       }
 
       return null;
@@ -414,7 +414,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     }
 
     const rotation = selectedCardRotationRef.current;
-    const attachCardEvent: ICarcassonneAttachCardEvent = {
+    const attachCardEvent: IAttachCardEvent = {
       cardIndex: selectedCardIndex,
       coords: placedCardCoords,
       rotation,
@@ -440,7 +440,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     hideSelectedCard();
 
-    io.emit(ECarcassonneGameEvent.ATTACH_CARD, attachCardEvent);
+    io.emit(EGameEvent.ATTACH_CARD, attachCardEvent);
   }, [board, hideSelectedCard, io, placedCardCoords, player, selectedCard, selectedCardIndex]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
@@ -509,14 +509,14 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   });
 
   useEffect(() => {
-    io.emit(ECarcassonneGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(ECarcassonneGameEvent.GAME_INFO, (gameInfo: ICarcassonneGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
       if (!user) {
         return;
       }
 
-      console.log(ECarcassonneGameEvent.GAME_INFO, gameInfo);
+      console.log(EGameEvent.GAME_INFO, gameInfo);
 
       setPlayers(gameInfo.players);
       setBoard(gameInfo.board);
@@ -534,7 +534,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
     });
 
     return () => {
-      io.off(ECarcassonneGameEvent.GAME_INFO);
+      io.off(EGameEvent.GAME_INFO);
     };
   }, [io, user]);
 

@@ -1,4 +1,4 @@
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 
 export enum ESurvivalOnlineGameEvent {
@@ -9,7 +9,7 @@ export enum ESurvivalOnlineGameEvent {
   UPDATE_GAME = 'UPDATE_GAME',
 }
 
-export interface ISurvivalOnlineGameOptions extends ICommonGameOptions {
+export interface ISurvivalOnlineGameOptions extends IGameOptions {
 
 }
 

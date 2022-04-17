@@ -1,59 +1,59 @@
 import { ALL_SIDE_PARTS } from 'common/constants/games/carcassonne';
 
 import {
-  ECarcassonneCardObject,
-  ICarcassonneCard,
-  ICarcassonneCardCity,
-  ICarcassonneCardField,
-  ICarcassonneCardMonastery,
-  ICarcassonneCardRoad,
-  ICarcassonneGameCity,
-  ICarcassonneGameField,
-  ICarcassonneGameMonastery,
-  ICarcassonneGameRoad,
-  TCarcassonneBoard,
-  TCarcassonneCardObject,
-  TCarcassonneGameObject,
+  ECardObject,
+  ICard,
+  ICardCity,
+  ICardField,
+  ICardMonastery,
+  ICardRoad,
+  IGameCity,
+  IGameField,
+  IGameMonastery,
+  IGameRoad,
+  TBoard,
+  TCardObject,
+  TGameObject,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
-export function isCardCity(object: TCarcassonneCardObject): object is ICarcassonneCardCity {
-  return object.type === ECarcassonneCardObject.CITY;
+export function isCardCity(object: TCardObject): object is ICardCity {
+  return object.type === ECardObject.CITY;
 }
 
-export function isGameCity(object: TCarcassonneGameObject): object is ICarcassonneGameCity {
-  return object.type === ECarcassonneCardObject.CITY;
+export function isGameCity(object: TGameObject): object is IGameCity {
+  return object.type === ECardObject.CITY;
 }
 
-export function isCardRoad(object: TCarcassonneCardObject): object is ICarcassonneCardRoad {
-  return object.type === ECarcassonneCardObject.ROAD;
+export function isCardRoad(object: TCardObject): object is ICardRoad {
+  return object.type === ECardObject.ROAD;
 }
 
-export function isGameRoad(object: TCarcassonneGameObject): object is ICarcassonneGameRoad {
-  return object.type === ECarcassonneCardObject.ROAD;
+export function isGameRoad(object: TGameObject): object is IGameRoad {
+  return object.type === ECardObject.ROAD;
 }
 
-export function isCardField(object: TCarcassonneCardObject): object is ICarcassonneCardField {
-  return object.type === ECarcassonneCardObject.FIELD;
+export function isCardField(object: TCardObject): object is ICardField {
+  return object.type === ECardObject.FIELD;
 }
 
-export function isGameField(object: TCarcassonneGameObject): object is ICarcassonneGameField {
-  return object.type === ECarcassonneCardObject.FIELD;
+export function isGameField(object: TGameObject): object is IGameField {
+  return object.type === ECardObject.FIELD;
 }
 
-export function isCardMonastery(object: TCarcassonneCardObject): object is ICarcassonneCardMonastery {
-  return object.type === ECarcassonneCardObject.MONASTERY;
+export function isCardMonastery(object: TCardObject): object is ICardMonastery {
+  return object.type === ECardObject.MONASTERY;
 }
 
-export function isGameMonastery(object: TCarcassonneGameObject): object is ICarcassonneGameMonastery {
-  return object.type === ECarcassonneCardObject.MONASTERY;
+export function isGameMonastery(object: TGameObject): object is IGameMonastery {
+  return object.type === ECardObject.MONASTERY;
 }
 
-export function isSideObject(object: TCarcassonneCardObject): object is ICarcassonneCardCity | ICarcassonneCardRoad | ICarcassonneCardField {
+export function isSideObject(object: TCardObject): object is ICardCity | ICardRoad | ICardField {
   return isCardCity(object) || isCardRoad(object) || isCardField(object);
 }
 
-export function isValidCard(card: ICarcassonneCard): boolean {
+export function isValidCard(card: ICard): boolean {
   const getObjectsBySidePart = (sidePart: number) => (
     card.objects.filter(isSideObject).filter(({ sideParts }) => sideParts.includes(sidePart))
   );
@@ -120,7 +120,7 @@ export function getNeighborCoords(coords: ICoords, side: number): ICoords {
   };
 }
 
-export function getAttachedObjectId(coords: ICoords, sidePart: number, board: TCarcassonneBoard): number | null {
+export function getAttachedObjectId(coords: ICoords, sidePart: number, board: TBoard): number | null {
   const side = Math.floor(sidePart / 3);
   const neighborCoords = getNeighborCoords(coords, side);
   const neighborCard = board[neighborCoords.y]?.[neighborCoords.x];

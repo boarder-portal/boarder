@@ -1,4 +1,4 @@
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 import { ICoords, IPlayer } from 'common/types';
 
 export enum EMazeGameEvent {
@@ -13,7 +13,7 @@ export enum EMazeGameEvent {
   PLAYER_STOPPED = 'PLAYER_STOPPED',
 }
 
-export interface IMazeGameOptions extends ICommonGameOptions {
+export interface IMazeGameOptions extends IGameOptions {
 
 }
 

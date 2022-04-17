@@ -1,5 +1,5 @@
 import { IPlayer } from 'common/types';
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 
 export enum EPexesoGameEvent {
   GAME_INFO = 'GAME_INFO',
@@ -46,7 +46,7 @@ export type TPexesoShuffleOptions = null | {
   afterMovesCount: number;
 };
 
-export interface IPexesoGameOptions extends ICommonGameOptions {
+export interface IPexesoGameOptions extends IGameOptions {
   set: EPexesoSet;
   matchingCardsCount: number;
   differentCardsCount: number;

@@ -8,7 +8,7 @@ export enum ERoomEvent {
   START_GAME = 'START_GAME',
 }
 
-export interface ICommonGameOptions {
+export interface IGameOptions {
   playersCount: number;
 }
 

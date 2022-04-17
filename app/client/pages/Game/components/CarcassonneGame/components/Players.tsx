@@ -5,14 +5,14 @@ import map from 'lodash/map';
 import times from 'lodash/times';
 import sumBy from 'lodash/sumBy';
 
-import { ECarcassonneCityGoods, ECarcassonneMeepleType, ICarcassonnePlayer } from 'common/types/carcassonne';
+import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
 
 import Box from 'client/components/common/Box/Box';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
 
 interface IPlayersProps {
   className?: string;
-  players: ICarcassonnePlayer[];
+  players: IPlayer[];
   turnEndsAt: number | null;
 }
 
@@ -75,9 +75,9 @@ const Players: React.FC<IPlayersProps> = (props) => {
             </div>
 
             <div>
-              Пшено: {player.goods[ECarcassonneCityGoods.WHEAT]},
-              Ткань: {player.goods[ECarcassonneCityGoods.FABRIC]},
-              Вино: {player.goods[ECarcassonneCityGoods.WINE]}
+              Пшено: {player.goods[ECityGoods.WHEAT]},
+              Ткань: {player.goods[ECityGoods.FABRIC]},
+              Вино: {player.goods[ECityGoods.WINE]}
             </div>
 
             <Box flex between={2}>
@@ -86,7 +86,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
                   <Meeple
                     key={`${type}-${index}`}
                     className={b('meeple')}
-                    type={type as ECarcassonneMeepleType}
+                    type={type as EMeepleType}
                     color={player.color}
                   />
                 ))

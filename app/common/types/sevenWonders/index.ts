@@ -1,4 +1,4 @@
-import { ICommonGameOptions } from 'common/types/room';
+import { IGameOptions } from 'common/types/room';
 import { IPlayer } from 'common/types';
 import { ISevenWondersCard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersBuildCardEffect, TSevenWondersEffect } from 'common/types/sevenWonders/effects';
@@ -20,7 +20,7 @@ export enum ESevenWondersScientificSymbol {
   TABLET = 'TABLET',
 }
 
-export interface ISevenWondersGameOptions extends ICommonGameOptions {}
+export interface ISevenWondersGameOptions extends IGameOptions {}
 
 export enum ESevenWondersCity {
   RHODOS = 'RHODOS',

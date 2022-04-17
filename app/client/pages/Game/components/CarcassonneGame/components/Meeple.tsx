@@ -2,15 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { ECarcassonneMeepleType, ECarcassonnePlayerColor } from 'common/types/carcassonne';
+import { EMeepleType, EPlayerColor } from 'common/types/carcassonne';
 
 import Box from 'client/components/common/Box/Box';
 
 interface IMeepleProps {
   className?: string;
   style?: React.CSSProperties;
-  type: ECarcassonneMeepleType;
-  color: ECarcassonnePlayerColor;
+  type: EMeepleType;
+  color: EPlayerColor;
   onClick?(): void;
 }
 
