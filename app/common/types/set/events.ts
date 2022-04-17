@@ -1,10 +1,10 @@
-import { ISetCard, ISetPlayer } from 'common/types/set/index';
+import { ICard, IPlayer } from 'common/types/set/index';
 
-export interface ISetGameInfoEvent {
-  players: ISetPlayer[];
-  cards: ISetCard[];
+export interface IGameInfoEvent {
+  players: IPlayer[];
+  cards: ICard[];
 }
 
-export interface ISetSendSetEvent {
+export interface ISendSetEvent {
   cardsIds: number[];
 }

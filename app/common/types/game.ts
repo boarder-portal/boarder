@@ -6,7 +6,7 @@ import {
   ISurvivalOnlinePlayer,
 } from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
-import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
+import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
 import { ESevenWondersGameEvent, ISevenWondersGameOptions, ISevenWondersPlayer } from 'common/types/sevenWonders';
@@ -45,9 +45,9 @@ export interface IGameParams {
     player: MazeTypes.IPlayer;
   };
   [EGame.SET]: {
-    event: ESetGameEvent;
-    options: ISetGameOptions;
-    player: ISetPlayer;
+    event: SetTypes.EGameEvent;
+    options: SetTypes.IGameOptions;
+    player: SetTypes.IPlayer;
   };
   [EGame.ONITAMA]: {
     event: OnitamaTypes.EGameEvent;

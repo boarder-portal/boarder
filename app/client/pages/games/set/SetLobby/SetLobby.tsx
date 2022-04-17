@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/set';
 
-import { ISetGameOptions } from 'common/types/set';
+import { IGameOptions } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
 import Lobby from 'client/components/Lobby/Lobby';
@@ -11,7 +11,7 @@ import SetGameOptions from 'client/pages/games/set/SetLobby/components/SetGameOp
 import useLobby from 'client/hooks/useLobby';
 
 const SetLobby: React.FC = () => {
-  const [options, setOptions] = useState<ISetGameOptions>(DEFAULT_GAME_OPTIONS);
+  const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
   const {
     lobby,

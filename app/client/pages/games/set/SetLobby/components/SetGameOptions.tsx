@@ -3,14 +3,14 @@ import times from 'lodash/times';
 
 import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'common/constants/games/set';
 
-import { ISetGameOptions } from 'common/types/set';
+import { IGameOptions } from 'common/types/set';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
 
 interface ISetGameOptionsProps {
-  options: ISetGameOptions;
-  onOptionsChange(options: ISetGameOptions): void;
+  options: IGameOptions;
+  onOptionsChange(options: IGameOptions): void;
 }
 
 const SetGameOptions: React.FC<ISetGameOptionsProps> = (props) => {

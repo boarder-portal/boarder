@@ -10,17 +10,17 @@ import {
   WRONG_SET_POINTS,
 } from 'common/constants/games/set';
 
-import { IPlayer } from 'common/types';
+import { IPlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import {
-  ESetCardColor,
-  ESetCardFill,
-  ESetCardShape,
-  ESetGameEvent,
-  ISetCard,
-  ISetPlayer,
+  ECardColor,
+  ECardFill,
+  ECardShape,
+  EGameEvent,
+  ICard,
+  IPlayer,
 } from 'common/types/set';
-import { ISetGameInfoEvent, ISetSendSetEvent } from 'common/types/set/events';
+import { IGameInfoEvent, ISendSetEvent } from 'common/types/set/events';
 import { EGame } from 'common/types/game';
 
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
@@ -31,12 +31,12 @@ import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
 class SetGame extends Game<EGame.SET> {
   handlers = {
-    [ESetGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [ESetGameEvent.SEND_SET]: this.onSendSet,
-    [ESetGameEvent.SEND_NO_SET]: this.onSendNoSet,
+    [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EGameEvent.SEND_SET]: this.onSendSet,
+    [EGameEvent.SEND_NO_SET]: this.onSendNoSet,
   };
 
-  cardsStack: ISetCard[] = [];
+  cardsStack: ICard[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
   constructor(options: IGameCreateOptions<EGame.SET>) {
@@ -45,7 +45,7 @@ class SetGame extends Game<EGame.SET> {
     this.setupGame();
   }
 
-  createPlayer(roomPlayer: IPlayer): ISetPlayer {
+  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {
       ...roomPlayer,
       score: 0,
@@ -53,11 +53,11 @@ class SetGame extends Game<EGame.SET> {
   }
 
   setupGame(): void {
-    const notShuffledCardsStack: ISetCard[] = [];
+    const notShuffledCardsStack: ICard[] = [];
 
-    Object.values(ESetCardColor).forEach((color) => {
-      Object.values(ESetCardShape).forEach((shape) => {
-        Object.values(ESetCardFill).forEach((fill) => {
+    Object.values(ECardColor).forEach((color) => {
+      Object.values(ECardShape).forEach((shape) => {
+        Object.values(ECardFill).forEach((fill) => {
           times(3).forEach((countIndex) => {
             notShuffledCardsStack.push({
               id: notShuffledCardsStack.length,
@@ -75,15 +75,15 @@ class SetGame extends Game<EGame.SET> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    const data: ISetGameInfoEvent = {
+    const data: IGameInfoEvent = {
       players: this.players,
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
 
-    socket.emit(ESetGameEvent.GAME_INFO, data);
+    socket.emit(EGameEvent.GAME_INFO, data);
   }
 
-  onSendSet({ socket, data }: IGameEvent<ISetSendSetEvent>): void {
+  onSendSet({ socket, data }: IGameEvent<ISendSetEvent>): void {
     const { cardsIds } = data;
 
     const player = this.getPlayerByLogin(socket.user?.login);
@@ -154,12 +154,12 @@ class SetGame extends Game<EGame.SET> {
   }
 
   sendGameUpdate(): void {
-    const data: ISetGameInfoEvent = {
+    const data: IGameInfoEvent = {
       players: this.players,
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
 
-    this.io.emit(ESetGameEvent.GAME_INFO, data);
+    this.io.emit(EGameEvent.GAME_INFO, data);
   }
 }
 

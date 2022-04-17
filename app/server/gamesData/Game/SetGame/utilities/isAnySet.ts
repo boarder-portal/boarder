@@ -1,8 +1,8 @@
-import { ISetCard } from 'common/types/set';
+import { ICard } from 'common/types/set';
 
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 
-export default function isAnySet(cards: ISetCard[]): boolean {
+export default function isAnySet(cards: ICard[]): boolean {
   for (let i = 0; i < cards.length; i++) {
     const firstCard = cards[i];
 

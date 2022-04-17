@@ -1,6 +1,6 @@
-import { ISetGameOptions } from 'common/types/set';
+import { IGameOptions } from 'common/types/set';
 
-export const DEFAULT_GAME_OPTIONS: ISetGameOptions = {
+export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   playersCount: 2,
 };
 

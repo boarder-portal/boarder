@@ -4,8 +4,8 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import chunk from 'lodash/chunk';
 
-import { ESetGameEvent, ISetCard, ISetPlayer } from 'common/types/set';
-import { ISetGameInfoEvent, ISetSendSetEvent } from 'common/types/set/events';
+import { EGameEvent, ICard, IPlayer } from 'common/types/set';
+import { IGameInfoEvent, ISendSetEvent } from 'common/types/set/events';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
@@ -16,7 +16,7 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 interface ISetGameProps {
   io: SocketIOClient.Socket;
-  players: ISetPlayer[];
+  players: IPlayer[];
   isGameEnd: boolean;
 }
 
@@ -45,15 +45,15 @@ const Root = styled(Box)`
 const SetGame: React.FC<ISetGameProps> = (props) => {
   const { io, isGameEnd } = props;
 
-  const [cards, setCards] = useState<ISetCard[]>([]);
-  const [players, setPlayers] = useState<ISetPlayer[]>([]);
+  const [cards, setCards] = useState<ICard[]>([]);
+  const [players, setPlayers] = useState<IPlayer[]>([]);
   const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
 
-  const playerRef = useRef<ISetPlayer | null>(null);
+  const playerRef = useRef<IPlayer | null>(null);
 
   const user = useRecoilValue(userAtom);
 
-  const handleCardClick = useImmutableCallback((card: ISetCard) => {
+  const handleCardClick = useImmutableCallback((card: ICard) => {
     if (isGameEnd) {
       return;
     }
@@ -76,25 +76,25 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
       setSelectedCardsIds(updatedSelectedCardsIds);
 
       if (updatedSelectedCardsIds.size === 3) {
-        const data: ISetSendSetEvent = {
+        const data: ISendSetEvent = {
           cardsIds: [...updatedSelectedCardsIds],
         };
 
         console.log('SEND_SET', data);
 
-        io.emit(ESetGameEvent.SEND_SET, data);
+        io.emit(EGameEvent.SEND_SET, data);
       }
     }
   });
 
   const handleNoSetClick = useCallback(() => {
-    io.emit(ESetGameEvent.SEND_NO_SET);
+    io.emit(EGameEvent.SEND_NO_SET);
   }, [io]);
 
   useEffect(() => {
-    io.emit(ESetGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(ESetGameEvent.GAME_INFO, (gameInfo: ISetGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
       console.log('GAME_INFO', gameInfo);
 
       if (!user) {
@@ -113,7 +113,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
     });
 
     return () => {
-      io.off(ESetGameEvent.GAME_INFO);
+      io.off(EGameEvent.GAME_INFO);
     };
   }, [io, user]);
 

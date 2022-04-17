@@ -4,10 +4,10 @@ import io from 'socket.io-client';
 
 import { EPlayerStatus } from 'common/types';
 import { EGame, EGameEvent, IGameUpdateEvent } from 'common/types/game';
-import { IPlayer } from 'common/types/pexeso';
+import { IPlayer as IPexesoPlayer } from 'common/types/pexeso';
 import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IPlayer as IMazePlayer } from 'common/types/maze';
-import { ISetPlayer } from 'common/types/set';
+import { IPlayer as ISetPlayer } from 'common/types/set';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -64,7 +64,7 @@ const Game: React.FC = () => {
     return (
       <PexesoGame
         io={ioRef.current}
-        players={gameData.players as IPlayer[]}
+        players={gameData.players as IPexesoPlayer[]}
         isGameEnd={isGameEnd}
       />
     );

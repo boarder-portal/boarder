@@ -1,7 +1,7 @@
-import { IGameOptions } from 'common/types/room';
-import { IPlayer } from 'common/types';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { IPlayer as ICommonPlayer } from 'common/types';
 
-export enum ESetGameEvent {
+export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   SEND_SET = 'SEND_SET',
   SEND_NO_SET = 'SEND_NO_SET',
@@ -9,36 +9,36 @@ export enum ESetGameEvent {
   GAME_INFO = 'GAME_INFO',
 }
 
-export interface ISetGameOptions extends IGameOptions {
+export interface IGameOptions extends ICommonGameOptions {
 
 }
 
-export interface ISetPlayer extends IPlayer {
+export interface IPlayer extends ICommonPlayer {
   score: number;
 }
 
-export enum ESetCardColor {
+export enum ECardColor {
   RED = 'red',
   BLUE = 'blue',
   GREEN = 'green',
 }
 
-export enum ESetCardFill {
+export enum ECardFill {
   EMPTY = 'empty',
   STRIPED = 'striped',
   FILLED = 'filled',
 }
 
-export enum ESetCardShape {
+export enum ECardShape {
   WAVE = 'wave',
   OVAL = 'oval',
   RHOMBUS = 'rhombus',
 }
 
-export interface ISetCard {
+export interface ICard {
   id: number;
   count: number;
-  color: ESetCardColor;
-  fill: ESetCardFill;
-  shape: ESetCardShape;
+  color: ECardColor;
+  fill: ECardFill;
+  shape: ECardShape;
 }

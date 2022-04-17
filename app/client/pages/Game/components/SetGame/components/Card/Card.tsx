@@ -2,15 +2,15 @@ import React, { useCallback } from 'react';
 import times from 'lodash/times';
 import styled from 'styled-components';
 
-import { ISetCard } from 'common/types/set';
+import { ICard } from 'common/types/set';
 
 import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';
 import Box from 'client/components/common/Box/Box';
 
 interface ICardProps {
-  card: ISetCard;
+  card: ICard;
   isSelected: boolean;
-  onClick(card: ISetCard): void;
+  onClick(card: ICard): void;
 }
 
 const BASE_SIZE = window.innerWidth < 1000 ? 80 : 130;
