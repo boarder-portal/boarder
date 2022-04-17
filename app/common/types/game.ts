@@ -1,10 +1,6 @@
 import { IPlayer } from 'common/types';
 import * as PexesoTypes from 'common/types/pexeso';
-import {
-  ESurvivalOnlineGameEvent,
-  ISurvivalOnlineGameOptions,
-  ISurvivalOnlinePlayer,
-} from 'common/types/survivalOnline';
+import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
 import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
@@ -35,9 +31,9 @@ export interface IGameParams {
     player: PexesoTypes.IPlayer;
   };
   [EGame.SURVIVAL_ONLINE]: {
-    event: ESurvivalOnlineGameEvent;
-    options: ISurvivalOnlineGameOptions;
-    player: ISurvivalOnlinePlayer;
+    event: SurvivalOnlineTypes.EGameEvent;
+    options: SurvivalOnlineTypes.IGameOptions;
+    player: SurvivalOnlineTypes.IPlayer;
   };
   [EGame.MAZE]: {
     event: MazeTypes.EGameEvent;

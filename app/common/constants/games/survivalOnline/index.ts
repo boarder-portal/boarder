@@ -1,6 +1,6 @@
-import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
+import { IGameOptions } from 'common/types/survivalOnline';
 
-export const DEFAULT_GAME_OPTIONS: ISurvivalOnlineGameOptions = {
+export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   playersCount: 2,
 };
 

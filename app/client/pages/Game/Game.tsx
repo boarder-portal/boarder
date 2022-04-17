@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { EPlayerStatus } from 'common/types';
 import { EGame, EGameEvent, IGameUpdateEvent } from 'common/types/game';
 import { IPlayer as IPexesoPlayer } from 'common/types/pexeso';
-import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
+import { IPlayer as ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IPlayer as IMazePlayer } from 'common/types/maze';
 import { IPlayer as ISetPlayer } from 'common/types/set';
 

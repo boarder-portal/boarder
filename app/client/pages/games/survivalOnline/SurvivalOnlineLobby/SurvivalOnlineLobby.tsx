@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/survivalOnline';
 
-import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
+import { IGameOptions } from 'common/types/survivalOnline';
 import { EGame } from 'common/types/game';
 
 import Lobby from 'client/components/Lobby/Lobby';
@@ -12,7 +12,7 @@ import SurvivalOnlineGameOptions
 import useLobby from 'client/hooks/useLobby';
 
 const SurvivalOnlineLobby: React.FC = () => {
-  const [options, setOptions] = useState<ISurvivalOnlineGameOptions>(DEFAULT_GAME_OPTIONS);
+  const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
   const {
     lobby,

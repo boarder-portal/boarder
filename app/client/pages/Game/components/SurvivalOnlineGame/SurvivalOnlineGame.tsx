@@ -6,11 +6,11 @@ import { useRecoilValue } from 'recoil';
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import {
-  ESurvivalOnlineDirection,
-  ESurvivalOnlineGameEvent,
-  ISurvivalOnlineGameInfoEvent,
-  ISurvivalOnlinePlayer,
-  ISurvivalOnlineUpdateGameEvent,
+  EDirection,
+  EGameEvent,
+  IGameInfoEvent,
+  IPlayer,
+  IUpdateGameEvent,
 } from 'common/types/survivalOnline';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
@@ -22,7 +22,7 @@ import userAtom from 'client/atoms/userAtom';
 
 interface ISurvivalOnlineGameProps {
   io: SocketIOClient.Socket;
-  players: ISurvivalOnlinePlayer[];
+  players: IPlayer[];
   isGameEnd: boolean;
 }
 
@@ -43,16 +43,16 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const gameInfoRef = useRef<ISurvivalOnlineGameInfoEvent | null>(null);
-  const playerRef = useRef<ISurvivalOnlinePlayer | null>(null);
+  const gameInfoRef = useRef<IGameInfoEvent | null>(null);
+  const playerRef = useRef<IPlayer | null>(null);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const user = useRecoilValue(userAtom);
 
   useEffect(() => {
-    io.emit(ESurvivalOnlineGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(ESurvivalOnlineGameEvent.GAME_INFO, (gameInfo: ISurvivalOnlineGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
       console.log('GAME_INFO', gameInfo);
 
       gameInfoRef.current = gameInfo;
@@ -72,7 +72,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       renderMap({ context, gameInfo, player });
     });
 
-    io.on(ESurvivalOnlineGameEvent.UPDATE_GAME, ({ players, cells }: ISurvivalOnlineUpdateGameEvent) => {
+    io.on(EGameEvent.UPDATE_GAME, ({ players, cells }: IUpdateGameEvent) => {
       console.log('UPDATE_GAME', { players, cells });
 
       const context = contextRef.current;
@@ -104,8 +104,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     });
 
     return () => {
-      io.off(ESurvivalOnlineGameEvent.GAME_INFO);
-      io.off(ESurvivalOnlineGameEvent.UPDATE_GAME);
+      io.off(EGameEvent.GAME_INFO);
+      io.off(EGameEvent.UPDATE_GAME);
     };
   }, [io, user]);
 
@@ -129,14 +129,14 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     document.addEventListener('keydown', (e) => {
       if (MOVES_KEY_CODES.includes(e.key)) {
         io.emit(
-          ESurvivalOnlineGameEvent.MOVE_PLAYER,
+          EGameEvent.MOVE_PLAYER,
           e.key === 'ArrowUp' ?
-            ESurvivalOnlineDirection.UP :
+            EDirection.UP :
             e.key === 'ArrowRight' ?
-              ESurvivalOnlineDirection.RIGHT :
+              EDirection.RIGHT :
               e.key === 'ArrowDown' ?
-                ESurvivalOnlineDirection.DOWN :
-                ESurvivalOnlineDirection.LEFT,
+                EDirection.DOWN :
+                EDirection.LEFT,
         );
       }
     });

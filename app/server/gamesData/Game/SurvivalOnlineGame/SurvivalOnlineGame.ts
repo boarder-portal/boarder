@@ -1,19 +1,19 @@
 import times from 'lodash/times';
 
-import { IPlayer } from 'common/types';
+import { IPlayer as ICommonPlayer } from 'common/types';
 import {
-  ESurvivalOnlineBiome,
-  ESurvivalOnlineDirection,
-  ESurvivalOnlineGameEvent,
-  ESurvivalOnlineObject,
-  ISurvivalOnlineBaseObject,
-  ISurvivalOnlineCell,
-  ISurvivalOnlineCellWithObject,
-  ISurvivalOnlinePlayer,
-  ISurvivalOnlinePlayerObject,
-  ISurvivalOnlineZombieObject,
-  TSurvivalOnlineMap,
-  TSurvivalOnlineObject,
+  EBiome,
+  EDirection,
+  EGameEvent,
+  EObject,
+  IBaseObject,
+  ICell,
+  ICellWithObject,
+  IPlayer,
+  IPlayerObject,
+  IZombieObject,
+  TMap,
+  TObject,
 } from 'common/types/survivalOnline';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
@@ -24,11 +24,11 @@ const MAP_WIDTH = 101;
 const MAP_HEIGHT = 101;
 
 const EDGE_CELLS: { x: number; y: number }[] = [];
-const DIRECTIONS_DIFFS: Record<ESurvivalOnlineDirection, { x: number; y: number }> = {
-  [ESurvivalOnlineDirection.UP]: { x: 0, y: -1 },
-  [ESurvivalOnlineDirection.DOWN]: { x: 0, y: +1 },
-  [ESurvivalOnlineDirection.LEFT]: { x: -1, y: 0 },
-  [ESurvivalOnlineDirection.RIGHT]: { x: +1, y: 0 },
+const DIRECTIONS_DIFFS: Record<EDirection, { x: number; y: number }> = {
+  [EDirection.UP]: { x: 0, y: -1 },
+  [EDirection.DOWN]: { x: 0, y: +1 },
+  [EDirection.LEFT]: { x: -1, y: 0 },
+  [EDirection.RIGHT]: { x: +1, y: 0 },
 };
 
 for (let x = 0; x < MAP_WIDTH; x++) {
@@ -53,10 +53,10 @@ const ZOMBIES_MOVE_INTERVAL = 500;
 const ZOMBIES_GENERATE_INTERVAL = 30 * 1000;
 
 class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
-  static containsObject<Obj extends TSurvivalOnlineObject>(
-    cell: ISurvivalOnlineCell,
+  static containsObject<Obj extends TObject>(
+    cell: ICell,
     type: Obj['type'],
-  ): cell is ISurvivalOnlineCellWithObject<Obj> {
+  ): cell is ICellWithObject<Obj> {
     return (
       !!cell.object
       && cell.object.type === type
@@ -64,21 +64,21 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
   }
 
   handlers = {
-    [ESurvivalOnlineGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [ESurvivalOnlineGameEvent.MOVE_PLAYER]: this.onMovePlayer,
+    [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EGameEvent.MOVE_PLAYER]: this.onMovePlayer,
   };
 
-  map: TSurvivalOnlineMap = [];
-  baseCell: ISurvivalOnlineCellWithObject<ISurvivalOnlineBaseObject> = {
+  map: TMap = [];
+  baseCell: ICellWithObject<IBaseObject> = {
     x: Math.floor(MAP_WIDTH / 2),
     y: Math.floor(MAP_HEIGHT / 2),
-    biome: ESurvivalOnlineBiome.GRASS,
+    biome: EBiome.GRASS,
     object: {
-      type: ESurvivalOnlineObject.BASE,
+      type: EObject.BASE,
       hp: 100,
     },
   };
-  zombies = new Set<{ cell: ISurvivalOnlineCellWithObject<ISurvivalOnlineZombieObject> }>();
+  zombies = new Set<{ cell: ICellWithObject<IZombieObject> }>();
 
   generateZombiesIterationInterval?: NodeJS.Timer;
   moveZombiesIterationInterval?: NodeJS.Timer;
@@ -90,22 +90,22 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     this.createWorld();
   }
 
-  createPlayer(roomPlayer: IPlayer): ISurvivalOnlinePlayer {
+  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {
       ...roomPlayer,
       x: 0,
       y: 0,
       object: {
-        type: ESurvivalOnlineObject.PLAYER,
+        type: EObject.PLAYER,
         login: roomPlayer.login,
         hp: 100,
-        direction: ESurvivalOnlineDirection.DOWN,
+        direction: EDirection.DOWN,
         isMoving: false,
       },
     };
   }
 
-  createWorld() {
+  createWorld(): void {
     times(MAP_HEIGHT, (y) => {
       this.map.push([]);
 
@@ -113,7 +113,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         this.map[y].push({
           x,
           y,
-          biome: ESurvivalOnlineBiome.GRASS,
+          biome: EBiome.GRASS,
           object: null,
         });
       });
@@ -141,7 +141,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
       while (true) {
         if (
           this.placeObjectRandomly({
-            type: ESurvivalOnlineObject.TREE,
+            type: EObject.TREE,
             hp: 100,
           })
         ) {
@@ -162,7 +162,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     ) as any;
   }
 
-  generateZombies(count: number) {
+  generateZombies(count: number): void {
     for (let i = 0; i < count; i++) {
       if (EDGE_CELLS.every(({ x, y }) => this.map[y][x].object)) {
         break;
@@ -173,11 +173,11 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         const cell = this.map[y][x];
 
         if (this.placeObject({
-          type: ESurvivalOnlineObject.ZOMBIE,
+          type: EObject.ZOMBIE,
           hp: 100,
-          direction: ESurvivalOnlineDirection.DOWN,
+          direction: EDirection.DOWN,
         }, cell)) {
-          this.zombies.add({ cell: cell as ISurvivalOnlineCellWithObject<ISurvivalOnlineZombieObject> });
+          this.zombies.add({ cell: cell as ICellWithObject<IZombieObject> });
 
           break;
         }
@@ -186,26 +186,26 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
   }
 
   getCellInDirection(
-    fromCell: ISurvivalOnlineCell,
-    direction: ESurvivalOnlineDirection,
-  ): ISurvivalOnlineCell | null {
+    fromCell: ICell,
+    direction: EDirection,
+  ): ICell | null {
     const { x: dx, y: dy } = DIRECTIONS_DIFFS[direction];
 
     return this.map[fromCell.y + dy]?.[fromCell.x + dx] || null;
   }
 
-  moveObjectInDirection<Obj extends TSurvivalOnlineObject & { direction: ESurvivalOnlineDirection }>(
-    cell: ISurvivalOnlineCellWithObject<Obj>,
-    direction: ESurvivalOnlineDirection,
-  ): [] | [ISurvivalOnlineCellWithObject<Obj>] | [ISurvivalOnlineCell, ISurvivalOnlineCellWithObject<Obj>] {
+  moveObjectInDirection<Obj extends TObject & { direction: EDirection }>(
+    cell: ICellWithObject<Obj>,
+    direction: EDirection,
+  ): [] | [ICellWithObject<Obj>] | [ICell, ICellWithObject<Obj>] {
     const cellInDirection = this.getCellInDirection(cell, direction);
 
     if (cellInDirection && !cellInDirection.object) {
       cell.object.direction = direction;
       cellInDirection.object = cell.object;
-      (cell as ISurvivalOnlineCell).object = null;
+      (cell as ICell).object = null;
 
-      if (SurvivalOnlineGame.containsObject<ISurvivalOnlinePlayerObject>(cellInDirection, ESurvivalOnlineObject.PLAYER)) {
+      if (SurvivalOnlineGame.containsObject<IPlayerObject>(cellInDirection, EObject.PLAYER)) {
         const player = this.getPlayerByLogin(cellInDirection.object.login);
 
         if (player) {
@@ -214,7 +214,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         }
       }
 
-      return [cell, cellInDirection as ISurvivalOnlineCellWithObject<Obj>];
+      return [cell, cellInDirection as ICellWithObject<Obj>];
     }
 
     if (cell.object.direction !== direction) {
@@ -226,8 +226,8 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     return [];
   }
 
-  moveZombies() {
-    const cellsToUpdate: ISurvivalOnlineCell[] = [];
+  moveZombies(): void {
+    const cellsToUpdate: ICell[] = [];
 
     for (const zombie of this.zombies) {
       let closestPlayer = this.players[0];
@@ -242,21 +242,21 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
         }
       });
 
-      const possibleDirections: ESurvivalOnlineDirection[] = [];
+      const possibleDirections: EDirection[] = [];
 
       if (zombie.cell.x !== closestPlayer.x) {
         possibleDirections.push(
           zombie.cell.x < closestPlayer.x
-            ? ESurvivalOnlineDirection.RIGHT
-            : ESurvivalOnlineDirection.LEFT,
+            ? EDirection.RIGHT
+            : EDirection.LEFT,
         );
       }
 
       if (zombie.cell.y !== closestPlayer.y) {
         possibleDirections.push(
           zombie.cell.y < closestPlayer.y
-            ? ESurvivalOnlineDirection.DOWN
-            : ESurvivalOnlineDirection.UP,
+            ? EDirection.DOWN
+            : EDirection.UP,
         );
       }
 
@@ -273,14 +273,14 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     this.sendGameUpdate(cellsToUpdate, false);
   }
 
-  onGetGameInfo({ socket }: IGameEvent) {
-    socket.emit(ESurvivalOnlineGameEvent.GAME_INFO, {
+  onGetGameInfo({ socket }: IGameEvent): void {
+    socket.emit(EGameEvent.GAME_INFO, {
       map: this.map,
       players: this.players,
     });
   }
 
-  onMovePlayer({ socket, data: direction }: IGameEvent<ESurvivalOnlineDirection>) {
+  onMovePlayer({ socket, data: direction }: IGameEvent<EDirection>): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
@@ -290,7 +290,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     const playerCell = this.map[player.y][player.x];
 
     if (
-      !SurvivalOnlineGame.containsObject<ISurvivalOnlinePlayerObject>(playerCell, ESurvivalOnlineObject.PLAYER)
+      !SurvivalOnlineGame.containsObject<IPlayerObject>(playerCell, EObject.PLAYER)
       || playerCell.object.login !== player.login
     ) {
       return;
@@ -299,7 +299,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     this.sendGameUpdate(this.moveObjectInDirection(playerCell, direction), true);
   }
 
-  placeObject(object: TSurvivalOnlineObject, cell: ISurvivalOnlineCell): boolean {
+  placeObject(object: TObject, cell: ICell): boolean {
     if (this.map[cell.y][cell.x].object) {
       return false;
     }
@@ -309,7 +309,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     return true;
   }
 
-  placeObjectRandomly(object: TSurvivalOnlineObject): boolean {
+  placeObjectRandomly(object: TObject): boolean {
     const randomIndex = Math.floor(Math.random() * MAP_WIDTH * MAP_HEIGHT);
     const y = Math.floor(randomIndex / MAP_WIDTH);
     const x = randomIndex % MAP_WIDTH;
@@ -317,16 +317,16 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     return this.placeObject(object, this.map[y][x]);
   }
 
-  sendGameUpdate(cells: ISurvivalOnlineCell[], withPlayers: boolean) {
+  sendGameUpdate(cells: ICell[], withPlayers: boolean): void {
     if (cells.length) {
-      this.io.emit(ESurvivalOnlineGameEvent.UPDATE_GAME, {
+      this.io.emit(EGameEvent.UPDATE_GAME, {
         cells,
         players: withPlayers ? this.players : null,
       });
     }
   }
 
-  deleteGame() {
+  deleteGame(): void {
     if (this.moveZombiesIterationInterval) {
       clearInterval(this.moveZombiesIterationInterval);
     }

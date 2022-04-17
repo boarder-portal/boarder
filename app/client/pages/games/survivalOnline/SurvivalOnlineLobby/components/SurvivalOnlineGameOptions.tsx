@@ -3,14 +3,14 @@ import times from 'lodash/times';
 
 import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'common/constants/games/survivalOnline';
 
-import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
+import { IGameOptions } from 'common/types/survivalOnline';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
 
 interface ISurvivalOnlineGameOptionsProps {
-  options: ISurvivalOnlineGameOptions;
-  onOptionsChange(options: ISurvivalOnlineGameOptions): void;
+  options: IGameOptions;
+  onOptionsChange(options: IGameOptions): void;
 }
 
 const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (props) => {
