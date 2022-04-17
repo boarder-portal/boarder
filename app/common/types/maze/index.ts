@@ -1,7 +1,7 @@
-import { IGameOptions } from 'common/types/room';
-import { ICoords, IPlayer } from 'common/types';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
 
-export enum EMazeGameEvent {
+export enum EGameEvent {
   // client events
   GET_GAME_INFO = 'GET_GAME_INFO',
   MOVE_PLAYER = 'MOVE_PLAYER',
@@ -13,40 +13,40 @@ export enum EMazeGameEvent {
   PLAYER_STOPPED = 'PLAYER_STOPPED',
 }
 
-export interface IMazeGameOptions extends IGameOptions {
+export interface IGameOptions extends ICommonGameOptions {
 
 }
 
-export enum EMazeMoveEvent {
+export enum EMoveEvent {
   MOVE = 'MOVE',
   STOP = 'STOP',
 }
 
-export interface IMazeMoveMoveEvent {
-  type: EMazeMoveEvent.MOVE;
+export interface IMoveMoveEvent {
+  type: EMoveEvent.MOVE;
   directionAngle: number;
   timestamp: number;
 }
 
-export interface IMazeMoveStopEvent {
-  type: EMazeMoveEvent.STOP;
+export interface IMoveStopEvent {
+  type: EMoveEvent.STOP;
   timestamp: number;
 }
 
-export type TMazeMoveEvent = IMazeMoveMoveEvent | IMazeMoveStopEvent;
+export type TMoveEvent = IMoveMoveEvent | IMoveStopEvent;
 
-export enum EMazePlayerSide {
+export enum EPlayerSide {
   TOP = 'TOP',
   BOTTOM = 'BOTTOM',
 }
 
-export interface IMazePlayer extends IPlayer {
-  side: EMazePlayerSide;
+export interface IPlayer extends ICommonPlayer {
+  side: EPlayerSide;
   x: number;
   y: number;
   directionAngle: number;
   isMoving: boolean;
-  moveEventsQueue: TMazeMoveEvent[];
+  moveEventsQueue: TMoveEvent[];
   lastActionTimestamp: number;
 }
 
@@ -57,17 +57,17 @@ export enum ESide {
   LEFT = 'LEFT',
 }
 
-export interface IMazeWall {
+export interface IWall {
   from: ICoords;
   to: ICoords;
 }
 
-export interface IMazeGameInfo {
-  walls: IMazeWall[];
-  players: IMazePlayer[];
+export interface IGameInfo {
+  walls: IWall[];
+  players: IPlayer[];
 }
 
-export interface IMazePlayerMoveEvent {
+export interface IPlayerMoveEvent {
   login: string;
   x: number;
   y: number;

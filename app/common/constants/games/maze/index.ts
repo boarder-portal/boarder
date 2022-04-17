@@ -1,6 +1,6 @@
-import { IMazeGameOptions } from 'common/types/maze';
+import { IGameOptions } from 'common/types/maze';
 
-export const DEFAULT_GAME_OPTIONS: IMazeGameOptions = {
+export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   playersCount: 2,
 };
 

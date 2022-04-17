@@ -1,17 +1,17 @@
 import { MAZE_HEIGHT, MAZE_WIDTH } from 'common/constants/games/maze';
 
-import { ICoords, IPlayer } from 'common/types';
+import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import {
-  EMazeGameEvent,
-  EMazeMoveEvent,
-  EMazePlayerSide,
+  EGameEvent,
+  EMoveEvent,
+  EPlayerSide,
   ESide,
-  IMazeGameInfo,
-  IMazePlayer,
-  IMazePlayerMoveEvent,
-  IMazeWall,
-  TMazeMoveEvent,
+  IGameInfo,
+  IPlayer,
+  IPlayerMoveEvent,
+  IWall,
+  TMoveEvent,
 } from 'common/types/maze';
 import { EGame } from 'common/types/game';
 
@@ -28,11 +28,11 @@ const BASE_PLAYER_SPEED = 3;
 
 class MazeGame extends Game<EGame.MAZE> {
   handlers = {
-    [EMazeGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [EMazeGameEvent.MOVE_PLAYER]: this.onMovePlayer,
-    [EMazeGameEvent.STOP_PLAYER]: this.onStopPlayer,
+    [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EGameEvent.MOVE_PLAYER]: this.onMovePlayer,
+    [EGameEvent.STOP_PLAYER]: this.onStopPlayer,
   };
-  walls: IMazeWall[] = [];
+  walls: IWall[] = [];
   movePlayersInterval?: NodeJS.Timer;
 
   constructor(options: IGameCreateOptions<EGame.MAZE>) {
@@ -130,12 +130,12 @@ class MazeGame extends Game<EGame.MAZE> {
     this.movePlayersInterval = setInterval(() => this.movePlayers(), MOVE_PLAYERS_INTERVAL) as any;
   }
 
-  createPlayer(roomPlayer: IPlayer, index: number): IMazePlayer {
+  createPlayer(roomPlayer: ICommonPlayer, index: number): IPlayer {
     const isTopPlayer = index === 0;
 
     return {
       ...roomPlayer,
-      side: isTopPlayer ? EMazePlayerSide.TOP : EMazePlayerSide.BOTTOM,
+      side: isTopPlayer ? EPlayerSide.TOP : EPlayerSide.BOTTOM,
       x: isTopPlayer ? 0.5 : MAZE_WIDTH - 0.5,
       y: isTopPlayer ? 0.5 : MAZE_HEIGHT - 0.5,
       directionAngle: isTopPlayer ? Math.PI / 2 : Math.PI * 3 / 2,
@@ -149,11 +149,11 @@ class MazeGame extends Game<EGame.MAZE> {
     const now = Date.now();
 
     this.players.forEach((player) => {
-      const moveEventsQueue: TMazeMoveEvent[] = [];
+      const moveEventsQueue: TMoveEvent[] = [];
 
       if (player.isMoving) {
         moveEventsQueue.push({
-          type: EMazeMoveEvent.MOVE,
+          type: EMoveEvent.MOVE,
           directionAngle: player.directionAngle,
           timestamp: player.lastActionTimestamp,
         });
@@ -167,13 +167,13 @@ class MazeGame extends Game<EGame.MAZE> {
         const nextTimestamp = i === moveEventsQueue.length - 1
           ? now
           : moveEventsQueue[i + 1].timestamp;
-        let isMoving = moveEvent.type === EMazeMoveEvent.MOVE;
+        let isMoving = moveEvent.type === EMoveEvent.MOVE;
 
-        if (moveEvent.type === EMazeMoveEvent.MOVE) {
+        if (moveEvent.type === EMoveEvent.MOVE) {
           const duration = nextTimestamp - moveEvent.timestamp;
           const distance = speed * duration / 1000;
-          const collidingWalls: IMazeWall[] = [];
-          const wallsToPossiblyCollide: IMazeWall[] = [];
+          const collidingWalls: IWall[] = [];
+          const wallsToPossiblyCollide: IWall[] = [];
 
           // find current colliding walls and walls that could possibly collide during tick
           this.walls.forEach((wall) => {
@@ -224,14 +224,14 @@ class MazeGame extends Game<EGame.MAZE> {
         player.lastActionTimestamp = nextTimestamp;
       }
 
-      const moveEvent: IMazePlayerMoveEvent = {
+      const moveEvent: IPlayerMoveEvent = {
         login: player.login,
         x: player.x,
         y: player.y,
       };
 
       if (player.isMoving || player.moveEventsQueue.length) {
-        this.io.emit(EMazeGameEvent.PLAYER_MOVED, moveEvent);
+        this.io.emit(EGameEvent.PLAYER_MOVED, moveEvent);
       }
 
       player.moveEventsQueue = [];
@@ -239,19 +239,19 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    const gameInfo: IMazeGameInfo = {
+    const gameInfo: IGameInfo = {
       walls: this.walls,
       players: this.players,
     };
 
-    socket.emit(EMazeGameEvent.GAME_INFO, gameInfo);
+    socket.emit(EGameEvent.GAME_INFO, gameInfo);
   }
 
   onMovePlayer({ socket, data: angle }: IGameEvent<number>): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
-      type: EMazeMoveEvent.MOVE,
+      type: EMoveEvent.MOVE,
       directionAngle: angle,
       timestamp: Date.now(),
     });
@@ -261,12 +261,12 @@ class MazeGame extends Game<EGame.MAZE> {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     player?.moveEventsQueue.push({
-      type: EMazeMoveEvent.STOP,
+      type: EMoveEvent.STOP,
       timestamp: Date.now(),
     });
   }
 
-  removeWall(wall: IMazeWall): void {
+  removeWall(wall: IWall): void {
     const wallIndex = this.walls.findIndex(({ from, to }) => (
       equalsCoords(wall.from, from)
       && equalsCoords(wall.to, to)

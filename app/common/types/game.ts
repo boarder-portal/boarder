@@ -5,7 +5,7 @@ import {
   ISurvivalOnlineGameOptions,
   ISurvivalOnlinePlayer,
 } from 'common/types/survivalOnline';
-import { EMazeGameEvent, IMazeGameOptions, IMazePlayer } from 'common/types/maze';
+import * as MazeTypes from 'common/types/maze';
 import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
 import { EOnitamaGameEvent, IOnitamaGameOptions, IOnitamaPlayer } from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
@@ -40,9 +40,9 @@ export interface IGameParams {
     player: ISurvivalOnlinePlayer;
   };
   [EGame.MAZE]: {
-    event: EMazeGameEvent;
-    options: IMazeGameOptions;
-    player: IMazePlayer;
+    event: MazeTypes.EGameEvent;
+    options: MazeTypes.IGameOptions;
+    player: MazeTypes.IPlayer;
   };
   [EGame.SET]: {
     event: ESetGameEvent;

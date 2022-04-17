@@ -6,7 +6,7 @@ import { EPlayerStatus } from 'common/types';
 import { EGame, EGameEvent, IGameUpdateEvent } from 'common/types/game';
 import { IPexesoPlayer } from 'common/types/pexeso';
 import { ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
-import { IMazePlayer } from 'common/types/maze';
+import { IPlayer as IMazePlayer } from 'common/types/maze';
 import { ISetPlayer } from 'common/types/set';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';

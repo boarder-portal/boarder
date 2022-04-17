@@ -11,13 +11,13 @@ import {
 } from 'common/constants/games/maze';
 
 import {
-  EMazeGameEvent,
-  EMazePlayerSide,
+  EGameEvent,
+  EPlayerSide,
   ESide,
-  IMazeGameInfo,
-  IMazePlayer,
-  IMazePlayerMoveEvent,
-  IMazeWall,
+  IGameInfo,
+  IPlayer,
+  IPlayerMoveEvent,
+  IWall,
 } from 'common/types/maze';
 
 import Vector from 'common/utilities/Vector';
@@ -29,7 +29,7 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 
 interface IMazeGameProps {
   io: SocketIOClient.Socket;
-  players: IMazePlayer[];
+  players: IPlayer[];
   isGameEnd: boolean;
 }
 
@@ -47,9 +47,9 @@ const Root = styled(Box)`
   }
 `;
 
-const PLAYER_COLORS: Record<EMazePlayerSide, string> = {
-  [EMazePlayerSide.TOP]: '#00f',
-  [EMazePlayerSide.BOTTOM]: '#f00',
+const PLAYER_COLORS: Record<EPlayerSide, string> = {
+  [EPlayerSide.TOP]: '#00f',
+  [EPlayerSide.BOTTOM]: '#f00',
 };
 
 const KEY_CODE_DIRECTIONS: Partial<Record<string, ESide>> = {
@@ -86,7 +86,7 @@ const getDirectionAngle = (directions: ESide[]): number | null => {
   return new Vector({ x: xProjection, y: yProjection }).getAngle();
 };
 
-const getPlayerElementProps = (player: IMazePlayer): { x: number; y: number } => {
+const getPlayerElementProps = (player: IPlayer): { x: number; y: number } => {
   return {
     x: player.x * CELL_SIZE - PLAYER_SIZE / 2,
     y: player.y * CELL_SIZE - PLAYER_SIZE / 2,
@@ -100,11 +100,11 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   } = props;
 
   const currentDirections = useRef<ESide[]>([]);
-  const players = useRef<IMazePlayer[]>([]);
+  const players = useRef<IPlayer[]>([]);
 
-  const [walls, setWalls] = useState<IMazeWall[] | null>(null);
+  const [walls, setWalls] = useState<IWall[] | null>(null);
 
-  const renderPlayer = (player: IMazePlayer) => {
+  const renderPlayer = (player: IPlayer) => {
     const playerElement = document.getElementById(`player-${player.side}`);
 
     if (playerElement && playerElement instanceof SVGRectElement) {
@@ -116,9 +116,9 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   };
 
   useEffect(() => {
-    io.emit(EMazeGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EMazeGameEvent.GAME_INFO, (mazeGameInfo: IMazeGameInfo) => {
+    io.on(EGameEvent.GAME_INFO, (mazeGameInfo: IGameInfo) => {
       players.current = mazeGameInfo.players;
 
       players.current.forEach(renderPlayer);
@@ -126,7 +126,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
       setWalls(mazeGameInfo.walls);
     });
 
-    io.on(EMazeGameEvent.PLAYER_MOVED, (moveEvent: IMazePlayerMoveEvent) => {
+    io.on(EGameEvent.PLAYER_MOVED, (moveEvent: IPlayerMoveEvent) => {
       const player = players.current.find(
         ({ login }) => login === moveEvent.login,
       );
@@ -142,8 +142,8 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     });
 
     return () => {
-      io.off(EMazeGameEvent.GAME_INFO);
-      io.off(EMazeGameEvent.PLAYER_MOVED);
+      io.off(EGameEvent.GAME_INFO);
+      io.off(EGameEvent.PLAYER_MOVED);
     };
   }, [io]);
 
@@ -165,7 +165,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     const newDirection = getDirectionAngle(currentDirections.current);
 
     if (newDirection !== null) {
-      io.emit(EMazeGameEvent.MOVE_PLAYER, newDirection);
+      io.emit(EGameEvent.MOVE_PLAYER, newDirection);
     }
   });
 
@@ -187,9 +187,9 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     const newDirection = getDirectionAngle(currentDirections.current);
 
     if (newDirection === null) {
-      io.emit(EMazeGameEvent.STOP_PLAYER);
+      io.emit(EGameEvent.STOP_PLAYER);
     } else {
-      io.emit(EMazeGameEvent.MOVE_PLAYER, newDirection);
+      io.emit(EGameEvent.MOVE_PLAYER, newDirection);
     }
   });
 
