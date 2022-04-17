@@ -6,13 +6,13 @@ import { useRecoilValue } from 'recoil';
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import {
-  EOnitamaCardType,
-  EOnitamaGameEvent,
-  EOnitamaPlayerColor,
-  TOnitamaBoard,
-  IOnitamaGameInfoEvent,
-  IOnitamaMovePieceEvent,
-  IOnitamaPlayer,
+  ECardType,
+  EGameEvent,
+  EPlayerColor,
+  IGameInfoEvent,
+  IMovePieceEvent,
+  IPlayer,
+  TBoard,
 } from 'common/types/onitama';
 import { ICoords } from 'common/types';
 
@@ -83,12 +83,12 @@ const Root = styled(Box)`
 
 const getLegalMoves = (
   from: ICoords,
-  card: EOnitamaCardType,
-  board: TOnitamaBoard,
-  player: IOnitamaPlayer,
+  card: ECardType,
+  board: TBoard,
+  player: IPlayer,
 ): ICoords[] => {
   const cells: ICoords[] = [];
-  const isFlipped = player.color === EOnitamaPlayerColor.RED;
+  const isFlipped = player.color === EPlayerColor.RED;
 
   ALL_CARDS[card].forEach(([y, x]) => {
     const toCell: ICoords = {
@@ -113,16 +113,16 @@ const getLegalMoves = (
 const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const { io, isGameEnd } = props;
 
-  const [board, setBoard] = useState<TOnitamaBoard>([]);
-  const [players, setPlayers] = useState<IOnitamaPlayer[]>([]);
-  const [fifthCard, setFifthCard] = useState<EOnitamaCardType>(EOnitamaCardType.TIGER);
+  const [board, setBoard] = useState<TBoard>([]);
+  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [fifthCard, setFifthCard] = useState<ECardType>(ECardType.TIGER);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [selectedFrom, setSelectedFrom] = useState<ICoords | null>(null);
   const [legalMoves, setLegalMoves] = useState<ICoords[]>([]);
-  const [player, setPlayer] = useState<IOnitamaPlayer | null>(null);
+  const [player, setPlayer] = useState<IPlayer | null>(null);
 
   const user = useRecoilValue(userAtom);
-  const isFlipped = player?.color === EOnitamaPlayerColor.RED;
+  const isFlipped = player?.color === EPlayerColor.RED;
 
   const handleCellClick = (cell: ICoords) => {
     if (!player || !player.isActive) {
@@ -143,17 +143,17 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
         ));
       }
     } else if (selectedFrom && legalMoves.some(equalsCoordsCb(cell))) {
-      const movePieceEvent: IOnitamaMovePieceEvent = {
+      const movePieceEvent: IMovePieceEvent = {
         from: selectedFrom,
         to: cell,
         cardIndex: selectedCardIndex,
       };
 
-      io.emit(EOnitamaGameEvent.MOVE_PIECE, movePieceEvent);
+      io.emit(EGameEvent.MOVE_PIECE, movePieceEvent);
     }
   };
 
-  const handleCardClick = useCallback((card: EOnitamaCardType) => {
+  const handleCardClick = useCallback((card: ECardType) => {
     if (player?.isActive) {
       const selectedCardIndex = player.cards.indexOf(card);
 
@@ -171,9 +171,9 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   }, [board, player, selectedFrom]);
 
   useEffect(() => {
-    io.emit(EOnitamaGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EOnitamaGameEvent.GAME_INFO, (gameInfo: IOnitamaGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
       if (!user) {
         return;
       }
@@ -190,7 +190,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
     });
 
     return () => {
-      io.off(EOnitamaGameEvent.GAME_INFO);
+      io.off(EGameEvent.GAME_INFO);
     };
   }, [io, user]);
 

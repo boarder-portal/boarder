@@ -7,7 +7,7 @@ import {
 } from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
 import { ESetGameEvent, ISetGameOptions, ISetPlayer } from 'common/types/set';
-import { EOnitamaGameEvent, IOnitamaGameOptions, IOnitamaPlayer } from 'common/types/onitama';
+import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
 import { ESevenWondersGameEvent, ISevenWondersGameOptions, ISevenWondersPlayer } from 'common/types/sevenWonders';
 
@@ -50,9 +50,9 @@ export interface IGameParams {
     player: ISetPlayer;
   };
   [EGame.ONITAMA]: {
-    event: EOnitamaGameEvent;
-    options: IOnitamaGameOptions;
-    player: IOnitamaPlayer;
+    event: OnitamaTypes.EGameEvent;
+    options: OnitamaTypes.IGameOptions;
+    player: OnitamaTypes.IPlayer;
   };
   [EGame.CARCASSONNE]: {
     event: CarcassonneTypes.EGameEvent;

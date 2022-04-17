@@ -5,15 +5,15 @@ import styled from 'styled-components';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import { EOnitamaCardType } from 'common/types/onitama';
+import { ECardType } from 'common/types/onitama';
 
 import Box from 'client/components/common/Box/Box';
 
 interface IOnitamaCardProps {
-  card: EOnitamaCardType;
+  card: ECardType;
   isFlipped: boolean;
   isSelected: boolean;
-  onClick?(card: EOnitamaCardType): void;
+  onClick?(card: ECardType): void;
 }
 
 const b = block('OnitamaCard');

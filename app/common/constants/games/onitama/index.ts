@@ -1,90 +1,90 @@
-import { EOnitamaCardType, IOnitamaGameOptions } from 'common/types/onitama';
+import { ECardType, IGameOptions } from 'common/types/onitama';
 
-export const DEFAULT_GAME_OPTIONS: IOnitamaGameOptions = {
+export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   playersCount: 2,
 };
 
-export const ALL_CARDS: Record<EOnitamaCardType, number[][]> = {
-  [EOnitamaCardType.TIGER]: [
+export const ALL_CARDS: Record<ECardType, number[][]> = {
+  [ECardType.TIGER]: [
     [+2, 0],
     [-1, 0],
   ],
-  [EOnitamaCardType.DRAGON]: [
+  [ECardType.DRAGON]: [
     [+1, -2],
     [+1, +2],
     [-1, -1],
     [-1, +1],
   ],
-  [EOnitamaCardType.FROG]: [
+  [ECardType.FROG]: [
     [0, -2],
     [+1, -1],
     [-1, +1],
   ],
-  [EOnitamaCardType.RABBIT]: [
+  [ECardType.RABBIT]: [
     [0, +2],
     [+1, +1],
     [-1, -1],
   ],
-  [EOnitamaCardType.CRAB]: [
+  [ECardType.CRAB]: [
     [0, -2],
     [+1, 0],
     [0, +2],
   ],
-  [EOnitamaCardType.ELEPHANT]: [
+  [ECardType.ELEPHANT]: [
     [+1, -1],
     [+1, +1],
     [0, -1],
     [0, +1],
   ],
-  [EOnitamaCardType.GOOSE]: [
+  [ECardType.GOOSE]: [
     [+1, -1],
     [0, -1],
     [0, +1],
     [-1, +1],
   ],
-  [EOnitamaCardType.ROOSTER]: [
+  [ECardType.ROOSTER]: [
     [+1, +1],
     [0, +1],
     [0, -1],
     [-1, -1],
   ],
-  [EOnitamaCardType.MONKEY]: [
+  [ECardType.MONKEY]: [
     [+1, -1],
     [+1, +1],
     [-1, +1],
     [-1, -1],
   ],
-  [EOnitamaCardType.MANTIS]: [
+  [ECardType.MANTIS]: [
     [+1, -1],
     [+1, +1],
     [-1, 0],
   ],
-  [EOnitamaCardType.HORSE]: [
+  [ECardType.HORSE]: [
     [+1, 0],
     [0, -1],
     [-1, 0],
   ],
-  [EOnitamaCardType.OX]: [
+  [ECardType.OX]: [
     [+1, 0],
     [0, +1],
     [-1, 0],
   ],
-  [EOnitamaCardType.CRANE]: [
+  [ECardType.CRANE]: [
     [-1, -1],
     [-1, +1],
     [+1, 0],
   ],
-  [EOnitamaCardType.BOAR]: [
+  [ECardType.BOAR]: [
     [+1, 0],
     [0, -1],
     [0, +1],
   ],
-  [EOnitamaCardType.EEL]: [
+  [ECardType.EEL]: [
     [+1, -1],
     [0, +1],
     [-1, -1],
   ],
-  [EOnitamaCardType.COBRA]: [
+  [ECardType.COBRA]: [
     [+1, +1],
     [0, -1],
     [-1, +1],

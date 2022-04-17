@@ -2,15 +2,15 @@ import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
 import {
-  EOnitamaCardType,
-  EOnitamaGameEvent,
-  EOnitamaPlayerColor,
-  TOnitamaBoard,
-  IOnitamaGameInfoEvent,
-  IOnitamaMovePieceEvent,
-  IOnitamaPlayer,
+  ECardType,
+  EGameEvent,
+  EPlayerColor,
+  IGameInfoEvent,
+  IMovePieceEvent,
+  IPlayer,
+  TBoard,
 } from 'common/types/onitama';
-import { IPlayer } from 'common/types';
+import { IPlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 
@@ -18,22 +18,22 @@ import { equalsCoords } from 'common/utilities/coords';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
-const ALL_CARDS = Object.values(EOnitamaCardType);
+const ALL_CARDS = Object.values(ECardType);
 
 class OnitamaGame extends Game<EGame.ONITAMA> {
   handlers = {
-    [EOnitamaGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [EOnitamaGameEvent.MOVE_PIECE]: this.onMovePiece,
+    [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EGameEvent.MOVE_PIECE]: this.onMovePiece,
   };
 
-  board: TOnitamaBoard = [
-    times(5, (index) => ({ color: EOnitamaPlayerColor.BLUE, isMaster: index === 2 })),
+  board: TBoard = [
+    times(5, (index) => ({ color: EPlayerColor.BLUE, isMaster: index === 2 })),
     times(5, () => null),
     times(5, () => null),
     times(5, () => null),
-    times(5, (index) => ({ color: EOnitamaPlayerColor.RED, isMaster: index === 2 })),
+    times(5, (index) => ({ color: EPlayerColor.RED, isMaster: index === 2 })),
   ];
-  fifthCard = EOnitamaCardType.TIGER;
+  fifthCard = ECardType.TIGER;
 
   constructor(options: IGameCreateOptions<EGame.ONITAMA>) {
     super(options);
@@ -41,7 +41,7 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
     this.createGameInfo();
   }
 
-  createGameInfo() {
+  createGameInfo(): void {
     let index = 0;
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];
@@ -55,29 +55,29 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
     this.fifthCard = getCard();
 
     this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
-    this.players[1].color = EOnitamaPlayerColor.RED;
+    this.players[1].color = EPlayerColor.RED;
   }
 
-  createPlayer(roomPlayer: IPlayer): IOnitamaPlayer {
+  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {
       ...roomPlayer,
       isActive: false,
       cards: [],
-      color: EOnitamaPlayerColor.BLUE,
+      color: EPlayerColor.BLUE,
     };
   }
 
-  onGetGameInfo({ socket }: IGameEvent) {
-    const gameInfo: IOnitamaGameInfoEvent = {
+  onGetGameInfo({ socket }: IGameEvent): void {
+    const gameInfo: IGameInfoEvent = {
       board: this.board,
       players: this.players,
       fifthCard: this.fifthCard,
     };
 
-    socket.emit(EOnitamaGameEvent.GAME_INFO, gameInfo);
+    socket.emit(EGameEvent.GAME_INFO, gameInfo);
   }
 
-  onMovePiece({ data }: IGameEvent<IOnitamaMovePieceEvent>) {
+  onMovePiece({ data }: IGameEvent<IMovePieceEvent>): void {
     const {
       from,
       to,
@@ -98,13 +98,13 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
       player.isActive = index === nextActivePlayerIndex;
     });
 
-    const gameInfo: IOnitamaGameInfoEvent = {
+    const gameInfo: IGameInfoEvent = {
       board: this.board,
       players: this.players,
       fifthCard: this.fifthCard,
     };
 
-    this.io.emit(EOnitamaGameEvent.GAME_INFO, gameInfo);
+    this.io.emit(EGameEvent.GAME_INFO, gameInfo);
 
     const isWayOfStoneWin = !!toPiece?.isMaster;
     const isWayOfStreamWin = equalsCoords(to, {

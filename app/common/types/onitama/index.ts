@@ -1,24 +1,24 @@
-import { IGameOptions } from 'common/types/room';
-import { ICoords, IPlayer } from 'common/types';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
 
-export enum EOnitamaGameEvent {
+export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
   MOVE_PIECE = 'MOVE_PIECE',
 
   GAME_INFO = 'GAME_INFO',
 }
 
-export interface IOnitamaGameOptions extends IGameOptions {
+export interface IGameOptions extends ICommonGameOptions {
 
 }
 
-export interface IOnitamaPlayer extends IPlayer {
+export interface IPlayer extends ICommonPlayer {
   isActive: boolean;
-  cards: EOnitamaCardType[];
-  color: EOnitamaPlayerColor;
+  cards: ECardType[];
+  color: EPlayerColor;
 }
 
-export enum EOnitamaCardType {
+export enum ECardType {
   TIGER = 'TIGER',
   DRAGON = 'DRAGON',
   FROG = 'FROG',
@@ -37,25 +37,25 @@ export enum EOnitamaCardType {
   COBRA = 'COBRA',
 }
 
-export enum EOnitamaPlayerColor {
+export enum EPlayerColor {
   BLUE = 'BLUE',
   RED = 'RED',
 }
 
-export interface IOnitamaPiece {
-  color: EOnitamaPlayerColor;
+export interface IPiece {
+  color: EPlayerColor;
   isMaster: boolean;
 }
 
-export type TOnitamaBoard = (IOnitamaPiece | null)[][];
+export type TBoard = (IPiece | null)[][];
 
-export interface IOnitamaGameInfoEvent {
-  board: TOnitamaBoard;
-  players: IOnitamaPlayer[];
-  fifthCard: EOnitamaCardType;
+export interface IGameInfoEvent {
+  board: TBoard;
+  players: IPlayer[];
+  fifthCard: ECardType;
 }
 
-export interface IOnitamaMovePieceEvent {
+export interface IMovePieceEvent {
   from: ICoords;
   to: ICoords;
   cardIndex: number;

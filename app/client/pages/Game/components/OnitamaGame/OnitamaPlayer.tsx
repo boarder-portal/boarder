@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { EOnitamaCardType, IOnitamaPlayer } from 'common/types/onitama';
+import { ECardType, IPlayer } from 'common/types/onitama';
 
 import Box from 'client/components/common/Box/Box';
 import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';
 
 interface IOnitamaPlayerProps {
-  player: IOnitamaPlayer;
-  fifthCard: EOnitamaCardType;
+  player: IPlayer;
+  fifthCard: ECardType;
   isFlipped: boolean;
   selectedCardIndex: number;
-  onCardClick?(card: EOnitamaCardType): void;
+  onCardClick?(card: ECardType): void;
 }
 
 const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
