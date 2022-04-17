@@ -21,7 +21,7 @@ const SevenWondersLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.SEVEN_WONDERS>(EGame.SEVEN_WONDERS, defaultGameOptions);
+  } = useLobby(EGame.SEVEN_WONDERS, defaultGameOptions);
 
   if (!lobby) {
     return null;

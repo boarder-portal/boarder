@@ -19,7 +19,7 @@ const PexesoLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.PEXESO>(EGame.PEXESO, options);
+  } = useLobby(EGame.PEXESO, options);
 
   const optionsBlock = useMemo(() => {
     return (

@@ -13,7 +13,7 @@ const MazeLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.MAZE>(EGame.MAZE, DEFAULT_GAME_OPTIONS);
+  } = useLobby(EGame.MAZE, DEFAULT_GAME_OPTIONS);
 
   if (!lobby) {
     return null;

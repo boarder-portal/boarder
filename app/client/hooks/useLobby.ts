@@ -5,7 +5,14 @@ import io from 'socket.io-client';
 import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
 import { EGame, TGameOptions } from 'common/types/game';
 
-export default function useLobby<Game extends EGame>(game: Game, gameOptions: TGameOptions<Game>) {
+interface IUseLobbyReturnValue<Game extends EGame> {
+  lobby: ILobbyUpdateEvent<Game> | null;
+
+  createRoom(): void;
+  enterRoom(roomId: string): void;
+}
+
+export default function useLobby<Game extends EGame>(game: Game, gameOptions: TGameOptions<Game>): IUseLobbyReturnValue<Game> {
   const history = useHistory();
   const ioRef = useRef<SocketIOClient.Socket>();
 

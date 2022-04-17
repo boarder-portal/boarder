@@ -17,7 +17,7 @@ const SetLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.SET>(EGame.SET, options);
+  } = useLobby(EGame.SET, options);
 
   const optionsBlock = useMemo(() => {
     return (

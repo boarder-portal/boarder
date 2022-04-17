@@ -18,7 +18,7 @@ const SurvivalOnlineLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.SURVIVAL_ONLINE>(EGame.SURVIVAL_ONLINE, options);
+  } = useLobby(EGame.SURVIVAL_ONLINE, options);
 
   const optionsBlock = useMemo(() => {
     return (

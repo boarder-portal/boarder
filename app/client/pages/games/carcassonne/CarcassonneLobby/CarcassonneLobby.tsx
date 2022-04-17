@@ -21,7 +21,7 @@ const CarcassonneLobby: React.FC = () => {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby<EGame.CARCASSONNE>(EGame.CARCASSONNE, defaultGameOptions);
+  } = useLobby(EGame.CARCASSONNE, defaultGameOptions);
 
   if (!lobby) {
     return null;

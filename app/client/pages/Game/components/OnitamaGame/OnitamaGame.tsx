@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import {
   EOnitamaCardType,
@@ -14,7 +14,6 @@ import {
   IOnitamaMovePieceEvent,
   IOnitamaPlayer,
 } from 'common/types/onitama';
-import { EGame } from 'common/types/game';
 import { ICoords } from 'common/types';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
@@ -82,14 +81,6 @@ const Root = styled(Box)`
   }
 `;
 
-const {
-  games: {
-    [EGame.ONITAMA]: {
-      allCards,
-    },
-  },
-} = GAMES_CONFIG;
-
 const getLegalMoves = (
   from: ICoords,
   card: EOnitamaCardType,
@@ -99,7 +90,7 @@ const getLegalMoves = (
   const cells: ICoords[] = [];
   const isFlipped = player.color === EOnitamaPlayerColor.RED;
 
-  allCards[card].forEach(([y, x]) => {
+  ALL_CARDS[card].forEach(([y, x]) => {
     const toCell: ICoords = {
       x: from.x + x * (isFlipped ? -1 : +1),
       y: from.y + y * (isFlipped ? -1 : +1),

@@ -3,10 +3,9 @@ import times from 'lodash/times';
 import block from 'bem-cn';
 import styled from 'styled-components';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import { EOnitamaCardType } from 'common/types/onitama';
-import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 
@@ -16,14 +15,6 @@ interface IOnitamaCardProps {
   isSelected: boolean;
   onClick?(card: EOnitamaCardType): void;
 }
-
-const {
-  games: {
-    [EGame.ONITAMA]: {
-      allCards,
-    },
-  },
-} = GAMES_CONFIG;
 
 const b = block('OnitamaCard');
 
@@ -51,7 +42,7 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
     isSelected,
     onClick,
   } = props;
-  const legalMoves = allCards[card];
+  const legalMoves = ALL_CARDS[card];
 
   const handleClick = useCallback(() => {
     if (onClick) {
