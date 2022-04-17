@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import times from 'lodash/times';
 
-import { MIN_PLAYERS_COUNT, MAX_PLAYERS_COUNT } from 'common/constants/games/survivalOnline';
+import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'common/constants/games/survivalOnline';
 
 import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
 

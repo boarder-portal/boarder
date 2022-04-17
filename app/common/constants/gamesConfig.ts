@@ -10,19 +10,6 @@ const CARCASSONNE_ALL_SIDE_PARTS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
 
 export const GAMES_CONFIG = {
   games: {
-    [EGame.SET]: {
-      startCardCountToShow: 12,
-      cardsCountToAddIfNoSet: 3,
-      pointsForSet: 1,
-      pointsForWrongSet: -1,
-      pointsForUnderstandingThereAreNoSet: 2,
-      pointsForWrongUnderstandingThereAreNoSet: -1,
-      minPlayersCount: 1,
-      maxPlayersCount: 4,
-      defaultGameOptions: {
-        playersCount: 2,
-      },
-    },
     [EGame.ONITAMA]: {
       defaultGameOptions: {
         playersCount: 2,

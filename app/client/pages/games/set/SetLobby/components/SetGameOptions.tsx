@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import times from 'lodash/times';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'common/constants/games/set';
 
 import { ISetGameOptions } from 'common/types/set';
-import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
@@ -13,15 +12,6 @@ interface ISetGameOptionsProps {
   options: ISetGameOptions;
   onOptionsChange(options: ISetGameOptions): void;
 }
-
-const {
-  games: {
-    [EGame.SET]: {
-      minPlayersCount,
-      maxPlayersCount,
-    },
-  },
-} = GAMES_CONFIG;
 
 const SetGameOptions: React.FC<ISetGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
@@ -39,9 +29,9 @@ const SetGameOptions: React.FC<ISetGameOptionsProps> = (props) => {
         label="Количество игроков"
         name="setPlayersCount"
         value={options.playersCount}
-        options={times(maxPlayersCount - minPlayersCount + 1, (index) => ({
-          value: minPlayersCount + index,
-          text: minPlayersCount + index,
+        options={times(MAX_PLAYERS_COUNT - MIN_PLAYERS_COUNT + 1, (index) => ({
+          value: MIN_PLAYERS_COUNT + index,
+          text: MIN_PLAYERS_COUNT + index,
         }))}
         onChange={handlePlayersCountChange}
       />

@@ -1,7 +1,14 @@
 import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import {
+  NEW_CARDS_COUNT,
+  NO_SET_POINTS,
+  SET_POINTS,
+  START_CARDS_COUNT,
+  WRONG_NO_SET_POINTS,
+  WRONG_SET_POINTS,
+} from 'common/constants/games/set';
 
 import { IPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
@@ -22,19 +29,6 @@ import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
-const {
-  games: {
-    [EGame.SET]: {
-      startCardCountToShow,
-      cardsCountToAddIfNoSet,
-      pointsForSet,
-      pointsForWrongSet,
-      pointsForUnderstandingThereAreNoSet,
-      pointsForWrongUnderstandingThereAreNoSet,
-    },
-  },
-} = GAMES_CONFIG;
-
 class SetGame extends Game<EGame.SET> {
   handlers = {
     [ESetGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
@@ -43,7 +37,7 @@ class SetGame extends Game<EGame.SET> {
   };
 
   cardsStack: ISetCard[] = [];
-  maxCardsToShow = startCardCountToShow;
+  maxCardsToShow = START_CARDS_COUNT;
 
   constructor(options: IGameCreateOptions<EGame.SET>) {
     super(options);
@@ -58,7 +52,7 @@ class SetGame extends Game<EGame.SET> {
     };
   }
 
-  setupGame() {
+  setupGame(): void {
     const notShuffledCardsStack: ISetCard[] = [];
 
     Object.values(ESetCardColor).forEach((color) => {
@@ -80,7 +74,7 @@ class SetGame extends Game<EGame.SET> {
     this.cardsStack = shuffle(notShuffledCardsStack);
   }
 
-  onGetGameInfo({ socket }: IGameEvent) {
+  onGetGameInfo({ socket }: IGameEvent): void {
     const data: ISetGameInfoEvent = {
       players: this.players,
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
@@ -89,7 +83,7 @@ class SetGame extends Game<EGame.SET> {
     socket.emit(ESetGameEvent.GAME_INFO, data);
   }
 
-  onSendSet({ socket, data }: IGameEvent<ISetSendSetEvent>) {
+  onSendSet({ socket, data }: IGameEvent<ISetSendSetEvent>): void {
     const { cardsIds } = data;
 
     const player = this.getPlayerByLogin(socket.user?.login);
@@ -127,11 +121,11 @@ class SetGame extends Game<EGame.SET> {
         }
       });
 
-      player.score += pointsForSet;
+      player.score += SET_POINTS;
 
-      this.maxCardsToShow = Math.max(startCardCountToShow, this.maxCardsToShow - cardsCountToAddIfNoSet);
+      this.maxCardsToShow = Math.max(START_CARDS_COUNT, this.maxCardsToShow - NEW_CARDS_COUNT);
     } else {
-      player.score += pointsForWrongSet;
+      player.score += WRONG_SET_POINTS;
     }
 
     this.sendGameUpdate();
@@ -141,7 +135,7 @@ class SetGame extends Game<EGame.SET> {
     }
   }
 
-  onSendNoSet({ socket }: IGameEvent) {
+  onSendNoSet({ socket }: IGameEvent): void {
     const player = this.getPlayerByLogin(socket.user?.login);
 
     if (!player) {
@@ -149,17 +143,17 @@ class SetGame extends Game<EGame.SET> {
     }
 
     if (isAnySet(this.cardsStack.slice(0, this.maxCardsToShow))) {
-      player.score += pointsForWrongUnderstandingThereAreNoSet;
+      player.score += WRONG_NO_SET_POINTS;
     } else {
-      player.score += pointsForUnderstandingThereAreNoSet;
+      player.score += NO_SET_POINTS;
 
-      this.maxCardsToShow += cardsCountToAddIfNoSet;
+      this.maxCardsToShow += NEW_CARDS_COUNT;
     }
 
     this.sendGameUpdate();
   }
 
-  sendGameUpdate() {
+  sendGameUpdate(): void {
     const data: ISetGameInfoEvent = {
       players: this.players,
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
