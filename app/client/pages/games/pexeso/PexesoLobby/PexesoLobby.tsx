@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/pexeso';
 
 import { IPexesoGameOptions } from 'common/types/pexeso';
 import { EGame } from 'common/types/game';
@@ -12,16 +12,8 @@ import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
 import useLobby from 'client/hooks/useLobby';
 
-const {
-  games: {
-    [EGame.PEXESO]: {
-      defaultGameOptions,
-    },
-  },
-} = GAMES_CONFIG;
-
 const PexesoLobby: React.FC = () => {
-  const [options, setOptions] = useState<IPexesoGameOptions>(defaultGameOptions);
+  const [options, setOptions] = useState<IPexesoGameOptions>(DEFAULT_GAME_OPTIONS);
 
   const {
     lobby,

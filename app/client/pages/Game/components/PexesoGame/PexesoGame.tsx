@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import times from 'lodash/times';
 import sortBy from 'lodash/sortBy';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
 import {
   EPexesoFieldLayout,
@@ -19,7 +19,6 @@ import {
   IPexesoShuffleCardsIndexes,
 } from 'common/types/pexeso';
 import { EPlayerStatus, ICoords } from 'common/types';
-import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
@@ -196,15 +195,6 @@ const Root = styled(Box)`
   }
 `;
 
-const {
-  games: {
-    [EGame.PEXESO]: {
-      sets,
-      fieldOptions,
-    },
-  },
-} = GAMES_CONFIG;
-
 const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IPexesoShuffleCardsIndexes | null) => {
   if (!shuffleIndexes) {
     return;
@@ -349,7 +339,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     const {
       imagesCount,
       imageVariantsCount,
-    } = sets[options.set];
+    } = SETS[options.set];
 
     times(imagesCount, (id) => {
       times(imageVariantsCount, (variant) => {
@@ -441,7 +431,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     const {
       width: fieldWidth,
       height: fieldHeight,
-    } = fieldOptions[layout][differentCardsCount * matchingCardsCount];
+    } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
 
     for (let y = 0; y < fieldHeight; y++) {
       for (let x = 0; x < fieldWidth; x++) {
@@ -455,7 +445,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     const {
       start,
       middle,
-    } = fieldOptions[layout][differentCardsCount * matchingCardsCount];
+    } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
     const rowsCount = 2 * (middle - start) + 1;
 
     for (let y = 0; y < rowsCount; y++) {

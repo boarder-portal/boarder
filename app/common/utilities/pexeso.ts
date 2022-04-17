@@ -1,19 +1,9 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
 import { EPexesoFieldLayout, IPexesoGameOptions } from 'common/types/pexeso';
-import { EGame } from 'common/types/game';
-
-const {
-  games: {
-    [EGame.PEXESO]: {
-      sets,
-      fieldOptions,
-    },
-  },
-} = GAMES_CONFIG;
 
 export function arePexesoOptionsValid(options: IPexesoGameOptions): boolean {
-  const setOptions = sets[options.set];
+  const setOptions = SETS[options.set];
   const cardsCount = options.differentCardsCount * options.matchingCardsCount;
 
   return (
@@ -22,7 +12,7 @@ export function arePexesoOptionsValid(options: IPexesoGameOptions): boolean {
     && (
       options.layout === EPexesoFieldLayout.SPIRAL || options.layout === EPexesoFieldLayout.SPIRAL_ROTATE
         ? true
-        : cardsCount in fieldOptions[options.layout] && cardsCount < 200
+        : cardsCount in FIELD_OPTIONS[options.layout] && cardsCount < 200
     )
   );
 }

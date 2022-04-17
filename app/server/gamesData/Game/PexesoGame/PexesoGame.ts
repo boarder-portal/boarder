@@ -2,7 +2,7 @@ import flatten from 'lodash/flatten';
 import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { SETS } from 'common/constants/games/pexeso';
 
 import {
   EPexesoGameEvent,
@@ -22,21 +22,13 @@ import { getRandomElement } from 'common/utilities/random';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
-const {
-  games: {
-    [EGame.PEXESO]: {
-      sets,
-    },
-  },
-} = GAMES_CONFIG;
-
 const OPEN_CLOSE_ANIMATION_DURATION = 300;
 const OPEN_DURATION = 1600;
 
 class PexesoGame extends Game<EGame.PEXESO> {
   static shufflePermutations: number[][][] = [];
 
-  static createAllShufflePermutations() {
+  static createAllShufflePermutations(): void {
     const createShufflePermutations = (cardsCount: number): number[][] => {
       const permutations: number[][] = [];
 
@@ -80,11 +72,11 @@ class PexesoGame extends Game<EGame.PEXESO> {
     this.createGameInfo();
   }
 
-  createGameInfo() {
+  createGameInfo(): void {
     const {
       imagesCount: setImagesCount,
       imageVariantsCount,
-    } = sets[this.options.set];
+    } = SETS[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (
       this.options.pickRandomImages
@@ -127,7 +119,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
     };
   }
 
-  onGetGameInfo({ socket }: IGameEvent) {
+  onGetGameInfo({ socket }: IGameEvent): void {
     const gameInfo: IPexesoGameInfoEvent = {
       options: this.options,
       cards: this.cards,
@@ -138,7 +130,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
     socket.emit(EPexesoGameEvent.GAME_INFO, gameInfo);
   }
 
-  onOpenCard({ data: cardIndex }: IGameEvent<number>) {
+  onOpenCard({ data: cardIndex }: IGameEvent<number>): void {
     if (
       this.isShowingCards
       || this.openedCardsIndexes.includes(cardIndex)

@@ -3,7 +3,15 @@ import times from 'lodash/times';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import {
+  DIFFERENT_CARDS_COUNTS,
+  LAYOUT_NAMES,
+  MATCHING_CARDS_COUNTS,
+  MAX_PLAYERS_COUNT,
+  MIN_PLAYERS_COUNT,
+  SHUFFLE_AFTER_MOVES_COUNTS,
+  SHUFFLE_CARDS_COUNTS,
+} from 'common/constants/games/pexeso';
 
 import {
   EPexesoFieldLayout,
@@ -12,7 +20,6 @@ import {
   IPexesoGameOptions,
   TPexesoShuffleOptions,
 } from 'common/types/pexeso';
-import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
@@ -25,20 +32,6 @@ interface IPexesoGameOptionsProps {
   options: IPexesoGameOptions;
   onOptionsChange(options: IPexesoGameOptions): void;
 }
-
-const {
-  games: {
-    [EGame.PEXESO]: {
-      minPlayersCount,
-      maxPlayersCount,
-      matchingCardsCounts,
-      differentCardsCounts,
-      layoutNames,
-      shuffleAfterMovesCounts,
-      shuffleCardsCounts,
-    },
-  },
-} = GAMES_CONFIG;
 
 const b = block('PexesoGameOptions');
 
@@ -205,9 +198,9 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Количество игроков"
         name="pexesoPlayersCount"
         value={options.playersCount}
-        options={times(maxPlayersCount - minPlayersCount + 1, (index) => ({
-          value: minPlayersCount + index,
-          text: minPlayersCount + index,
+        options={times(MAX_PLAYERS_COUNT - MIN_PLAYERS_COUNT + 1, (index) => ({
+          value: MIN_PLAYERS_COUNT + index,
+          text: MIN_PLAYERS_COUNT + index,
         }))}
         onChange={handlePlayersCountChange}
       />
@@ -216,7 +209,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Количество совпадающих карточек"
         name="pexesoMatchingCardsCount"
         value={options.matchingCardsCount}
-        options={matchingCardsCounts.map((matchingCardsCount) => ({
+        options={MATCHING_CARDS_COUNTS.map((matchingCardsCount) => ({
           value: matchingCardsCount,
           text: matchingCardsCount,
           disabled: !areOptionsValid({ matchingCardsCount }),
@@ -228,7 +221,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Количество разных карточек"
         name="pexesoDifferentCardsCount"
         value={options.differentCardsCount}
-        options={differentCardsCounts.map((differentCardsCount) => ({
+        options={DIFFERENT_CARDS_COUNTS.map((differentCardsCount) => ({
           value: differentCardsCount,
           text: differentCardsCount,
           disabled: !areOptionsValid({ differentCardsCount }),
@@ -242,7 +235,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         value={options.layout}
         options={Object.values(EPexesoFieldLayout).map((layout) => ({
           value: layout,
-          text: layoutNames[layout],
+          text: LAYOUT_NAMES[layout],
           disabled: !areOptionsValid({ layout }),
         }))}
         onChange={handleLayoutChange}
@@ -281,7 +274,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
                   <Select
                     name="shuffleCardsCount"
                     value={shuffleCardsCount}
-                    options={shuffleCardsCounts.map((cardsCount) => ({
+                    options={SHUFFLE_CARDS_COUNTS.map((cardsCount) => ({
                       value: cardsCount,
                       text: cardsCount,
                     }))}
@@ -304,7 +297,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
             <Select
               name="shuffleAfterMovesCount"
               value={options.shuffleOptions.afterMovesCount}
-              options={shuffleAfterMovesCounts.map((afterMovesCount) => ({
+              options={SHUFFLE_AFTER_MOVES_COUNTS.map((afterMovesCount) => ({
                 value: afterMovesCount,
                 text: afterMovesCount,
               }))}
