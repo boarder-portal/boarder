@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/pexeso';
 
-import { IPexesoGameOptions } from 'common/types/pexeso';
+import { IGameOptions } from 'common/types/pexeso';
 import { EGame } from 'common/types/game';
 
 import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
@@ -13,7 +13,7 @@ import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import useLobby from 'client/hooks/useLobby';
 
 const PexesoLobby: React.FC = () => {
-  const [options, setOptions] = useState<IPexesoGameOptions>(DEFAULT_GAME_OPTIONS);
+  const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
   const {
     lobby,
@@ -30,7 +30,7 @@ const PexesoLobby: React.FC = () => {
     );
   }, [options]);
 
-  const renderRoomOptions = useCallback((roomOptions: IPexesoGameOptions) => {
+  const renderRoomOptions = useCallback((roomOptions: IGameOptions) => {
     return (
       <Box>
         {roomOptions.set}

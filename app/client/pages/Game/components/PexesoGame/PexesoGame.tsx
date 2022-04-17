@@ -8,15 +8,15 @@ import sortBy from 'lodash/sortBy';
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
 import {
-  EPexesoFieldLayout,
-  EPexesoGameEvent,
-  IPexesoCard,
-  IPexesoGameInfoEvent,
-  IPexesoGameOptions,
-  IPexesoHideCardsEvent,
-  IPexesoPlayer,
-  IPexesoRemoveCardsEvent,
-  IPexesoShuffleCardsIndexes,
+  EFieldLayout,
+  EGameEvent,
+  ICard,
+  IGameInfoEvent,
+  IGameOptions,
+  IHideCardsEvent,
+  IPlayer,
+  IRemoveCardsEvent,
+  IShuffleCardsIndexes,
 } from 'common/types/pexeso';
 import { EPlayerStatus, ICoords } from 'common/types';
 
@@ -28,11 +28,11 @@ import userAtom from 'client/atoms/userAtom';
 
 interface IPexesoGameProps {
   io: SocketIOClient.Socket;
-  players: IPexesoPlayer[];
+  players: IPlayer[];
   isGameEnd: boolean;
 }
 
-interface IPexesoClientCard extends IPexesoCard {
+interface IPexesoClientCard extends ICard {
   id: number;
   isOpen: boolean;
   opened: boolean;
@@ -195,7 +195,7 @@ const Root = styled(Box)`
   }
 `;
 
-const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IPexesoShuffleCardsIndexes | null) => {
+const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsIndexes | null) => {
   if (!shuffleIndexes) {
     return;
   }
@@ -214,10 +214,10 @@ const getOrthogonalFieldCardCoord = (coord: number): number => (
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io, isGameEnd, players: baseGamePlayers } = props;
 
-  const [options, setOptions] = useState<IPexesoGameOptions | null>(null);
+  const [options, setOptions] = useState<IGameOptions | null>(null);
   const [cards, setCards] = useState<IPexesoClientCard[]>([]);
   const [highlightedCardsIndexes, setHighlightedCardsIndexes] = useState<number[]>([]);
-  const [players, setPlayers] = useState<IPexesoPlayer[]>([]);
+  const [players, setPlayers] = useState<IPlayer[]>([]);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const cardsLayoutContainerRef = useRef<HTMLDivElement | null>(null);
   const cardsLayoutRef = useRef<HTMLDivElement | null>(null);
@@ -235,7 +235,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
     setHighlightedCardsIndexes([]);
 
-    io.emit(EPexesoGameEvent.OPEN_CARD, cardIndex);
+    io.emit(EGameEvent.OPEN_CARD, cardIndex);
   }, [io, player]);
 
   const handleCardRightClick = useCallback((e: React.MouseEvent, cardIndex: number) => {
@@ -257,14 +257,14 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [highlightedCardsIndexes]);
 
   useEffect(() => {
-    io.emit(EPexesoGameEvent.GET_GAME_INFO);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EPexesoGameEvent.GAME_INFO, ({
+    io.on(EGameEvent.GAME_INFO, ({
       options,
       cards,
       players,
       openedCardsIndexes,
-    }: IPexesoGameInfoEvent) => {
+    }: IGameInfoEvent) => {
       setOptions(options);
       setCards(cards.map((card, index) => ({
         ...card,
@@ -277,7 +277,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setPlayers(players);
     });
 
-    io.on(EPexesoGameEvent.OPEN_CARD, (cardIndex: number) => {
+    io.on(EGameEvent.OPEN_CARD, (cardIndex: number) => {
       setCards((cards) => {
         cards[cardIndex].closed = false;
         cards[cardIndex].opened = true;
@@ -287,7 +287,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       });
     });
 
-    io.on(EPexesoGameEvent.HIDE_CARDS, ({ indexes, shuffleIndexes }: IPexesoHideCardsEvent) => {
+    io.on(EGameEvent.HIDE_CARDS, ({ indexes, shuffleIndexes }: IHideCardsEvent) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isOpen = false;
@@ -301,7 +301,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setHighlightedCardsIndexes([]);
     });
 
-    io.on(EPexesoGameEvent.REMOVE_CARDS, ({ indexes, shuffleIndexes }: IPexesoRemoveCardsEvent) => {
+    io.on(EGameEvent.REMOVE_CARDS, ({ indexes, shuffleIndexes }: IRemoveCardsEvent) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isInGame = false;
@@ -314,16 +314,16 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setHighlightedCardsIndexes([]);
     });
 
-    io.on(EPexesoGameEvent.UPDATE_PLAYERS, (players: IPexesoPlayer[]) => {
+    io.on(EGameEvent.UPDATE_PLAYERS, (players: IPlayer[]) => {
       setPlayers(players);
     });
 
     return () => {
-      io.off(EPexesoGameEvent.GAME_INFO);
-      io.off(EPexesoGameEvent.OPEN_CARD);
-      io.off(EPexesoGameEvent.HIDE_CARDS);
-      io.off(EPexesoGameEvent.REMOVE_CARDS);
-      io.off(EPexesoGameEvent.UPDATE_PLAYERS);
+      io.off(EGameEvent.GAME_INFO);
+      io.off(EGameEvent.OPEN_CARD);
+      io.off(EGameEvent.HIDE_CARDS);
+      io.off(EGameEvent.REMOVE_CARDS);
+      io.off(EGameEvent.UPDATE_PLAYERS);
     };
   }, [io]);
 
@@ -427,7 +427,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   } = options;
   const cardsOptions: (ICoords & { angle?: number })[] = [];
 
-  if (layout === EPexesoFieldLayout.RECT) {
+  if (layout === EFieldLayout.RECT) {
     const {
       width: fieldWidth,
       height: fieldHeight,
@@ -441,7 +441,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         });
       }
     }
-  } else if (layout === EPexesoFieldLayout.HEX) {
+  } else if (layout === EFieldLayout.HEX) {
     const {
       start,
       middle,
@@ -467,12 +467,12 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     let angle = startingAngle;
 
     for (let i = 0; i < cardsCount; i++) {
-      const radius = CARD_SIZE * (0.5 + (layout === EPexesoFieldLayout.SPIRAL ? 0.21 : 0.19) * (angle - startingAngle));
+      const radius = CARD_SIZE * (0.5 + (layout === EFieldLayout.SPIRAL ? 0.21 : 0.19) * (angle - startingAngle));
 
       cardsOptions.push({
         x: radius * Math.cos(angle),
         y: radius * Math.sin(angle),
-        angle: layout === EPexesoFieldLayout.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
+        angle: layout === EFieldLayout.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
       });
 
       angle += (CARD_SIZE / radius) * Math.PI / 4;

@@ -1,7 +1,7 @@
-import { IPlayer } from 'common/types';
-import { IGameOptions } from 'common/types/room';
+import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 
-export enum EPexesoGameEvent {
+export enum EGameEvent {
   GAME_INFO = 'GAME_INFO',
   GET_GAME_INFO = 'GET_GAME_INFO',
   OPEN_CARD = 'OPEN_CARD',
@@ -10,7 +10,7 @@ export enum EPexesoGameEvent {
   UPDATE_PLAYERS = 'UPDATE_PLAYERS',
 }
 
-export enum EPexesoSet {
+export enum ESet {
   COMMON = 'common',
   FRIENDS = 'friends',
   GAME_OF_THRONES = 'gameOfThrones',
@@ -25,66 +25,66 @@ export enum EPexesoSet {
   BREAKING_BAD = 'breakingBad',
 }
 
-export enum EPexesoFieldLayout {
+export enum EFieldLayout {
   RECT = 'RECT',
   HEX = 'HEX',
   SPIRAL = 'SPIRAL',
   SPIRAL_ROTATE = 'SPIRAL_ROTATE',
 }
 
-export enum EPexesoShuffleType {
+export enum EShuffleType {
   RANDOM = 'RANDOM',
   TURNED = 'TURNED',
 }
 
-export type TPexesoShuffleOptions = null | {
-  type: EPexesoShuffleType.RANDOM;
+export type TShuffleOptions = null | {
+  type: EShuffleType.RANDOM;
   afterMovesCount: number;
   cardsCount: number;
 } | {
-  type: EPexesoShuffleType.TURNED;
+  type: EShuffleType.TURNED;
   afterMovesCount: number;
 };
 
-export interface IPexesoGameOptions extends IGameOptions {
-  set: EPexesoSet;
+export interface IGameOptions extends ICommonGameOptions {
+  set: ESet;
   matchingCardsCount: number;
   differentCardsCount: number;
   pickRandomImages: boolean;
   useImageVariants: boolean;
-  layout: EPexesoFieldLayout;
-  shuffleOptions: TPexesoShuffleOptions;
+  layout: EFieldLayout;
+  shuffleOptions: TShuffleOptions;
 }
 
-export interface IPexesoPlayer extends IPlayer {
+export interface IPlayer extends ICommonPlayer {
   isActive: boolean;
   score: number;
 }
 
-export interface IPexesoCard {
+export interface ICard {
   imageId: number;
   imageVariant: number;
   isInGame: boolean;
 }
 
-export interface IPexesoGameInfoEvent {
-  options: IPexesoGameOptions;
-  cards: IPexesoCard[];
+export interface IGameInfoEvent {
+  options: IGameOptions;
+  cards: ICard[];
   openedCardsIndexes: number[];
-  players: IPexesoPlayer[];
+  players: IPlayer[];
 }
 
-export interface IPexesoShuffleCardsIndexes {
+export interface IShuffleCardsIndexes {
   indexes: number[];
   permutation: number[];
 }
 
-export interface IPexesoHideCardsEvent {
+export interface IHideCardsEvent {
   indexes: number[];
-  shuffleIndexes: IPexesoShuffleCardsIndexes | null;
+  shuffleIndexes: IShuffleCardsIndexes | null;
 }
 
-export interface IPexesoRemoveCardsEvent {
+export interface IRemoveCardsEvent {
   indexes: number[];
-  shuffleIndexes: IPexesoShuffleCardsIndexes | null;
+  shuffleIndexes: IShuffleCardsIndexes | null;
 }

@@ -1,5 +1,5 @@
-import { IPlayer } from 'common/types/index';
-import { EPexesoGameEvent, IPexesoGameOptions, IPexesoPlayer } from 'common/types/pexeso';
+import { IPlayer } from 'common/types';
+import * as PexesoTypes from 'common/types/pexeso';
 import {
   ESurvivalOnlineGameEvent,
   ISurvivalOnlineGameOptions,
@@ -30,9 +30,9 @@ export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
 
 export interface IGameParams {
   [EGame.PEXESO]: {
-    event: EPexesoGameEvent;
-    options: IPexesoGameOptions;
-    player: IPexesoPlayer;
+    event: PexesoTypes.EGameEvent;
+    options: PexesoTypes.IGameOptions;
+    player: PexesoTypes.IPlayer;
   };
   [EGame.SURVIVAL_ONLINE]: {
     event: ESurvivalOnlineGameEvent;

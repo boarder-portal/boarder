@@ -14,11 +14,11 @@ import {
 } from 'common/constants/games/pexeso';
 
 import {
-  EPexesoFieldLayout,
-  EPexesoSet,
-  EPexesoShuffleType,
-  IPexesoGameOptions,
-  TPexesoShuffleOptions,
+  EFieldLayout,
+  ESet,
+  EShuffleType,
+  IGameOptions,
+  TShuffleOptions,
 } from 'common/types/pexeso';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
@@ -29,8 +29,8 @@ import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
 interface IPexesoGameOptionsProps {
-  options: IPexesoGameOptions;
-  onOptionsChange(options: IPexesoGameOptions): void;
+  options: IGameOptions;
+  onOptionsChange(options: IGameOptions): void;
 }
 
 const b = block('PexesoGameOptions');
@@ -58,19 +58,19 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
 
   const [shuffleCardsCount, setShuffleCardsCount] = useState(2);
-  const lastShuffleOptions = useRef<NonNullable<TPexesoShuffleOptions>>(options.shuffleOptions || {
-    type: EPexesoShuffleType.TURNED,
+  const lastShuffleOptions = useRef<NonNullable<TShuffleOptions>>(options.shuffleOptions || {
+    type: EShuffleType.TURNED,
     afterMovesCount: 1,
   });
 
-  const areOptionsValid = <K extends keyof IPexesoGameOptions>(values: Pick<IPexesoGameOptions, K>): boolean => {
+  const areOptionsValid = <K extends keyof IGameOptions>(values: Pick<IGameOptions, K>): boolean => {
     return arePexesoOptionsValid({
       ...options,
       ...values,
     });
   };
 
-  const handleSetChange = useCallback((updatedSet: EPexesoSet) => {
+  const handleSetChange = useCallback((updatedSet: ESet) => {
     onOptionsChange({
       ...options,
       set: updatedSet,
@@ -98,7 +98,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
-  const handleLayoutChange = useCallback((layout: EPexesoFieldLayout) => {
+  const handleLayoutChange = useCallback((layout: EFieldLayout) => {
     onOptionsChange({
       ...options,
       layout,
@@ -140,10 +140,10 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     });
   }, [onOptionsChange, options]);
 
-  const handleShuffleTypeChange = useCallback((type: EPexesoShuffleType) => {
-    let newShuffleOptions: NonNullable<TPexesoShuffleOptions>;
+  const handleShuffleTypeChange = useCallback((type: EShuffleType) => {
+    let newShuffleOptions: NonNullable<TShuffleOptions>;
 
-    if (type === EPexesoShuffleType.TURNED) {
+    if (type === EShuffleType.TURNED) {
       newShuffleOptions = {
         type,
         afterMovesCount: lastShuffleOptions.current.afterMovesCount,
@@ -173,7 +173,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     onOptionsChange({
       ...options,
       shuffleOptions: {
-        type: EPexesoShuffleType.RANDOM,
+        type: EShuffleType.RANDOM,
         afterMovesCount: options.shuffleOptions.afterMovesCount,
         cardsCount,
       },
@@ -186,7 +186,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Сет"
         name="pexesoSet"
         value={options.set}
-        options={Object.values(EPexesoSet).map((set) => ({
+        options={Object.values(ESet).map((set) => ({
           value: set,
           text: set,
           disabled: !areOptionsValid({ set }),
@@ -233,7 +233,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
         label="Расположение карточек"
         name="pexesoFieldLayout"
         value={options.layout}
-        options={Object.values(EPexesoFieldLayout).map((layout) => ({
+        options={Object.values(EFieldLayout).map((layout) => ({
           value: layout,
           text: LAYOUT_NAMES[layout],
           disabled: !areOptionsValid({ layout }),
@@ -265,7 +265,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           <RadioGroup
             options={[{
               text: 'перевернутые только что карточки',
-              value: EPexesoShuffleType.TURNED,
+              value: EShuffleType.TURNED,
             }, {
               text: (
                 <>
@@ -285,7 +285,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
                   {' '}{shuffleCardsCount > 4 ? 'карточек' : 'карточки'}
                 </>
               ),
-              value: EPexesoShuffleType.RANDOM,
+              value: EShuffleType.RANDOM,
             }]}
             value={options.shuffleOptions.type}
             onChange={handleShuffleTypeChange}

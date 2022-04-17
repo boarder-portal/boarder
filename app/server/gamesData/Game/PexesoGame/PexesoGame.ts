@@ -5,16 +5,16 @@ import shuffle from 'lodash/shuffle';
 import { SETS } from 'common/constants/games/pexeso';
 
 import {
-  EPexesoGameEvent,
-  EPexesoShuffleType,
-  IPexesoCard,
-  IPexesoGameInfoEvent,
-  IPexesoHideCardsEvent,
-  IPexesoPlayer,
-  IPexesoRemoveCardsEvent,
-  IPexesoShuffleCardsIndexes,
+  EGameEvent,
+  EShuffleType,
+  ICard,
+  IGameInfoEvent,
+  IHideCardsEvent,
+  IPlayer,
+  IRemoveCardsEvent,
+  IShuffleCardsIndexes,
 } from 'common/types/pexeso';
-import { IPlayer } from 'common/types';
+import { IPlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 
@@ -57,11 +57,11 @@ class PexesoGame extends Game<EGame.PEXESO> {
   }
 
   handlers = {
-    [EPexesoGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
-    [EPexesoGameEvent.OPEN_CARD]: this.onOpenCard,
+    [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
+    [EGameEvent.OPEN_CARD]: this.onOpenCard,
   };
 
-  cards: IPexesoCard[] = [];
+  cards: ICard[] = [];
   openedCardsIndexes: number[] = [];
   isShowingCards = false;
   movesCount = 0;
@@ -111,7 +111,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
     this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
   }
 
-  createPlayer(roomPlayer: IPlayer): IPexesoPlayer {
+  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {
       ...roomPlayer,
       isActive: false,
@@ -120,14 +120,14 @@ class PexesoGame extends Game<EGame.PEXESO> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    const gameInfo: IPexesoGameInfoEvent = {
+    const gameInfo: IGameInfoEvent = {
       options: this.options,
       cards: this.cards,
       openedCardsIndexes: this.openedCardsIndexes,
       players: this.players,
     };
 
-    socket.emit(EPexesoGameEvent.GAME_INFO, gameInfo);
+    socket.emit(EGameEvent.GAME_INFO, gameInfo);
   }
 
   onOpenCard({ data: cardIndex }: IGameEvent<number>): void {
@@ -141,7 +141,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
     this.openedCardsIndexes.push(cardIndex);
 
-    this.io.emit(EPexesoGameEvent.OPEN_CARD, cardIndex);
+    this.io.emit(EGameEvent.OPEN_CARD, cardIndex);
 
     if (this.openedCardsIndexes.length !== this.options.matchingCardsCount) {
       return;
@@ -165,14 +165,14 @@ class PexesoGame extends Game<EGame.PEXESO> {
         this.players[activePlayerIndex].score++;
 
         const isGameEnd = this.cards.every((card) => !card.isInGame);
-        const removeCardsEvent: IPexesoRemoveCardsEvent = {
+        const removeCardsEvent: IRemoveCardsEvent = {
           indexes: this.openedCardsIndexes,
-          shuffleIndexes: isGameEnd || this.options.shuffleOptions?.type === EPexesoShuffleType.TURNED
+          shuffleIndexes: isGameEnd || this.options.shuffleOptions?.type === EShuffleType.TURNED
             ? null
             : this.shuffleCards(),
         };
 
-        this.io.emit(EPexesoGameEvent.REMOVE_CARDS, removeCardsEvent);
+        this.io.emit(EGameEvent.REMOVE_CARDS, removeCardsEvent);
 
         if (isGameEnd) {
           this.end();
@@ -180,26 +180,26 @@ class PexesoGame extends Game<EGame.PEXESO> {
       } else {
         nextActivePlayerIndex = (activePlayerIndex + 1) % this.players.length;
 
-        const hideCardsEvent: IPexesoHideCardsEvent = {
+        const hideCardsEvent: IHideCardsEvent = {
           indexes: this.openedCardsIndexes,
           shuffleIndexes: this.shuffleCards(),
         };
 
-        this.io.emit(EPexesoGameEvent.HIDE_CARDS, hideCardsEvent);
+        this.io.emit(EGameEvent.HIDE_CARDS, hideCardsEvent);
       }
 
       this.players.forEach((player, index) => {
         player.isActive = index === nextActivePlayerIndex;
       });
 
-      this.io.emit(EPexesoGameEvent.UPDATE_PLAYERS, this.players);
+      this.io.emit(EGameEvent.UPDATE_PLAYERS, this.players);
 
       this.isShowingCards = false;
       this.openedCardsIndexes = [];
     }, OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
   }
 
-  shuffleCards(): IPexesoShuffleCardsIndexes | null {
+  shuffleCards(): IShuffleCardsIndexes | null {
     if (
       !this.options.shuffleOptions
       || this.movesCount % this.options.shuffleOptions.afterMovesCount !== 0
@@ -209,7 +209,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
 
     let indexesToShuffle: number[];
 
-    if (this.options.shuffleOptions.type === EPexesoShuffleType.RANDOM) {
+    if (this.options.shuffleOptions.type === EShuffleType.RANDOM) {
       const allIndexesInPlay = times(this.options.differentCardsCount * this.options.matchingCardsCount)
         .filter((index) => this.cards[index].isInGame);
 

@@ -1,8 +1,8 @@
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
-import { EPexesoFieldLayout, IPexesoGameOptions } from 'common/types/pexeso';
+import { EFieldLayout, IGameOptions } from 'common/types/pexeso';
 
-export function arePexesoOptionsValid(options: IPexesoGameOptions): boolean {
+export function arePexesoOptionsValid(options: IGameOptions): boolean {
   const setOptions = SETS[options.set];
   const cardsCount = options.differentCardsCount * options.matchingCardsCount;
 
@@ -10,7 +10,7 @@ export function arePexesoOptionsValid(options: IPexesoGameOptions): boolean {
     options.differentCardsCount <= setOptions.imagesCount
     && (!options.useImageVariants || options.matchingCardsCount <= setOptions.imageVariantsCount)
     && (
-      options.layout === EPexesoFieldLayout.SPIRAL || options.layout === EPexesoFieldLayout.SPIRAL_ROTATE
+      options.layout === EFieldLayout.SPIRAL || options.layout === EFieldLayout.SPIRAL_ROTATE
         ? true
         : cardsCount in FIELD_OPTIONS[options.layout] && cardsCount < 200
     )
