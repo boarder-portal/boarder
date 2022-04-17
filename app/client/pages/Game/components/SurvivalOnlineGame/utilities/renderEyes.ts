@@ -1,17 +1,8 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { CELL_SIZE } from 'common/constants/games/survivalOnline';
 
 import { ESurvivalOnlineDirection } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
 
 import renderObject, { ISurvivalOnlineRectInfo } from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
-
-const {
-  games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      cellSize,
-    },
-  },
-} = GAMES_CONFIG;
 
 export default function renderEyes(
   context: CanvasRenderingContext2D,
@@ -19,26 +10,26 @@ export default function renderEyes(
   startY: number,
   direction: ESurvivalOnlineDirection,
   rects: ISurvivalOnlineRectInfo[],
-) {
+): void {
   if (direction === ESurvivalOnlineDirection.DOWN || direction === ESurvivalOnlineDirection.LEFT) {
     renderObject({
       context,
-      startX: startX + cellSize * 0.2,
-      startY: startY + cellSize * 0.2,
+      startX: startX + CELL_SIZE * 0.2,
+      startY: startY + CELL_SIZE * 0.2,
       rects,
-      width: cellSize * 0.2,
-      height: cellSize * 0.2,
+      width: CELL_SIZE * 0.2,
+      height: CELL_SIZE * 0.2,
     });
   }
 
   if (direction === ESurvivalOnlineDirection.DOWN || direction === ESurvivalOnlineDirection.RIGHT) {
     renderObject({
       context,
-      startX: startX + cellSize * 0.6,
-      startY: startY + cellSize * 0.2,
+      startX: startX + CELL_SIZE * 0.6,
+      startY: startY + CELL_SIZE * 0.2,
       rects,
-      width: cellSize * 0.2,
-      height: cellSize * 0.2,
+      width: CELL_SIZE * 0.2,
+      height: CELL_SIZE * 0.2,
     });
   }
 }

@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import times from 'lodash/times';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { MIN_PLAYERS_COUNT, MAX_PLAYERS_COUNT } from 'common/constants/games/survivalOnline';
 
 import { ISurvivalOnlineGameOptions } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
@@ -13,15 +12,6 @@ interface ISurvivalOnlineGameOptionsProps {
   options: ISurvivalOnlineGameOptions;
   onOptionsChange(options: ISurvivalOnlineGameOptions): void;
 }
-
-const {
-  games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      minPlayersCount,
-      maxPlayersCount,
-    },
-  },
-} = GAMES_CONFIG;
 
 const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
@@ -39,9 +29,9 @@ const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (pr
         label="Количество игроков"
         name="survivalOnlinePlayersCount"
         value={options.playersCount}
-        options={times(maxPlayersCount - minPlayersCount + 1, (index) => ({
-          value: minPlayersCount + index,
-          text: minPlayersCount + index,
+        options={times(MAX_PLAYERS_COUNT - MIN_PLAYERS_COUNT + 1, (index) => ({
+          value: MIN_PLAYERS_COUNT + index,
+          text: MIN_PLAYERS_COUNT + index,
         }))}
         onChange={handlePlayersCountChange}
       />

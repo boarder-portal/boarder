@@ -1,21 +1,11 @@
 import times from 'lodash/times';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import { ISurvivalOnlineGameInfoEvent, ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
 
 import renderCell from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderCell';
 import renderInventory from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderInventory';
-
-const {
-  games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      viewSize,
-      cellSize,
-    },
-  },
-} = GAMES_CONFIG;
 
 export default function renderMap({
   context,
@@ -25,22 +15,22 @@ export default function renderMap({
   context: CanvasRenderingContext2D;
   gameInfo: ISurvivalOnlineGameInfoEvent;
   player: ISurvivalOnlinePlayer;
-}) {
-  context.clearRect(0, 0, viewSize.width * cellSize, viewSize.height * cellSize);
+}): void {
+  context.clearRect(0, 0, VIEW_SIZE.width * CELL_SIZE, VIEW_SIZE.height * CELL_SIZE);
 
-  const startX = player.x - Math.floor(viewSize.width / 2);
-  const startY = player.y - Math.floor(viewSize.height / 2);
+  const startX = player.x - Math.floor(VIEW_SIZE.width / 2);
+  const startY = player.y - Math.floor(VIEW_SIZE.height / 2);
 
   const { map } = gameInfo;
 
-  times(viewSize.height, (y) => {
-    times(viewSize.width, (x) => {
+  times(VIEW_SIZE.height, (y) => {
+    times(VIEW_SIZE.width, (x) => {
       const cellX = startX + x;
       const cellY = startY + y;
 
       const cell = map[cellY]?.[cellX];
 
-      renderCell(context, x * cellSize, y * cellSize, cell);
+      renderCell(context, x * CELL_SIZE, y * CELL_SIZE, cell);
     });
   });
 

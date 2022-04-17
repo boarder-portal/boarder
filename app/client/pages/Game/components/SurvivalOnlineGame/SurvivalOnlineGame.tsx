@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import {
   ESurvivalOnlineDirection,
@@ -12,7 +12,6 @@ import {
   ISurvivalOnlinePlayer,
   ISurvivalOnlineUpdateGameEvent,
 } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
@@ -28,15 +27,6 @@ interface ISurvivalOnlineGameProps {
 }
 
 const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
-
-const {
-  games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      viewSize,
-      cellSize,
-    },
-  },
-} = GAMES_CONFIG;
 
 const b = block('SurvivalOnlineGame');
 
@@ -132,8 +122,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     const cellSize = getCellScreenSize(containerEl);
 
     setCanvasSize({
-      width: viewSize.width * cellSize,
-      height: viewSize.height * cellSize,
+      width: VIEW_SIZE.width * cellSize,
+      height: VIEW_SIZE.height * cellSize,
     });
 
     document.addEventListener('keydown', (e) => {
@@ -155,8 +145,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       const cellSize = getCellScreenSize(containerEl);
 
       setCanvasSize({
-        width: viewSize.width * cellSize,
-        height: viewSize.height * cellSize,
+        width: VIEW_SIZE.width * cellSize,
+        height: VIEW_SIZE.height * cellSize,
       });
     });
   }, [io]);
@@ -172,8 +162,8 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     >
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
-        width={viewSize.width * cellSize}
-        height={viewSize.height * cellSize}
+        width={VIEW_SIZE.width * CELL_SIZE}
+        height={VIEW_SIZE.height * CELL_SIZE}
         ref={canvasRef}
       />
     </Root>

@@ -1,18 +1,8 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import { EGame } from 'common/types/game';
-
-const {
-  games: {
-    [EGame.SURVIVAL_ONLINE]: {
-      viewSize,
-    },
-  },
-} = GAMES_CONFIG;
-
-export default function getCellScreenSize(containerEl: HTMLDivElement) {
-  const cellWidth = containerEl.offsetWidth / viewSize.width;
-  const cellHeight = containerEl.offsetHeight / viewSize.height;
+export default function getCellScreenSize(containerEl: HTMLDivElement): number {
+  const cellWidth = containerEl.offsetWidth / VIEW_SIZE.width;
+  const cellHeight = containerEl.offsetHeight / VIEW_SIZE.height;
 
   return Math.floor(Math.min(cellWidth, cellHeight));
 }
