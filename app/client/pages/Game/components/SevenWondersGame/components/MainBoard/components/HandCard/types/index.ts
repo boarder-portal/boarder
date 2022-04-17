@@ -20,5 +20,5 @@ export interface IBuildInfo {
   type: EBuildType;
   title: string;
   tradeVariants: ITradeVariant[];
-  onBuild(cardIndex: number, freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments): void;
+  onBuild(freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments): void;
 }

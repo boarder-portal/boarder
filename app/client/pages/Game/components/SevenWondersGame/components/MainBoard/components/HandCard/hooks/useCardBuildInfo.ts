@@ -29,7 +29,6 @@ function getTitle(buildType: EBuildType): string {
     case EBuildType.FREE:
     case EBuildType.FREE_BY_BUILDING:
     case EBuildType.FREE_BY_OWN_RESOURCES:
-    case EBuildType.FREE_WITH_EFFECT:
     case EBuildType.OWN_RESOURCES_AND_COINS: {
       return 'Построить';
     }
@@ -45,6 +44,10 @@ function getTitle(buildType: EBuildType): string {
     case EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS:
     case EBuildType.NOT_ALLOWED: {
       return 'Нельзя построить';
+    }
+
+    case EBuildType.FREE_WITH_EFFECT: {
+      throw new Error('Невозможный вариант');
     }
   }
 }
@@ -69,12 +72,13 @@ function getDiscount(card: ISevenWondersCard, player: ISevenWondersPlayer, leftN
 
 export default function useCardBuildInfo(
   card: ISevenWondersCard,
+  cardIndex: number,
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
   player: ISevenWondersPlayer,
   leftNeighbor: ISevenWondersPlayer,
   rightNeighbor: ISevenWondersPlayer,
-  onCardAction: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
+  onCardAction: (action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
   onStartCopyingLeader: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
 ): IBuildInfo {
   const { price: cardPrice } = card;
@@ -85,7 +89,7 @@ export default function useCardBuildInfo(
 
   const title = useMemo(() => getTitle(type), [type]);
 
-  const onBuild = useCallback((cardIndex: number, freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments) => {
+  const onBuild = useCallback((freeBuildType: TSevenWondersBuildType | null, payments?: TSevenWondersPayments) => {
     if (card.id === ESevenWonderCardId.COURTESANS_GUILD) {
       onStartCopyingLeader(cardIndex, {
         type: ESevenWondersCardActionType.BUILD_STRUCTURE,
@@ -95,12 +99,12 @@ export default function useCardBuildInfo(
       return;
     }
 
-    onCardAction(cardIndex, {
+    onCardAction({
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType,
       discount,
     }, payments);
-  }, [card.id, discount, onCardAction, onStartCopyingLeader]);
+  }, [card.id, cardIndex, discount, onCardAction, onStartCopyingLeader]);
 
   return useMemo(() => ({
     type,

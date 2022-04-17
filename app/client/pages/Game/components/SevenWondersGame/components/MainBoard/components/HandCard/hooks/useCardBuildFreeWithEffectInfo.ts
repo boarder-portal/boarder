@@ -20,14 +20,15 @@ import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuild
 
 export default function useCardBuildFreeWithEffectInfo(
   card: ISevenWondersCard,
+  cardIndex: number,
   player: ISevenWondersPlayer,
-  onCardAction: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
+  onCardAction: (action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
   onStartCopyingLeader: (cardIndex: number, action: TSevenWondersAction, payments?: TSevenWondersPayments) => void,
 ): {
   isAvailable: boolean;
   isPurchaseAvailable: boolean;
   title: string;
-  onBuild(cardIndex: number): void;
+  onBuild(): void;
 } {
   const waitingBuildEffect = useMemo(() => getWaitingBuildEffect(player), [player]);
 
@@ -90,7 +91,7 @@ export default function useCardBuildFreeWithEffectInfo(
 
   const title = useMemo(() => isAvailable ? 'Построить бесплатно с эффектом' : 'Нет эффекта', [isAvailable]);
 
-  const onBuild = useCallback((cardIndex: number) => {
+  const onBuild = useCallback(() => {
     const freeBuildType: TSevenWondersBuildType | null = buildEffectIndex === -1 ? null : {
       type: EBuildType.FREE_WITH_EFFECT,
       effectIndex: buildEffectIndex,
@@ -105,11 +106,11 @@ export default function useCardBuildFreeWithEffectInfo(
       return;
     }
 
-    onCardAction(cardIndex, {
+    onCardAction({
       type: ESevenWondersCardActionType.BUILD_STRUCTURE,
       freeBuildType,
     });
-  }, [buildEffectIndex, card.id, onCardAction, onStartCopyingLeader]);
+  }, [buildEffectIndex, card.id, cardIndex, onCardAction, onStartCopyingLeader]);
 
   return useMemo(() => ({
     isAvailable,
