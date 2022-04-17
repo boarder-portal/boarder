@@ -23,7 +23,6 @@ const Root = styled.div`
 
     &__game {
       aspect-ratio: 4 / 3;
-      color: white;
       border-radius: 8px;
       cursor: pointer;
       border: 2px solid #000;
@@ -32,7 +31,13 @@ const Root = styled.div`
 
       &__caption {
         padding: 3px 8px;
-        text-shadow: 0 0 8px #000;
+        color: #fff;
+        text-shadow:
+          -1px -1px 0 #000,
+          1px -1px 0 #000,
+          -1px 1px 0 #000,
+          1px 1px 0 #000,
+          0 0 8px #000;
       }
     }
   }
@@ -49,8 +54,6 @@ const Root = styled.div`
     --columns-count: 1;
   }
 `;
-
-const GAME_COLORS = ['#9acd32', '#ff0000', '#2929ca', '#c500f1', '#bbcc33', '#6fcccc', '#ff6347'];
 
 const { games } = GAMES_CONFIG;
 
