@@ -26,7 +26,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.MIDAS,
@@ -41,7 +41,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.ALEXANDER,
@@ -56,7 +56,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.BILKIS,
@@ -70,7 +70,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.ARISTOTLE,
@@ -84,7 +84,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.MAECENAS,
@@ -100,7 +100,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 1,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.JUSTINIAN,
@@ -120,7 +120,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PLATO,
@@ -144,7 +144,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.RAMSES,
@@ -160,7 +160,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 5,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.TOMYRIS,
@@ -171,7 +171,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.HANNIBAL,
@@ -183,7 +183,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 2,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.CAESAR,
@@ -195,7 +195,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 5,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.NERO,
@@ -208,7 +208,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 1,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.XENOPHON,
@@ -221,7 +221,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 2,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.VITRUVIUS,
@@ -234,7 +234,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 1,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.SOLOMON,
@@ -251,7 +251,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.CROESUS,
@@ -265,7 +265,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 1,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.HYPATIA,
@@ -281,7 +281,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.NEBUCHADNEZZAR,
@@ -297,7 +297,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PHIDIAS,
@@ -313,7 +313,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.VARRO,
@@ -329,7 +329,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PERICLES,
@@ -345,7 +345,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 6,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PRAXITELES,
@@ -361,7 +361,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.HIRAM,
@@ -377,7 +377,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.SAPPHO,
@@ -391,7 +391,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 1,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.ZENOBIA,
@@ -405,7 +405,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 2,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.NEFERTITI,
@@ -419,7 +419,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.CLEOPATRA,
@@ -433,7 +433,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.ARCHIMEDES,
@@ -449,7 +449,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 4,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.LEONIDAS,
@@ -465,7 +465,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 2,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.HAMMURABI,
@@ -481,7 +481,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 2,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.IMHOTEP,
@@ -497,7 +497,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 3,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.EUCLID,
@@ -509,7 +509,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 5,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PTOLEMY,
@@ -521,7 +521,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 5,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
   {
     id: ESevenWonderCardId.PYTHAGORAS,
@@ -533,7 +533,7 @@ const LEADERS: ISevenWondersCard[] = [
     price: {
       coins: 5,
     },
-    minPlayersCounts: [3],
+    minPlayersCounts: [],
   },
 ];
 

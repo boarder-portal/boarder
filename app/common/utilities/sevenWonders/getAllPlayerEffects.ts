@@ -1,19 +1,10 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
-
 import { ISevenWondersPlayer } from 'common/types/sevenWonders';
 import { TSevenWondersEffect } from 'common/types/sevenWonders/effects';
-import { EGame } from 'common/types/game';
 
-const {
-  games: {
-    [EGame.SEVEN_WONDERS]: {
-      allCities,
-    },
-  },
-} = GAMES_CONFIG;
+import getCity from 'common/utilities/sevenWonders/getCity';
 
 export default function getAllPlayerEffects(player: ISevenWondersPlayer): TSevenWondersEffect[] {
-  const citySide = allCities[player.city].sides[player.citySide];
+  const citySide = getCity(player.city, player.citySide);
 
   return [
     ...player.builtCards.map(({ effects }) => effects),

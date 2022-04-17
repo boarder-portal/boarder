@@ -1,4 +1,4 @@
-import { DEFAULT_CARD_ACTIONS } from 'common/constants/sevenWonders';
+import { DEFAULT_CARD_ACTIONS } from 'common/constants/games/sevenWonders';
 
 import { ESevenWondersCardActionType, ISevenWondersPlayer } from 'common/types/sevenWonders';
 

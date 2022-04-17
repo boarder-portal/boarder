@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/sevenWonders';
 
 import { EGame } from 'common/types/game';
 
@@ -8,20 +8,12 @@ import Lobby from 'client/components/Lobby/Lobby';
 
 import useLobby from 'client/hooks/useLobby';
 
-const {
-  games: {
-    [EGame.SEVEN_WONDERS]: {
-      defaultGameOptions,
-    },
-  },
-} = GAMES_CONFIG;
-
 const SevenWondersLobby: React.FC = () => {
   const {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby(EGame.SEVEN_WONDERS, defaultGameOptions);
+  } = useLobby(EGame.SEVEN_WONDERS, DEFAULT_GAME_OPTIONS);
 
   if (!lobby) {
     return null;

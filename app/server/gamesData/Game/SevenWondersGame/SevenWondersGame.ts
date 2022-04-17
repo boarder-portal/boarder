@@ -3,7 +3,7 @@ import chunk from 'lodash/chunk';
 import times from 'lodash/times';
 import random from 'lodash/random';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_LEADERS, CARDS_BY_AGE } from 'common/constants/games/sevenWonders';
 
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
@@ -59,15 +59,6 @@ import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards
 import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
-
-const {
-  games: {
-    [EGame.SEVEN_WONDERS]: {
-      cardsByAge,
-      allLeaders,
-    },
-  },
-} = GAMES_CONFIG;
 
 const ALL_CITIES = Object.values(ESevenWondersCity);
 
@@ -125,7 +116,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     });
 
-    this.leadersDeck = shuffle(allLeaders);
+    this.leadersDeck = shuffle(ALL_LEADERS);
 
     this.players.forEach((player, playerIndex) => {
       player.city = shuffledCities[playerIndex];
@@ -172,7 +163,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     this.age++;
     this.phase = ESevenWondersGamePhase.RECRUIT_LEADERS;
 
-    const ageCards = cardsByAge[this.age];
+    const ageCards = CARDS_BY_AGE[this.age];
     const addedGuildCards = shuffle(
       ageCards
         .filter(({ type }) => type === ESevenWondersCardType.GUILD)
