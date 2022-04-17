@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import block from 'bem-cn';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
-
 import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
@@ -55,9 +53,17 @@ const Root = styled.div`
   }
 `;
 
-const { games } = GAMES_CONFIG;
-
 const b = block('Home');
+
+const GAME_NAMES: Record<EGame, string> = {
+  [EGame.PEXESO]: 'Pexeso',
+  [EGame.SURVIVAL_ONLINE]: 'Выживать онлайн',
+  [EGame.MAZE]: 'Лабиринт',
+  [EGame.SET]: 'Сет',
+  [EGame.ONITAMA]: 'Онитама',
+  [EGame.CARCASSONNE]: 'Каркассон',
+  [EGame.SEVEN_WONDERS]: 'Семь чудес',
+};
 
 const Home: React.FC = () => {
   const history = useHistory();
@@ -85,7 +91,7 @@ const Home: React.FC = () => {
             onClick={() => handleGameClick(game)}
           >
             <span className={b('game__caption')}>
-              {games[game].name}
+              {GAME_NAMES[game]}
             </span>
           </Box>
         ))}

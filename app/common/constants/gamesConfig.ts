@@ -10,11 +10,7 @@ const CARCASSONNE_ALL_SIDE_PARTS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
 
 export const GAMES_CONFIG = {
   games: {
-    [EGame.PEXESO]: {
-      name: 'Pexeso',
-    },
     [EGame.SURVIVAL_ONLINE]: {
-      name: 'Выживать онлайн',
       minPlayersCount: 1,
       maxPlayersCount: 4,
       cellSize: 100,
@@ -39,7 +35,6 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.MAZE]: {
-      name: 'Лабиринт',
       mazeWidth: 30,
       mazeHeight: 16,
       cellSize: 30,
@@ -50,7 +45,6 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.SET]: {
-      name: 'Сет',
       startCardCountToShow: 12,
       cardsCountToAddIfNoSet: 3,
       pointsForSet: 1,
@@ -64,7 +58,6 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.ONITAMA]: {
-      name: 'Онитама',
       defaultGameOptions: {
         playersCount: 2,
       },
@@ -156,7 +149,6 @@ export const GAMES_CONFIG = {
       },
     },
     [EGame.CARCASSONNE]: {
-      name: 'Каркассон',
       defaultGameOptions: {
         playersCount: 4,
       },
@@ -165,7 +157,6 @@ export const GAMES_CONFIG = {
       cardsInHand: 3,
     },
     [EGame.SEVEN_WONDERS]: {
-      name: 'Семь чудес',
       defaultGameOptions: {
         playersCount: 3,
       },
