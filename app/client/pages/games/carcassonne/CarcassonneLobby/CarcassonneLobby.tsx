@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { DEFAULT_GAME_OPTIONS } from 'common/constants/games/carcassonne';
 
 import { EGame } from 'common/types/game';
 
@@ -8,20 +8,12 @@ import Lobby from 'client/components/Lobby/Lobby';
 
 import useLobby from 'client/hooks/useLobby';
 
-const {
-  games: {
-    [EGame.CARCASSONNE]: {
-      defaultGameOptions,
-    },
-  },
-} = GAMES_CONFIG;
-
 const CarcassonneLobby: React.FC = () => {
   const {
     lobby,
     createRoom,
     enterRoom,
-  } = useLobby(EGame.CARCASSONNE, defaultGameOptions);
+  } = useLobby(EGame.CARCASSONNE, DEFAULT_GAME_OPTIONS);
 
   if (!lobby) {
     return null;

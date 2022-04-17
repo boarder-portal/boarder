@@ -3,7 +3,7 @@ import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 import forEach from 'lodash/forEach';
 
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_CARDS, CARDS_IN_HAND } from 'common/constants/games/carcassonne';
 
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
@@ -49,15 +49,6 @@ interface IAttachCardOptions {
   player: ICarcassonnePlayer | null;
 }
 
-const {
-  games: {
-    [EGame.CARCASSONNE]: {
-      allCards,
-      cardsInHand,
-    },
-  },
-} = GAMES_CONFIG;
-
 // console.log(cards.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
 class CarcassonneGame extends Game<EGame.CARCASSONNE> {
@@ -66,7 +57,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     [ECarcassonneGameEvent.ATTACH_CARD]: this.onAttachCard,
   };
 
-  deck: ICarcassonneCard[] = cloneDeep(allCards).map((card) => times(card.count, () => card)).flat();
+  deck: ICarcassonneCard[] = cloneDeep(ALL_CARDS).map((card) => times(card.count, () => card)).flat();
   board: TCarcassonneBoard = {};
   objects: TCarcassonneObjects = {};
   lastId = 1;
@@ -286,7 +277,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
 
   createGameInfo(): void {
     this.attachCard({
-      card: allCards[0],
+      card: ALL_CARDS[0],
       coords: { x: 0, y: 0 },
       rotation: 0,
       meeple: null,
@@ -302,7 +293,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     this.players.forEach((player, index) => {
       player.color = colors[index];
 
-      times(cardsInHand, () => {
+      times(CARDS_IN_HAND, () => {
         const card = this.deck.pop();
 
         if (card) {

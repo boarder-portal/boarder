@@ -1,4 +1,4 @@
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_SIDE_PARTS } from 'common/constants/games/carcassonne';
 
 import {
   ECarcassonneCardObject,
@@ -15,7 +15,6 @@ import {
   TCarcassonneCardObject,
   TCarcassonneGameObject,
 } from 'common/types/carcassonne';
-import { EGame } from 'common/types/game';
 import { ICoords } from 'common/types';
 
 export function isCardCity(object: TCarcassonneCardObject): object is ICarcassonneCardCity {
@@ -61,7 +60,7 @@ export function isValidCard(card: ICarcassonneCard): boolean {
 
   // every side part is present only once
   if (
-    GAMES_CONFIG.games[EGame.CARCASSONNE].allSideParts.some((sidePart) => (
+    ALL_SIDE_PARTS.some((sidePart) => (
       getObjectsBySidePart(sidePart).length !== 1
     ))
   ) {

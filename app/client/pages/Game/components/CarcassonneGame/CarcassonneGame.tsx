@@ -7,7 +7,7 @@ import map from 'lodash/map';
 import isEmpty from 'lodash/isEmpty';
 
 import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
-import { GAMES_CONFIG } from 'common/constants/gamesConfig';
+import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import {
   ECarcassonneGameEvent,
@@ -21,7 +21,6 @@ import {
   TCarcassonneObjects,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
-import { EGame } from 'common/types/game';
 
 import {
   getAttachedObjectId,
@@ -46,14 +45,6 @@ interface ICarcassonneGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
-
-const {
-  games: {
-    [EGame.CARCASSONNE]: {
-      allCards,
-    },
-  },
-} = GAMES_CONFIG;
 
 const placedCardAudio = new Audio('/sounds/pop.wav');
 
@@ -236,7 +227,7 @@ const Root = styled(Box)`
 `;
 
 const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
-  const { io, isGameEnd } = props;
+  const { io } = props;
 
   const [players, setPlayers] = useState<ICarcassonnePlayer[]>([]);
   const [board, setBoard] = useState<TCarcassonneBoard>({});
@@ -360,7 +351,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     setPlacedCardCoords(coords);
 
-    const allowedMeeples = selectedCard.objects.map((object, objectId) => {
+    const allowedMeeples = selectedCard.objects.map((object) => {
       if (isCardMonastery(object)) {
         return [ECarcassonneMeepleType.COMMON, ECarcassonneMeepleType.FAT];
       }
@@ -604,7 +595,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
           {map(board, (row) => (
             map(row, (card) => {
-              const meepleCoords = card?.meeple && allCards[card.id].objects[card.meeple.cardObjectId].meepleCoords;
+              const meepleCoords = card?.meeple && ALL_CARDS[card.id].objects[card.meeple.cardObjectId].meepleCoords;
 
               if (!card?.meeple || !meepleCoords) {
                 return;
