@@ -134,9 +134,9 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
 
       // if (!player.isBot) {
-      //   player.city = ESevenWondersCity.HALIKARNASSOS;
+      //   player.city = ECity.ROMA;
       //   player.citySide = 1;
-      //   player.leadersHand.push(...allLeaders.filter(({ id }) => id === ESevenWonderCardId.MAECENAS));
+      //   player.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.BILKIS));
       // }
 
       // if (player.login === '123') {

@@ -20,7 +20,7 @@ export default function getObjectSpecificResources(
   const reducedPriceEffects = getAllPlayerEffects(player).filter(isReducedPriceEffect);
 
   const reducesPriceResources = reducedPriceEffects.map((effect): IResource[] | undefined => {
-    if (effect.objectType !== objectType) {
+    if (effect.objectType !== objectType || !effect.discount.resources) {
       return undefined;
     }
 
