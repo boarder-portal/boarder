@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
@@ -12,17 +12,9 @@ import {
   TPayments,
 } from 'common/types/sevenWonders';
 
-import getPlayerResourcePools
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
-import getCity from 'common/utilities/sevenWonders/getCity';
 import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getTradeVariants
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
-import getBuildType
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
+  ITradeVariant,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import TradeModal
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
@@ -32,9 +24,8 @@ import { useBoolean } from 'client/hooks/useBoolean';
 
 interface IBuildWonderLevelActionProps {
   player: IPlayer;
-  leftNeighbor: IPlayer;
-  rightNeighbor: IPlayer;
-  resourceTradePrices: TResourceTradePrices;
+  buildType: EBuildType;
+  tradeVariants: ITradeVariant[];
   onCardAction(action: TAction, payments?: TPayments): void;
 }
 
@@ -77,9 +68,8 @@ const Root = styled(Box)`
 const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) => {
   const {
     player,
-    leftNeighbor,
-    rightNeighbor,
-    resourceTradePrices,
+    buildType,
+    tradeVariants,
     onCardAction,
   } = props;
 
@@ -88,28 +78,6 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
     setTrue: openTradeModal,
     setFalse: closeTradeModal,
   } = useBoolean(false);
-
-  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
-
-  const wonderLevelResourcePools = useMemo(() => getPlayerResourcePools(player, leftNeighbor, rightNeighbor, 'wonderLevel'), [leftNeighbor, player, rightNeighbor]);
-  const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
-
-  const availableTradeVariants = useMemo(() =>
-    getTradeVariants(wonderLevelPrice, wonderLevelResourcePools, resourceTradePrices)
-      .filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.coins),
-  [player.coins, resourceTradePrices, wonderLevelPrice, wonderLevelResourcePools]);
-
-  const buildType = useMemo(() => {
-    if (player.builtStages.length === city.wonders.length) {
-      return EBuildType.ALREADY_BUILT;
-    }
-
-    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
-      return EBuildType.NOT_ALLOWED;
-    }
-
-    return getBuildType(wonderLevelPrice, player, availableTradeVariants, 0);
-  }, [availableTradeVariants, city.wonders.length, player, wonderLevelPrice]);
 
   const build = useCallback((payments?: TPayments) => {
     onCardAction({
@@ -143,7 +111,7 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
 
       <TradeModal
         isVisible={isTradeModalVisible}
-        tradeVariants={availableTradeVariants}
+        tradeVariants={tradeVariants}
         onBuild={build}
         onClose={closeTradeModal}
       />

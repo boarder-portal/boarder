@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import block from 'bem-cn';
 
@@ -8,11 +8,17 @@ import {
   TPayments,
 } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
-import getResourceTradePrices
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import {
+  TResourceTradePrices,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import {
+  ITradeVariant,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import Box from 'client/components/common/Box/Box';
 import DiscardAction
@@ -29,6 +35,10 @@ interface IBuildActionsProps {
   player: IPlayer;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
+  resourceTradePrices: TResourceTradePrices;
+  resourcePools: IOwnerResource[][];
+  wonderLevelBuildType: EBuildType;
+  wonderLevelTradeVariants: ITradeVariant[];
   onCardAction(action: TAction, payments?: TPayments): void;
   onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
@@ -49,11 +59,13 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
     player,
     leftNeighbor,
     rightNeighbor,
+    resourceTradePrices,
+    resourcePools,
+    wonderLevelBuildType,
+    wonderLevelTradeVariants,
     onCardAction,
     onStartCopyingLeader,
   } = props;
-  const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
-  const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
 
   return (
     <>
@@ -65,15 +77,15 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
           leftNeighbor={leftNeighbor}
           rightNeighbor={rightNeighbor}
           resourceTradePrices={resourceTradePrices}
+          resourcePools={resourcePools}
           onCardAction={onCardAction}
           onStartCopyingLeader={onStartCopyingLeader}
         />
 
         <BuildWonderLevelAction
           player={player}
-          leftNeighbor={leftNeighbor}
-          rightNeighbor={rightNeighbor}
-          resourceTradePrices={resourceTradePrices}
+          buildType={wonderLevelBuildType}
+          tradeVariants={wonderLevelTradeVariants}
           onCardAction={onCardAction}
         />
 

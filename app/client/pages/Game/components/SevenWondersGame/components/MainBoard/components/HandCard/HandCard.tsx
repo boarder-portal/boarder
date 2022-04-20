@@ -10,8 +10,19 @@ import {
   TPayments,
 } from 'common/types/sevenWonders';
 import {
+  IOwnerResource,
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+
+import {
+  ITradeVariant,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import {
+  TResourceTradePrices,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
@@ -31,6 +42,10 @@ interface IHandCardProps {
   isChosen: boolean;
   isDisabled: boolean;
   isViewingLeaders: boolean;
+  resourceTradePrices: TResourceTradePrices;
+  resourcePools: IOwnerResource[][];
+  wonderLevelBuildType: EBuildType;
+  wonderLevelTradeVariants: ITradeVariant[];
   onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
   onCancelCard(): void;
   onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
@@ -122,6 +137,10 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     isChosen,
     isDisabled,
     isViewingLeaders,
+    resourceTradePrices,
+    resourcePools,
+    wonderLevelBuildType,
+    wonderLevelTradeVariants,
     onCardAction,
     onCancelCard,
     onStartCopyingLeader,
@@ -149,6 +168,10 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
             isChosen={isChosen}
             gamePhase={gamePhase}
             courtesansBuildInfo={courtesansBuildInfo}
+            resourceTradePrices={resourceTradePrices}
+            resourcePools={resourcePools}
+            wonderLevelBuildType={wonderLevelBuildType}
+            wonderLevelTradeVariants={wonderLevelTradeVariants}
             onCancelCard={onCancelCard}
             onCardAction={onCardAction}
             onStartCopyingLeader={onStartCopyingLeader}

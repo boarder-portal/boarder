@@ -7,9 +7,20 @@ import {
   TPayments,
 } from 'common/types/sevenWonders';
 import {
+  IOwnerResource,
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import { ICard } from 'common/types/sevenWonders/cards';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+
+import {
+  ITradeVariant,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import {
+  TResourceTradePrices,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
 import DraftLeaderActions
   from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
@@ -30,6 +41,10 @@ interface IActionsProps {
   isChosen: boolean;
   gamePhase: EGamePhase;
   courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
+  resourceTradePrices: TResourceTradePrices;
+  resourcePools: IOwnerResource[][];
+  wonderLevelBuildType: EBuildType;
+  wonderLevelTradeVariants: ITradeVariant[];
   onCancelCard(): void;
   onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
   onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
@@ -46,6 +61,10 @@ const Actions: React.FC<IActionsProps> = (props) => {
     isChosen,
     gamePhase,
     courtesansBuildInfo,
+    resourceTradePrices,
+    resourcePools,
+    wonderLevelBuildType,
+    wonderLevelTradeVariants,
     onCancelCard,
     onCardAction,
     onStartCopyingLeader,
@@ -81,6 +100,10 @@ const Actions: React.FC<IActionsProps> = (props) => {
       card={card}
       leftNeighbor={leftNeighbor}
       rightNeighbor={rightNeighbor}
+      resourceTradePrices={resourceTradePrices}
+      resourcePools={resourcePools}
+      wonderLevelBuildType={wonderLevelBuildType}
+      wonderLevelTradeVariants={wonderLevelTradeVariants}
       onCardAction={handleIndexCardAction}
       onStartCopyingLeader={onStartCopyingLeader}
     />

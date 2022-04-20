@@ -4,6 +4,7 @@ import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import {
+  ECardActionType,
   EGameEvent,
   EGamePhase,
   ENeighborSide,
@@ -16,17 +17,36 @@ import { ICard } from 'common/types/sevenWonders/cards';
 import {
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import {
+  EBuildType,
+} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getHand from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getHand';
+import getPlayerResourcePools
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
+import getTradeVariants
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
+import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
+import getBuildType
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
+import getCity from 'common/utilities/sevenWonders/getCity';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
+import getResourceTradePrices
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getObjectSpecificResources
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
+import getResourcePoolsWithAdditionalResources
+  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
 
-import Box from 'client/components/common/Box/Box';
-import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
-import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
+import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
+import Box from 'client/components/common/Box/Box';
 
-import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 import { usePrevious } from 'client/hooks/usePrevious';
+import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 
 interface IMainBoardProps {
   className?: string;
@@ -133,7 +153,44 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     rightNeighbor,
     isViewingLeaders,
   ), [player, discard, gamePhase, courtesansBuildInfo, leftNeighbor, rightNeighbor, isViewingLeaders]);
+
   const prevHand = usePrevious(hand);
+
+  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
+  const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
+  const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
+
+  const resourcePools = useMemo(() =>
+    getPlayerResourcePools(player, leftNeighbor, rightNeighbor),
+  [leftNeighbor, player, rightNeighbor],
+  );
+
+  const wonderLevelPrice = useMemo(() => city.wonders[player.builtStages.length]?.price || null, [city.wonders, player.builtStages.length]);
+
+  const wonderLevelResourcePools = useMemo(() => {
+    const objectSpecificResources = getObjectSpecificResources(player, 'wonderLevel');
+
+    return getResourcePoolsWithAdditionalResources(resourcePools, objectSpecificResources);
+  },
+  [player, resourcePools],
+  );
+
+  const wonderLevelTradeVariants = useMemo(() =>
+    getTradeVariants(wonderLevelPrice, wonderLevelResourcePools, resourceTradePrices)
+      .filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.coins),
+  [player.coins, resourceTradePrices, wonderLevelPrice, wonderLevelResourcePools]);
+
+  const wonderLevelBuildType = useMemo(() => {
+    if (player.builtStages.length === city.wonders.length) {
+      return EBuildType.ALREADY_BUILT;
+    }
+
+    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
+      return EBuildType.NOT_ALLOWED;
+    }
+
+    return getBuildType(wonderLevelPrice, player, wonderLevelTradeVariants, 0);
+  }, [wonderLevelTradeVariants, city.wonders.length, player, wonderLevelPrice]);
 
   useEffect(() => {
     if (hand.length !== prevHand.length && document.hidden) {
@@ -174,6 +231,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
                   : index !== chosenCardIndex
               }
               isViewingLeaders={isViewingLeaders}
+              resourceTradePrices={resourceTradePrices}
+              resourcePools={resourcePools}
+              wonderLevelBuildType={wonderLevelBuildType}
+              wonderLevelTradeVariants={wonderLevelTradeVariants}
               onCardAction={handleCardAction}
               onCancelCard={cancelCard}
               onStartCopyingLeader={handleStartCopyingLeader}
