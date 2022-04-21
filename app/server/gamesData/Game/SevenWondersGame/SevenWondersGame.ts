@@ -165,10 +165,8 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
 
     const ageCards = CARDS_BY_AGE[this.age];
     const addedGuildCards = shuffle(
-      ageCards
-        .filter(({ type }) => type === ECardType.GUILD)
-        .slice(0, this.players.length + 2),
-    );
+      ageCards.filter(({ type }) => type === ECardType.GUILD),
+    ).slice(0, this.players.length + 2);
     const usedCards = ageCards.reduce<ICard[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
         if (cardPlayersCount > this.players.length) {
