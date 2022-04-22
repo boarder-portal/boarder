@@ -140,7 +140,7 @@ class Room<G extends EGame> {
     });
   }
 
-  sendRoomInfo() {
+  sendRoomInfo(): void {
     this.onUpdateRoom();
 
     const updatedData: IRoomUpdateEvent<G> = {
