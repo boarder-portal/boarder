@@ -21,10 +21,7 @@ import {
   IGameInfoEvent,
   IPlayer,
 } from 'common/types/sevenWonders';
-import {
-  ECardType,
-  ICard,
-} from 'common/types/sevenWonders/cards';
+import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 import {
   EEffect,
   EFreeCardPeriod,
@@ -519,6 +516,10 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
     const effectsVariants = getAllPlayerEffects(player).map((effect) => {
       if (!isCopyEffect(effect)) {
         return [[effect]];
+      }
+
+      if (effect.cardType !== ECardType.GUILD) {
+        return [];
       }
 
       return effect.neighbors

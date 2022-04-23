@@ -1642,7 +1642,6 @@ const CARDS_BY_AGE: ICard[][] = [
       },
       minPlayersCounts: [],
     },
-    /*
     {
       id: ECardId.COURTESANS_GUILD,
       type: ECardType.GUILD,
@@ -1671,7 +1670,6 @@ const CARDS_BY_AGE: ICard[][] = [
       },
       minPlayersCounts: [],
     },
-    */
     {
       id: ECardId.DIPLOMATS_GUILD,
       type: ECardType.GUILD,
