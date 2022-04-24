@@ -78,6 +78,7 @@ const Root = styled(Box)`
         text-align: center;
         cursor: pointer;
         text-shadow: 1px 1px 2px black;
+        user-select: none;
 
         &:not(:first-child) {
           margin-top: 20px;
@@ -118,7 +119,6 @@ const Root = styled(Box)`
           opacity: 1;
           pointer-events: all;
           z-index: 30;
-          user-select: none;
         }
       }
     }
