@@ -112,13 +112,13 @@ const Root = styled(Box)`
   :not(.HandCard_isDisabled) {
     .HandCard__cardWrapper {
       &:hover {
-        transform: translateY(-100px);
         z-index: 21;
 
         .HandCard__actions {
           opacity: 1;
           pointer-events: all;
           z-index: 30;
+          user-select: none;
         }
       }
     }
