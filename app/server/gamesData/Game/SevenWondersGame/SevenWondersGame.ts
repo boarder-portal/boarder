@@ -519,7 +519,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       }
 
       if (effect.cardType !== ECardType.GUILD) {
-        return [];
+        return [[]];
       }
 
       return effect.neighbors
