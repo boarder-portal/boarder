@@ -79,6 +79,7 @@ const Root = styled(Box)`
 
     &__handWrapper {
       position: fixed;
+      bottom: -200px;
       z-index: 24;
     }
 
