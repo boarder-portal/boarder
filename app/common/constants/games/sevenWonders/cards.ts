@@ -1233,7 +1233,7 @@ const CARDS_BY_AGE: ICard[][] = [
           type: EResource.LOOM,
           count: 1,
         }],
-        buildings: [ECardId.OBSERVATORY],
+        buildings: [ECardId.LABORATORY],
       },
       minPlayersCounts: [3, 7],
     },
