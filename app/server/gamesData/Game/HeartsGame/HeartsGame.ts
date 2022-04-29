@@ -210,6 +210,8 @@ class HeartsGame extends Game<EGame.HEARTS> {
         return;
       }
     } else {
+      const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
+
       player.playedCard = player.hand.splice(cardIndex, 1)[0] ?? null;
       player.isActive = false;
 
@@ -220,8 +222,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
           this.endTurn(playedCards);
         }, 2000);
       } else {
-        const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
-
         this.players[(activePlayerIndex + 1) % this.players.length].isActive = true;
       }
     }
