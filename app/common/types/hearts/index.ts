@@ -22,12 +22,15 @@ export interface IPlayer extends ICommonPlayer {
   chosenCardsIndexes: number[];
   score: number;
   handScore: number;
+  takenCards: ICard[];
 }
 
 export interface IGameInfoEvent {
   stage: EHandStage;
   players: IPlayer[];
   passDirection: EPassDirection;
+  startTurnPlayerIndex: number;
+  heartsEnteredPlay: boolean;
 }
 
 export interface IChooseCardEvent {

@@ -58,6 +58,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
   stage: EHandStage = EHandStage.PASS;
   passDirection: EPassDirection = EPassDirection.LEFT;
   startTurnPlayerIndex = 0;
+  heartsEnteredPlay = false;
 
   constructor(options: IGameCreateOptions<EGame.HEARTS>) {
     super(options);
@@ -78,6 +79,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
       chosenCardsIndexes: [],
       score: 0,
       handScore: 0,
+      takenCards: [],
     };
   }
 
@@ -90,6 +92,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
     this.stage = this.passDirection === EPassDirection.NONE
       ? EHandStage.PLAY
       : EHandStage.PASS;
+    this.heartsEnteredPlay = false;
 
     this.players.forEach((player, index) => {
       player.hand = shuffledDeck[index];
@@ -228,6 +231,12 @@ class HeartsGame extends Game<EGame.HEARTS> {
         : isEqualCards(card, getCard(EValue.QUEEN, ESuit.SPADES))
           ? 13
           : 0;
+
+      player.takenCards.push(card);
+
+      if (card.suit === ESuit.HEARTS) {
+        this.heartsEnteredPlay = true;
+      }
     });
   }
 
@@ -254,7 +263,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    console.log('on get info');
     socket.emit(EGameEvent.GAME_INFO, this.getGameInfoEvent());
   }
 
@@ -263,6 +271,8 @@ class HeartsGame extends Game<EGame.HEARTS> {
       stage: this.stage,
       players: this.players,
       passDirection: this.passDirection,
+      startTurnPlayerIndex: this.startTurnPlayerIndex,
+      heartsEnteredPlay: this.heartsEnteredPlay,
     };
   }
 }
