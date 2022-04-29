@@ -2,6 +2,7 @@ import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
 
 import { DECK } from 'common/constants/games/common/cards';
+import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
 import { IPlayer as ICommonPlayer } from 'common/types';
 import { EGameEvent, EHandStage, EPassDirection, IChooseCardEvent, IGameInfoEvent, IPlayer } from 'common/types/hearts';
@@ -10,10 +11,14 @@ import { ESuit, EValue, ICard } from 'common/types/cards';
 import { IGameEvent } from 'server/types';
 
 import { getRandomElement } from 'common/utilities/random';
-import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
+import { isEqualCards, isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
 import getCard from 'common/utilities/cards/getCard';
+import isDefined from 'common/utilities/isDefined';
+import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
+
+const isDeuceOfClubs = isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.CLUBS));
 
 class HeartsGame extends Game<EGame.HEARTS> {
   static decks: Record<number, ICard[]> = {
@@ -45,6 +50,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
   handIndex = -1;
   stage: EHandStage = EHandStage.PASS;
   passDirection: EPassDirection = EPassDirection.LEFT;
+  startTurnPlayerIndex = 0;
 
   constructor(options: IGameCreateOptions<EGame.HEARTS>) {
     super(options);
@@ -83,13 +89,61 @@ class HeartsGame extends Game<EGame.HEARTS> {
     this.players.forEach((player, index) => {
       player.hand = shuffledDeck[index];
       player.handScore = 0;
+      player.isActive = false;
     });
 
     this.sendGameInfo();
   }
 
-  endHand(): void {
+  startHandPlay(): void {
+    this.stage = EHandStage.PLAY;
 
+    const startingPlayerIndex = this.players.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
+    const startingPlayer = this.players[startingPlayerIndex];
+
+    this.startTurn(startingPlayerIndex);
+    this.choosePlayerCard(startingPlayer, startingPlayer.hand.findIndex(isDeuceOfClubs));
+  }
+
+  startTurn(playerIndex: number): void {
+    const startingPlayer = this.players[playerIndex];
+
+    this.startTurnPlayerIndex = playerIndex;
+    startingPlayer.isActive = true;
+  }
+
+  endTurn(playedCards: ICard[]): void {
+    const highestCardPlayerIndex = getHighestCardIndex(playedCards, this.startTurnPlayerIndex);
+
+    this.takeCards(this.players[highestCardPlayerIndex], playedCards);
+
+    this.players.forEach((player) => {
+      player.playedCard = null;
+    });
+
+    if (this.players.some(({ hand }) => hand.length === 0)) {
+      this.endHand();
+    } else {
+      this.startTurn(highestCardPlayerIndex);
+    }
+
+    this.sendGameInfo();
+  }
+
+  endHand(): void {
+    this.players.forEach((player) => {
+      player.score += player.handScore;
+    });
+
+    if (this.players.some((player) => player.score >= 100)) {
+      this.endGame();
+    } else {
+      this.startHand();
+    }
+  }
+
+  endGame(): void {
+    // TODO: end game
   }
 
   choosePlayerCard(player: IPlayer, cardIndex: number): void {
@@ -99,11 +153,40 @@ class HeartsGame extends Game<EGame.HEARTS> {
       } else {
         player.chosenCardsIndexes.push(cardIndex);
       }
+
+      if (this.players.every(({ chosenCardsIndexes }) => chosenCardsIndexes.length === PASS_CARDS_COUNT)) {
+        this.startHandPlay();
+
+        return;
+      }
     } else {
       player.playedCard = player.hand.splice(cardIndex, 1)[0] ?? null;
+
+      const playedCards = this.players.map(({ playedCard }) => playedCard);
+
+      if (playedCards.every(isDefined)) {
+        setTimeout(() => {
+          this.endTurn(playedCards);
+        }, 2000);
+      } else {
+        const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
+
+        player.isActive = false;
+        this.players[(activePlayerIndex + 1) % this.players.length].isActive = true;
+      }
     }
 
     this.sendGameInfo();
+  }
+
+  takeCards(player: IPlayer, cards: ICard[]): void {
+    cards.forEach((card) => {
+      player.handScore += card.suit === ESuit.HEARTS
+        ? 1
+        : isEqualCards(card, getCard(EValue.QUEEN, ESuit.SPADES))
+          ? 13
+          : 0;
+    });
   }
 
   sendGameInfo(): void {
