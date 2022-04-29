@@ -11,7 +11,6 @@ import { EGame } from 'common/types/game';
 import { ESuit, EValue, ICard } from 'common/types/cards';
 import { IGameEvent } from 'server/types';
 
-import { getRandomElement } from 'common/utilities/random';
 import { isEqualCards, isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
 import getCard from 'common/utilities/cards/getCard';
 import isDefined from 'common/utilities/isDefined';
@@ -67,8 +66,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   createGameInfo(): void {
-    getRandomElement(this.players).isActive = true;
-
     this.startHand();
   }
 
@@ -146,6 +143,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
     this.takeCards(this.players[highestCardPlayerIndex], playedCards);
 
     this.players.forEach((player) => {
+      player.isActive = false;
       player.playedCard = null;
     });
 
