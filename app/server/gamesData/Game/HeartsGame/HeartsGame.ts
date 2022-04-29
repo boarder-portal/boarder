@@ -90,14 +90,30 @@ class HeartsGame extends Game<EGame.HEARTS> {
       player.hand = shuffledDeck[index];
       player.handScore = 0;
       player.isActive = false;
-      player.chosenCardsIndexes = [];
     });
 
-    this.sendGameInfo();
+    if (this.stage === EHandStage.PLAY) {
+      this.startHandPlay();
+    } else {
+      this.sendGameInfo();
+    }
   }
 
   startHandPlay(): void {
     this.stage = EHandStage.PLAY;
+
+    const passedCards = this.players.map(({ chosenCardsIndexes, hand }) => (
+      chosenCardsIndexes.map((index) => hand[index])
+    ));
+
+    this.players.forEach((player, index) => {
+      this.players[this.getTargetPlayerIndex(index)].hand.push(
+        ...passedCards[index],
+      );
+
+      player.hand = player.hand.filter((_card, index) => !player.chosenCardsIndexes.includes(index));
+      player.chosenCardsIndexes = [];
+    });
 
     const startingPlayerIndex = this.players.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
     const startingPlayer = this.players[startingPlayerIndex];
@@ -178,6 +194,22 @@ class HeartsGame extends Game<EGame.HEARTS> {
     }
 
     this.sendGameInfo();
+  }
+
+  getTargetPlayerIndex(playerIndex: number): number {
+    if (this.passDirection === EPassDirection.NONE) {
+      return playerIndex;
+    }
+
+    if (this.passDirection === EPassDirection.LEFT) {
+      return (playerIndex - 1 + this.players.length) % this.players.length;
+    }
+
+    if (this.passDirection === EPassDirection.RIGHT) {
+      return (playerIndex + 1) % this.players.length;
+    }
+
+    return (playerIndex + 2) % this.players.length;
   }
 
   takeCards(player: IPlayer, cards: ICard[]): void {
