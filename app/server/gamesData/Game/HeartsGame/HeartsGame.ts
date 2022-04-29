@@ -21,6 +21,7 @@ import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
 const isDeuceOfClubs = isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.CLUBS));
 
+const ALL_SCORE = 26;
 const SUIT_VALUES: Record<ESuit, number> = {
   [ESuit.CLUBS]: 1e0,
   [ESuit.DIAMONDS]: 1e2,
@@ -80,7 +81,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
       playedCard: null,
       chosenCardsIndexes: [],
       score: 0,
-      handScore: 0,
       takenCards: [],
     };
   }
@@ -99,7 +99,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
 
     this.players.forEach((player, index) => {
       player.hand = shuffledDeck[index];
-      player.handScore = 0;
       player.isActive = false;
     });
 
@@ -165,8 +164,25 @@ class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   endHand(): void {
-    this.players.forEach((player) => {
-      player.score += player.handScore;
+    const playerScores = this.players.map((player) => (
+      player.takenCards.reduce((score, card) => (
+        score + (
+          isHeart(card)
+            ? 1
+            : isQueenOfSpades(card)
+              ? 13
+              : 0
+        )
+      ), 0)
+    ));
+    const takeAllPlayerIndex = playerScores.indexOf(ALL_SCORE);
+
+    this.players.forEach((player, index) => {
+      player.score += index === takeAllPlayerIndex
+        ? 0
+        : takeAllPlayerIndex === -1
+          ? playerScores[index]
+          : ALL_SCORE;
     });
 
     if (this.players.some((player) => player.score >= 100)) {
@@ -231,12 +247,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
 
   takeCards(player: IPlayer, cards: ICard[]): void {
     cards.forEach((card) => {
-      player.handScore += isHeart(card)
-        ? 1
-        : isQueenOfSpades(card)
-          ? 13
-          : 0;
-
       player.takenCards.push(card);
 
       if (isHeart(card)) {

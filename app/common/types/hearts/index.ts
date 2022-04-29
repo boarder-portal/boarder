@@ -21,7 +21,6 @@ export interface IPlayer extends ICommonPlayer {
   playedCard: ICard | null;
   chosenCardsIndexes: number[];
   score: number;
-  handScore: number;
   takenCards: ICard[];
 }
 
