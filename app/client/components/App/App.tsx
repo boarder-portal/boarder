@@ -28,6 +28,7 @@ import SetLobby from 'client/pages/games/set/SetLobby/SetLobby';
 import OnitamaLobby from 'client/pages/games/onitama/OnitamaLobby/OnitamaLobby';
 import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
 import SevenWondersLobby from 'client/pages/games/sevenWonders/SevenWonders/SevenWondersLobby';
+import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -138,6 +139,10 @@ const App: React.FC = () => {
 
           <Route exact path={`/${EGame.SEVEN_WONDERS}/lobby`}>
             <SevenWondersLobby />
+          </Route>
+
+          <Route exact path={`/${EGame.HEARTS}/lobby`}>
+            <HeartsLobby />
           </Route>
 
           <Route exact path="/:game/room/:roomId">

@@ -63,6 +63,7 @@ const GAME_NAMES: Record<EGame, string> = {
   [EGame.ONITAMA]: 'Онитама',
   [EGame.CARCASSONNE]: 'Каркассон',
   [EGame.SEVEN_WONDERS]: 'Семь чудес',
+  [EGame.HEARTS]: 'Червы',
 };
 
 const Home: React.FC = () => {

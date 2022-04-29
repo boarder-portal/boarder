@@ -108,7 +108,7 @@ class PexesoGame extends Game<EGame.PEXESO> {
       isInGame: true,
     }));
 
-    this.players[Math.floor(Math.random() * this.players.length)].isActive = true;
+    getRandomElement(this.players).isActive = true;
   }
 
   createPlayer(roomPlayer: ICommonPlayer): IPlayer {

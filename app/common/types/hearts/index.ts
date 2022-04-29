@@ -5,6 +5,7 @@ import { ICard } from 'common/types/cards';
 export enum EGameEvent {
   // client events
   GET_GAME_INFO = 'GET_GAME_INFO',
+  CHOOSE_CARD = 'CHOOSE_CARD',
 
   // server events
   GAME_INFO = 'GAME_INFO',
@@ -20,8 +21,27 @@ export interface IPlayer extends ICommonPlayer {
   playedCard: ICard | null;
   chosenCardsIndexes: number[];
   score: number;
+  handScore: number;
 }
 
 export interface IGameInfoEvent {
+  stage: EHandStage;
   players: IPlayer[];
+  passDirection: EPassDirection;
+}
+
+export interface IChooseCardEvent {
+  cardIndex: number;
+}
+
+export enum EHandStage {
+  PASS = 'PASS',
+  PLAY = 'PLAY',
+}
+
+export enum EPassDirection {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  ACROSS = 'ACROSS',
+  NONE = 'NONE',
 }
