@@ -195,6 +195,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
       }
     } else {
       player.playedCard = player.hand.splice(cardIndex, 1)[0] ?? null;
+      player.isActive = false;
 
       const playedCards = this.players.map(({ playedCard }) => playedCard);
 
@@ -205,7 +206,6 @@ class HeartsGame extends Game<EGame.HEARTS> {
       } else {
         const activePlayerIndex = this.players.findIndex(({ isActive }) => isActive);
 
-        player.isActive = false;
         this.players[(activePlayerIndex + 1) % this.players.length].isActive = true;
       }
     }
