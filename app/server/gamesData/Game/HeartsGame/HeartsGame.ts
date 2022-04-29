@@ -11,10 +11,11 @@ import { EGame } from 'common/types/game';
 import { ESuit, EValue, ICard } from 'common/types/cards';
 import { IGameEvent } from 'server/types';
 
-import { isEqualCards, isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
+import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
 import getCard from 'common/utilities/cards/getCard';
 import isDefined from 'common/utilities/isDefined';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
+import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
@@ -59,6 +60,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
   passDirection: EPassDirection = EPassDirection.LEFT;
   startTurnPlayerIndex = 0;
   heartsEnteredPlay = false;
+  isFirstTurn = false;
 
   constructor(options: IGameCreateOptions<EGame.HEARTS>) {
     super(options);
@@ -93,6 +95,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
       ? EHandStage.PLAY
       : EHandStage.PASS;
     this.heartsEnteredPlay = false;
+    this.isFirstTurn = true;
 
     this.players.forEach((player, index) => {
       player.hand = shuffledDeck[index];
@@ -149,6 +152,8 @@ class HeartsGame extends Game<EGame.HEARTS> {
       player.isActive = false;
       player.playedCard = null;
     });
+
+    this.isFirstTurn = false;
 
     if (this.players.some(({ hand }) => hand.length === 0)) {
       this.endHand();
@@ -226,15 +231,15 @@ class HeartsGame extends Game<EGame.HEARTS> {
 
   takeCards(player: IPlayer, cards: ICard[]): void {
     cards.forEach((card) => {
-      player.handScore += card.suit === ESuit.HEARTS
+      player.handScore += isHeart(card)
         ? 1
-        : isEqualCards(card, getCard(EValue.QUEEN, ESuit.SPADES))
+        : isQueenOfSpades(card)
           ? 13
           : 0;
 
       player.takenCards.push(card);
 
-      if (card.suit === ESuit.HEARTS) {
+      if (isHeart(card)) {
         this.heartsEnteredPlay = true;
       }
     });
@@ -273,6 +278,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
       passDirection: this.passDirection,
       startTurnPlayerIndex: this.startTurnPlayerIndex,
       heartsEnteredPlay: this.heartsEnteredPlay,
+      isFirstTurn: this.isFirstTurn,
     };
   }
 }

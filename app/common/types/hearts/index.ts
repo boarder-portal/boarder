@@ -31,6 +31,7 @@ export interface IGameInfoEvent {
   passDirection: EPassDirection;
   startTurnPlayerIndex: number;
   heartsEnteredPlay: boolean;
+  isFirstTurn: boolean;
 }
 
 export interface IChooseCardEvent {
