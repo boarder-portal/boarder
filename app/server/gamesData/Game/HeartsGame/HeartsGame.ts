@@ -90,6 +90,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
       player.hand = shuffledDeck[index];
       player.handScore = 0;
       player.isActive = false;
+      player.chosenCardsIndexes = [];
     });
 
     this.sendGameInfo();
