@@ -21,44 +21,50 @@ const Root = styled(Box)`
   border: 1px solid black;
   border-radius: 8px;
   user-select: none;
+  font-size: 24px;
 
   &.Card {
     &:not(&_visible) {
       background: black;
     }
+
+    &_color {
+      &_black {
+        color: black;
+      }
+
+      &_red {
+        color: red;
+      }
+    }
+  }
+
+  .Card {
+    &__suit {
+      font-size: 28px;
+    }
   }
 `;
 
-function Suit({ suit }: { suit: ESuit }) {
-  if (suit === ESuit.HEARTS) {
-    return (
-      <span>❤️️</span>
-    );
-  }
-
-  if (suit === ESuit.SPADES) {
-    return (
-      <span>♠️️</span>
-    );
-  }
-
-  if (suit === ESuit.CLUBS) {
-    return (
-      <span>♣️</span>
-    );
-  }
-
-  return (
-    <span>♦️</span>
-  );
-}
+const SUITS_MAP: Record<ESuit, string> = {
+  [ESuit.HEARTS]: '\u2665',
+  [ESuit.SPADES]: '\u2660',
+  [ESuit.CLUBS]: '\u2663',
+  [ESuit.DIAMONDS]: '\u2666',
+};
+const RED_COLORS = [ESuit.HEARTS, ESuit.DIAMONDS];
 
 const Card: React.FC<ICardProps> = (props) => {
   const { className, card, isVisible, onClick } = props;
 
   return (
     <Root
-      className={b({ visible: isVisible }).mix(className)}
+      className={b({
+        visible: isVisible,
+        color: RED_COLORS.includes(card.suit)
+          ? 'red'
+          : 'black',
+      }).mix(className)}
       flex
       justifyContent="center"
       alignItems="center"
@@ -67,7 +73,10 @@ const Card: React.FC<ICardProps> = (props) => {
       {isVisible && (
         <div>
           {card.value}
-          <Suit suit={card.suit} />
+
+          <span className={b('suit')}>
+            {SUITS_MAP[card.suit]}
+          </span>
         </div>
       )}
     </Root>
