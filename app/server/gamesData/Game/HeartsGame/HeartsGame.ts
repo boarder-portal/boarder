@@ -1,7 +1,8 @@
 import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
+import sortBy from 'lodash/sortBy';
 
-import { DECK } from 'common/constants/games/common/cards';
+import { CARDS_SORT, DECK } from 'common/constants/games/common/cards';
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
 import { IPlayer as ICommonPlayer } from 'common/types';
@@ -19,6 +20,13 @@ import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
 const isDeuceOfClubs = isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.CLUBS));
+
+const SUIT_VALUES: Record<ESuit, number> = {
+  [ESuit.CLUBS]: 1e0,
+  [ESuit.DIAMONDS]: 1e2,
+  [ESuit.SPADES]: 1e4,
+  [ESuit.HEARTS]: 1e6,
+};
 
 class HeartsGame extends Game<EGame.HEARTS> {
   static decks: Record<number, ICard[]> = {
@@ -95,6 +103,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
     if (this.stage === EHandStage.PLAY) {
       this.startHandPlay();
     } else {
+      this.sortHands();
       this.sendGameInfo();
     }
   }
@@ -114,6 +123,8 @@ class HeartsGame extends Game<EGame.HEARTS> {
       player.hand = player.hand.filter((_card, index) => !player.chosenCardsIndexes.includes(index));
       player.chosenCardsIndexes = [];
     });
+
+    this.sortHands();
 
     const startingPlayerIndex = this.players.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
     const startingPlayer = this.players[startingPlayerIndex];
@@ -219,6 +230,14 @@ class HeartsGame extends Game<EGame.HEARTS> {
         : isEqualCards(card, getCard(EValue.QUEEN, ESuit.SPADES))
           ? 13
           : 0;
+    });
+  }
+
+  sortHands(): void {
+    this.players.forEach((player) => {
+      player.hand = sortBy(player.hand, (card) => {
+        return SUIT_VALUES[card.suit] + CARDS_SORT.indexOf(card.value);
+      });
     });
   }
 
