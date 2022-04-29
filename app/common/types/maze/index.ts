@@ -62,7 +62,7 @@ export interface IWall {
   to: ICoords;
 }
 
-export interface IGameInfo {
+export interface IGameInfoEvent {
   walls: IWall[];
   players: IPlayer[];
 }

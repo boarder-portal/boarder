@@ -7,7 +7,7 @@ import {
   EMoveEvent,
   EPlayerSide,
   ESide,
-  IGameInfo,
+  IGameInfoEvent,
   IPlayer,
   IPlayerMoveEvent,
   IWall,
@@ -239,7 +239,7 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    const gameInfo: IGameInfo = {
+    const gameInfo: IGameInfoEvent = {
       walls: this.walls,
       players: this.players,
     };

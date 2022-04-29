@@ -22,6 +22,6 @@ export interface IPlayer extends ICommonPlayer {
   score: number;
 }
 
-export interface IGameInfo {
+export interface IGameInfoEvent {
   players: IPlayer[];
 }

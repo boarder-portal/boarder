@@ -14,7 +14,7 @@ import {
   EGameEvent,
   EPlayerSide,
   ESide,
-  IGameInfo,
+  IGameInfoEvent,
   IPlayer,
   IPlayerMoveEvent,
   IWall,
@@ -118,7 +118,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (mazeGameInfo: IGameInfo) => {
+    io.on(EGameEvent.GAME_INFO, (mazeGameInfo: IGameInfoEvent) => {
       players.current = mazeGameInfo.players;
 
       players.current.forEach(renderPlayer);
