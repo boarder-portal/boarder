@@ -6,6 +6,7 @@ import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
 import * as SevenWondersTypes from 'common/types/sevenWonders';
+import * as HeartsTypes from 'common/types/hearts';
 
 export enum EGameEvent {
   UPDATE = 'UPDATE',
@@ -20,6 +21,7 @@ export enum EGame {
   ONITAMA = 'onitama',
   CARCASSONNE = 'carcassonne',
   SEVEN_WONDERS = 'sevenWonders',
+  HEARTS = 'hearts',
 }
 
 export type TGamePlayer<Game extends EGame> = IGameParams[Game]['player'];
@@ -59,6 +61,11 @@ export interface IGameParams {
     event: SevenWondersTypes.EGameEvent;
     options: SevenWondersTypes.IGameOptions;
     player: SevenWondersTypes.IPlayer;
+  };
+  [EGame.HEARTS]: {
+    event: HeartsTypes.EGameEvent;
+    options: HeartsTypes.IGameOptions;
+    player: HeartsTypes.IPlayer;
   };
 }
 
