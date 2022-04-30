@@ -178,6 +178,7 @@ class HeartsGame extends Game<EGame.HEARTS> {
     const takeAllPlayerIndex = playerScores.indexOf(ALL_SCORE);
 
     this.players.forEach((player, index) => {
+      player.takenCards = [];
       player.score += index === takeAllPlayerIndex
         ? 0
         : takeAllPlayerIndex === -1
