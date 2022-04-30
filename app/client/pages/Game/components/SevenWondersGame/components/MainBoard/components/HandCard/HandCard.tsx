@@ -78,7 +78,6 @@ const Root = styled(Box)`
         text-align: center;
         cursor: pointer;
         text-shadow: 1px 1px 2px black;
-        user-select: none;
 
         &:not(:first-child) {
           margin-top: 20px;
@@ -113,6 +112,7 @@ const Root = styled(Box)`
   :not(.HandCard_isDisabled) {
     .HandCard__cardWrapper {
       &:hover {
+        transform: translateY(-100px);
         z-index: 21;
 
         .HandCard__actions {

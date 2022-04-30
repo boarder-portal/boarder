@@ -48,7 +48,6 @@ const Root = styled(Box)`
 
     &__mainBoard {
       margin-top: auto;
-      padding-bottom: 200px;
     }
   }
 `;
