@@ -36,8 +36,6 @@ export default class TurnState extends GameState<EGame.HEARTS, IRootState, ITurn
     const state = handState.turnState = this.initialState;
     const { playedCards } = state;
 
-    const heartsEnteredPlay = false;
-
     this.send(EGameEvent.ROOT_STATE, rootState);
 
     for (let i = 0; i < players.length; i++) {
