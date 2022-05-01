@@ -4,7 +4,7 @@ import block from 'bem-cn';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
-import { EHandStage, IPlayer } from 'common/types/hearts';
+import { EHandStage } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
 import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
@@ -20,7 +20,10 @@ enum ECardState {
 
 interface IHandProps {
   className?: string;
-  player: IPlayer;
+  isActive: boolean;
+  hand: ICard[];
+  chosenCardsIndexes: number[];
+  playedCard: ICard | null;
   stage: EHandStage;
   playedSuit: ESuit | null;
   heartsEnteredPlay: boolean;
@@ -73,43 +76,45 @@ function isCardAllowed(card: ICard, suit: ESuit | null, hand: ICard[], heartsEnt
 function getCardState(
   card: ICard,
   cardIndex: number,
-  player: IPlayer,
+  isActive: boolean,
+  hand: ICard[],
+  chosenCardsIndexes: number[],
   stage: EHandStage,
   playedSuit: ESuit | null,
   heartsEnteredPlay: boolean,
   isFirstTurn: boolean,
 ): ECardState {
   if (stage === EHandStage.PASS) {
-    const isSelected = player.chosenCardsIndexes.includes(cardIndex);
+    const isSelected = chosenCardsIndexes.includes(cardIndex);
 
     if (isSelected) {
       return ECardState.SELECTED;
     }
 
-    return player.chosenCardsIndexes.length === PASS_CARDS_COUNT ? ECardState.DISABLED : ECardState.DEFAULT;
+    return chosenCardsIndexes.length === PASS_CARDS_COUNT ? ECardState.DISABLED : ECardState.DEFAULT;
   }
 
-  if (!player.isActive) {
+  if (!isActive) {
     return ECardState.DISABLED;
   }
 
-  return isCardAllowed(card, playedSuit, player.hand, heartsEnteredPlay, isFirstTurn) ? ECardState.DEFAULT : ECardState.DISABLED;
+  return isCardAllowed(card, playedSuit, hand, heartsEnteredPlay, isFirstTurn) ? ECardState.DEFAULT : ECardState.DISABLED;
 }
 
 const Hand: React.FC<IHandProps> = (props) => {
-  const { className, player, stage, heartsEnteredPlay, playedSuit, isOwnHand, isFirstTurn, onSelectCard } = props;
+  const { className, isActive, hand, chosenCardsIndexes, playedCard, stage, heartsEnteredPlay, playedSuit, isOwnHand, isFirstTurn, onSelectCard } = props;
 
   return (
     <Root className={b({ ownHand: isOwnHand }).mix(className)} flex column alignItems="center" between={20}>
-      {player.playedCard && <Card card={player.playedCard} isVisible />}
+      {playedCard && <Card card={playedCard} isVisible />}
 
       <Box flex between={4}>
-        {player.hand.map((card, index) => {
+        {hand.map((card, index) => {
           return (
             <Card
               key={index}
               className={b('card', {
-                state: getCardState(card, index, player, stage, playedSuit, heartsEnteredPlay, isFirstTurn),
+                state: getCardState(card, index, isActive, hand, chosenCardsIndexes, stage, playedSuit, heartsEnteredPlay, isFirstTurn),
               })}
               card={card}
               isVisible={isOwnHand}

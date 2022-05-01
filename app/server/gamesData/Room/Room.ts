@@ -4,12 +4,12 @@ import uuid from 'uuid/v4';
 import { IAuthSocket } from 'server/types';
 import { EPlayerStatus, IPlayer } from 'common/types';
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
-import { EGame, IGameParams, TGameOptions } from 'common/types/game';
+import { EGame, IGamesParams, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
 import ioInstance from 'server/io';
-import Game from 'server/gamesData/Game/Game';
+import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 import MazeGame from 'server/gamesData/Game/MazeGame/MazeGame';
 import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
@@ -19,7 +19,9 @@ import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGa
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 
-const GAMES_MAP = {
+const GAMES_MAP: {
+  [G in EGame]: {new(options: IGameCreateOptions<G>): Game<G>};
+} = {
   [EGame.PEXESO]: PexesoGame,
   [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
   [EGame.MAZE]: MazeGame,
@@ -41,7 +43,7 @@ class Room<G extends EGame> {
 
   constructor({ game, options, onUpdateRoom, onDeleteRoom }: {
     game: G;
-    options: IGameParams[G]['options'];
+    options: IGamesParams[G]['options'];
     onUpdateRoom(): void;
     onDeleteRoom: (id: string) => void;
   }) {
@@ -84,6 +86,7 @@ class Room<G extends EGame> {
         this.players.push({
           ...user,
           status: EPlayerStatus.NOT_READY,
+          index: this.players.length,
         });
       }
 

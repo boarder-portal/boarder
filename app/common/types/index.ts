@@ -15,6 +15,7 @@ export enum EPlayerStatus {
 
 export interface IPlayer extends IUser {
   status: EPlayerStatus;
+  index: number;
 }
 
 export interface ICoords {

@@ -4,11 +4,11 @@ import { ICard } from 'common/types/cards';
 
 export enum EGameEvent {
   // client events
-  GET_GAME_INFO = 'GET_GAME_INFO',
+  GET_ROOT_STATE = 'GET_ROOT_STATE',
   CHOOSE_CARD = 'CHOOSE_CARD',
 
   // server events
-  GAME_INFO = 'GAME_INFO',
+  ROOT_STATE = 'ROOT_STATE',
 }
 
 export interface IGameOptions extends ICommonGameOptions {
@@ -16,12 +16,29 @@ export interface IGameOptions extends ICommonGameOptions {
 }
 
 export interface IPlayer extends ICommonPlayer {
-  isActive: boolean;
-  hand: ICard[];
-  playedCard: ICard | null;
-  chosenCardsIndexes: number[];
   score: number;
-  takenCards: ICard[];
+}
+
+export interface IRootState {
+  players: IPlayer[];
+  handIndex: number;
+  passDirection: EPassDirection;
+  handState: IHandState;
+}
+
+export interface IHandState {
+  stage: EHandStage;
+  hands: ICard[][];
+  chosenCardsIndexes: number[][];
+  takenCards: ICard[][];
+  heartsEnteredPlay: boolean;
+  turnState: ITurnState;
+}
+
+export interface ITurnState {
+  startPlayerIndex: number;
+  activePlayerIndex: number;
+  playedCards: (ICard | null)[];
 }
 
 export interface IGameInfoEvent {
@@ -47,4 +64,11 @@ export enum EPassDirection {
   RIGHT = 'RIGHT',
   ACROSS = 'ACROSS',
   NONE = 'NONE',
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_ROOT_STATE]: undefined;
+  [EGameEvent.CHOOSE_CARD]: IChooseCardEvent;
+
+  [EGameEvent.ROOT_STATE]: IRootState;
 }

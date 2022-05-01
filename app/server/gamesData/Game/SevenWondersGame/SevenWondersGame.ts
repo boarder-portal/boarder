@@ -108,6 +108,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
         ...this.createPlayer({
           status: EPlayerStatus.DISCONNECTED,
           login: `bot-${index}`,
+          index: this.players.length,
         }),
         isBot: true,
       });

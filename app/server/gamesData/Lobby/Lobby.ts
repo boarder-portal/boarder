@@ -51,6 +51,7 @@ class Lobby<Game extends EGame> {
         room.players.push({
           ...user,
           status: EPlayerStatus.NOT_READY,
+          index: room.players.length,
         });
 
         this.sendLobbyUpdate();
