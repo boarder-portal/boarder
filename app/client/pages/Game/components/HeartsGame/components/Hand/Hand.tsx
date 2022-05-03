@@ -23,7 +23,6 @@ interface IHandProps {
   isActive: boolean;
   hand: ICard[];
   chosenCardsIndexes: number[];
-  playedCard: ICard | null;
   stage: EHandStage;
   playedSuit: ESuit | null;
   heartsEnteredPlay: boolean;
@@ -52,6 +51,16 @@ const Root = styled(Box)`
             pointer-events: none;
           }
         }
+      }
+    }
+  }
+
+  .Hand {
+    &__card {
+      background: white;
+
+      &:not(:first-child) {
+        margin-left: -12px;
       }
     }
   }
@@ -102,13 +111,22 @@ function getCardState(
 }
 
 const Hand: React.FC<IHandProps> = (props) => {
-  const { className, isActive, hand, chosenCardsIndexes, playedCard, stage, heartsEnteredPlay, playedSuit, isOwnHand, isFirstTurn, onSelectCard } = props;
+  const {
+    className,
+    isActive,
+    hand,
+    chosenCardsIndexes,
+    stage,
+    heartsEnteredPlay,
+    playedSuit,
+    isOwnHand,
+    isFirstTurn,
+    onSelectCard,
+  } = props;
 
   return (
     <Root className={b({ ownHand: isOwnHand }).mix(className)} flex column alignItems="center" between={20}>
-      {playedCard && <Card card={playedCard} isVisible />}
-
-      <Box flex between={4}>
+      <Box flex>
         {hand.map((card, index) => {
           return (
             <Card

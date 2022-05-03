@@ -26,6 +26,7 @@ const Root = styled(Box)`
   &.Card {
     &:not(&_visible) {
       background: black;
+      border: 1px solid white;
     }
 
     &_color {

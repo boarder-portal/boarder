@@ -3,14 +3,16 @@ import styled from 'styled-components';
 import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
+import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
-import { EGameEvent, EHandStage, IChooseCardEvent, IPlayer, IRootState } from 'common/types/hearts';
+import { EGameEvent, EHandStage, EPassDirection, IChooseCardEvent, IPlayer, IRootState } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
 import { isDeuceOfClubs } from 'common/utilities/hearts';
+import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 
 import Box from 'client/components/common/Box/Box';
-import Hand from 'client/pages/Game/components/HeartsGame/components/Hand/Hand';
+import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -22,31 +24,51 @@ interface IHeartsGameProps {
 const b = block('HeartsGame');
 
 const Root = styled(Box)`
+  flex-grow: 1;
+  position: relative;
+
   .HeartsGame {
     &__player {
+      --offset: 40px;
       position: absolute;
 
-      &_0 {
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+      &_bottom,
+      &_top {
+        left: var(--offset);
+        right: var(--offset);
       }
 
-      &_1 {
+      &_bottom {
+        bottom: 0;
+        z-index: 10;
+      }
+
+      &_top {
+        top: 0;
+      }
+
+      &_left,
+      &_right {
+        top: var(--offset);
+        bottom: var(--offset);
+      }
+
+      &_left {
         left: 0;
-        top: 50%;
-        transform: translateX(-50%) rotate(90deg) translateY(-50%) translateY(-20px)
       }
 
-      &_2 {
-        left: 50%;
-        top: 20px;
-        transform: translateX(-50%) rotate(180deg);
+      &_right {
+        right: 0;
       }
     }
 
-    &__score {
-      margin-left: auto;
+    &__direction {
+      width: 200px;
+      height: 200px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 `;
@@ -63,6 +85,7 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
   const [heartsEnteredPlay, setHeartsEnteredPlay] = useState(false);
   const [playedSuit, setPlayedSuit] = useState<ESuit | null>(null);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
+  const [passDirection, setPassDirection] = useState<EPassDirection>(EPassDirection.NONE);
   const user = useRecoilValue(userAtom);
 
   const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
@@ -89,6 +112,12 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
     io.emit(EGameEvent.CHOOSE_CARD, data);
   }, [io]);
 
+  const directionBlock = useMemo(() => {
+    return passDirection === EPassDirection.LEFT ?
+      <ArrowLeft className={b('direction').toString()} /> :
+      <ArrowRight className={b('direction').toString()} />;
+  }, [passDirection]);
+
   useEffect(() => {
     io.emit(EGameEvent.GET_ROOT_STATE);
 
@@ -109,6 +138,7 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
         setHeartsEnteredPlay(rootState.handState.heartsEnteredPlay);
         setPlayedSuit(rootState.handState.turnState.playedCards[rootState.handState.turnState.startPlayerIndex]?.suit ?? null);
         setIsFirstTurn(rootState.handState.turnState.playedCards.some(isDeuceOfClubs));
+        setPassDirection(rootState.passDirection);
       });
     });
 
@@ -123,28 +153,30 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
 
   return (
     <Root className={b()}>
-      {sortedPlayers.map((localPlayer, index) => (
-        <Hand
-          key={localPlayer.login}
-          className={b('player', { [index]: true })}
-          isActive={localPlayer.index === activePlayerIndex}
-          hand={hands[localPlayer.index]}
-          chosenCardsIndexes={chosenCardsIndexes[localPlayer.index]}
-          playedCard={playedCards[localPlayer.index]}
-          stage={stage}
-          playedSuit={playedSuit}
-          heartsEnteredPlay={heartsEnteredPlay}
-          isOwnHand={localPlayer === player}
-          isFirstTurn={isFirstTurn}
-          onSelectCard={selectCard}
-        />
-      ))}
+      {sortedPlayers.map((localPlayer, index) => {
+        const position = getPlayerPosition(index, players.length);
 
-      <Box className={b('score')} flex column between={2} mt={100}>
-        {players.map((p) => (
-          <div key={p.login}>{p.login}: {p.score}</div>
-        ))}
-      </Box>
+        return (
+          <Player
+            key={localPlayer.login}
+            className={b('player', { [position]: true })}
+            player={localPlayer}
+            position={position}
+            isActive={localPlayer.index === activePlayerIndex}
+            hand={hands[localPlayer.index]}
+            chosenCardsIndexes={chosenCardsIndexes[localPlayer.index]}
+            playedCard={playedCards[localPlayer.index]}
+            stage={stage}
+            playedSuit={playedSuit}
+            heartsEnteredPlay={heartsEnteredPlay}
+            isOwnHand={localPlayer === player}
+            isFirstTurn={isFirstTurn}
+            onSelectCard={selectCard}
+          />
+        );
+      })}
+
+      {stage === EHandStage.PASS && directionBlock}
     </Root>
   );
 };
