@@ -144,11 +144,11 @@ export default class HandState extends GameState<EGame.HEARTS, IRootState, numbe
     }
 
     if (passDirection === EPassDirection.LEFT) {
-      return (playerIndex + 1 + players.length) % players.length;
+      return (playerIndex + 1) % players.length;
     }
 
     if (passDirection === EPassDirection.RIGHT) {
-      return (playerIndex - 1) % players.length;
+      return (playerIndex - 1 + players.length) % players.length;
     }
 
     return (playerIndex + 2) % players.length;
