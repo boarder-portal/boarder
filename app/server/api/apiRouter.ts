@@ -60,7 +60,7 @@ apiRouter
   ) => {
     req.session.destroy?.();
 
-    res.status(200).send();
+    res.status(200).send({});
   });
 
 export default apiRouter;

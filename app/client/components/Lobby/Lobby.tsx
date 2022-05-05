@@ -1,6 +1,4 @@
 import React from 'react';
-import block from 'bem-cn';
-import styled from 'styled-components';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
@@ -19,14 +17,6 @@ interface ILobbyProps<Game extends EGame> {
   onEnterRoom(roomId: string): void;
 }
 
-const b = block('Lobby');
-
-const Root = styled.div`
-  .Lobby {
-
-  }
-`;
-
 const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
   const {
     game,
@@ -38,7 +28,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
   } = props;
 
   return (
-    <Root className={b()}>
+    <div>
       <Box size="xxl" bold>{game}</Box>
 
       <Box flex mt={20}>
@@ -46,7 +36,6 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
           {rooms.length ? (
             rooms.map((room) => (
               <LobbyRoom
-                className={b('room').toString()}
                 key={room.id}
                 title={room.id}
                 options={renderRoomOptions?.(room.options)}
@@ -86,7 +75,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
           </Box>
         </Box>
       </Box>
-    </Root>
+    </div>
   );
 };
 

@@ -1,7 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useSetRecoilState } from 'recoil';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
@@ -12,30 +10,7 @@ import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
 
-const Root = styled(Box)`
-  flex-grow: 1;
-  justify-content: center;
-  align-items: center;
-
-  .Registration {
-    &__form {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    &__password {
-      margin-top: 8px;
-    }
-
-    &__submit {
-      margin-top: 20px;
-      width: 100%;
-    }
-  }
-`;
-
-const b = block('Registration');
+import styles from './Registration.pcss';
 
 const Registration: React.FC = () => {
   const history = useHistory();
@@ -60,11 +35,11 @@ const Registration: React.FC = () => {
   }, [history, login, password, setUser]);
 
   return (
-    <Root className={b()} flex column>
+    <Box className={styles.root} flex column>
       <Box size="xxl" bold>Регистрация</Box>
 
       <form
-        className={b('form')}
+        className={styles.form}
         onSubmit={handleSubmit}
       >
         <Input
@@ -74,7 +49,7 @@ const Registration: React.FC = () => {
         />
 
         <Input
-          className={b('password').toString()}
+          className={styles.password}
           label="Пароль"
           value={password}
           type="password"
@@ -82,7 +57,7 @@ const Registration: React.FC = () => {
         />
 
         <Input
-          className={b('password').toString()}
+          className={styles.password}
           label="Повторный пароль"
           value={passwordForCheck}
           type="password"
@@ -90,13 +65,13 @@ const Registration: React.FC = () => {
         />
 
         <Button
-          className={b('submit').toString()}
+          className={styles.submit}
           isSubmit
         >
           Регистрация
         </Button>
       </form>
-    </Root>
+    </Box>
   );
 };
 

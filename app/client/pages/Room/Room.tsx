@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
-import block from 'bem-cn';
-import styled from 'styled-components';
 
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
 import { EGame } from 'common/types/game';
@@ -14,21 +12,7 @@ import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
 
-const b = block('RoomPage');
-
-const Root = styled.div`
-  .RoomPage {
-    &__user {
-      box-shadow: 0 1px 5px rgb(0 0 0 / 15%);
-      border-radius: 8px;
-      padding: 16px 32px;
-    }
-
-    &__changeReadyStatusButton {
-      margin-left: auto;
-    }
-  }
-`;
+import styles from './Room.pcss';
 
 const Room: React.FC = () => {
   const { game, roomId } = useParams<{ game: EGame; roomId: string }>();
@@ -72,14 +56,14 @@ const Room: React.FC = () => {
   }
 
   return (
-    <Root className={b()}>
+    <div>
       <Box size="xxl" bold>Комната {game}</Box>
 
       <Box mt={20} between={12}>
         {room.players.map(({ login, status }) => (
           <Box
             key={login}
-            className={b('user')}
+            className={styles.user}
             flex
             alignItems="center"
             between={8}
@@ -89,7 +73,7 @@ const Room: React.FC = () => {
 
             {login === user.login && (
               <Button
-                className={b('changeReadyStatusButton').toString()}
+                className={styles.changeReadyStatusButton}
                 type={status === EPlayerStatus.NOT_READY ? 'primary' : 'secondary'}
                 onClick={handleUserClick}
               >
@@ -99,7 +83,7 @@ const Room: React.FC = () => {
           </Box>
         ))}
       </Box>
-    </Root>
+    </div>
   );
 };
 

@@ -1,12 +1,9 @@
-import './App.pcss';
+import '../../styles/reset.pcss';
+import 'boarder-components/dist/index.css';
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
-import { Reset } from 'styled-reset';
-import { Normalize } from 'styled-normalize';
-import { Container } from '@material-ui/core';
-import block from 'bem-cn';
 import { useRecoilState } from 'recoil';
+import { Container } from 'boarder-components';
 
 import { EGame } from 'common/types/game';
 
@@ -29,51 +26,7 @@ import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/Ca
 import SevenWondersLobby from 'client/pages/games/sevenWonders/SevenWonders/SevenWondersLobby';
 import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
 
-const GlobalStyle = createGlobalStyle`
-  * {
-    box-sizing: border-box;
-  }
-
-  html,
-  body {
-    height: 100%;
-  }
-
-  #root {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  body {
-    color: #333;
-  }
-
-  h1 {
-    font-size: 100%;
-    margin: 0;
-  }
-
-  a,
-  a:visited {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  img {
-    display: block;
-  }
-`;
-
-const Root = styled(Container)`
-  &.App {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-`;
-
-const b = block('App');
+import styles from './App.pcss';
 
 const App: React.FC = () => {
   const [user, setUser] = useRecoilState(userAtom);
@@ -88,13 +41,9 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Reset />
-      <Normalize />
-      <GlobalStyle />
+      <Container className={styles.app}>
+        <Header user={user} />
 
-      <Header user={user} />
-
-      <Root className={b().toString()}>
         <Switch>
           <Route exact path="/">
             <Home />
@@ -148,7 +97,7 @@ const App: React.FC = () => {
             <Game />
           </Route>
         </Switch>
-      </Root>
+      </Container>
     </>
   );
 };

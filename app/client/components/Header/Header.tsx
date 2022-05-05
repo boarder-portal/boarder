@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Container } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
-import block from 'bem-cn';
 import { useSetRecoilState } from 'recoil';
 
 import { IUser } from 'common/types';
@@ -14,29 +11,11 @@ import Dropdown from 'client/components/common/Dropdown/Dropdown';
 
 import userAtom from 'client/atoms/userAtom';
 
+import styles from './Header.pcss';
+
 interface IHeaderProps {
   user: IUser | null;
 }
-
-const Root = styled(Container)`
-  .Header {
-    &__login {
-      margin-left: auto;
-    }
-
-    &__registration {
-      margin-left: 8px;
-    }
-  }
-`;
-
-const GlobalStyle = createGlobalStyle`
-  .Header__logout {
-    cursor: pointer;
-  }
-`;
-
-const b = block('Header');
 
 const Header: React.FC<IHeaderProps> = (props) => {
   const { user } = props;
@@ -53,7 +32,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
     return (
       <Box px={16} py={12}>
         <Box
-          className={b('logout').toString()}
+          className={styles.logout}
           onClick={logout}
         >
           Выйти
@@ -63,40 +42,36 @@ const Header: React.FC<IHeaderProps> = (props) => {
   }, [logout]);
 
   return (
-    <Root className={b()}>
-      <GlobalStyle />
+    <Box py={12} flex alignItems="center">
+      <Link to="/">
+        <Box size="l" bold>Boarder</Box>
+      </Link>
 
-      <Box py={12} flex alignItems="center">
-        <Link to="/">
-          <Box size="l" bold>Boarder</Box>
-        </Link>
-
-        {user ? (
-          <Dropdown
-            popup={userPopup}
-            ml="auto"
+      {user ? (
+        <Dropdown
+          popup={userPopup}
+          ml="auto"
+        >
+          {user.login}
+        </Dropdown>
+      ) : (
+        <>
+          <Link
+            to="/login"
+            className={styles.login}
           >
-            {user.login}
-          </Dropdown>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              className={b('login').toString()}
-            >
-              Вход
-            </Link>
+            Вход
+          </Link>
 
-            <Link
-              to="/registration"
-              className={b('registration').toString()}
-            >
-              Регистрация
-            </Link>
-          </>
-        )}
-      </Box>
-    </Root>
+          <Link
+            to="/registration"
+            className={styles.registration}
+          >
+            Регистрация
+          </Link>
+        </>
+      )}
+    </Box>
   );
 };
 
