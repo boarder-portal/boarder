@@ -40,13 +40,12 @@ import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/
 
 import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
+import { playSound, POP_SOUND } from 'client/sounds';
 
 interface ICarcassonneGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
-
-const placedCardAudio = new Audio('/sounds/pop.wav');
 
 const b = block('CarcassonneGame');
 
@@ -527,7 +526,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       const boardCardsCount = gameInfo.cardsLeft + gameInfo.players.reduce((playersCardsCount, p) => playersCardsCount + p.cards.length, 0);
 
       if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
-        placedCardAudio.play();
+        playSound(POP_SOUND);
       }
 
       boardCardsCountRef.current = boardCardsCount;

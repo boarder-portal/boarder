@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "target": "es2017",
     "strict": true,
     "outDir": "./dist",
-    "jsx": "react",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
     "sourceMap": true,
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "baseUrl": ".",

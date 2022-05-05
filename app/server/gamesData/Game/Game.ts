@@ -68,7 +68,7 @@ abstract class Game<Game extends EGame, RootState = unknown> {
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
 
-    let deleteGameTimeout: number | null = setTimeout(() => this.deleteGame(), 10000);
+    let deleteGameTimeout: NodeJS.Timeout | null = setTimeout(() => this.deleteGame(), 10000);
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {

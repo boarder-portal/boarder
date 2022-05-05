@@ -3,14 +3,16 @@ import { Container } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import block from 'bem-cn';
-import { useMutation } from '@apollo/react-hooks';
-
-import { GET_USER_QUERY, LOGOUT_QUERY } from 'client/graphql/queries';
+import { useSetRecoilState } from 'recoil';
 
 import { IUser } from 'common/types';
 
+import httpClient from 'client/utilities/HttpClient/HttpClient';
+
 import Box from 'client/components/common/Box/Box';
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
+
+import userAtom from 'client/atoms/userAtom';
 
 interface IHeaderProps {
   user: IUser | null;
@@ -39,27 +41,26 @@ const b = block('Header');
 const Header: React.FC<IHeaderProps> = (props) => {
   const { user } = props;
 
-  const [logout] = useMutation(LOGOUT_QUERY);
+  const setUser = useSetRecoilState(userAtom);
 
-  const handleLogout = useCallback(async () => {
-    await logout({
-      refetchQueries: [{ query: GET_USER_QUERY }],
-      awaitRefetchQueries: true,
-    });
-  }, [logout]);
+  const logout = useCallback(async () => {
+    await httpClient.logout();
+
+    setUser(null);
+  }, [setUser]);
 
   const userPopup = useMemo(() => {
     return (
       <Box px={16} py={12}>
         <Box
           className={b('logout').toString()}
-          onClick={handleLogout}
+          onClick={logout}
         >
           Выйти
         </Box>
       </Box>
     );
-  }, [handleLogout]);
+  }, [logout]);
 
   return (
     <Root className={b()}>

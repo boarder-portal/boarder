@@ -62,7 +62,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   objects: TObjects = {};
   lastId = 1;
   isBuilderMove = false;
-  endTurnTimeout: number | null = null;
+  endTurnTimeout: NodeJS.Timeout | null = null;
   endTurnTimeoutEndsAt: number | null = null;
 
   constructor(options: IGameCreateOptions<EGame.CARCASSONNE>) {

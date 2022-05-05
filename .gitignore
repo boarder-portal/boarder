@@ -2,6 +2,7 @@
 
 node_modules
 
+*.pcss.d.ts
 .cache
 .parcel-cache
 dist

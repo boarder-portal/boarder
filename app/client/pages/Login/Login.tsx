@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import block from 'bem-cn';
-import { useMutation } from '@apollo/react-hooks';
+import { useSetRecoilState } from 'recoil';
 
-import { LOGIN_QUERY, GET_USER_QUERY } from 'client/graphql/queries';
-
-import { ILoginParams } from 'common/types/requestParams';
-import { IUser } from 'common/types';
+import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Input from 'client/components/common/Input/Input';
 import Box from 'client/components/common/Box/Box';
 import Button from 'client/components/common/Button/Button';
+
+import userAtom from 'client/atoms/userAtom';
 
 const Root = styled(Box)`
   flex-grow: 1;
@@ -40,37 +39,24 @@ const b = block('Login');
 
 const Login: React.FC = () => {
   const history = useHistory();
+  const setUser = useSetRecoilState(userAtom);
 
   const [userLogin, setUserLogin] = useState('');
   const [password, setPassword] = useState('');
 
-  const [
-    login,
-    {
-      data: newUserData,
-    },
-  ] = useMutation<IUser, ILoginParams>(LOGIN_QUERY);
-
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await login({
-      variables: {
-        user: {
-          login: userLogin,
-          password,
-        },
+    const user = await httpClient.login({
+      user: {
+        login: userLogin,
+        password,
       },
-      refetchQueries: [{ query: GET_USER_QUERY }],
-      awaitRefetchQueries: true,
     });
-  }, [login, password, userLogin]);
 
-  useEffect(() => {
-    if (newUserData) {
-      history.push('/');
-    }
-  }, [history, newUserData]);
+    setUser(user);
+    history.push('/');
+  }, [history, password, setUser, userLogin]);
 
   return (
     <Root className={b()} flex column>

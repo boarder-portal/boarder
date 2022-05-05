@@ -7,7 +7,7 @@ interface ICardObjectProps {
   card: ICard;
 }
 
-const isMobile = window.innerWidth < 1000;
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 1000;
 
 const BASE_SIZE = isMobile ? 20 : 42;
 

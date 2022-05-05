@@ -1,3 +1,4 @@
+import './App.pcss';
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -5,13 +6,11 @@ import { Reset } from 'styled-reset';
 import { Normalize } from 'styled-normalize';
 import { Container } from '@material-ui/core';
 import block from 'bem-cn';
-import { useQuery } from '@apollo/react-hooks';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
-import { GET_USER_QUERY } from 'client/graphql/queries';
-
-import { IUser } from 'common/types';
 import { EGame } from 'common/types/game';
+
+import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Header from 'client/components/Header/Header';
 
@@ -77,19 +76,15 @@ const Root = styled(Container)`
 const b = block('App');
 
 const App: React.FC = () => {
-  const setUser = useSetRecoilState(userAtom);
-
-  const {
-    data: userData,
-  } = useQuery<{ getUser: IUser | null }>(GET_USER_QUERY);
-
-  const user = userData?.getUser || null;
+  const [user, setUser] = useRecoilState(userAtom);
 
   useEffect(() => {
-    if (user) {
+    (async () => {
+      const user = await httpClient.getUser();
+
       setUser(user);
-    }
-  }, [setUser, user]);
+    })();
+  }, [setUser]);
 
   return (
     <>

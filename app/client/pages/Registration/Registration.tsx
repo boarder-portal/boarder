@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import block from 'bem-cn';
-import { useMutation } from '@apollo/react-hooks';
+import { useSetRecoilState } from 'recoil';
 
-import { REGISTER_QUERY } from 'client/graphql/queries';
-
-import { IRegisterParams } from 'common/types/requestParams';
-import { IUser } from 'common/types';
+import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Input from 'client/components/common/Input/Input';
 import Box from 'client/components/common/Box/Box';
 import Button from 'client/components/common/Button/Button';
+
+import userAtom from 'client/atoms/userAtom';
 
 const Root = styled(Box)`
   flex-grow: 1;
@@ -40,36 +39,25 @@ const b = block('Registration');
 
 const Registration: React.FC = () => {
   const history = useHistory();
+  const setUser = useSetRecoilState(userAtom);
 
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordForCheck, setPasswordForCheck] = useState('');
 
-  const [
-    register,
-    {
-      data: newUserData,
-    },
-  ] = useMutation<IUser, IRegisterParams>(REGISTER_QUERY);
-
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await register({
-      variables: {
-        user: {
-          login,
-          password,
-        },
+    const user = await httpClient.register({
+      user: {
+        login,
+        password,
       },
     });
-  }, [login, password, register]);
 
-  useEffect(() => {
-    if (newUserData) {
-      history.push('/');
-    }
-  }, [history, newUserData]);
+    setUser(user);
+    history.push('/');
+  }, [history, login, password, setUser]);
 
   return (
     <Root className={b()} flex column>

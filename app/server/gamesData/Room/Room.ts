@@ -62,7 +62,7 @@ class Room<G extends EGame> {
       onDeleteRoom(this.id);
     };
 
-    let deleteRoomTimeout: number | null = setTimeout(() => {
+    let deleteRoomTimeout: NodeJS.Timeout | null = setTimeout(() => {
       this.deleteRoom();
     }, 10000);
 

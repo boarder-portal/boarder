@@ -13,7 +13,7 @@ interface ICardProps {
   onClick(card: ICard): void;
 }
 
-const BASE_SIZE = window.innerWidth < 1000 ? 80 : 130;
+const BASE_SIZE = typeof window !== 'undefined' && window.innerWidth < 1000 ? 80 : 130;
 
 const Root = styled(Box)`
   width: ${BASE_SIZE}px;
