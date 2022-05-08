@@ -10,18 +10,13 @@ export interface IStateContext<Game extends EGame> {
   send<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void;
 }
 
-export interface IListenInfo<Game extends EGame, RootState> {
+export interface IListenInfo<Game extends EGame> {
   events: TPlayerEventListeners<Game>;
   stopIf?(): boolean;
 }
 
-export default abstract class GameState<Game extends EGame, RootState, ReturnValue = void> {
+export default abstract class GameEntity<Game extends EGame, ReturnValue = void> {
   context: IStateContext<Game> | null = null;
-  rootState: RootState | null;
-
-  protected constructor(rootState: RootState | null = null) {
-    this.rootState = rootState;
-  }
 
   abstract lifecycle(): Promise<ReturnValue>;
 
@@ -33,15 +28,7 @@ export default abstract class GameState<Game extends EGame, RootState, ReturnVal
     return this.context;
   }
 
-  getRootState(): RootState {
-    if (!this.rootState) {
-      throw new Error('No root state');
-    }
-
-    return this.rootState;
-  }
-
-  async listen(listenInfo: IListenInfo<Game, RootState>, player?: string | null): Promise<void> {
+  async listen(listenInfo: IListenInfo<Game>, player?: string | null): Promise<void> {
     let unsubscribe: (() => void) | undefined;
 
     try {
@@ -68,11 +55,14 @@ export default abstract class GameState<Game extends EGame, RootState, ReturnVal
     this.getContext().send(event, data, socket);
   }
 
-  async spawnState<ReturnValue>(state: GameState<Game, RootState, ReturnValue>): Promise<ReturnValue> {
+  async spawnState<ReturnValue>(state: GameEntity<Game, ReturnValue>): Promise<ReturnValue> {
     state.context = this.context;
-    state.rootState = this.rootState;
 
     return state.lifecycle();
+  }
+
+  toJSON(): unknown {
+    return null;
   }
 
   async waitFor<Event extends TGameEvent<Game>>(

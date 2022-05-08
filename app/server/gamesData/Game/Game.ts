@@ -17,7 +17,7 @@ import {
 } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-import GameState from 'server/gamesData/Game/utilities/GameState';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import ioInstance from 'server/io';
 
@@ -39,7 +39,7 @@ export interface IGameCreateOptions<Game extends EGame> {
   onDeleteGame(): void;
 }
 
-abstract class Game<Game extends EGame, RootState = unknown> {
+abstract class Game<Game extends EGame> {
   io: Namespace;
   game: Game;
   id: string;
@@ -48,8 +48,6 @@ abstract class Game<Game extends EGame, RootState = unknown> {
   onDeleteGame: () => void;
 
   abstract handlers: TEventHandlers<Game>;
-  // TODO: make abstract and required
-  rootState?: RootState;
 
   temporaryListeners: {
     [Event in TGameEvent<Game>]?: Set<TGameEventListener<Game, Event>>;
@@ -182,8 +180,8 @@ abstract class Game<Game extends EGame, RootState = unknown> {
     this.io.emit(EGameEvent.UPDATE, updatedData);
   }
 
-  initMainGameState(state: GameState<Game, RootState, void>): RootState {
-    state.context = {
+  initMainGameEntity<Entity extends GameEntity<Game, void>>(entity: Entity): Entity {
+    entity.context = {
       listen: (events, player) => {
         const unsubscribers = new Set<() => void>();
 
@@ -205,7 +203,7 @@ abstract class Game<Game extends EGame, RootState = unknown> {
     };
 
     (async () => {
-      await state.lifecycle();
+      await entity.lifecycle();
 
       this.end();
     })().catch((err) => {
@@ -214,7 +212,7 @@ abstract class Game<Game extends EGame, RootState = unknown> {
       this.deleteGame();
     });
 
-    return state.getRootState();
+    return entity;
   }
 
   deleteGame(): void {

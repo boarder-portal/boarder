@@ -8,7 +8,7 @@ export enum EGameEvent {
   CHOOSE_CARD = 'CHOOSE_CARD',
 
   // server events
-  ROOT_STATE = 'ROOT_STATE',
+  ROOT_INFO = 'ROOT_INFO',
 }
 
 export interface IGameOptions extends ICommonGameOptions {
@@ -19,26 +19,33 @@ export interface IPlayer extends ICommonPlayer {
   score: number;
 }
 
-export interface IRootState {
+export interface IGame {
   players: IPlayer[];
-  handIndex: number;
   passDirection: EPassDirection;
-  handState: IHandState;
+  hand: IHand | null;
 }
 
-export interface IHandState {
+export interface IHandPlayerData {
+  hand: ICard[];
+  chosenCardsIndexes: number[];
+  takenCards: ICard[];
+}
+
+export interface IHand {
   stage: EHandStage;
-  hands: ICard[][];
-  chosenCardsIndexes: number[][];
-  takenCards: ICard[][];
+  playersData: IHandPlayerData[];
   heartsEnteredPlay: boolean;
-  turnState: ITurnState;
+  turn: ITurn | null;
 }
 
-export interface ITurnState {
+export interface ITurnPlayerData {
+  playedCard: ICard | null;
+}
+
+export interface ITurn {
   startPlayerIndex: number;
   activePlayerIndex: number;
-  playedCards: (ICard | null)[];
+  playersData: ITurnPlayerData[];
 }
 
 export interface IGameInfoEvent {
@@ -70,5 +77,5 @@ export interface IEventMap {
   [EGameEvent.GET_ROOT_STATE]: undefined;
   [EGameEvent.CHOOSE_CARD]: IChooseCardEvent;
 
-  [EGameEvent.ROOT_STATE]: IRootState;
+  [EGameEvent.ROOT_INFO]: IGame;
 }
