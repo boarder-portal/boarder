@@ -277,12 +277,12 @@ class MazeGame extends Game<EGame.MAZE> {
     }
   }
 
-  deleteGame(): void {
+  delete(): void {
     if (this.movePlayersInterval) {
       clearInterval(this.movePlayersInterval);
     }
 
-    super.deleteGame();
+    super.delete();
   }
 }
 

@@ -809,10 +809,6 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       phase: this.phase,
     };
   }
-
-  deleteGame(): void {
-    super.deleteGame();
-  }
 }
 
 export default SevenWondersGame;

@@ -326,7 +326,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
     }
   }
 
-  deleteGame(): void {
+  delete(): void {
     if (this.moveZombiesIterationInterval) {
       clearInterval(this.moveZombiesIterationInterval);
     }
@@ -339,7 +339,7 @@ class SurvivalOnlineGame extends Game<EGame.SURVIVAL_ONLINE> {
       clearInterval(this.generateZombiesIterationInterval);
     }
 
-    super.deleteGame();
+    super.delete();
   }
 }
 

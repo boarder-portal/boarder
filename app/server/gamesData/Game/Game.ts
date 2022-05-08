@@ -66,7 +66,7 @@ abstract class Game<Game extends EGame> {
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
 
-    let deleteGameTimeout: NodeJS.Timeout | null = setTimeout(() => this.deleteGame(), 10000);
+    let deleteGameTimeout: NodeJS.Timeout | null = setTimeout(() => this.delete(), 10000);
 
     this.io.use(ioSessionMiddleware as any);
     this.io.on('connection', (socket: IAuthSocket) => {
@@ -118,13 +118,64 @@ abstract class Game<Game extends EGame> {
         this.sendBaseGameInfo();
 
         if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
-          deleteGameTimeout = setTimeout(() => this.deleteGame(), 10000);
+          deleteGameTimeout = setTimeout(() => this.delete(), 10000);
         }
       });
     });
   }
 
   abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<Game>;
+
+  delete(): void {
+    this.io.removeAllListeners();
+
+    delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
+
+    this.onDeleteGame();
+  }
+
+  end(): void {
+    this.io.emit(EGameEvent.END);
+  }
+
+  getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
+    return this.players.find((player) => player.login === login);
+  }
+
+  initMainGameEntity<Entity extends GameEntity<Game, void>>(entity: Entity): Entity {
+    entity.context = {
+      listen: (events, player) => {
+        const unsubscribers = new Set<() => void>();
+
+        forEach(events, (handler, event) => {
+          if (handler) {
+            unsubscribers.add(this.listen(event as TGameEvent<Game>, handler, player));
+          }
+        });
+
+        return () => {
+          for (const unsubscribe of unsubscribers) {
+            unsubscribe();
+          }
+        };
+      },
+      send: <Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket) => {
+        this.send(event, data, socket);
+      },
+    };
+
+    (async () => {
+      await entity.lifecycle();
+
+      this.end();
+    })().catch((err) => {
+      console.log(err);
+
+      this.delete();
+    });
+
+    return entity;
+  }
 
   listen<Event extends TGameEvent<Game>>(
     event: Event,
@@ -167,10 +218,6 @@ abstract class Game<Game extends EGame> {
     (socket ?? this.io).emit(event, data);
   }
 
-  getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
-    return this.players.find((player) => player.login === login);
-  }
-
   sendBaseGameInfo(): void {
     const updatedData: IGameUpdateEvent = {
       id: this.id,
@@ -178,53 +225,6 @@ abstract class Game<Game extends EGame> {
     };
 
     this.io.emit(EGameEvent.UPDATE, updatedData);
-  }
-
-  initMainGameEntity<Entity extends GameEntity<Game, void>>(entity: Entity): Entity {
-    entity.context = {
-      listen: (events, player) => {
-        const unsubscribers = new Set<() => void>();
-
-        forEach(events, (handler, event) => {
-          if (handler) {
-            unsubscribers.add(this.listen(event as TGameEvent<Game>, handler, player));
-          }
-        });
-
-        return () => {
-          for (const unsubscribe of unsubscribers) {
-            unsubscribe();
-          }
-        };
-      },
-      send: <Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket) => {
-        this.send(event, data, socket);
-      },
-    };
-
-    (async () => {
-      await entity.lifecycle();
-
-      this.end();
-    })().catch((err) => {
-      console.log(err);
-
-      this.deleteGame();
-    });
-
-    return entity;
-  }
-
-  deleteGame(): void {
-    this.io.removeAllListeners();
-
-    delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
-
-    this.onDeleteGame();
-  }
-
-  end(): void {
-    this.io.emit(EGameEvent.END);
   }
 }
 

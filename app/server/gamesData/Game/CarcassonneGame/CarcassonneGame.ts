@@ -754,12 +754,12 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     };
   }
 
-  deleteGame(): void {
+  delete(): void {
     if (this.endTurnTimeout) {
       clearTimeout(this.endTurnTimeout);
     }
 
-    super.deleteGame();
+    super.delete();
   }
 }
 
