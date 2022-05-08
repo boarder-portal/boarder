@@ -5,22 +5,17 @@ import { EGame, TGameEvent, TGameEventData } from 'common/types/game';
 
 import { TPlayerEventListeners } from 'server/gamesData/Game/Game';
 
-export interface IStateContext<Game extends EGame> {
+export interface IEntityContext<Game extends EGame> {
   listen(events: TPlayerEventListeners<Game>, player?: string | null): () => void;
-  send<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void;
-}
-
-export interface IListenInfo<Game extends EGame> {
-  events: TPlayerEventListeners<Game>;
-  stopIf?(): boolean;
+  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void;
 }
 
 export default abstract class GameEntity<Game extends EGame, ReturnValue = void> {
-  context: IStateContext<Game> | null = null;
+  context: IEntityContext<Game> | null = null;
 
   abstract lifecycle(): Promise<ReturnValue>;
 
-  getContext(): IStateContext<Game> {
+  getContext(): IEntityContext<Game> {
     if (!this.context) {
       throw new Error('No context');
     }
@@ -28,17 +23,17 @@ export default abstract class GameEntity<Game extends EGame, ReturnValue = void>
     return this.context;
   }
 
-  async listen(listenInfo: IListenInfo<Game>, player?: string | null): Promise<void> {
+  async listenWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): Promise<void> {
     let unsubscribe: (() => void) | undefined;
 
     try {
       await new Promise<void>((resolve) => {
         unsubscribe = this.getContext().listen(
-          mapValues(listenInfo.events, (handler) => {
+          mapValues(events, (handler) => {
             return (data, player) => {
               handler?.(data, player);
 
-              if (listenInfo.stopIf?.() ?? true) {
+              if (check()) {
                 resolve();
               }
             };
@@ -51,8 +46,8 @@ export default abstract class GameEntity<Game extends EGame, ReturnValue = void>
     }
   }
 
-  send<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
-    this.getContext().send(event, data, socket);
+  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
+    this.getContext().sendSocketEvent(event, data, socket);
   }
 
   async spawnState<ReturnValue>(state: GameEntity<Game, ReturnValue>): Promise<ReturnValue> {

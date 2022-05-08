@@ -149,7 +149,7 @@ abstract class Game<Game extends EGame> {
 
         forEach(events, (handler, event) => {
           if (handler) {
-            unsubscribers.add(this.listen(event as TGameEvent<Game>, handler, player));
+            unsubscribers.add(this.listenSocketEvent(event as TGameEvent<Game>, handler, player));
           }
         });
 
@@ -159,8 +159,8 @@ abstract class Game<Game extends EGame> {
           }
         };
       },
-      send: <Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket) => {
-        this.send(event, data, socket);
+      sendSocketEvent: <Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket) => {
+        this.sendSocketEvent(event, data, socket);
       },
     };
 
@@ -177,7 +177,7 @@ abstract class Game<Game extends EGame> {
     return entity;
   }
 
-  listen<Event extends TGameEvent<Game>>(
+  listenSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     listener: TPlayerEventListener<Game, Event>,
     player?: string | null,
@@ -212,12 +212,6 @@ abstract class Game<Game extends EGame> {
     };
   }
 
-  send<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
-    // TODO: batch actions, don't send same actions multiple times
-
-    (socket ?? this.io).emit(event, data);
-  }
-
   sendBaseGameInfo(): void {
     const updatedData: IGameUpdateEvent = {
       id: this.id,
@@ -225,6 +219,12 @@ abstract class Game<Game extends EGame> {
     };
 
     this.io.emit(EGameEvent.UPDATE, updatedData);
+  }
+
+  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
+    // TODO: batch actions, don't send same actions multiple times
+
+    (socket ?? this.io).emit(event, data);
   }
 }
 

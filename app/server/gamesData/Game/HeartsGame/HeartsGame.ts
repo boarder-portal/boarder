@@ -20,6 +20,6 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   onGetRootState({ socket }: IGameEvent): void {
-    this.send(EGameEvent.ROOT_INFO, this.root.toJSON(), socket);
+    this.sendSocketEvent(EGameEvent.ROOT_INFO, this.root.toJSON(), socket);
   }
 }

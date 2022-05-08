@@ -54,11 +54,12 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
     });
 
     this.sortHands();
-    this.send(EGameEvent.ROOT_INFO, this.root.toJSON());
+    this.root.sendInfo();
 
     if (this.stage === EHandStage.PASS) {
-      await this.listen({
-        events: {
+      await this.listenWhile(
+        () => this.playersData.every(({ chosenCardsIndexes }) => chosenCardsIndexes.length === PASS_CARDS_COUNT),
+        {
           [EGameEvent.CHOOSE_CARD]: ({ cardIndex }, player) => {
             const playerChosenCardsIndexes = this.playersData[player.index].chosenCardsIndexes;
 
@@ -71,10 +72,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
             this.root.sendInfo();
           },
         },
-        stopIf: () => (
-          this.playersData.every(({ chosenCardsIndexes }) => chosenCardsIndexes.length === PASS_CARDS_COUNT)
-        ),
-      });
+      );
 
       const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) => (
         chosenCardsIndexes.map((cardIndex) => hand[cardIndex])

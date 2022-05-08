@@ -41,7 +41,7 @@ export default class Root extends GameEntity<EGame.HEARTS> {
   }
 
   sendInfo(): void {
-    this.send(EGameEvent.ROOT_INFO, this.toJSON());
+    this.sendSocketEvent(EGameEvent.ROOT_INFO, this.toJSON());
   }
 
   toJSON(): IGame {
