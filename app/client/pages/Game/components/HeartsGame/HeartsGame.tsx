@@ -10,9 +10,9 @@ import {
   EHandStage,
   EPassDirection,
   IChooseCardEvent,
-  IPlayer,
   IGame,
   IHandPlayerData,
+  IPlayer,
   ITurnPlayerData,
 } from 'common/types/hearts';
 import { ESuit } from 'common/types/cards';
