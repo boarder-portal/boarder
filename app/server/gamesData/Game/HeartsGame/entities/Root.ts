@@ -38,6 +38,8 @@ export default class Root extends GameEntity<EGame.HEARTS> {
 
       this.sendInfo();
     }
+
+    this.hand = null;
   }
 
   sendInfo(): void {
