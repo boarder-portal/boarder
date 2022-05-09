@@ -110,7 +110,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return this.#handleAnyEffect((resolve, reject) => {
       (async () => {
         try {
-          resolve(await effect.entity.#run());
+          resolve(await effect.entity.run());
         } catch (err) {
           reject(err);
         }
@@ -195,29 +195,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     });
   }
 
-  async #run(): Promise<Result> {
-    if (this.#lifecycle) {
-      return this.#lifecycle;
-    }
-
-    return (
-      this.#lifecycle = (async () => {
-        const iterator = this.lifecycle();
-        let prevResult: unknown;
-
-        while (true) {
-          const { value, done } = iterator.next(prevResult);
-
-          if (done) {
-            return value;
-          }
-
-          prevResult = await this.#handleEffect(value);
-        }
-      })()
-    );
-  }
-
   *awaitEntity<Result>(entity: GameEntity<Game, Result>): TGenerator<Game, Result, Result> {
     return yield {
       type: EEffect.AWAIT_ENTITY,
@@ -250,7 +227,26 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   }
 
   async run(): Promise<Result> {
-    return this.#run();
+    if (this.#lifecycle) {
+      return this.#lifecycle;
+    }
+
+    return (
+      this.#lifecycle = (async () => {
+        const iterator = this.lifecycle();
+        let prevResult: unknown;
+
+        while (true) {
+          const { value, done } = iterator.next(prevResult);
+
+          if (done) {
+            return value;
+          }
+
+          prevResult = await this.#handleEffect(value);
+        }
+      })()
+    );
   }
 
   sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
@@ -262,6 +258,14 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     entity.#parent = this;
 
     this.#children.add(entity);
+
+    (async () => {
+      try {
+        await entity.run();
+      } catch {
+        // empty
+      }
+    })();
 
     return entity;
   }
