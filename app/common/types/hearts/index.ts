@@ -1,6 +1,7 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IPlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/cards';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   // client events
@@ -78,4 +79,15 @@ export interface IEventMap {
   [EGameEvent.CHOOSE_CARD]: IChooseCardEvent;
 
   [EGameEvent.ROOT_INFO]: IGame;
+}
+
+declare module 'common/types/game' {
+  export interface IGamesParams {
+    [EGame.HEARTS]: {
+      event: EGameEvent;
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: IPlayer;
+    };
+  }
 }

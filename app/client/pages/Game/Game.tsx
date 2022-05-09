@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
 import { EPlayerStatus } from 'common/types';
-import { EGame, EGameEvent, IGameUpdateEvent } from 'common/types/game';
+import { EGame, ECommonGameEvent, IGameUpdateEvent } from 'common/types/game';
 import { IPlayer as IPexesoPlayer } from 'common/types/pexeso';
 import { IPlayer as ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IPlayer as IMazePlayer } from 'common/types/maze';
@@ -34,11 +34,11 @@ const Game: React.FC = () => {
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/game/${gameId}`);
 
-    ioRef.current.on(EGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
+    ioRef.current.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
       setGameData(updatedGameData);
     });
 
-    ioRef.current.on(EGameEvent.END, () => {
+    ioRef.current.on(ECommonGameEvent.END, () => {
       console.log('GAME_END');
 
       endGame();

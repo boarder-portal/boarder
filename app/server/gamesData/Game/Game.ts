@@ -7,7 +7,7 @@ import { IAuthSocket, IGameEvent } from 'server/types';
 import { EPlayerStatus, IPlayer } from 'common/types';
 import {
   EGame,
-  EGameEvent,
+  ECommonGameEvent,
   IGameUpdateEvent,
   TGameEvent,
   TGameEventData,
@@ -135,14 +135,14 @@ abstract class Game<Game extends EGame> {
   }
 
   end(): void {
-    this.io.emit(EGameEvent.END);
+    this.io.emit(ECommonGameEvent.END);
   }
 
   getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
     return this.players.find((player) => player.login === login);
   }
 
-  initMainGameEntity<Entity extends GameEntity<Game, void>>(entity: Entity): Entity {
+  initMainGameEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
     entity.context = {
       listen: (events, player) => {
         const unsubscribers = new Set<() => void>();
@@ -165,7 +165,7 @@ abstract class Game<Game extends EGame> {
     };
 
     (async () => {
-      await entity.lifecycle();
+      await entity.run();
 
       this.end();
     })().catch((err) => {
@@ -218,7 +218,7 @@ abstract class Game<Game extends EGame> {
       players: this.players,
     };
 
-    this.io.emit(EGameEvent.UPDATE, updatedData);
+    this.io.emit(ECommonGameEvent.UPDATE, updatedData);
   }
 
   sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {

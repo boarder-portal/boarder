@@ -20,17 +20,19 @@ export default class Root extends GameEntity<EGame.HEARTS> {
     this.players = players;
   }
 
-  async lifecycle(): Promise<void> {
+  *lifecycle() {
     while (this.players.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.players.length][this.handIndex % this.players.length];
 
-      this.hand = new Hand(
-        this,
-        this.passDirection === EPassDirection.NONE ? EHandStage.PLAY : EHandStage.PASS,
+      this.hand = this.spawnEntity(
+        new Hand(
+          this,
+          this.passDirection === EPassDirection.NONE ? EHandStage.PLAY : EHandStage.PASS,
+        ),
       );
 
-      const scoreIncrements = await this.spawnState(this.hand);
+      const scoreIncrements = yield* this.awaitEntity(this.hand);
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.players[playerIndex].score += scoreIncrement;

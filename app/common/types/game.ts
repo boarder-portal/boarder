@@ -1,4 +1,4 @@
-import { IPlayer } from 'common/types';
+import { IPlayer as ICommonPlayer } from 'common/types';
 import * as PexesoTypes from 'common/types/pexeso';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
@@ -6,9 +6,8 @@ import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
 import * as SevenWondersTypes from 'common/types/sevenWonders';
-import * as HeartsTypes from 'common/types/hearts';
 
-export enum EGameEvent {
+export enum ECommonGameEvent {
   UPDATE = 'UPDATE',
   END = 'END',
 }
@@ -67,12 +66,6 @@ export interface IGamesParams {
     options: SevenWondersTypes.IGameOptions;
     player: SevenWondersTypes.IPlayer;
   };
-  [EGame.HEARTS]: {
-    event: HeartsTypes.EGameEvent;
-    eventMap: HeartsTypes.IEventMap;
-    options: HeartsTypes.IGameOptions;
-    player: HeartsTypes.IPlayer;
-  };
 }
 
 export type TGamePlayer<Game extends EGame> = IGamesParams[Game]['player'];
@@ -87,5 +80,5 @@ export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];
 
 export interface IGameUpdateEvent {
   id: string;
-  players: IPlayer[];
+  players: ICommonPlayer[];
 }

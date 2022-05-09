@@ -45,7 +45,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
     }));
   }
 
-  async lifecycle(): Promise<number[]> {
+  *lifecycle() {
     const deck = shuffle(DECKS[this.players.length]);
     const shuffledDeck = chunk(deck, deck.length / this.players.length);
 
@@ -57,7 +57,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
     this.root.sendInfo();
 
     if (this.stage === EHandStage.PASS) {
-      await this.listenWhile(
+      yield* this.listenSocketWhile(
         () => this.playersData.every(({ chosenCardsIndexes }) => chosenCardsIndexes.length === PASS_CARDS_COUNT),
         {
           [EGameEvent.CHOOSE_CARD]: ({ cardIndex }, player) => {
@@ -98,14 +98,16 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
     let startPlayerIndex = this.playersData.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
 
     while (this.playersData.some(({ hand }) => hand.length !== 0)) {
-      this.turn = new Turn(this, startPlayerIndex);
+      this.turn = this.spawnEntity(
+        new Turn(this, startPlayerIndex),
+      );
 
       this.root.sendInfo();
 
       const {
         highestCardPlayerIndex,
         takenCards: playerTakenCards,
-      } = await this.spawnState(this.turn);
+      } = yield* this.awaitEntity(this.turn);
 
       startPlayerIndex = highestCardPlayerIndex;
       this.heartsEnteredPlay ||= playerTakenCards.some(isHeart);
