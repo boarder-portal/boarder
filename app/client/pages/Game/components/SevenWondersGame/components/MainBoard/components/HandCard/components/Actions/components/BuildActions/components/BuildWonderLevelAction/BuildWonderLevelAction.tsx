@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   EBuildType,
@@ -57,14 +55,6 @@ function getTitle(buildType: EBuildType): string {
   }
 }
 
-const b = block('BuildWonderLevelAction');
-
-const Root = styled(Box)`
-  .BuildWonderLevelAction {
-
-  }
-`;
-
 const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) => {
   const {
     player,
@@ -105,9 +95,9 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
 
   return (
     <>
-      <Root className={b()} onClick={handleClick}>
+      <Box onClick={handleClick}>
         {getTitle(buildType)}
-      </Root>
+      </Box>
 
       <TradeModal
         isVisible={isTradeModalVisible}

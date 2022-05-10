@@ -1,6 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
+import classNames from 'classnames';
+
+import styles from './BackCard.pcss';
 
 interface IBackCardProps {
   className?: string;
@@ -9,17 +10,16 @@ interface IBackCardProps {
   onClick?(): void;
 }
 
-const b = block('BackCard');
-
-const Root = styled.img`
-  width: 110px;
-`;
-
 const BackCard: React.FC<IBackCardProps> = (props) => {
   const { className, style, type, onClick } = props;
 
   return (
-    <Root className={b.mix(className)} src={`/sevenWonders/cards/backs/${type}.png`} style={style} onClick={onClick} />
+    <img
+      className={classNames(styles.root, className)}
+      src={`/sevenWonders/cards/backs/${type}.png`}
+      style={style}
+      onClick={onClick}
+    />
   );
 };
 

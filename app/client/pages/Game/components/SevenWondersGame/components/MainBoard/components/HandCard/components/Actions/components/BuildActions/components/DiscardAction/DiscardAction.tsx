@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   ECardActionType,
@@ -17,14 +15,6 @@ interface IDiscardActionProps {
   player: IPlayer;
   onCardAction(action: TAction, payments?: TPayments): void;
 }
-
-const b = block('DiscardAction');
-
-const Root = styled(Box)`
-  .DiscardAction {
-
-  }
-`;
 
 const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
   const { player, onCardAction } = props;
@@ -48,9 +38,9 @@ const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
   }
 
   return (
-    <Root className={b()} size="s" textAlign="center" onClick={onClick}>
+    <Box size="s" textAlign="center" onClick={onClick}>
       {title}
-    </Root>
+    </Box>
   );
 };
 

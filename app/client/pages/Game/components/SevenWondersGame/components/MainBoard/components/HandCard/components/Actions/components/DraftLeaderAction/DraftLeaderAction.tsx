@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import { ECardActionType, TAction, TPayments } from 'common/types/sevenWonders';
 
@@ -10,14 +8,6 @@ interface IDraftLeaderActionProps {
   className?: string;
   onCardAction(action: TAction, payments?: TPayments): void;
 }
-
-const b = block('DraftLeaderAction');
-
-const Root = styled(Box)`
-  .PickLeaderActions {
-
-  }
-`;
 
 const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
   const { className, onCardAction } = props;
@@ -29,9 +19,9 @@ const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
   }, [onCardAction]);
 
   return (
-    <Root className={b.mix(className)} >
+    <Box className={className} >
       <div onClick={handleSelect}>Выбрать</div>
-    </Root>
+    </Box>
   );
 };
 

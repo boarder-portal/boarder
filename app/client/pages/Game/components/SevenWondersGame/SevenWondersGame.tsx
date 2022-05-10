@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
 import {
@@ -20,37 +18,12 @@ import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/
 
 import userAtom from 'client/atoms/userAtom';
 
+import styles from './SevenWondersGame.pcss';
+
 interface ISevenWondersGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
-
-const b = block('SevenWondersGame');
-
-const Root = styled(Box)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 48px;
-  width: 100%;
-  background: beige;
-  padding: 12px;
-
-  .SevenWondersGame {
-    &__otherPlayers {
-      display: flex;
-    }
-
-    &__otherPlayerWonder {
-      flex: 0 0 400px;
-    }
-
-    &__mainBoard {
-      margin-top: auto;
-    }
-  }
-`;
 
 const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const { io } = props;
@@ -106,20 +79,20 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   }
 
   return (
-    <Root className={b()} flex column>
+    <Box className={styles.root} flex column>
       <Box
-        className={b('otherPlayers')}
+        className={styles.otherPlayers}
         flex
         between={20}
         justifyContent="center"
       >
         {otherPlayers.map((otherPlayer) => (
-          <Wonder key={otherPlayer.login} className={b('otherPlayerWonder')} player={otherPlayer} copiedLeaderId={player.copiedCard?.id} isOtherPlayer />
+          <Wonder key={otherPlayer.login} className={styles.otherPlayerWonder} player={otherPlayer} copiedLeaderId={player.copiedCard?.id} isOtherPlayer />
         ))}
       </Box>
 
       <MainBoard
-        className={b('mainBoard')}
+        className={styles.mainBoard}
         io={io}
         player={player}
         discard={discard}
@@ -128,7 +101,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         leftNeighbor={leftNeighbor}
         rightNeighbor={rightNeighbor}
       />
-    </Root>
+    </Box>
   );
 };
 

@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   ISevenWondersCourtesansBuildInfo,
@@ -17,14 +15,6 @@ interface ICourtesanActionProps {
   onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
-const b = block('CourtesanAction');
-
-const Root = styled(Box)`
-  .CourtesanAction {
-
-  }
-`;
-
 const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
   const { className, card, courtesansBuildInfo, onCardAction } = props;
 
@@ -36,9 +26,9 @@ const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
   }, [card, courtesansBuildInfo.action, courtesansBuildInfo.cardIndex, courtesansBuildInfo.payments, onCardAction]);
 
   return (
-    <Root className={b.mix(className)}>
+    <Box className={className}>
       <div onClick={handleSelect}>Выбрать</div>
-    </Root>
+    </Box>
   );
 };
 

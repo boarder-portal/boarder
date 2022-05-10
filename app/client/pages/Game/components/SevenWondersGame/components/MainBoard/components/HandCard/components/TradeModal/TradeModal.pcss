@@ -1,0 +1,26 @@
+.title {
+  text-align: center;
+}
+
+.container {
+  min-width: 500px;
+}
+
+.tradeVariant {
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 12px 20px;
+  margin: 0 -20px;
+
+  & > div {
+    flex: 0 0 33.33%;
+
+    &:nth-child(2) {
+      justify-content: center;
+    }
+  }
+
+  &:hover {
+    background: #eee;
+  }
+}

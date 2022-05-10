@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
+import classNames from 'classnames';
 
 import {
   ECardActionType,
@@ -48,6 +47,8 @@ import Box from 'client/components/common/Box/Box';
 import { usePrevious } from 'client/hooks/usePrevious';
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 
+import styles from './MainBoard.pcss';
+
 interface IMainBoardProps {
   className?: string;
   io: SocketIOClient.Socket;
@@ -58,48 +59,6 @@ interface IMainBoardProps {
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
 }
-
-const b = block('MainBoard');
-
-const Root = styled(Box)`
-  padding-bottom: 125px;
-
-  .MainBoard {
-    &__wonderWrapper {
-      position: relative;
-      max-width: 500px;
-    }
-
-    &__switchHand {
-      position: absolute;
-      left: -140px;
-      top: 150px;
-      cursor: pointer;
-    }
-
-    &__handWrapper {
-      position: fixed;
-      bottom: -100px;
-      z-index: 24;
-    }
-
-    &__leftArrow,
-    &__rightArrow {
-      position: absolute;
-      top: 60px;
-      width: 50px;
-      height: 50px;
-    }
-
-    &__leftArrow {
-      left: -50px;
-    }
-
-    &__rightArrow {
-      right: -50px;
-    }
-  }
-`;
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
@@ -199,20 +158,26 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [hand.length, prevHand.length]);
 
   return (
-    <Root className={b.mix(className)} flex alignItems="center" column between={12}>
-      <div className={b('wonderWrapper')}>
-        <Wonder className={b('wonder')} player={player} />
+    <Box
+      className={classNames(styles.root, className)}
+      flex
+      alignItems="center"
+      column
+      between={12}
+    >
+      <div className={styles.wonderWrapper}>
+        <Wonder player={player} />
 
         {gamePhase !== EGamePhase.RECRUIT_LEADERS && (
           <BackCard
-            className={b('switchHand')}
+            className={styles.switchHand}
             type={isViewingLeaders && gamePhase === EGamePhase.BUILD_STRUCTURES ? age : 'leader'}
             onClick={handleClickHandSwitcher}
           />
         )}
       </div>
 
-      <Box className={b('handWrapper')}>
+      <Box className={styles.handWrapper}>
         <Box flex between={-35}>
           {hand.map((card, index) => (
             <HandCard
@@ -243,10 +208,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
         </Box>
 
         {cardsDirection === ENeighborSide.LEFT ?
-          <ArrowLeft className={b('leftArrow').toString()} /> :
-          <ArrowRight className={b('rightArrow').toString()} />}
+          <ArrowLeft className={styles.leftArrow} /> :
+          <ArrowRight className={styles.rightArrow} />}
       </Box>
-    </Root>
+    </Box>
   );
 };
 

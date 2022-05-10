@@ -1,6 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   IPlayer,
@@ -43,14 +41,6 @@ interface IBuildActionsProps {
   onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
 }
 
-const b = block('BuildActions');
-
-const Root = styled(Box)`
-  .BuildActions {
-
-  }
-`;
-
 const BuildActions: React.FC<IBuildActionsProps> = (props) => {
   const {
     className,
@@ -69,7 +59,7 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
 
   return (
     <>
-      <Root className={b.mix(className)}>
+      <Box className={className}>
         <BuildCardActions
           card={card}
           cardIndex={cardIndex}
@@ -90,7 +80,7 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
         />
 
         <DiscardAction player={player} onCardAction={onCardAction} />
-      </Root>
+      </Box>
     </>
   );
 };

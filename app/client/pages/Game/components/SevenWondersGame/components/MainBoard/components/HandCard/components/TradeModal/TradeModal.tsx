@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
 
@@ -15,45 +13,14 @@ import ResourcesAndPrice
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
+import styles from './TradeModal.pcss';
+
 interface ITradeModalProps {
   isVisible: boolean;
   tradeVariants: ITradeVariant[];
   onBuild(payments?: TPayments): void;
   onClose(): void;
 }
-
-const b = block('TradeModal');
-
-const Root = styled(Modal)`
-  .TradeModal {
-    &__title {
-      text-align: center;
-    }
-
-    &__container {
-      min-width: 500px;
-    }
-
-    &__tradeVariant {
-      border-radius: 8px;
-      cursor: pointer;
-      padding: 12px 20px;
-      margin: 0 -20px;
-
-      & > div {
-        flex: 0 0 33.33%;
-
-        &:nth-child(2) {
-          justify-content: center;
-        }
-      }
-
-      &:hover {
-        background: #eee;
-      }
-    }
-  }
-`;
 
 const TradeModal: React.FC<ITradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
@@ -68,8 +35,8 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
   }, []);
 
   return (
-    <Root className={b()} containerClassName={b('container')} open={isVisible} onClose={onClose}>
-      <Box className={b('title')} size="xxl" bold>Торговые варианты</Box>
+    <Modal containerClassName={styles.container} open={isVisible} onClose={onClose}>
+      <Box className={styles.title} size="xxl" bold>Торговые варианты</Box>
 
       <Box flex justifyContent="space-between" mt={20}>
         <Box bold size="l">Left</Box>
@@ -80,7 +47,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
       <Box flex column between={8} mt={8}>
         {tradeVariants.map((tradeVariant, index) => (
           <Box
-            className={b('tradeVariant')}
+            className={styles.tradeVariant}
             key={index}
             flex
             onMouseEnter={handleHoverTradeVariant}
@@ -104,7 +71,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
           </Box>
         ))}
       </Box>
-    </Root>
+    </Modal>
   );
 };
 
