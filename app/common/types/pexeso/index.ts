@@ -1,5 +1,6 @@
 import { IPlayer as ICommonPlayer } from 'common/types';
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GAME_INFO = 'GAME_INFO',
@@ -57,8 +58,19 @@ export interface IGameOptions extends ICommonGameOptions {
 }
 
 export interface IPlayer extends ICommonPlayer {
-  isActive: boolean;
   score: number;
+}
+
+export interface IGame {
+  players: IPlayer[];
+  options: IGameOptions;
+  activePlayerIndex: number;
+  cards: ICard[];
+  turn: ITurn | null;
+}
+
+export interface ITurn {
+  openedCardsIndexes: number[];
 }
 
 export interface ICard {
@@ -79,6 +91,11 @@ export interface IShuffleCardsIndexes {
   permutation: number[];
 }
 
+export interface IUpdatePlayersEvent {
+  players: IPlayer[];
+  activePlayerIndex: number;
+}
+
 export interface IHideCardsEvent {
   indexes: number[];
   shuffleIndexes: IShuffleCardsIndexes | null;
@@ -87,4 +104,25 @@ export interface IHideCardsEvent {
 export interface IRemoveCardsEvent {
   indexes: number[];
   shuffleIndexes: IShuffleCardsIndexes | null;
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.OPEN_CARD]: number;
+
+  [EGameEvent.GAME_INFO]: IGame;
+  [EGameEvent.UPDATE_PLAYERS]: IUpdatePlayersEvent;
+  [EGameEvent.HIDE_CARDS]: IHideCardsEvent;
+  [EGameEvent.REMOVE_CARDS]: IRemoveCardsEvent;
+}
+
+declare module 'common/types/game' {
+  interface IGamesParams {
+    [EGame.PEXESO]: {
+      event: EGameEvent;
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: IPlayer;
+    };
+  }
 }

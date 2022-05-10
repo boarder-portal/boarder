@@ -4,7 +4,7 @@ import uuid from 'uuid/v4';
 import { IAuthSocket } from 'server/types';
 import { EPlayerStatus, IPlayer } from 'common/types';
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
-import { EGame, IGamesParams, TGameOptions } from 'common/types/game';
+import { EGame, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
@@ -43,7 +43,7 @@ class Room<G extends EGame> {
 
   constructor({ game, options, onUpdateRoom, onDeleteRoom }: {
     game: G;
-    options: IGamesParams[G]['options'];
+    options: TGameOptions<G>;
     onUpdateRoom(): void;
     onDeleteRoom: (id: string) => void;
   }) {

@@ -32,7 +32,7 @@ export const MAX_PLAYERS_COUNT = 4;
 export const MATCHING_CARDS_COUNTS = [2, 3, 4, 5, 6];
 export const DIFFERENT_CARDS_COUNTS = [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 48, 54, 60, 72, 84];
 export const SHUFFLE_AFTER_MOVES_COUNTS = [1, 2, 3, 4, 5, 6];
-export const SHUFFLE_CARDS_COUNTS = [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 48, 54, 60, 72, 84];
+export const SHUFFLE_CARDS_COUNTS = [2, 3, 4, 5, 6];
 
 export const FIELD_OPTIONS: IFieldOptions = {
   [EFieldLayout.RECT]: {

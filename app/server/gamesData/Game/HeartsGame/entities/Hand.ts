@@ -23,6 +23,7 @@ const SUIT_VALUES: Record<ESuit, number> = {
   [ESuit.SPADES]: 1e4,
   [ESuit.HEARTS]: 1e6,
 };
+const SHOW_CARDS_TIMEOUT = 2 * 1000;
 
 export interface IHandOptions {
   startStage: EHandStage;
@@ -31,9 +32,11 @@ export interface IHandOptions {
 export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   game: HeartsGame;
   players: IPlayer[];
+
   stage: EHandStage;
   playersData: IHandPlayerData[];
   heartsEnteredPlay = false;
+
   turn: Turn | null = null;
 
   constructor(game: HeartsGame, options: IHandOptions) {
@@ -111,6 +114,8 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
         highestCardPlayerIndex,
         takenCards: playerTakenCards,
       } = await this.waitForEntity(this.turn);
+
+      await this.delay(SHOW_CARDS_TIMEOUT);
 
       startPlayerIndex = highestCardPlayerIndex;
       this.heartsEnteredPlay ||= playerTakenCards.some(isHeart);

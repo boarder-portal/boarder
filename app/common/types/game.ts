@@ -1,5 +1,4 @@
 import { IPlayer as ICommonPlayer } from 'common/types';
-import * as PexesoTypes from 'common/types/pexeso';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
 import * as SetTypes from 'common/types/set';
@@ -24,12 +23,6 @@ export enum EGame {
 }
 
 export interface IGamesParams {
-  [EGame.PEXESO]: {
-    event: PexesoTypes.EGameEvent;
-    eventMap: any;
-    options: PexesoTypes.IGameOptions;
-    player: PexesoTypes.IPlayer;
-  };
   [EGame.SURVIVAL_ONLINE]: {
     event: SurvivalOnlineTypes.EGameEvent;
     eventMap: any;

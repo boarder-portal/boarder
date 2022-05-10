@@ -82,7 +82,7 @@ export interface IEventMap {
 }
 
 declare module 'common/types/game' {
-  export interface IGamesParams {
+  interface IGamesParams {
     [EGame.HEARTS]: {
       event: EGameEvent;
       eventMap: IEventMap;

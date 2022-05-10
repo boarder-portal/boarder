@@ -12,6 +12,11 @@ interface IEntityContext<Game extends EGame> {
 
 type TUnsubscriber = () => unknown;
 
+export interface IWaitForEventOptions<Game extends EGame, Event extends TGameEvent<Game>> {
+  player?: string | null;
+  validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
+}
+
 export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   #children = new Set<GameEntity<Game>>();
   #lifecycle: Promise<Result> | null = null;
@@ -185,12 +190,20 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
 
   waitForSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
-    player?: string | null,
+    options?: IWaitForEventOptions<Game, Event>,
   ): Promise<TGameEventData<Game, Event>> {
     return this.#registerEffect((resolve) => {
       return this.#getContext().listen({
-        [event]: resolve,
-      } as any, player);
+        [event]: (data: unknown) => {
+          try {
+            if (options?.validate?.(data) ?? true) {
+              resolve(data);
+            }
+          } catch {
+            // empty
+          }
+        },
+      } as any, options?.player);
     });
   }
 }

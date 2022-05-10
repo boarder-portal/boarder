@@ -11,12 +11,13 @@ import {
   EFieldLayout,
   EGameEvent,
   ICard,
-  IGameInfoEvent,
+  IGame,
   IGameOptions,
   IHideCardsEvent,
   IPlayer,
   IRemoveCardsEvent,
   IShuffleCardsIndexes,
+  IUpdatePlayersEvent,
 } from 'common/types/pexeso';
 import { EPlayerStatus, ICoords } from 'common/types';
 
@@ -218,6 +219,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const [cards, setCards] = useState<IPexesoClientCard[]>([]);
   const [highlightedCardsIndexes, setHighlightedCardsIndexes] = useState<number[]>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const cardsLayoutContainerRef = useRef<HTMLDivElement | null>(null);
   const cardsLayoutRef = useRef<HTMLDivElement | null>(null);
@@ -229,14 +231,14 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [players, user]);
 
   const handleCardClick = useCallback((cardIndex: number) => {
-    if (!player?.isActive) {
+    if (player?.index !== activePlayerIndex) {
       return;
     }
 
     setHighlightedCardsIndexes([]);
 
     io.emit(EGameEvent.OPEN_CARD, cardIndex);
-  }, [io, player]);
+  }, [activePlayerIndex, io, player]);
 
   const handleCardRightClick = useCallback((e: React.MouseEvent, cardIndex: number) => {
     e.preventDefault();
@@ -263,18 +265,20 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       options,
       cards,
       players,
-      openedCardsIndexes,
-    }: IGameInfoEvent) => {
+      activePlayerIndex,
+      turn,
+    }: IGame) => {
       setOptions(options);
       setCards(cards.map((card, index) => ({
         ...card,
         id: index,
-        isOpen: openedCardsIndexes.includes(index),
+        isOpen: turn?.openedCardsIndexes.includes(index) ?? false,
         opened: false,
         closed: false,
         exited: false,
       })));
       setPlayers(players);
+      setActivePlayerIndex(activePlayerIndex);
     });
 
     io.on(EGameEvent.OPEN_CARD, (cardIndex: number) => {
@@ -314,8 +318,12 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setHighlightedCardsIndexes([]);
     });
 
-    io.on(EGameEvent.UPDATE_PLAYERS, (players: IPlayer[]) => {
+    io.on(EGameEvent.UPDATE_PLAYERS, ({
+      players,
+      activePlayerIndex,
+    }: IUpdatePlayersEvent) => {
       setPlayers(players);
+      setActivePlayerIndex(activePlayerIndex);
     });
 
     return () => {
@@ -390,7 +398,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         {players.map((localPlayer) => (
           <Box
             key={localPlayer.login}
-            className={b('player', { isActive: localPlayer.isActive })}
+            className={b('player', { isActive: localPlayer.index === activePlayerIndex })}
             flex
             alignItems="center"
           >
@@ -407,7 +415,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         ))}
       </Box>
     );
-  }, [players]);
+  }, [activePlayerIndex, players]);
 
   if (isGameEnd) {
     return (

@@ -18,12 +18,11 @@ export interface ITurnOptions {
   startPlayerIndex: number;
 }
 
-const SHOW_CARDS_TIMEOUT = 2 * 1000;
-
 export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
   game: HeartsGame;
   hand: Hand;
   players: IPlayer[];
+
   playersData: ITurnPlayerData[];
   startPlayerIndex: number;
   activePlayerIndex: number;
@@ -47,7 +46,9 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
-        const { cardIndex } = await this.waitForSocketEvent(EGameEvent.CHOOSE_CARD, activePlayer.login);
+        const { cardIndex } = await this.waitForSocketEvent(EGameEvent.CHOOSE_CARD, {
+          player: activePlayer.login,
+        });
 
         chosenCardIndex = cardIndex;
       }
@@ -66,8 +67,6 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
     if (!playedCards.every(isDefined)) {
       throw new Error('Missing cards');
     }
-
-    await this.delay(SHOW_CARDS_TIMEOUT);
 
     return {
       highestCardPlayerIndex: getHighestCardIndex(playedCards, this.startPlayerIndex),

@@ -10,8 +10,10 @@ import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
 export default class HeartsGame extends GameEntity<EGame.HEARTS> {
   players: IPlayer[];
+
   handIndex = -1;
   passDirection: EPassDirection = EPassDirection.NONE;
+
   hand: Hand | null = null;
 
   constructor(players: IPlayer[]) {
