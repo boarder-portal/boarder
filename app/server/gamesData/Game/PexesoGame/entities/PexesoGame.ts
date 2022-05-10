@@ -87,12 +87,12 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
       );
 
       const openedCardsIndexes = await this.waitForEntity(this.turn);
-      let isGameEnd = false;
 
       await this.delay(OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
 
       const openedCards = openedCardsIndexes.map((cardIndex) => this.cards[cardIndex]);
       const areOpenedCardsSame = openedCards.every(({ imageId }) => imageId === openedCards[0].imageId);
+      let isGameEnd = false;
 
       if (areOpenedCardsSame) {
         openedCards.forEach((openedCard) => {
