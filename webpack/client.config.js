@@ -27,6 +27,10 @@ module.exports = {
     }].js`,
     path: path.resolve(__dirname, '../build/client'),
   },
+  cache: {
+    type: 'filesystem',
+    cacheDirectory: path.resolve(__dirname, '../.cache/client'),
+  },
   plugins: [
     ...commonConfig.plugins,
     new LoadablePlugin(),

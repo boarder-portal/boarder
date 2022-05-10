@@ -1,10 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
+import classNames from 'classnames';
 
 import { ESuit, ICard } from 'common/types/cards';
 
 import Box from 'client/components/common/Box/Box';
+
+import styles from './Card.pcss';
 
 interface ICardProps {
   className?: string;
@@ -12,40 +13,6 @@ interface ICardProps {
   isVisible: boolean;
   onClick?(): void;
 }
-
-const b = block('Card');
-
-const Root = styled(Box)`
-  width: 50px;
-  height: 70px;
-  border: 1px solid black;
-  border-radius: 8px;
-  user-select: none;
-  font-size: 24px;
-
-  &.Card {
-    &:not(&_visible) {
-      background: black;
-      border: 1px solid white;
-    }
-
-    &_color {
-      &_black {
-        color: black;
-      }
-
-      &_red {
-        color: red;
-      }
-    }
-  }
-
-  .Card {
-    &__suit {
-      font-size: 28px;
-    }
-  }
-`;
 
 const SUITS_MAP: Record<ESuit, string> = {
   [ESuit.HEARTS]: '\u2665',
@@ -59,13 +26,13 @@ const Card: React.FC<ICardProps> = (props) => {
   const { className, card, isVisible, onClick } = props;
 
   return (
-    <Root
-      className={b({
-        visible: isVisible,
-        color: RED_COLORS.includes(card.suit)
-          ? 'red'
-          : 'black',
-      }).mix(className)}
+    <Box
+      className={classNames(
+        styles.root,
+        isVisible ? styles.visible : undefined,
+        RED_COLORS.includes(card.suit) ? styles.red : styles.black,
+        className,
+      )}
       flex
       justifyContent="center"
       alignItems="center"
@@ -75,12 +42,12 @@ const Card: React.FC<ICardProps> = (props) => {
         <div>
           {card.value}
 
-          <span className={b('suit')}>
+          <span className={styles.suit}>
             {SUITS_MAP[card.suit]}
           </span>
         </div>
       )}
-    </Root>
+    </Box>
   );
 };
 

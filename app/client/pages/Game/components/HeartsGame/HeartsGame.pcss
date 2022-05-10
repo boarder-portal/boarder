@@ -1,0 +1,47 @@
+.player {
+  --offset: 40px;
+  position: absolute;
+
+  &.bottom,
+  &.top {
+    left: var(--offset);
+    right: var(--offset);
+  }
+
+  &.bottom {
+    bottom: 0;
+    z-index: 10;
+  }
+
+  &.top {
+    top: 0;
+  }
+
+  &.left,
+  &.right {
+    top: var(--offset);
+    bottom: var(--offset);
+  }
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+}
+
+.root {
+  flex-grow: 1;
+  position: relative;
+
+  .direction {
+    width: 300px;
+    height: 300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

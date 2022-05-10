@@ -1,8 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
+import classNames from 'classnames';
 
 import Box from 'client/components/common/Box/Box';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
+
+import styles from './Room.pcss';
 
 interface ILobbyRoomProps {
   className?: string;
@@ -14,18 +16,12 @@ interface ILobbyRoomProps {
   onClick(): void;
 }
 
-const Root = styled(Box)`
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  cursor: pointer;
-`;
-
-const LobbyRoom: React.FC<ILobbyRoomProps> = (props) => {
+const Room: React.FC<ILobbyRoomProps> = (props) => {
   const { className, title, options, players, maxPlayers, gameIsStarted, onClick } = props;
 
   return (
-    <Root
-      className={className}
+    <Box
+      className={classNames(styles.root, className)}
       px={32}
       py={16}
       flex
@@ -45,8 +41,8 @@ const LobbyRoom: React.FC<ILobbyRoomProps> = (props) => {
       </Box>
 
       <Box ml="auto" size="xxl">{`${players}/${maxPlayers}`}</Box>
-    </Root>
+    </Box>
   );
 };
 
-export default React.memo(LobbyRoom);
+export default React.memo(Room);

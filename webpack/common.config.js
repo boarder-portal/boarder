@@ -42,9 +42,6 @@ module.exports = {
       chunks: 'all',
     },
   },
-  cache: {
-    type: 'filesystem',
-  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: `[${

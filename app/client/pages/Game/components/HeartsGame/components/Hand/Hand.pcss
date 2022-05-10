@@ -1,0 +1,26 @@
+.card {
+  background: white;
+
+  &:not(:first-child) {
+    margin-left: -12px;
+  }
+}
+
+.root {
+  &.ownHand {
+    .card {
+      &.default, &.selected {
+        cursor: pointer;
+      }
+
+      &.selected {
+        transform: translateY(-10px);
+      }
+
+      &.disabled {
+        background: grey;
+        pointer-events: none;
+      }
+    }
+  }
+}

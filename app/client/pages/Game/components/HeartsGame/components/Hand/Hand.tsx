@@ -1,6 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
+import classNames from 'classnames';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
@@ -11,6 +10,8 @@ import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
+
+import styles from './Hand.pcss';
 
 enum ECardState {
   DEFAULT = 'default',
@@ -30,41 +31,6 @@ interface IHandProps {
   isFirstTurn: boolean;
   onSelectCard(cardIndex: number): void;
 }
-
-const b = block('Hand');
-
-const Root = styled(Box)`
-  &.Hand {
-    &_ownHand {
-      .Hand__card {
-        &_state {
-          &_selected {
-            transform: translateY(-10px);
-          }
-
-          &_default, &_selected {
-            cursor: pointer;
-          }
-
-          &_disabled {
-            background: grey;
-            pointer-events: none;
-          }
-        }
-      }
-    }
-  }
-
-  .Hand {
-    &__card {
-      background: white;
-
-      &:not(:first-child) {
-        margin-left: -12px;
-      }
-    }
-  }
-`;
 
 function isCardAllowed(card: ICard, suit: ESuit | null, hand: ICard[], heartsEnteredPlay: boolean, isFirstTurn: boolean): boolean {
   if (hand.some((card) => card.suit === suit)) {
@@ -125,15 +91,21 @@ const Hand: React.FC<IHandProps> = (props) => {
   } = props;
 
   return (
-    <Root className={b({ ownHand: isOwnHand }).mix(className)} flex column alignItems="center" between={20}>
+    <Box
+      className={classNames(styles.root, isOwnHand ? styles.ownHand : undefined, className)}
+      flex
+      column
+      alignItems="center"
+      between={20}
+    >
       <Box flex>
         {hand.map((card, index) => {
+          const state = getCardState(card, index, isActive, hand, chosenCardsIndexes, stage, playedSuit, heartsEnteredPlay, isFirstTurn);
+
           return (
             <Card
               key={index}
-              className={b('card', {
-                state: getCardState(card, index, isActive, hand, chosenCardsIndexes, stage, playedSuit, heartsEnteredPlay, isFirstTurn),
-              })}
+              className={classNames(styles.card, styles[state])}
               card={card}
               isVisible={isOwnHand}
               onClick={isOwnHand ? () => onSelectCard(index) : undefined}
@@ -141,7 +113,7 @@ const Hand: React.FC<IHandProps> = (props) => {
           );
         })}
       </Box>
-    </Root>
+    </Box>
   );
 };
 

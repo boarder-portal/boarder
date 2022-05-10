@@ -1,6 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
+import classNames from 'classnames';
 
 import { ESuit, ICard } from 'common/types/cards';
 import { EHandStage, IPlayer } from 'common/types/hearts';
@@ -10,6 +9,8 @@ import { EPlayerPosition } from 'client/pages/Game/components/HeartsGame/utiliti
 import Box from 'client/components/common/Box/Box';
 import Hand from 'client/pages/Game/components/HeartsGame/components/Hand/Hand';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
+
+import styles from './Player.pcss';
 
 interface IPlayerProps {
   className?: string;
@@ -26,20 +27,6 @@ interface IPlayerProps {
   isFirstTurn: boolean;
   onSelectCard(cardIndex: number): void;
 }
-
-const b = block('Player');
-
-const Root = styled(Box)`
-  &.Player {
-    &_left,
-    &_right {
-      .Player__hand {
-        width: 70px;
-        transform: rotate(90deg);
-      }
-    }
-  }
-`;
 
 const Player: React.FC<IPlayerProps> = (props) => {
   const {
@@ -59,8 +46,14 @@ const Player: React.FC<IPlayerProps> = (props) => {
   } = props;
 
   return (
-    <Root
-      className={b({ [position]: true }).mix(className)}
+    <Box
+      className={classNames(
+        styles.root,
+        position === EPlayerPosition.LEFT || position === EPlayerPosition.RIGHT ?
+          styles[position] :
+          undefined,
+        className,
+      )}
       flex
       alignItems="center"
       column={position === EPlayerPosition.BOTTOM || position === EPlayerPosition.TOP}
@@ -70,7 +63,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
       {playedCard && <Card card={playedCard} isVisible />}
 
       <Hand
-        className={b('hand')}
+        className={styles.hand}
         isActive={isActive}
         hand={hand}
         chosenCardsIndexes={chosenCardsIndexes}
@@ -82,11 +75,11 @@ const Player: React.FC<IPlayerProps> = (props) => {
         onSelectCard={onSelectCard}
       />
 
-      <Box className={b('info')} flex column alignItems="center">
+      <Box flex column alignItems="center">
         <Box size="xl" bold>{player.login}</Box>
         <Box size="l">{player.score}</Box>
       </Box>
-    </Root>
+    </Box>
   );
 };
 

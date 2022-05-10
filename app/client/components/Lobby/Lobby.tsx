@@ -6,7 +6,7 @@ import { ILobbyUpdateEvent } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';
 import Box from 'client/components/common/Box/Box';
-import LobbyRoom from 'client/components/Lobby/components/LobbyRoom/LobbyRoom';
+import LobbyRoom from 'client/components/Lobby/components/Room/Room';
 
 interface ILobbyProps<Game extends EGame> {
   game: EGame;

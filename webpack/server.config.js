@@ -21,6 +21,10 @@ module.exports = {
     chunkFilename: '[name].[contenthash].js',
     path: path.resolve(__dirname, '../build/server'),
   },
+  cache: {
+    type: 'filesystem',
+    cacheDirectory: path.resolve(__dirname, '../.cache/server'),
+  },
   plugins: [
     ...commonConfig.plugins,
     new webpack.DefinePlugin({
