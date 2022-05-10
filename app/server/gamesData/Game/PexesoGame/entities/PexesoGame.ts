@@ -132,7 +132,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   }
 
   isCardInGame(cardIndex: number): boolean {
-    return this.cards[cardIndex]?.isInGame ?? false;
+    return this.cards[cardIndex].isInGame;
   }
 
   shuffleCards(openedCardsIndexes: number[]): IShuffleCardsIndexes | null {
