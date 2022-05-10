@@ -5,11 +5,11 @@ import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   // client events
-  GET_ROOT_STATE = 'GET_ROOT_STATE',
+  GET_GAME_INFO = 'GET_GAME_INFO',
   CHOOSE_CARD = 'CHOOSE_CARD',
 
   // server events
-  ROOT_INFO = 'ROOT_INFO',
+  GAME_INFO = 'GAME_INFO',
 }
 
 export interface IGameOptions extends ICommonGameOptions {
@@ -75,10 +75,10 @@ export enum EPassDirection {
 }
 
 export interface IEventMap {
-  [EGameEvent.GET_ROOT_STATE]: undefined;
+  [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.CHOOSE_CARD]: IChooseCardEvent;
 
-  [EGameEvent.ROOT_INFO]: IGame;
+  [EGameEvent.GAME_INFO]: IGame;
 }
 
 declare module 'common/types/game' {

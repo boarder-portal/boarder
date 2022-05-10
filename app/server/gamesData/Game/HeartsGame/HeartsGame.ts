@@ -8,7 +8,7 @@ import Root from 'server/gamesData/Game/HeartsGame/entities/Root';
 
 export default class HeartsGame extends Game<EGame.HEARTS> {
   handlers = {
-    [EGameEvent.GET_ROOT_STATE]: this.onGetRootState,
+    [EGameEvent.GET_GAME_INFO]: this.onGetRootState,
   };
   root = this.initMainGameEntity(new Root(this.players));
 
@@ -20,6 +20,6 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   onGetRootState({ socket }: IGameEvent): void {
-    this.sendSocketEvent(EGameEvent.ROOT_INFO, this.root.toJSON(), socket);
+    this.sendSocketEvent(EGameEvent.GAME_INFO, this.root.toJSON(), socket);
   }
 }

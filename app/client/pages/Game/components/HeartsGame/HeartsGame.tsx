@@ -76,14 +76,14 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
   }, [passDirection]);
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_ROOT_STATE);
+    io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.ROOT_INFO, (game: IGame) => {
+    io.on(EGameEvent.GAME_INFO, (game: IGame) => {
       if (!user) {
         return;
       }
 
-      console.log(EGameEvent.ROOT_INFO, game);
+      console.log(EGameEvent.GAME_INFO, game);
 
       batchedUpdates(() => {
         setPlayers(game.players);
@@ -99,7 +99,7 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
     });
 
     return () => {
-      io.off(EGameEvent.GET_ROOT_STATE);
+      io.off(EGameEvent.GET_GAME_INFO);
     };
   }, [io, user]);
 

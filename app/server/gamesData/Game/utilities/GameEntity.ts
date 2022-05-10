@@ -77,6 +77,16 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
+  #destroy(): void {
+    for (const child of this.#children) {
+      child.#destroy();
+    }
+
+    for (const unsubscriber of this.#unsubscribers) {
+      unsubscriber();
+    }
+  }
+
   #getContext(): IEntityContext<Game> {
     if (!this.context) {
       throw new Error('No context');
@@ -233,17 +243,21 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
 
     return (
       this.#lifecycle = (async () => {
-        const iterator = this.lifecycle();
-        let prevResult: unknown;
+        try {
+          const iterator = this.lifecycle();
+          let prevResult: unknown;
 
-        while (true) {
-          const { value, done } = iterator.next(prevResult);
+          while (true) {
+            const { value, done } = iterator.next(prevResult);
 
-          if (done) {
-            return value;
+            if (done) {
+              return value;
+            }
+
+            prevResult = await this.#handleEffect(value);
           }
-
-          prevResult = await this.#handleEffect(value);
+        } finally {
+          this.#destroy();
         }
       })()
     );
@@ -264,6 +278,8 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
         await entity.run();
       } catch {
         // empty
+      } finally {
+        this.#children.delete(entity);
       }
     })();
 
