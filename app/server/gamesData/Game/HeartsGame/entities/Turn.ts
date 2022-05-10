@@ -6,7 +6,7 @@ import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
 
-import Root from 'server/gamesData/Game/HeartsGame/entities/Root';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
 export interface ITurnResult {
@@ -14,49 +14,51 @@ export interface ITurnResult {
   takenCards: ICard[];
 }
 
+export interface ITurnOptions {
+  startPlayerIndex: number;
+}
+
+const SHOW_CARDS_TIMEOUT = 2 * 1000;
+
 export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
-  root: Root;
+  game: HeartsGame;
   hand: Hand;
   players: IPlayer[];
   playersData: ITurnPlayerData[];
   startPlayerIndex: number;
   activePlayerIndex: number;
 
-  constructor(hand: Hand, startPlayerIndex: number) {
+  constructor(hand: Hand, options: ITurnOptions) {
     super();
 
-    this.root = hand.root;
+    this.game = hand.game;
     this.hand = hand;
-    this.players = this.root.players;
+    this.players = this.game.players;
     this.playersData = this.players.map(() => ({
       playedCard: null,
     }));
-    this.activePlayerIndex = this.startPlayerIndex = startPlayerIndex;
+    this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;
   }
 
-  *lifecycle() {
+  async lifecycle() {
     for (let i = 0; i < this.players.length; i++) {
       const activePlayer = this.players[this.activePlayerIndex];
 
-      const chooseCard = (cardIndex: number): void => {
-        this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(this.activePlayerIndex, cardIndex);
-      };
+      let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
-      const deuceOfClubsIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
+      if (chosenCardIndex === -1) {
+        const { cardIndex } = await this.waitForSocketEvent(EGameEvent.CHOOSE_CARD, activePlayer.login);
 
-      if (deuceOfClubsIndex === -1) {
-        const { cardIndex } = yield* this.waitForSocketEvent(EGameEvent.CHOOSE_CARD, activePlayer.login);
-
-        chooseCard(cardIndex);
-      } else {
-        chooseCard(deuceOfClubsIndex);
+        chosenCardIndex = cardIndex;
       }
+
+      this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(this.activePlayerIndex, chosenCardIndex);
 
       this.activePlayerIndex = i === this.players.length - 1
         ? -1
         : (this.activePlayerIndex + 1) % this.players.length;
 
-      this.root.sendInfo();
+      this.game.sendInfo();
     }
 
     const playedCards = this.playersData.map(({ playedCard }) => playedCard);
@@ -65,7 +67,7 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
       throw new Error('Missing cards');
     }
 
-    yield* this.delay(2000);
+    await this.delay(SHOW_CARDS_TIMEOUT);
 
     return {
       highestCardPlayerIndex: getHighestCardIndex(playedCards, this.startPlayerIndex),

@@ -4,13 +4,13 @@ import { EGame } from 'common/types/game';
 import { IGameEvent } from 'server/types';
 
 import Game from 'server/gamesData/Game/Game';
-import Root from 'server/gamesData/Game/HeartsGame/entities/Root';
+import HeartsGameEntity from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
 
 export default class HeartsGame extends Game<EGame.HEARTS> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetRootState,
   };
-  root = this.initMainGameEntity(new Root(this.players));
+  gameEntity = this.initMainGameEntity(new HeartsGameEntity(this.players));
 
   createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {
@@ -20,6 +20,6 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
   }
 
   onGetRootState({ socket }: IGameEvent): void {
-    this.sendSocketEvent(EGameEvent.GAME_INFO, this.root.toJSON(), socket);
+    this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }
 }

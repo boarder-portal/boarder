@@ -10,54 +10,6 @@ interface IEntityContext<Game extends EGame> {
   sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void;
 }
 
-enum EEffect {
-  AWAIT_ENTITY = 'AWAIT_ENTITY',
-  DELAY = 'DELAY',
-  REPEAT_TASK = 'REPEAT_TASK',
-  LISTEN_SOCKET = 'LISTEN_SOCKET',
-  WAIT_SOCKET_EVENT = 'WAIT_SOCKET_EVENT',
-}
-
-interface IAwaitEntityEffect<Game extends EGame, Result> {
-  type: EEffect.AWAIT_ENTITY;
-  entity: GameEntity<Game, Result>;
-}
-
-interface IDelayEffect {
-  type: EEffect.DELAY;
-  ms: number;
-}
-
-interface IRepeatTaskEffect<Result> {
-  type: EEffect.REPEAT_TASK;
-  ms: number;
-  task(): Result | void;
-}
-
-interface IListenSocketEffect<Game extends EGame> {
-  type: EEffect.LISTEN_SOCKET;
-  check(): boolean;
-  events: TPlayerEventListeners<Game>;
-  player?: string | null;
-}
-
-interface IWaitSocketEventEffect<Game extends EGame, Event extends TGameEvent<Game>> {
-  type: EEffect.WAIT_SOCKET_EVENT;
-  event: Event;
-  player?: string | null;
-}
-
-type TEffect<Game extends EGame> =
-  | IAwaitEntityEffect<Game, unknown>
-  | IDelayEffect
-  | IRepeatTaskEffect<unknown>
-  | IListenSocketEffect<Game>
-  | IWaitSocketEventEffect<Game, TGameEvent<Game>>
-
-type TGenerator<Game extends EGame, Result, Yield = unknown> = Generator<TEffect<Game>, Result, Yield>;
-
-export type TLifecycle<Game extends EGame, Result = void> = TGenerator<Game, Result>;
-
 type TUnsubscriber = () => unknown;
 
 export default abstract class GameEntity<Game extends EGame, Result = unknown> {
@@ -67,7 +19,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   #unsubscribers = new Set<TUnsubscriber>();
   context: IEntityContext<Game> | null = null;
 
-  protected abstract lifecycle(): TLifecycle<Game, Result>;
+  protected abstract lifecycle(): Promise<Result>;
 
   #addUnsubscriber(unsubscriber: TUnsubscriber): () => void {
     this.#unsubscribers.add(unsubscriber);
@@ -95,42 +47,33 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return this.context;
   }
 
-  #handleAnyEffect<Result>(
+  async #registerEffect<Result>(
     callback: (
       resolve: (result: Result) => void,
       reject: (error: unknown) => void,
     ) => (() => unknown) | void,
   ): Promise<Result> {
     return new Promise((resolve, reject) => {
-      callback((result) => {
-        cleanup();
+      const cleanup = callback((result) => {
+        cleanup?.();
+        removeUnsubscriber();
         resolve(result);
       }, (error) => {
-        cleanup();
+        cleanup?.();
+        removeUnsubscriber();
         reject(error);
       });
 
-      const cleanup = this.#addUnsubscriber(() => {
+      const removeUnsubscriber = this.#addUnsubscriber(() => {
+        cleanup?.();
         reject(new Error('Effect aborted'));
       });
     });
   }
 
-  #handleAwaitEntityEffect<Result>(effect: IAwaitEntityEffect<Game, Result>): Promise<Result> {
-    return this.#handleAnyEffect((resolve, reject) => {
-      (async () => {
-        try {
-          resolve(await effect.entity.run());
-        } catch (err) {
-          reject(err);
-        }
-      })();
-    });
-  }
-
-  #handleDelayEffect(effect: IDelayEffect): Promise<void> {
-    return this.#handleAnyEffect((resolve) => {
-      const timeout = setTimeout(resolve, effect.ms);
+  delay(ms: number): Promise<void> {
+    return this.#registerEffect((resolve) => {
+      const timeout = setTimeout(resolve, ms);
 
       return () => {
         clearTimeout(timeout);
@@ -138,102 +81,57 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     });
   }
 
-  async #handleEffect(effect: TEffect<Game>): Promise<unknown> {
-    if (effect.type === EEffect.AWAIT_ENTITY) {
-      return this.#handleAwaitEntityEffect(effect);
-    }
+  listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): Promise<void> {
+    return this.#registerEffect((resolve, reject) => {
+      if (!check()) {
+        Promise.resolve().then(resolve);
 
-    if (effect.type === EEffect.DELAY) {
-      return this.#handleDelayEffect(effect);
-    }
+        return;
+      }
 
-    if (effect.type === EEffect.REPEAT_TASK) {
-      return this.#handleRepeatTaskEffect(effect);
-    }
-
-    if (effect.type === EEffect.LISTEN_SOCKET) {
-      return this.#handleListenSocketEffect(effect);
-    }
-
-    if (effect.type === EEffect.WAIT_SOCKET_EVENT) {
-      return this.#handleWaitSocketEffect(effect);
-    }
-  }
-
-  #handleListenSocketEffect(effect: IListenSocketEffect<Game>): Promise<void> {
-    return this.#handleAnyEffect((resolve) => {
       return this.#getContext().listen(
-        mapValues(effect.events, (handler) => {
+        mapValues(events, (handler) => {
           return (data, player) => {
-            handler?.(data, player);
+            try {
+              handler?.(data, player);
 
-            if (effect.check()) {
-              resolve();
+              if (!check()) {
+                resolve();
+              }
+            } catch (err) {
+              reject(err);
             }
           };
         }),
-        effect.player,
+        player,
       );
     });
   }
 
-  #handleRepeatTaskEffect<Result>(effect: IRepeatTaskEffect<Result>): Promise<Result> {
-    return this.#handleAnyEffect((done) => {
+  repeatTask<Result>(ms: number, task: () => Result | void): Promise<Result> {
+    return this.#registerEffect((resolve, reject) => {
+      let promiseChain = Promise.resolve();
+
       const interval = setInterval(() => {
-        const result = effect.task();
+        promiseChain = promiseChain.then(async () => {
+          try {
+            const result = await task();
 
-        if (result !== undefined) {
-          clearInterval(interval);
+            if (result !== undefined) {
+              clearInterval(interval);
 
-          done(result);
-        }
-      }, effect.ms);
+              resolve(result);
+            }
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }, ms);
 
       return () => {
         clearInterval(interval);
       };
     });
-  }
-
-  #handleWaitSocketEffect<Event extends TGameEvent<Game>>(
-    effect: IWaitSocketEventEffect<Game, Event>,
-  ): Promise<TGameEventData<Game, Event>> {
-    return this.#handleAnyEffect((resolve) => {
-      return this.#getContext().listen({
-        [effect.event]: resolve,
-      } as any, effect.player);
-    });
-  }
-
-  *awaitEntity<Result>(entity: GameEntity<Game, Result>): TGenerator<Game, Result, Result> {
-    return yield {
-      type: EEffect.AWAIT_ENTITY,
-      entity,
-    };
-  }
-
-  *delay(ms: number): TGenerator<Game, void> {
-    yield {
-      type: EEffect.DELAY,
-      ms,
-    };
-  }
-
-  *listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): TGenerator<Game, void> {
-    yield {
-      type: EEffect.LISTEN_SOCKET,
-      check,
-      events,
-      player,
-    };
-  }
-
-  *repeatTask<Result>(ms: number, task: () => Result | void): TGenerator<Game, Result, Result> {
-    return yield {
-      type: EEffect.REPEAT_TASK,
-      ms,
-      task,
-    };
   }
 
   async run(): Promise<Result> {
@@ -244,18 +142,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return (
       this.#lifecycle = (async () => {
         try {
-          const iterator = this.lifecycle();
-          let prevResult: unknown;
-
-          while (true) {
-            const { value, done } = iterator.next(prevResult);
-
-            if (done) {
-              return value;
-            }
-
-            prevResult = await this.#handleEffect(value);
-          }
+          return await this.lifecycle();
         } finally {
           this.#destroy();
         }
@@ -290,14 +177,20 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return null;
   }
 
-  *waitForSocketEvent<Event extends TGameEvent<Game>>(
+  waitForEntity<Result>(entity: GameEntity<Game, Result>): Promise<Result> {
+    return this.#registerEffect((resolve, reject) => {
+      entity.run().then(resolve, reject);
+    });
+  }
+
+  waitForSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     player?: string | null,
-  ): TGenerator<Game, TGameEventData<Game, Event>> {
-    return yield {
-      type: EEffect.WAIT_SOCKET_EVENT,
-      event,
-      player,
-    };
+  ): Promise<TGameEventData<Game, Event>> {
+    return this.#registerEffect((resolve) => {
+      return this.#getContext().listen({
+        [event]: resolve,
+      } as any, player);
+    });
   }
 }

@@ -8,7 +8,7 @@ import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
-export default class Root extends GameEntity<EGame.HEARTS> {
+export default class HeartsGame extends GameEntity<EGame.HEARTS> {
   players: IPlayer[];
   handIndex = -1;
   passDirection: EPassDirection = EPassDirection.NONE;
@@ -20,19 +20,20 @@ export default class Root extends GameEntity<EGame.HEARTS> {
     this.players = players;
   }
 
-  *lifecycle() {
+  async lifecycle() {
     while (this.players.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.players.length][this.handIndex % this.players.length];
 
       this.hand = this.spawnEntity(
-        new Hand(
-          this,
-          this.passDirection === EPassDirection.NONE ? EHandStage.PLAY : EHandStage.PASS,
-        ),
+        new Hand(this, {
+          startStage: this.passDirection === EPassDirection.NONE ? EHandStage.PLAY : EHandStage.PASS,
+        }),
       );
 
-      const scoreIncrements = yield* this.awaitEntity(this.hand);
+      this.sendInfo();
+
+      const scoreIncrements = await this.waitForEntity(this.hand);
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.players[playerIndex].score += scoreIncrement;
