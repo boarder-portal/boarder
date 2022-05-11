@@ -19,6 +19,12 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
     };
   }
 
+  delete(): void {
+    super.delete();
+
+    this.gameEntity.destroy();
+  }
+
   onGetGameInfo({ socket }: IGameEvent): void {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }

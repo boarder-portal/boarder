@@ -19,6 +19,12 @@ export default class SetGame extends Game<EGame.SET> {
     };
   }
 
+  delete(): void {
+    super.delete();
+
+    this.gameEntity.destroy();
+  }
+
   onGetGameInfo({ socket }: IGameEvent): void {
     socket.emit(EGameEvent.GAME_INFO, this.gameEntity.toJSON());
   }

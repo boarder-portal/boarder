@@ -116,16 +116,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #destroy(): void {
-    for (const child of this.#children) {
-      child.#destroy();
-    }
-
-    for (const unsubscriber of this.#unsubscribers) {
-      unsubscriber();
-    }
-  }
-
   #getContext(): IEntityContext<Game> {
     if (!this.context) {
       throw new Error('No context');
@@ -360,6 +350,16 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
+  destroy(): void {
+    for (const child of this.#children) {
+      child.destroy();
+    }
+
+    for (const unsubscriber of this.#unsubscribers) {
+      unsubscriber();
+    }
+  }
+
   *listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): TGenerator<Game, void> {
     yield {
       type: EEffect.LISTEN_SOCKET,
@@ -409,7 +409,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
             }
           }
         } finally {
-          this.#destroy();
+          this.destroy();
         }
       })()
     );
