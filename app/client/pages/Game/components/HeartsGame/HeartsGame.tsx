@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
-import { ArrowLeft, ArrowRight } from '@material-ui/icons';
+import ArrowLeft from '@material-ui/icons/ArrowLeft';
+import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
 import {

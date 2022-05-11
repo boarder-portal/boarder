@@ -1,5 +1,3 @@
-import '../../styles/reset.pcss';
-import 'boarder-components/dist/index.css';
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

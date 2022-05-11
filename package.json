@@ -4,19 +4,7 @@
   "description": "",
   "default": "build/client.js",
   "scripts": {
-    "dev:start": "npm-run-all -p dev:server:watch dev:client:watch",
-    "dev:server": "webpack -c ./webpack/server.config.js && node ./build/server/main.js",
-    "dev:server:watch": "npm-run-all -p dev:server:build:watch dev:server:start:watch",
-    "dev:client:watch": "npm-run-all -p dev:client:build:watch css:watch",
-    "dev:client:build:watch": "webpack -w -c ./webpack/client.config.js",
-    "dev:server:build:watch": "webpack -w -c ./webpack/server.config.js",
-    "dev:server:start:watch": "supervisor ./build/server/main.js",
-    "dev:analize-bundle": "ANALYZE_BUNDLE=1 npm run dev:client:build:watch",
-    "prod:start": "NODE_ENV=production npm-run-all -s prod:client:build prod:server:build prod:server:start",
-    "prod:client:build": "NODE_ENV=production webpack -c ./webpack/client.config.js",
-    "prod:server:build": "NODE_ENV=production webpack -c ./webpack/server.config.js",
-    "prod:server:start": "node ./build/server/main.js",
-    "prod:analize-bundle": "ANALYZE_BUNDLE=1 npm run prod:client:build",
+    "dev": "ts-node-dev --transpile-only --ignore-watch /build/ -r tsconfig-paths/register ./app/server/server.ts",
     "css:watch": "tcm -p app/**/*.pcss --watch",
     "init-db": "ts-node -r tsconfig-paths/register ./app/server/db/initDB.ts",
     "create-pexeso-set": "ts-node scripts/createPexesoSet.ts",
@@ -100,6 +88,7 @@
     "@types/styled-components": "^4.4.3",
     "@types/type-is": "^1.6.3",
     "@types/uuid": "^3.4.7",
+    "@types/webpack-dev-middleware": "^5.3.0",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "autoprefixer": "^10.4.7",
@@ -118,11 +107,13 @@
     "postcss-loader": "^6.2.1",
     "postcss-nested": "^5.0.6",
     "process": "^0.11.10",
+    "require-so-slow": "^2.0.5",
     "sass": "^1.26.10",
     "supervisor": "^0.12.0",
     "tsconfig-paths": "^3.9.0",
     "typed-css-modules": "^0.7.2",
     "webpack-bundle-analyzer": "^4.5.0",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "webpack-node-externals": "^3.0.0"
   }
 }

@@ -1,4 +1,6 @@
 import 'regenerator-runtime/runtime';
+import './styles/reset.pcss';
+import 'boarder-components/dist/index.css';
 
 import React from 'react';
 import { render } from 'react-dom';

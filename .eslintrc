@@ -52,6 +52,7 @@
     ],
     "@typescript-eslint/ban-ts-ignore": 0,
     "@typescript-eslint/no-empty-interface": 0,
+    "@typescript-eslint/ban-ts-comment": 0,
     "no-unused-expressions": 0,
     "@typescript-eslint/no-unused-expressions": "error",
     "react-hooks/rules-of-hooks": "error",

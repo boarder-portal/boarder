@@ -1,45 +1,27 @@
-import React, { FC } from 'react';
+import React from 'react';
 import path from 'path';
 import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
-import { StaticRouter } from 'react-router-dom';
-import { renderToString } from 'react-dom/server';
-import { RecoilRoot } from 'recoil';
-import { ThemeProvider } from '@material-ui/core/styles';
 
-import App from 'client/components/App/App';
+const nodeStats = path.resolve(
+  './build/node/loadable-stats.json',
+);
 
-import theme from 'client/theme';
-
-const statsFile = path.resolve('./build/client/loadable-stats.json');
-const extractor = new ChunkExtractor({ statsFile, publicPath: '/' });
-
-interface IServerAppProps {
-  url: string;
-}
-
-const ServerApp: FC<IServerAppProps> = (props) => {
-  const { url } = props;
-
-  return (
-    <StaticRouter location={url}>
-      <ThemeProvider theme={theme}>
-        <RecoilRoot>
-          <App />
-        </RecoilRoot>
-      </ThemeProvider>
-    </StaticRouter>
-  );
-};
+const webStats = path.resolve(
+  './build/web/loadable-stats.json',
+);
 
 export default async function render(req: Request, res: Response) {
-  extractor.collectChunks(
-    <ServerApp url={req.url} />,
-  );
+  const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
+  const { default: App } = nodeExtractor.requireEntrypoint();
+  const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
-  const linkTags = extractor.getLinkTags();
-  const styleTags = extractor.getStyleTags();
-  const scriptTags = extractor.getScriptTags();
+  // @ts-ignore
+  webExtractor.collectChunks(<App url={req.url} />);
+
+  const linkTags = webExtractor.getLinkTags();
+  const styleTags = webExtractor.getStyleTags();
+  const scriptTags = webExtractor.getScriptTags();
 
   return res.send(`
 <html>
