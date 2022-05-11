@@ -66,7 +66,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
       await this.listenSocketWhile(
         () => this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT),
         {
-          [EGameEvent.CHOOSE_CARD]: ({ cardIndex }, player) => {
+          [EGameEvent.CHOOSE_CARD]: (cardIndex, player) => {
             const playerChosenCardsIndexes = this.playersData[player.index].chosenCardsIndexes;
 
             if (playerChosenCardsIndexes.includes(cardIndex)) {

@@ -1,7 +1,6 @@
 import { IPlayer as ICommonPlayer } from 'common/types';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
-import * as SetTypes from 'common/types/set';
 import * as OnitamaTypes from 'common/types/onitama';
 import * as CarcassonneTypes from 'common/types/carcassonne';
 import * as SevenWondersTypes from 'common/types/sevenWonders';
@@ -34,12 +33,6 @@ export interface IGamesParams {
     eventMap: any;
     options: MazeTypes.IGameOptions;
     player: MazeTypes.IPlayer;
-  };
-  [EGame.SET]: {
-    event: SetTypes.EGameEvent;
-    eventMap: any;
-    options: SetTypes.IGameOptions;
-    player: SetTypes.IPlayer;
   };
   [EGame.ONITAMA]: {
     event: OnitamaTypes.EGameEvent;

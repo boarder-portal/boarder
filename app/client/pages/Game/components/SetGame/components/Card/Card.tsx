@@ -18,9 +18,10 @@ const BASE_SIZE = typeof window !== 'undefined' && window.innerWidth < 1000 ? 80
 const Root = styled(Box)`
   width: ${BASE_SIZE}px;
   height: ${BASE_SIZE * 1.5}px;
-  border: ${({ isSelected }: Pick<ICardProps, 'isSelected'>) => isSelected ? 2 : 1}px solid black;
+  border: 1px solid black;
   border-radius: 8px;
   cursor: pointer;
+  ${({ isSelected }: Pick<ICardProps, 'isSelected'>) => isSelected ? 'background-color: lavender' : ''}
 `;
 
 const Card: React.FC<ICardProps> = (props) => {

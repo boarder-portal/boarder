@@ -1,7 +1,7 @@
 import mapValues from 'lodash/mapValues';
 import { Socket } from 'socket.io';
 
-import { EGame, TGameEvent, TGameEventData } from 'common/types/game';
+import { EGame, TGameEvent, TGameEventData, TGamePlayer } from 'common/types/game';
 
 import { TPlayerEventListeners } from 'server/gamesData/Game/Game';
 
@@ -12,9 +12,22 @@ interface IEntityContext<Game extends EGame> {
 
 type TUnsubscriber = () => unknown;
 
-export interface IWaitForEventOptions<Game extends EGame, Event extends TGameEvent<Game>> {
-  player?: string | null;
+export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>> {
   validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
+}
+
+export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameEvent<Game>> {
+  data: TGameEventData<Game, Event>;
+  player: TGamePlayer<Game>;
+}
+
+export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>> extends IWaitForSocketEventOptions<Game, Event> {
+  player: string;
+  validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
+}
+
+interface ICancelablePromise<T> extends Promise<T> {
+  cancel(): void;
 }
 
 export default abstract class GameEntity<Game extends EGame, Result = unknown> {
@@ -52,20 +65,20 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return this.context;
   }
 
-  async #registerEffect<Result>(
+  #registerEffect<Result>(
     callback: (
       resolve: (result: Result) => void,
       reject: (error: unknown) => void,
     ) => (() => unknown) | void,
-  ): Promise<Result> {
-    return new Promise((resolve, reject) => {
+  ): ICancelablePromise<Result> {
+    let unregisterEffect: (() => unknown) | undefined;
+
+    const cancelablePromise = new Promise((resolve, reject) => {
       const cleanup = callback((result) => {
-        cleanup?.();
-        removeUnsubscriber();
+        unregisterEffect?.();
         resolve(result);
       }, (error) => {
-        cleanup?.();
-        removeUnsubscriber();
+        unregisterEffect?.();
         reject(error);
       });
 
@@ -73,10 +86,23 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
         cleanup?.();
         reject(new Error('Effect aborted'));
       });
-    });
+
+      unregisterEffect = () => {
+        cleanup?.();
+        removeUnsubscriber();
+
+        unregisterEffect = undefined;
+      };
+    }).finally(() => unregisterEffect?.()) as ICancelablePromise<Result>;
+
+    cancelablePromise.cancel = () => {
+      unregisterEffect?.();
+    };
+
+    return cancelablePromise;
   }
 
-  delay(ms: number): Promise<void> {
+  delay(ms: number): ICancelablePromise<void> {
     return this.#registerEffect((resolve) => {
       const timeout = setTimeout(resolve, ms);
 
@@ -86,7 +112,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     });
   }
 
-  listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): Promise<void> {
+  listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): ICancelablePromise<void> {
     return this.#registerEffect((resolve, reject) => {
       if (!check()) {
         Promise.resolve().then(resolve);
@@ -113,7 +139,17 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     });
   }
 
-  repeatTask<Result>(ms: number, task: () => Result | void): Promise<Result> {
+  async race<T extends readonly ICancelablePromise<unknown>[] | []>(effects: T): Promise<Awaited<T[number]>> {
+    const result = await Promise.race(effects);
+
+    effects.forEach((effect) => {
+      effect.cancel();
+    });
+
+    return result;
+  }
+
+  repeatTask<Result>(ms: number, task: () => Result | void): ICancelablePromise<Result> {
     return this.#registerEffect((resolve, reject) => {
       let promiseChain = Promise.resolve();
 
@@ -182,28 +218,50 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return null;
   }
 
-  waitForEntity<Result>(entity: GameEntity<Game, Result>): Promise<Result> {
+  waitForEntity<Result>(entity: GameEntity<Game, Result>): ICancelablePromise<Result> {
     return this.#registerEffect((resolve, reject) => {
       entity.run().then(resolve, reject);
     });
   }
 
-  waitForSocketEvent<Event extends TGameEvent<Game>>(
+  waitForPlayerSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
-    options?: IWaitForEventOptions<Game, Event>,
-  ): Promise<TGameEventData<Game, Event>> {
+    options: IWaitForPlayerSocketEventOptions<Game, Event>,
+  ): ICancelablePromise<TGameEventData<Game, Event>> {
     return this.#registerEffect((resolve) => {
       return this.#getContext().listen({
         [event]: (data: unknown) => {
           try {
-            if (options?.validate?.(data) ?? true) {
+            if (options.validate?.(data) ?? true) {
               resolve(data);
             }
           } catch {
             // empty
           }
         },
-      } as any, options?.player);
+      } as any, options.player);
+    });
+  }
+
+  waitForSocketEvent<Event extends TGameEvent<Game>>(
+    event: Event,
+    options?: IWaitForSocketEventOptions<Game, Event>,
+  ): ICancelablePromise<IWaitForSocketEventResult<Game, Event>> {
+    return this.#registerEffect((resolve) => {
+      return this.#getContext().listen({
+        [event]: (data: unknown, player: TGamePlayer<Game>) => {
+          try {
+            if (options?.validate?.(data) ?? true) {
+              resolve({
+                data,
+                player,
+              });
+            }
+          } catch {
+            // empty
+          }
+        },
+      } as any);
     });
   }
 }

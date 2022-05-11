@@ -76,7 +76,7 @@ export enum EPassDirection {
 
 export interface IEventMap {
   [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.CHOOSE_CARD]: IChooseCardEvent;
+  [EGameEvent.CHOOSE_CARD]: number;
 
   [EGameEvent.GAME_INFO]: IGame;
 }

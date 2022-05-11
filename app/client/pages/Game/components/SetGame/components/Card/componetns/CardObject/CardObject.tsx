@@ -48,8 +48,8 @@ const Root = styled.div`
       border: ${isMobile ? 1 : 3}px solid ${card.color};
       background: repeating-linear-gradient(
         ${card.shape === ECardShape.RHOMBUS ? '45deg' : 'to right'},
-        white,
-        white ${isMobile ? 1 : 3}px,
+        transparent,
+        transparent ${isMobile ? 1 : 3}px,
         ${card.color} ${isMobile ? 1 : 3}px,
         ${card.color} ${isMobile ? 2 : 6}px
       );

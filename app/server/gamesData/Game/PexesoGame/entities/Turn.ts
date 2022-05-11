@@ -26,7 +26,7 @@ export default class Turn extends GameEntity<EGame.PEXESO, number[]> {
 
   async lifecycle() {
     while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
-      const cardIndex = await this.waitForSocketEvent(EGameEvent.OPEN_CARD, {
+      const cardIndex = await this.waitForPlayerSocketEvent(EGameEvent.OPEN_CARD, {
         player: this.activePlayer.login,
         validate: this.validateOpenCardEvent,
       });

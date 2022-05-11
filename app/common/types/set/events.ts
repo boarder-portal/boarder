@@ -1,4 +1,4 @@
-import { ICard, IPlayer } from 'common/types/set/index';
+import { ICard, IPlayer } from 'common/types/set';
 
 export interface IGameInfoEvent {
   players: IPlayer[];

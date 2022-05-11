@@ -62,11 +62,7 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
   }, [player, players]);
 
   const selectCard = useCallback((cardIndex: number) => {
-    const data: IChooseCardEvent = {
-      cardIndex,
-    };
-
-    io.emit(EGameEvent.CHOOSE_CARD, data);
+    io.emit(EGameEvent.CHOOSE_CARD, cardIndex);
   }, [io]);
 
   const directionBlock = useMemo(() => {
