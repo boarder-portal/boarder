@@ -1,5 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -13,7 +14,6 @@ export interface IGameOptions extends ICommonGameOptions {
 }
 
 export interface IPlayer extends ICommonPlayer {
-  isActive: boolean;
   cards: ECardType[];
   color: EPlayerColor;
 }
@@ -49,14 +49,33 @@ export interface IPiece {
 
 export type TBoard = (IPiece | null)[][];
 
-export interface IGameInfoEvent {
+export interface IGame {
   board: TBoard;
   players: IPlayer[];
   fifthCard: ECardType;
+  activePlayerIndex: number;
 }
 
 export interface IMovePieceEvent {
   from: ICoords;
   to: ICoords;
   cardIndex: number;
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.MOVE_PIECE]: IMovePieceEvent;
+
+  [EGameEvent.GAME_INFO]: IGame;
+}
+
+declare module 'common/types/game' {
+  interface IGamesParams {
+    [EGame.ONITAMA]: {
+      event: EGameEvent;
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: IPlayer;
+    };
+  }
 }

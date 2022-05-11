@@ -12,8 +12,16 @@ import {
 } from 'common/constants/games/set';
 
 import { EGame } from 'common/types/game';
-import { ECardColor, ECardFill, ECardShape, EGameEvent, ICard, IPlayer } from 'common/types/set';
-import { IGameInfoEvent, ISendSetEvent } from 'common/types/set/events';
+import {
+  ECardColor,
+  ECardFill,
+  ECardShape,
+  EGameEvent,
+  ICard,
+  IGame,
+  IPlayer,
+  ISendSetEvent,
+} from 'common/types/set';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
@@ -129,7 +137,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
-  toJSON(): IGameInfoEvent {
+  toJSON(): IGame {
     return {
       players: this.players,
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
@@ -147,12 +155,8 @@ export default class SetGame extends GameEntity<EGame.SET> {
 
     const { cardsIds } = event;
 
-    if (!isArray(cardsIds)) {
+    if (!isArray(cardsIds) || !cardsIds.every(isNumber)) {
       throw new Error('Wrong cardIds property');
-    }
-
-    if (!cardsIds.every(isNumber)) {
-      throw new Error('Wrong cardIds content');
     }
   };
 }

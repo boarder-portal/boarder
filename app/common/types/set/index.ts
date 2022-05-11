@@ -1,6 +1,5 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IPlayer as ICommonPlayer } from 'common/types';
-import { IGameInfoEvent, ISendSetEvent } from 'common/types/set/events';
 import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
@@ -45,12 +44,21 @@ export interface ICard {
   shape: ECardShape;
 }
 
+export interface IGame {
+  players: IPlayer[];
+  cards: ICard[];
+}
+
+export interface ISendSetEvent {
+  cardsIds: number[];
+}
+
 export interface IEventMap {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.SEND_SET]: ISendSetEvent;
   [EGameEvent.SEND_NO_SET]: undefined;
 
-  [EGameEvent.GAME_INFO]: IGameInfoEvent;
+  [EGameEvent.GAME_INFO]: IGame;
 }
 
 declare module 'common/types/game' {

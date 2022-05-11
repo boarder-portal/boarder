@@ -26,6 +26,6 @@ export default class SetGame extends Game<EGame.SET> {
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
-    socket.emit(EGameEvent.GAME_INFO, this.gameEntity.toJSON());
+    this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }
 }

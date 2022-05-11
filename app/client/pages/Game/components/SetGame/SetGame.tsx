@@ -4,8 +4,7 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import chunk from 'lodash/chunk';
 
-import { EGameEvent, ICard, IPlayer } from 'common/types/set';
-import { IGameInfoEvent, ISendSetEvent } from 'common/types/set/events';
+import { EGameEvent, ICard, IGame, IPlayer, ISendSetEvent } from 'common/types/set';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
@@ -94,7 +93,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
       console.log('GAME_INFO', gameInfo);
 
       if (!user) {

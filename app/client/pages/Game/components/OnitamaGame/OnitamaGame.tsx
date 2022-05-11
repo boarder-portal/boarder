@@ -9,7 +9,7 @@ import {
   ECardType,
   EGameEvent,
   EPlayerColor,
-  IGameInfoEvent,
+  IGame,
   IMovePieceEvent,
   IPlayer,
   TBoard,
@@ -115,6 +115,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
 
   const [board, setBoard] = useState<TBoard>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [fifthCard, setFifthCard] = useState<ECardType>(ECardType.TIGER);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [selectedFrom, setSelectedFrom] = useState<ICoords | null>(null);
@@ -125,7 +126,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const isFlipped = player?.color === EPlayerColor.RED;
 
   const handleCellClick = (cell: ICoords) => {
-    if (!player || !player.isActive) {
+    if (!player || player.index !== activePlayerIndex) {
       return;
     }
 
@@ -154,7 +155,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   };
 
   const handleCardClick = useCallback((card: ECardType) => {
-    if (player?.isActive) {
+    if (player?.index === activePlayerIndex) {
       const selectedCardIndex = player.cards.indexOf(card);
 
       setSelectedCardIndex(selectedCardIndex);
@@ -168,20 +169,23 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
         ));
       }
     }
-  }, [board, player, selectedFrom]);
+  }, [activePlayerIndex, board, player, selectedFrom]);
 
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
       if (!user) {
         return;
       }
+
+      console.log(gameInfo);
 
       const player = gameInfo.players.find(({ login }) => login === user.login) || null;
 
       setBoard(gameInfo.board);
       setPlayers(gameInfo.players);
+      setActivePlayerIndex(gameInfo.activePlayerIndex);
       setFifthCard(gameInfo.fifthCard);
       setPlayer(player);
       setSelectedCardIndex(-1);
@@ -206,11 +210,15 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
     return null;
   }
 
+  const topPlayer = players[isFlipped ? 0 : 1];
+  const bottomPlayer = players[isFlipped ? 1 : 0];
+
   return (
     <Root className={b()} flex column between={10} alignItems="flex-start">
       <OnitamaPlayer
-        player={players[isFlipped ? 0 : 1]}
+        player={topPlayer}
         fifthCard={fifthCard}
+        isActive={topPlayer.index === activePlayerIndex}
         isFlipped
         selectedCardIndex={-1}
       />
@@ -246,8 +254,9 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
       </Box>
 
       <OnitamaPlayer
-        player={players[isFlipped ? 1 : 0]}
+        player={bottomPlayer}
         fifthCard={fifthCard}
+        isActive={bottomPlayer.index === activePlayerIndex}
         isFlipped={false}
         selectedCardIndex={selectedCardIndex}
         onCardClick={handleCardClick}

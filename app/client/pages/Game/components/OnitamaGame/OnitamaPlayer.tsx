@@ -8,6 +8,7 @@ import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';
 interface IOnitamaPlayerProps {
   player: IPlayer;
   fifthCard: ECardType;
+  isActive: boolean;
   isFlipped: boolean;
   selectedCardIndex: number;
   onCardClick?(card: ECardType): void;
@@ -17,6 +18,7 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
   const {
     player,
     fifthCard,
+    isActive,
     isFlipped,
     selectedCardIndex,
     onCardClick,
@@ -35,7 +37,7 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
           />
         ))}
 
-        {player.isActive && (
+        {isActive && (
           <div style={{
             opacity: 0.25,
             transform: 'scale(0.75)',
