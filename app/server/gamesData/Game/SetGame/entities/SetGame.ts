@@ -34,7 +34,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
     this.players = players;
   }
 
-  async lifecycle() {
+  *lifecycle() {
     const notShuffledCardsStack: ICard[] = [];
 
     Object.values(ECardColor).forEach((color) => {
@@ -56,7 +56,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
     this.cardsStack = shuffle(notShuffledCardsStack);
 
     while (true) {
-      const { data: event, player } = await this.race([
+      const { data: event, player } = yield* this.race([
         this.waitForSocketEvent(EGameEvent.SEND_SET, {
           validate: this.validateSendSetEvent,
         }),

@@ -39,14 +39,14 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
     this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;
   }
 
-  async lifecycle() {
+  *lifecycle() {
     for (let i = 0; i < this.players.length; i++) {
       const activePlayer = this.players[this.activePlayerIndex];
 
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
-        chosenCardIndex = await this.waitForPlayerSocketEvent(EGameEvent.CHOOSE_CARD, {
+        chosenCardIndex = yield* this.waitForPlayerSocketEvent(EGameEvent.CHOOSE_CARD, {
           player: activePlayer.login,
         });
       }

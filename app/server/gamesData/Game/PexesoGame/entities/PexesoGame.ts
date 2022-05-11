@@ -41,7 +41,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
     this.options = options;
   }
 
-  async lifecycle() {
+  *lifecycle() {
     const {
       imagesCount: setImagesCount,
       imageVariantsCount,
@@ -86,9 +86,9 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
         }),
       );
 
-      const openedCardsIndexes = await this.waitForEntity(this.turn);
+      const openedCardsIndexes = yield* this.waitForEntity(this.turn);
 
-      await this.delay(OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
+      yield* this.delay(OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
 
       const openedCards = openedCardsIndexes.map((cardIndex) => this.cards[cardIndex]);
       const areOpenedCardsSame = openedCards.every(({ imageId }) => imageId === openedCards[0].imageId);

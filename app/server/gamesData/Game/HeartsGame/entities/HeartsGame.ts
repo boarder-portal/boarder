@@ -22,7 +22,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
     this.players = players;
   }
 
-  async lifecycle() {
+  *lifecycle() {
     while (this.players.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.players.length][this.handIndex % this.players.length];
@@ -35,7 +35,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
 
       this.sendInfo();
 
-      const scoreIncrements = await this.waitForEntity(this.hand);
+      const scoreIncrements = yield* this.waitForEntity(this.hand);
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.players[playerIndex].score += scoreIncrement;
