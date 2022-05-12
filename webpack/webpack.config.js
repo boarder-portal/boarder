@@ -13,8 +13,8 @@ function getConfig(target) {
       'development',
     target,
     entry: target === 'web' ?
-      path.resolve(__dirname, '../app/client/client.tsx') :
-      path.resolve(__dirname, '../app/server/middlewares/ServerApp.tsx'),
+      path.resolve('./app/client/client.tsx') :
+      path.resolve('./app/server/middlewares/ServerApp.tsx'),
     module: {
       rules: [
         {
@@ -62,21 +62,21 @@ function getConfig(target) {
       chunkFilename: `[${
         process.env.NODE_ENV === 'production' ? 'contenthash' : 'name'
       }].js`,
-      path: path.resolve(__dirname, `../build/${target}`),
+      path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
     },
     resolve: {
       alias: {
-        client: path.resolve(__dirname, '../app/client'),
-        common: path.resolve(__dirname, '../app/common'),
-        server: path.resolve(__dirname, '../app/server'),
+        client: path.resolve('./app/client'),
+        common: path.resolve('./app/common'),
+        server: path.resolve('./app/server'),
       },
       extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
     cache: {
       type: 'filesystem',
-      cacheDirectory: path.resolve(__dirname, `../.cache/${target}`),
+      cacheDirectory: path.resolve(`./.cache/${target}`),
     },
     plugins: [
       new LoadablePlugin(),
