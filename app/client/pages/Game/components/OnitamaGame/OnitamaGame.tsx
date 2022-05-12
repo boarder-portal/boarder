@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
+import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
@@ -24,62 +23,12 @@ import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlaye
 
 import userAtom from 'client/atoms/userAtom';
 
+import styles from './OnitamaGame.pcss';
+
 interface IOnitamaGameProps {
   io: SocketIOClient.Socket;
   isGameEnd: boolean;
 }
-
-const b = block('OnitamaGame');
-
-const Root = styled(Box)`
-  display: flex;
-
-  .OnitamaGame {
-    &__board {
-      transform: scaleY(-1);
-
-      &_isFlipped {
-        transform: scaleX(-1);
-      }
-    }
-
-    &__cell {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 70px;
-      height: 70px;
-      border: 1px solid black;
-
-      &_isSelected {
-        background-color: #7f7;
-      }
-
-      &_isLegalMove {
-        background-color: #aaa;
-      }
-    }
-
-    &__piece {
-      position: relative;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-
-      &_isMaster::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background-color: #fe0;
-      }
-    }
-  }
-`;
 
 const getLegalMoves = (
   from: ICoords,
@@ -214,7 +163,13 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const bottomPlayer = players[isFlipped ? 1 : 0];
 
   return (
-    <Root className={b()} flex column between={10} alignItems="flex-start">
+    <Box
+      className={styles.root}
+      flex
+      column
+      between={10}
+      alignItems="flex-start"
+    >
       <OnitamaPlayer
         player={topPlayer}
         fifthCard={fifthCard}
@@ -224,7 +179,9 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
       />
 
       <Box
-        className={b('board', { isFlipped })}
+        className={classNames(styles.board, {
+          [styles.isFlipped]: isFlipped,
+        })}
         between={2}
       >
         {board.map((row, y) => (
@@ -232,16 +189,18 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
             {row.map((piece, x) => (
               <Box
                 key={x}
-                className={b('cell', {
-                  isSelected: selectedFrom && equalsCoords({ x, y }, selectedFrom),
-                  isLegalMove: legalMoves.some(equalsCoordsCb({ x, y })),
+                className={classNames(styles.cell, {
+                  [styles.isSelected]: selectedFrom && equalsCoords({ x, y }, selectedFrom),
+                  [styles.isLegalMove]: legalMoves.some(equalsCoordsCb({ x, y })),
                 })}
                 data-cell={JSON.stringify({ x, y })}
                 onClick={() => handleCellClick({ x, y })}
               >
                 {piece && (
                   <div
-                    className={b('piece', { isMaster: piece.isMaster })}
+                    className={classNames(styles.piece, {
+                      [styles.isMaster]: piece.isMaster,
+                    })}
                     style={{
                       backgroundColor: piece.color,
                     }}
@@ -261,7 +220,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
         selectedCardIndex={selectedCardIndex}
         onCardClick={handleCardClick}
       />
-    </Root>
+    </Box>
   );
 };
 

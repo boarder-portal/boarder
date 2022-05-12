@@ -1,0 +1,47 @@
+.board {
+  transform: scaleY(-1);
+
+  &.isFlipped {
+    transform: scaleX(-1);
+  }
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border: 1px solid black;
+
+  &.isSelected {
+    background-color: #7f7;
+  }
+
+  &.isLegalMove {
+    background-color: #aaa;
+  }
+}
+
+.piece {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  &.isMaster::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #fe0;
+  }
+}
+
+.root {
+  display: flex;
+}

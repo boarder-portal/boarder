@@ -1,0 +1,14 @@
+.root {
+  width: 100px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid black;
+}
+
+.cells {
+  transform: scaleY(-1);
+
+  &.isFlipped {
+    transform: scaleX(-1);
+  }
+}

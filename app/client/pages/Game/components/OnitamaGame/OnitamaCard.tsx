@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import times from 'lodash/times';
-import block from 'bem-cn';
-import styled from 'styled-components';
+import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
@@ -9,31 +8,14 @@ import { ECardType } from 'common/types/onitama';
 
 import Box from 'client/components/common/Box/Box';
 
+import styles from './OnitamaCard.pcss';
+
 interface IOnitamaCardProps {
   card: ECardType;
   isFlipped: boolean;
   isSelected: boolean;
   onClick?(card: ECardType): void;
 }
-
-const b = block('OnitamaCard');
-
-const Root = styled(Box)`
-  width: 100px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  border: 1px solid black;
-
-  .OnitamaCard {
-    &__cells {
-      transform: scaleY(-1);
-
-      &_isFlipped {
-        transform: scaleX(-1);
-      }
-    }
-  }
-`;
 
 const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
   const {
@@ -51,15 +33,23 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
   }, [card, onClick]);
 
   return (
-    <Root
-      className={b()}
+    <Box
+      className={styles.root}
       column
       alignItems="center"
       between={4}
       background={isSelected ? '#7f7' : undefined}
       onClick={onClick && handleClick}
     >
-      <Box className={b('cells', { isFlipped })} flex column between={1} alignItems="center">
+      <Box
+        className={classNames(styles.cells, {
+          [styles.isFlipped]: isFlipped,
+        })}
+        flex
+        column
+        between={1}
+        alignItems="center"
+      >
         {times(5, (y) => (
           <Box key={y} flex between={1}>
             {times(5, (x) => (
@@ -85,7 +75,7 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
       <div style={{ textAlign: 'center' }}>
         {card}
       </div>
-    </Root>
+    </Box>
   );
 };
 
