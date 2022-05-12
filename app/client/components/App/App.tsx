@@ -1,3 +1,5 @@
+import '../../styles/reset.pcss';
+import '../../styles/styles.css';
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

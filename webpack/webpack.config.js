@@ -40,9 +40,12 @@ function getConfig(target) {
         },
         {
           test: /\.css$/,
-          use: target === 'node' ?
-            ['file-loader'] :
-            [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+            },
+          ],
         },
       ],
     },
@@ -64,6 +67,7 @@ function getConfig(target) {
       }].js`,
       path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
+      libraryTarget: target === 'node' ? 'commonjs2' : undefined,
     },
     resolve: {
       alias: {

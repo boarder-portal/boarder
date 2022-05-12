@@ -2,6 +2,7 @@ import React from 'react';
 import path from 'path';
 import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
+import { renderToString } from 'react-dom/server';
 
 const nodeStats = path.resolve(
   './build/node/loadable-stats.json',
@@ -11,13 +12,15 @@ const webStats = path.resolve(
   './build/web/loadable-stats.json',
 );
 
-export default async function render(req: Request, res: Response) {
+export default async function render(req: Request, res: Response): Promise<Response> {
   const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
   const { default: App } = nodeExtractor.requireEntrypoint();
+
   const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
   // @ts-ignore
-  webExtractor.collectChunks(<App url={req.url} />);
+  const jsx = webExtractor.collectChunks(<App url={req.url} />);
+  const html = renderToString(jsx);
 
   const linkTags = webExtractor.getLinkTags();
   const styleTags = webExtractor.getStyleTags();
@@ -36,7 +39,7 @@ export default async function render(req: Request, res: Response) {
     </head>
 
     <body>
-        <div id="root" />
+        <div id="root">${html}</div>
 
         ${scriptTags}
     </body>
