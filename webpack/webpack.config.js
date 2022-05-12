@@ -78,7 +78,7 @@ function getConfig(target) {
       extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
-    cache: {
+    cache: process.env.NODE_ENV === 'production' ? false : {
       type: 'filesystem',
       cacheDirectory: path.resolve(`./.cache/${target}`),
     },

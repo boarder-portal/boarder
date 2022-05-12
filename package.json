@@ -4,13 +4,17 @@
   "description": "",
   "default": "build/client.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --ignore-watch /build/ -r tsconfig-paths/register ./app/server/server.ts",
-    "css:watch": "tcm -p app/**/*.pcss --watch",
-    "init-db": "ts-node -r tsconfig-paths/register ./app/server/db/initDB.ts",
-    "create-pexeso-set": "ts-node scripts/createPexesoSet.ts",
+    "dev": "npm-run-all -p devServer cssWatch",
+    "devServer": "ts-node-dev --transpile-only --ignore-watch /build/ -r tsconfig-paths/register ./app/server/server.ts",
+    "cssWatch": "tcm -p app/**/*.pcss --watch",
+    "prod": "npm-run-all -c build prodStartServer",
+    "prodStartServer": "NODE_ENV=production ts-node --transpile-only -r tsconfig-paths/register ./app/server/server.ts",
+    "build": "NODE_ENV=production webpack -c ./webpack/webpack.config.js",
+    "initDb": "ts-node -r tsconfig-paths/register ./app/server/db/initDB.ts",
+    "createPexesoSet": "ts-node scripts/createPexesoSet.ts",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "eslint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+    "eslintFix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "alias": {
     "server": "./app/server",

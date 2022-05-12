@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
   },
 });
 
-if (process.env.NODE !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   const compiler = webpack(webpackConfig);
 
   app.use(
@@ -44,7 +44,7 @@ if (process.env.NODE !== 'production') {
 
 app
   .use(expressSession(sessionSettings))
-  .use(express.static('build/web'))
+  .use('/build/web', express.static('build/web'))
   .use(express.static('public'))
   .use(morgan('dev'))
   .post(
