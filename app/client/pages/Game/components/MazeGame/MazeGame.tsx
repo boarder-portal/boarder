@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   CELL_SIZE,
@@ -27,25 +25,13 @@ import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
+import styles from './MazeGame.pcss';
+
 interface IMazeGameProps {
   io: SocketIOClient.Socket;
   players: IPlayer[];
   isGameEnd: boolean;
 }
-
-const b = block('MazeGame');
-
-const Root = styled(Box)`
-  .MazeGame {
-    &__maze {
-      overflow: visible;
-    }
-
-    &__wall {
-      stroke: black;
-    }
-  }
-`;
 
 const PLAYER_COLORS: Record<EPlayerSide, string> = {
   [EPlayerSide.TOP]: '#00f',
@@ -208,9 +194,9 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   // console.log(mazeInfo);
 
   return (
-    <Root className={b()}>
+    <Box>
       <svg
-        className={b('maze')}
+        className={styles.maze}
         style={{
           width: MAZE_WIDTH * CELL_SIZE,
           height: MAZE_HEIGHT * CELL_SIZE,
@@ -220,7 +206,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
           {walls.map((wall) => (
             <line
               key={`${wall.from.x}x${wall.from.y} - ${wall.to.x}x${wall.to.y}`}
-              className={b('wall')}
+              className={styles.wall}
               style={{
                 strokeWidth: WALL_THICKNESS,
               }}
@@ -245,7 +231,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
           ))}
         </g>
       </svg>
-    </Root>
+    </Box>
   );
 };
 
