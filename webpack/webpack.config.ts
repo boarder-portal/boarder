@@ -1,18 +1,27 @@
-const path = require('path');
-const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
-const LoadablePlugin = require('@loadable/webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+import webpack, { Configuration } from 'webpack';
+import path from 'path';
+import nodeExternals from 'webpack-node-externals';
+import LoadablePlugin from '@loadable/webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
-function getConfig(target) {
+import isNotUndefined from '../app/common/utilities/isNotUndefined';
+
+enum ETarget {
+  WEB = 'web',
+  NODE = 'node',
+}
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+function getConfig(target: ETarget): Configuration {
   return {
     name: target,
-    mode: process.env.NODE_ENV === 'production' ?
+    mode: IS_PRODUCTION ?
       'production' :
       'development',
     target,
-    entry: target === 'web' ?
+    entry: target === ETarget.WEB ?
       path.resolve('./app/client/client.tsx') :
       path.resolve('./app/server/middlewares/ServerApp.tsx'),
     module: {
@@ -55,19 +64,19 @@ function getConfig(target) {
       },
     },
     externals:
-      target === 'node' ?
+      target === ETarget.NODE ?
         ['@loadable/component', nodeExternals()] :
         undefined,
     output: {
       filename: `[${
-        process.env.NODE_ENV === 'production' ? 'contenthash' : 'name'
+        IS_PRODUCTION ? 'contenthash' : 'name'
       }].js`,
       chunkFilename: `[${
-        process.env.NODE_ENV === 'production' ? 'contenthash' : 'name'
+        IS_PRODUCTION ? 'contenthash' : 'name'
       }].js`,
       path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
-      libraryTarget: target === 'node' ? 'commonjs2' : undefined,
+      libraryTarget: target === ETarget.NODE ? 'commonjs2' : undefined,
     },
     resolve: {
       alias: {
@@ -78,25 +87,27 @@ function getConfig(target) {
       extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
-    cache: process.env.NODE_ENV === 'production' ? false : {
-      type: 'filesystem',
-      cacheDirectory: path.resolve(`./.cache/${target}`),
-    },
+    cache: IS_PRODUCTION ?
+      false :
+      {
+        type: 'filesystem',
+        cacheDirectory: path.resolve(`./.cache/${target}`),
+      },
     plugins: [
-      new LoadablePlugin(),
+      new LoadablePlugin() as any,
       new MiniCssExtractPlugin({
         filename: `[${
-          process.env.NODE_ENV === 'production' ? 'contenthash' : 'name'
+          IS_PRODUCTION ? 'contenthash' : 'name'
         }].css`,
       }),
       new webpack.DefinePlugin({
-        SERVER: target === 'node',
+        SERVER: target === ETarget.NODE,
       }),
-      process.env.ANALYZE_BUNDLE && target === 'web' ?
+      process.env.ANALYZE_BUNDLE && target === ETarget.WEB ?
         new BundleAnalyzerPlugin() :
         undefined,
-    ].filter(Boolean),
+    ].filter(isNotUndefined),
   };
 }
 
-module.exports = [getConfig('web'), getConfig('node')];
+export default [getConfig(ETarget.WEB), getConfig(ETarget.NODE)];

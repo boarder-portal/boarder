@@ -15,8 +15,7 @@ import sessionSettings from 'server/sessionSettings';
 import render from 'server/middlewares/render';
 import apiRouter from 'server/api/apiRouter';
 
-// @ts-ignore
-import webpackConfig from '../../webpack/webpack.config.js';
+import webpackConfig from '../../webpack/webpack.config';
 
 import './gamesData';
 
