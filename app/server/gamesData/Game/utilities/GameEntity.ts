@@ -1,4 +1,3 @@
-import mapValues from 'lodash/mapValues';
 import { Socket } from 'socket.io';
 
 import { EGame, TGameEvent, TGameEventData, TGamePlayer } from 'common/types/game';
@@ -14,7 +13,6 @@ interface IEntityContext<G extends EGame> {
 
 enum EEffect {
   DELAY = 'DELAY',
-  LISTEN_SOCKET = 'LISTEN_SOCKET',
   REPEAT_TASK = 'REPEAT_TASK',
   RACE = 'RACE',
   WAIT_FOR_ENTITY = 'WAIT_FOR_ENTITY',
@@ -25,13 +23,6 @@ enum EEffect {
 interface IDelayEffect {
   type: EEffect.DELAY;
   ms: number;
-}
-
-interface IListenSocketEffect<Game extends EGame> {
-  type: EEffect.LISTEN_SOCKET;
-  check(): boolean;
-  events: TPlayerEventListeners<Game>;
-  player?: string | null;
 }
 
 interface IRaceEffect<Game extends EGame> {
@@ -65,7 +56,6 @@ interface IWaitSocketEventEffect<Game extends EGame, Event extends TGameEvent<Ga
 
 type TEffect<Game extends EGame> =
   | IDelayEffect
-  | IListenSocketEffect<Game>
   | IRaceEffect<Game>
   | IRepeatTaskEffect<unknown>
   | IWaitEntityEffect<Game, unknown>
@@ -174,10 +164,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
       return this.#handleDelayEffect(effect);
     }
 
-    if (effect.type === EEffect.LISTEN_SOCKET) {
-      return this.#handleListenSocketEffect(effect);
-    }
-
     if (effect.type === EEffect.RACE) {
       return this.#handleRaceEffect(effect);
     }
@@ -197,33 +183,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     if (effect.type === EEffect.WAIT_SOCKET_EVENT) {
       return this.#handleWaitSocketEffect(effect);
     }
-  }
-
-  #handleListenSocketEffect(effect: IListenSocketEffect<Game>): IEffectResult<void> {
-    return this.#handleAnyEffect((resolve, reject) => {
-      if (!effect.check()) {
-        Promise.resolve().then(resolve);
-
-        return;
-      }
-
-      return this.#getContext().listen(
-        mapValues(effect.events, (handler) => {
-          return (data, player) => {
-            try {
-              handler?.(data, player);
-
-              if (!effect.check()) {
-                resolve();
-              }
-            } catch (err) {
-              reject(err);
-            }
-          };
-        }),
-        effect.player,
-      );
-    });
   }
 
   #handleRaceEffect(effect: IRaceEffect<Game>): IEffectResult<unknown> {
@@ -358,15 +317,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
 
   getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
     return this.#getContext().game.getPlayerByLogin(login);
-  }
-
-  *listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): TGenerator<Game> {
-    yield {
-      type: EEffect.LISTEN_SOCKET,
-      check,
-      events,
-      player,
-    };
   }
 
   *race<T extends TGenerator<Game, unknown>[]>(generators: T): TGenerator<Game, TGeneratorReturnValue<Game, T[number]>, TGeneratorReturnValue<Game, T[number]>> {

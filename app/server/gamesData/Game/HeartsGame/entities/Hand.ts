@@ -63,22 +63,19 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
     this.sortHands();
 
     if (this.stage === EHandStage.PASS) {
-      yield* this.listenSocketWhile(
-        () => this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT),
-        {
-          [EGameEvent.CHOOSE_CARD]: (cardIndex, player) => {
-            const playerChosenCardsIndexes = this.playersData[player.index].chosenCardsIndexes;
+      while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
+        const { data: cardIndex, player } = yield* this.waitForSocketEvent(EGameEvent.CHOOSE_CARD);
 
-            if (playerChosenCardsIndexes.includes(cardIndex)) {
-              this.playersData[player.index].chosenCardsIndexes = playerChosenCardsIndexes.filter((index) => index !== cardIndex);
-            } else {
-              playerChosenCardsIndexes.push(cardIndex);
-            }
+        const playerChosenCardsIndexes = this.playersData[player.index].chosenCardsIndexes;
 
-            this.game.sendInfo();
-          },
-        },
-      );
+        if (playerChosenCardsIndexes.includes(cardIndex)) {
+          this.playersData[player.index].chosenCardsIndexes = playerChosenCardsIndexes.filter((index) => index !== cardIndex);
+        } else {
+          playerChosenCardsIndexes.push(cardIndex);
+        }
+
+        this.game.sendInfo();
+      }
 
       const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) => (
         chosenCardsIndexes.map((cardIndex) => hand[cardIndex])
