@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 
 import { EPlayerStatus } from 'common/types';
@@ -31,25 +31,31 @@ const Game: React.FC = () => {
     setTrue: endGame,
   } = useBoolean(false);
 
-  useEffect(() => {
-    ioRef.current = io.connect(`/${game}/game/${gameId}`);
+  const history = useHistory();
 
-    ioRef.current.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
+  useEffect(() => {
+    const socket = ioRef.current = io.connect(`/${game}/game/${gameId}`);
+
+    socket.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
       setGameData(updatedGameData);
     });
 
-    ioRef.current.on(ECommonGameEvent.END, () => {
+    socket.on(ECommonGameEvent.END, () => {
       console.log('GAME_END');
 
       endGame();
     });
 
-    return () => {
-      if (ioRef.current) {
-        ioRef.current.disconnect();
+    socket.on('error', (err: unknown) => {
+      if (err === 'Invalid namespace') {
+        history.push(`/${game}/lobby`);
       }
+    });
+
+    return () => {
+      socket.disconnect();
     };
-  }, [endGame, game, gameId]);
+  }, [endGame, game, gameId, history]);
 
   if (!gameData || !ioRef.current) {
     return null;
