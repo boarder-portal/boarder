@@ -1,5 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -136,7 +137,6 @@ export type TScore = IObjectScore | IGoodsScore;
 
 export interface IPlayer extends ICommonPlayer {
   color: EPlayerColor;
-  isActive: boolean;
   score: TScore[];
   cards: ICard[];
   meeples: Record<EMeepleType, number>;
@@ -154,12 +154,17 @@ export interface IGamePlacedMeeple extends IPlacedMeeple {
   gameObjectId: number;
 }
 
-export interface IGameInfoEvent {
+export interface IGame {
   players: IPlayer[];
+  activePlayerIndex: number;
   board: TBoard;
   objects: TObjects;
   cardsLeft: number;
-  turnEndsAt: number | null;
+  turn: ITurn | null;
+}
+
+export interface ITurn {
+  endsAt: number;
 }
 
 export interface IAttachCardEvent {
@@ -167,4 +172,22 @@ export interface IAttachCardEvent {
   coords: ICoords;
   rotation: number;
   meeple: IPlacedMeeple | null;
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.ATTACH_CARD]: IAttachCardEvent;
+
+  [EGameEvent.GAME_INFO]: IGame;
+}
+
+declare module 'common/types/game' {
+  interface IGamesParams {
+    [EGame.CARCASSONNE]: {
+      event: EGameEvent;
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: IPlayer;
+    };
+  }
 }

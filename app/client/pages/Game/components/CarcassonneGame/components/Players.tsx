@@ -13,6 +13,7 @@ import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meep
 interface IPlayersProps {
   className?: string;
   players: IPlayer[];
+  activePlayerIndex: number;
   turnEndsAt: number | null;
 }
 
@@ -44,16 +45,20 @@ const Root = styled(Box)`
 `;
 
 const Players: React.FC<IPlayersProps> = (props) => {
-  const { className, players, turnEndsAt } = props;
+  const { className, players, activePlayerIndex, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const setSecondsLeft = () => {
       const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - Date.now()) / 1000) : 0;
 
       setTurnSecondsLeft(secondsLeft);
-    }, 1000);
+    };
+
+    const interval = setInterval(setSecondsLeft, 1000);
+
+    setSecondsLeft();
 
     return () => {
       clearInterval(interval);
@@ -63,11 +68,13 @@ const Players: React.FC<IPlayersProps> = (props) => {
   return (
     <Root flex column className={b.mix(className)}>
       {players.map((player) => {
+        const isActive = player.index === activePlayerIndex;
+
         return (
-          <div key={player.login} className={b('player', { active: player.isActive })}>
+          <div key={player.login} className={b('player', { active: isActive })}>
             <div>
               <span>{player.login}</span>
-              {player.isActive && <span> {turnSecondsLeft}</span>}
+              {isActive && <span> {turnSecondsLeft}</span>}
             </div>
 
             <div>

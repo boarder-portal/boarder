@@ -45,6 +45,7 @@ abstract class Game<Game extends EGame> {
   id: string;
   players: TGamePlayer<Game>[];
   options: TGameOptions<Game>;
+  deleted = false;
   onDeleteGame: () => void;
 
   abstract handlers: TEventHandlers<Game>;
@@ -94,11 +95,9 @@ abstract class Game<Game extends EGame> {
         });
       });
 
-      forEach(this.temporaryListeners, (handlers, event) => {
-        handlers?.forEach((listener) => {
-          socket.on(event, (data) => {
-            listener.call(socket, data);
-          });
+      forEach(this.temporaryListeners, (listeners, event) => {
+        listeners?.forEach((listener) => {
+          socket.on(event, listener);
         });
       });
 
@@ -132,6 +131,8 @@ abstract class Game<Game extends EGame> {
     delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
 
     this.onDeleteGame();
+
+    this.deleted = true;
   }
 
   end(): void {
@@ -144,6 +145,7 @@ abstract class Game<Game extends EGame> {
 
   initMainGameEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
     entity.context = {
+      game: this,
       listen: (events, player) => {
         const unsubscribers = new Set<() => void>();
 
@@ -169,9 +171,11 @@ abstract class Game<Game extends EGame> {
 
       this.end();
     })().catch((err) => {
-      console.log(err);
+      if (!this.deleted) {
+        console.log('Error in game', err);
 
-      this.delete();
+        this.delete();
+      }
     });
 
     return entity;

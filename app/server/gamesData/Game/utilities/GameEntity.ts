@@ -3,11 +3,13 @@ import { Socket } from 'socket.io';
 
 import { EGame, TGameEvent, TGameEventData, TGamePlayer } from 'common/types/game';
 
-import { TPlayerEventListeners } from 'server/gamesData/Game/Game';
+import Game, { TPlayerEventListeners } from 'server/gamesData/Game/Game';
 
-interface IEntityContext<Game extends EGame> {
-  listen(events: TPlayerEventListeners<Game>, player?: string | null): () => void;
-  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void;
+interface IEntityContext<G extends EGame> {
+  game: Game<G>;
+
+  listen(events: TPlayerEventListeners<G>, player?: string | null): () => void;
+  sendSocketEvent<Event extends TGameEvent<G>>(event: Event, data: TGameEventData<G, Event>, socket?: Socket): void;
 }
 
 enum EEffect {
@@ -75,13 +77,13 @@ interface IEffectResult<Result> {
   cancel(): void;
 }
 
-type TGenerator<Game extends EGame, Result, Yield = unknown> = Generator<TEffect<Game>, Result, Yield>;
+export type TGenerator<Game extends EGame, Result = void, Yield = unknown> = Generator<TEffect<Game>, Result, Yield>;
 
-type TGeneratorReturnValue<Game extends EGame, Generator> = Generator extends TGenerator<Game, infer Result>
+export type TGeneratorReturnValue<Game extends EGame, Generator> = Generator extends TGenerator<Game, infer Result>
   ? Result
   : never;
 
-type TLifecycle<Game extends EGame, Result = void> = TGenerator<Game, Result>;
+export type TLifecycle<Game extends EGame, Result = void> = TGenerator<Game, Result>;
 
 type TUnsubscriber = () => unknown;
 
@@ -118,7 +120,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
 
   #getContext(): IEntityContext<Game> {
     if (!this.context) {
-      throw new Error('No context');
+      throw new Error('No context. You need to spawn entities using spawnEntity');
     }
 
     return this.context;
@@ -294,13 +296,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
 
   #handleWaitEntityEffect<Result>(effect: IWaitEntityEffect<Game, Result>): IEffectResult<Result> {
     return this.#handleAnyEffect((resolve, reject) => {
-      (async () => {
-        try {
-          resolve(await effect.entity.run());
-        } catch (err) {
-          reject(err);
-        }
-      })();
+      effect.entity.run().then(resolve, reject);
     });
   }
 
@@ -343,7 +339,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     });
   }
 
-  *delay(ms: number): TGenerator<Game, void> {
+  *delay(ms: number): TGenerator<Game> {
     yield {
       type: EEffect.DELAY,
       ms,
@@ -360,7 +356,11 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     }
   }
 
-  *listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): TGenerator<Game, void> {
+  getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
+    return this.#getContext().game.getPlayerByLogin(login);
+  }
+
+  *listenSocketWhile(check: () => boolean, events: TPlayerEventListeners<Game>, player?: string | null): TGenerator<Game> {
     yield {
       type: EEffect.LISTEN_SOCKET,
       check,

@@ -1,7 +1,6 @@
 import { IPlayer as ICommonPlayer } from 'common/types';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
-import * as CarcassonneTypes from 'common/types/carcassonne';
 import * as SevenWondersTypes from 'common/types/sevenWonders';
 
 export enum ECommonGameEvent {
@@ -32,12 +31,6 @@ export interface IGamesParams {
     eventMap: any;
     options: MazeTypes.IGameOptions;
     player: MazeTypes.IPlayer;
-  };
-  [EGame.CARCASSONNE]: {
-    event: CarcassonneTypes.EGameEvent;
-    eventMap: any;
-    options: CarcassonneTypes.IGameOptions;
-    player: CarcassonneTypes.IPlayer;
   };
   [EGame.SEVEN_WONDERS]: {
     event: SevenWondersTypes.EGameEvent;

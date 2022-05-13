@@ -14,7 +14,7 @@ import {
   EMeepleType,
   IAttachCardEvent,
   ICard,
-  IGameInfoEvent,
+  IGame,
   IPlacedMeeple,
   IPlayer,
   TBoard,
@@ -51,6 +51,7 @@ const b = block('CarcassonneGame');
 
 const Root = styled(Box)`
   position: absolute;
+  top: 48px;
   left: 0;
   right: 0;
 
@@ -229,6 +230,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   const { io } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [board, setBoard] = useState<TBoard>({});
   const [objects, setObjects] = useState<TObjects>({});
   const [cardsLeft, setCardsLeft] = useState<number>(0);
@@ -457,7 +459,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, placedCardCoords, selectedCard, transformDraggingCard]);
 
   const onHandCardClick = useCallback((e: React.MouseEvent, index: number) => {
-    if (!player?.isActive) {
+    if (player?.index !== activePlayerIndex) {
       return;
     }
 
@@ -474,7 +476,15 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
     hideSelectedCard();
     setPlacedCardCoords(null);
-  }, [boardZoomRef, calculateAllowedMoves, hideSelectedCard, player, selectedCardIndex, transformDraggingCard]);
+  }, [
+    activePlayerIndex,
+    boardZoomRef,
+    calculateAllowedMoves,
+    hideSelectedCard,
+    player,
+    selectedCardIndex,
+    transformDraggingCard,
+  ]);
 
   const onAllowedMoveEnter = useCallback(({ x, y }: ICoords) => {
     const selectedCardElem = selectedCardRef.current;
@@ -510,7 +520,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
       if (!user) {
         return;
       }
@@ -518,10 +528,11 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       console.log(EGameEvent.GAME_INFO, gameInfo);
 
       setPlayers(gameInfo.players);
+      setActivePlayerIndex(gameInfo.activePlayerIndex);
       setBoard(gameInfo.board);
       setObjects(gameInfo.objects);
       setCardsLeft(gameInfo.cardsLeft);
-      setTurnEndsAt(gameInfo.turnEndsAt);
+      setTurnEndsAt(gameInfo.turn?.endsAt ?? null);
 
       const boardCardsCount = gameInfo.cardsLeft + gameInfo.players.reduce((playersCardsCount, p) => playersCardsCount + p.cards.length, 0);
 
@@ -719,7 +730,12 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         })}
       </Box>
 
-      <Players className={b('players')} players={players} turnEndsAt={turnEndsAt} />
+      <Players
+        className={b('players')}
+        players={players}
+        activePlayerIndex={activePlayerIndex}
+        turnEndsAt={turnEndsAt}
+      />
 
       <div className={b('cardsLeft')}>
         {cardsLeft}
