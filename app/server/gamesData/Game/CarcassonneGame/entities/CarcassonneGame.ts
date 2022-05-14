@@ -88,13 +88,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
     this.players.forEach((player, index) => {
       player.color = colors[index];
 
-      times(CARDS_IN_HAND, () => {
-        const card = this.deck.pop();
-
-        if (card) {
-          player.cards.push(card);
-        }
-      });
+      player.cards.push(...this.deck.splice(-CARDS_IN_HAND));
     });
 
     while (this.activePlayerIndex !== -1) {
@@ -109,13 +103,13 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
       this.sendGameInfo();
 
-      const placedAnyCards = yield* this.waitForEntity(this.turn);
+      const placedAnyCards = yield* this.turn;
 
       if (!placedAnyCards) {
         activePlayer.lastMoves = [];
       }
 
-      this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.players.length) ?? -1;
+      this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.players.length);
     }
 
     this.turn = null;
@@ -521,16 +515,16 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
     return Object.values(this.board).reduce((accCount, boardRow) => accCount + (boardRow ? Object.keys(boardRow).length : 0), 0);
   }
 
-  getPlayerIndexWithCards(currentPlayerIndex: number): number | null {
+  getPlayerIndexWithCards(currentPlayerIndex: number): number {
     let nextPlayerIndexWithCards = currentPlayerIndex;
 
-    while (this.players[currentPlayerIndex].cards.length === 0) {
+    while (!this.hasCards(nextPlayerIndexWithCards)) {
       nextPlayerIndexWithCards = (nextPlayerIndexWithCards + 1) % this.players.length;
 
       // TODO: check for impossible cards
 
       if (nextPlayerIndexWithCards === currentPlayerIndex) {
-        return null;
+        return -1;
       }
     }
 
@@ -542,6 +536,10 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       (playerObjectMeeples?.[EMeepleType.COMMON] || 0)
       + 2 * (playerObjectMeeples?.[EMeepleType.FAT] || 0)
     );
+  }
+
+  hasCards(playerIndex: number): boolean {
+    return this.players[playerIndex].cards.length !== 0;
   }
 
   mergeCardObject(targetObject: TGameObject, mergedObject: TCardObject): void {

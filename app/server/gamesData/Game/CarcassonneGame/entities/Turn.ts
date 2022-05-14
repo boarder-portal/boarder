@@ -53,7 +53,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
 
       this.placedAnyCards = true;
 
-      if (isBuilderMove || !attachedToBuilder) {
+      if (isBuilderMove || !attachedToBuilder || !this.game.hasCards(this.activePlayer.index)) {
         break;
       }
 
