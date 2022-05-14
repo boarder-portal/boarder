@@ -27,7 +27,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
 
   *lifecycle() {
     yield* this.race([
-      this.delay(this.endsAt - Date.now()),
+      // this.delay(this.endsAt - Date.now()),
       this.makeMoves(),
     ]);
 
