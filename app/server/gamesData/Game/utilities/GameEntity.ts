@@ -54,7 +54,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   #lifecycle: Promise<Result> | null = null;
   #parent: GameEntity<Game> | null = null;
   #abortCallbacks = new Set<TAbortCallback>();
-  #context: IEntityContext<Game> | null = null;
+  context: IEntityContext<Game> | null = null;
 
   protected abstract lifecycle(): TGenerator<Result>;
 
@@ -67,11 +67,11 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   }
 
   #getContext(): IEntityContext<Game> {
-    if (!this.#context) {
+    if (!this.context) {
       throw new Error('No context. You need to spawn entities using spawnEntity');
     }
 
-    return this.#context;
+    return this.context;
   }
 
   #getGeneratorResult<Result>(generator: TGenerator<Result>): IGeneratorResult<Result> {
@@ -266,7 +266,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   }
 
   spawnEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
-    entity.#context = this.#context;
+    entity.context = this.context;
     entity.#parent = this;
 
     this.#children.add(entity);
