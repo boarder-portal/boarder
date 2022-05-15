@@ -107,12 +107,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #handleAnyEffect<Result>(
-    callback: (
-      resolve: (result: Result) => void,
-      reject: (error: unknown) => void,
-    ) => (() => unknown) | void,
-  ): IEffectResult<Result> {
+  #handleAnyEffect<Result>(callback: TEffectCallback<Result>): IEffectResult<Result> {
     let unregisterEffect: (() => void) | undefined;
 
     return {
@@ -170,6 +165,10 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
         });
       };
     };
+  }
+
+  *async<Result>(callback: TEffectCallback<Result>): TGenerator<Result, Result> {
+    return yield callback;
   }
 
   *delay(ms: number): TGenerator<void, void> {
