@@ -103,7 +103,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
   }
 
   // FIXME: remove after bot api
-  *makeRandomMove(playerIndex: number): TGenerator<EGame.SEVEN_WONDERS, IBotMoveResult> {
+  *makeRandomMove(playerIndex: number): TGenerator<IBotMoveResult> {
     yield* this.delay(random(200, 1000, true));
 
     const { waitingForAction } = this.playersData[playerIndex];

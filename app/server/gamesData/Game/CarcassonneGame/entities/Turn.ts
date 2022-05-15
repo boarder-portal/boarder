@@ -34,7 +34,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
     return this.placedAnyCards;
   }
 
-  *makeMoves(): TGenerator<EGame.CARCASSONNE> {
+  *makeMoves(): TGenerator {
     let isBuilderMove = false;
 
     while (true) {
@@ -53,7 +53,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
 
       this.placedAnyCards = true;
 
-      if (isBuilderMove || !attachedToBuilder || !this.game.hasCards(this.activePlayer.index)) {
+      if (isBuilderMove || !attachedToBuilder || !this.game.canPlayAnyCards(this.activePlayer.index)) {
         break;
       }
 

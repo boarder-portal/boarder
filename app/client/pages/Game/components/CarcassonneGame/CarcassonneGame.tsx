@@ -25,6 +25,7 @@ import { ICoords } from 'common/types';
 import {
   getAttachedObjectId,
   getNeighborCoords,
+  getObjectPlayerMeeples,
   isCardCity,
   isCardField,
   isCardMonastery,
@@ -374,11 +375,11 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
           return;
         }
 
-        if (!isEmpty(attachedObject.meeples)) {
+        if (attachedObject.meeples.length > 0) {
           isOccupied = true;
         }
 
-        if (player.login in attachedObject.meeples) {
+        if (getObjectPlayerMeeples(attachedObject, player.index).length > 0) {
           hasOurMeeple = true;
         }
       });

@@ -74,11 +74,16 @@ export interface ICard {
   objects: TCardObject[];
 }
 
+export interface IPlayerMeeple {
+  playerIndex: number;
+  type: EMeepleType;
+}
+
 export interface IGameObject {
   id: number;
   type: ECardObject;
   cards: ICoords[];
-  meeples: Partial<Record<string, Partial<Record<EMeepleType, number>>>>;
+  meeples: IPlayerMeeple[];
 }
 
 export interface IGameCity extends IGameObject {

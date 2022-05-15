@@ -11,6 +11,7 @@ import {
   IGameField,
   IGameMonastery,
   IGameRoad,
+  IPlayerMeeple,
   TBoard,
   TCardObject,
   TGameObject,
@@ -134,4 +135,8 @@ export function getAttachedObjectId(coords: ICoords, sidePart: number, board: TB
     : 14 - sidePart;
 
   return neighborCard.objectsBySideParts[attachedSidePart];
+}
+
+export function getObjectPlayerMeeples(object: TGameObject, playerIndex: number): IPlayerMeeple[] {
+  return object.meeples.filter((meeple) => meeple.playerIndex === playerIndex);
 }

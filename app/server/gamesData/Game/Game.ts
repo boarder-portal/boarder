@@ -213,8 +213,8 @@ abstract class Game<Game extends EGame> {
 
   sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
     const existingEventIndex = this.batchedActions.findIndex((action) => (
-      action.event !== event
-      || action.socket !== socket
+      action.event === event
+      && action.socket === socket
     ));
     const batchedAction: IBatchedAction<Game, Event> = {
       event,
