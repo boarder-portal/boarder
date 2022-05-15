@@ -1,5 +1,5 @@
-import { EGameEvent, IPlayer } from 'common/types/pexeso';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { EGameEvent } from 'common/types/pexeso';
+import { IGamePlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 
@@ -12,11 +12,8 @@ export default class PexesoGame extends Game<EGame.PEXESO> {
   };
   gameEntity = this.initMainGameEntity(new PexesoGameEntity(this.players, this.options));
 
-  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
-    return {
-      ...roomPlayer,
-      score: 0,
-    };
+  createPlayer(roomPlayer: IGamePlayer): IGamePlayer {
+    return roomPlayer;
   }
 
   delete(): void {

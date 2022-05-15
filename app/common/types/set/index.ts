@@ -1,5 +1,5 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { EGame } from 'common/types/game';
 
 export enum EGameEvent {

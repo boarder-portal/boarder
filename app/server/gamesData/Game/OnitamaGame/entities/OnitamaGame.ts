@@ -49,7 +49,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
         to,
         cardIndex,
       } = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PIECE, {
-        player: this.players[this.activePlayerIndex].login,
+        playerIndex: this.activePlayerIndex,
       });
 
       const activePlayer = this.players[this.activePlayerIndex];

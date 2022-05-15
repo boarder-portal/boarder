@@ -13,7 +13,7 @@ export enum EPlayerStatus {
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface IPlayer extends IUser {
+export interface IGamePlayer extends IUser {
   status: EPlayerStatus;
   index: number;
 }

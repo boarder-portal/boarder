@@ -1,4 +1,4 @@
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { EGame } from 'common/types/game';
 
@@ -57,8 +57,12 @@ export interface IGameOptions extends ICommonGameOptions {
   shuffleOptions: TShuffleOptions;
 }
 
-export interface IPlayer extends ICommonPlayer {
+export interface IGamePlayerData {
   score: number;
+}
+
+export interface IPlayer extends ICommonPlayer {
+  data: IGamePlayerData;
 }
 
 export interface IGame {
@@ -122,7 +126,7 @@ declare module 'common/types/game' {
       event: EGameEvent;
       eventMap: IEventMap;
       options: IGameOptions;
-      player: IPlayer;
+      player: ICommonPlayer;
     };
   }
 }

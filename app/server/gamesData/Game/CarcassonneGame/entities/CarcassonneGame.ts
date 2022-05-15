@@ -54,7 +54,7 @@ interface IAttachPlayerCardOptions {
   coords: ICoords;
   rotation: number;
   meeple: IPlacedMeeple | null;
-  player: IPlayer;
+  playerIndex: number;
   isFirstTurnCard: boolean;
 }
 
@@ -62,7 +62,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   players: IPlayer[];
 
   activePlayerIndex = 0;
-  deck: ICard[] = shuffle(cloneDeep(ALL_CARDS).map((card) => times(card.count, () => card)).flat()).slice(0, 10);
+  deck: ICard[] = shuffle(cloneDeep(ALL_CARDS).map((card) => times(card.count, () => card)).flat());
   board: TBoard = {};
   objects: TObjects = {};
   lastId = 1;
@@ -97,7 +97,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
       this.turn = this.spawnEntity(
         new Turn(this, {
-          activePlayer,
+          activePlayerIndex: this.activePlayerIndex,
           duration: BASE_TIME + this.getPlacedCardsCount() * TURN_INCREMENT,
         }),
       );
@@ -416,9 +416,10 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       coords,
       rotation,
       meeple,
-      player,
+      playerIndex,
       isFirstTurnCard,
     } = options;
+    const player = this.players[playerIndex];
 
     const gameCard = this.attachCard({
       card: player.cards[cardIndex],

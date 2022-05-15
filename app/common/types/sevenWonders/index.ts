@@ -1,5 +1,5 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
 import {

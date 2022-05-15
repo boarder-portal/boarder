@@ -1,4 +1,4 @@
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { EGameEvent, IPlayer } from 'common/types/hearts';
 import { EGame } from 'common/types/game';
 import { IGameEvent } from 'server/types';

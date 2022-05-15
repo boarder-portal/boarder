@@ -2,7 +2,7 @@ import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 
 import { IAuthSocket } from 'server/types';
-import { EPlayerStatus, IPlayer } from 'common/types';
+import { EPlayerStatus, IGamePlayer } from 'common/types';
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
 import { EGame, TGameOptions } from 'common/types/game';
 
@@ -35,7 +35,7 @@ const GAMES_MAP: {
 class Room<G extends EGame> {
   io: Namespace;
   id: string;
-  players: IPlayer[];
+  players: IGamePlayer[];
   game: Game<G> | null;
   options: TGameOptions<G>;
   deleteRoom: () => void;

@@ -1,19 +1,19 @@
 import { EGame } from 'common/types/game';
-import { EGameEvent, IPlayer, ITurn } from 'common/types/carcassonne';
+import { EGameEvent, ITurn } from 'common/types/carcassonne';
 
 import GameEntity, { TGenerator } from 'server/gamesData/Game/utilities/GameEntity';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
 
 export interface ITurnOptions {
-  activePlayer: IPlayer;
+  activePlayerIndex: number;
   duration: number;
 }
 
 export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
   game: CarcassonneGame;
 
-  activePlayer: IPlayer;
+  activePlayerIndex: number;
   endsAt: number;
   placedAnyCards = false;
 
@@ -21,7 +21,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
     super();
 
     this.game = game;
-    this.activePlayer = options.activePlayer;
+    this.activePlayerIndex = options.activePlayerIndex;
     this.endsAt = Date.now() + options.duration;
   }
 
@@ -39,7 +39,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
 
     while (true) {
       const { cardIndex, coords, rotation, meeple } = yield* this.waitForPlayerSocketEvent(EGameEvent.ATTACH_CARD, {
-        player: this.activePlayer.login,
+        playerIndex: this.activePlayerIndex,
       });
 
       const attachedToBuilder = this.game.attachPlayerCard({
@@ -47,13 +47,13 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
         coords,
         rotation,
         meeple,
-        player: this.activePlayer,
+        playerIndex: this.activePlayerIndex,
         isFirstTurnCard: !isBuilderMove,
       });
 
       this.placedAnyCards = true;
 
-      if (isBuilderMove || !attachedToBuilder || !this.game.canPlayAnyCards(this.activePlayer.index)) {
+      if (isBuilderMove || !attachedToBuilder || !this.game.canPlayAnyCards(this.activePlayerIndex)) {
         break;
       }
 

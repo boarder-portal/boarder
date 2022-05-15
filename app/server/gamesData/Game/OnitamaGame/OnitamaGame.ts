@@ -3,7 +3,7 @@ import {
   EPlayerColor,
   IPlayer,
 } from 'common/types/onitama';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 

@@ -1,4 +1,4 @@
-import { IPlayer } from 'common/types/index';
+import { IGamePlayer } from 'common/types/index';
 import { EGame, TGameOptions } from 'common/types/game';
 
 export enum ELobbyEvent {
@@ -10,7 +10,7 @@ export enum ELobbyEvent {
 export interface ILobbyUpdateEvent<Game extends EGame> {
   rooms: {
     id: string;
-    players: IPlayer[];
+    players: IGamePlayer[];
     gameIsStarted: boolean;
     options: TGameOptions<Game>;
   }[];

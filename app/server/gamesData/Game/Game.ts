@@ -4,7 +4,7 @@ import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 
 import { IAuthSocket, IGameEvent } from 'server/types';
-import { EPlayerStatus, IPlayer } from 'common/types';
+import { EPlayerStatus, IGamePlayer } from 'common/types';
 import {
   EGame,
   ECommonGameEvent,
@@ -25,13 +25,13 @@ export type TEventHandlers<Game extends EGame> = Partial<Record<TGameEvent<Game>
 
 export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,
-  player: TGamePlayer<Game>,
+  playerIndex: number,
 ) => unknown;
 
 export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
   options: TGameOptions<Game>;
-  players: IPlayer[];
+  players: IGamePlayer[];
   onDeleteGame(): void;
 }
 
@@ -127,7 +127,7 @@ abstract class Game<Game extends EGame> {
     });
   }
 
-  abstract createPlayer(roomPlayer: IPlayer, index: number): TGamePlayer<Game>;
+  abstract createPlayer(roomPlayer: IGamePlayer, index: number): TGamePlayer<Game>;
 
   delete(): void {
     this.io.removeAllListeners();
@@ -170,7 +170,7 @@ abstract class Game<Game extends EGame> {
   listenSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     listener: TPlayerEventListener<Game, Event>,
-    player?: string | null,
+    playerIndex?: number,
   ): () => void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const game = this;
@@ -182,8 +182,8 @@ abstract class Game<Game extends EGame> {
         return;
       }
 
-      if (player == null || socketPlayer.login === player) {
-        listener(data, socketPlayer);
+      if (playerIndex === undefined || socketPlayer.index === playerIndex) {
+        listener(data, socketPlayer.index);
       }
     };
 

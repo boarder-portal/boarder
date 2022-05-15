@@ -7,7 +7,7 @@ import {
   EPlayerColor,
   IPlayer,
 } from 'common/types/carcassonne';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 
 import Game from 'server/gamesData/Game/Game';
 import CarcassonneGameEntity from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';

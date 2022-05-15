@@ -1,6 +1,6 @@
 import { MAZE_HEIGHT, MAZE_WIDTH } from 'common/constants/games/maze';
 
-import { ICoords, IPlayer as ICommonPlayer } from 'common/types';
+import { ICoords, IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import {
   EGameEvent,

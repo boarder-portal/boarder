@@ -1,6 +1,6 @@
 import times from 'lodash/times';
 
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 import {
   EBiome,
   EDirection,

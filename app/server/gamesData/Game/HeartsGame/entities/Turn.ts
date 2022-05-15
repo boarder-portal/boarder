@@ -1,6 +1,8 @@
+import times from 'lodash/times';
+
 import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/cards';
-import { EGameEvent, IPlayer, ITurn, ITurnPlayerData } from 'common/types/hearts';
+import { EGameEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
@@ -21,7 +23,7 @@ export interface ITurnOptions {
 export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
   game: HeartsGame;
   hand: Hand;
-  players: IPlayer[];
+  playersCount: number;
 
   playersData: ITurnPlayerData[];
   startPlayerIndex: number;
@@ -32,30 +34,28 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
 
     this.game = hand.game;
     this.hand = hand;
-    this.players = this.game.players;
-    this.playersData = this.players.map(() => ({
+    this.playersCount = this.game.players.length;
+    this.playersData = times(this.playersCount, () => ({
       playedCard: null,
     }));
     this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;
   }
 
   *lifecycle() {
-    for (let i = 0; i < this.players.length; i++) {
-      const activePlayer = this.players[this.activePlayerIndex];
-
+    for (let i = 0; i < this.playersCount; i++) {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
         chosenCardIndex = yield* this.waitForPlayerSocketEvent(EGameEvent.CHOOSE_CARD, {
-          player: activePlayer.login,
+          playerIndex: this.activePlayerIndex,
         });
       }
 
       this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(this.activePlayerIndex, chosenCardIndex);
 
-      this.activePlayerIndex = i === this.players.length - 1
+      this.activePlayerIndex = i === this.playersCount - 1
         ? -1
-        : (this.activePlayerIndex + 1) % this.players.length;
+        : (this.activePlayerIndex + 1) % this.playersCount;
 
       this.game.sendInfo();
     }

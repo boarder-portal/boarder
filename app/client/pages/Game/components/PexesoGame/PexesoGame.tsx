@@ -29,7 +29,6 @@ import userAtom from 'client/atoms/userAtom';
 
 interface IPexesoGameProps {
   io: SocketIOClient.Socket;
-  players: IPlayer[];
   isGameEnd: boolean;
 }
 
@@ -213,7 +212,7 @@ const getOrthogonalFieldCardCoord = (coord: number): number => (
 );
 
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
-  const { io, isGameEnd, players: baseGamePlayers } = props;
+  const { io, isGameEnd } = props;
 
   const [options, setOptions] = useState<IGameOptions | null>(null);
   const [cards, setCards] = useState<IPexesoClientCard[]>([]);
@@ -336,10 +335,6 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [io]);
 
   useEffect(() => {
-    setPlayers(baseGamePlayers);
-  }, [baseGamePlayers]);
-
-  useEffect(() => {
     if (!options) {
       return;
     }
@@ -402,7 +397,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
             flex
             alignItems="center"
           >
-            <span>{`${localPlayer.login} ${localPlayer.score}`}</span>
+            <span>{`${localPlayer.login} ${localPlayer.data.score}`}</span>
 
             {localPlayer.status === EPlayerStatus.DISCONNECTED && (
               <>

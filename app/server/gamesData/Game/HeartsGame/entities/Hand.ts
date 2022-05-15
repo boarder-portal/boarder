@@ -64,12 +64,12 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
 
     if (this.stage === EHandStage.PASS) {
       while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
-        const { data: cardIndex, player } = yield* this.waitForSocketEvent(EGameEvent.CHOOSE_CARD);
+        const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameEvent.CHOOSE_CARD);
 
-        const playerChosenCardsIndexes = this.playersData[player.index].chosenCardsIndexes;
+        const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
 
         if (playerChosenCardsIndexes.includes(cardIndex)) {
-          this.playersData[player.index].chosenCardsIndexes = playerChosenCardsIndexes.filter((index) => index !== cardIndex);
+          this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter((index) => index !== cardIndex);
         } else {
           playerChosenCardsIndexes.push(cardIndex);
         }

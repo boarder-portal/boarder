@@ -1,5 +1,5 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
-import { IPlayer as ICommonPlayer } from 'common/types';
+import { IGamePlayer as ICommonPlayer } from 'common/types';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',

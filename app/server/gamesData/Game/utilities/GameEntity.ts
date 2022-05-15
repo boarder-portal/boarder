@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { EGame, TGameEvent, TGameEventData, TGamePlayer } from 'common/types/game';
+import { EGame, TGameEvent, TGameEventData } from 'common/types/game';
 
 import Game from 'server/gamesData/Game/Game';
 
@@ -23,7 +23,9 @@ export type TEffectCallback<Result> = (
   reject: (error: unknown) => void,
 ) => (() => unknown) | void;
 
-export type TGenerator<Result = void, Yield = never> = Generator<TEffectCallback<unknown>, Result, Yield>;
+export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = Generator<TEffectCallback<EffectResult>, Result, Yield>;
+
+export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
 export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result>
   ? Result
@@ -41,11 +43,11 @@ export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TG
 
 export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameEvent<Game>> {
   data: TGameEventData<Game, Event>;
-  player: TGamePlayer<Game>;
+  playerIndex: number;
 }
 
 export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>> extends IWaitForSocketEventOptions<Game, Event> {
-  player: string;
+  playerIndex: number;
   validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
 }
 
@@ -136,7 +138,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *all<T extends TGenerator<unknown>[]>(generators: T): TGenerator<TAllEffectReturnValue<T>, TAllEffectReturnValue<T>> {
+  *all<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
       let resultsLeft = generators.length;
@@ -167,11 +169,11 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *async<Result>(callback: TEffectCallback<Result>): TGenerator<Result, Result> {
+  *async<Result>(callback: TEffectCallback<Result>): TEffectGenerator<Result> {
     return yield callback;
   }
 
-  *delay(ms: number): TGenerator<void, void> {
+  *delay(ms: number): TEffectGenerator<void> {
     yield (resolve) => {
       const timeout = setTimeout(resolve, ms);
 
@@ -191,7 +193,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     }
   }
 
-  *race<T extends TGenerator<unknown>[]>(generators: T): TGenerator<TGeneratorReturnValue<T[number]>, TGeneratorReturnValue<T[number]>> {
+  *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
     return yield (resolve, reject) => {
       const cancels = generators.map((generator) => {
         const { run, cancel } = this.#getGeneratorResult(generator);
@@ -211,7 +213,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *repeatTask<Result = void>(ms: number, task: () => Result | Promise<Result>): TGenerator<Result, Result> {
+  *repeatTask<Result = void>(ms: number, task: () => Result | Promise<Result>): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
       let promiseChain = Promise.resolve();
 
@@ -284,7 +286,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return entity;
   }
 
-  *[Symbol.iterator](): TGenerator<Result, Result> {
+  *[Symbol.iterator](): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
       this.run().then(resolve, reject);
     };
@@ -297,9 +299,11 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   *waitForPlayerSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     options: IWaitForPlayerSocketEventOptions<Game, Event>,
-  ): TGenerator<TGameEventData<Game, Event>, TGameEventData<Game, Event>> {
+  ): TEffectGenerator<TGameEventData<Game, Event>> {
     return yield (resolve) => {
-      return this.#getContext().game.listenSocketEvent(event, (data) => {
+      const { game } = this.#getContext();
+
+      return game.listenSocketEvent(event, (data) => {
         try {
           if (options?.validate?.(data) ?? true) {
             resolve(data);
@@ -307,21 +311,21 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
         } catch {
           // empty
         }
-      }, options.player);
+      }, options.playerIndex);
     };
   }
 
   *waitForSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     options?: IWaitForSocketEventOptions<Game, Event>,
-  ): TGenerator<IWaitForSocketEventResult<Game, Event>, IWaitForSocketEventResult<Game, Event>> {
+  ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
-      this.#getContext().game.listenSocketEvent(event, (data, player) => {
+      this.#getContext().game.listenSocketEvent(event, (data, playerIndex) => {
         try {
           if (options?.validate?.(data) ?? true) {
             resolve({
               data,
-              player,
+              playerIndex,
             });
           }
         } catch {

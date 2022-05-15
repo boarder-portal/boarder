@@ -30,7 +30,7 @@ export interface ITurnOptions {
 
 interface IBotMoveResult {
   data: IExecuteActionEvent;
-  player: IPlayer;
+  playerIndex: number;
 }
 
 export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
@@ -64,7 +64,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
           isBot && this.isWaitingForAction(this.playersData[index])
         ));
 
-        const { data: event, player } = yield* this.race([
+        const { data: event, playerIndex } = yield* this.race([
           this.waitForSocketEvent(EGameEvent.EXECUTE_ACTION),
           this.waitForSocketEvent(EGameEvent.CANCEL_ACTION),
           ...(
@@ -74,7 +74,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
           ),
         ]);
 
-        this.playersData[player.index].chosenActionEvent = event ?? null;
+        this.playersData[playerIndex].chosenActionEvent = event ?? null;
 
         this.game.sendGameInfo();
       }
@@ -140,7 +140,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
           },
         },
       },
-      player,
+      playerIndex,
     };
   }
 

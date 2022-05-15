@@ -12,9 +12,11 @@ import {
   ICard,
   IGame,
   IGameOptions,
+  IGamePlayerData,
   IPlayer,
   IShuffleCardsIndexes,
 } from 'common/types/pexeso';
+import { IGamePlayer } from 'common/types';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
@@ -25,19 +27,23 @@ const OPEN_CLOSE_ANIMATION_DURATION = 300;
 const OPEN_DURATION = 1600;
 
 export default class PexesoGame extends GameEntity<EGame.PEXESO> {
-  players: IPlayer[];
+  players: IGamePlayer[];
   options: IGameOptions;
 
   cards: ICard[] = [];
+  playersData: IGamePlayerData[] = [];
   activePlayerIndex = 0;
   movesCount = -1;
 
   turn: Turn | null = null;
 
-  constructor(players: IPlayer[], options: IGameOptions) {
+  constructor(players: IGamePlayer[], options: IGameOptions) {
     super();
 
     this.players = players;
+    this.playersData = players.map(() => ({
+      score: 0,
+    }));
     this.options = options;
   }
 
@@ -82,7 +88,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
       this.turn = this.spawnEntity(
         new Turn(this, {
-          activePlayer: this.players[this.activePlayerIndex],
+          activePlayerIndex: this.activePlayerIndex,
         }),
       );
 
@@ -99,7 +105,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
           openedCard.isInGame = false;
         });
 
-        this.players[this.activePlayerIndex].score++;
+        this.playersData[this.activePlayerIndex].score++;
 
         isGameEnd = this.cards.every((card) => !card.isInGame);
 
@@ -119,7 +125,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
       }
 
       this.sendSocketEvent(EGameEvent.UPDATE_PLAYERS, {
-        players: this.players,
+        players: this.getGamePlayers(),
         activePlayerIndex: this.activePlayerIndex,
       });
 
@@ -129,6 +135,13 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
     }
 
     this.turn = null;
+  }
+
+  getGamePlayers(): IPlayer[] {
+    return this.players.map((player) => ({
+      ...player,
+      data: this.playersData[player.index],
+    }));
   }
 
   isCardInGame(cardIndex: number): boolean {
@@ -170,7 +183,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
   toJSON(): IGame {
     return {
-      players: this.players,
+      players: this.getGamePlayers(),
       options: this.options,
       activePlayerIndex: this.activePlayerIndex,
       cards: this.cards,

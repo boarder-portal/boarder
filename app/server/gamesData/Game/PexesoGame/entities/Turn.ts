@@ -1,18 +1,18 @@
 import { EGame } from 'common/types/game';
-import { EGameEvent, IGameOptions, IPlayer, ITurn } from 'common/types/pexeso';
+import { EGameEvent, IGameOptions, ITurn } from 'common/types/pexeso';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import PexesoGame from 'server/gamesData/Game/PexesoGame/entities/PexesoGame';
 
 export interface ITurnOptions {
-  activePlayer: IPlayer;
+  activePlayerIndex: number;
 }
 
 export default class Turn extends GameEntity<EGame.PEXESO, number[]> {
   game: PexesoGame;
   options: IGameOptions;
-  activePlayer: IPlayer;
+  activePlayerIndex: number;
 
   openedCardsIndexes: number[] = [];
 
@@ -21,13 +21,13 @@ export default class Turn extends GameEntity<EGame.PEXESO, number[]> {
 
     this.game = game;
     this.options = game.options;
-    this.activePlayer = options.activePlayer;
+    this.activePlayerIndex = options.activePlayerIndex;
   }
 
   *lifecycle() {
     while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
       const cardIndex = yield* this.waitForPlayerSocketEvent(EGameEvent.OPEN_CARD, {
-        player: this.activePlayer.login,
+        playerIndex: this.activePlayerIndex,
         validate: this.validateOpenCardEvent,
       });
 

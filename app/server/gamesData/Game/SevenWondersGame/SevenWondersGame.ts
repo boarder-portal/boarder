@@ -2,7 +2,7 @@ import times from 'lodash/times';
 
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
-import { EPlayerStatus, IPlayer as ICommonPlayer } from 'common/types';
+import { EPlayerStatus, IGamePlayer as ICommonPlayer } from 'common/types';
 import {
   ECity,
   EGameEvent,
