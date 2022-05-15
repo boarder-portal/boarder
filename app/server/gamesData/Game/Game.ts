@@ -148,7 +148,7 @@ abstract class Game<Game extends EGame> {
   }
 
   initMainGameEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
-    entity.context = {
+    entity.#context = {
       game: this,
     };
 
