@@ -1,24 +1,24 @@
 import { EGamePhase, IPlayer } from 'common/types/sevenWonders';
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
-import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
+import getPlayerHandCards, { IGetPlayerHandCardsOptions } from 'common/utilities/sevenWonders/getPlayerHandCards';
 
-export default function getHand(
-  player: IPlayer,
-  discard: ICard[],
-  phase: EGamePhase,
-  isCopyingLeader: boolean,
-  leftNeighbor: IPlayer,
-  rightNeighbor: IPlayer,
-  isViewingLeaders: boolean,
-): ICard[] {
-  if (isViewingLeaders) {
-    return player.leadersHand;
+export interface IGetHandOptions extends IGetPlayerHandCardsOptions {
+  pickedLeaders: ICard[];
+  isCopyingLeader: boolean;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
+  isViewingLeaders: boolean;
+}
+
+export default function getHand(options: IGetHandOptions): ICard[] {
+  if (options.isViewingLeaders) {
+    return options.gamePhase === EGamePhase.DRAFT_LEADERS ? options.pickedLeaders : options.leadersHand;
   }
 
-  if (isCopyingLeader) {
-    return [...leftNeighbor.builtCards, ...rightNeighbor.builtCards].filter((card) => card.type === ECardType.LEADER);
+  if (options.isCopyingLeader) {
+    return [...options.leftNeighbor.builtCards, ...options.rightNeighbor.builtCards].filter((card) => card.type === ECardType.LEADER);
   }
 
-  return getPlayerHandCards(player, discard, phase);
+  return getPlayerHandCards(options);
 }

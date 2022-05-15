@@ -1,7 +1,9 @@
 import React from 'react';
 
 import {
+  IAgePlayerData,
   IPlayer,
+  ITurnPlayerData,
   TAction,
   TPayments,
 } from 'common/types/sevenWonders';
@@ -31,6 +33,8 @@ interface IBuildActionsProps {
   cardIndex: number;
   card: ICard;
   player: IPlayer;
+  agePlayerData: IAgePlayerData | null;
+  turnPlayerData: ITurnPlayerData | null;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
   resourceTradePrices: TResourceTradePrices;
@@ -47,6 +51,8 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
     cardIndex,
     card,
     player,
+    agePlayerData,
+    turnPlayerData,
     leftNeighbor,
     rightNeighbor,
     resourceTradePrices,
@@ -64,6 +70,8 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
           card={card}
           cardIndex={cardIndex}
           player={player}
+          agePlayerData={agePlayerData}
+          turnPlayerData={turnPlayerData}
           leftNeighbor={leftNeighbor}
           rightNeighbor={rightNeighbor}
           resourceTradePrices={resourceTradePrices}
@@ -79,7 +87,11 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
           onCardAction={onCardAction}
         />
 
-        <DiscardAction player={player} onCardAction={onCardAction} />
+        <DiscardAction
+          agePlayerData={agePlayerData}
+          turnPlayerData={turnPlayerData}
+          onCardAction={onCardAction}
+        />
       </Box>
     </>
   );

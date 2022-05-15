@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
+import { IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
@@ -28,9 +28,11 @@ import { useBoolean } from 'client/hooks/useBoolean';
 interface IBuildCardActionsProps {
   card: ICard;
   cardIndex: number;
-  player: IPlayer
-  leftNeighbor: IPlayer
-  rightNeighbor: IPlayer
+  player: IPlayer;
+  agePlayerData: IAgePlayerData | null;
+  turnPlayerData: ITurnPlayerData | null;
+  leftNeighbor: IPlayer;
+  rightNeighbor: IPlayer;
   resourceTradePrices: TResourceTradePrices;
   resourcePools: IOwnerResource[][];
   onCardAction(action: TAction, payments?: TPayments): void;
@@ -42,6 +44,8 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     card,
     cardIndex,
     player,
+    agePlayerData,
+    turnPlayerData,
     leftNeighbor,
     rightNeighbor,
     resourceTradePrices,
@@ -64,8 +68,8 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
   [card.type, player, resourcePools],
   );
 
-  const cardBuildInfo = useCardBuildInfo(card, cardIndex, cardResourcePools, resourceTradePrices, player, leftNeighbor, rightNeighbor, onCardAction, onStartCopyingLeader);
-  const cardBuildFreeWithEffectInfo = useCardBuildFreeWithEffectInfo(card, cardIndex, player, onCardAction, onStartCopyingLeader);
+  const cardBuildInfo = useCardBuildInfo(card, cardIndex, cardResourcePools, resourceTradePrices, player, agePlayerData, turnPlayerData, leftNeighbor, rightNeighbor, onCardAction, onStartCopyingLeader);
+  const cardBuildFreeWithEffectInfo = useCardBuildFreeWithEffectInfo(card, cardIndex, turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? [], onCardAction, onStartCopyingLeader);
 
   const handleBuildActionClick = useCallback(() => {
     if (

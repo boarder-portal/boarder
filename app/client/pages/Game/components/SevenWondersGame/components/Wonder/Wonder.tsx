@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { EWaitingActionType, IPlayer } from 'common/types/sevenWonders';
+import { EWaitingActionType, IAgePlayerData, IPlayer, ITurnPlayerData } from 'common/types/sevenWonders';
 import { EFreeCardSource } from 'common/types/sevenWonders/effects';
 import { ECardId } from 'common/types/sevenWonders/cards';
 
@@ -16,6 +16,8 @@ import styles from './Wonder.pcss';
 interface IWonderProps {
   className?: string;
   player: IPlayer;
+  agePlayerData: IAgePlayerData | null;
+  turnPlayerData: ITurnPlayerData | null;
   copiedLeaderId?: ECardId;
   isOtherPlayer?: boolean;
 }
@@ -24,41 +26,48 @@ const GROUP_HEIGHT = 125;
 const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
 
 const Wonder: React.FC<IWonderProps> = (props) => {
-  const { className, player, copiedLeaderId, isOtherPlayer } = props;
+  const {
+    className,
+    player,
+    agePlayerData,
+    turnPlayerData,
+    copiedLeaderId,
+    isOtherPlayer,
+  } = props;
 
   const cardGroups = useCardGroups(player);
 
   const currentAction = useMemo(() => {
-    if (player.chosenActionEvent || !player.waitingForAction) {
+    if (turnPlayerData?.chosenActionEvent || !turnPlayerData?.waitingForAction) {
       return 'Ожидает';
     }
 
-    if (player.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
-      const buildEffect = player.buildCardEffects[player.waitingForAction.buildEffectIndex];
+    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
+      const buildEffect = agePlayerData?.buildEffects[turnPlayerData.waitingForAction.buildEffectIndex];
 
-      if (buildEffect.source === EFreeCardSource.DISCARD) {
+      if (buildEffect?.source === EFreeCardSource.DISCARD) {
         return 'Выбор из сброса';
       }
 
-      if (buildEffect.source === EFreeCardSource.LEADERS) {
+      if (buildEffect?.source === EFreeCardSource.LEADERS) {
         return 'Найм лидера';
       }
 
       return 'Строительство последней карты';
     }
 
-    if (player.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
+    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
       return 'Выбирает лидера';
     }
 
-    if (player.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
+    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
       return 'Нанимает лидера';
     }
 
-    if (player.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
+    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
       return 'Выбирает карту';
     }
-  }, [player]);
+  }, [agePlayerData, turnPlayerData]);
 
   const warPoints = useMemo(() => [...player.victoryPoints, ...player.defeatPoints], [player.defeatPoints, player.victoryPoints]);
 

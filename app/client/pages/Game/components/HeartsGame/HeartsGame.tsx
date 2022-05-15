@@ -9,7 +9,6 @@ import {
   EGameEvent,
   EHandStage,
   EPassDirection,
-  IChooseCardEvent,
   IGame,
   IHandPlayerData,
   IPlayer,

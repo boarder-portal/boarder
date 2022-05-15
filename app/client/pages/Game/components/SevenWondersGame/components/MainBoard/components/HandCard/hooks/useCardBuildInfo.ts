@@ -3,7 +3,9 @@ import { useCallback, useMemo } from 'react';
 import {
   ECardActionType,
   EPlayerDirection,
+  IAgePlayerData,
   IPlayer,
+  ITurnPlayerData,
   TAction,
   TBuildType,
   TPayments,
@@ -77,6 +79,8 @@ export default function useCardBuildInfo(
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
   player: IPlayer,
+  agePlayerData: IAgePlayerData | null,
+  turnPlayerData: ITurnPlayerData | null,
   leftNeighbor: IPlayer,
   rightNeighbor: IPlayer,
   onCardAction: (action: TAction, payments?: TPayments) => void,
@@ -86,7 +90,7 @@ export default function useCardBuildInfo(
 
   const tradeVariants = useMemo(() => getTradeVariants(cardPrice, resourcePools, resourceTradePrices), [cardPrice, resourcePools, resourceTradePrices]);
   const discount = useMemo(() => getDiscount(card, player, leftNeighbor, rightNeighbor), [card, leftNeighbor, player, rightNeighbor]);
-  const type = useMemo(() => getCardBuildType(card, player, tradeVariants, discount), [card, discount, player, tradeVariants]);
+  const type = useMemo(() => getCardBuildType(card, player, turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? [], tradeVariants, discount), [agePlayerData, card, discount, player, tradeVariants, turnPlayerData]);
 
   const title = useMemo(() => getTitle(type), [type]);
 

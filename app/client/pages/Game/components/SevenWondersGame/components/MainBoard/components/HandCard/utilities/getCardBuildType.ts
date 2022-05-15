@@ -1,8 +1,9 @@
 import { ICard } from 'common/types/sevenWonders/cards';
-import { ECardActionType, IPlayer } from 'common/types/sevenWonders';
+import { ECardActionType, IPlayer, TWaitingAction } from 'common/types/sevenWonders';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { IBuildCardEffect } from 'common/types/sevenWonders/effects';
 
 import {
   ITradeVariant,
@@ -14,10 +15,12 @@ import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBu
 export default function getCardBuildType(
   card: ICard,
   player: IPlayer,
+  waitingForAction: TWaitingAction | null,
+  buildCardEffects: IBuildCardEffect[],
   tradeVariants: ITradeVariant[],
   discount: number,
 ): EBuildType {
-  const possibleBuildActions = getPossibleBuildActions(player);
+  const possibleBuildActions = getPossibleBuildActions(waitingForAction, buildCardEffects);
 
   if (!possibleBuildActions.includes(ECardActionType.BUILD_STRUCTURE)) {
     return EBuildType.NOT_ALLOWED;

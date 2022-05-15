@@ -4,7 +4,9 @@ import classNames from 'classnames';
 import { ICard } from 'common/types/sevenWonders/cards';
 import {
   EGamePhase,
+  IAgePlayerData,
   IPlayer,
+  ITurnPlayerData,
   TAction,
   TPayments,
 } from 'common/types/sevenWonders';
@@ -36,7 +38,9 @@ interface IHandCardProps {
   card: ICard;
   cardIndex: number;
   player: IPlayer;
-  gamePhase: EGamePhase;
+  agePlayerData: IAgePlayerData | null;
+  turnPlayerData: ITurnPlayerData | null;
+  gamePhase: EGamePhase | null;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
   courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
@@ -57,6 +61,8 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
     card,
     cardIndex,
     player,
+    agePlayerData,
+    turnPlayerData,
     gamePhase,
     leftNeighbor,
     rightNeighbor,
@@ -95,6 +101,8 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
             cardIndex={cardIndex}
             card={card}
             player={player}
+            agePlayerData={agePlayerData}
+            turnPlayerData={turnPlayerData}
             leftNeighbor={leftNeighbor}
             rightNeighbor={rightNeighbor}
             isChosen={isChosen}

@@ -5,6 +5,7 @@ import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
 import {
   EBuildType,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -87,28 +88,63 @@ export type TWaitingAction =
 export interface IPlayer extends ICommonPlayer {
   points: number;
   builtCards: ICard[];
-  hand: ICard[];
   city: ECity;
   citySide: number;
   builtStages: IWonderBuiltStage[];
   coins: number;
-  receivedCoinsDuringTurn: number;
   victoryPoints: number[];
   defeatPoints: number[];
   isBot: boolean;
-  chosenActionEvent: IExecuteActionEvent | null;
-  waitingForAction: TWaitingAction | null;
-  buildCardEffects: IBuildCardEffect[];
   leadersHand: ICard[];
-  leadersPool: ICard[];
   copiedCard: ICard | null;
 }
 
-export interface IGameInfoEvent {
+export interface ILeadersDraftPhase extends ILeadersDraft {
+  type: EGamePhase.DRAFT_LEADERS;
+}
+
+export interface IAgePhase extends IAge {
+  type: EGamePhase.AGE;
+}
+
+export type TGamePhase = ILeadersDraftPhase | IAgePhase;
+
+export interface IGame {
   players: IPlayer[];
   discard: ICard[];
+  phase: TGamePhase | null;
+}
+
+export interface ILeadersDraftPlayerData {
+  pickedLeaders: ICard[];
+  leadersPool: ICard[];
+}
+
+export interface ILeadersDraft {
+  playersData: ILeadersDraftPlayerData[];
+  turn: ITurn | null;
+}
+
+export interface IAgePlayerData {
+  hand: ICard[];
+  buildEffects: IBuildCardEffect[];
+}
+
+export interface IAge {
   age: number;
-  phase: EGamePhase;
+  phase: EAgePhase;
+  playersData: IAgePlayerData[];
+  turn: ITurn | null;
+}
+
+export interface ITurnPlayerData {
+  receivedCoins: number;
+  chosenActionEvent: IExecuteActionEvent | null;
+  waitingForAction: TWaitingAction | null;
+}
+
+export interface ITurn {
+  playersData: ITurnPlayerData[];
 }
 
 export enum ECardActionType {
@@ -203,6 +239,29 @@ export type TResourceOwner = ENeighborSide | 'own' | 'bank';
 
 export enum EGamePhase {
   DRAFT_LEADERS = 'DRAFT_LEADERS',
+  AGE = 'AGE',
+}
+
+export enum EAgePhase {
   RECRUIT_LEADERS = 'RECRUIT_LEADERS',
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.EXECUTE_ACTION]: IExecuteActionEvent;
+  [EGameEvent.CANCEL_ACTION]: undefined;
+
+  [EGameEvent.GAME_INFO]: IGame;
+}
+
+declare module 'common/types/game' {
+  interface IGamesParams {
+    [EGame.SEVEN_WONDERS]: {
+      event: EGameEvent;
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: IPlayer;
+    };
+  }
 }

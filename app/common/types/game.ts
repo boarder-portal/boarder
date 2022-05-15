@@ -1,7 +1,6 @@
 import { IPlayer as ICommonPlayer } from 'common/types';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
 import * as MazeTypes from 'common/types/maze';
-import * as SevenWondersTypes from 'common/types/sevenWonders';
 
 export enum ECommonGameEvent {
   UPDATE = 'UPDATE',
@@ -31,12 +30,6 @@ export interface IGamesParams {
     eventMap: any;
     options: MazeTypes.IGameOptions;
     player: MazeTypes.IPlayer;
-  };
-  [EGame.SEVEN_WONDERS]: {
-    event: SevenWondersTypes.EGameEvent;
-    eventMap: any;
-    options: SevenWondersTypes.IGameOptions;
-    player: SevenWondersTypes.IPlayer;
   };
 }
 

@@ -86,7 +86,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
         }),
       );
 
-      const openedCardsIndexes = yield* this.waitForEntity(this.turn);
+      const openedCardsIndexes = yield* this.turn;
 
       yield* this.delay(OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
 

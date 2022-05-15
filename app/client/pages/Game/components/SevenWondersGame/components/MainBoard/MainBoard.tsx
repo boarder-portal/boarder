@@ -4,12 +4,16 @@ import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
 import {
+  EAgePhase,
   ECardActionType,
   EGameEvent,
   EGamePhase,
   ENeighborSide,
+  IAgePlayerData,
   IExecuteActionEvent,
+  ILeadersDraftPlayerData,
   IPlayer,
+  ITurnPlayerData,
   TAction,
   TPayments,
 } from 'common/types/sevenWonders';
@@ -54,22 +58,39 @@ interface IMainBoardProps {
   className?: string;
   io: SocketIOClient.Socket;
   player: IPlayer;
+  leadersDraftPlayerData: ILeadersDraftPlayerData | null;
+  agePlayerData: IAgePlayerData | null;
+  turnPlayerData: ITurnPlayerData | null;
   discard: ICard[];
-  age: number;
-  gamePhase: EGamePhase;
+  age: number | null;
+  gamePhase: EGamePhase | null;
+  agePhase: EAgePhase | null;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
 }
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
-  const { className, io, player, discard, age, gamePhase, leftNeighbor, rightNeighbor } = props;
+  const {
+    className,
+    io,
+    player,
+    leadersDraftPlayerData,
+    agePlayerData,
+    turnPlayerData,
+    discard,
+    age,
+    gamePhase,
+    agePhase,
+    leftNeighbor,
+    rightNeighbor,
+  } = props;
 
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
   const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
 
-  const cardsDirection = useMemo(() => getAgeDirection(age), [age]);
+  const cardsDirection = useMemo(() => getAgeDirection(age ?? 0), [age]);
 
-  const chosenCardIndex = player.chosenActionEvent?.cardIndex;
+  const chosenCardIndex = turnPlayerData?.chosenActionEvent?.cardIndex;
 
   const handleStartCopyingLeader = useCallback((cardIndex: number, action: TAction, payments?: TPayments) => {
     setCourtesansBuildInfo({
@@ -104,15 +125,21 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     setIsViewingLeaders((v) => !v);
   }, []);
 
-  const hand = useMemo(() => getHand(
-    player,
+  const hand = useMemo(() => getHand({
+    waitingForAction: turnPlayerData?.waitingForAction ?? null,
+    buildCardEffects: agePlayerData?.buildEffects ?? [],
+    leadersHand: player.leadersHand,
+    leadersPool: leadersDraftPlayerData?.leadersPool ?? [],
+    hand: agePlayerData?.hand ?? [],
     discard,
     gamePhase,
-    Boolean(courtesansBuildInfo),
+    agePhase,
+    pickedLeaders: leadersDraftPlayerData?.pickedLeaders ?? [],
+    isCopyingLeader: Boolean(courtesansBuildInfo),
     leftNeighbor,
     rightNeighbor,
     isViewingLeaders,
-  ), [player, discard, gamePhase, courtesansBuildInfo, leftNeighbor, rightNeighbor, isViewingLeaders]);
+  }), [turnPlayerData, agePlayerData, player.leadersHand, leadersDraftPlayerData, discard, gamePhase, agePhase, courtesansBuildInfo, leftNeighbor, rightNeighbor, isViewingLeaders]);
 
   const prevHand = usePrevious(hand);
 
@@ -145,12 +172,12 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       return EBuildType.ALREADY_BUILT;
     }
 
-    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
+    if (!getPossibleBuildActions(turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? []).includes(ECardActionType.BUILD_WONDER_STAGE)) {
       return EBuildType.NOT_ALLOWED;
     }
 
     return getBuildType(wonderLevelPrice, player, wonderLevelTradeVariants, 0);
-  }, [wonderLevelTradeVariants, city.wonders.length, player, wonderLevelPrice]);
+  }, [player, city.wonders.length, turnPlayerData, agePlayerData, wonderLevelPrice, wonderLevelTradeVariants]);
 
   useEffect(() => {
     if (hand.length !== prevHand.length && document.hidden) {
@@ -167,12 +194,12 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       between={12}
     >
       <div className={styles.wonderWrapper}>
-        <Wonder player={player} />
+        <Wonder player={player} agePlayerData={agePlayerData} turnPlayerData={turnPlayerData} />
 
-        {gamePhase !== EGamePhase.RECRUIT_LEADERS && (
+        {(gamePhase === EGamePhase.DRAFT_LEADERS || agePhase === EAgePhase.BUILD_STRUCTURES) && (
           <BackCard
             className={styles.switchHand}
-            type={isViewingLeaders && gamePhase === EGamePhase.BUILD_STRUCTURES ? age : 'leader'}
+            type={isViewingLeaders && agePhase === EAgePhase.BUILD_STRUCTURES ? age ?? 0 : 'leader'}
             onClick={handleClickHandSwitcher}
           />
         )}
@@ -186,6 +213,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               card={card}
               cardIndex={index}
               player={player}
+              agePlayerData={agePlayerData}
+              turnPlayerData={turnPlayerData}
               gamePhase={gamePhase}
               leftNeighbor={leftNeighbor}
               rightNeighbor={rightNeighbor}
@@ -193,7 +222,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               isChosen={index === chosenCardIndex}
               isDisabled={
                 chosenCardIndex === undefined
-                  ? !player.waitingForAction
+                  ? !turnPlayerData?.waitingForAction
                   : index !== chosenCardIndex
               }
               isViewingLeaders={isViewingLeaders}

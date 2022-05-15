@@ -110,7 +110,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
       const {
         highestCardPlayerIndex,
         takenCards: playerTakenCards,
-      } = yield* this.waitForEntity(this.turn);
+      } = yield* this.turn;
 
       yield* this.delay(SHOW_CARDS_TIMEOUT);
 

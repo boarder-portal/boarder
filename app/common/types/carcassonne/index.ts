@@ -35,7 +35,6 @@ export enum EPlayerColor {
   GREEN = 'GREEN',
   BLACK = 'BLACK',
   YELLOW = 'YELLOW',
-  GREY = 'GREY',
 }
 
 export interface ICardObject {

@@ -35,7 +35,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
 
       this.sendInfo();
 
-      const scoreIncrements = yield* this.waitForEntity(this.hand);
+      const scoreIncrements = yield* this.hand;
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.players[playerIndex].score += scoreIncrement;

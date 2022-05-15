@@ -23,10 +23,6 @@ import ioInstance from 'server/io';
 
 export type TEventHandlers<Game extends EGame> = Partial<Record<TGameEvent<Game>, (event: IGameEvent<any>) => void>>;
 
-export type TPlayerEventListeners<Game extends EGame> = {
-  [Event in TGameEvent<Game>]?: TPlayerEventListener<Game, Event>;
-};
-
 export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,
   player: TGamePlayer<Game>,
@@ -39,6 +35,12 @@ export interface IGameCreateOptions<Game extends EGame> {
   onDeleteGame(): void;
 }
 
+interface IBatchedAction<Game extends EGame, Event extends TGameEvent<Game>> {
+  event: Event;
+  data: TGameEventData<Game, Event>;
+  socket?: Socket;
+}
+
 abstract class Game<Game extends EGame> {
   io: Namespace;
   game: Game;
@@ -46,6 +48,8 @@ abstract class Game<Game extends EGame> {
   players: TGamePlayer<Game>[];
   options: TGameOptions<Game>;
   deleted = false;
+  batchedActions: IBatchedAction<Game, TGameEvent<Game>>[] = [];
+  batchedActionsTimeout: NodeJS.Timeout | null = null;
   onDeleteGame: () => void;
 
   abstract handlers: TEventHandlers<Game>;
@@ -146,24 +150,6 @@ abstract class Game<Game extends EGame> {
   initMainGameEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
     entity.context = {
       game: this,
-      listen: (events, player) => {
-        const unsubscribers = new Set<() => void>();
-
-        forEach(events, (handler, event) => {
-          if (handler) {
-            unsubscribers.add(this.listenSocketEvent(event as TGameEvent<Game>, handler, player));
-          }
-        });
-
-        return () => {
-          for (const unsubscribe of unsubscribers) {
-            unsubscribe();
-          }
-        };
-      },
-      sendSocketEvent: <Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket) => {
-        this.sendSocketEvent(event, data, socket);
-      },
     };
 
     (async () => {
@@ -226,9 +212,32 @@ abstract class Game<Game extends EGame> {
   }
 
   sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
-    // TODO: batch actions, don't send same actions multiple times
+    const existingEventIndex = this.batchedActions.findIndex((action) => (
+      action.event !== event
+      || action.socket !== socket
+    ));
+    const batchedAction: IBatchedAction<Game, Event> = {
+      event,
+      data,
+      socket,
+    };
 
-    (socket ?? this.io).emit(event, data);
+    if (existingEventIndex === -1) {
+      this.batchedActions.push(batchedAction);
+    } else {
+      this.batchedActions[existingEventIndex] = batchedAction;
+    }
+
+    if (!this.batchedActionsTimeout) {
+      this.batchedActionsTimeout = setTimeout(() => {
+        this.batchedActions.forEach(({ event, data, socket }) => {
+          (socket ?? this.io).emit(event, data);
+        });
+
+        this.batchedActions = [];
+        this.batchedActionsTimeout = null;
+      }, 0);
+    }
   }
 }
 

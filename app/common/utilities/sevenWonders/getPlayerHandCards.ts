@@ -1,30 +1,37 @@
-import { EGamePhase, IPlayer } from 'common/types/sevenWonders';
+import { EAgePhase, EGamePhase, TWaitingAction } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
-import { EFreeCardSource } from 'common/types/sevenWonders/effects';
+import { EFreeCardSource, IBuildCardEffect } from 'common/types/sevenWonders/effects';
 
 import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
-export default function getPlayerHandCards(
-  player: IPlayer,
-  discard: ICard[],
-  phase: EGamePhase,
-): ICard[] {
-  const buildEffect = getWaitingBuildEffect(player);
+export interface IGetPlayerHandCardsOptions {
+  waitingForAction: TWaitingAction | null;
+  buildCardEffects: IBuildCardEffect[];
+  gamePhase: EGamePhase | null;
+  agePhase: EAgePhase | null;
+  discard: ICard[];
+  leadersHand: ICard[];
+  leadersPool: ICard[];
+  hand: ICard[];
+}
+
+export default function getPlayerHandCards(options: IGetPlayerHandCardsOptions): ICard[] {
+  const buildEffect = getWaitingBuildEffect(options.waitingForAction, options.buildCardEffects);
 
   if (buildEffect?.source === EFreeCardSource.DISCARD) {
-    return discard;
+    return options.discard;
   }
 
   if (
     buildEffect?.source === EFreeCardSource.LEADERS
-    || phase === EGamePhase.RECRUIT_LEADERS
+    || options.agePhase === EAgePhase.RECRUIT_LEADERS
   ) {
-    return player.leadersHand;
+    return options.leadersHand;
   }
 
-  if (phase === EGamePhase.DRAFT_LEADERS) {
-    return player.leadersPool;
+  if (options.gamePhase === EGamePhase.DRAFT_LEADERS) {
+    return options.leadersPool;
   }
 
-  return player.hand;
+  return options.hand;
 }
