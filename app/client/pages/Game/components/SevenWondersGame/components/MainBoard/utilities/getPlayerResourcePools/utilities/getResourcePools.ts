@@ -32,11 +32,12 @@ import { getAllCombinations } from 'common/utilities/combinations';
  * ]
  */
 export default function getResourcePools(ownerResources: IOwnerResource[][]): IOwnerResource[][] {
-  return getAllCombinations(ownerResources)
-    .map((resourcePool) => resourcePool
-      .flatMap((resource) => times(resource.count, () => ({
+  return getAllCombinations(ownerResources).map((resourcePool) =>
+    resourcePool.flatMap((resource) =>
+      times(resource.count, () => ({
         ...resource,
         count: 1,
-      }))),
-    );
+      })),
+    ),
+  );
 }

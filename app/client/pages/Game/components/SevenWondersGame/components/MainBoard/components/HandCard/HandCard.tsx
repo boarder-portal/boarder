@@ -2,32 +2,18 @@ import React, { useCallback } from 'react';
 import classNames from 'classnames';
 
 import { ICard } from 'common/types/sevenWonders/cards';
-import {
-  EGamePhase,
-  IAgePlayerData,
-  IPlayer,
-  ITurnPlayerData,
-  TAction,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { EGamePhase, IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 import {
   IOwnerResource,
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
-import Actions
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/Actions';
+import Actions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/Actions';
 import Box from 'client/components/common/Box/Box';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';

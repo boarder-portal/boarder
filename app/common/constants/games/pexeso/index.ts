@@ -6,14 +6,20 @@ interface ISetConfig {
 }
 
 interface IFieldOptions {
-  [EFieldLayout.RECT]: Record<number, {
-    width: number;
-    height: number;
-  }>;
-  [EFieldLayout.HEX]: Record<number, {
-    start: number;
-    middle: number;
-  }>;
+  [EFieldLayout.RECT]: Record<
+    number,
+    {
+      width: number;
+      height: number;
+    }
+  >;
+  [EFieldLayout.HEX]: Record<
+    number,
+    {
+      start: number;
+      middle: number;
+    }
+  >;
 }
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {

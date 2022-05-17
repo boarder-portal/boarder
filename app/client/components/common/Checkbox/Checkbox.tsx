@@ -11,27 +11,18 @@ interface ICheckboxProps {
 }
 
 const Checkbox: React.FC<ICheckboxProps> = (props) => {
-  const {
-    className,
-    checked,
-    disabled,
-    label,
-    onChange,
-  } = props;
+  const { className, checked, disabled, label, onChange } = props;
 
-  const onCheckboxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.checked);
-  }, [onChange]);
+  const onCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.checked);
+    },
+    [onChange],
+  );
 
   return (
     <FormControlLabel
-      control={
-        <MuiCheckbox
-          className={className}
-          checked={checked}
-          onChange={onCheckboxChange}
-        />
-      }
+      control={<MuiCheckbox className={className} checked={checked} onChange={onCheckboxChange} />}
       label={label}
       disabled={disabled}
     />

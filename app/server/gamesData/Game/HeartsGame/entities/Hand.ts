@@ -18,7 +18,7 @@ import Turn from 'server/gamesData/Game/HeartsGame/entities/Turn';
 
 const ALL_SCORE = 26;
 const SUIT_VALUES: Record<ESuit, number> = {
-  [ESuit.CLUBS]: 1e0,
+  [ESuit.CLUBS]: 1,
   [ESuit.DIAMONDS]: 1e2,
   [ESuit.SPADES]: 1e4,
   [ESuit.HEARTS]: 1e6,
@@ -69,7 +69,9 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
         const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
 
         if (playerChosenCardsIndexes.includes(cardIndex)) {
-          this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter((index) => index !== cardIndex);
+          this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter(
+            (index) => index !== cardIndex,
+          );
         } else {
           playerChosenCardsIndexes.push(cardIndex);
         }
@@ -77,14 +79,12 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
         this.game.sendInfo();
       }
 
-      const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) => (
-        chosenCardsIndexes.map((cardIndex) => hand[cardIndex])
-      ));
+      const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>
+        chosenCardsIndexes.map((cardIndex) => hand[cardIndex]),
+      );
 
       this.playersData.forEach((playerData, playerIndex) => {
-        this.playersData[this.getTargetPlayerIndex(playerIndex)].hand.push(
-          ...passedCards[playerIndex],
-        );
+        this.playersData[this.getTargetPlayerIndex(playerIndex)].hand.push(...passedCards[playerIndex]);
 
         playerData.hand = playerData.hand.filter(
           (_card, cardIndex) => !playerData.chosenCardsIndexes.includes(cardIndex),
@@ -107,10 +107,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
 
       this.game.sendInfo();
 
-      const {
-        highestCardPlayerIndex,
-        takenCards: playerTakenCards,
-      } = yield* this.turn;
+      const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.turn;
 
       yield* this.delay(SHOW_CARDS_TIMEOUT);
 
@@ -122,26 +119,14 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
 
     this.turn = null;
 
-    const playerScores = this.playersData.map(({ takenCards }) => (
-      takenCards.reduce((score, card) => (
-        score + (
-          isHeart(card)
-            ? 1
-            : isQueenOfSpades(card)
-              ? 13
-              : 0
-        )
-      ), 0)
-    ));
+    const playerScores = this.playersData.map(({ takenCards }) =>
+      takenCards.reduce((score, card) => score + (isHeart(card) ? 1 : isQueenOfSpades(card) ? 13 : 0), 0),
+    );
     const takeAllPlayerIndex = playerScores.indexOf(ALL_SCORE);
 
-    return playerScores.map((score, playerIndex) => (
-      playerIndex === takeAllPlayerIndex
-        ? 0
-        : takeAllPlayerIndex === -1
-          ? score
-          : ALL_SCORE
-    ));
+    return playerScores.map((score, playerIndex) =>
+      playerIndex === takeAllPlayerIndex ? 0 : takeAllPlayerIndex === -1 ? score : ALL_SCORE,
+    );
   }
 
   getDeuceOfClubsIndex(playerIndex: number): number {

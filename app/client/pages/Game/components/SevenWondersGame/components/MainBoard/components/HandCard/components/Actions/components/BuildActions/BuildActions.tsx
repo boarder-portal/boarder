@@ -1,32 +1,17 @@
 import React from 'react';
 
-import {
-  IAgePlayerData,
-  IPlayer,
-  ITurnPlayerData,
-  TAction,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
-import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import Box from 'client/components/common/Box/Box';
-import DiscardAction
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
-import BuildWonderLevelAction
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
-import BuildCardActions
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildCardActions/BuildCardActions';
+import DiscardAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
+import BuildWonderLevelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
+import BuildCardActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildCardActions/BuildCardActions';
 
 interface IBuildActionsProps {
   className?: string;
@@ -87,11 +72,7 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
           onCardAction={onCardAction}
         />
 
-        <DiscardAction
-          agePlayerData={agePlayerData}
-          turnPlayerData={turnPlayerData}
-          onCardAction={onCardAction}
-        />
+        <DiscardAction agePlayerData={agePlayerData} turnPlayerData={turnPlayerData} onCardAction={onCardAction} />
       </Box>
     </>
   );

@@ -62,7 +62,11 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   players: IPlayer[];
 
   activePlayerIndex = 0;
-  deck: ICard[] = shuffle(cloneDeep(ALL_CARDS).map((card) => times(card.count, () => card)).flat());
+  deck: ICard[] = shuffle(
+    cloneDeep(ALL_CARDS)
+      .map((card) => times(card.count, () => card))
+      .flat(),
+  );
   board: TBoard = {};
   objects: TObjects = {};
   lastId = 1;
@@ -117,12 +121,10 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
     forEach(this.objects, (object) => {
       if (
-        object
-        && (
-          isGameField(object)
-          || (isGameMonastery(object) && object.cards.length < 9)
-          || ((isGameCity(object) || isGameRoad(object)) && !object.isFinished)
-        )
+        object &&
+        (isGameField(object) ||
+          (isGameMonastery(object) && object.cards.length < 9) ||
+          ((isGameCity(object) || isGameRoad(object)) && !object.isFinished))
       ) {
         this.addObjectScore(object);
       }
@@ -136,10 +138,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
     forEach(this.players, ({ goods }) => {
       forEach(goods, (count, goodsType) => {
-        maxGoods[goodsType as ECityGoods] = Math.max(
-          maxGoods[goodsType as ECityGoods],
-          count,
-        );
+        maxGoods[goodsType as ECityGoods] = Math.max(maxGoods[goodsType as ECityGoods], count);
       });
     });
 
@@ -193,27 +192,15 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
         addScore(player, finishedCities.length * (3 + (hasPig ? 1 : 0)));
       });
     } else if (isGameCity(object)) {
-      const score = (
-        object.isFinished
-          ? object.cathedral
-            ? 3
-            : 2
-          : object.cathedral
-            ? 0
-            : 1
-      ) * (object.cards.length + object.shields);
+      const score =
+        (object.isFinished ? (object.cathedral ? 3 : 2) : object.cathedral ? 0 : 1) *
+        (object.cards.length + object.shields);
 
       owners.forEach((player) => {
         addScore(player, score);
       });
     } else if (isGameRoad(object)) {
-      const score = (
-        object.inn
-          ? object.isFinished
-            ? 2
-            : 0
-          : 1
-      ) * object.cards.length;
+      const score = (object.inn ? (object.isFinished ? 2 : 0) : 1) * object.cards.length;
 
       owners.forEach((player) => {
         addScore(player, score);
@@ -228,25 +215,20 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   }
 
   attachCard(options: IAttachCardOptions): IGameCard {
-    const {
-      card,
-      coords,
-      rotation,
-      meeple,
-      player,
-    } = options;
-    const gameCard: IGameCard = (this.board[coords.y] ||= {})[coords.x] = {
+    const { card, coords, rotation, meeple, player } = options;
+    const gameCard: IGameCard = ((this.board[coords.y] ||= {})[coords.x] = {
       ...coords,
       id: card.id,
       rotation,
       monasteryId: null,
       objectsBySideParts: times(12, () => 0),
-      meeple: meeple && player && {
-        ...meeple,
-        color: player.color,
-        gameObjectId: 0,
-      },
-    };
+      meeple: meeple &&
+        player && {
+          ...meeple,
+          color: player.color,
+          gameObjectId: 0,
+        },
+    });
     const idsMap = new Map<number, number>();
 
     card.objects.forEach((object, objectId) => {
@@ -411,14 +393,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   }
 
   attachPlayerCard(options: IAttachPlayerCardOptions): boolean {
-    const {
-      cardIndex,
-      coords,
-      rotation,
-      meeple,
-      playerIndex,
-      isFirstTurnCard,
-    } = options;
+    const { cardIndex, coords, rotation, meeple, playerIndex, isFirstTurnCard } = options;
     const player = this.players[playerIndex];
 
     const gameCard = this.attachCard({
@@ -498,8 +473,8 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       }
 
       if (
-        getObjectPlayerMeeples(object, player.index).some(({ type }) => type === EMeepleType.BUILDER)
-        && meeple?.type !== EMeepleType.BUILDER
+        getObjectPlayerMeeples(object, player.index).some(({ type }) => type === EMeepleType.BUILDER) &&
+        meeple?.type !== EMeepleType.BUILDER
       ) {
         attachedToBuilder = true;
       }
@@ -517,7 +492,10 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   }
 
   getPlacedCardsCount(): number {
-    return Object.values(this.board).reduce((accCount, boardRow) => accCount + (boardRow ? Object.keys(boardRow).length : 0), 0);
+    return Object.values(this.board).reduce(
+      (accCount, boardRow) => accCount + (boardRow ? Object.keys(boardRow).length : 0),
+      0,
+    );
   }
 
   getPlayerIndexWithCards(currentPlayerIndex: number): number {
@@ -535,15 +513,10 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   }
 
   getPlayerObjectMeeples(object: TGameObject, playerIndex: number): number {
-    return getObjectPlayerMeeples(object, playerIndex).reduce((count, { type }) => (
-      count + (
-        type === EMeepleType.COMMON
-          ? 1
-          : type === EMeepleType.FAT
-            ? 2
-            : 0
-      )
-    ), 0);
+    return getObjectPlayerMeeples(object, playerIndex).reduce(
+      (count, { type }) => count + (type === EMeepleType.COMMON ? 1 : type === EMeepleType.FAT ? 2 : 0),
+      0,
+    );
   }
 
   mergeCardObject(targetObject: TGameObject, mergedObject: TCardObject): void {
@@ -631,9 +604,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       this.players[playerIndex].meeples[type]++;
     });
 
-    const returnFromCards = isGameMonastery(object)
-      ? object.cards.slice(0)
-      : object.cards;
+    const returnFromCards = isGameMonastery(object) ? object.cards.slice(0) : object.cards;
 
     returnFromCards.forEach((coords) => {
       const card = this.board[coords.y]?.[coords.x];

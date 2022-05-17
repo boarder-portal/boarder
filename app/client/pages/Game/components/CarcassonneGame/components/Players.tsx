@@ -77,18 +77,15 @@ const Players: React.FC<IPlayersProps> = (props) => {
               {isActive && <span> {turnSecondsLeft}</span>}
             </div>
 
-            <div>
-              {sumBy(player.score, ({ score }) => score)}
-            </div>
+            <div>{sumBy(player.score, ({ score }) => score)}</div>
 
             <div>
-              Пшено: {player.goods[ECityGoods.WHEAT]},
-              Ткань: {player.goods[ECityGoods.FABRIC]},
-              Вино: {player.goods[ECityGoods.WINE]}
+              Пшено: {player.goods[ECityGoods.WHEAT]}, Ткань: {player.goods[ECityGoods.FABRIC]}, Вино:{' '}
+              {player.goods[ECityGoods.WINE]}
             </div>
 
             <Box flex between={2}>
-              {map(player.meeples, (count, type) => (
+              {map(player.meeples, (count, type) =>
                 times(count, (index) => (
                   <Meeple
                     key={`${type}-${index}`}
@@ -96,8 +93,8 @@ const Players: React.FC<IPlayersProps> = (props) => {
                     type={type as EMeepleType}
                     color={player.color}
                   />
-                ))
-              ))}
+                )),
+              )}
             </Box>
           </div>
         );

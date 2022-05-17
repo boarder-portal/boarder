@@ -1,27 +1,18 @@
 import React, { useCallback, useMemo } from 'react';
 
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
-import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getObjectSpecificResources
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
-import getResourcePoolsWithAdditionalResources
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
+import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getObjectSpecificResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
+import getResourcePoolsWithAdditionalResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
 
 import Box from 'client/components/common/Box/Box';
-import useCardBuildInfo
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildInfo';
-import useCardBuildFreeWithEffectInfo
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
-import TradeModal
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
+import useCardBuildInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildInfo';
+import useCardBuildFreeWithEffectInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
+import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -54,22 +45,35 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     onStartCopyingLeader,
   } = props;
 
-  const {
-    value: isTradeModalVisible,
-    setTrue: openTradeModal,
-    setFalse: closeTradeModal,
-  } = useBoolean(false);
+  const { value: isTradeModalVisible, setTrue: openTradeModal, setFalse: closeTradeModal } = useBoolean(false);
 
   const cardResourcePools = useMemo(() => {
     const objectSpecificResources = getObjectSpecificResources(player, card.type);
 
     return getResourcePoolsWithAdditionalResources(resourcePools, objectSpecificResources);
-  },
-  [card.type, player, resourcePools],
-  );
+  }, [card.type, player, resourcePools]);
 
-  const cardBuildInfo = useCardBuildInfo(card, cardIndex, cardResourcePools, resourceTradePrices, player, agePlayerData, turnPlayerData, leftNeighbor, rightNeighbor, onCardAction, onStartCopyingLeader);
-  const cardBuildFreeWithEffectInfo = useCardBuildFreeWithEffectInfo(card, cardIndex, turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? [], onCardAction, onStartCopyingLeader);
+  const cardBuildInfo = useCardBuildInfo(
+    card,
+    cardIndex,
+    cardResourcePools,
+    resourceTradePrices,
+    player,
+    agePlayerData,
+    turnPlayerData,
+    leftNeighbor,
+    rightNeighbor,
+    onCardAction,
+    onStartCopyingLeader,
+  );
+  const cardBuildFreeWithEffectInfo = useCardBuildFreeWithEffectInfo(
+    card,
+    cardIndex,
+    turnPlayerData?.waitingForAction ?? null,
+    agePlayerData?.buildEffects ?? [],
+    onCardAction,
+    onStartCopyingLeader,
+  );
 
   const handleBuildActionClick = useCallback(() => {
     if (
@@ -78,17 +82,24 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
       cardBuildInfo.type === EBuildType.OWN_RESOURCES_AND_COINS ||
       cardBuildInfo.type === EBuildType.FREE_BY_BUILDING
     ) {
-      cardBuildInfo.onBuild(cardBuildInfo.type === EBuildType.FREE_BY_BUILDING ? {
-        type: EBuildType.FREE_BY_BUILDING,
-      } : null);
+      cardBuildInfo.onBuild(
+        cardBuildInfo.type === EBuildType.FREE_BY_BUILDING
+          ? {
+              type: EBuildType.FREE_BY_BUILDING,
+            }
+          : null,
+      );
     } else if (cardBuildInfo.type === EBuildType.WITH_TRADE) {
       openTradeModal();
     }
   }, [cardBuildInfo, openTradeModal]);
 
-  const trade = useCallback((payments?: TPayments) => {
-    cardBuildInfo.onBuild(null, payments);
-  }, [cardBuildInfo]);
+  const trade = useCallback(
+    (payments?: TPayments) => {
+      cardBuildInfo.onBuild(null, payments);
+    },
+    [cardBuildInfo],
+  );
 
   const isBuildActionAvailable = useMemo(() => {
     if (cardBuildFreeWithEffectInfo.isAvailable && !cardBuildFreeWithEffectInfo.isPurchaseAvailable) {
@@ -104,7 +115,9 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     }
 
     if (cardBuildFreeWithEffectInfo.isPurchaseAvailable) {
-      if ([EBuildType.FREE, EBuildType.FREE_BY_BUILDING, EBuildType.FREE_BY_OWN_RESOURCES].includes(cardBuildInfo.type)) {
+      if (
+        [EBuildType.FREE, EBuildType.FREE_BY_BUILDING, EBuildType.FREE_BY_OWN_RESOURCES].includes(cardBuildInfo.type)
+      ) {
         return false;
       }
     }

@@ -20,14 +20,7 @@ const Room: React.FC<ILobbyRoomProps> = (props) => {
   const { className, title, options, players, maxPlayers, gameIsStarted, onClick } = props;
 
   return (
-    <Box
-      className={classNames(styles.root, className)}
-      px={32}
-      py={16}
-      flex
-      alignItems="center"
-      onClick={onClick}
-    >
+    <Box className={classNames(styles.root, className)} px={32} py={16} flex alignItems="center" onClick={onClick}>
       <Box flex column between={8}>
         <Box size="l">
           {title}

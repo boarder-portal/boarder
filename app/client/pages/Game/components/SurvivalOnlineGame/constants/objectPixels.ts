@@ -1,10 +1,6 @@
 import { COLORS } from 'common/constants/games/survivalOnline';
 
-const {
-  budGreen,
-  fernGreen,
-  coffee,
-} = COLORS;
+const { budGreen, fernGreen, coffee } = COLORS;
 
 export const OBJECT_PIXELS = {
   grass: [{ x: 0, y: 0, width: 1, height: 1, color: budGreen }],

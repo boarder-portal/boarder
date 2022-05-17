@@ -48,35 +48,23 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   }
 
   *lifecycle() {
-    const {
-      imagesCount: setImagesCount,
-      imageVariantsCount,
-    } = SETS[this.options.set];
+    const { imagesCount: setImagesCount, imageVariantsCount } = SETS[this.options.set];
     const allIds = times(setImagesCount);
-    const ids = (
-      this.options.pickRandomImages
-        ? shuffle(allIds)
-        : allIds
-    ).slice(0, this.options.differentCardsCount);
+    const ids = (this.options.pickRandomImages ? shuffle(allIds) : allIds).slice(0, this.options.differentCardsCount);
     const allImageVariants = times(imageVariantsCount);
 
-    const shuffledIds = shuffle(flatten(
-      ids.map((imageId) => {
-        const imageVariants = this.options.pickRandomImages
-          ? shuffle(allImageVariants)
-          : allImageVariants;
+    const shuffledIds = shuffle(
+      flatten(
+        ids.map((imageId) => {
+          const imageVariants = this.options.pickRandomImages ? shuffle(allImageVariants) : allImageVariants;
 
-        return (
-          times(
-            this.options.matchingCardsCount,
-            (index) => ({
-              imageId,
-              imageVariant: imageVariants[this.options.useImageVariants ? index : 0],
-            }),
-          )
-        );
-      }),
-    ));
+          return times(this.options.matchingCardsCount, (index) => ({
+            imageId,
+            imageVariant: imageVariants[this.options.useImageVariants ? index : 0],
+          }));
+        }),
+      ),
+    );
 
     this.cards = shuffledIds.map((card) => ({
       ...card,
@@ -111,9 +99,10 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
         this.sendSocketEvent(EGameEvent.REMOVE_CARDS, {
           indexes: openedCardsIndexes,
-          shuffleIndexes: isGameEnd || this.options.shuffleOptions?.type === EShuffleType.TURNED
-            ? null
-            : this.shuffleCards(openedCardsIndexes),
+          shuffleIndexes:
+            isGameEnd || this.options.shuffleOptions?.type === EShuffleType.TURNED
+              ? null
+              : this.shuffleCards(openedCardsIndexes),
         });
       } else {
         this.activePlayerIndex = (this.activePlayerIndex + 1) % this.players.length;
@@ -149,18 +138,16 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   }
 
   shuffleCards(openedCardsIndexes: number[]): IShuffleCardsIndexes | null {
-    if (
-      !this.options.shuffleOptions
-      || this.movesCount % this.options.shuffleOptions.afterMovesCount !== 0
-    ) {
+    if (!this.options.shuffleOptions || this.movesCount % this.options.shuffleOptions.afterMovesCount !== 0) {
       return null;
     }
 
     let indexesToShuffle: number[];
 
     if (this.options.shuffleOptions.type === EShuffleType.RANDOM) {
-      const allIndexesInPlay = times(this.options.differentCardsCount * this.options.matchingCardsCount)
-        .filter((index) => this.cards[index].isInGame);
+      const allIndexesInPlay = times(this.options.differentCardsCount * this.options.matchingCardsCount).filter(
+        (index) => this.cards[index].isInGame,
+      );
 
       indexesToShuffle = shuffle(allIndexesInPlay).slice(0, this.options.shuffleOptions.cardsCount);
     } else {

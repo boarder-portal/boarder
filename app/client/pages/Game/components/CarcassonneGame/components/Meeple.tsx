@@ -49,18 +49,8 @@ const Meeple: React.FC<IMeepleProps> = (props) => {
   const { className, style, type, color, onClick } = props;
 
   return (
-    <Root
-      className={b.mix(className)}
-      style={style}
-      flex
-      alignItems="center"
-      justifyContent="center"
-      onClick={onClick}
-    >
-      <div
-        className={b('meeple', { type })}
-        style={{ backgroundColor: color }}
-      />
+    <Root className={b.mix(className)} style={style} flex alignItems="center" justifyContent="center" onClick={onClick}>
+      <div className={b('meeple', { type })} style={{ backgroundColor: color }} />
     </Root>
   );
 };

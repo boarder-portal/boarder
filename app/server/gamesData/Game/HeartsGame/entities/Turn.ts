@@ -51,11 +51,12 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
         });
       }
 
-      this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(this.activePlayerIndex, chosenCardIndex);
+      this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(
+        this.activePlayerIndex,
+        chosenCardIndex,
+      );
 
-      this.activePlayerIndex = i === this.playersCount - 1
-        ? -1
-        : (this.activePlayerIndex + 1) % this.playersCount;
+      this.activePlayerIndex = i === this.playersCount - 1 ? -1 : (this.activePlayerIndex + 1) % this.playersCount;
 
       this.game.sendInfo();
     }

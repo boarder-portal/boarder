@@ -13,10 +13,10 @@ import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTrad
  *    [{ type: 'GLASS', count: 1 }],
  * ]
  */
-export function getPlayerResources(player: IPlayer, onlyTradableResources?: boolean): IResource[][]  {
-  return onlyTradableResources ?
-    getPlayerTradeResources(player) :
-    getAllPlayerEffects(player)
-      .filter(isResourceEffect)
-      .map((resourceEffect) => resourceEffect.variants);
+export function getPlayerResources(player: IPlayer, onlyTradableResources?: boolean): IResource[][] {
+  return onlyTradableResources
+    ? getPlayerTradeResources(player)
+    : getAllPlayerEffects(player)
+        .filter(isResourceEffect)
+        .map((resourceEffect) => resourceEffect.variants);
 }

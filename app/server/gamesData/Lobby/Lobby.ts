@@ -24,12 +24,14 @@ class Lobby<Game extends EGame> {
       this.sendLobbyUpdate();
 
       socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions<Game>) => {
-        this.rooms.push(new Room({
-          game,
-          options,
-          onUpdateRoom: this.sendLobbyUpdate,
-          onDeleteRoom: this.deleteRoom,
-        }));
+        this.rooms.push(
+          new Room({
+            game,
+            options,
+            onUpdateRoom: this.sendLobbyUpdate,
+            onDeleteRoom: this.deleteRoom,
+          }),
+        );
 
         this.sendLobbyUpdate();
       });
@@ -70,22 +72,19 @@ class Lobby<Game extends EGame> {
     };
 
     this.io.emit(ELobbyEvent.UPDATE, updatedData);
-  }
+  };
 
   deleteRoom = (id: string): void => {
-    const roomIndex = this.rooms.findIndex(({  id: roomId }) => roomId === id);
+    const roomIndex = this.rooms.findIndex(({ id: roomId }) => roomId === id);
 
     if (roomIndex === -1) {
       return;
     }
 
-    this.rooms = [
-      ...this.rooms.slice(0, roomIndex),
-      ...this.rooms.slice(roomIndex + 1),
-    ];
+    this.rooms = [...this.rooms.slice(0, roomIndex), ...this.rooms.slice(roomIndex + 1)];
 
     this.sendLobbyUpdate();
-  }
+  };
 }
 
 export default Lobby;

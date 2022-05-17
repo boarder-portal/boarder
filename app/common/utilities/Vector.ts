@@ -27,11 +27,7 @@ class Vector {
     const yProjection = this.to.y - this.from.y;
     const atan = Math.atan(yProjection / xProjection);
 
-    return xProjection >= 0
-      ? yProjection >= 0
-        ? atan
-        : atan + 2 * Math.PI
-      : atan + Math.PI;
+    return xProjection >= 0 ? (yProjection >= 0 ? atan : atan + 2 * Math.PI) : atan + Math.PI;
   }
 
   getLength(): number {

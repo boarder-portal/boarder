@@ -4,13 +4,9 @@ import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
 import { renderToString } from 'react-dom/server';
 
-const nodeStats = path.resolve(
-  './build/node/loadable-stats.json',
-);
+const nodeStats = path.resolve('./build/node/loadable-stats.json');
 
-const webStats = path.resolve(
-  './build/web/loadable-stats.json',
-);
+const webStats = path.resolve('./build/web/loadable-stats.json');
 
 export default async function render(req: Request, res: Response): Promise<Response> {
   const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });

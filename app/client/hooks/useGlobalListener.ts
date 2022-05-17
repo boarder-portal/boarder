@@ -4,11 +4,7 @@ export default function useGlobalListener<
   T extends Document | Window,
   M extends T extends Document ? DocumentEventMap : WindowEventMap,
   K extends keyof M,
->(
-  type: K,
-  target: T,
-  listener: (event: M[K]) => void,
-) {
+>(type: K, target: T, listener: (event: M[K]) => void) {
   const listenerRef = useRef<(event: M[K]) => void>(listener);
 
   useEffect(() => {

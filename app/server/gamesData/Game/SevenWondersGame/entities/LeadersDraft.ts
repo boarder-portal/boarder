@@ -52,7 +52,10 @@ export default class LeadersDraft extends GameEntity<EGame.SEVEN_WONDERS, ICard[
 
       yield* this.turn;
 
-      const newLeadersPools = rotateObjects(this.playersData.map(({ leadersPool }) => leadersPool), 1);
+      const newLeadersPools = rotateObjects(
+        this.playersData.map(({ leadersPool }) => leadersPool),
+        1,
+      );
 
       this.playersData.forEach((playerData, index) => {
         playerData.leadersPool = newLeadersPools[index];

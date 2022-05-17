@@ -21,7 +21,7 @@ const Root = styled(Box)`
   border: 1px solid black;
   border-radius: 8px;
   cursor: pointer;
-  ${({ isSelected }: Pick<ICardProps, 'isSelected'>) => isSelected ? 'background-color: lavender' : ''}
+  ${({ isSelected }: Pick<ICardProps, 'isSelected'>) => (isSelected ? 'background-color: lavender' : '')}
 `;
 
 const Card: React.FC<ICardProps> = (props) => {
@@ -42,10 +42,7 @@ const Card: React.FC<ICardProps> = (props) => {
       onClick={handleClick}
     >
       {times(card.count).map((objIndex) => (
-        <CardObject
-          key={objIndex}
-          card={card}
-        />
+        <CardObject key={objIndex} card={card} />
       ))}
     </Root>
   );

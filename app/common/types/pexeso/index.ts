@@ -38,14 +38,17 @@ export enum EShuffleType {
   TURNED = 'TURNED',
 }
 
-export type TShuffleOptions = null | {
-  type: EShuffleType.RANDOM;
-  afterMovesCount: number;
-  cardsCount: number;
-} | {
-  type: EShuffleType.TURNED;
-  afterMovesCount: number;
-};
+export type TShuffleOptions =
+  | null
+  | {
+      type: EShuffleType.RANDOM;
+      afterMovesCount: number;
+      cardsCount: number;
+    }
+  | {
+      type: EShuffleType.TURNED;
+      afterMovesCount: number;
+    };
 
 export interface IGameOptions extends ICommonGameOptions {
   set: ESet;

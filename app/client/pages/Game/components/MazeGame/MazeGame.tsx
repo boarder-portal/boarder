@@ -1,22 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import {
-  CELL_SIZE,
-  MAZE_HEIGHT,
-  MAZE_WIDTH,
-  PLAYER_SIZE,
-  WALL_THICKNESS,
-} from 'common/constants/games/maze';
+import { CELL_SIZE, MAZE_HEIGHT, MAZE_WIDTH, PLAYER_SIZE, WALL_THICKNESS } from 'common/constants/games/maze';
 
-import {
-  EGameEvent,
-  EPlayerSide,
-  ESide,
-  IGameInfoEvent,
-  IPlayer,
-  IPlayerMoveEvent,
-  IWall,
-} from 'common/types/maze';
+import { EGameEvent, EPlayerSide, ESide, IGameInfoEvent, IPlayer, IPlayerMoveEvent, IWall } from 'common/types/maze';
 
 import Vector from 'common/utilities/Vector';
 
@@ -80,10 +66,7 @@ const getPlayerElementProps = (player: IPlayer): { x: number; y: number } => {
 };
 
 const MazeGame: React.FC<IMazeGameProps> = (props) => {
-  const {
-    io,
-    isGameEnd,
-  } = props;
+  const { io, isGameEnd } = props;
 
   const currentDirections = useRef<ESide[]>([]);
   const players = useRef<IPlayer[]>([]);
@@ -113,9 +96,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
     });
 
     io.on(EGameEvent.PLAYER_MOVED, (moveEvent: IPlayerMoveEvent) => {
-      const player = players.current.find(
-        ({ login }) => login === moveEvent.login,
-      );
+      const player = players.current.find(({ login }) => login === moveEvent.login);
 
       if (!player) {
         return;
@@ -180,11 +161,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   });
 
   if (isGameEnd) {
-    return (
-      <GameEnd>
-
-      </GameEnd>
-    );
+    return <GameEnd></GameEnd>;
   }
 
   if (!walls) {

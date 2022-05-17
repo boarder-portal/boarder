@@ -17,7 +17,9 @@ export default function getHand(options: IGetHandOptions): ICard[] {
   }
 
   if (options.isCopyingLeader) {
-    return [...options.leftNeighbor.builtCards, ...options.rightNeighbor.builtCards].filter((card) => card.type === ECardType.LEADER);
+    return [...options.leftNeighbor.builtCards, ...options.rightNeighbor.builtCards].filter(
+      (card) => card.type === ECardType.LEADER,
+    );
   }
 
   return getPlayerHandCards(options);

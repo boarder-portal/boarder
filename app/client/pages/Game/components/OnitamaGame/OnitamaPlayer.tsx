@@ -15,14 +15,7 @@ interface IOnitamaPlayerProps {
 }
 
 const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
-  const {
-    player,
-    fifthCard,
-    isActive,
-    isFlipped,
-    selectedCardIndex,
-    onCardClick,
-  } = props;
+  const { player, fifthCard, isActive, isFlipped, selectedCardIndex, onCardClick } = props;
 
   return (
     <div>
@@ -38,15 +31,13 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
         ))}
 
         {isActive && (
-          <div style={{
-            opacity: 0.25,
-            transform: 'scale(0.75)',
-          }}>
-            <OnitamaCard
-              card={fifthCard}
-              isFlipped={isFlipped}
-              isSelected={false}
-            />
+          <div
+            style={{
+              opacity: 0.25,
+              transform: 'scale(0.75)',
+            }}
+          >
+            <OnitamaCard card={fifthCard} isFlipped={isFlipped} isSelected={false} />
           </div>
         )}
       </Box>

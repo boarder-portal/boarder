@@ -5,7 +5,12 @@ import { EBiome, EObject, ICell } from 'common/types/survivalOnline';
 import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 import renderEyes from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderEyes';
 
-export default function renderCell(context: CanvasRenderingContext2D, startX: number, startY: number, cell: ICell | undefined): void {
+export default function renderCell(
+  context: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  cell: ICell | undefined,
+): void {
   if (!cell) {
     return;
   }

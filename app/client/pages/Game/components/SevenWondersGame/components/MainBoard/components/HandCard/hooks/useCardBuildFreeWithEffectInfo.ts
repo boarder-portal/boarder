@@ -1,22 +1,9 @@
 import { useCallback, useMemo } from 'react';
 
-import {
-  ECardActionType,
-  TAction,
-  TBuildType,
-  TPayments,
-  TWaitingAction,
-} from 'common/types/sevenWonders';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { ECardActionType, TAction, TBuildType, TPayments, TWaitingAction } from 'common/types/sevenWonders';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { ECardId, ICard } from 'common/types/sevenWonders/cards';
-import {
-  EEffect,
-  EFreeCardPeriod,
-  EFreeCardSource,
-  IBuildCardEffect,
-} from 'common/types/sevenWonders/effects';
+import { EEffect, EFreeCardPeriod, EFreeCardSource, IBuildCardEffect } from 'common/types/sevenWonders/effects';
 
 import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
@@ -48,10 +35,9 @@ export default function useCardBuildFreeWithEffectInfo(
       return infinityBuildEffectIndex;
     }
 
-    return buildCardEffects
-      .findIndex((effect) =>
-        effect.period === EFreeCardPeriod.AGE && (effect.cardTypes?.includes(card.type) ?? true),
-      );
+    return buildCardEffects.findIndex(
+      (effect) => effect.period === EFreeCardPeriod.AGE && (effect.cardTypes?.includes(card.type) ?? true),
+    );
   }, [buildCardEffects, card.type, infinityBuildEffectIndex]);
 
   const isAvailable = useMemo(() => {
@@ -94,13 +80,16 @@ export default function useCardBuildFreeWithEffectInfo(
     return true;
   }, [infinityBuildEffectIndex, waitingBuildEffect]);
 
-  const title = useMemo(() => isAvailable ? 'Построить бесплатно с эффектом' : 'Нет эффекта', [isAvailable]);
+  const title = useMemo(() => (isAvailable ? 'Построить бесплатно с эффектом' : 'Нет эффекта'), [isAvailable]);
 
   const onBuild = useCallback(() => {
-    const freeBuildType: TBuildType | null = buildEffectIndex === -1 ? null : {
-      type: EBuildType.FREE_WITH_EFFECT,
-      effectIndex: buildEffectIndex,
-    };
+    const freeBuildType: TBuildType | null =
+      buildEffectIndex === -1
+        ? null
+        : {
+            type: EBuildType.FREE_WITH_EFFECT,
+            effectIndex: buildEffectIndex,
+          };
 
     if (card.id === ECardId.COURTESANS_GUILD) {
       onStartCopyingLeader(cardIndex, {
@@ -117,10 +106,13 @@ export default function useCardBuildFreeWithEffectInfo(
     });
   }, [buildEffectIndex, card.id, cardIndex, onCardAction, onStartCopyingLeader]);
 
-  return useMemo(() => ({
-    isAvailable,
-    isPurchaseAvailable,
-    title,
-    onBuild,
-  }), [isAvailable, isPurchaseAvailable, onBuild, title]);
+  return useMemo(
+    () => ({
+      isAvailable,
+      isPurchaseAvailable,
+      title,
+      onBuild,
+    }),
+    [isAvailable, isPurchaseAvailable, onBuild, title],
+  );
 }

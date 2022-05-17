@@ -49,9 +49,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
     <Box
       className={classNames(
         styles.root,
-        position === EPlayerPosition.LEFT || position === EPlayerPosition.RIGHT ?
-          styles[position] :
-          undefined,
+        position === EPlayerPosition.LEFT || position === EPlayerPosition.RIGHT ? styles[position] : undefined,
         className,
       )}
       flex
@@ -76,7 +74,9 @@ const Player: React.FC<IPlayerProps> = (props) => {
       />
 
       <Box flex column alignItems="center">
-        <Box size="xl" bold>{player.login}</Box>
+        <Box size="xl" bold>
+          {player.login}
+        </Box>
         <Box size="l">{player.score}</Box>
       </Box>
     </Box>

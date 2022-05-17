@@ -16,12 +16,15 @@ interface ISurvivalOnlineGameOptionsProps {
 const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
 
-  const handlePlayersCountChange = useCallback((updatedPlayersCount: number) => {
-    onOptionsChange({
-      ...options,
-      playersCount: updatedPlayersCount,
-    });
-  }, [onOptionsChange, options]);
+  const handlePlayersCountChange = useCallback(
+    (updatedPlayersCount: number) => {
+      onOptionsChange({
+        ...options,
+        playersCount: updatedPlayersCount,
+      });
+    },
+    [onOptionsChange, options],
+  );
 
   return (
     <Box flex column between={12}>

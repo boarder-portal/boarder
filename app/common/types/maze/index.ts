@@ -13,9 +13,7 @@ export enum EGameEvent {
   PLAYER_STOPPED = 'PLAYER_STOPPED',
 }
 
-export interface IGameOptions extends ICommonGameOptions {
-
-}
+export interface IGameOptions extends ICommonGameOptions {}
 
 export enum EMoveEvent {
   MOVE = 'MOVE',

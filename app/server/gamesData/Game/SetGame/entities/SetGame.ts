@@ -12,16 +12,7 @@ import {
 } from 'common/constants/games/set';
 
 import { EGame } from 'common/types/game';
-import {
-  ECardColor,
-  ECardFill,
-  ECardShape,
-  EGameEvent,
-  ICard,
-  IGame,
-  IPlayer,
-  ISendSetEvent,
-} from 'common/types/set';
+import { ECardColor, ECardFill, ECardShape, EGameEvent, ICard, IGame, IPlayer, ISendSetEvent } from 'common/types/set';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
@@ -80,9 +71,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
         const { cardsIds } = event;
 
         const cards = cardsIds
-          .map((cardId) =>
-            this.cardsStack.find((card) => card.id === cardId),
-          )
+          .map((cardId) => this.cardsStack.find((card) => card.id === cardId))
           .filter(isNotUndefined);
 
         if (isSet(cards)) {

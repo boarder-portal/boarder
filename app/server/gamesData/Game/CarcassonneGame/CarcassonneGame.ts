@@ -1,12 +1,6 @@
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
-import {
-  ECityGoods,
-  EGameEvent,
-  EMeepleType,
-  EPlayerColor,
-  IPlayer,
-} from 'common/types/carcassonne';
+import { ECityGoods, EGameEvent, EMeepleType, EPlayerColor, IPlayer } from 'common/types/carcassonne';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 
 import Game from 'server/gamesData/Game/Game';

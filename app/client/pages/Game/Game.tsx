@@ -25,15 +25,12 @@ const Game: React.FC = () => {
 
   const [gameData, setGameData] = useState<IGameUpdateEvent | null>(null);
 
-  const {
-    value: isGameEnd,
-    setTrue: endGame,
-  } = useBoolean(false);
+  const { value: isGameEnd, setTrue: endGame } = useBoolean(false);
 
   const history = useHistory();
 
   useEffect(() => {
-    const socket = ioRef.current = io.connect(`/${game}/game/${gameId}`);
+    const socket = (ioRef.current = io.connect(`/${game}/game/${gameId}`));
 
     socket.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
       setGameData(updatedGameData);
@@ -60,19 +57,14 @@ const Game: React.FC = () => {
     return null;
   }
 
-  if (gameData.players.some(({ status }) => status !== EPlayerStatus.PLAYING && status !== EPlayerStatus.DISCONNECTED)) {
-    return (
-      <div>Ожидание игроков...</div>
-    );
+  if (
+    gameData.players.some(({ status }) => status !== EPlayerStatus.PLAYING && status !== EPlayerStatus.DISCONNECTED)
+  ) {
+    return <div>Ожидание игроков...</div>;
   }
 
   if (game === EGame.PEXESO) {
-    return (
-      <PexesoGame
-        io={ioRef.current}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <PexesoGame io={ioRef.current} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.SURVIVAL_ONLINE) {
@@ -86,59 +78,27 @@ const Game: React.FC = () => {
   }
 
   if (game === EGame.MAZE) {
-    return (
-      <MazeGame
-        io={ioRef.current}
-        players={gameData.players as IMazePlayer[]}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <MazeGame io={ioRef.current} players={gameData.players as IMazePlayer[]} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.SET) {
-    return (
-      <SetGame
-        io={ioRef.current}
-        players={gameData.players as ISetPlayer[]}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <SetGame io={ioRef.current} players={gameData.players as ISetPlayer[]} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.ONITAMA) {
-    return (
-      <OnitamaGame
-        io={ioRef.current}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <OnitamaGame io={ioRef.current} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.CARCASSONNE) {
-    return (
-      <CarcassonneGame
-        io={ioRef.current}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <CarcassonneGame io={ioRef.current} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.SEVEN_WONDERS) {
-    return (
-      <SevenWondersGame
-        io={ioRef.current}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <SevenWondersGame io={ioRef.current} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.HEARTS) {
-    return (
-      <HeartsGame
-        io={ioRef.current}
-        isGameEnd={isGameEnd}
-      />
-    );
+    return <HeartsGame io={ioRef.current} isGameEnd={isGameEnd} />;
   }
 
   return null;

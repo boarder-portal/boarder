@@ -4,15 +4,7 @@ import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import {
-  ECardType,
-  EGameEvent,
-  EPlayerColor,
-  IGame,
-  IMovePieceEvent,
-  IPlayer,
-  TBoard,
-} from 'common/types/onitama';
+import { ECardType, EGameEvent, EPlayerColor, IGame, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
 import { ICoords } from 'common/types';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
@@ -30,12 +22,7 @@ interface IOnitamaGameProps {
   isGameEnd: boolean;
 }
 
-const getLegalMoves = (
-  from: ICoords,
-  card: ECardType,
-  board: TBoard,
-  player: IPlayer,
-): ICoords[] => {
+const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IPlayer): ICoords[] => {
   const cells: ICoords[] = [];
   const isFlipped = player.color === EPlayerColor.RED;
 
@@ -46,11 +33,11 @@ const getLegalMoves = (
     };
 
     if (
-      toCell.x > -1
-      && toCell.x < 5
-      && toCell.y > -1
-      && toCell.y < 5
-      && board[toCell.y][toCell.x]?.color !== player.color
+      toCell.x > -1 &&
+      toCell.x < 5 &&
+      toCell.y > -1 &&
+      toCell.y < 5 &&
+      board[toCell.y][toCell.x]?.color !== player.color
     ) {
       cells.push(toCell);
     }
@@ -85,12 +72,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
       setSelectedFrom(cell);
 
       if (selectedCardIndex !== -1) {
-        setLegalMoves(getLegalMoves(
-          cell,
-          player.cards[selectedCardIndex],
-          board,
-          player,
-        ));
+        setLegalMoves(getLegalMoves(cell, player.cards[selectedCardIndex], board, player));
       }
     } else if (selectedFrom && legalMoves.some(equalsCoordsCb(cell))) {
       const movePieceEvent: IMovePieceEvent = {
@@ -103,22 +85,20 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
     }
   };
 
-  const handleCardClick = useCallback((card: ECardType) => {
-    if (player?.index === activePlayerIndex) {
-      const selectedCardIndex = player.cards.indexOf(card);
+  const handleCardClick = useCallback(
+    (card: ECardType) => {
+      if (player?.index === activePlayerIndex) {
+        const selectedCardIndex = player.cards.indexOf(card);
 
-      setSelectedCardIndex(selectedCardIndex);
+        setSelectedCardIndex(selectedCardIndex);
 
-      if (selectedFrom) {
-        setLegalMoves(getLegalMoves(
-          selectedFrom,
-          player.cards[selectedCardIndex],
-          board,
-          player,
-        ));
+        if (selectedFrom) {
+          setLegalMoves(getLegalMoves(selectedFrom, player.cards[selectedCardIndex], board, player));
+        }
       }
-    }
-  }, [activePlayerIndex, board, player, selectedFrom]);
+    },
+    [activePlayerIndex, board, player, selectedFrom],
+  );
 
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
@@ -148,11 +128,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   }, [io, user]);
 
   if (isGameEnd) {
-    return (
-      <GameEnd>
-
-      </GameEnd>
-    );
+    return <GameEnd></GameEnd>;
   }
 
   if (!board.length || !players.length) {
@@ -163,13 +139,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const bottomPlayer = players[isFlipped ? 1 : 0];
 
   return (
-    <Box
-      className={styles.root}
-      flex
-      column
-      between={10}
-      alignItems="flex-start"
-    >
+    <Box className={styles.root} flex column between={10} alignItems="flex-start">
       <OnitamaPlayer
         player={topPlayer}
         fifthCard={fifthCard}

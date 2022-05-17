@@ -18,12 +18,7 @@ interface IOnitamaCardProps {
 }
 
 const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
-  const {
-    card,
-    isFlipped,
-    isSelected,
-    onClick,
-  } = props;
+  const { card, isFlipped, isSelected, onClick } = props;
   const legalMoves = ALL_CARDS[card];
 
   const handleClick = useCallback(() => {
@@ -61,20 +56,16 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
                   x === 2 && y === 2
                     ? '#000'
                     : legalMoves.some(([cellY, cellX]) => cellY === y - 2 && cellX === x - 2)
-                      ? '#900'
-                      : '#eee'
+                    ? '#900'
+                    : '#eee'
                 }
-              >
-
-              </Box>
+              ></Box>
             ))}
           </Box>
         ))}
       </Box>
 
-      <div style={{ textAlign: 'center' }}>
-        {card}
-      </div>
+      <div style={{ textAlign: 'center' }}>{card}</div>
     </Box>
   );
 };

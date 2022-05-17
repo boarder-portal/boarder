@@ -31,10 +31,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
   const userPopup = useMemo(() => {
     return (
       <Box px={16} py={12}>
-        <Box
-          className={styles.logout}
-          onClick={logout}
-        >
+        <Box className={styles.logout} onClick={logout}>
           Выйти
         </Box>
       </Box>
@@ -44,29 +41,22 @@ const Header: React.FC<IHeaderProps> = (props) => {
   return (
     <Box py={12} flex alignItems="center">
       <Link to="/">
-        <Box size="l" bold>Boarder</Box>
+        <Box size="l" bold>
+          Boarder
+        </Box>
       </Link>
 
       {user ? (
-        <Dropdown
-          popup={userPopup}
-          ml="auto"
-        >
+        <Dropdown popup={userPopup} ml="auto">
           {user.login}
         </Dropdown>
       ) : (
         <>
-          <Link
-            to="/login"
-            className={styles.login}
-          >
+          <Link to="/login" className={styles.login}>
             Вход
           </Link>
 
-          <Link
-            to="/registration"
-            className={styles.registration}
-          >
+          <Link to="/registration" className={styles.registration}>
             Регистрация
           </Link>
         </>

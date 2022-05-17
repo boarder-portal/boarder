@@ -1,37 +1,20 @@
 import React, { useCallback } from 'react';
 
-import {
-  EGamePhase,
-  IAgePlayerData,
-  IPlayer,
-  ITurnPlayerData,
-  TAction,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { EGamePhase, IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 import {
   IOwnerResource,
   ISevenWondersCourtesansBuildInfo,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import { ICard } from 'common/types/sevenWonders/cards';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
-import DraftLeaderActions
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
-import CancelAction
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CancelAction/CancelAction';
-import CourtesanAction
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CourtesanAction/CourtesanAction';
-import BuildActions
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/BuildActions';
+import DraftLeaderActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
+import CancelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CancelAction/CancelAction';
+import CourtesanAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CourtesanAction/CourtesanAction';
+import BuildActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/BuildActions';
 
 interface IActionsProps {
   className?: string;
@@ -76,26 +59,30 @@ const Actions: React.FC<IActionsProps> = (props) => {
     onStartCopyingLeader,
   } = props;
 
-  const handleIndexCardAction = useCallback((action: TAction, payments?: TPayments) => {
-    onCardAction(cardIndex, action, payments);
-  }, [cardIndex, onCardAction]);
+  const handleIndexCardAction = useCallback(
+    (action: TAction, payments?: TPayments) => {
+      onCardAction(cardIndex, action, payments);
+    },
+    [cardIndex, onCardAction],
+  );
 
   if (isChosen) {
-    return (
-      <CancelAction className={className} onCancelCard={onCancelCard}  />
-    );
+    return <CancelAction className={className} onCancelCard={onCancelCard} />;
   }
 
   if (courtesansBuildInfo) {
     return (
-      <CourtesanAction className={className} card={card} courtesansBuildInfo={courtesansBuildInfo} onCardAction={onCardAction} />
+      <CourtesanAction
+        className={className}
+        card={card}
+        courtesansBuildInfo={courtesansBuildInfo}
+        onCardAction={onCardAction}
+      />
     );
   }
 
   if (gamePhase === EGamePhase.DRAFT_LEADERS) {
-    return (
-      <DraftLeaderActions className={className} onCardAction={handleIndexCardAction} />
-    );
+    return <DraftLeaderActions className={className} onCardAction={handleIndexCardAction} />;
   }
 
   return (

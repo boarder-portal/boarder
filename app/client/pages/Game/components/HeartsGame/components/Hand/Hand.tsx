@@ -32,7 +32,13 @@ interface IHandProps {
   onSelectCard(cardIndex: number): void;
 }
 
-function isCardAllowed(card: ICard, suit: ESuit | null, hand: ICard[], heartsEnteredPlay: boolean, isFirstTurn: boolean): boolean {
+function isCardAllowed(
+  card: ICard,
+  suit: ESuit | null,
+  hand: ICard[],
+  heartsEnteredPlay: boolean,
+  isFirstTurn: boolean,
+): boolean {
   if (hand.some((card) => card.suit === suit)) {
     return card.suit === suit;
   }
@@ -73,7 +79,9 @@ function getCardState(
     return ECardState.DISABLED;
   }
 
-  return isCardAllowed(card, playedSuit, hand, heartsEnteredPlay, isFirstTurn) ? ECardState.DEFAULT : ECardState.DISABLED;
+  return isCardAllowed(card, playedSuit, hand, heartsEnteredPlay, isFirstTurn)
+    ? ECardState.DEFAULT
+    : ECardState.DISABLED;
 }
 
 const Hand: React.FC<IHandProps> = (props) => {
@@ -100,7 +108,17 @@ const Hand: React.FC<IHandProps> = (props) => {
     >
       <Box flex>
         {hand.map((card, index) => {
-          const state = getCardState(card, index, isActive, hand, chosenCardsIndexes, stage, playedSuit, heartsEnteredPlay, isFirstTurn);
+          const state = getCardState(
+            card,
+            index,
+            isActive,
+            hand,
+            chosenCardsIndexes,
+            stage,
+            playedSuit,
+            heartsEnteredPlay,
+            isFirstTurn,
+          );
 
           return (
             <Card

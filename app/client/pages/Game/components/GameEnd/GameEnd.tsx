@@ -16,7 +16,9 @@ const GameEnd: React.FC<IGameEndProps> = (props) => {
 
   return (
     <Box flex grow justifyContent="center" alignItems="center" column between={20}>
-      <Box size="xxl" bold>Игра окончена</Box>
+      <Box size="xxl" bold>
+        Игра окончена
+      </Box>
 
       {children}
 

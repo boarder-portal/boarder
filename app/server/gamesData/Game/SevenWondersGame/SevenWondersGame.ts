@@ -3,11 +3,7 @@ import times from 'lodash/times';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
 import { EPlayerStatus, IGamePlayer as ICommonPlayer } from 'common/types';
-import {
-  ECity,
-  EGameEvent,
-  IPlayer,
-} from 'common/types/sevenWonders';
+import { ECity, EGameEvent, IPlayer } from 'common/types/sevenWonders';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 import SevenWondersGameEntity from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';

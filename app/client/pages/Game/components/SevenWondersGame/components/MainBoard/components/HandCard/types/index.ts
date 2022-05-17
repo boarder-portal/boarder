@@ -1,8 +1,6 @@
 import { TBuildType, TPayments } from 'common/types/sevenWonders';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 export enum EBuildType {
   FREE = 'FREE',

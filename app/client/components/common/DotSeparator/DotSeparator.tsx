@@ -6,11 +6,7 @@ const Root = styled.span`
 `;
 
 const DotSeparator: React.FC = () => {
-  return (
-    <Root>
-      {'  •  '}
-    </Root>
-  );
+  return <Root>{'  •  '}</Root>;
 };
 
 export default React.memo(DotSeparator);

@@ -22,10 +22,7 @@ export default function getPlayerHandCards(options: IGetPlayerHandCardsOptions):
     return options.discard;
   }
 
-  if (
-    buildEffect?.source === EFreeCardSource.LEADERS
-    || options.agePhase === EAgePhase.RECRUIT_LEADERS
-  ) {
+  if (buildEffect?.source === EFreeCardSource.LEADERS || options.agePhase === EAgePhase.RECRUIT_LEADERS) {
     return options.leadersHand;
   }
 

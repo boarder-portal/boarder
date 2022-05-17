@@ -98,9 +98,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
     this.phase = {
       type: EGamePhase.DRAFT_LEADERS,
-      leadersDraft: this.spawnEntity(
-        new LeadersDraft(this),
-      ),
+      leadersDraft: this.spawnEntity(new LeadersDraft(this)),
     };
 
     this.sendGameInfo();
@@ -235,8 +233,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
       return effect.neighbors
         .map((neighborSide) => {
-          return this.getNeighbor(player, neighborSide).builtCards
-            .filter(({ type }) => type === effect.cardType)
+          return this.getNeighbor(player, neighborSide)
+            .builtCards.filter(({ type }) => type === effect.cardType)
             .map(({ effects }) => effects);
         })
         .flat();
@@ -249,11 +247,9 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
   }
 
   calculateScientificCardsPoints(symbols: EScientificSymbol[], setValue: number): number {
-    const symbolsCounts = [
-      EScientificSymbol.GEAR,
-      EScientificSymbol.COMPASS,
-      EScientificSymbol.TABLET,
-    ].map((symbol) => symbols.filter((s) => s === symbol).length);
+    const symbolsCounts = [EScientificSymbol.GEAR, EScientificSymbol.COMPASS, EScientificSymbol.TABLET].map(
+      (symbol) => symbols.filter((s) => s === symbol).length,
+    );
     const setsCount = Math.min(...symbolsCounts);
 
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * setValue);
@@ -298,9 +294,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         addedPlayer = this.getNeighbor(player, ENeighborSide.RIGHT);
       }
 
-      return addedPlayer
-        ? [...players, addedPlayer]
-        : players;
+      return addedPlayer ? [...players, addedPlayer] : players;
     }, []);
   }
 
@@ -340,11 +334,11 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     return {
       players: this.players,
       discard: this.discard,
-      phase: this.phase && (
-        this.phase.type === EGamePhase.DRAFT_LEADERS
+      phase:
+        this.phase &&
+        (this.phase.type === EGamePhase.DRAFT_LEADERS
           ? { type: EGamePhase.DRAFT_LEADERS, ...this.phase.leadersDraft.toJSON() }
-          : { type: EGamePhase.AGE, ...this.phase.age.toJSON() }
-      ),
+          : { type: EGamePhase.AGE, ...this.phase.age.toJSON() }),
     };
   }
 }

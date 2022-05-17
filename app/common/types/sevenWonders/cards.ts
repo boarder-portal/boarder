@@ -172,4 +172,3 @@ export interface ICard {
   price?: ICardPrice;
   minPlayersCounts: number[];
 }
-

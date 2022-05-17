@@ -1,27 +1,20 @@
-import {
-  ECardId,
-  ECardType,
-  ICard,
-} from 'common/types/sevenWonders/cards';
-import {
-  ECoinPassiveSource,
-  EEffect,
-  EFreeCardPeriod,
-  EFreeCardSource,
-} from 'common/types/sevenWonders/effects';
+import { ECardId, ECardType, ICard } from 'common/types/sevenWonders/cards';
+import { ECoinPassiveSource, EEffect, EFreeCardPeriod, EFreeCardSource } from 'common/types/sevenWonders/effects';
 import { ECardActionType, EPlayerDirection, EScientificSymbol } from 'common/types/sevenWonders';
 
 const LEADERS: ICard[] = [
   {
     id: ECardId.AMYTIS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.WONDER_LEVELS,
-      gain: {
-        points: 2,
+    effects: [
+      {
+        type: EEffect.WONDER_LEVELS,
+        gain: {
+          points: 2,
+        },
+        directions: [EPlayerDirection.SELF],
       },
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -30,13 +23,15 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.MIDAS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN_BY_COINS,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.GAIN_BY_COINS,
+        gain: {
+          points: 1,
+        },
+        count: 3,
       },
-      count: 3,
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -45,13 +40,15 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.ALEXANDER,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.WINS,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.WINS,
+        gain: {
+          points: 1,
+        },
+        directions: [EPlayerDirection.SELF],
       },
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -60,12 +57,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.BILKIS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.TRADE,
-      price: 1,
-      resources: [ECardType.RAW_MATERIAL, ECardType.MANUFACTURED_GOODS],
-      sources: ['bank'],
-    }],
+    effects: [
+      {
+        type: EEffect.TRADE,
+        price: 1,
+        resources: [ECardType.RAW_MATERIAL, ECardType.MANUFACTURED_GOODS],
+        sources: ['bank'],
+      },
+    ],
     price: {
       coins: 4,
     },
@@ -74,12 +73,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.ARISTOTLE,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SCIENTIFIC_SET,
-      gain: {
-        points: 3,
+    effects: [
+      {
+        type: EEffect.SCIENTIFIC_SET,
+        gain: {
+          points: 3,
+        },
       },
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -88,14 +89,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.MAECENAS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.BUILD_CARD,
-      source: EFreeCardSource.LEADERS,
-      cardTypes: [ECardType.LEADER],
-      isFree: true,
-      period: EFreeCardPeriod.LEADER_RECRUITMENT,
-      possibleActions: [ECardActionType.BUILD_STRUCTURE],
-    }],
+    effects: [
+      {
+        type: EEffect.BUILD_CARD,
+        source: EFreeCardSource.LEADERS,
+        cardTypes: [ECardType.LEADER],
+        isFree: true,
+        period: EFreeCardPeriod.LEADER_RECRUITMENT,
+        possibleActions: [ECardActionType.BUILD_STRUCTURE],
+      },
+    ],
     price: {
       coins: 1,
     },
@@ -104,18 +107,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.JUSTINIAN,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      cardTypes: [
-        ECardType.CIVILIAN,
-        ECardType.MILITARY,
-        ECardType.SCIENTIFIC,
-      ],
-      gain: {
-        points: 3,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        cardTypes: [ECardType.CIVILIAN, ECardType.MILITARY, ECardType.SCIENTIFIC],
+        gain: {
+          points: 3,
+        },
+        directions: [EPlayerDirection.SELF],
       },
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -124,22 +125,24 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PLATO,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      cardTypes: [
-        ECardType.RAW_MATERIAL,
-        ECardType.MANUFACTURED_GOODS,
-        ECardType.CIVILIAN,
-        ECardType.COMMERCIAL,
-        ECardType.SCIENTIFIC,
-        ECardType.MILITARY,
-        ECardType.GUILD,
-      ],
-      gain: {
-        points: 7,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        cardTypes: [
+          ECardType.RAW_MATERIAL,
+          ECardType.MANUFACTURED_GOODS,
+          ECardType.CIVILIAN,
+          ECardType.COMMERCIAL,
+          ECardType.SCIENTIFIC,
+          ECardType.MILITARY,
+          ECardType.GUILD,
+        ],
+        gain: {
+          points: 7,
+        },
+        directions: [EPlayerDirection.SELF],
       },
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -148,14 +151,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.RAMSES,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.BUILD_CARD,
-      source: EFreeCardSource.HAND,
-      cardTypes: [ECardType.GUILD],
-      isFree: true,
-      period: EFreeCardPeriod.ETERNITY,
-      possibleActions: [ECardActionType.BUILD_STRUCTURE],
-    }],
+    effects: [
+      {
+        type: EEffect.BUILD_CARD,
+        source: EFreeCardSource.HAND,
+        cardTypes: [ECardType.GUILD],
+        isFree: true,
+        period: EFreeCardPeriod.ETERNITY,
+        possibleActions: [ECardActionType.BUILD_STRUCTURE],
+      },
+    ],
     price: {
       coins: 5,
     },
@@ -164,9 +169,11 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.TOMYRIS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.RETURN_DEFEATS,
-    }],
+    effects: [
+      {
+        type: EEffect.RETURN_DEFEATS,
+      },
+    ],
     price: {
       coins: 4,
     },
@@ -175,10 +182,12 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.HANNIBAL,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SHIELDS,
-      count: 1,
-    }],
+    effects: [
+      {
+        type: EEffect.SHIELDS,
+        count: 1,
+      },
+    ],
     price: {
       coins: 2,
     },
@@ -187,10 +196,12 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.CAESAR,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SHIELDS,
-      count: 2,
-    }],
+    effects: [
+      {
+        type: EEffect.SHIELDS,
+        count: 2,
+      },
+    ],
     price: {
       coins: 5,
     },
@@ -199,11 +210,13 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.NERO,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.COIN_PASSIVE,
-      source: ECoinPassiveSource.VICTORY_TOKENS,
-      count: 2,
-    }],
+    effects: [
+      {
+        type: EEffect.COIN_PASSIVE,
+        source: ECoinPassiveSource.VICTORY_TOKENS,
+        count: 2,
+      },
+    ],
     price: {
       coins: 1,
     },
@@ -212,11 +225,13 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.XENOPHON,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.COIN_PASSIVE,
-      source: ECoinPassiveSource.COMMERCIAL_CARDS,
-      count: 2,
-    }],
+    effects: [
+      {
+        type: EEffect.COIN_PASSIVE,
+        source: ECoinPassiveSource.COMMERCIAL_CARDS,
+        count: 2,
+      },
+    ],
     price: {
       coins: 2,
     },
@@ -225,11 +240,13 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.VITRUVIUS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.COIN_PASSIVE,
-      source: ECoinPassiveSource.STRUCTURE_INHERITANCE,
-      count: 2,
-    }],
+    effects: [
+      {
+        type: EEffect.COIN_PASSIVE,
+        source: ECoinPassiveSource.STRUCTURE_INHERITANCE,
+        count: 2,
+      },
+    ],
     price: {
       coins: 1,
     },
@@ -238,15 +255,17 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.SOLOMON,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.BUILD_CARD,
-      source: EFreeCardSource.DISCARD,
-      isFree: true,
-      count: 1,
-      period: EFreeCardPeriod.NOW,
-      possibleActions: [ECardActionType.BUILD_STRUCTURE],
-      priority: 0,
-    }],
+    effects: [
+      {
+        type: EEffect.BUILD_CARD,
+        source: EFreeCardSource.DISCARD,
+        isFree: true,
+        count: 1,
+        period: EFreeCardPeriod.NOW,
+        possibleActions: [ECardActionType.BUILD_STRUCTURE],
+        priority: 0,
+      },
+    ],
     price: {
       coins: 3,
     },
@@ -255,12 +274,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.CROESUS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN,
-      gain: {
-        coins: 6,
+    effects: [
+      {
+        type: EEffect.GAIN,
+        gain: {
+          coins: 6,
+        },
       },
-    }],
+    ],
     price: {
       coins: 1,
     },
@@ -269,14 +290,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.HYPATIA,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 1,
+        },
+        cardTypes: [ECardType.SCIENTIFIC],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.SCIENTIFIC],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -285,14 +308,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.NEBUCHADNEZZAR,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 1,
+        },
+        cardTypes: [ECardType.CIVILIAN],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.CIVILIAN],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -301,14 +326,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PHIDIAS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 1,
+        },
+        cardTypes: [ECardType.RAW_MATERIAL],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.RAW_MATERIAL],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -317,14 +344,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.VARRO,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 1,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 1,
+        },
+        cardTypes: [ECardType.COMMERCIAL],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.COMMERCIAL],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -333,14 +362,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PERICLES,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 2,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 2,
+        },
+        cardTypes: [ECardType.MILITARY],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.MILITARY],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 6,
     },
@@ -349,14 +380,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PRAXITELES,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 2,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 2,
+        },
+        cardTypes: [ECardType.MANUFACTURED_GOODS],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.MANUFACTURED_GOODS],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -365,14 +398,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.HIRAM,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.CARDS_TYPE,
-      gain: {
-        points: 2,
+    effects: [
+      {
+        type: EEffect.CARDS_TYPE,
+        gain: {
+          points: 2,
+        },
+        cardTypes: [ECardType.GUILD],
+        directions: [EPlayerDirection.SELF],
       },
-      cardTypes: [ECardType.GUILD],
-      directions: [EPlayerDirection.SELF],
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -381,12 +416,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.SAPPHO,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN,
-      gain: {
-        points: 2,
+    effects: [
+      {
+        type: EEffect.GAIN,
+        gain: {
+          points: 2,
+        },
       },
-    }],
+    ],
     price: {
       coins: 1,
     },
@@ -395,12 +432,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.ZENOBIA,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN,
-      gain: {
-        points: 3,
+    effects: [
+      {
+        type: EEffect.GAIN,
+        gain: {
+          points: 3,
+        },
       },
-    }],
+    ],
     price: {
       coins: 2,
     },
@@ -409,12 +448,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.NEFERTITI,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN,
-      gain: {
-        points: 4,
+    effects: [
+      {
+        type: EEffect.GAIN,
+        gain: {
+          points: 4,
+        },
       },
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -423,12 +464,14 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.CLEOPATRA,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.GAIN,
-      gain: {
-        points: 5,
+    effects: [
+      {
+        type: EEffect.GAIN,
+        gain: {
+          points: 5,
+        },
       },
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -437,14 +480,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.ARCHIMEDES,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.REDUCED_PRICE,
-      objectType: ECardType.SCIENTIFIC,
-      direction: EPlayerDirection.SELF,
-      discount: {
-        resources: 1,
+    effects: [
+      {
+        type: EEffect.REDUCED_PRICE,
+        objectType: ECardType.SCIENTIFIC,
+        direction: EPlayerDirection.SELF,
+        discount: {
+          resources: 1,
+        },
       },
-    }],
+    ],
     price: {
       coins: 4,
     },
@@ -453,14 +498,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.LEONIDAS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.REDUCED_PRICE,
-      objectType: ECardType.MILITARY,
-      direction: EPlayerDirection.SELF,
-      discount: {
-        resources: 1,
+    effects: [
+      {
+        type: EEffect.REDUCED_PRICE,
+        objectType: ECardType.MILITARY,
+        direction: EPlayerDirection.SELF,
+        discount: {
+          resources: 1,
+        },
       },
-    }],
+    ],
     price: {
       coins: 2,
     },
@@ -469,14 +516,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.HAMMURABI,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.REDUCED_PRICE,
-      objectType: ECardType.CIVILIAN,
-      direction: EPlayerDirection.SELF,
-      discount: {
-        resources: 1,
+    effects: [
+      {
+        type: EEffect.REDUCED_PRICE,
+        objectType: ECardType.CIVILIAN,
+        direction: EPlayerDirection.SELF,
+        discount: {
+          resources: 1,
+        },
       },
-    }],
+    ],
     price: {
       coins: 2,
     },
@@ -485,14 +534,16 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.IMHOTEP,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.REDUCED_PRICE,
-      objectType: 'wonderLevel',
-      direction: EPlayerDirection.SELF,
-      discount: {
-        resources: 1,
+    effects: [
+      {
+        type: EEffect.REDUCED_PRICE,
+        objectType: 'wonderLevel',
+        direction: EPlayerDirection.SELF,
+        discount: {
+          resources: 1,
+        },
       },
-    }],
+    ],
     price: {
       coins: 3,
     },
@@ -501,10 +552,12 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.EUCLID,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SCIENTIFIC_SYMBOLS,
-      variants: [EScientificSymbol.COMPASS],
-    }],
+    effects: [
+      {
+        type: EEffect.SCIENTIFIC_SYMBOLS,
+        variants: [EScientificSymbol.COMPASS],
+      },
+    ],
     price: {
       coins: 5,
     },
@@ -513,10 +566,12 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PTOLEMY,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SCIENTIFIC_SYMBOLS,
-      variants: [EScientificSymbol.TABLET],
-    }],
+    effects: [
+      {
+        type: EEffect.SCIENTIFIC_SYMBOLS,
+        variants: [EScientificSymbol.TABLET],
+      },
+    ],
     price: {
       coins: 5,
     },
@@ -525,10 +580,12 @@ const LEADERS: ICard[] = [
   {
     id: ECardId.PYTHAGORAS,
     type: ECardType.LEADER,
-    effects: [{
-      type: EEffect.SCIENTIFIC_SYMBOLS,
-      variants: [EScientificSymbol.GEAR],
-    }],
+    effects: [
+      {
+        type: EEffect.SCIENTIFIC_SYMBOLS,
+        variants: [EScientificSymbol.GEAR],
+      },
+    ],
     price: {
       coins: 5,
     },

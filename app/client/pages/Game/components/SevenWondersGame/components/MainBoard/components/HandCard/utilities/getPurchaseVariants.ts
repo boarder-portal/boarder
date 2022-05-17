@@ -39,7 +39,10 @@ import { getAllCombinations } from 'common/utilities/combinations';
  *    [{ type: 'WOOD', count: 1, ownerA }, { type: 'CLAY', count: 1, ownerA }, { type: 'CLAY', count: 1, ownerC }]
  * ]
  */
-export default function getPurchaseVariants(price: IPrice | undefined, resourcePools:  IOwnerResource[][]): IOwnerResource[][] {
+export default function getPurchaseVariants(
+  price: IPrice | undefined,
+  resourcePools: IOwnerResource[][],
+): IOwnerResource[][] {
   const cardResourcePrice = price?.resources;
 
   if (!cardResourcePrice) {

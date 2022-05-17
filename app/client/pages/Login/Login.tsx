@@ -19,46 +19,35 @@ const Login: React.FC = () => {
   const [userLogin, setUserLogin] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    const user = await httpClient.login({
-      user: {
-        login: userLogin,
-        password,
-      },
-    });
+      const user = await httpClient.login({
+        user: {
+          login: userLogin,
+          password,
+        },
+      });
 
-    setUser(user);
-    history.push('/');
-  }, [history, password, setUser, userLogin]);
+      setUser(user);
+      history.push('/');
+    },
+    [history, password, setUser, userLogin],
+  );
 
   return (
     <Box className={styles.root} flex column>
-      <Box size="xxl" bold>Вход</Box>
+      <Box size="xxl" bold>
+        Вход
+      </Box>
 
-      <form
-        className={styles.form}
-        onSubmit={handleSubmit}
-      >
-        <Input
-          label="Логин"
-          value={userLogin}
-          onChange={setUserLogin}
-        />
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <Input label="Логин" value={userLogin} onChange={setUserLogin} />
 
-        <Input
-          className={styles.password}
-          label="Пароль"
-          value={password}
-          type="password"
-          onChange={setPassword}
-        />
+        <Input className={styles.password} label="Пароль" value={password} type="password" onChange={setPassword} />
 
-        <Button
-          className={styles.submit}
-          isSubmit
-        >
+        <Button className={styles.submit} isSubmit>
           Вход
         </Button>
       </form>

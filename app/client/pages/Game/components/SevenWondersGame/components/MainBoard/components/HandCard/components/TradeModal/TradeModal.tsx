@@ -2,14 +2,11 @@ import React, { useCallback } from 'react';
 
 import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import Box from 'client/components/common/Box/Box';
 import Modal from 'client/components/common/Modal/Modal';
-import ResourcesAndPrice
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
+import ResourcesAndPrice from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -25,10 +22,13 @@ interface ITradeModalProps {
 const TradeModal: React.FC<ITradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
 
-  const handleSelectTradeVariant = useCallback((payments: TPayments) => {
-    onBuild(payments);
-    onClose();
-  }, [onBuild, onClose]);
+  const handleSelectTradeVariant = useCallback(
+    (payments: TPayments) => {
+      onBuild(payments);
+      onClose();
+    },
+    [onBuild, onClose],
+  );
 
   const handleHoverTradeVariant = useCallback(() => {
     playSound(HOVER_SOUND);
@@ -36,12 +36,20 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
   return (
     <Modal containerClassName={styles.container} open={isVisible} onClose={onClose}>
-      <Box className={styles.title} size="xxl" bold>Торговые варианты</Box>
+      <Box className={styles.title} size="xxl" bold>
+        Торговые варианты
+      </Box>
 
       <Box flex justifyContent="space-between" mt={20}>
-        <Box bold size="l">Left</Box>
-        <Box bold size="l">Bank</Box>
-        <Box bold size="l">Right</Box>
+        <Box bold size="l">
+          Left
+        </Box>
+        <Box bold size="l">
+          Bank
+        </Box>
+        <Box bold size="l">
+          Right
+        </Box>
       </Box>
 
       <Box flex column between={8} mt={8}>

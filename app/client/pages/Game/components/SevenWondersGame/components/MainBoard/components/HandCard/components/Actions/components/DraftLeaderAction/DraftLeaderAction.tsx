@@ -19,7 +19,7 @@ const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
   }, [onCardAction]);
 
   return (
-    <Box className={className} >
+    <Box className={className}>
       <div onClick={handleSelect}>Выбрать</div>
     </Box>
   );

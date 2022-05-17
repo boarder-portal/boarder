@@ -18,9 +18,7 @@ export const DECKS: Record<number, ICard[]> = {
   4: DECK,
 };
 
-const removedCardIndex = DECKS[3].findIndex(
-  isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.DIAMONDS)),
-);
+const removedCardIndex = DECKS[3].findIndex(isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.DIAMONDS)));
 
 if (removedCardIndex !== -1) {
   DECKS[3].splice(removedCardIndex, 1);

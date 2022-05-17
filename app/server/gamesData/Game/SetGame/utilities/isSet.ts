@@ -6,12 +6,7 @@ export default function isSet(cards: ICard[]): boolean {
   const fillsSet = new Set(cards.map(({ fill }) => fill));
   const shapesSet = new Set(cards.map(({ shape }) => shape));
 
-  const propsSets = [
-    colorsSet,
-    countsSet,
-    fillsSet,
-    shapesSet,
-  ];
+  const propsSets = [colorsSet, countsSet, fillsSet, shapesSet];
 
   for (const propSet of propsSets) {
     const isSameValue = propSet.size === 1;

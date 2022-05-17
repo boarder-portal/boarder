@@ -46,12 +46,9 @@ app
   .use('/build/web', express.static('build/web'))
   .use(express.static('public'))
   .use(morgan('dev'))
-  .post(
-    '/uploadPhoto',
-    multer({ storage }).single('file'),
-    (req, res) => {
-      res.send(req.file);
-    })
+  .post('/uploadPhoto', multer({ storage }).single('file'), (req, res) => {
+    res.send(req.file);
+  })
   .use('/api', apiRouter)
   .get('*', render);
 

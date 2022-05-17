@@ -62,12 +62,15 @@ abstract class Game<Game extends EGame> {
     this.game = game;
     this.id = uuid();
     this.options = options;
-    this.players = shuffle(players).map((player, index) => (
-      this.createPlayer({
-        ...player,
+    this.players = shuffle(players).map((player, index) =>
+      this.createPlayer(
+        {
+          ...player,
+          index,
+        },
         index,
-      }, index)
-    ));
+      ),
+    );
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
 
@@ -211,11 +214,14 @@ abstract class Game<Game extends EGame> {
     this.io.emit(ECommonGameEvent.UPDATE, updatedData);
   }
 
-  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
-    const existingEventIndex = this.batchedActions.findIndex((action) => (
-      action.event === event
-      && action.socket === socket
-    ));
+  sendSocketEvent<Event extends TGameEvent<Game>>(
+    event: Event,
+    data: TGameEventData<Game, Event>,
+    socket?: Socket,
+  ): void {
+    const existingEventIndex = this.batchedActions.findIndex(
+      (action) => action.event === event && action.socket === socket,
+    );
     const batchedAction: IBatchedAction<Game, Event> = {
       event,
       data,

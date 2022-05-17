@@ -12,9 +12,7 @@ import {
   ITurnPlayerData,
   TWaitingAction,
 } from 'common/types/sevenWonders';
-import {
-  EBuildType,
-} from 'app/client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'app/client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
 import GameEntity, { TGenerator } from 'server/gamesData/Game/utilities/GameEntity';
 import getPlayerHandCards from 'app/common/utilities/sevenWonders/getPlayerHandCards';
@@ -60,18 +58,14 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
   *lifecycle() {
     while (this.isWaitingForActions()) {
       while (this.isWaitingForActions()) {
-        const firstWaitingBotIndex = this.players.findIndex(({ isBot }, index) => (
-          isBot && this.isWaitingForAction(this.playersData[index])
-        ));
+        const firstWaitingBotIndex = this.players.findIndex(
+          ({ isBot }, index) => isBot && this.isWaitingForAction(this.playersData[index]),
+        );
 
         const { data: event, playerIndex } = yield* this.race([
           this.waitForSocketEvent(EGameEvent.EXECUTE_ACTION),
           this.waitForSocketEvent(EGameEvent.CANCEL_ACTION),
-          ...(
-            firstWaitingBotIndex === -1
-              ? []
-              : [this.makeRandomMove(firstWaitingBotIndex)]
-          ),
+          ...(firstWaitingBotIndex === -1 ? [] : [this.makeRandomMove(firstWaitingBotIndex)]),
         ]);
 
         this.playersData[playerIndex].chosenActionEvent = event ?? null;
@@ -111,34 +105,33 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
 
     const hand = getPlayerHandCards({
       waitingForAction,
-      buildCardEffects: this.game.phase?.type === EGamePhase.AGE
-        ? this.game.phase.age.playersData[playerIndex].buildEffects
-        : [],
+      buildCardEffects:
+        this.game.phase?.type === EGamePhase.AGE ? this.game.phase.age.playersData[playerIndex].buildEffects : [],
       gamePhase: this.game.phase?.type ?? null,
-      agePhase: this.game.phase?.type === EGamePhase.AGE
-        ? this.game.phase.age.phase
-        : null,
-      leadersPool: this.game.phase?.type === EGamePhase.DRAFT_LEADERS
-        ? this.game.phase.leadersDraft.playersData[playerIndex].leadersPool
-        : [],
+      agePhase: this.game.phase?.type === EGamePhase.AGE ? this.game.phase.age.phase : null,
+      leadersPool:
+        this.game.phase?.type === EGamePhase.DRAFT_LEADERS
+          ? this.game.phase.leadersDraft.playersData[playerIndex].leadersPool
+          : [],
       leadersHand: player.leadersHand,
-      hand: this.game.phase?.type === EGamePhase.AGE
-        ? this.game.phase.age.playersData[playerIndex].hand
-        : [],
+      hand: this.game.phase?.type === EGamePhase.AGE ? this.game.phase.age.playersData[playerIndex].hand : [],
       discard: this.game.discard,
     });
 
     return {
       data: {
         cardIndex: getRandomIndex(hand.length),
-        action: this.game.phase?.type === EGamePhase.DRAFT_LEADERS ? {
-          type: ECardActionType.PICK_LEADER,
-        } : {
-          type: ECardActionType.BUILD_STRUCTURE,
-          freeBuildType: {
-            type: EBuildType.FREE_BY_BUILDING,
-          },
-        },
+        action:
+          this.game.phase?.type === EGamePhase.DRAFT_LEADERS
+            ? {
+                type: ECardActionType.PICK_LEADER,
+              }
+            : {
+                type: ECardActionType.BUILD_STRUCTURE,
+                freeBuildType: {
+                  type: EBuildType.FREE_BY_BUILDING,
+                },
+              },
       },
       playerIndex,
     };

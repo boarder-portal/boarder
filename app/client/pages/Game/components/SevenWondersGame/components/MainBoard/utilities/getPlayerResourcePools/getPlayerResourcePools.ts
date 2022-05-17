@@ -1,15 +1,10 @@
 import { ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
-import getOwnerResources
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
-import {
-  getPlayerResources,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResources';
-import getResourcePools
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getResourcePools';
-import getBankResources
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getBankResources';
+import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
+import { getPlayerResources } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResources';
+import getResourcePools from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getResourcePools';
+import getBankResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getBankResources';
 
 /**
  * [
@@ -35,16 +30,11 @@ export default function getPlayerResourcePools(
   player: IPlayer,
   leftNeighbor: IPlayer,
   rightNeighbor: IPlayer,
-): IOwnerResource[][]  {
+): IOwnerResource[][] {
   const playerResources = getOwnerResources(getPlayerResources(player), 'own');
   const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ENeighborSide.LEFT);
   const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), ENeighborSide.RIGHT);
   const bankResources = getBankResources(player);
 
-  return getResourcePools([
-    ...playerResources,
-    ...leftNeighborResources,
-    ...rightNeighborResources,
-    ...bankResources,
-  ]);
+  return getResourcePools([...playerResources, ...leftNeighborResources, ...rightNeighborResources, ...bankResources]);
 }

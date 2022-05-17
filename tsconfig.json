@@ -17,13 +17,6 @@
       "common/*": ["./app/common/*"]
     }
   },
-  "include": [
-    "./app/**/*"
-  ],
-  "exclude": [
-    "**/node_modules/*",
-    "**/build/*",
-    "**/.cache/*",
-    "**/dist/*"
-  ]
+  "include": ["./app/**/*"],
+  "exclude": ["**/node_modules/*", "**/build/*", "**/.cache/*", "**/dist/*"]
 }

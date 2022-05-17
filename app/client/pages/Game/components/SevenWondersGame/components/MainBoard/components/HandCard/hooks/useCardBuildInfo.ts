@@ -17,13 +17,9 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { ECardId, ICard } from 'common/types/sevenWonders/cards';
 
-import getTradeVariants
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import {
-  TResourceTradePrices,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getCardBuildType
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
+import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
+import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getCardBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import { isReducedPriceEffect } from 'common/utilities/sevenWonders/isEffect';
 
@@ -88,33 +84,63 @@ export default function useCardBuildInfo(
 ): IBuildInfo {
   const { price: cardPrice } = card;
 
-  const tradeVariants = useMemo(() => getTradeVariants(cardPrice, resourcePools, resourceTradePrices), [cardPrice, resourcePools, resourceTradePrices]);
-  const discount = useMemo(() => getDiscount(card, player, leftNeighbor, rightNeighbor), [card, leftNeighbor, player, rightNeighbor]);
-  const type = useMemo(() => getCardBuildType(card, player, turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? [], tradeVariants, discount), [agePlayerData, card, discount, player, tradeVariants, turnPlayerData]);
+  const tradeVariants = useMemo(
+    () => getTradeVariants(cardPrice, resourcePools, resourceTradePrices),
+    [cardPrice, resourcePools, resourceTradePrices],
+  );
+  const discount = useMemo(
+    () => getDiscount(card, player, leftNeighbor, rightNeighbor),
+    [card, leftNeighbor, player, rightNeighbor],
+  );
+  const type = useMemo(
+    () =>
+      getCardBuildType(
+        card,
+        player,
+        turnPlayerData?.waitingForAction ?? null,
+        agePlayerData?.buildEffects ?? [],
+        tradeVariants,
+        discount,
+      ),
+    [agePlayerData, card, discount, player, tradeVariants, turnPlayerData],
+  );
 
   const title = useMemo(() => getTitle(type), [type]);
 
-  const onBuild = useCallback((freeBuildType: TBuildType | null, payments?: TPayments) => {
-    if (card.id === ECardId.COURTESANS_GUILD) {
-      onStartCopyingLeader(cardIndex, {
-        type: ECardActionType.BUILD_STRUCTURE,
-        freeBuildType,
-      }, payments);
+  const onBuild = useCallback(
+    (freeBuildType: TBuildType | null, payments?: TPayments) => {
+      if (card.id === ECardId.COURTESANS_GUILD) {
+        onStartCopyingLeader(
+          cardIndex,
+          {
+            type: ECardActionType.BUILD_STRUCTURE,
+            freeBuildType,
+          },
+          payments,
+        );
 
-      return;
-    }
+        return;
+      }
 
-    onCardAction({
-      type: ECardActionType.BUILD_STRUCTURE,
-      freeBuildType,
-      discount,
-    }, payments);
-  }, [card.id, cardIndex, discount, onCardAction, onStartCopyingLeader]);
+      onCardAction(
+        {
+          type: ECardActionType.BUILD_STRUCTURE,
+          freeBuildType,
+          discount,
+        },
+        payments,
+      );
+    },
+    [card.id, cardIndex, discount, onCardAction, onStartCopyingLeader],
+  );
 
-  return useMemo(() => ({
-    type,
-    title,
-    tradeVariants,
-    onBuild,
-  }), [onBuild, title, tradeVariants, type]);
+  return useMemo(
+    () => ({
+      type,
+      title,
+      tradeVariants,
+      onBuild,
+    }),
+    [onBuild, title, tradeVariants, type],
+  );
 }

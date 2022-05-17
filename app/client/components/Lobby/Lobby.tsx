@@ -18,18 +18,13 @@ interface ILobbyProps<Game extends EGame> {
 }
 
 const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
-  const {
-    game,
-    rooms,
-    options,
-    renderRoomOptions,
-    onCreateRoom,
-    onEnterRoom,
-  } = props;
+  const { game, rooms, options, renderRoomOptions, onCreateRoom, onEnterRoom } = props;
 
   return (
     <div>
-      <Box size="xxl" bold>{game}</Box>
+      <Box size="xxl" bold>
+        {game}
+      </Box>
 
       <Box flex mt={20}>
         <Box flex column grow between={12}>
@@ -45,15 +40,8 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
                 onClick={() => onEnterRoom(room.id)}
               />
             ))
-
           ) : (
-            <Box
-              flex
-              alignItems="center"
-              justifyContent="center"
-              grow
-              size="xl"
-            >
+            <Box flex alignItems="center" justifyContent="center" grow size="xl">
               Комнат пока нет
             </Box>
           )}

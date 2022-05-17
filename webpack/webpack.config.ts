@@ -17,13 +17,12 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 function getConfig(target: ETarget): Configuration {
   return {
     name: target,
-    mode: IS_PRODUCTION ?
-      'production' :
-      'development',
+    mode: IS_PRODUCTION ? 'production' : 'development',
     target,
-    entry: target === ETarget.WEB ?
-      path.resolve('./app/client/client.tsx') :
-      path.resolve('./app/server/middlewares/ServerApp.tsx'),
+    entry:
+      target === ETarget.WEB
+        ? path.resolve('./app/client/client.tsx')
+        : path.resolve('./app/server/middlewares/ServerApp.tsx'),
     module: {
       rules: [
         {
@@ -63,17 +62,10 @@ function getConfig(target: ETarget): Configuration {
         chunks: 'all',
       },
     },
-    externals:
-      target === ETarget.NODE ?
-        ['@loadable/component', nodeExternals()] :
-        undefined,
+    externals: target === ETarget.NODE ? ['@loadable/component', nodeExternals()] : undefined,
     output: {
-      filename: `[${
-        IS_PRODUCTION ? 'contenthash' : 'name'
-      }].js`,
-      chunkFilename: `[${
-        IS_PRODUCTION ? 'contenthash' : 'name'
-      }].js`,
+      filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
+      chunkFilename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
       path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
       libraryTarget: target === ETarget.NODE ? 'commonjs2' : undefined,
@@ -87,25 +79,21 @@ function getConfig(target: ETarget): Configuration {
       extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
-    cache: IS_PRODUCTION ?
-      false :
-      {
-        type: 'filesystem',
-        cacheDirectory: path.resolve(`./.cache/${target}`),
-      },
+    cache: IS_PRODUCTION
+      ? false
+      : {
+          type: 'filesystem',
+          cacheDirectory: path.resolve(`./.cache/${target}`),
+        },
     plugins: [
       new LoadablePlugin() as any,
       new MiniCssExtractPlugin({
-        filename: `[${
-          IS_PRODUCTION ? 'contenthash' : 'name'
-        }].css`,
+        filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].css`,
       }),
       new webpack.DefinePlugin({
         SERVER: target === ETarget.NODE,
       }),
-      process.env.ANALYZE_BUNDLE && target === ETarget.WEB ?
-        new BundleAnalyzerPlugin() :
-        undefined,
+      process.env.ANALYZE_BUNDLE && target === ETarget.WEB ? new BundleAnalyzerPlugin() : undefined,
     ].filter(isNotUndefined),
   };
 }

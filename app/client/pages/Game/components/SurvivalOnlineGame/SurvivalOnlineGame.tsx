@@ -5,13 +5,7 @@ import { useRecoilValue } from 'recoil';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import {
-  EDirection,
-  EGameEvent,
-  IGameInfoEvent,
-  IPlayer,
-  IUpdateGameEvent,
-} from 'common/types/survivalOnline';
+import { EDirection, EGameEvent, IGameInfoEvent, IPlayer, IUpdateGameEvent } from 'common/types/survivalOnline';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
@@ -63,7 +57,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
         return;
       }
 
-      const player = playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
+      const player = (playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null);
 
       if (!player) {
         return;
@@ -130,13 +124,13 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       if (MOVES_KEY_CODES.includes(e.key)) {
         io.emit(
           EGameEvent.MOVE_PLAYER,
-          e.key === 'ArrowUp' ?
-            EDirection.UP :
-            e.key === 'ArrowRight' ?
-              EDirection.RIGHT :
-              e.key === 'ArrowDown' ?
-                EDirection.DOWN :
-                EDirection.LEFT,
+          e.key === 'ArrowUp'
+            ? EDirection.UP
+            : e.key === 'ArrowRight'
+            ? EDirection.RIGHT
+            : e.key === 'ArrowDown'
+            ? EDirection.DOWN
+            : EDirection.LEFT,
         );
       }
     });
@@ -152,14 +146,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   }, [io]);
 
   return (
-    <Root
-      className={b()}
-      flex
-      justifyContent="center"
-      alignItems="center"
-      column
-      innerRef={containerRef}
-    >
+    <Root className={b()} flex justifyContent="center" alignItems="center" column innerRef={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
         width={VIEW_SIZE.width * CELL_SIZE}

@@ -9,7 +9,7 @@ interface ICardProps {
   className?: string;
   style?: CSSProperties;
   card: ICard;
-  flip?: boolean
+  flip?: boolean;
   width?: number;
   isCopiedLeader?: boolean;
   zoomOnHover?: boolean;

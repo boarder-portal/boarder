@@ -25,7 +25,7 @@ const Root = styled(Box)`
   display: flex;
 
   .SetGame {
-    &__info  {
+    &__info {
       margin-left: 40px;
     }
   }
@@ -34,7 +34,7 @@ const Root = styled(Box)`
     flex-direction: column;
 
     .SetGame {
-      &__info  {
+      &__info {
         margin-top: 20px;
       }
     }
@@ -100,7 +100,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
         return;
       }
 
-      const player = playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
+      const player = (playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null);
 
       if (!player) {
         return;
@@ -119,10 +119,14 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
   const playersBlock = useMemo(() => {
     return (
       <Box between={8}>
-        <Box bold size="l">Игроки: </Box>
+        <Box bold size="l">
+          Игроки:{' '}
+        </Box>
 
         {players.map((player) => (
-          <Box key={player.login}>{player.login}: {player.score}</Box>
+          <Box key={player.login}>
+            {player.login}: {player.score}
+          </Box>
         ))}
       </Box>
     );
@@ -130,10 +134,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
 
   return (
     <Root className={b()}>
-      <Box
-        className={b('board')}
-        between={20}
-      >
+      <Box className={b('board')} between={20}>
         {chunk(cards, cards.length / 3).map((cardsRow, index) => (
           <Box key={index} flex between={20}>
             {cardsRow.map((card, cardRowIndex) => (
@@ -148,15 +149,16 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
         ))}
       </Box>
 
-      <Box
-        className={b('info')}
-        between={20}
-      >
+      <Box className={b('info')} between={20}>
         {playersBlock}
 
         {!isGameEnd && <Button onClick={handleNoSetClick}>Нет сета</Button>}
 
-        {isGameEnd && <Box bold size="l">Игра окончена</Box>}
+        {isGameEnd && (
+          <Box bold size="l">
+            Игра окончена
+          </Box>
+        )}
       </Box>
     </Root>
   );

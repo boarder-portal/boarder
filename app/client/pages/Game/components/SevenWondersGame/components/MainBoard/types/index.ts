@@ -1,9 +1,4 @@
-import {
-  IResource,
-  TAction,
-  TPayments,
-  TResourceOwner,
-} from 'common/types/sevenWonders';
+import { IResource, TAction, TPayments, TResourceOwner } from 'common/types/sevenWonders';
 
 export interface IOwnerResource extends IResource {
   owner: TResourceOwner;
@@ -12,5 +7,5 @@ export interface IOwnerResource extends IResource {
 export interface ISevenWondersCourtesansBuildInfo {
   cardIndex: number;
   action: TAction;
-  payments?: TPayments
+  payments?: TPayments;
 }

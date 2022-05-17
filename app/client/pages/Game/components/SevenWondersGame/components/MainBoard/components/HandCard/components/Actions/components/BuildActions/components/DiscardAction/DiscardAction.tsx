@@ -1,12 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import {
-  ECardActionType,
-  IAgePlayerData,
-  ITurnPlayerData,
-  TAction,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { ECardActionType, IAgePlayerData, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
 
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 
@@ -30,7 +24,7 @@ const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
     return possibleBuildActions.includes(ECardActionType.DISCARD);
   }, [possibleBuildActions]);
 
-  const title = useMemo(() => isAvailable ? 'Продать' : 'Нельзя продать', [isAvailable]);
+  const title = useMemo(() => (isAvailable ? 'Продать' : 'Нельзя продать'), [isAvailable]);
 
   const onClick = useCallback(() => {
     onCardAction({

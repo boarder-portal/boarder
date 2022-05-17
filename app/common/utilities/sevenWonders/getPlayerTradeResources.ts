@@ -14,7 +14,7 @@ export default function getPlayerTradeResources(player: IPlayer): IResource[][] 
   const { effects: cityEffects } = getCity(player.city, player.citySide);
 
   const cityResourceVariants = cityEffects
-    .map((effect) => isResourceEffect(effect) ? effect.variants : undefined)
+    .map((effect) => (isResourceEffect(effect) ? effect.variants : undefined))
     .filter(isNotUndefined);
 
   return [...builtCardsResourceVariants, ...cityResourceVariants];

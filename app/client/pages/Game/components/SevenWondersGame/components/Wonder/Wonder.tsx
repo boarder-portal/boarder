@@ -26,14 +26,7 @@ const GROUP_HEIGHT = 125;
 const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
 
 const Wonder: React.FC<IWonderProps> = (props) => {
-  const {
-    className,
-    player,
-    agePlayerData,
-    turnPlayerData,
-    copiedLeaderId,
-    isOtherPlayer,
-  } = props;
+  const { className, player, agePlayerData, turnPlayerData, copiedLeaderId, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
 
@@ -69,7 +62,10 @@ const Wonder: React.FC<IWonderProps> = (props) => {
     }
   }, [agePlayerData, turnPlayerData]);
 
-  const warPoints = useMemo(() => [...player.victoryPoints, ...player.defeatPoints], [player.defeatPoints, player.victoryPoints]);
+  const warPoints = useMemo(
+    () => [...player.victoryPoints, ...player.defeatPoints],
+    [player.defeatPoints, player.victoryPoints],
+  );
 
   return (
     <Box className={className}>
@@ -83,10 +79,11 @@ const Wonder: React.FC<IWonderProps> = (props) => {
                 <Card
                   key={cardIndex}
                   className={styles.card}
-                  style={{ top: `${(GROUP_HEIGHT - cardVerticalSpace * (cardIndex + 1))}px`, zIndex: 10 - cardIndex }}
+                  style={{ top: `${GROUP_HEIGHT - cardVerticalSpace * (cardIndex + 1)}px`, zIndex: 10 - cardIndex }}
                   card={card}
-                  flip={isOtherPlayer && card.effects.some((effect) =>
-                    isTradeEffect(effect) && effect.sources.length === 1)}
+                  flip={
+                    isOtherPlayer && card.effects.some((effect) => isTradeEffect(effect) && effect.sources.length === 1)
+                  }
                   width={100}
                   isCopiedLeader={card.id === copiedLeaderId}
                   zoomOnHover
@@ -101,7 +98,12 @@ const Wonder: React.FC<IWonderProps> = (props) => {
         <img className={styles.wonderCard} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
 
         {player.builtStages.map((builtStage, index) => (
-          <BackCard key={index} className={styles.builtStage} type={builtStage.cardType} style={{ left: `${9 + 30 * index}%` }} />
+          <BackCard
+            key={index}
+            className={styles.builtStage}
+            type={builtStage.cardType}
+            style={{ left: `${9 + 30 * index}%` }}
+          />
         ))}
       </div>
 

@@ -53,14 +53,17 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
 
     const playerIndex = players.findIndex(({ login }) => login === player.login);
 
-    return [
-      ...players.slice(playerIndex + 1),
-      ...players.slice(0, playerIndex),
-    ].reverse();
+    return [...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)].reverse();
   }, [player, players]);
 
-  const leftNeighbor = useMemo(() => player ? getNeighbor(players, player, ENeighborSide.LEFT) : null, [player, players]);
-  const rightNeighbor = useMemo(() => player ? getNeighbor(players, player, ENeighborSide.RIGHT) : null, [player, players]);
+  const leftNeighbor = useMemo(
+    () => (player ? getNeighbor(players, player, ENeighborSide.LEFT) : null),
+    [player, players],
+  );
+  const rightNeighbor = useMemo(
+    () => (player ? getNeighbor(players, player, ENeighborSide.RIGHT) : null),
+    [player, players],
+  );
 
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
@@ -76,9 +79,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         setPlayers(gameInfo.players);
         setDiscard(gameInfo.discard);
         setLeadersDraftPlayersData(
-          gameInfo.phase?.type === EGamePhase.DRAFT_LEADERS
-            ? gameInfo.phase.playersData
-            : null,
+          gameInfo.phase?.type === EGamePhase.DRAFT_LEADERS ? gameInfo.phase.playersData : null,
         );
         setTurnPlayersData(gameInfo.phase?.turn?.playersData ?? null);
         setGamePhase(gameInfo.phase?.type ?? null);
@@ -106,12 +107,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
 
   return (
     <Box className={styles.root} flex column>
-      <Box
-        className={styles.otherPlayers}
-        flex
-        between={20}
-        justifyContent="center"
-      >
+      <Box className={styles.otherPlayers} flex between={20} justifyContent="center">
         {otherPlayers.map((otherPlayer) => (
           <Wonder
             key={otherPlayer.login}

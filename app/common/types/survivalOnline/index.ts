@@ -9,9 +9,7 @@ export enum EGameEvent {
   UPDATE_GAME = 'UPDATE_GAME',
 }
 
-export interface IGameOptions extends ICommonGameOptions {
-
-}
+export interface IGameOptions extends ICommonGameOptions {}
 
 export interface IPlayer extends ICommonPlayer {
   x: number;
@@ -65,12 +63,7 @@ export interface ITreeObject extends IObject {
   hp: number;
 }
 
-export type TObject = (
-  | IBaseObject
-  | IPlayerObject
-  | IZombieObject
-  | ITreeObject
-);
+export type TObject = IBaseObject | IPlayerObject | IZombieObject | ITreeObject;
 
 export interface ICell<Obj extends TObject = TObject> {
   x: number;
@@ -94,4 +87,3 @@ export interface IUpdateGameEvent {
   players: IPlayer[] | null;
   cells: ICell[];
 }
-

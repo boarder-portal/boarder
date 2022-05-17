@@ -58,9 +58,7 @@ const Root = styled.div`
 `;
 
 const CardObject: React.FC<ICardObjectProps> = (props) => {
-  return (
-    <Root {...props} />
-  );
+  return <Root {...props} />;
 };
 
 export default React.memo(CardObject);

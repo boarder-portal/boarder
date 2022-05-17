@@ -66,7 +66,8 @@ const Root = styled(Box)`
       border-radius: 8px;
       overflow: hidden;
 
-      .cardBack, .cardContent {
+      .cardBack,
+      .cardContent {
         position: absolute;
         top: 0;
         left: 50%;
@@ -123,13 +124,15 @@ const Root = styled(Box)`
       &_isOut {
         background-color: #fff;
 
-        .cardBack, .cardContent {
+        .cardBack,
+        .cardContent {
           opacity: 0;
         }
       }
 
       &_exited {
-        .cardBack, .cardContent {
+        .cardBack,
+        .cardContent {
           animation-name: fade;
         }
       }
@@ -207,9 +210,7 @@ const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsI
   });
 };
 
-const getOrthogonalFieldCardCoord = (coord: number): number => (
-  (CARD_SIZE + CARDS_MARGIN) * coord
-);
+const getOrthogonalFieldCardCoord = (coord: number): number => (CARD_SIZE + CARDS_MARGIN) * coord;
 
 const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   const { io, isGameEnd } = props;
@@ -229,53 +230,52 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     return players.find(({ login }) => login === user?.login);
   }, [players, user]);
 
-  const handleCardClick = useCallback((cardIndex: number) => {
-    if (player?.index !== activePlayerIndex) {
-      return;
-    }
+  const handleCardClick = useCallback(
+    (cardIndex: number) => {
+      if (player?.index !== activePlayerIndex) {
+        return;
+      }
 
-    setHighlightedCardsIndexes([]);
+      setHighlightedCardsIndexes([]);
 
-    io.emit(EGameEvent.OPEN_CARD, cardIndex);
-  }, [activePlayerIndex, io, player]);
+      io.emit(EGameEvent.OPEN_CARD, cardIndex);
+    },
+    [activePlayerIndex, io, player],
+  );
 
-  const handleCardRightClick = useCallback((e: React.MouseEvent, cardIndex: number) => {
-    e.preventDefault();
+  const handleCardRightClick = useCallback(
+    (e: React.MouseEvent, cardIndex: number) => {
+      e.preventDefault();
 
-    const highlightedIndex = highlightedCardsIndexes.indexOf(cardIndex);
+      const highlightedIndex = highlightedCardsIndexes.indexOf(cardIndex);
 
-    if (highlightedIndex === -1) {
-      setHighlightedCardsIndexes([
-        ...highlightedCardsIndexes,
-        cardIndex,
-      ]);
-    } else {
-      setHighlightedCardsIndexes([
-        ...highlightedCardsIndexes.slice(0, highlightedIndex),
-        ...highlightedCardsIndexes.slice(highlightedIndex + 1),
-      ]);
-    }
-  }, [highlightedCardsIndexes]);
+      if (highlightedIndex === -1) {
+        setHighlightedCardsIndexes([...highlightedCardsIndexes, cardIndex]);
+      } else {
+        setHighlightedCardsIndexes([
+          ...highlightedCardsIndexes.slice(0, highlightedIndex),
+          ...highlightedCardsIndexes.slice(highlightedIndex + 1),
+        ]);
+      }
+    },
+    [highlightedCardsIndexes],
+  );
 
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, ({
-      options,
-      cards,
-      players,
-      activePlayerIndex,
-      turn,
-    }: IGame) => {
+    io.on(EGameEvent.GAME_INFO, ({ options, cards, players, activePlayerIndex, turn }: IGame) => {
       setOptions(options);
-      setCards(cards.map((card, index) => ({
-        ...card,
-        id: index,
-        isOpen: turn?.openedCardsIndexes.includes(index) ?? false,
-        opened: false,
-        closed: false,
-        exited: false,
-      })));
+      setCards(
+        cards.map((card, index) => ({
+          ...card,
+          id: index,
+          isOpen: turn?.openedCardsIndexes.includes(index) ?? false,
+          opened: false,
+          closed: false,
+          exited: false,
+        })),
+      );
       setPlayers(players);
       setActivePlayerIndex(activePlayerIndex);
     });
@@ -317,10 +317,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       setHighlightedCardsIndexes([]);
     });
 
-    io.on(EGameEvent.UPDATE_PLAYERS, ({
-      players,
-      activePlayerIndex,
-    }: IUpdatePlayersEvent) => {
+    io.on(EGameEvent.UPDATE_PLAYERS, ({ players, activePlayerIndex }: IUpdatePlayersEvent) => {
       setPlayers(players);
       setActivePlayerIndex(activePlayerIndex);
     });
@@ -339,10 +336,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       return;
     }
 
-    const {
-      imagesCount,
-      imageVariantsCount,
-    } = SETS[options.set];
+    const { imagesCount, imageVariantsCount } = SETS[options.set];
 
     times(imagesCount, (id) => {
       times(imageVariantsCount, (variant) => {
@@ -413,28 +407,18 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }, [activePlayerIndex, players]);
 
   if (isGameEnd) {
-    return (
-      <GameEnd>{playersBlock}</GameEnd>
-    );
+    return <GameEnd>{playersBlock}</GameEnd>;
   }
 
   if (!cards.length || !options) {
     return null;
   }
 
-  const {
-    set,
-    differentCardsCount,
-    matchingCardsCount,
-    layout,
-  } = options;
+  const { set, differentCardsCount, matchingCardsCount, layout } = options;
   const cardsOptions: (ICoords & { angle?: number })[] = [];
 
   if (layout === EFieldLayout.RECT) {
-    const {
-      width: fieldWidth,
-      height: fieldHeight,
-    } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
+    const { width: fieldWidth, height: fieldHeight } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
 
     for (let y = 0; y < fieldHeight; y++) {
       for (let x = 0; x < fieldWidth; x++) {
@@ -445,16 +429,11 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       }
     }
   } else if (layout === EFieldLayout.HEX) {
-    const {
-      start,
-      middle,
-    } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
+    const { start, middle } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
     const rowsCount = 2 * (middle - start) + 1;
 
     for (let y = 0; y < rowsCount; y++) {
-      const cardsInRow = y > middle - start
-        ? 2 * middle - start - y
-        : start + y;
+      const cardsInRow = y > middle - start ? 2 * middle - start - y : start + y;
       const offsetX = (middle - cardsInRow) / 2;
 
       for (let x = 0; x < cardsInRow; x++) {
@@ -478,57 +457,54 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         angle: layout === EFieldLayout.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
       });
 
-      angle += (CARD_SIZE / radius) * Math.PI / 4;
+      angle += ((CARD_SIZE / radius) * Math.PI) / 4;
     }
   }
 
   return (
     <Root className={b()} flex between={20}>
-      <div
-        ref={cardsLayoutContainerRef}
-        className={b('cardsLayoutContainer')}
-      >
-        <div
-          ref={cardsLayoutRef}
-          className={b('cardsLayout')}
-        >
-          {sortBy((cards.map((card, cardIndex) => {
-            const { x, y, angle } = cardsOptions[cardIndex];
+      <div ref={cardsLayoutContainerRef} className={b('cardsLayoutContainer')}>
+        <div ref={cardsLayoutRef} className={b('cardsLayout')}>
+          {sortBy(
+            cards.map((card, cardIndex) => {
+              const { x, y, angle } = cardsOptions[cardIndex];
 
-            return (
-              <div
-                key={card.id}
-                id={`card-${card.id}`}
-                className={b('card', {
-                  isHighlighted: highlightedCardsIndexes.includes(cardIndex),
-                  isOpen: card.isOpen,
-                  opened: card.opened,
-                  closed: card.closed,
-                  exited: card.exited,
-                  isInGame: card.isInGame,
-                  isOut: !card.isInGame,
-                })}
-                style={{
-                  transform: `translate(${x}px, ${y}px)${angle === undefined ? '' : `rotate(${angle}rad)`}`,
-                  zIndex: card.isInGame ? cardIndex : cardIndex - 1e4,
-                }}
-              >
-                <img
-                  className="cardBack"
-                  alt="card"
-                  src={'/pexeso/backs/default/2.jpg'}
-                  onClick={() => handleCardClick(cardIndex)}
-                  onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
-                />
+              return (
+                <div
+                  key={card.id}
+                  id={`card-${card.id}`}
+                  className={b('card', {
+                    isHighlighted: highlightedCardsIndexes.includes(cardIndex),
+                    isOpen: card.isOpen,
+                    opened: card.opened,
+                    closed: card.closed,
+                    exited: card.exited,
+                    isInGame: card.isInGame,
+                    isOut: !card.isInGame,
+                  })}
+                  style={{
+                    transform: `translate(${x}px, ${y}px)${angle === undefined ? '' : `rotate(${angle}rad)`}`,
+                    zIndex: card.isInGame ? cardIndex : cardIndex - 1e4,
+                  }}
+                >
+                  <img
+                    className="cardBack"
+                    alt="card"
+                    src={'/pexeso/backs/default/2.jpg'}
+                    onClick={() => handleCardClick(cardIndex)}
+                    onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
+                  />
 
-                <img
-                  className="cardContent"
-                  alt="back"
-                  src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
-                />
-              </div>
-            );
-          })), 'props.id')}
+                  <img
+                    className="cardContent"
+                    alt="back"
+                    src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
+                  />
+                </div>
+              );
+            }),
+            'props.id',
+          )}
         </div>
       </div>
 

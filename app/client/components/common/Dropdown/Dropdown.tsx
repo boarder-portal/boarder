@@ -46,20 +46,13 @@ const Dropdown: React.FC<IDropdownProps> = (props) => {
 
   const toggleElRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    value: opened,
-    setFalse: close,
-    toggle,
-  } = useBoolean(false);
+  const { value: opened, setFalse: close, toggle } = useBoolean(false);
 
   return (
     <Root {...boxProps}>
       <GlobalStyle />
 
-      <Box
-        innerRef={toggleElRef}
-        onClick={toggle}
-      >
+      <Box innerRef={toggleElRef} onClick={toggle}>
         {children}
       </Box>
 

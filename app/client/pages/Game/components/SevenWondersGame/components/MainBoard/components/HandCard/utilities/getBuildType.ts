@@ -1,13 +1,9 @@
 import { first } from 'lodash';
 
 import { IPlayer, IPrice } from 'common/types/sevenWonders';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 export default function getBuildType(
   price: IPrice,
@@ -32,7 +28,8 @@ export default function getBuildType(
     return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
-  const tradeVariantPrice = cheapestTradeVariant.payments.LEFT + cheapestTradeVariant.payments.RIGHT + cheapestTradeVariant.payments.bank;
+  const tradeVariantPrice =
+    cheapestTradeVariant.payments.LEFT + cheapestTradeVariant.payments.RIGHT + cheapestTradeVariant.payments.bank;
 
   if (!tradeVariantPrice) {
     if (!cardCoinsPrice) {

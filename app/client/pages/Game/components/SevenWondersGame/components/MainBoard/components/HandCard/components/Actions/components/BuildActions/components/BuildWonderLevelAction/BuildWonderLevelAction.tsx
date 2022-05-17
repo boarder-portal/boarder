@@ -1,21 +1,11 @@
 import React, { useCallback } from 'react';
 
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import {
-  ECardActionType,
-  IPlayer,
-  TAction,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import TradeModal
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
+import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 import Box from 'client/components/common/Box/Box';
 
 import { useBoolean } from 'client/hooks/useBoolean';
@@ -56,25 +46,22 @@ function getTitle(buildType: EBuildType): string {
 }
 
 const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) => {
-  const {
-    player,
-    buildType,
-    tradeVariants,
-    onCardAction,
-  } = props;
+  const { player, buildType, tradeVariants, onCardAction } = props;
 
-  const {
-    value: isTradeModalVisible,
-    setTrue: openTradeModal,
-    setFalse: closeTradeModal,
-  } = useBoolean(false);
+  const { value: isTradeModalVisible, setTrue: openTradeModal, setFalse: closeTradeModal } = useBoolean(false);
 
-  const build = useCallback((payments?: TPayments) => {
-    onCardAction({
-      type: ECardActionType.BUILD_WONDER_STAGE,
-      stageIndex: player.builtStages.length,
-    }, payments);
-  }, [onCardAction, player.builtStages.length]);
+  const build = useCallback(
+    (payments?: TPayments) => {
+      onCardAction(
+        {
+          type: ECardActionType.BUILD_WONDER_STAGE,
+          stageIndex: player.builtStages.length,
+        },
+        payments,
+      );
+    },
+    [onCardAction, player.builtStages.length],
+  );
 
   const handleClick = useCallback(() => {
     if (
@@ -95,9 +82,7 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
 
   return (
     <>
-      <Box onClick={handleClick}>
-        {getTitle(buildType)}
-      </Box>
+      <Box onClick={handleClick}>{getTitle(buildType)}</Box>
 
       <TradeModal
         isVisible={isTradeModalVisible}

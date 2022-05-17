@@ -57,17 +57,13 @@ const Room: React.FC = () => {
 
   return (
     <div>
-      <Box size="xxl" bold>Комната {game}</Box>
+      <Box size="xxl" bold>
+        Комната {game}
+      </Box>
 
       <Box mt={20} between={12}>
         {room.players.map(({ login, status }) => (
-          <Box
-            key={login}
-            className={styles.user}
-            flex
-            alignItems="center"
-            between={8}
-          >
+          <Box key={login} className={styles.user} flex alignItems="center" between={8}>
             <div>{login}</div>
             <div>{status === EPlayerStatus.NOT_READY ? 'Не готов' : 'Готов'}</div>
 

@@ -10,16 +10,10 @@ const apiRouter = express.Router();
 
 apiRouter
   .use(bodyParser.json())
-  .get('/user', async (
-    req,
-    res,
-  ) => {
+  .get('/user', async (req, res) => {
     res.status(200).json(req.session.user || null);
   })
-  .post('/register', async (
-    req: Request<unknown, unknown, IRegisterParams, unknown>,
-    res,
-  ) => {
+  .post('/register', async (req: Request<unknown, unknown, IRegisterParams, unknown>, res) => {
     const { user } = req.body;
 
     const db = await getDB();
@@ -32,10 +26,7 @@ apiRouter
       login: user.login,
     });
   })
-  .post('/login', async (
-    req: Request<unknown, unknown, ILoginParams, unknown>,
-    res,
-  ) => {
+  .post('/login', async (req: Request<unknown, unknown, ILoginParams, unknown>, res) => {
     const { user } = req.body;
 
     const db = await getDB();
@@ -54,10 +45,7 @@ apiRouter
       login: authUser.login,
     });
   })
-  .post('/logout', async (
-    req: Request,
-    res,
-  ) => {
+  .post('/logout', async (req: Request, res) => {
     req.session.destroy?.();
 
     res.status(200).send({});

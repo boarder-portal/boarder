@@ -16,15 +16,14 @@ interface IRadioGroupProps<Value> {
 }
 
 const RadioGroup = <Value extends number | string>(props: IRadioGroupProps<Value>) => {
-  const {
-    options,
-    value,
-    onChange,
-  } = props;
+  const { options, value, onChange } = props;
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value as any);
-  }, [onChange]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value as any);
+    },
+    [onChange],
+  );
 
   return (
     <MuiRadioGroup value={value} onChange={handleChange}>

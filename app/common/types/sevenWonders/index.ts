@@ -2,9 +2,7 @@ import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
@@ -163,9 +161,7 @@ export interface IBuildEffectBuildType {
   effectIndex: number;
 }
 
-export type TBuildType =
-  | IBuildingBuildType
-  | IBuildEffectBuildType;
+export type TBuildType = IBuildingBuildType | IBuildEffectBuildType;
 
 export interface IBuildStructureAction {
   type: ECardActionType.BUILD_STRUCTURE;
@@ -187,12 +183,7 @@ export interface IPickLeaderAction {
   type: ECardActionType.PICK_LEADER;
 }
 
-export type TAction = (
-  | IBuildStructureAction
-  | IBuildWonderStageAction
-  | IDiscardAction
-  | IPickLeaderAction
-);
+export type TAction = IBuildStructureAction | IBuildWonderStageAction | IDiscardAction | IPickLeaderAction;
 
 export type TPayments = Record<ENeighborSide | 'bank', number>;
 

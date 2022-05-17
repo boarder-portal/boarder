@@ -20,7 +20,7 @@ import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWonder
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 
 const GAMES_MAP: {
-  [G in EGame]: {new(options: IGameCreateOptions<G>): Game<G>};
+  [G in EGame]: { new (options: IGameCreateOptions<G>): Game<G> };
 } = {
   [EGame.PEXESO]: PexesoGame,
   [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
@@ -41,7 +41,12 @@ class Room<G extends EGame> {
   deleteRoom: () => void;
   onUpdateRoom: () => void;
 
-  constructor({ game, options, onUpdateRoom, onDeleteRoom }: {
+  constructor({
+    game,
+    options,
+    onUpdateRoom,
+    onDeleteRoom,
+  }: {
     game: G;
     options: TGameOptions<G>;
     onUpdateRoom(): void;

@@ -34,23 +34,11 @@ const Root = styled(MuiModal)`
 `;
 
 const Modal: React.FC<IModalProps> = (props) => {
-  const {
-    className,
-    containerClassName,
-    children,
-    open,
-    onClose,
-  } = props;
+  const { className, containerClassName, children, open, onClose } = props;
 
   return (
-    <Root
-      className={b.mix(className)}
-      open={open}
-      onClose={onClose}
-    >
-      <div className={b('container').mix(containerClassName)}>
-        {children}
-      </div>
+    <Root className={b.mix(className)} open={open} onClose={onClose}>
+      <div className={b('container').mix(containerClassName)}>{children}</div>
     </Root>
   );
 };

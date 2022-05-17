@@ -29,24 +29,19 @@ interface ISelectMultipleProps<Value> extends ISelectCommonProps<Value> {
 type TSelectProps<Value> = ISelectSingleProps<Value> | ISelectMultipleProps<Value>;
 
 const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
-  const {
-    label,
-    name,
-    value,
-    options,
-    style,
-    multiple = false,
-    onChange,
-  } = props;
+  const { label, name, value, options, style, multiple = false, onChange } = props;
 
-  const handleChange = useCallback((e: React.ChangeEvent<{value: unknown}>) => {
-    onChange(e.target.value as any);
-  }, [onChange]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<{ value: unknown }>) => {
+      onChange(e.target.value as any);
+    },
+    [onChange],
+  );
 
   return (
     // FIXME: wtf is fromBlock
     <FormControl className="fromBlock" style={style}>
-      {label && (<InputLabel id={name}>{label}</InputLabel>)}
+      {label && <InputLabel id={name}>{label}</InputLabel>}
 
       <MuiSelect
         labelId={name}

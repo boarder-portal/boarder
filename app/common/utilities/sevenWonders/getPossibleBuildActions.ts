@@ -8,7 +8,7 @@ import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuild
 export default function getPossibleBuildActions(
   waitingForAction: TWaitingAction | null,
   buildCardEffects: IBuildCardEffect[],
-): ECardActionType[]  {
+): ECardActionType[] {
   const waitingBuildEffect = getWaitingBuildEffect(waitingForAction, buildCardEffects);
 
   return waitingBuildEffect?.possibleActions ?? DEFAULT_CARD_ACTIONS;

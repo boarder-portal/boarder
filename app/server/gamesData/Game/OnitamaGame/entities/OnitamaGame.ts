@@ -44,11 +44,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
     this.players[1].color = EPlayerColor.RED;
 
     while (true) {
-      const {
-        from,
-        to,
-        cardIndex,
-      } = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PIECE, {
+      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
       });
 

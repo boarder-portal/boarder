@@ -6,27 +6,17 @@ import { IGameOptions } from 'common/types/survivalOnline';
 import { EGame } from 'common/types/game';
 
 import Lobby from 'client/components/Lobby/Lobby';
-import SurvivalOnlineGameOptions
-  from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/components/SurvivalOnlineGameOptions';
+import SurvivalOnlineGameOptions from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/components/SurvivalOnlineGameOptions';
 
 import useLobby from 'client/hooks/useLobby';
 
 const SurvivalOnlineLobby: React.FC = () => {
   const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
-  const {
-    lobby,
-    createRoom,
-    enterRoom,
-  } = useLobby(EGame.SURVIVAL_ONLINE, options);
+  const { lobby, createRoom, enterRoom } = useLobby(EGame.SURVIVAL_ONLINE, options);
 
   const optionsBlock = useMemo(() => {
-    return (
-      <SurvivalOnlineGameOptions
-        options={options}
-        onOptionsChange={setOptions}
-      />
-    );
+    return <SurvivalOnlineGameOptions options={options} onOptionsChange={setOptions} />;
   }, [options]);
 
   const renderRoomOptions = useCallback(() => {

@@ -54,21 +54,22 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
 
     const playerIndex = players.indexOf(player);
 
-    return [
-      player,
-      ...players.slice(playerIndex + 1),
-      ...players.slice(0, playerIndex),
-    ];
+    return [player, ...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)];
   }, [player, players]);
 
-  const selectCard = useCallback((cardIndex: number) => {
-    io.emit(EGameEvent.CHOOSE_CARD, cardIndex);
-  }, [io]);
+  const selectCard = useCallback(
+    (cardIndex: number) => {
+      io.emit(EGameEvent.CHOOSE_CARD, cardIndex);
+    },
+    [io],
+  );
 
   const directionBlock = useMemo(() => {
-    return passDirection === EPassDirection.LEFT ?
-      <ArrowLeft className={styles.direction} /> :
-      <ArrowRight className={styles.direction} />;
+    return passDirection === EPassDirection.LEFT ? (
+      <ArrowLeft className={styles.direction} />
+    ) : (
+      <ArrowRight className={styles.direction} />
+    );
   }, [passDirection]);
 
   useEffect(() => {

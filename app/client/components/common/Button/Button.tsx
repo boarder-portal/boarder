@@ -12,15 +12,7 @@ interface IButtonProps {
 }
 
 const Button: React.FC<IButtonProps> = (props) => {
-  const {
-    className,
-    disabled = false,
-    type = 'primary',
-    isSubmit = false,
-    size = 'medium',
-    children,
-    onClick,
-  } = props;
+  const { className, disabled = false, type = 'primary', isSubmit = false, size = 'medium', children, onClick } = props;
 
   return (
     <MuiButton

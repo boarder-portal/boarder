@@ -11,13 +11,7 @@ export function getAllCombinations<T>(sets: T[][]): T[][] {
   let combinations: T[][] = [];
 
   sets[0].forEach((value) => {
-    combinations = [
-      ...combinations,
-      ...restCombinations.map((combination) => [
-        value,
-        ...combination,
-      ]),
-    ];
+    combinations = [...combinations, ...restCombinations.map((combination) => [value, ...combination])];
   });
 
   return combinations;

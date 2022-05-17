@@ -1,15 +1,10 @@
 import { ICard } from 'common/types/sevenWonders/cards';
 import { ECardActionType, IPlayer, TWaitingAction } from 'common/types/sevenWonders';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { IBuildCardEffect } from 'common/types/sevenWonders/effects';
 
-import {
-  ITradeVariant,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import getBuildType
-  from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
+import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 
 export default function getCardBuildType(
@@ -36,11 +31,7 @@ export default function getCardBuildType(
     return EBuildType.FREE;
   }
 
-  if (price.buildings &&
-    player.builtCards
-      .some((builtCard) =>
-        price.buildings?.includes(builtCard.id))
-  ) {
+  if (price.buildings && player.builtCards.some((builtCard) => price.buildings?.includes(builtCard.id))) {
     return EBuildType.FREE_BY_BUILDING;
   }
 

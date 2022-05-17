@@ -17,9 +17,7 @@ import {
   TWaitingAction,
 } from 'common/types/sevenWonders';
 import { EFreeCardPeriod, EFreeCardSource, TEffect } from 'common/types/sevenWonders/effects';
-import {
-  EBuildType,
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
@@ -85,25 +83,23 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     this.phase = EAgePhase.BUILD_STRUCTURES;
 
     this.playersData.forEach((playerData) => {
-      playerData.buildEffects = playerData.buildEffects.filter(({ period }) => (
-        period !== EFreeCardPeriod.LEADER_RECRUITMENT
-      ));
+      playerData.buildEffects = playerData.buildEffects.filter(
+        ({ period }) => period !== EFreeCardPeriod.LEADER_RECRUITMENT,
+      );
     });
 
     const ageCards = CARDS_BY_AGE[this.age];
-    const addedGuildCards = shuffle(
-      ageCards.filter(({ type }) => type === ECardType.GUILD),
-    ).slice(0, this.players.length + 2);
+    const addedGuildCards = shuffle(ageCards.filter(({ type }) => type === ECardType.GUILD)).slice(
+      0,
+      this.players.length + 2,
+    );
     const usedCards = ageCards.reduce<ICard[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
         if (cardPlayersCount > this.players.length) {
           return cards;
         }
 
-        return [
-          ...cards,
-          card,
-        ];
+        return [...cards, card];
       }, cards);
     }, addedGuildCards);
 
@@ -147,26 +143,23 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
       const effects = getAllPlayerEffects(player);
       const playerShieldsCount = this.game.getPlayerShieldsCount(player);
 
-      [
-        this.game.getNeighbor(player, ENeighborSide.LEFT),
-        this.game.getNeighbor(player, ENeighborSide.RIGHT),
-      ].forEach((neighbor) => {
-        const neighborShieldsCount = this.game.getPlayerShieldsCount(neighbor);
+      [this.game.getNeighbor(player, ENeighborSide.LEFT), this.game.getNeighbor(player, ENeighborSide.RIGHT)].forEach(
+        (neighbor) => {
+          const neighborShieldsCount = this.game.getPlayerShieldsCount(neighbor);
 
-        if (playerShieldsCount > neighborShieldsCount) {
-          player.victoryPoints.push(ageVictoryPoints);
+          if (playerShieldsCount > neighborShieldsCount) {
+            player.victoryPoints.push(ageVictoryPoints);
 
-          effects.filter(isVictoryTokensCoinPassiveEffect).forEach((effect) => {
-            player.coins += effect.count;
-          });
-        } else if (playerShieldsCount < neighborShieldsCount) {
-          const defeatTokenTarget = effects.some(isReturnDefeatsEffect)
-            ? neighbor
-            : player;
+            effects.filter(isVictoryTokensCoinPassiveEffect).forEach((effect) => {
+              player.coins += effect.count;
+            });
+          } else if (playerShieldsCount < neighborShieldsCount) {
+            const defeatTokenTarget = effects.some(isReturnDefeatsEffect) ? neighbor : player;
 
-          defeatTokenTarget.defeatPoints.push(-1);
-        }
-      });
+            defeatTokenTarget.defeatPoints.push(-1);
+          }
+        },
+      );
     });
   }
 
@@ -257,9 +250,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     }
 
     if (payments) {
-      (
-        Object.entries(payments) as [ENeighborSide, number][]
-      ).forEach(([neighborSide, payment]) => {
+      (Object.entries(payments) as [ENeighborSide, number][]).forEach(([neighborSide, payment]) => {
         const neighbor = this.game.getNeighbor(player, neighborSide);
 
         receivedCoins[neighbor.index] += payment;
@@ -289,12 +280,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
       if (chosenActionEvent && waitingForAction) {
         newPlayersEffects.push({
           player: this.players[index],
-          effects: this.executePlayerAction(
-            this.players[index],
-            chosenActionEvent,
-            waitingForAction,
-            receivedCoins,
-          ),
+          effects: this.executePlayerAction(this.players[index], chosenActionEvent, waitingForAction, receivedCoins),
         });
       }
     });
@@ -315,9 +301,9 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
 
     if (isLastTurn) {
       this.playersData.forEach(({ buildEffects }, index) => {
-        const buildLastCardEffectIndex = buildEffects.findIndex((effect) => (
-          effect.period === EFreeCardPeriod.LAST_AGE_TURN
-        ));
+        const buildLastCardEffectIndex = buildEffects.findIndex(
+          (effect) => effect.period === EFreeCardPeriod.LAST_AGE_TURN,
+        );
 
         if (buildLastCardEffectIndex !== -1) {
           waitingActions[index] = {
@@ -331,10 +317,9 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     }
 
     this.playersData.forEach(({ buildEffects }, index) => {
-      const buildNowEffectIndex = buildEffects.findIndex((effect) => (
-        effect.period === EFreeCardPeriod.NOW
-        && effect.source !== EFreeCardSource.DISCARD
-      ));
+      const buildNowEffectIndex = buildEffects.findIndex(
+        (effect) => effect.period === EFreeCardPeriod.NOW && effect.source !== EFreeCardSource.DISCARD,
+      );
 
       if (buildNowEffectIndex !== -1) {
         waitingActions[index] = {
@@ -356,16 +341,17 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
 
     if (this.game.discard.length > 0) {
       let maxDiscardPriority = -Infinity;
-      let highestDiscardTarget: {
-        playerIndex: number;
-        effectIndex: number;
-      } | undefined;
+      let highestDiscardTarget:
+        | {
+            playerIndex: number;
+            effectIndex: number;
+          }
+        | undefined;
 
       this.playersData.forEach(({ buildEffects }, index) => {
-        const buildFromDiscardEffectIndex = buildEffects.findIndex((effect) => (
-          effect.period === EFreeCardPeriod.NOW
-          && effect.source === EFreeCardSource.DISCARD
-        ));
+        const buildFromDiscardEffectIndex = buildEffects.findIndex(
+          (effect) => effect.period === EFreeCardPeriod.NOW && effect.source === EFreeCardSource.DISCARD,
+        );
 
         if (buildFromDiscardEffectIndex !== -1) {
           const priority = buildEffects[buildFromDiscardEffectIndex].priority ?? -1;

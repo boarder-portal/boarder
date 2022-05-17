@@ -123,9 +123,7 @@ export interface IGameCard extends ICoords {
 
 export type TBoard = Partial<Record<number, Partial<Record<number, IGameCard>>>>;
 
-export interface IGameOptions extends ICommonGameOptions {
-
-}
+export interface IGameOptions extends ICommonGameOptions {}
 
 export interface IObjectScore {
   objectId: number;

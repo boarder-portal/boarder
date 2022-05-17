@@ -23,13 +23,15 @@ export type TEffectCallback<Result> = (
   reject: (error: unknown) => void,
 ) => (() => unknown) | void;
 
-export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = Generator<TEffectCallback<EffectResult>, Result, Yield>;
+export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = Generator<
+  TEffectCallback<EffectResult>,
+  Result,
+  Yield
+>;
 
 export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
-export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result>
-  ? Result
-  : never;
+export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
 
 type TAbortCallback = () => unknown;
 
@@ -46,7 +48,8 @@ export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGa
   playerIndex: number;
 }
 
-export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>> extends IWaitForSocketEventOptions<Game, Event> {
+export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>>
+  extends IWaitForSocketEventOptions<Game, Event> {
   playerIndex: number;
   validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
 }
@@ -115,13 +118,16 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return {
       cancel: () => unregisterEffect?.(),
       promise: new Promise<Result>((resolve, reject) => {
-        const cleanup = callback((result) => {
-          unregisterEffect?.();
-          resolve(result);
-        }, (error) => {
-          unregisterEffect?.();
-          reject(error);
-        });
+        const cleanup = callback(
+          (result) => {
+            unregisterEffect?.();
+            resolve(result);
+          },
+          (error) => {
+            unregisterEffect?.();
+            reject(error);
+          },
+        );
 
         const removeUnsubscriber = this.#addAbortCallback(() => {
           cleanup?.();
@@ -244,26 +250,28 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
       return this.#lifecycle;
     }
 
-    return (
-      this.#lifecycle = (async () => {
-        let cancelGenerator: (() => void) | undefined;
+    return (this.#lifecycle = (async () => {
+      let cancelGenerator: (() => void) | undefined;
 
-        try {
-          const { run, cancel } = this.#getGeneratorResult(this.lifecycle());
+      try {
+        const { run, cancel } = this.#getGeneratorResult(this.lifecycle());
 
-          cancelGenerator = cancel;
+        cancelGenerator = cancel;
 
-          return await run();
-        } finally {
-          cancelGenerator?.();
+        return await run();
+      } finally {
+        cancelGenerator?.();
 
-          this.destroy();
-        }
-      })()
-    );
+        this.destroy();
+      }
+    })());
   }
 
-  sendSocketEvent<Event extends TGameEvent<Game>>(event: Event, data: TGameEventData<Game, Event>, socket?: Socket): void {
+  sendSocketEvent<Event extends TGameEvent<Game>>(
+    event: Event,
+    data: TGameEventData<Game, Event>,
+    socket?: Socket,
+  ): void {
     this.#getContext().game.sendSocketEvent(event, data, socket);
   }
 
@@ -303,15 +311,19 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return yield (resolve) => {
       const { game } = this.#getContext();
 
-      return game.listenSocketEvent(event, (data) => {
-        try {
-          if (options?.validate?.(data) ?? true) {
-            resolve(data);
+      return game.listenSocketEvent(
+        event,
+        (data) => {
+          try {
+            if (options?.validate?.(data) ?? true) {
+              resolve(data);
+            }
+          } catch {
+            // empty
           }
-        } catch {
-          // empty
-        }
-      }, options.playerIndex);
+        },
+        options.playerIndex,
+      );
     };
   }
 

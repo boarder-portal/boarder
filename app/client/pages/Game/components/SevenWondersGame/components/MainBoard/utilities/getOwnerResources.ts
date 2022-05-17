@@ -1,8 +1,5 @@
 import { IResource, TResourceOwner } from 'common/types/sevenWonders';
-import {
-  IOwnerResource,
-
-} from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 /**
  * resources: [
@@ -20,11 +17,10 @@ import {
  * ]
  */
 export default function getOwnerResources(resources: IResource[][], owner: TResourceOwner): IOwnerResource[][] {
-  return resources
-    .map((resource) =>
-      resource.map((resourceVariant) => ({
-        ...resourceVariant,
-        owner,
-      })),
-    );
+  return resources.map((resource) =>
+    resource.map((resourceVariant) => ({
+      ...resourceVariant,
+      owner,
+    })),
+  );
 }

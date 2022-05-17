@@ -46,10 +46,7 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   arePointsEqual(point1: ICoords, point2: ICoords): boolean {
-    return (
-      this.areFloatsEqual(point1.x, point2.x)
-      && this.areFloatsEqual(point1.y, point2.y)
-    );
+    return this.areFloatsEqual(point1.x, point2.x) && this.areFloatsEqual(point1.y, point2.y);
   }
 
   createGameInfo(): void {
@@ -57,10 +54,7 @@ class MazeGame extends Game<EGame.MAZE> {
       for (let x = 0; x < MAZE_WIDTH; x++) {
         const coords: ICoords = { x, y };
 
-        this.walls.push(
-          getMazeWallCoords(coords, ESide.TOP),
-          getMazeWallCoords(coords, ESide.LEFT),
-        );
+        this.walls.push(getMazeWallCoords(coords, ESide.TOP), getMazeWallCoords(coords, ESide.LEFT));
 
         if (x === MAZE_WIDTH - 1) {
           this.walls.push(getMazeWallCoords(coords, ESide.RIGHT));
@@ -95,11 +89,7 @@ class MazeGame extends Game<EGame.MAZE> {
         const coords = path[i];
         const neighbors = getMazeCellNeighbors(coords);
 
-        if (
-          Object.values(neighbors).some((coords) => (
-            visitedCells.every(notEqualsCoordsCb(coords))
-          ))
-        ) {
+        if (Object.values(neighbors).some((coords) => visitedCells.every(notEqualsCoordsCb(coords)))) {
           lastCellWithUnvisitedNeighborsIndex = i;
 
           break;
@@ -138,7 +128,7 @@ class MazeGame extends Game<EGame.MAZE> {
       side: isTopPlayer ? EPlayerSide.TOP : EPlayerSide.BOTTOM,
       x: isTopPlayer ? 0.5 : MAZE_WIDTH - 0.5,
       y: isTopPlayer ? 0.5 : MAZE_HEIGHT - 0.5,
-      directionAngle: isTopPlayer ? Math.PI / 2 : Math.PI * 3 / 2,
+      directionAngle: isTopPlayer ? Math.PI / 2 : (Math.PI * 3) / 2,
       isMoving: false,
       moveEventsQueue: [],
       lastActionTimestamp: 0,
@@ -164,14 +154,12 @@ class MazeGame extends Game<EGame.MAZE> {
       for (let i = 0; i < moveEventsQueue.length; i++) {
         const speed = BASE_PLAYER_SPEED;
         const moveEvent = moveEventsQueue[i];
-        const nextTimestamp = i === moveEventsQueue.length - 1
-          ? now
-          : moveEventsQueue[i + 1].timestamp;
+        const nextTimestamp = i === moveEventsQueue.length - 1 ? now : moveEventsQueue[i + 1].timestamp;
         let isMoving = moveEvent.type === EMoveEvent.MOVE;
 
         if (moveEvent.type === EMoveEvent.MOVE) {
           const duration = nextTimestamp - moveEvent.timestamp;
-          const distance = speed * duration / 1000;
+          const distance = (speed * duration) / 1000;
           const collidingWalls: IWall[] = [];
           const wallsToPossiblyCollide: IWall[] = [];
 
@@ -187,9 +175,7 @@ class MazeGame extends Game<EGame.MAZE> {
           });
 
           // reduce moveVector due to colliding walls
-          collidingWalls.forEach((wall) => {
-
-          });
+          collidingWalls.forEach((wall) => {});
 
           if (moveVector.getLength() === 0) {
             isMoving = false;
@@ -198,9 +184,7 @@ class MazeGame extends Game<EGame.MAZE> {
             const distanceToFirstCollidingWall = Infinity;
 
             // find closest wall to collide if there's any
-            wallsToPossiblyCollide.forEach((wall) => {
-
-            });
+            wallsToPossiblyCollide.forEach((wall) => {});
 
             const eventualDistance = Math.min(distance, distanceToFirstCollidingWall);
             const eventualAngle = moveVector.getAngle();
@@ -267,10 +251,9 @@ class MazeGame extends Game<EGame.MAZE> {
   }
 
   removeWall(wall: IWall): void {
-    const wallIndex = this.walls.findIndex(({ from, to }) => (
-      equalsCoords(wall.from, from)
-      && equalsCoords(wall.to, to)
-    ));
+    const wallIndex = this.walls.findIndex(
+      ({ from, to }) => equalsCoords(wall.from, from) && equalsCoords(wall.to, to),
+    );
 
     if (wallIndex !== -1) {
       this.walls.splice(wallIndex, 1);

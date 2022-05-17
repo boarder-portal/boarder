@@ -15,7 +15,7 @@ export interface IBoxProps {
   between?: number;
   bold?: boolean;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
-  textAlign?: 'center'
+  textAlign?: 'center';
   flex?: boolean;
   column?: boolean;
   reverseDirection?: boolean;
@@ -37,7 +37,11 @@ const TEXT_SIZES_MAP = {
   xxl: 36,
 };
 
-function getBetweenMarginDirection(isFlex?: boolean, isColumn?: boolean, isReverse?: boolean): 'top' | 'bottom' | 'left' | 'right' {
+function getBetweenMarginDirection(
+  isFlex?: boolean,
+  isColumn?: boolean,
+  isReverse?: boolean,
+): 'top' | 'bottom' | 'left' | 'right' {
   if (!isFlex) {
     return 'top';
   }
@@ -50,9 +54,9 @@ function getBetweenMarginDirection(isFlex?: boolean, isColumn?: boolean, isRever
 }
 
 const Root = styled.div`
-  ${({ width }: IBoxProps) => width ? `width: ${typeof width === 'number' ? `${width}px` : width};` : ''}
-  ${({ height }: IBoxProps) => height ? `height: ${typeof height === 'number' ? `${height}px` : height};` : ''}
-  ${({ flex }: IBoxProps) => flex ? 'display: flex;' : ''}
+  ${({ width }: IBoxProps) => (width ? `width: ${typeof width === 'number' ? `${width}px` : width};` : '')}
+  ${({ height }: IBoxProps) => (height ? `height: ${typeof height === 'number' ? `${height}px` : height};` : '')}
+  ${({ flex }: IBoxProps) => (flex ? 'display: flex;' : '')}
   ${({ reverseDirection, column }: IBoxProps) => {
     if (column) {
       return `flex-direction: column${reverseDirection ? '-reverse' : ''};`;
@@ -62,39 +66,47 @@ const Root = styled.div`
       return 'flex-direction: row-reverse;';
     }
   }}
-  ${({ alignItems }: IBoxProps) => alignItems ? `align-items: ${alignItems};` : ''}
-  ${({ justifyContent }: IBoxProps) => justifyContent ? `justify-content: ${justifyContent};` : ''}
-  ${({ withWrap }: IBoxProps) => withWrap ? 'flex-wrap: wrap;' : ''}
-  ${({ grow }: IBoxProps) => grow ? 'flex-grow: 1;' : ''}
-  ${({ px }: IBoxProps) => px ? `
+  ${({ alignItems }: IBoxProps) => (alignItems ? `align-items: ${alignItems};` : '')}
+  ${({ justifyContent }: IBoxProps) => (justifyContent ? `justify-content: ${justifyContent};` : '')}
+  ${({ withWrap }: IBoxProps) => (withWrap ? 'flex-wrap: wrap;' : '')}
+  ${({ grow }: IBoxProps) => (grow ? 'flex-grow: 1;' : '')}
+  ${({ px }: IBoxProps) =>
+    px
+      ? `
     padding-left: ${px}px;
     padding-right: ${px}px;
-  ` : ''}
-  ${({ py }: IBoxProps) => py ? `
+  `
+      : ''}
+  ${({ py }: IBoxProps) =>
+    py
+      ? `
     padding-top: ${py}px;
     padding-bottom: ${py}px;
-  ` : ''}
-  ${({ mt }: IBoxProps) => mt ? `margin-top: ${mt}px;` : ''}
-  ${({ mb }: IBoxProps) => mb ? `margin-bottom: ${mb}px;` : ''}
-  ${({ ml }: IBoxProps) => ml ? `margin-left: ${ml === 'auto' ? 'auto' : `${ml}px`};` : ''}
-  ${({ between, flex, column, reverseDirection }: IBoxProps) => between ?
-    `& > *:not(:first-child) { margin-${getBetweenMarginDirection(flex, column, reverseDirection)}: ${between}px; }`
-    : ''}
-  ${({ bold }: IBoxProps) => bold ? 'font-weight: bold;' : ''}
-  ${({ size = 'm' }: IBoxProps) => size ? `
+  `
+      : ''}
+  ${({ mt }: IBoxProps) => (mt ? `margin-top: ${mt}px;` : '')}
+  ${({ mb }: IBoxProps) => (mb ? `margin-bottom: ${mb}px;` : '')}
+  ${({ ml }: IBoxProps) => (ml ? `margin-left: ${ml === 'auto' ? 'auto' : `${ml}px`};` : '')}
+  ${({ between, flex, column, reverseDirection }: IBoxProps) =>
+    between
+      ? `& > *:not(:first-child) { margin-${getBetweenMarginDirection(flex, column, reverseDirection)}: ${between}px; }`
+      : ''}
+  ${({ bold }: IBoxProps) => (bold ? 'font-weight: bold;' : '')}
+  ${({ size = 'm' }: IBoxProps) =>
+    size
+      ? `
     font-size: ${TEXT_SIZES_MAP[size]}px;
     line-height: 1.2;
-  ` : ''}
-  ${({ textAlign }: IBoxProps) => textAlign ? `text-align: ${textAlign};` : ''}
-  ${({ background }: IBoxProps) => background ? `background-color: ${background};` : ''}
+  `
+      : ''}
+  ${({ textAlign }: IBoxProps) => (textAlign ? `text-align: ${textAlign};` : '')}
+  ${({ background }: IBoxProps) => (background ? `background-color: ${background};` : '')}
 `;
 
 const Box: React.FC<IBoxProps> = (props) => {
   const { innerRef } = props;
 
-  return (
-    <Root ref={innerRef} {...props} />
-  );
+  return <Root ref={innerRef} {...props} />;
 };
 
 export default React.memo(Box);

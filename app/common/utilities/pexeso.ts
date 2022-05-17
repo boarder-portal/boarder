@@ -7,12 +7,10 @@ export function arePexesoOptionsValid(options: IGameOptions): boolean {
   const cardsCount = options.differentCardsCount * options.matchingCardsCount;
 
   return (
-    options.differentCardsCount <= setOptions.imagesCount
-    && (!options.useImageVariants || options.matchingCardsCount <= setOptions.imageVariantsCount)
-    && (
-      options.layout === EFieldLayout.SPIRAL || options.layout === EFieldLayout.SPIRAL_ROTATE
-        ? true
-        : cardsCount in FIELD_OPTIONS[options.layout] && cardsCount < 200
-    )
+    options.differentCardsCount <= setOptions.imagesCount &&
+    (!options.useImageVariants || options.matchingCardsCount <= setOptions.imageVariantsCount) &&
+    (options.layout === EFieldLayout.SPIRAL || options.layout === EFieldLayout.SPIRAL_ROTATE
+      ? true
+      : cardsCount in FIELD_OPTIONS[options.layout] && cardsCount < 200)
   );
 }

@@ -16,12 +16,15 @@ interface ISetGameOptionsProps {
 const SetGameOptions: React.FC<ISetGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
 
-  const handlePlayersCountChange = useCallback((updatedPlayersCount: number) => {
-    onOptionsChange({
-      ...options,
-      playersCount: updatedPlayersCount,
-    });
-  }, [onOptionsChange, options]);
+  const handlePlayersCountChange = useCallback(
+    (updatedPlayersCount: number) => {
+      onOptionsChange({
+        ...options,
+        playersCount: updatedPlayersCount,
+      });
+    },
+    [onOptionsChange, options],
+  );
 
   return (
     <Box flex column between={12}>

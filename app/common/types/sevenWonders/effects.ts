@@ -160,20 +160,20 @@ export interface IScientificSetEffect {
 }
 
 export type TEffect =
- | IGainEffect
- | IResourcesEffect
- | ITradeEffect
- | ICardsTypeEffect
- | IWonderLevelsEffect
- | IShieldsEffect
- | IScientificSymbolsEffect
- | IWinsEffect
- | ILossesEffect
- | IGainByCoinsEffect
- | IBuildCardEffect
- | ICopyCardEffect
- | IReducedPriceEffect
- | ICoinPassiveEffect
- | IReturnDefeatsEffect
- | IDrawLeadersEffect
- | IScientificSetEffect
+  | IGainEffect
+  | IResourcesEffect
+  | ITradeEffect
+  | ICardsTypeEffect
+  | IWonderLevelsEffect
+  | IShieldsEffect
+  | IScientificSymbolsEffect
+  | IWinsEffect
+  | ILossesEffect
+  | IGainByCoinsEffect
+  | IBuildCardEffect
+  | ICopyCardEffect
+  | IReducedPriceEffect
+  | ICoinPassiveEffect
+  | IReturnDefeatsEffect
+  | IDrawLeadersEffect
+  | IScientificSetEffect;

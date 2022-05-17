@@ -14,7 +14,7 @@ interface IImgProps {
 const b = block('Img');
 
 const Root = styled.div`
-  width: ${({ width }: IImgProps) => width === 'max' ? '100%' : `${width}px`};
+  width: ${({ width }: IImgProps) => (width === 'max' ? '100%' : `${width}px`)};
   height: ${({ height }: IImgProps) => `${height}px`};
   background-image: ${({ url }: IImgProps) => `url(${url})`};
   background-position: center center;
@@ -26,12 +26,7 @@ const Root = styled.div`
 const Img: React.FC<IImgProps> = (props) => {
   const { className } = props;
 
-  return (
-    <Root
-      className={b.mix(className).toString()}
-      {...props}
-    />
-  );
+  return <Root className={b.mix(className).toString()} {...props} />;
 };
 
 export default React.memo(Img);

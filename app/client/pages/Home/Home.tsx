@@ -21,13 +21,18 @@ const GAME_NAMES: Record<EGame, string> = {
 const Home: React.FC = () => {
   const history = useHistory();
 
-  const handleGameClick = useCallback((game: EGame) => {
-    history.push(`/${game}/lobby`);
-  }, [history]);
+  const handleGameClick = useCallback(
+    (game: EGame) => {
+      history.push(`/${game}/lobby`);
+    },
+    [history],
+  );
 
   return (
-    <div className={styles.root} >
-      <Box size="xxl" bold>Игры</Box>
+    <div className={styles.root}>
+      <Box size="xxl" bold>
+        Игры
+      </Box>
 
       <Box className={styles.games} mt={20}>
         {Object.values(EGame).map((game) => (
@@ -43,9 +48,7 @@ const Home: React.FC = () => {
             }}
             onClick={() => handleGameClick(game)}
           >
-            <span className={styles.caption}>
-              {GAME_NAMES[game]}
-            </span>
+            <span className={styles.caption}>{GAME_NAMES[game]}</span>
           </Box>
         ))}
       </Box>

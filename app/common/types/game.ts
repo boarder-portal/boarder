@@ -39,7 +39,9 @@ export type TGameEvent<Game extends EGame> = IGamesParams[Game]['event'];
 
 export type TGameEventData<Game extends EGame, Event extends TGameEvent<Game>> = IGamesParams[Game]['eventMap'][Event];
 
-export type TGameEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (data: TGameEventData<Game, Event>) => unknown;
+export type TGameEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
+  data: TGameEventData<Game, Event>,
+) => unknown;
 
 export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];
 

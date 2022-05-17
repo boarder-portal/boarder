@@ -42,9 +42,7 @@ const Card: React.FC<ICardProps> = (props) => {
         <div>
           {card.value}
 
-          <span className={styles.suit}>
-            {SUITS_MAP[card.suit]}
-          </span>
+          <span className={styles.suit}>{SUITS_MAP[card.suit]}</span>
         </div>
       )}
     </Box>

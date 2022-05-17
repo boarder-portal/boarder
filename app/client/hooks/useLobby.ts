@@ -12,7 +12,10 @@ interface IUseLobbyReturnValue<Game extends EGame> {
   enterRoom(roomId: string): void;
 }
 
-export default function useLobby<Game extends EGame>(game: Game, gameOptions: TGameOptions<Game>): IUseLobbyReturnValue<Game> {
+export default function useLobby<Game extends EGame>(
+  game: Game,
+  gameOptions: TGameOptions<Game>,
+): IUseLobbyReturnValue<Game> {
   const history = useHistory();
   const ioRef = useRef<SocketIOClient.Socket>();
 
@@ -26,15 +29,18 @@ export default function useLobby<Game extends EGame>(game: Game, gameOptions: TG
     ioRef.current.emit(ELobbyEvent.CREATE_ROOM, gameOptions);
   }, [gameOptions]);
 
-  const enterRoom = useCallback((roomId: string) => {
-    if (!ioRef.current) {
-      return;
-    }
+  const enterRoom = useCallback(
+    (roomId: string) => {
+      if (!ioRef.current) {
+        return;
+      }
 
-    ioRef.current.emit(ELobbyEvent.ENTER_ROOM, roomId);
+      ioRef.current.emit(ELobbyEvent.ENTER_ROOM, roomId);
 
-    history.push(`/${game}/room/${roomId}`);
-  }, [game, history]);
+      history.push(`/${game}/room/${roomId}`);
+    },
+    [game, history],
+  );
 
   useEffect(() => {
     ioRef.current = io.connect(`/${game}/lobby`);

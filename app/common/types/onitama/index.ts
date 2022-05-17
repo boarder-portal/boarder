@@ -9,9 +9,7 @@ export enum EGameEvent {
   GAME_INFO = 'GAME_INFO',
 }
 
-export interface IGameOptions extends ICommonGameOptions {
-
-}
+export interface IGameOptions extends ICommonGameOptions {}
 
 export interface IPlayer extends ICommonPlayer {
   cards: ECardType[];
