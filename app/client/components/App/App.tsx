@@ -1,6 +1,6 @@
 import '../../styles/reset.pcss';
 import '../../styles/styles.css';
-import React, { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { Container } from 'boarder-components';
@@ -28,7 +28,7 @@ import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
 
 import styles from './App.pcss';
 
-const App: React.FC = () => {
+const App: FC = () => {
   const [user, setUser] = useRecoilState(userAtom);
 
   useEffect(() => {
