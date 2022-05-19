@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type RafCallback = (timePassed: number) => false | void;
 
-export default function useRaf(callback: RafCallback) {
+export default function useRaf(callback: RafCallback): void {
   const callbackRef = useRef<RafCallback>(callback);
   const timestampRef = useRef<number | null>(null);
   const ended = useRef<boolean>(false);

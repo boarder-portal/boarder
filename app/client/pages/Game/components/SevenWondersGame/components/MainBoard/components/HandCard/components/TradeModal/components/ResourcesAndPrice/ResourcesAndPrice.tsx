@@ -3,6 +3,7 @@ import React from 'react';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import Box from 'client/components/common/Box/Box';
+import Image from 'client/components/common/Image/Image';
 
 import styles from './ResourceAndPrice.pcss';
 
@@ -26,7 +27,7 @@ const ResourcesAndPrice: React.FC<IResourcesAndPriceProps> = (props) => {
       {Boolean(resources.length) && (
         <Box flex alignItems="center" between={4}>
           {resources.map((resource, index) => (
-            <img key={index} className={styles.resource} src={`/sevenWonders/resources/${resource.type}.png`} />
+            <Image key={index} className={styles.resource} src={`/sevenWonders/resources/${resource.type}.png`} />
           ))}
         </Box>
       )}

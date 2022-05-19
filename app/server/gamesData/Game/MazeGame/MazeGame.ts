@@ -164,7 +164,7 @@ class MazeGame extends Game<EGame.MAZE> {
           const wallsToPossiblyCollide: IWall[] = [];
 
           // find current colliding walls and walls that could possibly collide during tick
-          this.walls.forEach((wall) => {
+          this.walls.forEach(() => {
             // currently colliding walls are those that have a common point
             // walls that could possibly collide are those
           });
@@ -175,7 +175,9 @@ class MazeGame extends Game<EGame.MAZE> {
           });
 
           // reduce moveVector due to colliding walls
-          collidingWalls.forEach((wall) => {});
+          collidingWalls.forEach(() => {
+            // empty
+          });
 
           if (moveVector.getLength() === 0) {
             isMoving = false;
@@ -184,7 +186,9 @@ class MazeGame extends Game<EGame.MAZE> {
             const distanceToFirstCollidingWall = Infinity;
 
             // find closest wall to collide if there's any
-            wallsToPossiblyCollide.forEach((wall) => {});
+            wallsToPossiblyCollide.forEach(() => {
+              // empty
+            });
 
             const eventualDistance = Math.min(distance, distanceToFirstCollidingWall);
             const eventualAngle = moveVector.getAngle();

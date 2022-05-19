@@ -3,6 +3,8 @@ import classNames from 'classnames';
 
 import { ICard } from 'common/types/sevenWonders/cards';
 
+import Image from 'client/components/common/Image/Image';
+
 import styles from './Card.pcss';
 
 interface ICardProps {
@@ -19,7 +21,7 @@ const Card: React.FC<ICardProps> = (props) => {
   const { className, style, card, flip, width = 110, isCopiedLeader, zoomOnHover } = props;
 
   return (
-    <img
+    <Image
       className={classNames(
         styles.root,
         {

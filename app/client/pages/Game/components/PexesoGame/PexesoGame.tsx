@@ -25,6 +25,7 @@ import { EGame } from 'common/types/game';
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
+import Image from 'client/components/common/Image/Image';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -486,7 +487,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                     zIndex: card.isInGame ? cardIndex : cardIndex - 1e4,
                   }}
                 >
-                  <img
+                  <Image
                     className="cardBack"
                     alt="card"
                     src={'/pexeso/backs/default/2.jpg'}
@@ -494,7 +495,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                     onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
                   />
 
-                  <img
+                  <Image
                     className="cardContent"
                     alt="back"
                     src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}

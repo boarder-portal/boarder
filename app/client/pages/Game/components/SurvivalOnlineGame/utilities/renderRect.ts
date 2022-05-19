@@ -5,7 +5,7 @@ export default function renderRect(
   width: number,
   height: number,
   color: string,
-) {
+): void {
   context.fillStyle = color;
   context.fillRect(x, y, width, height);
 }

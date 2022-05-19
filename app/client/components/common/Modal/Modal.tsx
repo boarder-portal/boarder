@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import MuiModal from '@material-ui/core/Modal';
 import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
 import block from 'bem-cn';
 
 interface IModalProps {

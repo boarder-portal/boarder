@@ -38,6 +38,7 @@ import Box from 'client/components/common/Box/Box';
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Players';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
 import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
+import Image from 'client/components/common/Image/Image';
 
 import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
@@ -590,7 +591,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                     `,
                     }}
                   >
-                    <img className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+                    <Image className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
                   </div>
                 )
               );
@@ -669,7 +670,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
           >
             {selectedCard && (
               <>
-                <img className={b('selectedCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
+                <Image className={b('selectedCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
 
                 {placedCardCoords &&
                   selectedCard.objects.map(({ meepleCoords }, objectId) => {
@@ -734,7 +735,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
               className={b('handCard', { selected: index === selectedCardIndex })}
               onClick={(e) => onHandCardClick(e, index)}
             >
-              <img className={b('handCardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+              <Image className={b('handCardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
             </div>
           );
         })}
@@ -750,7 +751,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       <div className={b('cardsLeft')}>{cardsLeft}</div>
 
       <div className={b('draggingCard')} ref={draggingCardRef}>
-        {selectedCard && <img className={b('draggingCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />}
+        {selectedCard && <Image className={b('draggingCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />}
       </div>
     </Root>
   );

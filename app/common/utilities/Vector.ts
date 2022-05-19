@@ -16,7 +16,7 @@ class Vector {
     }
   }
 
-  add(vector: Vector) {
+  add(vector: Vector): void {
     this.to.x += vector.to.x - vector.from.x;
     this.to.y += vector.to.y - vector.from.y;
   }
@@ -42,12 +42,12 @@ class Vector {
     return this.to.y - this.from.y;
   }
 
-  multiply(coefficient: number) {
+  multiply(coefficient: number): void {
     this.to.x += coefficient * (this.to.x - this.from.x);
     this.to.y += coefficient * (this.to.y - this.from.y);
   }
 
-  subtract(vector: Vector) {
+  subtract(vector: Vector): void {
     this.to.x -= vector.to.x - vector.from.x;
     this.to.y -= vector.to.y - vector.from.y;
   }

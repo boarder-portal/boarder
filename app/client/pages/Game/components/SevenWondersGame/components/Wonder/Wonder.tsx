@@ -10,6 +10,7 @@ import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
+import Image from 'client/components/common/Image/Image';
 
 import styles from './Wonder.pcss';
 
@@ -95,7 +96,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       </Box>
 
       <div className={styles.wonderImageWrapper}>
-        <img className={styles.wonderCard} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
+        <Image className={styles.wonderCard} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
 
         {player.builtStages.map((builtStage, index) => (
           <BackCard

@@ -4,7 +4,7 @@ export default function useGlobalListener<
   T extends Document | Window,
   M extends T extends Document ? DocumentEventMap : WindowEventMap,
   K extends keyof M,
->(type: K, target: T, listener: (event: M[K]) => void) {
+>(type: K, target: T, listener: (event: M[K]) => void): void {
   const listenerRef = useRef<(event: M[K]) => void>(listener);
 
   useEffect(() => {
@@ -21,5 +21,6 @@ export default function useGlobalListener<
     return () => {
       target.removeEventListener(type as any, localListener as any);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, target]);
 }
