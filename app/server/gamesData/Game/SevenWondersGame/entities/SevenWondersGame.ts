@@ -17,7 +17,7 @@ import {
   IPlayer,
   IWonderBuiltStage,
 } from 'common/types/sevenWonders';
-import { ECardType, ICard } from 'common/types/sevenWonders/cards';
+import { ECardId, ECardType, ICard } from 'common/types/sevenWonders/cards';
 import {
   EEffect,
   IGain,
@@ -86,26 +86,26 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         playerData.coins += this.calculateEffectGain(effect, playerIndex)?.coins ?? 0;
       });
 
-      // if (!player.isBot) {
-      //   player.city = ECity.ROMA;
-      //   player.citySide = 1;
-      //   player.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.BILKIS));
+      // if (!playerData.isBot) {
+      //   playerData.city = ECity.ROMA;
+      //   playerData.citySide = 1;
+      //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.BILKIS));
       // }
 
-      // if (player.login === '123') {
-      //   player.city = ESevenWondersCity.ROMA;
-      //   player.citySide = 1;
-      //   player.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.SOLOMON));
+      // if (this.players[playerIndex].login === '123') {
+      //   playerData.city = ECity.ROMA;
+      //   playerData.citySide = 1;
+      //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.SOLOMON));
       // }
       //
-      // if (player.login === '234') {
-      //   player.city = ESevenWondersCity.BABYLON;
-      //   player.citySide = 1;
+      // if (this.players[playerIndex].login === '234') {
+      //   playerData.city = ECity.BABYLON;
+      //   playerData.citySide = 1;
       // }
       //
-      // if (player.login === '345') {
-      //   player.city = ESevenWondersCity.HALIKARNASSOS;
-      //   player.citySide = 1;
+      // if (this.players[playerIndex].login === '345') {
+      //   playerData.city = ECity.HALIKARNASSOS;
+      //   playerData.citySide = 1;
       // }
     });
 
@@ -119,7 +119,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     const pickedLeaders = yield* this.phase.leadersDraft;
 
     this.playersData.forEach((playerData, index) => {
-      playerData.leadersHand = pickedLeaders[index];
+      playerData.leadersHand.push(...pickedLeaders[index]);
     });
 
     for (let age = 0; age < 3; age++) {
