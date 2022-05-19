@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import chunk from 'lodash/chunk';
 
@@ -15,31 +13,11 @@ import userAtom from 'client/atoms/userAtom';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import { IGameProps } from 'client/pages/Game/Game';
 
+import styles from './SetGame.pcss';
+
 interface ISetGameProps extends IGameProps<EGame.SET> {
   players: IPlayer[];
 }
-
-const b = block('SetGame');
-
-const Root = styled(Box)`
-  display: flex;
-
-  .SetGame {
-    &__info {
-      margin-left: 40px;
-    }
-  }
-
-  @media (max-width: 500px) {
-    flex-direction: column;
-
-    .SetGame {
-      &__info {
-        margin-top: 20px;
-      }
-    }
-  }
-`;
 
 const SetGame: React.FC<ISetGameProps> = (props) => {
   const { io, isGameEnd } = props;
@@ -133,8 +111,8 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
   }, [players]);
 
   return (
-    <Root className={b()}>
-      <Box className={b('board')} between={20}>
+    <Box className={styles.root}>
+      <Box between={20}>
         {chunk(cards, cards.length / 3).map((cardsRow, index) => (
           <Box key={index} flex between={20}>
             {cardsRow.map((card, cardRowIndex) => (
@@ -149,7 +127,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
         ))}
       </Box>
 
-      <Box className={b('info')} between={20}>
+      <Box className={styles.info} between={20}>
         {playersBlock}
 
         {!isGameEnd && <Button onClick={handleNoSetClick}>Нет сета</Button>}
@@ -160,7 +138,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
           </Box>
         )}
       </Box>
-    </Root>
+    </Box>
   );
 };
 

@@ -1,0 +1,75 @@
+.root {
+  --size: 42px;
+  --stripedDirection: to right;
+
+  &.red {
+    --color: red;
+  }
+
+  &.blue {
+    --color: blue;
+  }
+
+  &.green {
+    --color: green;
+  }
+
+  &.oval {
+    width: calc(var(--size) * 1.5);
+    height: var(--size);
+    border-radius: calc(var(--size) * 0.1);
+  }
+
+  &.rhombus {
+    --stripedDirection: 45deg;
+    width: calc(var(--size) * 0.8);
+    height: calc(var(--size) * 0.8);
+    transform: rotate(45deg);
+  }
+
+  &.wave {
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+  }
+
+  &.empty {
+    border: 3px solid var(--color);
+  }
+
+  &.filled {
+    background: var(--color);
+  }
+
+  &.striped {
+    border: 3px solid var(--color);
+    background: repeating-linear-gradient(
+      var(--stripedDirection),
+      transparent,
+      transparent 3px,
+      var(--color) 3px,
+      var(--color) 6px
+    );
+  }
+}
+
+@media (max-width: 1000px) {
+  .root {
+    --size: 20px;
+
+    &.empty {
+      border: 1px solid var(--color);
+    }
+
+    &.striped {
+      border: 1px solid var(--color);
+      background: repeating-linear-gradient(
+        var(--stripedDirection),
+        transparent,
+        transparent 1px,
+        var(--color) 1px,
+        var(--color) 2px
+      );
+    }
+  }
+}
