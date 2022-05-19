@@ -59,7 +59,7 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
                     ? '#900'
                     : '#eee'
                 }
-              ></Box>
+              />
             ))}
           </Box>
         ))}

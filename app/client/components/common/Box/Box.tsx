@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export interface IBoxProps {
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   style?: React.CSSProperties;
   width?: number | string;
   height?: number | string;
