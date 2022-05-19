@@ -18,7 +18,7 @@ export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
   placedAnyCards = false;
 
   constructor(game: CarcassonneGame, options: ITurnOptions) {
-    super();
+    super(game);
 
     this.game = game;
     this.activePlayerIndex = options.activePlayerIndex;

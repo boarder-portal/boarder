@@ -1,6 +1,6 @@
 import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/sevenWonders/cards';
-import { EWaitingActionType, ILeadersDraft, ILeadersDraftPlayerData, IPlayer } from 'common/types/sevenWonders';
+import { EWaitingActionType, ILeadersDraft, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import rotateObjects from 'common/utilities/rotateObjects';
@@ -10,17 +10,15 @@ import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
 export default class LeadersDraft extends GameEntity<EGame.SEVEN_WONDERS, ICard[][]> {
   game: SevenWondersGame;
-  players: IPlayer[];
 
   playersData: ILeadersDraftPlayerData[];
 
   turn: Turn | null = null;
 
   constructor(game: SevenWondersGame) {
-    super();
+    super(game);
 
     this.game = game;
-    this.players = game.players;
     this.playersData = this.players.map(() => ({
       leadersPool: [],
       pickedLeaders: [],

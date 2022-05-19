@@ -2,16 +2,15 @@ import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 
 import { EGame } from 'common/types/game';
-import { ECardType, EGameEvent, EPlayerColor, IGame, IPlayer, TBoard } from 'common/types/onitama';
+import { ECardType, EGameEvent, EPlayerColor, IGame, IGamePlayerData, IPlayer, TBoard } from 'common/types/onitama';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
 import { equalsCoords } from 'common/utilities/coords';
 
 const ALL_CARDS = Object.values(ECardType);
 
 export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
-  players: IPlayer[];
-
+  playersData: IGamePlayerData[];
   activePlayerIndex = 0;
   board: TBoard = [
     times(5, (index) => ({ color: EPlayerColor.BLUE, isMaster: index === 2 })),
@@ -22,10 +21,13 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
   ];
   fifthCard = ECardType.TIGER;
 
-  constructor(players: IPlayer[]) {
-    super();
+  constructor(context: IEntityContext<EGame.ONITAMA>) {
+    super(context);
 
-    this.players = players;
+    this.playersData = this.getPlayersData(({ index }) => ({
+      color: index === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
+      cards: [],
+    }));
   }
 
   *lifecycle() {
@@ -33,23 +35,21 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];
 
-    for (const player of this.players) {
+    for (const { cards } of this.playersData) {
       for (let i = 0; i < 2; i++) {
-        player.cards.push(getCard());
+        cards.push(getCard());
       }
     }
 
     this.fifthCard = getCard();
-
-    this.players[1].color = EPlayerColor.RED;
 
     while (true) {
       const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
       });
 
-      const activePlayer = this.players[this.activePlayerIndex];
-      const [playedCard] = activePlayer.cards.splice(cardIndex, 1, this.fifthCard);
+      const { cards } = this.playersData[this.activePlayerIndex];
+      const [playedCard] = cards.splice(cardIndex, 1, this.fifthCard);
       const toPiece = this.board[to.y][to.x];
 
       this.board[to.y][to.x] = this.board[from.y][from.x];
@@ -72,10 +72,14 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
     }
   }
 
+  getGamePlayers(): IPlayer[] {
+    return this.getPlayersWithData(({ index }) => this.playersData[index]);
+  }
+
   toJSON(): IGame {
     return {
       board: this.board,
-      players: this.players,
+      players: this.getGamePlayers(),
       fifthCard: this.fifthCard,
       activePlayerIndex: this.activePlayerIndex,
     };

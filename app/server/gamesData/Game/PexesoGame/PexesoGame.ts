@@ -10,7 +10,7 @@ export default class PexesoGame extends Game<EGame.PEXESO> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
-  gameEntity = this.initMainGameEntity(new PexesoGameEntity(this.players, this.options));
+  gameEntity = this.initMainGameEntity((context) => new PexesoGameEntity(context));
 
   createPlayer(roomPlayer: IGamePlayer): IGamePlayer {
     return roomPlayer;

@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 
-import { EGame, TGameEvent, TGameEventData } from 'common/types/game';
+import { EGame, TGameEvent, TGameEventData, TGameOptions, TGamePlayer } from 'common/types/game';
 
 import Game from 'server/gamesData/Game/Game';
 
-interface IEntityContext<G extends EGame> {
+export interface IEntityContext<G extends EGame> {
   game: Game<G>;
 }
 
@@ -59,7 +59,17 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
   #lifecycle: Promise<Result> | null = null;
   #parent: GameEntity<Game> | null = null;
   #abortCallbacks = new Set<TAbortCallback>();
-  context: IEntityContext<Game> | null = null;
+  context: IEntityContext<Game>;
+  options: TGameOptions<Game>;
+  players: TGamePlayer<Game>[];
+
+  constructor(parentOrContext: IEntityContext<Game> | GameEntity<Game>) {
+    const context = parentOrContext instanceof GameEntity ? parentOrContext.context : parentOrContext;
+
+    this.context = context;
+    this.options = context.game.options;
+    this.players = context.game.players;
+  }
 
   protected abstract lifecycle(): TGenerator<Result>;
 
@@ -69,14 +79,6 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     return () => {
       this.#abortCallbacks.delete(abortCallback);
     };
-  }
-
-  #getContext(): IEntityContext<Game> {
-    if (!this.context) {
-      throw new Error('No context. You need to spawn entities using spawnEntity');
-    }
-
-    return this.context;
   }
 
   #getGeneratorResult<Result>(generator: TGenerator<Result>): IGeneratorResult<Result> {
@@ -199,6 +201,21 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     }
   }
 
+  getPlayersData<Data>(mapper: (player: TGamePlayer<Game>) => Data): Data[] {
+    return this.players.map((player) => mapper(player));
+  }
+
+  getPlayersWithData<Data>(mapper: (player: TGamePlayer<Game>) => Data): (TGamePlayer<Game> & { data: Data })[] {
+    return this.players.map((player) => ({
+      ...player,
+      data: mapper(player),
+    }));
+  }
+
+  get playersCount(): number {
+    return this.players.length;
+  }
+
   *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
     return yield (resolve, reject) => {
       const cancels = generators.map((generator) => {
@@ -272,7 +289,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     data: TGameEventData<Game, Event>,
     socket?: Socket,
   ): void {
-    this.#getContext().game.sendSocketEvent(event, data, socket);
+    this.context.game.sendSocketEvent(event, data, socket);
   }
 
   spawnEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
@@ -309,9 +326,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     options: IWaitForPlayerSocketEventOptions<Game, Event>,
   ): TEffectGenerator<TGameEventData<Game, Event>> {
     return yield (resolve) => {
-      const { game } = this.#getContext();
-
-      return game.listenSocketEvent(
+      return this.context.game.listenSocketEvent(
         event,
         (data) => {
           try {
@@ -332,7 +347,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     options?: IWaitForSocketEventOptions<Game, Event>,
   ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
-      this.#getContext().game.listenSocketEvent(event, (data, playerIndex) => {
+      this.context.game.listenSocketEvent(event, (data, playerIndex) => {
         try {
           if (options?.validate?.(data) ?? true) {
             resolve({

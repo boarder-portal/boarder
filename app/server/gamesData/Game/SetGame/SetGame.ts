@@ -10,7 +10,7 @@ export default class SetGame extends Game<EGame.SET> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
-  gameEntity = this.initMainGameEntity(new SetGameEntity(this.players));
+  gameEntity = this.initMainGameEntity((context) => new SetGameEntity(context));
 
   createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {

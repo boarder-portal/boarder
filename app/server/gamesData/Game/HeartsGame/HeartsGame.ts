@@ -10,7 +10,7 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
-  gameEntity = this.initMainGameEntity(new HeartsGameEntity(this.players));
+  gameEntity = this.initMainGameEntity((context) => new HeartsGameEntity(context));
 
   createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {

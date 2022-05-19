@@ -12,7 +12,7 @@ import {
 } from 'common/constants/games/set';
 
 import { EGame } from 'common/types/game';
-import { ECardColor, ECardFill, ECardShape, EGameEvent, ICard, IGame, IPlayer, ISendSetEvent } from 'common/types/set';
+import { ECardColor, ECardFill, ECardShape, EGameEvent, ICard, IGame, ISendSetEvent } from 'common/types/set';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
@@ -22,16 +22,8 @@ import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
 
 export default class SetGame extends GameEntity<EGame.SET> {
-  players: IPlayer[];
-
   cardsStack: ICard[] = [];
   maxCardsToShow = START_CARDS_COUNT;
-
-  constructor(players: IPlayer[]) {
-    super();
-
-    this.players = players;
-  }
 
   *lifecycle() {
     const notShuffledCardsStack: ICard[] = [];

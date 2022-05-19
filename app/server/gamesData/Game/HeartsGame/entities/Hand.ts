@@ -7,7 +7,7 @@ import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { DECKS } from 'server/gamesData/Game/HeartsGame/constants';
 
 import { EGame } from 'common/types/game';
-import { EGameEvent, EHandStage, EPassDirection, IHand, IHandPlayerData, IPlayer } from 'common/types/hearts';
+import { EGameEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
@@ -31,7 +31,6 @@ export interface IHandOptions {
 
 export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   game: HeartsGame;
-  players: IPlayer[];
 
   stage: EHandStage;
   playersData: IHandPlayerData[];
@@ -40,10 +39,9 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   turn: Turn | null = null;
 
   constructor(game: HeartsGame, options: IHandOptions) {
-    super();
+    super(game);
 
     this.game = game;
-    this.players = game.players;
     this.stage = options.startStage;
     this.playersData = game.players.map(() => ({
       hand: [],
@@ -53,8 +51,8 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   }
 
   *lifecycle() {
-    const deck = shuffle(DECKS[this.players.length]);
-    const shuffledDeck = chunk(deck, deck.length / this.players.length);
+    const deck = shuffle(DECKS[this.playersCount]);
+    const shuffledDeck = chunk(deck, deck.length / this.playersCount);
 
     this.players.forEach((player, playerIndex) => {
       this.playersData[playerIndex].hand = shuffledDeck[playerIndex];
@@ -134,21 +132,21 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   }
 
   getTargetPlayerIndex(playerIndex: number): number {
-    const { players, passDirection } = this.game;
+    const { passDirection } = this.game;
 
     if (passDirection === EPassDirection.NONE) {
       return playerIndex;
     }
 
     if (passDirection === EPassDirection.LEFT) {
-      return (playerIndex + 1) % players.length;
+      return (playerIndex + 1) % this.playersCount;
     }
 
     if (passDirection === EPassDirection.RIGHT) {
-      return (playerIndex - 1 + players.length) % players.length;
+      return (playerIndex - 1 + this.playersCount) % this.playersCount;
     }
 
-    return (playerIndex + 2) % players.length;
+    return (playerIndex + 2) % this.playersCount;
   }
 
   sortHands(): void {

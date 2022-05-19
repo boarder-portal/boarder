@@ -1,5 +1,5 @@
 import { EGame } from 'common/types/game';
-import { EGameEvent, IGameOptions, ITurn } from 'common/types/pexeso';
+import { EGameEvent, ITurn } from 'common/types/pexeso';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
@@ -11,16 +11,14 @@ export interface ITurnOptions {
 
 export default class Turn extends GameEntity<EGame.PEXESO, number[]> {
   game: PexesoGame;
-  options: IGameOptions;
   activePlayerIndex: number;
 
   openedCardsIndexes: number[] = [];
 
   constructor(game: PexesoGame, options: ITurnOptions) {
-    super();
+    super(game);
 
     this.game = game;
-    this.options = game.options;
     this.activePlayerIndex = options.activePlayerIndex;
   }
 

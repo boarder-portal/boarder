@@ -20,7 +20,7 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
   return (
     <div>
       <Box flex between={8} alignItems="center">
-        {player.cards.map((card, index) => (
+        {player.data.cards.map((card, index) => (
           <OnitamaCard
             key={card}
             card={card}

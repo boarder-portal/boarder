@@ -11,14 +11,12 @@ import {
   EShuffleType,
   ICard,
   IGame,
-  IGameOptions,
   IGamePlayerData,
   IPlayer,
   IShuffleCardsIndexes,
 } from 'common/types/pexeso';
-import { IGamePlayer } from 'common/types';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
 
 import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
@@ -27,9 +25,6 @@ const OPEN_CLOSE_ANIMATION_DURATION = 300;
 const OPEN_DURATION = 1600;
 
 export default class PexesoGame extends GameEntity<EGame.PEXESO> {
-  players: IGamePlayer[];
-  options: IGameOptions;
-
   cards: ICard[] = [];
   playersData: IGamePlayerData[] = [];
   activePlayerIndex = 0;
@@ -37,14 +32,12 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
   turn: Turn | null = null;
 
-  constructor(players: IGamePlayer[], options: IGameOptions) {
-    super();
+  constructor(context: IEntityContext<EGame.PEXESO>) {
+    super(context);
 
-    this.players = players;
-    this.playersData = players.map(() => ({
+    this.playersData = this.getPlayersData(() => ({
       score: 0,
     }));
-    this.options = options;
   }
 
   *lifecycle() {
@@ -105,7 +98,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
               : this.shuffleCards(openedCardsIndexes),
         });
       } else {
-        this.activePlayerIndex = (this.activePlayerIndex + 1) % this.players.length;
+        this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
 
         this.sendSocketEvent(EGameEvent.HIDE_CARDS, {
           indexes: openedCardsIndexes,
@@ -127,10 +120,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   }
 
   getGamePlayers(): IPlayer[] {
-    return this.players.map((player) => ({
-      ...player,
-      data: this.playersData[player.index],
-    }));
+    return this.getPlayersWithData(({ index }) => this.playersData[index]);
   }
 
   isCardInGame(cardIndex: number): boolean {

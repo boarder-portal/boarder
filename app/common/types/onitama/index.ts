@@ -11,9 +11,13 @@ export enum EGameEvent {
 
 export interface IGameOptions extends ICommonGameOptions {}
 
-export interface IPlayer extends ICommonPlayer {
+export interface IGamePlayerData {
   cards: ECardType[];
   color: EPlayerColor;
+}
+
+export interface IPlayer extends ICommonPlayer {
+  data: IGamePlayerData;
 }
 
 export enum ECardType {
@@ -72,7 +76,7 @@ declare module 'common/types/game' {
     [EGame.ONITAMA]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: IPlayer;
+      player: ICommonPlayer;
     };
   }
 }

@@ -23,7 +23,7 @@ interface IOnitamaGameProps extends IGameProps<EGame.ONITAMA> {}
 
 const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IPlayer): ICoords[] => {
   const cells: ICoords[] = [];
-  const isFlipped = player.color === EPlayerColor.RED;
+  const isFlipped = player.data.color === EPlayerColor.RED;
 
   ALL_CARDS[card].forEach(([y, x]) => {
     const toCell: ICoords = {
@@ -36,7 +36,7 @@ const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IP
       toCell.x < 5 &&
       toCell.y > -1 &&
       toCell.y < 5 &&
-      board[toCell.y][toCell.x]?.color !== player.color
+      board[toCell.y][toCell.x]?.color !== player.data.color
     ) {
       cells.push(toCell);
     }
@@ -58,7 +58,7 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const [player, setPlayer] = useState<IPlayer | null>(null);
 
   const user = useRecoilValue(userAtom);
-  const isFlipped = player?.color === EPlayerColor.RED;
+  const isFlipped = player?.data.color === EPlayerColor.RED;
 
   const handleCellClick = (cell: ICoords) => {
     if (!player || player.index !== activePlayerIndex) {
@@ -67,11 +67,11 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
 
     const piece = board[cell.y][cell.x];
 
-    if (piece?.color === player.color) {
+    if (piece?.color === player.data.color) {
       setSelectedFrom(cell);
 
       if (selectedCardIndex !== -1) {
-        setLegalMoves(getLegalMoves(cell, player.cards[selectedCardIndex], board, player));
+        setLegalMoves(getLegalMoves(cell, player.data.cards[selectedCardIndex], board, player));
       }
     } else if (selectedFrom && legalMoves.some(equalsCoordsCb(cell))) {
       const movePieceEvent: IMovePieceEvent = {
@@ -87,12 +87,12 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   const handleCardClick = useCallback(
     (card: ECardType) => {
       if (player?.index === activePlayerIndex) {
-        const selectedCardIndex = player.cards.indexOf(card);
+        const selectedCardIndex = player.data.cards.indexOf(card);
 
         setSelectedCardIndex(selectedCardIndex);
 
         if (selectedFrom) {
-          setLegalMoves(getLegalMoves(selectedFrom, player.cards[selectedCardIndex], board, player));
+          setLegalMoves(getLegalMoves(selectedFrom, player.data.cards[selectedCardIndex], board, player));
         }
       }
     },

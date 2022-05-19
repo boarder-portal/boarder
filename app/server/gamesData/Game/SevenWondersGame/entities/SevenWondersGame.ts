@@ -49,17 +49,9 @@ interface IAgePhase {
 }
 
 export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
-  players: IPlayer[];
-
   phase: ILeadersDraftPhase | IAgePhase | null = null;
   discard: ICard[] = [];
   leadersDeck: ICard[] = [];
-
-  constructor(players: IPlayer[]) {
-    super();
-
-    this.players = players;
-  }
 
   *lifecycle() {
     const shuffledCities = shuffle(ALL_CITIES);

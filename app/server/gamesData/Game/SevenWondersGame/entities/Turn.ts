@@ -7,7 +7,6 @@ import {
   EGamePhase,
   EWaitingActionType,
   IExecuteActionEvent,
-  IPlayer,
   ITurn,
   ITurnPlayerData,
   TWaitingAction,
@@ -33,17 +32,15 @@ interface IBotMoveResult {
 
 export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
   game: SevenWondersGame;
-  players: IPlayer[];
 
   playersData: ITurnPlayerData[];
   getWaitingActions: ITurnOptions['getWaitingActions'];
   executeActions: ITurnOptions['executeActions'];
 
   constructor(game: SevenWondersGame, options: ITurnOptions) {
-    super();
+    super(game);
 
     this.game = game;
-    this.players = game.players;
     this.playersData = this.players.map(() => ({
       receivedCoins: 0,
       chosenActionEvent: null,

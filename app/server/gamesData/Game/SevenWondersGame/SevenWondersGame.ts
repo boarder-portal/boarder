@@ -49,7 +49,7 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
       });
     });
 
-    this.gameEntity = this.initMainGameEntity(new SevenWondersGameEntity(this.players));
+    this.gameEntity = this.initMainGameEntity((context) => new SevenWondersGameEntity(context));
   }
 
   delete(): void {

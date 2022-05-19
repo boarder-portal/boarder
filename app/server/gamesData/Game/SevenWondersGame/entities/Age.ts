@@ -45,7 +45,6 @@ export interface IAgeOptions {
 
 export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
   game: SevenWondersGame;
-  players: IPlayer[];
 
   age: number;
   phase = EAgePhase.RECRUIT_LEADERS;
@@ -54,10 +53,9 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
   turn: Turn | null = null;
 
   constructor(game: SevenWondersGame, options: IAgeOptions) {
-    super();
+    super(game);
 
     this.game = game;
-    this.players = game.players;
     this.age = options.age;
     this.playersData = this.players.map(() => ({
       hand: [],

@@ -59,8 +59,6 @@ interface IAttachPlayerCardOptions {
 }
 
 export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
-  players: IPlayer[];
-
   activePlayerIndex = 0;
   deck: ICard[] = shuffle(
     cloneDeep(ALL_CARDS)
@@ -72,12 +70,6 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   lastId = 1;
 
   turn: Turn | null = null;
-
-  constructor(players: IPlayer[]) {
-    super();
-
-    this.players = players;
-  }
 
   *lifecycle() {
     this.attachCard({

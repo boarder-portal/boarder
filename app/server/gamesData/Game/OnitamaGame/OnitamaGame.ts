@@ -1,4 +1,4 @@
-import { EGameEvent, EPlayerColor, IPlayer } from 'common/types/onitama';
+import { EGameEvent } from 'common/types/onitama';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
 import { EGame } from 'common/types/game';
@@ -10,13 +10,11 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
-  gameEntity = this.initMainGameEntity(new OnitamaGameEntity(this.players));
+  gameEntity = this.initMainGameEntity((context) => new OnitamaGameEntity(context));
 
-  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
+  createPlayer(roomPlayer: ICommonPlayer): ICommonPlayer {
     return {
       ...roomPlayer,
-      cards: [],
-      color: EPlayerColor.BLUE,
     };
   }
 

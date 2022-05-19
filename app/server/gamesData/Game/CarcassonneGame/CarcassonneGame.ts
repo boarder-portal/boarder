@@ -12,7 +12,7 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
-  gameEntity = this.initMainGameEntity(new CarcassonneGameEntity(this.players));
+  gameEntity = this.initMainGameEntity((context) => new CarcassonneGameEntity(context));
 
   createPlayer(roomPlayer: ICommonPlayer): IPlayer {
     return {

@@ -1,5 +1,3 @@
-import times from 'lodash/times';
-
 import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/cards';
 import { EGameEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
@@ -23,19 +21,17 @@ export interface ITurnOptions {
 export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
   game: HeartsGame;
   hand: Hand;
-  playersCount: number;
 
   playersData: ITurnPlayerData[];
   startPlayerIndex: number;
   activePlayerIndex: number;
 
   constructor(hand: Hand, options: ITurnOptions) {
-    super();
+    super(hand);
 
     this.game = hand.game;
     this.hand = hand;
-    this.playersCount = this.game.players.length;
-    this.playersData = times(this.playersCount, () => ({
+    this.playersData = this.getPlayersData(() => ({
       playedCard: null,
     }));
     this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;

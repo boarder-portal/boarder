@@ -17,7 +17,7 @@ import {
 } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
 import removeNamespace from 'server/utilities/removeNamespace';
 
 import ioInstance from 'server/io';
@@ -149,10 +149,10 @@ abstract class Game<Game extends EGame> {
     return this.players.find((player) => player.login === login);
   }
 
-  initMainGameEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
-    entity.context = {
+  initMainGameEntity<Entity extends GameEntity<Game>>(callback: (context: IEntityContext<Game>) => Entity): Entity {
+    const entity = callback({
       game: this,
-    };
+    });
 
     (async () => {
       await entity.run();
