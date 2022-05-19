@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
+import { IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
@@ -20,8 +20,6 @@ interface IBuildCardActionsProps {
   card: ICard;
   cardIndex: number;
   player: IPlayer;
-  agePlayerData: IAgePlayerData | null;
-  turnPlayerData: ITurnPlayerData | null;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
   resourceTradePrices: TResourceTradePrices;
@@ -35,8 +33,6 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     card,
     cardIndex,
     player,
-    agePlayerData,
-    turnPlayerData,
     leftNeighbor,
     rightNeighbor,
     resourceTradePrices,
@@ -59,8 +55,6 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
     cardResourcePools,
     resourceTradePrices,
     player,
-    agePlayerData,
-    turnPlayerData,
     leftNeighbor,
     rightNeighbor,
     onCardAction,
@@ -69,8 +63,7 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
   const cardBuildFreeWithEffectInfo = useCardBuildFreeWithEffectInfo(
     card,
     cardIndex,
-    turnPlayerData?.waitingForAction ?? null,
-    agePlayerData?.buildEffects ?? [],
+    player,
     onCardAction,
     onStartCopyingLeader,
   );
@@ -126,8 +119,8 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
   }, [cardBuildInfo.type, cardBuildFreeWithEffectInfo.isAvailable, cardBuildFreeWithEffectInfo.isPurchaseAvailable]);
 
   const availableTradeVariants = useMemo(() => {
-    return cardBuildInfo.tradeVariants.filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.coins);
-  }, [cardBuildInfo.tradeVariants, player.coins]);
+    return cardBuildInfo.tradeVariants.filter(({ payments }) => payments.LEFT + payments.RIGHT <= player.data.coins);
+  }, [cardBuildInfo.tradeVariants, player.data.coins]);
 
   return (
     <>

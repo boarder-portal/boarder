@@ -2,11 +2,11 @@ import { EAgePhase, EGamePhase, TWaitingAction } from 'common/types/sevenWonders
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EFreeCardSource, IBuildCardEffect } from 'common/types/sevenWonders/effects';
 
-import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
 export interface IGetPlayerHandCardsOptions {
-  waitingForAction: TWaitingAction | null;
-  buildCardEffects: IBuildCardEffect[];
+  waitingForAction: TWaitingAction | null | undefined;
+  buildCardEffects: IBuildCardEffect[] | undefined;
   gamePhase: EGamePhase | null;
   agePhase: EAgePhase | null;
   discard: ICard[];

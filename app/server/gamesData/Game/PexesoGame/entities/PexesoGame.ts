@@ -11,8 +11,8 @@ import {
   EShuffleType,
   ICard,
   IGame,
-  IGamePlayerData,
   IPlayer,
+  IPlayerData,
   IShuffleCardsIndexes,
 } from 'common/types/pexeso';
 
@@ -26,7 +26,7 @@ const OPEN_DURATION = 1600;
 
 export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   cards: ICard[] = [];
-  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+  playersData: IPlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));
   activePlayerIndex = 0;

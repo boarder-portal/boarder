@@ -1,15 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import {
-  ECardActionType,
-  EPlayerDirection,
-  IAgePlayerData,
-  IPlayer,
-  ITurnPlayerData,
-  TAction,
-  TBuildType,
-  TPayments,
-} from 'common/types/sevenWonders';
+import { ECardActionType, EPlayerDirection, IPlayer, TAction, TBuildType, TPayments } from 'common/types/sevenWonders';
 import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import {
   EBuildType,
@@ -53,7 +44,7 @@ function getTitle(buildType: EBuildType): string {
 
 function getPlayerDiscount(card: ICard, player: IPlayer, direction: EPlayerDirection): number {
   return Math.max(
-    ...getAllPlayerEffects(player)
+    ...getAllPlayerEffects(player.data)
       .filter(isReducedPriceEffect)
       .filter((effect) => effect.objectType === card.type && effect.direction === direction)
       .map((effect) => effect.discount.coins || 0),
@@ -75,8 +66,6 @@ export default function useCardBuildInfo(
   resourcePools: IOwnerResource[][],
   resourceTradePrices: TResourceTradePrices,
   player: IPlayer,
-  agePlayerData: IAgePlayerData | null,
-  turnPlayerData: ITurnPlayerData | null,
   leftNeighbor: IPlayer,
   rightNeighbor: IPlayer,
   onCardAction: (action: TAction, payments?: TPayments) => void,
@@ -93,16 +82,8 @@ export default function useCardBuildInfo(
     [card, leftNeighbor, player, rightNeighbor],
   );
   const type = useMemo(
-    () =>
-      getCardBuildType(
-        card,
-        player,
-        turnPlayerData?.waitingForAction ?? null,
-        agePlayerData?.buildEffects ?? [],
-        tradeVariants,
-        discount,
-      ),
-    [agePlayerData, card, discount, player, tradeVariants, turnPlayerData],
+    () => getCardBuildType(card, player, tradeVariants, discount),
+    [card, discount, player, tradeVariants],
   );
 
   const title = useMemo(() => getTitle(type), [type]);

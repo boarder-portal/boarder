@@ -1,15 +1,15 @@
-import { IPlayer } from 'common/types/sevenWonders';
+import { IGamePlayerData } from 'common/types/sevenWonders';
 import { TEffect } from 'common/types/sevenWonders/effects';
 
-import getCity from 'common/utilities/sevenWonders/getCity';
+import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
 
-export default function getAllPlayerEffects(player: IPlayer): TEffect[] {
-  const citySide = getCity(player.city, player.citySide);
+export default function getAllPlayerEffects(playerData: IGamePlayerData): TEffect[] {
+  const citySide = getPlayerCity(playerData);
 
   return [
-    ...player.builtCards.map(({ effects }) => effects),
-    ...player.builtStages.map(({ index }) => citySide.wonders[index].effects),
+    ...playerData.builtCards.map(({ effects }) => effects),
+    ...playerData.builtStages.map(({ index }) => citySide.wonders[index].effects),
     ...citySide.effects,
-    ...(player.copiedCard?.effects ?? []),
+    ...(playerData.copiedCard?.effects ?? []),
   ].flat();
 }

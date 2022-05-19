@@ -18,7 +18,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
   *lifecycle() {
     while (this.playersData.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
-      this.passDirection = PASS_DIRECTIONS[this.players.length][this.handIndex % this.players.length];
+      this.passDirection = PASS_DIRECTIONS[this.playersCount][this.handIndex % this.players.length];
 
       this.hand = this.spawnEntity(
         new Hand(this, {

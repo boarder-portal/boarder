@@ -55,12 +55,12 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
       onCardAction(
         {
           type: ECardActionType.BUILD_WONDER_STAGE,
-          stageIndex: player.builtStages.length,
+          stageIndex: player.data.builtStages.length,
         },
         payments,
       );
     },
-    [onCardAction, player.builtStages.length],
+    [onCardAction, player.data.builtStages.length],
   );
 
   const handleClick = useCallback(() => {

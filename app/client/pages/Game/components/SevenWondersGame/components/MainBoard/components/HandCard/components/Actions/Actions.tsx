@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { EGamePhase, IAgePlayerData, IPlayer, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
+import { EGamePhase, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
 import {
   IOwnerResource,
   ISevenWondersCourtesansBuildInfo,
@@ -21,8 +21,6 @@ interface IActionsProps {
   cardIndex: number;
   card: ICard;
   player: IPlayer;
-  agePlayerData: IAgePlayerData | null;
-  turnPlayerData: ITurnPlayerData | null;
   leftNeighbor: IPlayer;
   rightNeighbor: IPlayer;
   isChosen: boolean;
@@ -42,8 +40,6 @@ const Actions: React.FC<IActionsProps> = (props) => {
     className,
     cardIndex,
     player,
-    agePlayerData,
-    turnPlayerData,
     leftNeighbor,
     rightNeighbor,
     card,
@@ -89,8 +85,6 @@ const Actions: React.FC<IActionsProps> = (props) => {
     <BuildActions
       className={className}
       player={player}
-      agePlayerData={agePlayerData}
-      turnPlayerData={turnPlayerData}
       cardIndex={cardIndex}
       card={card}
       leftNeighbor={leftNeighbor}

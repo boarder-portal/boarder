@@ -7,7 +7,6 @@ import {
   EGamePhase,
   EWaitingActionType,
   IExecuteActionEvent,
-  ITurn,
   ITurnPlayerData,
   TWaitingAction,
 } from 'common/types/sevenWonders';
@@ -55,7 +54,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
   *lifecycle() {
     while (this.isWaitingForActions()) {
       while (this.isWaitingForActions()) {
-        const firstWaitingBotIndex = this.players.findIndex(
+        const firstWaitingBotIndex = this.game.playersData.findIndex(
           ({ isBot }, index) => isBot && this.isWaitingForAction(this.playersData[index]),
         );
 
@@ -98,7 +97,6 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
     yield* this.delay(random(200, 1000, true));
 
     const { waitingForAction } = this.playersData[playerIndex];
-    const player = this.players[playerIndex];
 
     const hand = getPlayerHandCards({
       waitingForAction,
@@ -110,7 +108,7 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
         this.game.phase?.type === EGamePhase.DRAFT_LEADERS
           ? this.game.phase.leadersDraft.playersData[playerIndex].leadersPool
           : [],
-      leadersHand: player.leadersHand,
+      leadersHand: this.game.playersData[playerIndex].leadersHand,
       hand: this.game.phase?.type === EGamePhase.AGE ? this.game.phase.age.playersData[playerIndex].hand : [],
       discard: this.game.discard,
     });
@@ -131,12 +129,6 @@ export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
               },
       },
       playerIndex,
-    };
-  }
-
-  toJSON(): ITurn {
-    return {
-      playersData: this.playersData,
     };
   }
 }

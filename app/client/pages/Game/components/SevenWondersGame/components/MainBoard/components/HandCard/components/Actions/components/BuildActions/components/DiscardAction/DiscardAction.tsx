@@ -1,24 +1,20 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { ECardActionType, IAgePlayerData, ITurnPlayerData, TAction, TPayments } from 'common/types/sevenWonders';
+import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
 
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 
 import Box from 'client/components/common/Box/Box';
 
 interface IDiscardActionProps {
-  agePlayerData: IAgePlayerData | null;
-  turnPlayerData: ITurnPlayerData | null;
+  player: IPlayer;
   onCardAction(action: TAction, payments?: TPayments): void;
 }
 
 const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
-  const { agePlayerData, turnPlayerData, onCardAction } = props;
+  const { player, onCardAction } = props;
 
-  const possibleBuildActions = getPossibleBuildActions(
-    turnPlayerData?.waitingForAction ?? null,
-    agePlayerData?.buildEffects ?? [],
-  );
+  const possibleBuildActions = getPossibleBuildActions(player);
 
   const isAvailable = useMemo(() => {
     return possibleBuildActions.includes(ECardActionType.DISCARD);

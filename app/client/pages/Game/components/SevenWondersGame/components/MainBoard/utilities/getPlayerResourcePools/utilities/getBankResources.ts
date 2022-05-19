@@ -13,7 +13,7 @@ import isNotUndefined from 'common/utilities/isNotUndefined';
 import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
 
 export default function getBankResources(player: IPlayer): IOwnerResource[][] {
-  const tradeEffects = getAllPlayerEffects(player).filter(isTradeEffect);
+  const tradeEffects = getAllPlayerEffects(player.data).filter(isTradeEffect);
 
   const bankTradeResources = tradeEffects
     .map((effect): IResource[] | undefined => {

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { EWaitingActionType, IAgePlayerData, IPlayer, ITurnPlayerData } from 'common/types/sevenWonders';
+import { EWaitingActionType, IPlayer } from 'common/types/sevenWonders';
 import { EFreeCardSource } from 'common/types/sevenWonders/effects';
 import { ECardId } from 'common/types/sevenWonders/cards';
 
@@ -17,8 +17,6 @@ import styles from './Wonder.pcss';
 interface IWonderProps {
   className?: string;
   player: IPlayer;
-  agePlayerData: IAgePlayerData | null;
-  turnPlayerData: ITurnPlayerData | null;
   copiedLeaderId?: ECardId;
   isOtherPlayer?: boolean;
 }
@@ -27,17 +25,17 @@ const GROUP_HEIGHT = 125;
 const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
 
 const Wonder: React.FC<IWonderProps> = (props) => {
-  const { className, player, agePlayerData, turnPlayerData, copiedLeaderId, isOtherPlayer } = props;
+  const { className, player, copiedLeaderId, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
 
   const currentAction = useMemo(() => {
-    if (turnPlayerData?.chosenActionEvent || !turnPlayerData?.waitingForAction) {
+    if (player.data.turn?.chosenActionEvent || !player.data.turn?.waitingForAction) {
       return 'Ожидает';
     }
 
-    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
-      const buildEffect = agePlayerData?.buildEffects[turnPlayerData.waitingForAction.buildEffectIndex];
+    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
+      const buildEffect = player.data.age?.buildEffects[player.data.turn.waitingForAction.buildEffectIndex];
 
       if (buildEffect?.source === EFreeCardSource.DISCARD) {
         return 'Выбор из сброса';
@@ -50,22 +48,22 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       return 'Строительство последней карты';
     }
 
-    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
+    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
       return 'Выбирает лидера';
     }
 
-    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
+    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
       return 'Нанимает лидера';
     }
 
-    if (turnPlayerData?.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
+    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
       return 'Выбирает карту';
     }
-  }, [agePlayerData, turnPlayerData]);
+  }, [player.data.age, player.data.turn]);
 
   const warPoints = useMemo(
-    () => [...player.victoryPoints, ...player.defeatPoints],
-    [player.defeatPoints, player.victoryPoints],
+    () => [...player.data.victoryPoints, ...player.data.defeatPoints],
+    [player.data.defeatPoints, player.data.victoryPoints],
   );
 
   return (
@@ -96,9 +94,12 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       </Box>
 
       <div className={styles.wonderImageWrapper}>
-        <Image className={styles.wonderCard} src={`/sevenWonders/cities/${player.city}/${player.citySide}.png`} />
+        <Image
+          className={styles.wonderCard}
+          src={`/sevenWonders/cities/${player.data.city}/${player.data.citySide}.png`}
+        />
 
-        {player.builtStages.map((builtStage, index) => (
+        {player.data.builtStages.map((builtStage, index) => (
           <BackCard
             key={index}
             className={styles.builtStage}
@@ -110,8 +111,8 @@ const Wonder: React.FC<IWonderProps> = (props) => {
 
       <Box flex between={8} mt={16}>
         <div>{player.login}</div>
-        {player.points > 0 && <div>{`Очки: ${player.points}`}</div>}
-        <div>{`Монет: ${player.coins}`}</div>
+        {player.data.points > 0 && <div>{`Очки: ${player.data.points}`}</div>}
+        <div>{`Монет: ${player.data.coins}`}</div>
         {warPoints.length ? <div>{`Война ${warPoints.join(', ')}`}</div> : null}
         <div>{currentAction}</div>
       </Box>

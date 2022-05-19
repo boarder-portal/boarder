@@ -83,7 +83,7 @@ export type TWaitingAction =
   | IWaitingBuildCardAction
   | IWaitingEffectBuildCardAction;
 
-export interface IPlayer extends ICommonPlayer {
+export interface IGamePlayerData {
   points: number;
   builtCards: ICard[];
   city: ECity;
@@ -97,7 +97,17 @@ export interface IPlayer extends ICommonPlayer {
   copiedCard: ICard | null;
 }
 
-export interface ILeadersDraftPhase extends ILeadersDraft {
+export interface IPlayerData extends IGamePlayerData {
+  leadersDraft: ILeadersDraftPlayerData | null;
+  age: IAgePlayerData | null;
+  turn: ITurnPlayerData | null;
+}
+
+export interface IPlayer extends ICommonPlayer {
+  data: IPlayerData;
+}
+
+export interface ILeadersDraftPhase {
   type: EGamePhase.DRAFT_LEADERS;
 }
 
@@ -118,11 +128,6 @@ export interface ILeadersDraftPlayerData {
   leadersPool: ICard[];
 }
 
-export interface ILeadersDraft {
-  playersData: ILeadersDraftPlayerData[];
-  turn: ITurn | null;
-}
-
 export interface IAgePlayerData {
   hand: ICard[];
   buildEffects: IBuildCardEffect[];
@@ -131,18 +136,12 @@ export interface IAgePlayerData {
 export interface IAge {
   age: number;
   phase: EAgePhase;
-  playersData: IAgePlayerData[];
-  turn: ITurn | null;
 }
 
 export interface ITurnPlayerData {
   receivedCoins: number;
   chosenActionEvent: IExecuteActionEvent | null;
   waitingForAction: TWaitingAction | null;
-}
-
-export interface ITurn {
-  playersData: ITurnPlayerData[];
 }
 
 export enum ECardActionType {
@@ -251,7 +250,7 @@ declare module 'common/types/game' {
     [EGame.SEVEN_WONDERS]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: IPlayer;
+      player: ICommonPlayer;
     };
   }
 }

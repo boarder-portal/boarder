@@ -19,8 +19,8 @@ import {
   EGameEvent,
   ICard,
   IGame,
-  IGamePlayerData,
   IPlayer,
+  IPlayerData,
   ISendSetEvent,
 } from 'common/types/set';
 
@@ -32,7 +32,7 @@ import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
 
 export default class SetGame extends GameEntity<EGame.SET> {
-  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+  playersData: IPlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));
   cardsStack: ICard[] = [];

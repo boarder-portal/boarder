@@ -12,7 +12,6 @@ import {
   IAge,
   IAgePlayerData,
   IExecuteActionEvent,
-  IPlayer,
   ITurnPlayerData,
   TWaitingAction,
 } from 'common/types/sevenWonders';
@@ -21,8 +20,7 @@ import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/compon
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
-import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import {
   isBuildCardEffect,
@@ -32,7 +30,6 @@ import {
   isStructureInheritancePassiveEffect,
   isVictoryTokensCoinPassiveEffect,
 } from 'common/utilities/sevenWonders/isEffect';
-import getCity from 'common/utilities/sevenWonders/getCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import rotateObjects from 'common/utilities/rotateObjects';
 
@@ -103,9 +100,10 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
 
     const shuffledCards = chunk(shuffle(usedCards), usedCards.length / this.players.length);
 
-    this.playersData = this.players.map((player, index) => ({
+    this.playersData = this.players.map(({ index }) => ({
       hand: shuffledCards[index],
-      buildEffects: getAllPlayerEffects(player)
+      buildEffects: this.game
+        .getAllPlayerEffects(index)
         .filter(isBuildCardEffect)
         .filter((effect) => effect.period !== EFreeCardPeriod.NOW),
     }));
@@ -137,32 +135,31 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
 
     const ageVictoryPoints = 2 * this.age + 1;
 
-    this.players.forEach((player) => {
-      const effects = getAllPlayerEffects(player);
-      const playerShieldsCount = this.game.getPlayerShieldsCount(player);
+    this.players.forEach(({ index: playerIndex }) => {
+      const effects = this.game.getAllPlayerEffects(playerIndex);
+      const playerShieldsCount = this.game.getPlayerShieldsCount(playerIndex);
 
-      [this.game.getNeighbor(player, ENeighborSide.LEFT), this.game.getNeighbor(player, ENeighborSide.RIGHT)].forEach(
-        (neighbor) => {
-          const neighborShieldsCount = this.game.getPlayerShieldsCount(neighbor);
+      [
+        this.game.getNeighbor(playerIndex, ENeighborSide.LEFT),
+        this.game.getNeighbor(playerIndex, ENeighborSide.RIGHT),
+      ].forEach((neighbor) => {
+        const neighborShieldsCount = this.game.getPlayerShieldsCount(neighbor);
 
-          if (playerShieldsCount > neighborShieldsCount) {
-            player.victoryPoints.push(ageVictoryPoints);
+        if (playerShieldsCount > neighborShieldsCount) {
+          this.game.addVictoryToken(playerIndex, ageVictoryPoints);
 
-            effects.filter(isVictoryTokensCoinPassiveEffect).forEach((effect) => {
-              player.coins += effect.count;
-            });
-          } else if (playerShieldsCount < neighborShieldsCount) {
-            const defeatTokenTarget = effects.some(isReturnDefeatsEffect) ? neighbor : player;
-
-            defeatTokenTarget.defeatPoints.push(-1);
-          }
-        },
-      );
+          effects.filter(isVictoryTokensCoinPassiveEffect).forEach((effect) => {
+            this.game.changePlayerCoins(playerIndex, effect.count);
+          });
+        } else if (playerShieldsCount < neighborShieldsCount) {
+          this.game.addDefeatToken(effects.some(isReturnDefeatsEffect) ? neighbor : playerIndex);
+        }
+      });
     });
   }
 
   executePlayerAction(
-    player: IPlayer,
+    playerIndex: number,
     executeActionEvent: IExecuteActionEvent,
     waitingForAction: TWaitingAction,
     receivedCoins: number[],
@@ -173,7 +170,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
       return [];
     }
 
-    const { hand, buildEffects } = this.playersData[player.index];
+    const { hand, buildEffects } = this.playersData[playerIndex];
 
     const playerHandCards = getPlayerHandCards({
       waitingForAction,
@@ -181,7 +178,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
       gamePhase: this.game.phase?.type ?? null,
       agePhase: this.phase,
       leadersPool: [],
-      leadersHand: player.leadersHand,
+      leadersHand: this.game.playersData[playerIndex].leadersHand,
       hand,
       discard: this.game.discard,
     });
@@ -190,51 +187,51 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     const newEffects: TEffect[] = [];
 
     if (action.type === ECardActionType.BUILD_STRUCTURE) {
-      player.builtCards.push(card);
+      this.game.buildCard(playerIndex, card);
 
       if (!action.freeBuildType && !waitingBuildEffect?.isFree) {
-        player.coins -= Math.max(0, (card.price?.coins ?? 0) - (action.discount ?? 0));
+        this.game.changePlayerCoins(playerIndex, -Math.max(0, (card.price?.coins ?? 0) - (action.discount ?? 0)));
       }
 
       if (action.freeBuildType?.type === EBuildType.FREE_WITH_EFFECT) {
-        this.usePlayerBuildEffect(player, action.freeBuildType.effectIndex);
+        this.usePlayerBuildEffect(playerIndex, action.freeBuildType.effectIndex);
       }
 
       newEffects.push(...card.effects);
 
-      const effects = getAllPlayerEffects(player);
+      const effects = this.game.getAllPlayerEffects(playerIndex);
 
       if (card.type === ECardType.COMMERCIAL) {
         effects.filter(isCommercialCardsPassiveEffect).forEach((effect) => {
-          player.coins += effect.count;
+          this.game.changePlayerCoins(playerIndex, effect.count);
         });
       }
 
       if (action.freeBuildType?.type === EBuildType.FREE_BY_BUILDING) {
         effects.filter(isStructureInheritancePassiveEffect).forEach((effect) => {
-          player.coins += effect.count;
+          this.game.changePlayerCoins(playerIndex, effect.count);
         });
       }
 
       if (action.copiedCard) {
-        player.copiedCard = action.copiedCard;
+        this.game.copyCard(playerIndex, action.copiedCard);
 
         newEffects.push(...action.copiedCard.effects);
       }
     } else if (action.type === ECardActionType.BUILD_WONDER_STAGE) {
-      const city = getCity(player.city, player.citySide);
+      const city = this.game.getPlayerCity(playerIndex);
       const wonderLevel = city.wonders[action.stageIndex];
 
-      player.builtStages.push({
+      this.game.buildWonderStage(playerIndex, {
         index: action.stageIndex,
         card,
         cardType: card.type === ECardType.LEADER ? 'leader' : this.age,
       });
-      player.coins -= wonderLevel.price.coins ?? 0;
+      this.game.changePlayerCoins(playerIndex, -(wonderLevel.price.coins ?? 0));
 
       newEffects.push(...wonderLevel.effects);
     } else if (action.type === ECardActionType.DISCARD) {
-      player.coins += 3;
+      this.game.changePlayerCoins(playerIndex, 3);
 
       if (card.type !== ECardType.LEADER) {
         this.game.discardCards([card]);
@@ -244,15 +241,16 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     playerHandCards.splice(cardIndex, 1);
 
     if (waitingForAction.type === EWaitingActionType.EFFECT_BUILD_CARD) {
-      this.usePlayerBuildEffect(player, waitingForAction.buildEffectIndex);
+      this.usePlayerBuildEffect(playerIndex, waitingForAction.buildEffectIndex);
     }
 
     if (payments) {
       (Object.entries(payments) as [ENeighborSide, number][]).forEach(([neighborSide, payment]) => {
-        const neighbor = this.game.getNeighbor(player, neighborSide);
+        const neighbor = this.game.getNeighbor(playerIndex, neighborSide);
 
-        receivedCoins[neighbor.index] += payment;
-        player.coins -= payment;
+        receivedCoins[neighbor] += payment;
+
+        this.game.changePlayerCoins(playerIndex, -payment);
       });
     }
 
@@ -260,7 +258,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
       if (isBuildCardEffect(effect)) {
         buildEffects.push(effect);
       } else if (isDrawLeadersEffect(effect)) {
-        player.leadersHand.push(...this.game.extractFromLeadersDeck(effect.count));
+        this.game.addLeaders(playerIndex, effect.count);
       }
     });
 
@@ -270,22 +268,22 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
   executePlayersActions = (playersData: ITurnPlayerData[]): number[] => {
     const receivedCoins = this.players.map(() => 0);
     const newPlayersEffects: {
-      player: IPlayer;
+      playerIndex: number;
       effects: TEffect[];
     }[] = [];
 
     playersData.forEach(({ chosenActionEvent, waitingForAction }, index) => {
       if (chosenActionEvent && waitingForAction) {
         newPlayersEffects.push({
-          player: this.players[index],
-          effects: this.executePlayerAction(this.players[index], chosenActionEvent, waitingForAction, receivedCoins),
+          playerIndex: index,
+          effects: this.executePlayerAction(index, chosenActionEvent, waitingForAction, receivedCoins),
         });
       }
     });
 
-    newPlayersEffects.forEach(({ player, effects }) => {
+    newPlayersEffects.forEach(({ playerIndex, effects }) => {
       effects.forEach((effect) => {
-        player.coins += this.game.calculateEffectGain(effect, player)?.coins ?? 0;
+        this.game.changePlayerCoins(playerIndex, this.game.calculateEffectGain(effect, playerIndex)?.coins ?? 0);
       });
     });
 
@@ -383,18 +381,16 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
     return {
       age: this.age,
       phase: this.phase,
-      playersData: this.playersData,
-      turn: this.turn?.toJSON() ?? null,
     };
   }
 
-  usePlayerBuildEffect(player: IPlayer, effectIndex: number): void {
-    this.playersData[player.index].buildEffects.splice(effectIndex, 1);
+  usePlayerBuildEffect(playerIndex: number, effectIndex: number): void {
+    this.playersData[playerIndex].buildEffects.splice(effectIndex, 1);
   }
 
   withdrawPlayersCoins(receivedCoins: number[]): void {
-    this.players.forEach((player, index) => {
-      player.coins += receivedCoins[index];
+    this.players.forEach(({ index }) => {
+      this.game.changePlayerCoins(index, receivedCoins[index]);
     });
   }
 }

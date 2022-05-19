@@ -137,7 +137,7 @@ export interface IGoodsScore {
 
 export type TScore = IObjectScore | IGoodsScore;
 
-export interface IGamePlayerData {
+export interface IPlayerData {
   color: EPlayerColor;
   score: TScore[];
   cards: ICard[];
@@ -147,7 +147,7 @@ export interface IGamePlayerData {
 }
 
 export interface IPlayer extends ICommonPlayer {
-  data: IGamePlayerData;
+  data: IPlayerData;
 }
 
 export interface IPlacedMeeple {

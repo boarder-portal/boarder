@@ -16,7 +16,7 @@ export default function getObjectSpecificResources(
   player: IPlayer,
   objectType: ECardType | 'wonderLevel',
 ): IOwnerResource[][] {
-  const reducedPriceEffects = getAllPlayerEffects(player).filter(isReducedPriceEffect);
+  const reducedPriceEffects = getAllPlayerEffects(player.data).filter(isReducedPriceEffect);
 
   const reducesPriceResources = reducedPriceEffects
     .map((effect): IResource[] | undefined => {

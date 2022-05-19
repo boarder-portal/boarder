@@ -1,17 +1,16 @@
 import { useCallback, useMemo } from 'react';
 
-import { ECardActionType, TAction, TBuildType, TPayments, TWaitingAction } from 'common/types/sevenWonders';
+import { ECardActionType, IPlayer, TAction, TBuildType, TPayments } from 'common/types/sevenWonders';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { ECardId, ICard } from 'common/types/sevenWonders/cards';
-import { EEffect, EFreeCardPeriod, EFreeCardSource, IBuildCardEffect } from 'common/types/sevenWonders/effects';
+import { EEffect, EFreeCardPeriod, EFreeCardSource } from 'common/types/sevenWonders/effects';
 
-import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import { getPlayerWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
 export default function useCardBuildFreeWithEffectInfo(
   card: ICard,
   cardIndex: number,
-  waitingForAction: TWaitingAction | null,
-  buildCardEffects: IBuildCardEffect[],
+  player: IPlayer,
   onCardAction: (action: TAction, payments?: TPayments) => void,
   onStartCopyingLeader: (cardIndex: number, action: TAction, payments?: TPayments) => void,
 ): {
@@ -21,24 +20,28 @@ export default function useCardBuildFreeWithEffectInfo(
   onBuild(): void;
 } {
   const waitingBuildEffect = useMemo(() => {
-    return getWaitingBuildEffect(waitingForAction, buildCardEffects);
-  }, [buildCardEffects, waitingForAction]);
+    return getPlayerWaitingBuildEffect(player);
+  }, [player]);
 
   const infinityBuildEffectIndex = useMemo(() => {
-    return buildCardEffects
-      .filter((effect) => effect.count === undefined)
-      .findIndex((effect) => effect.cardTypes?.includes(card.type) ?? true);
-  }, [buildCardEffects, card.type]);
+    return (
+      player.data.age?.buildEffects
+        .filter((effect) => effect.count === undefined)
+        .findIndex((effect) => effect.cardTypes?.includes(card.type) ?? true) ?? -1
+    );
+  }, [card.type, player.data.age]);
 
   const buildEffectIndex = useMemo(() => {
     if (infinityBuildEffectIndex !== -1) {
       return infinityBuildEffectIndex;
     }
 
-    return buildCardEffects.findIndex(
-      (effect) => effect.period === EFreeCardPeriod.AGE && (effect.cardTypes?.includes(card.type) ?? true),
+    return (
+      player.data.age?.buildEffects.findIndex(
+        (effect) => effect.period === EFreeCardPeriod.AGE && (effect.cardTypes?.includes(card.type) ?? true),
+      ) ?? -1
     );
-  }, [buildCardEffects, card.type, infinityBuildEffectIndex]);
+  }, [card.type, infinityBuildEffectIndex, player.data.age]);
 
   const isAvailable = useMemo(() => {
     if (buildEffectIndex !== -1) {

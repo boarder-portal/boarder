@@ -1,4 +1,5 @@
 import shuffle from 'lodash/shuffle';
+import times from 'lodash/times';
 
 import { ALL_LEADERS } from 'common/constants/games/sevenWonders';
 
@@ -10,8 +11,11 @@ import {
   ENeighborSide,
   EPlayerDirection,
   EScientificSymbol,
+  ICitySide,
   IGame,
+  IGamePlayerData,
   IPlayer,
+  IWonderBuiltStage,
 } from 'common/types/sevenWonders';
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 import {
@@ -21,8 +25,9 @@ import {
   IScientificSymbolsEffect,
   TEffect,
 } from 'common/types/sevenWonders/effects';
+import { EPlayerStatus } from 'common/types';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import {
@@ -32,6 +37,7 @@ import {
   isShieldsEffect,
 } from 'common/utilities/sevenWonders/isEffect';
 import { getAllCombinations } from 'common/utilities/combinations';
+import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
 
 import Age from 'server/gamesData/Game/SevenWondersGame/entities/Age';
 import LeadersDraft from 'server/gamesData/Game/SevenWondersGame/entities/LeadersDraft';
@@ -49,20 +55,34 @@ interface IAgePhase {
 }
 
 export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
+  playersData: IGamePlayerData[] = this.getPlayersData(() => this.getPlayerInitialData(false));
   phase: ILeadersDraftPhase | IAgePhase | null = null;
   discard: ICard[] = [];
   leadersDeck: ICard[] = [];
+
+  constructor(context: IEntityContext<EGame.SEVEN_WONDERS>) {
+    super(context);
+
+    times(this.options.playersCount - this.players.length, (index) => {
+      this.players.push({
+        status: EPlayerStatus.DISCONNECTED,
+        login: `bot-${index}`,
+        index: this.players.length,
+      });
+      this.playersData.push(this.getPlayerInitialData(true));
+    });
+  }
 
   *lifecycle() {
     const shuffledCities = shuffle(ALL_CITIES);
 
     this.leadersDeck = shuffle(ALL_LEADERS);
 
-    this.players.forEach((player, playerIndex) => {
-      player.city = shuffledCities[playerIndex];
+    this.playersData.forEach((playerData, playerIndex) => {
+      playerData.city = shuffledCities[playerIndex];
 
-      getAllPlayerEffects(player).forEach((effect) => {
-        player.coins += this.calculateEffectGain(effect, player)?.coins ?? 0;
+      getAllPlayerEffects(playerData).forEach((effect) => {
+        playerData.coins += this.calculateEffectGain(effect, playerIndex)?.coins ?? 0;
       });
 
       // if (!player.isBot) {
@@ -97,8 +117,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
     const pickedLeaders = yield* this.phase.leadersDraft;
 
-    this.players.forEach((player, index) => {
-      player.leadersHand = pickedLeaders[index];
+    this.playersData.forEach((playerData, index) => {
+      playerData.leadersHand = pickedLeaders[index];
     });
 
     for (let age = 0; age < 3; age++) {
@@ -118,14 +138,36 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       this.sendGameInfo();
     }
 
-    this.players.forEach((player) => {
-      player.points = this.calculatePlayerMaxPoints(player);
+    this.playersData.forEach((playerData, playerIndex) => {
+      playerData.points = this.calculatePlayerMaxPoints(playerIndex);
     });
 
     this.sendGameInfo();
   }
 
-  calculateEffectGain(effect: TEffect, player: IPlayer): IGain | null {
+  addDefeatToken(playerIndex: number): void {
+    this.playersData[playerIndex].defeatPoints.push(-1);
+  }
+
+  addLeaders(playerIndex: number, count: number): void {
+    this.playersData[playerIndex].leadersHand.push(...this.extractFromLeadersDeck(count));
+  }
+
+  addVictoryToken(playerIndex: number, value: number): void {
+    this.playersData[playerIndex].victoryPoints.push(value);
+  }
+
+  buildCard(playerIndex: number, card: ICard): void {
+    this.playersData[playerIndex].builtCards.push(card);
+  }
+
+  buildWonderStage(playerIndex: number, stage: IWonderBuiltStage): void {
+    this.playersData[playerIndex].builtStages.push(stage);
+  }
+
+  calculateEffectGain(effect: TEffect, playerIndex: number): IGain | null {
+    const { coins } = this.playersData[playerIndex];
+
     switch (effect.type) {
       case EEffect.GAIN: {
         return effect.gain;
@@ -134,9 +176,9 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       case EEffect.CARDS_TYPE: {
         const gain: IGain = {};
 
-        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
+        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((playerIndex) => {
           const cardTypeCardCounts = effect.cardTypes.map((cardType) => {
-            return this.getPlayerTypeCards(player, cardType).length;
+            return this.getPlayerTypeCards(playerIndex, cardType).length;
           });
           const setsCount = Math.min(...cardTypeCardCounts);
 
@@ -149,8 +191,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       case EEffect.WONDER_LEVELS: {
         const gain: IGain = {};
 
-        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.builtStages.length);
+        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((playerIndex) => {
+          this.mergeGains(gain, effect.gain, this.playersData[playerIndex].builtStages.length);
         });
 
         return gain;
@@ -159,8 +201,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       case EEffect.WINS: {
         const gain: IGain = {};
 
-        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.victoryPoints.length);
+        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((playerIndex) => {
+          this.mergeGains(gain, effect.gain, this.playersData[playerIndex].victoryPoints.length);
         });
 
         return gain;
@@ -169,15 +211,15 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       case EEffect.LOSSES: {
         const gain: IGain = {};
 
-        this.getDirectionsPlayers(player, effect.directions).forEach((player) => {
-          this.mergeGains(gain, effect.gain, player.defeatPoints.length);
+        this.getDirectionsPlayers(playerIndex, effect.directions).forEach((playerIndex) => {
+          this.mergeGains(gain, effect.gain, this.playersData[playerIndex].defeatPoints.length);
         });
 
         return gain;
       }
 
       case EEffect.GAIN_BY_COINS: {
-        return this.mergeGains({}, effect.gain, Math.floor(player.coins / effect.count));
+        return this.mergeGains({}, effect.gain, Math.floor(coins / effect.count));
       }
 
       default: {
@@ -186,18 +228,19 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     }
   }
 
-  calculatePlayerPoints(player: IPlayer, effects: TEffect[]): number {
+  calculatePlayerPoints(playerIndex: number, effects: TEffect[]): number {
+    const { coins, defeatPoints, victoryPoints } = this.playersData[playerIndex];
     let allPoints = 0;
 
     // effect points
     effects.forEach((effect) => {
-      const gain = this.calculateEffectGain(effect, player);
+      const gain = this.calculateEffectGain(effect, playerIndex);
 
       allPoints += gain?.points ?? 0;
     });
 
     // war points
-    [...player.victoryPoints, ...player.defeatPoints].forEach((points) => {
+    [...victoryPoints, ...defeatPoints].forEach((points) => {
       allPoints += points;
     });
 
@@ -208,13 +251,13 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     allPoints += this.calculateScientificEffectsMaxPoints(scientificEffects, scientificSetEffects);
 
     // coins points
-    allPoints += Math.floor(player.coins / 3);
+    allPoints += Math.floor(coins / 3);
 
     return allPoints;
   }
 
-  calculatePlayerMaxPoints(player: IPlayer): number {
-    const effectsVariants = getAllPlayerEffects(player).map((effect) => {
+  calculatePlayerMaxPoints(playerIndex: number): number {
+    const effectsVariants = this.getAllPlayerEffects(playerIndex).map((effect) => {
       if (!isCopyEffect(effect)) {
         return [[effect]];
       }
@@ -225,8 +268,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
       return effect.neighbors
         .map((neighborSide) => {
-          return this.getNeighbor(player, neighborSide)
-            .builtCards.filter(({ type }) => type === effect.cardType)
+          return this.playersData[this.getNeighbor(playerIndex, neighborSide)].builtCards
+            .filter(({ type }) => type === effect.cardType)
             .map(({ effects }) => effects);
         })
         .flat();
@@ -234,7 +277,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     const effectsCombinations = getAllCombinations(effectsVariants);
 
     return effectsCombinations.reduce((maxPoints, effects) => {
-      return Math.max(maxPoints, this.calculatePlayerPoints(player, effects.flat()));
+      return Math.max(maxPoints, this.calculatePlayerPoints(playerIndex, effects.flat()));
     }, 0);
   }
 
@@ -262,6 +305,14 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     }, 0);
   }
 
+  changePlayerCoins(playerIndex: number, receivedCoins: number): void {
+    this.playersData[playerIndex].coins += receivedCoins;
+  }
+
+  copyCard(playerIndex: number, card: ICard): void {
+    this.playersData[playerIndex].copiedCard = card;
+  }
+
   discardCards(cards: ICard[]): void {
     this.discard.push(...cards);
   }
@@ -270,40 +321,75 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     return this.leadersDeck.splice(-count);
   }
 
-  getDirectionsPlayers(player: IPlayer, directions: EPlayerDirection[]): IPlayer[] {
+  getDirectionsPlayers(playerIndex: number, directions: EPlayerDirection[]): number[] {
     if (directions.includes(EPlayerDirection.ALL)) {
-      return this.players;
+      return this.players.map(({ index }) => index);
     }
 
-    return directions.reduce<IPlayer[]>((players, direction) => {
-      let addedPlayer: IPlayer | undefined;
+    return directions.reduce<number[]>((players, direction) => {
+      let addedPlayer: number | undefined;
 
       if (direction === EPlayerDirection.SELF) {
-        addedPlayer = player;
+        addedPlayer = playerIndex;
       } else if (direction === EPlayerDirection.LEFT) {
-        addedPlayer = this.getNeighbor(player, ENeighborSide.LEFT);
+        addedPlayer = this.getNeighbor(playerIndex, ENeighborSide.LEFT);
       } else if (direction === EPlayerDirection.RIGHT) {
-        addedPlayer = this.getNeighbor(player, ENeighborSide.RIGHT);
+        addedPlayer = this.getNeighbor(playerIndex, ENeighborSide.RIGHT);
       }
 
-      return addedPlayer ? [...players, addedPlayer] : players;
+      return addedPlayer === undefined ? players : [...players, addedPlayer];
     }, []);
   }
 
-  getNeighbor(player: IPlayer, neighborSide: ENeighborSide): IPlayer {
-    return getNeighbor(this.players, player, neighborSide);
+  getAllPlayerEffects(playerIndex: number): TEffect[] {
+    return getAllPlayerEffects(this.playersData[playerIndex]);
   }
 
-  getPlayerShieldsCount(player: IPlayer): number {
-    return getAllPlayerEffects(player)
+  getGamePlayers(): IPlayer[] {
+    const turn = this.phase?.type === EGamePhase.DRAFT_LEADERS ? this.phase.leadersDraft.turn : this.phase?.age.turn;
+
+    return this.getPlayersWithData(({ index }) => ({
+      ...this.playersData[index],
+      leadersDraft: this.phase?.type === EGamePhase.DRAFT_LEADERS ? this.phase.leadersDraft.playersData[index] : null,
+      age: this.phase?.type === EGamePhase.AGE ? this.phase.age.playersData[index] : null,
+      turn: turn?.playersData[index] ?? null,
+    }));
+  }
+
+  getNeighbor(playerIndex: number, neighborSide: ENeighborSide): number {
+    return getNeighbor(playerIndex, this.playersCount, neighborSide);
+  }
+
+  getPlayerCity(playerIndex: number): ICitySide {
+    return getPlayerCity(this.playersData[playerIndex]);
+  }
+
+  getPlayerInitialData(isBot: boolean): IGamePlayerData {
+    return {
+      points: 0,
+      builtCards: [],
+      city: ECity.RHODOS,
+      citySide: Number(Math.random() > 0.5),
+      builtStages: [],
+      coins: 6,
+      victoryPoints: [],
+      defeatPoints: [],
+      isBot,
+      leadersHand: [],
+      copiedCard: null,
+    };
+  }
+
+  getPlayerShieldsCount(playerIndex: number): number {
+    return this.getAllPlayerEffects(playerIndex)
       .filter(isShieldsEffect)
       .reduce((shieldsCount, effect) => {
         return shieldsCount + effect.count;
       }, 0);
   }
 
-  getPlayerTypeCards(player: IPlayer, cardType: ECardType): ICard[] {
-    return player.builtCards.filter((card) => card.type === cardType);
+  getPlayerTypeCards(playerIndex: number, cardType: ECardType): ICard[] {
+    return this.playersData[playerIndex].builtCards.filter((card) => card.type === cardType);
   }
 
   mergeGains(target: IGain, source: IGain, coefficient: number): IGain {
@@ -324,12 +410,12 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
   toJSON(): IGame {
     return {
-      players: this.players,
+      players: this.getGamePlayers(),
       discard: this.discard,
       phase:
         this.phase &&
         (this.phase.type === EGamePhase.DRAFT_LEADERS
-          ? { type: EGamePhase.DRAFT_LEADERS, ...this.phase.leadersDraft.toJSON() }
+          ? { type: EGamePhase.DRAFT_LEADERS }
           : { type: EGamePhase.AGE, ...this.phase.age.toJSON() }),
     };
   }

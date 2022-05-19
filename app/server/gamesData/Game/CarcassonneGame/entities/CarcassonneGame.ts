@@ -15,9 +15,9 @@ import {
   ICard,
   IGame,
   IGameCard,
-  IGamePlayerData,
   IPlacedMeeple,
   IPlayer,
+  IPlayerData,
   TBoard,
   TCardObject,
   TGameObject,
@@ -60,7 +60,7 @@ interface IAttachPlayerCardOptions {
 }
 
 export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
-  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+  playersData: IPlayerData[] = this.getPlayersData(() => ({
     color: EPlayerColor.RED,
     score: [],
     cards: [],

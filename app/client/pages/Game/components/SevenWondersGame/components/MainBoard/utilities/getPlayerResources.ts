@@ -16,7 +16,7 @@ import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTrad
 export function getPlayerResources(player: IPlayer, onlyTradableResources?: boolean): IResource[][] {
   return onlyTradableResources
     ? getPlayerTradeResources(player)
-    : getAllPlayerEffects(player)
+    : getAllPlayerEffects(player.data)
         .filter(isResourceEffect)
         .map((resourceEffect) => resourceEffect.variants);
 }

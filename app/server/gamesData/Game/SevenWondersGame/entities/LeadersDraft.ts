@@ -1,6 +1,6 @@
 import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/sevenWonders/cards';
-import { EWaitingActionType, ILeadersDraft, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
+import { EWaitingActionType, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import rotateObjects from 'common/utilities/rotateObjects';
@@ -67,12 +67,5 @@ export default class LeadersDraft extends GameEntity<EGame.SEVEN_WONDERS, ICard[
     });
 
     return this.playersData.map(({ pickedLeaders }) => pickedLeaders);
-  }
-
-  toJSON(): ILeadersDraft {
-    return {
-      playersData: this.playersData,
-      turn: this.turn?.toJSON() ?? null,
-    };
   }
 }

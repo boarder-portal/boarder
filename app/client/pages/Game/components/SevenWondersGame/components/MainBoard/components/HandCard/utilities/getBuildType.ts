@@ -12,7 +12,7 @@ export default function getBuildType(
   discount: number,
 ): EBuildType {
   const cardCoinsPrice = price.coins ? price.coins - discount : 0;
-  const enoughCoins = player.coins >= cardCoinsPrice;
+  const enoughCoins = player.data.coins >= cardCoinsPrice;
 
   if (!enoughCoins) {
     return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
@@ -39,7 +39,7 @@ export default function getBuildType(
     return EBuildType.OWN_RESOURCES_AND_COINS;
   }
 
-  if (tradeVariantPrice > player.coins) {
+  if (tradeVariantPrice > player.data.coins) {
     return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 

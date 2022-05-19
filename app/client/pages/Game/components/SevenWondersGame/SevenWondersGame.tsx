@@ -2,17 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import {
-  EAgePhase,
-  EGameEvent,
-  EGamePhase,
-  ENeighborSide,
-  IAgePlayerData,
-  IGame,
-  ILeadersDraftPlayerData,
-  IPlayer,
-  ITurnPlayerData,
-} from 'common/types/sevenWonders';
+import { EAgePhase, EGameEvent, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EGame } from 'common/types/game';
 
@@ -33,9 +23,6 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const { io } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [leadersDraftPlayersData, setLeadersDraftPlayersData] = useState<ILeadersDraftPlayerData[] | null>(null);
-  const [agePlayersData, setAgePlayersData] = useState<IAgePlayerData[] | null>(null);
-  const [turnPlayersData, setTurnPlayersData] = useState<ITurnPlayerData[] | null>(null);
   const [discard, setDiscard] = useState<ICard[]>([]);
   const [age, setAge] = useState<number | null>(null);
   const [gamePhase, setGamePhase] = useState<EGamePhase | null>(null);
@@ -56,18 +43,18 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   }, [player, players]);
 
   const leftNeighbor = useMemo(
-    () => (player ? getNeighbor(players, player, ENeighborSide.LEFT) : null),
+    () => (player ? players[getNeighbor(player.index, players.length, ENeighborSide.LEFT)] : null),
     [player, players],
   );
   const rightNeighbor = useMemo(
-    () => (player ? getNeighbor(players, player, ENeighborSide.RIGHT) : null),
+    () => (player ? players[getNeighbor(player.index, players.length, ENeighborSide.RIGHT)] : null),
     [player, players],
   );
 
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo) => {
       if (!user) {
         return;
       }
@@ -77,18 +64,12 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
       batchedUpdates(() => {
         setPlayers(gameInfo.players);
         setDiscard(gameInfo.discard);
-        setLeadersDraftPlayersData(
-          gameInfo.phase?.type === EGamePhase.DRAFT_LEADERS ? gameInfo.phase.playersData : null,
-        );
-        setTurnPlayersData(gameInfo.phase?.turn?.playersData ?? null);
         setGamePhase(gameInfo.phase?.type ?? null);
 
         if (gameInfo.phase?.type === EGamePhase.AGE) {
-          setAgePlayersData(gameInfo.phase.playersData);
           setAge(gameInfo.phase.age);
           setAgePhase(gameInfo.phase.phase);
         } else {
-          setAgePlayersData(null);
           setAge(null);
           setAgePhase(null);
         }
@@ -112,9 +93,7 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
             key={otherPlayer.login}
             className={styles.otherPlayerWonder}
             player={otherPlayer}
-            agePlayerData={agePlayersData?.[otherPlayer.index] ?? null}
-            turnPlayerData={turnPlayersData?.[otherPlayer.index] ?? null}
-            copiedLeaderId={player.copiedCard?.id}
+            copiedLeaderId={player.data.copiedCard?.id}
             isOtherPlayer
           />
         ))}
@@ -124,9 +103,6 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
         className={styles.mainBoard}
         io={io}
         player={player}
-        leadersDraftPlayerData={leadersDraftPlayersData?.[player.index] ?? null}
-        agePlayerData={agePlayersData?.[player.index] ?? null}
-        turnPlayerData={turnPlayersData?.[player.index] ?? null}
         discard={discard}
         age={age}
         gamePhase={gamePhase}

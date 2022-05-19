@@ -10,11 +10,8 @@ import {
   EGameEvent,
   EGamePhase,
   ENeighborSide,
-  IAgePlayerData,
   IExecuteActionEvent,
-  ILeadersDraftPlayerData,
   IPlayer,
-  ITurnPlayerData,
   TAction,
   TPayments,
 } from 'common/types/sevenWonders';
@@ -29,7 +26,7 @@ import getPlayerResourcePools from 'client/pages/Game/components/SevenWondersGam
 import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
-import getCity from 'common/utilities/sevenWonders/getCity';
+import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 import getResourceTradePrices from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
@@ -50,9 +47,6 @@ interface IMainBoardProps {
   className?: string;
   io: Socket<TGameSocketEventMap<EGame.SEVEN_WONDERS>>;
   player: IPlayer;
-  leadersDraftPlayerData: ILeadersDraftPlayerData | null;
-  agePlayerData: IAgePlayerData | null;
-  turnPlayerData: ITurnPlayerData | null;
   discard: ICard[];
   age: number | null;
   gamePhase: EGamePhase | null;
@@ -62,27 +56,14 @@ interface IMainBoardProps {
 }
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
-  const {
-    className,
-    io,
-    player,
-    leadersDraftPlayerData,
-    agePlayerData,
-    turnPlayerData,
-    discard,
-    age,
-    gamePhase,
-    agePhase,
-    leftNeighbor,
-    rightNeighbor,
-  } = props;
+  const { className, io, player, discard, age, gamePhase, agePhase, leftNeighbor, rightNeighbor } = props;
 
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
   const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
 
   const cardsDirection = useMemo(() => getAgeDirection(age ?? 0), [age]);
 
-  const chosenCardIndex = turnPlayerData?.chosenActionEvent?.cardIndex;
+  const chosenCardIndex = player.data.turn?.chosenActionEvent?.cardIndex;
 
   const handleStartCopyingLeader = useCallback((cardIndex: number, action: TAction, payments?: TPayments) => {
     setCourtesansBuildInfo({
@@ -123,25 +104,25 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const hand = useMemo(
     () =>
       getHand({
-        waitingForAction: turnPlayerData?.waitingForAction ?? null,
-        buildCardEffects: agePlayerData?.buildEffects ?? [],
-        leadersHand: player.leadersHand,
-        leadersPool: leadersDraftPlayerData?.leadersPool ?? [],
-        hand: agePlayerData?.hand ?? [],
+        waitingForAction: player.data.turn?.waitingForAction,
+        buildCardEffects: player.data.age?.buildEffects,
+        leadersHand: player.data.leadersHand,
+        leadersPool: player.data.leadersDraft?.leadersPool ?? [],
+        hand: player.data.age?.hand ?? [],
         discard,
         gamePhase,
         agePhase,
-        pickedLeaders: leadersDraftPlayerData?.pickedLeaders ?? [],
+        pickedLeaders: player.data.leadersDraft?.pickedLeaders ?? [],
         isCopyingLeader: Boolean(courtesansBuildInfo),
         leftNeighbor,
         rightNeighbor,
         isViewingLeaders,
       }),
     [
-      turnPlayerData,
-      agePlayerData,
-      player.leadersHand,
-      leadersDraftPlayerData,
+      player.data.turn,
+      player.data.age,
+      player.data.leadersHand,
+      player.data.leadersDraft,
       discard,
       gamePhase,
       agePhase,
@@ -154,8 +135,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const prevHand = usePrevious(hand);
 
-  const city = useMemo(() => getCity(player.city, player.citySide), [player.city, player.citySide]);
-  const tradeEffects = useMemo(() => getAllPlayerEffects(player).filter(isTradeEffect), [player]);
+  const city = useMemo(() => getPlayerCity(player.data), [player.data]);
+  const tradeEffects = useMemo(() => getAllPlayerEffects(player.data).filter(isTradeEffect), [player.data]);
   const resourceTradePrices = useMemo(() => getResourceTradePrices(tradeEffects), [tradeEffects]);
 
   const resourcePools = useMemo(
@@ -164,8 +145,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   );
 
   const wonderLevelPrice = useMemo(
-    () => city.wonders[player.builtStages.length]?.price || null,
-    [city.wonders, player.builtStages.length],
+    () => city.wonders[player.data.builtStages.length]?.price || null,
+    [city.wonders, player.data.builtStages.length],
   );
 
   const wonderLevelResourcePools = useMemo(() => {
@@ -177,26 +158,22 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const wonderLevelTradeVariants = useMemo(
     () =>
       getTradeVariants(wonderLevelPrice, wonderLevelResourcePools, resourceTradePrices).filter(
-        ({ payments }) => payments.LEFT + payments.RIGHT <= player.coins,
+        ({ payments }) => payments.LEFT + payments.RIGHT <= player.data.coins,
       ),
-    [player.coins, resourceTradePrices, wonderLevelPrice, wonderLevelResourcePools],
+    [player.data.coins, resourceTradePrices, wonderLevelPrice, wonderLevelResourcePools],
   );
 
   const wonderLevelBuildType = useMemo(() => {
-    if (player.builtStages.length === city.wonders.length) {
+    if (player.data.builtStages.length === city.wonders.length) {
       return EBuildType.ALREADY_BUILT;
     }
 
-    if (
-      !getPossibleBuildActions(turnPlayerData?.waitingForAction ?? null, agePlayerData?.buildEffects ?? []).includes(
-        ECardActionType.BUILD_WONDER_STAGE,
-      )
-    ) {
+    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
       return EBuildType.NOT_ALLOWED;
     }
 
     return getBuildType(wonderLevelPrice, player, wonderLevelTradeVariants, 0);
-  }, [player, city.wonders.length, turnPlayerData, agePlayerData, wonderLevelPrice, wonderLevelTradeVariants]);
+  }, [player, city.wonders.length, wonderLevelPrice, wonderLevelTradeVariants]);
 
   useEffect(() => {
     if (hand.length !== prevHand.length && document.hidden) {
@@ -207,7 +184,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   return (
     <Box className={classNames(styles.root, className)} flex alignItems="center" column between={12}>
       <div className={styles.wonderWrapper}>
-        <Wonder player={player} agePlayerData={agePlayerData} turnPlayerData={turnPlayerData} />
+        <Wonder player={player} />
 
         {(gamePhase === EGamePhase.DRAFT_LEADERS || agePhase === EAgePhase.BUILD_STRUCTURES) && (
           <BackCard
@@ -226,14 +203,14 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               card={card}
               cardIndex={index}
               player={player}
-              agePlayerData={agePlayerData}
-              turnPlayerData={turnPlayerData}
               gamePhase={gamePhase}
               leftNeighbor={leftNeighbor}
               rightNeighbor={rightNeighbor}
               courtesansBuildInfo={courtesansBuildInfo}
               isChosen={index === chosenCardIndex}
-              isDisabled={chosenCardIndex === undefined ? !turnPlayerData?.waitingForAction : index !== chosenCardIndex}
+              isDisabled={
+                chosenCardIndex === undefined ? !player.data.turn?.waitingForAction : index !== chosenCardIndex
+              }
               isViewingLeaders={isViewingLeaders}
               resourceTradePrices={resourceTradePrices}
               resourcePools={resourcePools}

@@ -1,15 +1,11 @@
 import { DEFAULT_CARD_ACTIONS } from 'common/constants/games/sevenWonders';
 
-import { ECardActionType, TWaitingAction } from 'common/types/sevenWonders';
-import { IBuildCardEffect } from 'common/types/sevenWonders/effects';
+import { ECardActionType, IPlayer } from 'common/types/sevenWonders';
 
-import getWaitingBuildEffect from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import { getPlayerWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
-export default function getPossibleBuildActions(
-  waitingForAction: TWaitingAction | null,
-  buildCardEffects: IBuildCardEffect[],
-): ECardActionType[] {
-  const waitingBuildEffect = getWaitingBuildEffect(waitingForAction, buildCardEffects);
+export default function getPossibleBuildActions(player: IPlayer): ECardActionType[] {
+  const waitingBuildEffect = getPlayerWaitingBuildEffect(player);
 
   return waitingBuildEffect?.possibleActions ?? DEFAULT_CARD_ACTIONS;
 }

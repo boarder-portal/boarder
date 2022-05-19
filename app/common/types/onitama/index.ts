@@ -11,13 +11,13 @@ export enum EGameEvent {
 
 export interface IGameOptions extends ICommonGameOptions {}
 
-export interface IGamePlayerData {
+export interface IPlayerData {
   cards: ECardType[];
   color: EPlayerColor;
 }
 
 export interface IPlayer extends ICommonPlayer {
-  data: IGamePlayerData;
+  data: IPlayerData;
 }
 
 export enum ECardType {

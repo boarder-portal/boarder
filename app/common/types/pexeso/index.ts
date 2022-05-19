@@ -60,12 +60,12 @@ export interface IGameOptions extends ICommonGameOptions {
   shuffleOptions: TShuffleOptions;
 }
 
-export interface IGamePlayerData {
+export interface IPlayerData {
   score: number;
 }
 
 export interface IPlayer extends ICommonPlayer {
-  data: IGamePlayerData;
+  data: IPlayerData;
 }
 
 export interface IGame {
