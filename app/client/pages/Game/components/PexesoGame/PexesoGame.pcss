@@ -1,0 +1,150 @@
+.cardsLayout {
+  position: relative;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--card-size);
+  height: var(--card-size);
+  transition: transform var(--animation-duration) ease-out;
+  border: 1px solid black;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .cardBack,
+  .cardContent {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    opacity: 1;
+    animation: var(--animation-duration) ease-in-out;
+  }
+
+  .cardBack {
+    width: 100%;
+  }
+
+  .cardContent {
+    width: 0;
+  }
+
+  &.closed {
+    .cardBack {
+      animation-name: open;
+    }
+
+    .cardContent {
+      animation-name: close;
+    }
+  }
+
+  &.opened {
+    .cardBack {
+      animation-name: close;
+    }
+
+    .cardContent {
+      animation-name: open;
+    }
+  }
+
+  &.isOpen {
+    .cardBack {
+      width: 0;
+    }
+
+    .cardContent {
+      width: 100%;
+    }
+  }
+
+  &.isInGame {
+    .cardBack {
+      cursor: pointer;
+    }
+  }
+
+  &.isOut {
+    background-color: #fff;
+
+    .cardBack,
+    .cardContent {
+      opacity: 0;
+    }
+  }
+
+  &.exited {
+    .cardBack,
+    .cardContent {
+      animation-name: fade;
+    }
+  }
+
+  &.isHighlighted {
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #f00;
+    }
+  }
+}
+
+.player {
+  &.isActive {
+    font-weight: bold;
+  }
+}
+
+.root {
+  --card-size: 80px;
+  --cards-margin: 8px;
+  --animation-duration: 0.3s;
+}
+
+@keyframes close {
+  0% {
+    width: 100%;
+  }
+
+  50% {
+    width: 0;
+  }
+
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes open {
+  0% {
+    width: 0;
+  }
+
+  50% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

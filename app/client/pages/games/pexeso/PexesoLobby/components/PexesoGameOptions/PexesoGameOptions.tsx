@@ -1,7 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import times from 'lodash/times';
-import styled from 'styled-components';
-import block from 'bem-cn';
 
 import {
   DIFFERENT_CARDS_COUNTS,
@@ -22,31 +20,12 @@ import Select from 'client/components/common/Select/Select';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
+import styles from './PexesoGameOptions.pcss';
+
 interface IPexesoGameOptionsProps {
   options: IGameOptions;
   onOptionsChange(options: IGameOptions): void;
 }
-
-const b = block('PexesoGameOptions');
-
-const Root = styled(Box)`
-  .PexesoGameOptions {
-    &__shuffleOptions {
-      padding-left: 16px;
-    }
-
-    &__shuffleAfterMovesCount {
-      display: flex;
-      align-items: baseline;
-      margin-top: 8px;
-    }
-  }
-
-  .MuiFormControlLabel-label {
-    display: flex;
-    align-items: baseline;
-  }
-`;
 
 const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   const { options, onOptionsChange } = props;
@@ -210,7 +189,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   );
 
   return (
-    <Root className={b()} flex column between={12}>
+    <Box className={styles.root} flex column between={12}>
       <Select
         label="Сет"
         name="pexesoSet"
@@ -282,7 +261,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       <Checkbox label="Перемешивать" checked={!!options.shuffleOptions} onChange={handleShuffleCheckboxChange} />
 
       {options.shuffleOptions && (
-        <div className={b('shuffleOptions')}>
+        <div className={styles.shuffleOptions}>
           <RadioGroup
             options={[
               {
@@ -313,7 +292,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
             onChange={handleShuffleTypeChange}
           />
 
-          <div className={b('shuffleAfterMovesCount')}>
+          <div className={styles.shuffleAfterMovesCount}>
             {options.shuffleOptions.afterMovesCount === 1 ? 'каждый' : 'каждые'}{' '}
             <Select
               name="shuffleAfterMovesCount"
@@ -333,7 +312,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           </div>
         </div>
       )}
-    </Root>
+    </Box>
   );
 };
 

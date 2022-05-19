@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import times from 'lodash/times';
 import sortBy from 'lodash/sortBy';
+import classNames from 'classnames';
 
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
@@ -30,6 +29,8 @@ import Image from 'client/components/common/Image/Image';
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
 
+import styles from './PexesoGame.pcss';
+
 interface IPexesoGameProps extends IGameProps<EGame.PEXESO> {}
 
 interface IPexesoClientCard extends ICard {
@@ -42,161 +43,6 @@ interface IPexesoClientCard extends ICard {
 
 const CARD_SIZE = 80;
 const CARDS_MARGIN = 8;
-
-const b = block('PexesoGame');
-
-const Root = styled(Box)`
-  --card-size: 80px;
-  --cards-margin: 8px;
-  --animation-duration: 0.3s;
-
-  .PexesoGame {
-    &__cardsLayout {
-      position: relative;
-    }
-
-    &__card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: ${CARD_SIZE}px;
-      height: ${CARD_SIZE}px;
-      transition: transform var(--animation-duration) ease-out;
-      border: 1px solid black;
-      border-radius: 8px;
-      overflow: hidden;
-
-      .cardBack,
-      .cardContent {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        height: 100%;
-        opacity: 1;
-        animation: var(--animation-duration) ease-in-out;
-      }
-
-      .cardBack {
-        width: 100%;
-      }
-
-      .cardContent {
-        width: 0;
-      }
-
-      &_closed {
-        .cardBack {
-          animation-name: open;
-        }
-
-        .cardContent {
-          animation-name: close;
-        }
-      }
-
-      &_opened {
-        .cardBack {
-          animation-name: close;
-        }
-
-        .cardContent {
-          animation-name: open;
-        }
-      }
-
-      &_isOpen {
-        .cardBack {
-          width: 0;
-        }
-
-        .cardContent {
-          width: 100%;
-        }
-      }
-
-      &_isInGame {
-        .cardBack {
-          cursor: pointer;
-        }
-      }
-
-      &_isOut {
-        background-color: #fff;
-
-        .cardBack,
-        .cardContent {
-          opacity: 0;
-        }
-      }
-
-      &_exited {
-        .cardBack,
-        .cardContent {
-          animation-name: fade;
-        }
-      }
-
-      &_isHighlighted {
-        &:after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background-color: #f00;
-        }
-      }
-    }
-
-    &__player {
-      &_isActive {
-        font-weight: bold;
-      }
-    }
-  }
-
-  @keyframes close {
-    0% {
-      width: 100%;
-    }
-
-    50% {
-      width: 0;
-    }
-
-    100% {
-      width: 0;
-    }
-  }
-
-  @keyframes open {
-    0% {
-      width: 0;
-    }
-
-    50% {
-      width: 0;
-    }
-
-    100% {
-      width: 100%;
-    }
-  }
-
-  @keyframes fade {
-    0% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0;
-    }
-  }
-`;
 
 const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsIndexes | null) => {
   if (!shuffleIndexes) {
@@ -363,7 +209,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
     let minTop = Infinity;
     let maxBottom = -Infinity;
 
-    for (const card of cardsLayout.querySelectorAll(`.${b('card')}`)) {
+    for (const card of cardsLayout.querySelectorAll(`.${styles.card}`)) {
       const box = card.getBoundingClientRect();
 
       minLeft = Math.min(minLeft, box.left);
@@ -387,7 +233,9 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
         {players.map((localPlayer) => (
           <Box
             key={localPlayer.login}
-            className={b('player', { isActive: localPlayer.index === activePlayerIndex })}
+            className={classNames(styles.player, {
+              [styles.isActive]: localPlayer.index === activePlayerIndex,
+            })}
             flex
             alignItems="center"
           >
@@ -462,9 +310,9 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
   }
 
   return (
-    <Root className={b()} flex between={20}>
-      <div ref={cardsLayoutContainerRef} className={b('cardsLayoutContainer')}>
-        <div ref={cardsLayoutRef} className={b('cardsLayout')}>
+    <Box className={styles.root} flex between={20}>
+      <div ref={cardsLayoutContainerRef}>
+        <div ref={cardsLayoutRef} className={styles.cardsLayout}>
           {sortBy(
             cards.map((card, cardIndex) => {
               const { x, y, angle } = cardsOptions[cardIndex];
@@ -473,14 +321,14 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                 <div
                   key={card.id}
                   id={`card-${card.id}`}
-                  className={b('card', {
-                    isHighlighted: highlightedCardsIndexes.includes(cardIndex),
-                    isOpen: card.isOpen,
-                    opened: card.opened,
-                    closed: card.closed,
-                    exited: card.exited,
-                    isInGame: card.isInGame,
-                    isOut: !card.isInGame,
+                  className={classNames(styles.card, {
+                    [styles.isHighlighted]: highlightedCardsIndexes.includes(cardIndex),
+                    [styles.isOpen]: card.isOpen,
+                    [styles.opened]: card.opened,
+                    [styles.closed]: card.closed,
+                    [styles.exited]: card.exited,
+                    [styles.isInGame]: card.isInGame,
+                    [styles.isOut]: !card.isInGame,
                   })}
                   style={{
                     transform: `translate(${x}px, ${y}px)${angle === undefined ? '' : `rotate(${angle}rad)`}`,
@@ -488,7 +336,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   }}
                 >
                   <Image
-                    className="cardBack"
+                    className={styles.cardBack}
                     alt="card"
                     src={'/pexeso/backs/default/2.jpg'}
                     onClick={() => handleCardClick(cardIndex)}
@@ -496,7 +344,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
                   />
 
                   <Image
-                    className="cardContent"
+                    className={styles.cardContent}
                     alt="back"
                     src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
                   />
@@ -509,7 +357,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
       </div>
 
       {playersBlock}
-    </Root>
+    </Box>
   );
 };
 
