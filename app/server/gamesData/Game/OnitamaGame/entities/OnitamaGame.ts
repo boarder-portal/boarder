@@ -4,12 +4,12 @@ import shuffle from 'lodash/shuffle';
 import { EGame } from 'common/types/game';
 import { ECardType, EGameEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 import { equalsCoords } from 'common/utilities/coords';
 
 const ALL_CARDS = Object.values(ECardType);
 
-export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
+export default class OnitamaGame extends Entity<EGame.ONITAMA> {
   playersData: IPlayerData[] = this.getPlayersData(({ index }) => ({
     color: index === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
     cards: [],

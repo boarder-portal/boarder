@@ -54,17 +54,17 @@ export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event exte
   validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
 }
 
-export default abstract class GameEntity<Game extends EGame, Result = unknown> {
-  #children = new Set<GameEntity<Game>>();
+export default abstract class Entity<Game extends EGame, Result = unknown> {
+  #children = new Set<Entity<Game>>();
   #lifecycle: Promise<Result> | null = null;
-  #parent: GameEntity<Game> | null = null;
+  #parent: Entity<Game> | null = null;
   #abortCallbacks = new Set<TAbortCallback>();
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
   players: TGamePlayer<Game>[];
 
-  constructor(parentOrContext: IEntityContext<Game> | GameEntity<Game>) {
-    const context = parentOrContext instanceof GameEntity ? parentOrContext.context : parentOrContext;
+  constructor(parentOrContext: IEntityContext<Game> | Entity<Game>) {
+    const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;
     this.options = context.game.options;
@@ -292,7 +292,7 @@ export default abstract class GameEntity<Game extends EGame, Result = unknown> {
     this.context.game.sendSocketEvent(event, data, socket);
   }
 
-  spawnEntity<Entity extends GameEntity<Game>>(entity: Entity): Entity {
+  spawnEntity<E extends Entity<Game>>(entity: E): E {
     entity.context = this.context;
     entity.#parent = this;
 

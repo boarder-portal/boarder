@@ -26,7 +26,7 @@ import {
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -61,7 +61,7 @@ interface IAttachPlayerCardOptions {
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
+export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     color: EPlayerColor.RED,
     score: [],

@@ -2,13 +2,13 @@ import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EWaitingActionType, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
-export default class LeadersDraft extends GameEntity<EGame.SEVEN_WONDERS, ICard[][]> {
+export default class LeadersDraft extends Entity<EGame.SEVEN_WONDERS, ICard[][]> {
   game: SevenWondersGame;
 
   playersData: ILeadersDraftPlayerData[];

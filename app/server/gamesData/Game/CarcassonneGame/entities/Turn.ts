@@ -1,7 +1,7 @@
 import { EGame } from 'common/types/game';
 import { EGameEvent, ITurn } from 'common/types/carcassonne';
 
-import GameEntity, { TGenerator } from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
 
@@ -10,7 +10,7 @@ export interface ITurnOptions {
   duration: number;
 }
 
-export default class Turn extends GameEntity<EGame.CARCASSONNE, boolean> {
+export default class Turn extends Entity<EGame.CARCASSONNE, boolean> {
   game: CarcassonneGame;
 
   activePlayerIndex: number;

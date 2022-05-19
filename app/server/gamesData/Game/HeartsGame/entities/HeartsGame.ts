@@ -4,11 +4,11 @@ import { END_GAME_SCORE } from 'common/constants/games/hearts';
 import { EGame } from 'common/types/game';
 import { EGameEvent, EHandStage, EPassDirection, IGame, IGamePlayerData, IPlayer } from 'common/types/hearts';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
-export default class HeartsGame extends GameEntity<EGame.HEARTS> {
+export default class HeartsGame extends Entity<EGame.HEARTS> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => ({ score: 0 }));
   handIndex = -1;
   passDirection: EPassDirection = EPassDirection.NONE;

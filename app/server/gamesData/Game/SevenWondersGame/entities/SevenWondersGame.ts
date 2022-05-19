@@ -27,7 +27,7 @@ import {
 } from 'common/types/sevenWonders/effects';
 import { EPlayerStatus } from 'common/types';
 
-import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import {
@@ -55,7 +55,7 @@ interface IAgePhase {
   age: Age;
 }
 
-export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
+export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => this.getPlayerInitialData(false));
   phase: ILeadersDraftPhase | IAgePhase | null = null;
   discard: ICard[] = [];

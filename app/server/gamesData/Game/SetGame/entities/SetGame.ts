@@ -24,14 +24,14 @@ import {
   ISendSetEvent,
 } from 'common/types/set';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
 
-export default class SetGame extends GameEntity<EGame.SET> {
+export default class SetGame extends Entity<EGame.SET> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));

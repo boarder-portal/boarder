@@ -12,7 +12,7 @@ import {
 } from 'common/types/sevenWonders';
 import { EBuildType } from 'app/client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 
-import GameEntity, { TGenerator } from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import getPlayerHandCards from 'app/common/utilities/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'app/common/utilities/random';
 
@@ -29,7 +29,7 @@ interface IBotMoveResult {
   playerIndex: number;
 }
 
-export default class Turn extends GameEntity<EGame.SEVEN_WONDERS, number[]> {
+export default class Turn extends Entity<EGame.SEVEN_WONDERS, number[]> {
   game: SevenWondersGame;
 
   playersData: ITurnPlayerData[];

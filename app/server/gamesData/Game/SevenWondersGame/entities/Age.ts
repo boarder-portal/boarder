@@ -21,7 +21,7 @@ import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity';
 import {
   isBuildCardEffect,
   isCommercialCardsPassiveEffect,
@@ -39,7 +39,7 @@ export interface IAgeOptions {
   age: number;
 }
 
-export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
+export default class Age extends Entity<EGame.SEVEN_WONDERS> {
   game: SevenWondersGame;
 
   age: number;
