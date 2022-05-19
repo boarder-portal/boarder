@@ -340,7 +340,7 @@ const PexesoGame: React.FC<IPexesoGameProps> = (props) => {
 
     times(imagesCount, (id) => {
       times(imageVariantsCount, (variant) => {
-        const image = new Image();
+        const image = new window.Image();
 
         image.src = `/pexeso/sets/${options.set}/${id}/${variant}.jpg`;
 
