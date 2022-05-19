@@ -22,7 +22,7 @@ import Vector from 'common/utilities/Vector';
 
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 
-const MOVE_PLAYERS_INTERVAL = 40;
+const MOVE_PLAYERS_INTERVAL = 1000 / 60;
 // cells per second
 const BASE_PLAYER_SPEED = 3;
 
