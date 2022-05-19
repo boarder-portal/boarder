@@ -1,6 +1,6 @@
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameEvent } from 'server/types';
-import { EGameEvent, IPlayer } from 'common/types/set';
+import { EGameEvent } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
 import SetGameEntity from 'server/gamesData/Game/SetGame/entities/SetGame';
@@ -12,11 +12,8 @@ export default class SetGame extends Game<EGame.SET> {
   };
   gameEntity = this.initMainGameEntity((context) => new SetGameEntity(context));
 
-  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
-    return {
-      ...roomPlayer,
-      score: 0,
-    };
+  createPlayer(roomPlayer: ICommonPlayer): ICommonPlayer {
+    return roomPlayer;
   }
 
   delete(): void {

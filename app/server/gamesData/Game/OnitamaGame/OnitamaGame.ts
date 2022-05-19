@@ -13,9 +13,7 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
   gameEntity = this.initMainGameEntity((context) => new OnitamaGameEntity(context));
 
   createPlayer(roomPlayer: ICommonPlayer): ICommonPlayer {
-    return {
-      ...roomPlayer,
-    };
+    return roomPlayer;
   }
 
   delete(): void {

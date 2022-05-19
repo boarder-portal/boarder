@@ -125,7 +125,7 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
 
         {players.map((player) => (
           <Box key={player.login}>
-            {player.login}: {player.score}
+            {player.login}: {player.data.score}
           </Box>
         ))}
       </Box>

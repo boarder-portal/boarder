@@ -4,13 +4,16 @@ import shuffle from 'lodash/shuffle';
 import { EGame } from 'common/types/game';
 import { ECardType, EGameEvent, EPlayerColor, IGame, IGamePlayerData, IPlayer, TBoard } from 'common/types/onitama';
 
-import GameEntity, { IEntityContext } from 'server/gamesData/Game/utilities/GameEntity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { equalsCoords } from 'common/utilities/coords';
 
 const ALL_CARDS = Object.values(ECardType);
 
 export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
-  playersData: IGamePlayerData[];
+  playersData: IGamePlayerData[] = this.getPlayersData(({ index }) => ({
+    color: index === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
+    cards: [],
+  }));
   activePlayerIndex = 0;
   board: TBoard = [
     times(5, (index) => ({ color: EPlayerColor.BLUE, isMaster: index === 2 })),
@@ -20,15 +23,6 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
     times(5, (index) => ({ color: EPlayerColor.RED, isMaster: index === 2 })),
   ];
   fifthCard = ECardType.TIGER;
-
-  constructor(context: IEntityContext<EGame.ONITAMA>) {
-    super(context);
-
-    this.playersData = this.getPlayersData(({ index }) => ({
-      color: index === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
-      cards: [],
-    }));
-  }
 
   *lifecycle() {
     let index = 0;

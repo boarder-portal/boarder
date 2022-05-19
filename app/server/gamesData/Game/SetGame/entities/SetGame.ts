@@ -12,7 +12,17 @@ import {
 } from 'common/constants/games/set';
 
 import { EGame } from 'common/types/game';
-import { ECardColor, ECardFill, ECardShape, EGameEvent, ICard, IGame, ISendSetEvent } from 'common/types/set';
+import {
+  ECardColor,
+  ECardFill,
+  ECardShape,
+  EGameEvent,
+  ICard,
+  IGame,
+  IGamePlayerData,
+  IPlayer,
+  ISendSetEvent,
+} from 'common/types/set';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
@@ -22,6 +32,9 @@ import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
 
 export default class SetGame extends GameEntity<EGame.SET> {
+  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+    score: 0,
+  }));
   cardsStack: ICard[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
@@ -56,7 +69,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
         }),
       ]);
 
-      const player = this.players[playerIndex];
+      const playerData = this.playersData[playerIndex];
 
       if (event) {
         // SEND_SET event
@@ -89,11 +102,11 @@ export default class SetGame extends GameEntity<EGame.SET> {
             }
           });
 
-          player.score += SET_POINTS;
+          playerData.score += SET_POINTS;
 
           this.maxCardsToShow = Math.max(START_CARDS_COUNT, this.maxCardsToShow - NEW_CARDS_COUNT);
         } else {
-          player.score += WRONG_SET_POINTS;
+          playerData.score += WRONG_SET_POINTS;
         }
 
         this.sendGameUpdate();
@@ -104,9 +117,9 @@ export default class SetGame extends GameEntity<EGame.SET> {
       } else {
         // SEND_NO_SET event
         if (isAnySet(this.cardsStack.slice(0, this.maxCardsToShow))) {
-          player.score += WRONG_NO_SET_POINTS;
+          playerData.score += WRONG_NO_SET_POINTS;
         } else {
-          player.score += NO_SET_POINTS;
+          playerData.score += NO_SET_POINTS;
 
           this.maxCardsToShow += NEW_CARDS_COUNT;
         }
@@ -116,13 +129,17 @@ export default class SetGame extends GameEntity<EGame.SET> {
     }
   }
 
+  getGamePlayers(): IPlayer[] {
+    return this.getPlayersWithData(({ index }) => this.playersData[index]);
+  }
+
   sendGameUpdate(): void {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
   toJSON(): IGame {
     return {
-      players: this.players,
+      players: this.getGamePlayers(),
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
   }
