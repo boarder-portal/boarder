@@ -15,6 +15,7 @@ import {
   ICard,
   IGame,
   IGameCard,
+  IGamePlayerData,
   IPlacedMeeple,
   IPlayer,
   TBoard,
@@ -46,7 +47,7 @@ interface IAttachCardOptions {
   coords: ICoords;
   rotation: number;
   meeple: IPlacedMeeple | null;
-  player: IPlayer | null;
+  playerIndex: number | null;
 }
 
 interface IAttachPlayerCardOptions {
@@ -59,6 +60,23 @@ interface IAttachPlayerCardOptions {
 }
 
 export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
+  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+    color: EPlayerColor.RED,
+    score: [],
+    cards: [],
+    meeples: {
+      [EMeepleType.COMMON]: 7,
+      [EMeepleType.FAT]: 1,
+      [EMeepleType.BUILDER]: 1,
+      [EMeepleType.PIG]: 1,
+    },
+    goods: {
+      [ECityGoods.WHEAT]: 0,
+      [ECityGoods.FABRIC]: 0,
+      [ECityGoods.WINE]: 0,
+    },
+    lastMoves: [],
+  }));
   activePlayerIndex = 0;
   deck: ICard[] = shuffle(
     cloneDeep(ALL_CARDS)
@@ -77,19 +95,19 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       coords: { x: 0, y: 0 },
       rotation: 0,
       meeple: null,
-      player: null,
+      playerIndex: null,
     });
 
     const colors = shuffle(Object.values(EPlayerColor));
 
-    this.players.forEach((player, index) => {
-      player.color = colors[index];
+    this.playersData.forEach((playerData, index) => {
+      playerData.color = colors[index];
 
-      player.cards.push(...this.deck.splice(-CARDS_IN_HAND));
+      playerData.cards.push(...this.deck.splice(-CARDS_IN_HAND));
     });
 
     while (this.activePlayerIndex !== -1) {
-      const activePlayer = this.players[this.activePlayerIndex];
+      const activePlayerData = this.playersData[this.activePlayerIndex];
 
       this.turn = this.spawnEntity(
         new Turn(this, {
@@ -103,7 +121,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       const placedAnyCards = yield* this.turn;
 
       if (!placedAnyCards) {
-        activePlayer.lastMoves = [];
+        activePlayerData.lastMoves = [];
       }
 
       this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.players.length);
@@ -128,16 +146,16 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       [ECityGoods.WINE]: 0,
     };
 
-    forEach(this.players, ({ goods }) => {
+    this.playersData.forEach(({ goods }) => {
       forEach(goods, (count, goodsType) => {
         maxGoods[goodsType as ECityGoods] = Math.max(maxGoods[goodsType as ECityGoods], count);
       });
     });
 
-    forEach(this.players, (player) => {
-      forEach(player.goods, (count, goodsType) => {
+    this.playersData.forEach(({ goods }, playerIndex) => {
+      forEach(goods, (count, goodsType) => {
         if (count && maxGoods[goodsType as ECityGoods] === count) {
-          this.addPlayerScore(player, {
+          this.addPlayerScore(playerIndex, {
             goods: goodsType as ECityGoods,
             score: 15,
           });
@@ -149,77 +167,80 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   }
 
   addObjectScore(object: TGameObject): void {
-    const addScore = (player: IPlayer, score: number): void => {
-      this.addPlayerScore(player, {
+    const addScore = (playerIndex: number, score: number): void => {
+      this.addPlayerScore(playerIndex, {
         objectId: object.id,
         score,
       });
     };
 
-    let owners: IPlayer[] = [];
+    let owners: number[] = [];
     let maxMeeples = 1;
 
-    this.players.forEach((player) => {
-      const meeplesCount = this.getPlayerObjectMeeples(object, player.index);
+    this.players.forEach(({ index }) => {
+      const meeplesCount = this.getPlayerObjectMeeples(object, index);
 
       if (meeplesCount > maxMeeples) {
-        owners = [player];
+        owners = [index];
         maxMeeples = meeplesCount;
       } else if (meeplesCount === maxMeeples) {
-        owners.push(player);
+        owners.push(index);
       }
     });
 
     if (isGameMonastery(object) && owners.length > 0) {
       addScore(owners[0], object.cards.length);
     } else if (isGameField(object)) {
-      owners.forEach((player) => {
-        const hasPig = getObjectPlayerMeeples(object, player.index).some(({ type }) => type === EMeepleType.PIG);
+      owners.forEach((playerIndex) => {
+        const hasPig = getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === EMeepleType.PIG);
         const finishedCities = object.cities.filter((cityId) => {
           const city = this.objects[cityId];
 
           return city && isGameCity(city) && city.isFinished;
         });
 
-        addScore(player, finishedCities.length * (3 + (hasPig ? 1 : 0)));
+        addScore(playerIndex, finishedCities.length * (3 + (hasPig ? 1 : 0)));
       });
     } else if (isGameCity(object)) {
       const score =
         (object.isFinished ? (object.cathedral ? 3 : 2) : object.cathedral ? 0 : 1) *
         (object.cards.length + object.shields);
 
-      owners.forEach((player) => {
-        addScore(player, score);
+      owners.forEach((playerIndex) => {
+        addScore(playerIndex, score);
       });
     } else if (isGameRoad(object)) {
       const score = (object.inn ? (object.isFinished ? 2 : 0) : 1) * object.cards.length;
 
-      owners.forEach((player) => {
-        addScore(player, score);
+      owners.forEach((playerIndex) => {
+        addScore(playerIndex, score);
       });
     }
   }
 
-  addPlayerScore(player: IPlayer, score: TScore): void {
+  addPlayerScore(playerIndex: number, score: TScore): void {
     if (score.score) {
-      player.score.push(score);
+      this.playersData[playerIndex].score.push(score);
     }
   }
 
   attachCard(options: IAttachCardOptions): IGameCard {
-    const { card, coords, rotation, meeple, player } = options;
+    const { card, coords, rotation, meeple, playerIndex } = options;
     const gameCard: IGameCard = ((this.board[coords.y] ||= {})[coords.x] = {
       ...coords,
       id: card.id,
       rotation,
       monasteryId: null,
       objectsBySideParts: times(12, () => 0),
-      meeple: meeple &&
-        player && {
-          ...meeple,
-          color: player.color,
-          gameObjectId: 0,
-        },
+      meeple:
+        meeple &&
+        (playerIndex === null
+          ? null
+          : {
+              ...meeple,
+              playerIndex,
+              gameObjectId: 0,
+            }),
     });
     const idsMap = new Map<number, number>();
 
@@ -315,9 +336,9 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
             gameCard.meeple.gameObjectId = gameObject.id;
           }
 
-          if (player) {
+          if (playerIndex !== null) {
             gameObject.meeples.push({
-              playerIndex: player.index,
+              playerIndex,
               type: meeple.type,
             });
           }
@@ -386,27 +407,27 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
   attachPlayerCard(options: IAttachPlayerCardOptions): boolean {
     const { cardIndex, coords, rotation, meeple, playerIndex, isFirstTurnCard } = options;
-    const player = this.players[playerIndex];
+    const playerData = this.playersData[playerIndex];
 
     const gameCard = this.attachCard({
-      card: player.cards[cardIndex],
+      card: playerData.cards[cardIndex],
       coords,
       rotation,
       meeple,
-      player,
+      playerIndex,
     });
 
-    player.cards.splice(cardIndex, 1, ...this.deck.splice(-1));
+    playerData.cards.splice(cardIndex, 1, ...this.deck.splice(-1));
 
     if (meeple) {
-      player.meeples[meeple.type]--;
+      playerData.meeples[meeple.type]--;
     }
 
     if (isFirstTurnCard) {
-      player.lastMoves = [];
+      playerData.lastMoves = [];
     }
 
-    player.lastMoves.push(coords);
+    playerData.lastMoves.push(coords);
 
     this.traverseNeighbors(coords, (card) => {
       if (!card?.monasteryId) {
@@ -449,7 +470,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
         if (isGameCity(object)) {
           forEach(object.goods, (count, goodsType) => {
-            player.goods[goodsType as ECityGoods] += count || 0;
+            playerData.goods[goodsType as ECityGoods] += count || 0;
           });
         }
       }
@@ -465,7 +486,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
       }
 
       if (
-        getObjectPlayerMeeples(object, player.index).some(({ type }) => type === EMeepleType.BUILDER) &&
+        getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === EMeepleType.BUILDER) &&
         meeple?.type !== EMeepleType.BUILDER
       ) {
         attachedToBuilder = true;
@@ -480,7 +501,11 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   canPlayAnyCards(playerIndex: number): boolean {
     // TODO: check for impossible cards
 
-    return this.players[playerIndex].cards.length !== 0;
+    return this.playersData[playerIndex].cards.length !== 0;
+  }
+
+  getGamePlayers(): IPlayer[] {
+    return this.getPlayersWithData(({ index }) => this.playersData[index]);
   }
 
   getPlacedCardsCount(): number {
@@ -593,7 +618,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
   returnMeeples(object: TGameObject): void {
     object.meeples.forEach(({ playerIndex, type }) => {
-      this.players[playerIndex].meeples[type]++;
+      this.playersData[playerIndex].meeples[type]++;
     });
 
     const returnFromCards = isGameMonastery(object) ? object.cards.slice(0) : object.cards;
@@ -622,7 +647,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
   toJSON(): IGame {
     return {
-      players: this.players,
+      players: this.getGamePlayers(),
       activePlayerIndex: this.activePlayerIndex,
       board: this.board,
       objects: this.objects,

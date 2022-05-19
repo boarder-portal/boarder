@@ -137,7 +137,7 @@ export interface IGoodsScore {
 
 export type TScore = IObjectScore | IGoodsScore;
 
-export interface IPlayer extends ICommonPlayer {
+export interface IGamePlayerData {
   color: EPlayerColor;
   score: TScore[];
   cards: ICard[];
@@ -146,13 +146,17 @@ export interface IPlayer extends ICommonPlayer {
   lastMoves: ICoords[];
 }
 
+export interface IPlayer extends ICommonPlayer {
+  data: IGamePlayerData;
+}
+
 export interface IPlacedMeeple {
   type: EMeepleType;
   cardObjectId: number;
 }
 
 export interface IGamePlacedMeeple extends IPlacedMeeple {
-  color: EPlayerColor;
+  playerIndex: number;
   gameObjectId: number;
 }
 
@@ -188,7 +192,7 @@ declare module 'common/types/game' {
     [EGame.CARCASSONNE]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: IPlayer;
+      player: ICommonPlayer;
     };
   }
 }

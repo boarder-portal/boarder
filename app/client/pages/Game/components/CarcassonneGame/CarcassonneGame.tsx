@@ -252,7 +252,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
   const selectedCardRotationRef = useRef<number>(0);
 
-  const selectedCard = player?.cards[selectedCardIndex];
+  const selectedCard = player?.data.cards[selectedCardIndex];
 
   const calculateAllowedMoves = useCallback(
     (selectedCard: ICard | undefined) => {
@@ -404,7 +404,8 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
 
       setAllowedMeeples(
         allowedMeeples.map((meepleTypes) => {
-          const filteredMeepleTypes = meepleTypes && meepleTypes.filter((meepleType) => player.meeples[meepleType] > 0);
+          const filteredMeepleTypes =
+            meepleTypes && meepleTypes.filter((meepleType) => player.data.meeples[meepleType] > 0);
 
           return filteredMeepleTypes && filteredMeepleTypes.length > 0 ? filteredMeepleTypes : null;
         }),
@@ -435,7 +436,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         monasteryId: null,
         meeple: placedMeeple && {
           ...placedMeeple,
-          color: player.color,
+          playerIndex: player.index,
           gameObjectId: 0,
         },
       };
@@ -481,7 +482,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
         selectedCardRotationRef.current = 0;
 
         setSelectedCardIndex(index);
-        calculateAllowedMoves(player?.cards[index]);
+        calculateAllowedMoves(player?.data.cards[index]);
         transformDraggingCard(e, boardZoomRef.current);
       }
 
@@ -551,7 +552,8 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       setTurnEndsAt(gameInfo.turn?.endsAt ?? null);
 
       const boardCardsCount =
-        gameInfo.cardsLeft + gameInfo.players.reduce((playersCardsCount, p) => playersCardsCount + p.cards.length, 0);
+        gameInfo.cardsLeft +
+        gameInfo.players.reduce((playersCardsCount, player) => playersCardsCount + player.data.cards.length, 0);
 
       if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
         playSound(POP_SOUND);
@@ -598,7 +600,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
             }),
           )}
 
-          {players.map(({ color, lastMoves }) =>
+          {players.map(({ data: { color, lastMoves } }) =>
             lastMoves.map((coords, index) => {
               return (
                 <div
@@ -634,7 +636,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                   key={card.x}
                   className={b('meeple')}
                   type={card.meeple.type}
-                  color={card.meeple.color}
+                  color={players[card.meeple.playerIndex].data.color}
                   style={{
                     transform: `
                       translate(
@@ -711,7 +713,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
                                   key={meepleType}
                                   className={b('allowedMeeple')}
                                   type={meepleType}
-                                  color={player.color}
+                                  color={player.data.color}
                                   onClick={() => onPlaceMeepleClick({ type: meepleType, cardObjectId: objectId })}
                                 />
                               );
@@ -728,7 +730,7 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
       </div>
 
       <Box className={b('hand')} flex between={4}>
-        {player?.cards.map((card, index) => {
+        {player?.data.cards.map((card, index) => {
           return (
             <div
               key={index}
