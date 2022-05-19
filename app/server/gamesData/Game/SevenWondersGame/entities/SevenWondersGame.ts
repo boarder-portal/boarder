@@ -38,6 +38,7 @@ import {
 } from 'common/utilities/sevenWonders/isEffect';
 import { getAllCombinations } from 'common/utilities/combinations';
 import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
+import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 
 import Age from 'server/gamesData/Game/SevenWondersGame/entities/Age';
 import LeadersDraft from 'server/gamesData/Game/SevenWondersGame/entities/LeadersDraft';
@@ -339,6 +340,10 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
       return addedPlayer === undefined ? players : [...players, addedPlayer];
     }, []);
+  }
+
+  getAgeDirection(age?: number): number {
+    return getAgeDirection(this.phase?.type ?? null, age ?? null) === ENeighborSide.LEFT ? -1 : 1;
   }
 
   getAllPlayerEffects(playerIndex: number): TEffect[] {

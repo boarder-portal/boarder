@@ -61,7 +61,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
   const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
 
-  const cardsDirection = useMemo(() => getAgeDirection(age ?? 0), [age]);
+  const cardsDirection = useMemo(() => getAgeDirection(gamePhase, age ?? 0), [age, gamePhase]);
 
   const chosenCardIndex = player.data.turn?.chosenActionEvent?.cardIndex;
 

@@ -30,7 +30,6 @@ import {
   isStructureInheritancePassiveEffect,
   isVictoryTokensCoinPassiveEffect,
 } from 'common/utilities/sevenWonders/isEffect';
-import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import rotateObjects from 'common/utilities/rotateObjects';
 
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
@@ -123,7 +122,7 @@ export default class Age extends GameEntity<EGame.SEVEN_WONDERS> {
 
       const newHands = rotateObjects(
         this.playersData.map(({ hand }) => hand),
-        getAgeDirection(this.age) === ENeighborSide.LEFT ? -1 : 1,
+        this.game.getAgeDirection(this.age),
       );
 
       this.playersData.forEach((playerData, index) => {
