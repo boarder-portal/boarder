@@ -5,12 +5,10 @@ import io, { Socket } from 'socket.io-client';
 import { EPlayerStatus } from 'common/types';
 import { EGame, ECommonGameEvent, IGameUpdateEvent, TGameSocketEventMap } from 'common/types/game';
 import { IPlayer as ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
-import { IPlayer as IMazePlayer } from 'common/types/maze';
 import { IPlayer as ISetPlayer } from 'common/types/set';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
-import MazeGame from 'client/pages/Game/components/MazeGame/MazeGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
 import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
 import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/CarcassonneGame';
@@ -80,10 +78,6 @@ const Game: React.FC = () => {
         isGameEnd={isGameEnd}
       />
     );
-  }
-
-  if (game === EGame.MAZE) {
-    return <MazeGame io={ioRef.current} players={gameData.players as IMazePlayer[]} isGameEnd={isGameEnd} />;
   }
 
   if (game === EGame.SET) {

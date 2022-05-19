@@ -19,7 +19,6 @@ import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
 import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/SurvivalOnlineLobby';
-import MazeLobby from 'client/pages/games/maze/MazeLobby/MazeLobby';
 import SetLobby from 'client/pages/games/set/SetLobby/SetLobby';
 import OnitamaLobby from 'client/pages/games/onitama/OnitamaLobby/OnitamaLobby';
 import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
@@ -63,10 +62,6 @@ const App: FC = () => {
 
           <Route exact path={`/${EGame.SURVIVAL_ONLINE}/lobby`}>
             <SurvivalOnlineLobby />
-          </Route>
-
-          <Route exact path={`/${EGame.MAZE}/lobby`}>
-            <MazeLobby />
           </Route>
 
           <Route exact path={`/${EGame.SET}/lobby`}>

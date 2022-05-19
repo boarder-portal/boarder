@@ -1,6 +1,5 @@
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
-import * as MazeTypes from 'common/types/maze';
 
 export enum ECommonGameEvent {
   UPDATE = 'UPDATE',
@@ -10,7 +9,6 @@ export enum ECommonGameEvent {
 export enum EGame {
   PEXESO = 'pexeso',
   SURVIVAL_ONLINE = 'survivalOnline',
-  MAZE = 'maze',
   SET = 'set',
   ONITAMA = 'onitama',
   CARCASSONNE = 'carcassonne',
@@ -23,11 +21,6 @@ export interface IGamesParams {
     eventMap: SurvivalOnlineTypes.IEventMap;
     options: SurvivalOnlineTypes.IGameOptions;
     player: SurvivalOnlineTypes.IPlayer;
-  };
-  [EGame.MAZE]: {
-    eventMap: MazeTypes.IEventMap;
-    options: MazeTypes.IGameOptions;
-    player: MazeTypes.IPlayer;
   };
 }
 

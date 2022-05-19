@@ -10,7 +10,6 @@ import styles from './Home.pcss';
 const GAME_NAMES: Record<EGame, string> = {
   [EGame.PEXESO]: 'Pexeso',
   [EGame.SURVIVAL_ONLINE]: 'Выживать онлайн',
-  [EGame.MAZE]: 'Лабиринт',
   [EGame.SET]: 'Сет',
   [EGame.ONITAMA]: 'Онитама',
   [EGame.CARCASSONNE]: 'Каркассон',

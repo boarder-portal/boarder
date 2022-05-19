@@ -11,7 +11,6 @@ import removeNamespace from 'server/utilities/removeNamespace';
 import ioInstance from 'server/io';
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
-import MazeGame from 'server/gamesData/Game/MazeGame/MazeGame';
 import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
 import SetGame from 'server/gamesData/Game/SetGame/SetGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -24,7 +23,6 @@ const GAMES_MAP: {
 } = {
   [EGame.PEXESO]: PexesoGame,
   [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
-  [EGame.MAZE]: MazeGame,
   [EGame.SET]: SetGame,
   [EGame.ONITAMA]: OnitamaGame,
   [EGame.CARCASSONNE]: CarcassonneGame,
