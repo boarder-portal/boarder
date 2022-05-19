@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 
-import { ESuit, ICard } from 'common/types/cards';
+import { ESuit } from 'common/types/cards';
 import { EHandStage, IPlayer } from 'common/types/hearts';
 
 import { EPlayerPosition } from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
@@ -17,9 +17,6 @@ interface IPlayerProps {
   player: IPlayer;
   position: EPlayerPosition;
   isActive: boolean;
-  hand: ICard[];
-  chosenCardsIndexes: number[];
-  playedCard: ICard | null;
   stage: EHandStage;
   playedSuit: ESuit | null;
   heartsEnteredPlay: boolean;
@@ -34,9 +31,6 @@ const Player: React.FC<IPlayerProps> = (props) => {
     player,
     position,
     isActive,
-    hand,
-    chosenCardsIndexes,
-    playedCard,
     stage,
     playedSuit,
     heartsEnteredPlay,
@@ -44,6 +38,10 @@ const Player: React.FC<IPlayerProps> = (props) => {
     isFirstTurn,
     onSelectCard,
   } = props;
+
+  const hand = useMemo(() => player.data.hand?.hand ?? [], [player.data.hand]);
+
+  const chosenCardsIndexes = useMemo(() => player.data.hand?.chosenCardsIndexes ?? [], [player.data.hand]);
 
   return (
     <Box
@@ -58,7 +56,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
       reverseDirection={position === EPlayerPosition.LEFT || position === EPlayerPosition.TOP}
       between={20}
     >
-      {playedCard && <Card card={playedCard} isVisible />}
+      {player.data.turn?.playedCard && <Card card={player.data.turn.playedCard} isVisible />}
 
       <Hand
         className={styles.hand}
@@ -77,7 +75,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
         <Box size="xl" bold>
           {player.login}
         </Box>
-        <Box size="l">{player.score}</Box>
+        <Box size="l">{player.data.score}</Box>
       </Box>
     </Box>
   );

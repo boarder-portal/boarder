@@ -14,8 +14,17 @@ export enum EGameEvent {
 
 export interface IGameOptions extends ICommonGameOptions {}
 
-export interface IPlayer extends ICommonPlayer {
+export interface IGamePlayerData {
   score: number;
+}
+
+export interface IPlayerData extends IGamePlayerData {
+  hand: IHandPlayerData | null;
+  turn: ITurnPlayerData | null;
+}
+
+export interface IPlayer extends ICommonPlayer {
+  data: IPlayerData;
 }
 
 export interface IGame {
@@ -32,7 +41,6 @@ export interface IHandPlayerData {
 
 export interface IHand {
   stage: EHandStage;
-  playersData: IHandPlayerData[];
   heartsEnteredPlay: boolean;
   turn: ITurn | null;
 }
@@ -44,20 +52,6 @@ export interface ITurnPlayerData {
 export interface ITurn {
   startPlayerIndex: number;
   activePlayerIndex: number;
-  playersData: ITurnPlayerData[];
-}
-
-export interface IGameInfoEvent {
-  stage: EHandStage;
-  players: IPlayer[];
-  passDirection: EPassDirection;
-  startTurnPlayerIndex: number;
-  heartsEnteredPlay: boolean;
-  isFirstTurn: boolean;
-}
-
-export interface IChooseCardEvent {
-  cardIndex: number;
 }
 
 export enum EHandStage {
@@ -84,7 +78,7 @@ declare module 'common/types/game' {
     [EGame.HEARTS]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: IPlayer;
+      player: ICommonPlayer;
     };
   }
 }

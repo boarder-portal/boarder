@@ -43,7 +43,7 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
 
     this.game = game;
     this.stage = options.startStage;
-    this.playersData = game.players.map(() => ({
+    this.playersData = this.getPlayersData(() => ({
       hand: [],
       chosenCardsIndexes: [],
       takenCards: [],
@@ -164,7 +164,6 @@ export default class Hand extends GameEntity<EGame.HEARTS, number[]> {
   toJSON(): IHand {
     return {
       stage: this.stage,
-      playersData: this.playersData,
       heartsEnteredPlay: this.heartsEnteredPlay,
       turn: this.turn?.toJSON() ?? null,
     };

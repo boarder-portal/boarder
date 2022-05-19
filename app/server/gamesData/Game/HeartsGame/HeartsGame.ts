@@ -1,5 +1,5 @@
 import { IGamePlayer as ICommonPlayer } from 'common/types';
-import { EGameEvent, IPlayer } from 'common/types/hearts';
+import { EGameEvent } from 'common/types/hearts';
 import { EGame } from 'common/types/game';
 import { IGameEvent } from 'server/types';
 
@@ -12,11 +12,8 @@ export default class HeartsGame extends Game<EGame.HEARTS> {
   };
   gameEntity = this.initMainGameEntity((context) => new HeartsGameEntity(context));
 
-  createPlayer(roomPlayer: ICommonPlayer): IPlayer {
-    return {
-      ...roomPlayer,
-      score: 0,
-    };
+  createPlayer(roomPlayer: ICommonPlayer): ICommonPlayer {
+    return roomPlayer;
   }
 
   delete(): void {

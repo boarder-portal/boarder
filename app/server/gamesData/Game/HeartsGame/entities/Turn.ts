@@ -73,7 +73,6 @@ export default class Turn extends GameEntity<EGame.HEARTS, ITurnResult> {
     return {
       startPlayerIndex: this.startPlayerIndex,
       activePlayerIndex: this.activePlayerIndex,
-      playersData: this.playersData,
     };
   }
 }

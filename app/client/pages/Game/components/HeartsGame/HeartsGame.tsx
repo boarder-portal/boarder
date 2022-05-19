@@ -5,15 +5,7 @@ import ArrowLeft from '@material-ui/icons/ArrowLeft';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
-import {
-  EGameEvent,
-  EHandStage,
-  EPassDirection,
-  IGame,
-  IHandPlayerData,
-  IPlayer,
-  ITurnPlayerData,
-} from 'common/types/hearts';
+import { EGameEvent, EHandStage, EPassDirection, IGame, IPlayer } from 'common/types/hearts';
 import { ESuit } from 'common/types/cards';
 import { EGame } from 'common/types/game';
 
@@ -35,8 +27,6 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [handPlayersData, setHandPlayersData] = useState<IHandPlayerData[] | null>(null);
-  const [turnPlayersData, setTurnPlayersData] = useState<ITurnPlayerData[] | null>(null);
   const [stage, setStage] = useState<EHandStage>(EHandStage.PASS);
   const [heartsEnteredPlay, setHeartsEnteredPlay] = useState(false);
   const [playedSuit, setPlayedSuit] = useState<ESuit | null>(null);
@@ -83,13 +73,13 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
 
       batchedUpdates(() => {
         setPlayers(game.players);
-        setHandPlayersData(game.hand?.playersData ?? null);
-        setTurnPlayersData(game.hand?.turn?.playersData ?? null);
         setActivePlayerIndex(game.hand?.turn?.activePlayerIndex ?? -1);
         setStage(game.hand?.stage ?? EHandStage.PASS);
         setHeartsEnteredPlay(game.hand?.heartsEnteredPlay ?? false);
-        setPlayedSuit(game.hand?.turn?.playersData[game.hand.turn.startPlayerIndex].playedCard?.suit ?? null);
-        setIsFirstTurn(game.hand?.turn?.playersData.some(({ playedCard }) => isDeuceOfClubs(playedCard)) ?? false);
+        setPlayedSuit(
+          game.hand?.turn ? game.players[game.hand.turn.startPlayerIndex].data.turn?.playedCard?.suit ?? null : null,
+        );
+        setIsFirstTurn(game.players.some(({ data }) => isDeuceOfClubs(data.turn?.playedCard)) ?? false);
         setPassDirection(game.passDirection);
       });
     });
@@ -115,9 +105,6 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
             player={localPlayer}
             position={position}
             isActive={localPlayer.index === activePlayerIndex}
-            hand={handPlayersData?.[localPlayer.index].hand ?? []}
-            chosenCardsIndexes={handPlayersData?.[localPlayer.index].chosenCardsIndexes ?? []}
-            playedCard={turnPlayersData?.[localPlayer.index].playedCard ?? null}
             stage={stage}
             playedSuit={playedSuit}
             heartsEnteredPlay={heartsEnteredPlay}
