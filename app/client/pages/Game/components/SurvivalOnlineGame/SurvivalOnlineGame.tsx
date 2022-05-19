@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
@@ -16,20 +14,13 @@ import Box from 'client/components/common/Box/Box';
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
 
+import styles from './SurvivalOnlineGame.pcss';
+
 interface ISurvivalOnlineGameProps extends IGameProps<EGame.SURVIVAL_ONLINE> {
   players: IPlayer[];
 }
 
 const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
-
-const b = block('SurvivalOnlineGame');
-
-const Root = styled(Box)`
-  background: black;
-  flex-grow: 1;
-  width: 100%;
-  margin-bottom: 40px;
-`;
 
 const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   const { io } = props;
@@ -146,14 +137,14 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   }, [io]);
 
   return (
-    <Root className={b()} flex justifyContent="center" alignItems="center" column innerRef={containerRef}>
+    <Box className={styles.root} flex justifyContent="center" alignItems="center" column innerRef={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
         width={VIEW_SIZE.width * CELL_SIZE}
         height={VIEW_SIZE.height * CELL_SIZE}
         ref={canvasRef}
       />
-    </Root>
+    </Box>
   );
 };
 
