@@ -59,6 +59,8 @@ interface IAttachPlayerCardOptions {
   isFirstTurnCard: boolean;
 }
 
+// console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
+
 export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     color: EPlayerColor.RED,

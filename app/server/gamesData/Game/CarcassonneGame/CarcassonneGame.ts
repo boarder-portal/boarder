@@ -6,9 +6,7 @@ import { IGamePlayer as ICommonPlayer } from 'common/types';
 import Game from 'server/gamesData/Game/Game';
 import CarcassonneGameEntity from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
 
-// console.log(cards.filter((card) => !isValidCard(card)).map(({ id }) => id));
-
-class CarcassonneGame extends Game<EGame.CARCASSONNE> {
+export default class CarcassonneGame extends Game<EGame.CARCASSONNE> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
@@ -28,5 +26,3 @@ class CarcassonneGame extends Game<EGame.CARCASSONNE> {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }
 }
-
-export default CarcassonneGame;

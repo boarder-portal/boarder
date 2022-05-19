@@ -6,7 +6,7 @@ import { EGameEvent } from 'common/types/sevenWonders';
 import Game from 'server/gamesData/Game/Game';
 import SevenWondersGameEntity from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
 
-class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
+export default class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
@@ -17,14 +17,12 @@ class SevenWondersGame extends Game<EGame.SEVEN_WONDERS> {
   }
 
   delete(): void {
-    this.gameEntity?.destroy();
-
     super.delete();
+
+    this.gameEntity.destroy();
   }
 
   onGetGameInfo({ socket }: IGameEvent): void {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }
 }
-
-export default SevenWondersGame;

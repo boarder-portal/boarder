@@ -6,7 +6,7 @@ import { EGame } from 'common/types/game';
 import Game from 'server/gamesData/Game/Game';
 import OnitamaGameEntity from 'server/gamesData/Game/OnitamaGame/entities/OnitamaGame';
 
-class OnitamaGame extends Game<EGame.ONITAMA> {
+export default class OnitamaGame extends Game<EGame.ONITAMA> {
   handlers = {
     [EGameEvent.GET_GAME_INFO]: this.onGetGameInfo,
   };
@@ -26,5 +26,3 @@ class OnitamaGame extends Game<EGame.ONITAMA> {
     this.sendSocketEvent(EGameEvent.GAME_INFO, this.gameEntity.toJSON(), socket);
   }
 }
-
-export default OnitamaGame;
