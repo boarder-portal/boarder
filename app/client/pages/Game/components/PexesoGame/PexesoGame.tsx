@@ -20,17 +20,16 @@ import {
   IUpdatePlayersEvent,
 } from 'common/types/pexeso';
 import { EPlayerStatus, ICoords } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
 import userAtom from 'client/atoms/userAtom';
+import { IGameProps } from 'client/pages/Game/Game';
 
-interface IPexesoGameProps {
-  io: SocketIOClient.Socket;
-  isGameEnd: boolean;
-}
+interface IPexesoGameProps extends IGameProps<EGame.PEXESO> {}
 
 interface IPexesoClientCard extends ICard {
   id: number;

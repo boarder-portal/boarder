@@ -20,14 +20,12 @@ export enum EGame {
 
 export interface IGamesParams {
   [EGame.SURVIVAL_ONLINE]: {
-    event: SurvivalOnlineTypes.EGameEvent;
-    eventMap: any;
+    eventMap: SurvivalOnlineTypes.IEventMap;
     options: SurvivalOnlineTypes.IGameOptions;
     player: SurvivalOnlineTypes.IPlayer;
   };
   [EGame.MAZE]: {
-    event: MazeTypes.EGameEvent;
-    eventMap: any;
+    eventMap: MazeTypes.IEventMap;
     options: MazeTypes.IGameOptions;
     player: MazeTypes.IPlayer;
   };
@@ -35,9 +33,20 @@ export interface IGamesParams {
 
 export type TGamePlayer<Game extends EGame> = IGamesParams[Game]['player'];
 
-export type TGameEvent<Game extends EGame> = IGamesParams[Game]['event'];
+export type TGameEvent<Game extends EGame> = keyof TGameEventMap<Game> & string;
 
-export type TGameEventData<Game extends EGame, Event extends TGameEvent<Game>> = IGamesParams[Game]['eventMap'][Event];
+export type TGameEventMap<Game extends EGame> = IGamesParams[Game]['eventMap'];
+
+export type TGameEventArgs<
+  Game extends EGame,
+  Event extends keyof TGameEventMap<Game>,
+> = TGameEventMap<Game>[Event] extends undefined ? [] : [TGameEventMap<Game>[Event]];
+
+export type TGameSocketEventMap<Game extends EGame> = {
+  [Event in keyof TGameEventMap<Game>]: (...args: TGameEventArgs<Game, Event>) => void;
+};
+
+export type TGameEventData<Game extends EGame, Event extends TGameEvent<Game>> = TGameEventMap<Game>[Event];
 
 export type TGameEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,

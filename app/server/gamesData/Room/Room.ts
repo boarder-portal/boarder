@@ -1,12 +1,12 @@
 import { Namespace } from 'socket.io';
 import uuid from 'uuid/v4';
 
-import { IAuthSocket } from 'server/types';
 import { EPlayerStatus, IGamePlayer } from 'common/types';
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
 import { EGame, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
+import removeNamespace from 'server/utilities/removeNamespace';
 
 import ioInstance from 'server/io';
 import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
@@ -60,9 +60,7 @@ class Room<G extends EGame> {
     this.onUpdateRoom = onUpdateRoom;
 
     this.deleteRoom = () => {
-      this.io.removeAllListeners();
-
-      delete ioInstance.nsps[`/${game}/room/${this.id}`];
+      removeNamespace(this.io);
 
       onDeleteRoom(this.id);
     };
@@ -71,8 +69,8 @@ class Room<G extends EGame> {
       this.deleteRoom();
     }, 10000);
 
-    this.io.use(ioSessionMiddleware as any);
-    this.io.on('connection', (socket: IAuthSocket) => {
+    this.io.use(ioSessionMiddleware);
+    this.io.on('connection', (socket) => {
       const user = socket.user;
 
       if (!user) {

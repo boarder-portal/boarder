@@ -1,7 +1,6 @@
 import { Namespace } from 'socket.io';
 
 import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
-import { IAuthSocket } from 'server/types';
 import { EPlayerStatus } from 'common/types';
 import { EGame, TGameOptions } from 'common/types/game';
 
@@ -19,8 +18,8 @@ class Lobby<Game extends EGame> {
     this.io = ioInstance.of(`/${game}/lobby`);
     this.game = game;
 
-    this.io.use(ioSessionMiddleware as any);
-    this.io.on('connection', (socket: IAuthSocket) => {
+    this.io.use(ioSessionMiddleware);
+    this.io.on('connection', (socket) => {
       this.sendLobbyUpdate();
 
       socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions<Game>) => {

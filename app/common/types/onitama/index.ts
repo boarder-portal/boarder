@@ -70,7 +70,6 @@ export interface IEventMap {
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.ONITAMA]: {
-      event: EGameEvent;
       eventMap: IEventMap;
       options: IGameOptions;
       player: IPlayer;

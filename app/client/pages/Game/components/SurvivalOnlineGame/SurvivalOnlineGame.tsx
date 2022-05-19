@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil';
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import { EDirection, EGameEvent, IGameInfoEvent, IPlayer, IUpdateGameEvent } from 'common/types/survivalOnline';
+import { EGame } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
@@ -13,11 +14,10 @@ import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/u
 import Box from 'client/components/common/Box/Box';
 
 import userAtom from 'client/atoms/userAtom';
+import { IGameProps } from 'client/pages/Game/Game';
 
-interface ISurvivalOnlineGameProps {
-  io: SocketIOClient.Socket;
+interface ISurvivalOnlineGameProps extends IGameProps<EGame.SURVIVAL_ONLINE> {
   players: IPlayer[];
-  isGameEnd: boolean;
 }
 
 const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
@@ -46,7 +46,7 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (gameInfo) => {
       console.log('GAME_INFO', gameInfo);
 
       gameInfoRef.current = gameInfo;

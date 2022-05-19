@@ -4,7 +4,6 @@ import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
-import isEmpty from 'lodash/isEmpty';
 
 import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
@@ -21,6 +20,7 @@ import {
   TObjects,
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import {
   getAttachedObjectId,
@@ -42,11 +42,9 @@ import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/
 import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { playSound, POP_SOUND } from 'client/sounds';
+import { IGameProps } from 'client/pages/Game/Game';
 
-interface ICarcassonneGameProps {
-  io: SocketIOClient.Socket;
-  isGameEnd: boolean;
-}
+interface ICarcassonneGameProps extends IGameProps<EGame.CARCASSONNE> {}
 
 const b = block('CarcassonneGame');
 

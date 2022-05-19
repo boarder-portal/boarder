@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ArrowLeft from '@material-ui/icons/ArrowLeft';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
+import { Socket } from 'socket.io-client';
 
 import {
   EAgePhase,
@@ -20,6 +21,7 @@ import {
 import { ICard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersCourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { EGame, TGameSocketEventMap } from 'common/types/game';
 
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getHand from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getHand';
@@ -46,7 +48,7 @@ import styles from './MainBoard.pcss';
 
 interface IMainBoardProps {
   className?: string;
-  io: SocketIOClient.Socket;
+  io: Socket<TGameSocketEventMap<EGame.SEVEN_WONDERS>>;
   player: IPlayer;
   leadersDraftPlayerData: ILeadersDraftPlayerData | null;
   agePlayerData: IAgePlayerData | null;

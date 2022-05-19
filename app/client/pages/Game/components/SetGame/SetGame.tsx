@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 import chunk from 'lodash/chunk';
 
 import { EGameEvent, ICard, IGame, IPlayer, ISendSetEvent } from 'common/types/set';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
@@ -12,11 +13,10 @@ import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import { IGameProps } from 'client/pages/Game/Game';
 
-interface ISetGameProps {
-  io: SocketIOClient.Socket;
+interface ISetGameProps extends IGameProps<EGame.SET> {
   players: IPlayer[];
-  isGameEnd: boolean;
 }
 
 const b = block('SetGame');

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 
 import { ERoomEvent, IRoomUpdateEvent } from 'common/types/room';
@@ -16,7 +16,7 @@ import styles from './Room.pcss';
 
 const Room: React.FC = () => {
   const { game, roomId } = useParams<{ game: EGame; roomId: string }>();
-  const ioRef = useRef<SocketIOClient.Socket>();
+  const ioRef = useRef<Socket>();
   const history = useHistory();
 
   const [room, setRoom] = useState<IRoomUpdateEvent<EGame> | null>(null);
@@ -32,7 +32,7 @@ const Room: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    ioRef.current = io.connect(`/${game}/room/${roomId}`);
+    ioRef.current = io(`/${game}/room/${roomId}`);
 
     ioRef.current.on(ERoomEvent.UPDATE, (roomData: IRoomUpdateEvent<EGame>) => {
       console.log(ERoomEvent.UPDATE, roomData);

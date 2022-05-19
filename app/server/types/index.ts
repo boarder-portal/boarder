@@ -7,11 +7,13 @@ export interface ISession {
   destroy?(): void;
 }
 
-export interface IAuthSocket extends Socket {
-  user: IUser | null;
+export interface IGameEvent<Data = undefined> {
+  socket: Socket;
+  data: Data;
 }
 
-export interface IGameEvent<Data = undefined> {
-  socket: IAuthSocket;
-  data: Data;
+declare module 'socket.io' {
+  interface Socket {
+    user: IUser | null;
+  }
 }

@@ -1,12 +1,11 @@
 import session from 'express-session';
-
-import { IAuthSocket } from 'server/types';
+import { Socket } from 'socket.io';
 
 import sessionSettings from 'server/sessionSettings';
 
-const ioSessionMiddleware = (socket: IAuthSocket, next: () => void) => {
-  session(sessionSettings)(socket.request, {} as any, () => {
-    socket.user = socket.request.session.user || null;
+const ioSessionMiddleware = (socket: Socket, next: () => void): void => {
+  session(sessionSettings)(socket.request as any, {} as any, () => {
+    socket.user = (socket.request as any).session.user || null;
 
     next();
   });

@@ -70,3 +70,17 @@ export interface IPlayerMoveEvent {
   x: number;
   y: number;
 }
+
+export interface IPlayerStopEvent {
+  login: string;
+}
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.MOVE_PLAYER]: number;
+  [EGameEvent.STOP_PLAYER]: undefined;
+
+  [EGameEvent.GAME_INFO]: IGameInfoEvent;
+  [EGameEvent.PLAYER_MOVED]: IPlayerMoveEvent;
+  [EGameEvent.PLAYER_STOPPED]: IPlayerStopEvent;
+}

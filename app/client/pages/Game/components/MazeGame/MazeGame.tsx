@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { CELL_SIZE, MAZE_HEIGHT, MAZE_WIDTH, PLAYER_SIZE, WALL_THICKNESS } from 'common/constants/games/maze';
 
-import { EGameEvent, EPlayerSide, ESide, IGameInfoEvent, IPlayer, IPlayerMoveEvent, IWall } from 'common/types/maze';
+import { EGameEvent, EPlayerSide, ESide, IPlayer, IWall } from 'common/types/maze';
+import { EGame } from 'common/types/game';
 
 import Vector from 'common/utilities/Vector';
 
@@ -10,13 +11,12 @@ import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './MazeGame.pcss';
 
-interface IMazeGameProps {
-  io: SocketIOClient.Socket;
+interface IMazeGameProps extends IGameProps<EGame.MAZE> {
   players: IPlayer[];
-  isGameEnd: boolean;
 }
 
 const PLAYER_COLORS: Record<EPlayerSide, string> = {
@@ -87,7 +87,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
   useEffect(() => {
     io.emit(EGameEvent.GET_GAME_INFO);
 
-    io.on(EGameEvent.GAME_INFO, (mazeGameInfo: IGameInfoEvent) => {
+    io.on(EGameEvent.GAME_INFO, (mazeGameInfo) => {
       players.current = mazeGameInfo.players;
 
       players.current.forEach(renderPlayer);
@@ -95,7 +95,7 @@ const MazeGame: React.FC<IMazeGameProps> = (props) => {
       setWalls(mazeGameInfo.walls);
     });
 
-    io.on(EGameEvent.PLAYER_MOVED, (moveEvent: IPlayerMoveEvent) => {
+    io.on(EGameEvent.PLAYER_MOVED, (moveEvent) => {
       const player = players.current.find(({ login }) => login === moveEvent.login);
 
       if (!player) {

@@ -6,6 +6,7 @@ import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import { ECardType, EGameEvent, EPlayerColor, IGame, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
 import { ICoords } from 'common/types';
+import { EGame } from 'common/types/game';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 
@@ -14,13 +15,11 @@ import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlayer';
 
 import userAtom from 'client/atoms/userAtom';
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './OnitamaGame.pcss';
 
-interface IOnitamaGameProps {
-  io: SocketIOClient.Socket;
-  isGameEnd: boolean;
-}
+interface IOnitamaGameProps extends IGameProps<EGame.ONITAMA> {}
 
 const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IPlayer): ICoords[] => {
   const cells: ICoords[] = [];

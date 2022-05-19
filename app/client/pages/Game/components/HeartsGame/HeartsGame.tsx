@@ -15,6 +15,7 @@ import {
   ITurnPlayerData,
 } from 'common/types/hearts';
 import { ESuit } from 'common/types/cards';
+import { EGame } from 'common/types/game';
 
 import { isDeuceOfClubs } from 'common/utilities/hearts';
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
@@ -23,13 +24,11 @@ import Box from 'client/components/common/Box/Box';
 import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 
 import userAtom from 'client/atoms/userAtom';
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './HeartsGame.pcss';
 
-interface IHeartsGameProps {
-  io: SocketIOClient.Socket;
-  isGameEnd: boolean;
-}
+interface IHeartsGameProps extends IGameProps<EGame.HEARTS> {}
 
 const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
   const { io } = props;

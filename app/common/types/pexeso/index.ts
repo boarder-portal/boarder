@@ -126,7 +126,6 @@ export interface IEventMap {
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.PEXESO]: {
-      event: EGameEvent;
       eventMap: IEventMap;
       options: IGameOptions;
       player: ICommonPlayer;

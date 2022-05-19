@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
 import { EPlayerStatus } from 'common/types';
-import { EGame, ECommonGameEvent, IGameUpdateEvent } from 'common/types/game';
+import { EGame, ECommonGameEvent, IGameUpdateEvent, TGameSocketEventMap } from 'common/types/game';
 import { IPlayer as ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
 import { IPlayer as IMazePlayer } from 'common/types/maze';
 import { IPlayer as ISetPlayer } from 'common/types/set';
@@ -19,9 +19,14 @@ import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
+export interface IGameProps<Game extends EGame> {
+  io: Socket<TGameSocketEventMap<Game>>;
+  isGameEnd: boolean;
+}
+
 const Game: React.FC = () => {
   const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
-  const ioRef = useRef<SocketIOClient.Socket>();
+  const ioRef = useRef<Socket>();
 
   const [gameData, setGameData] = useState<IGameUpdateEvent | null>(null);
 
@@ -30,7 +35,7 @@ const Game: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const socket = (ioRef.current = io.connect(`/${game}/game/${gameId}`));
+    const socket = (ioRef.current = io(`/${game}/game/${gameId}`));
 
     socket.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
       setGameData(updatedGameData);
@@ -42,8 +47,8 @@ const Game: React.FC = () => {
       endGame();
     });
 
-    socket.on('error', (err: unknown) => {
-      if (err === 'Invalid namespace') {
+    socket.on('connect_error', (err) => {
+      if (err.message === 'Invalid namespace') {
         history.push(`/${game}/lobby`);
       }
     });

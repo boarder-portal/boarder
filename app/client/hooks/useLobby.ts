@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
 import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
 import { EGame, TGameOptions } from 'common/types/game';
@@ -17,7 +17,7 @@ export default function useLobby<Game extends EGame>(
   gameOptions: TGameOptions<Game>,
 ): IUseLobbyReturnValue<Game> {
   const history = useHistory();
-  const ioRef = useRef<SocketIOClient.Socket>();
+  const ioRef = useRef<Socket>();
 
   const [lobby, setLobby] = useState<ILobbyUpdateEvent<Game> | null>(null);
 
@@ -43,7 +43,7 @@ export default function useLobby<Game extends EGame>(
   );
 
   useEffect(() => {
-    ioRef.current = io.connect(`/${game}/lobby`);
+    ioRef.current = io(`/${game}/lobby`);
 
     ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobbyUpdateEvent<Game>) => {
       setLobby(lobbyData);
@@ -54,6 +54,7 @@ export default function useLobby<Game extends EGame>(
         ioRef.current.disconnect();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game]);
 
   return {

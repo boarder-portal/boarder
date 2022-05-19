@@ -3,7 +3,7 @@ import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 
-import { IAuthSocket, IGameEvent } from 'server/types';
+import { IGameEvent } from 'server/types';
 import { EPlayerStatus, IGamePlayer } from 'common/types';
 import {
   EGame,
@@ -18,6 +18,7 @@ import {
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import removeNamespace from 'server/utilities/removeNamespace';
 
 import ioInstance from 'server/io';
 
@@ -76,8 +77,8 @@ abstract class Game<Game extends EGame> {
 
     let deleteGameTimeout: NodeJS.Timeout | null = setTimeout(() => this.delete(), 10000);
 
-    this.io.use(ioSessionMiddleware as any);
-    this.io.on('connection', (socket: IAuthSocket) => {
+    this.io.use(ioSessionMiddleware);
+    this.io.on('connection', (socket) => {
       const user = socket.user;
 
       if (user) {
@@ -133,9 +134,7 @@ abstract class Game<Game extends EGame> {
   abstract createPlayer(roomPlayer: IGamePlayer, index: number): TGamePlayer<Game>;
 
   delete(): void {
-    this.io.removeAllListeners();
-
-    delete ioInstance.nsps[`/${this.game}/game/${this.id}`];
+    removeNamespace(this.io);
 
     this.onDeleteGame();
 
@@ -178,7 +177,7 @@ abstract class Game<Game extends EGame> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const game = this;
 
-    const playerListener = function (this: IAuthSocket, data: TGameEventData<Game, Event>) {
+    const playerListener = function (this: Socket, data: TGameEventData<Game, Event>) {
       const socketPlayer = game.getPlayerByLogin(this.user?.login);
 
       if (!socketPlayer) {
@@ -190,14 +189,14 @@ abstract class Game<Game extends EGame> {
       }
     };
 
-    forEach(this.io.sockets, (socket) => {
-      socket.on(event, playerListener);
+    this.io.sockets.forEach((socket) => {
+      socket.on(event, playerListener as any);
     });
 
     (this.temporaryListeners[event] ||= new Set())?.add(playerListener);
 
     return () => {
-      forEach(this.io.sockets, (socket) => {
+      this.io.sockets.forEach((socket) => {
         socket.off(event, playerListener);
       });
 

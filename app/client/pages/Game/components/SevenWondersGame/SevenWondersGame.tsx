@@ -14,6 +14,7 @@ import {
   ITurnPlayerData,
 } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
+import { EGame } from 'common/types/game';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
@@ -22,13 +23,11 @@ import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Won
 import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 
 import userAtom from 'client/atoms/userAtom';
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './SevenWondersGame.pcss';
 
-interface ISevenWondersGameProps {
-  io: SocketIOClient.Socket;
-  isGameEnd: boolean;
-}
+interface ISevenWondersGameProps extends IGameProps<EGame.SEVEN_WONDERS> {}
 
 const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   const { io } = props;

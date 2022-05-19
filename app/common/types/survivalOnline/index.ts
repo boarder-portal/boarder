@@ -87,3 +87,11 @@ export interface IUpdateGameEvent {
   players: IPlayer[] | null;
   cells: ICell[];
 }
+
+export interface IEventMap {
+  [EGameEvent.GET_GAME_INFO]: undefined;
+  [EGameEvent.MOVE_PLAYER]: EDirection;
+
+  [EGameEvent.GAME_INFO]: IGameInfoEvent;
+  [EGameEvent.UPDATE_GAME]: IUpdateGameEvent;
+}
