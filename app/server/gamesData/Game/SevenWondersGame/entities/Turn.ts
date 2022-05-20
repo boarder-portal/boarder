@@ -40,7 +40,7 @@ export default class Turn extends Entity<EGame.SEVEN_WONDERS, number[]> {
     super(game);
 
     this.game = game;
-    this.playersData = this.players.map(() => ({
+    this.playersData = this.getPlayersData(() => ({
       receivedCoins: 0,
       chosenActionEvent: null,
       waitingForAction: {

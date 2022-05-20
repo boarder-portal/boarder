@@ -126,7 +126,7 @@ export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
         activePlayerData.lastMoves = [];
       }
 
-      this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.players.length);
+      this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.playersCount);
     }
 
     this.turn = null;
@@ -179,14 +179,14 @@ export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
     let owners: number[] = [];
     let maxMeeples = 1;
 
-    this.players.forEach(({ index }) => {
-      const meeplesCount = this.getPlayerObjectMeeples(object, index);
+    this.forEachPlayer((playerIndex) => {
+      const meeplesCount = this.getPlayerObjectMeeples(object, playerIndex);
 
       if (meeplesCount > maxMeeples) {
-        owners = [index];
+        owners = [playerIndex];
         maxMeeples = meeplesCount;
       } else if (meeplesCount === maxMeeples) {
-        owners.push(index);
+        owners.push(playerIndex);
       }
     });
 
@@ -521,7 +521,7 @@ export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
     let nextPlayerIndexWithCards = currentPlayerIndex;
 
     while (!this.canPlayAnyCards(nextPlayerIndexWithCards)) {
-      nextPlayerIndexWithCards = (nextPlayerIndexWithCards + 1) % this.players.length;
+      nextPlayerIndexWithCards = (nextPlayerIndexWithCards + 1) % this.playersCount;
 
       if (nextPlayerIndexWithCards === currentPlayerIndex) {
         return -1;

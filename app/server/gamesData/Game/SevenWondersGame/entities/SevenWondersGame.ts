@@ -64,11 +64,12 @@ export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
   constructor(context: IEntityContext<EGame.SEVEN_WONDERS>) {
     super(context);
 
-    times(this.options.playersCount - this.players.length, (index) => {
-      this.players.push({
+    // FIXME: remove after bot api
+    times(this.options.playersCount - this.playersCount, (index) => {
+      this.getPlayers().push({
         status: EPlayerStatus.DISCONNECTED,
         login: `bot-${index}`,
-        index: this.players.length,
+        index: this.getPlayers().length,
       });
       this.playersData.push(this.getPlayerInitialData(true));
     });
@@ -324,7 +325,7 @@ export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
 
   getDirectionsPlayers(playerIndex: number, directions: EPlayerDirection[]): number[] {
     if (directions.includes(EPlayerDirection.ALL)) {
-      return this.players.map(({ index }) => index);
+      return this.getPlayersData((playerIndex) => playerIndex);
     }
 
     return directions.reduce<number[]>((players, direction) => {

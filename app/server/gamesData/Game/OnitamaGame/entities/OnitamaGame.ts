@@ -10,8 +10,8 @@ import { equalsCoords } from 'common/utilities/coords';
 const ALL_CARDS = Object.values(ECardType);
 
 export default class OnitamaGame extends Entity<EGame.ONITAMA> {
-  playersData: IPlayerData[] = this.getPlayersData(({ index }) => ({
-    color: index === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
+  playersData: IPlayerData[] = this.getPlayersData((playerIndex) => ({
+    color: playerIndex === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
     cards: [],
   }));
   activePlayerIndex = 0;
@@ -50,7 +50,7 @@ export default class OnitamaGame extends Entity<EGame.ONITAMA> {
       this.board[from.y][from.x] = null;
 
       this.fifthCard = playedCard;
-      this.activePlayerIndex = (this.activePlayerIndex + 1) % this.players.length;
+      this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
 
       this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
 

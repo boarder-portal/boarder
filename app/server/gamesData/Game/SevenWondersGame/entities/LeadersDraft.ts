@@ -19,15 +19,15 @@ export default class LeadersDraft extends Entity<EGame.SEVEN_WONDERS, ICard[][]>
     super(game);
 
     this.game = game;
-    this.playersData = this.players.map(() => ({
+    this.playersData = this.getPlayersData(() => ({
       leadersPool: [],
       pickedLeaders: [],
     }));
   }
 
   *lifecycle() {
-    this.players.forEach((player, index) => {
-      this.playersData[index].leadersPool = this.game.extractFromLeadersDeck(4);
+    this.forEachPlayer((playerIndex) => {
+      this.playersData[playerIndex].leadersPool = this.game.extractFromLeadersDeck(4);
     });
 
     while (this.playersData.every(({ leadersPool }) => leadersPool.length !== 1)) {

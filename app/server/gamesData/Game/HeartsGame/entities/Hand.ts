@@ -54,7 +54,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
     const deck = shuffle(DECKS[this.playersCount]);
     const shuffledDeck = chunk(deck, deck.length / this.playersCount);
 
-    this.players.forEach((player, playerIndex) => {
+    this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].hand = shuffledDeck[playerIndex];
     });
 

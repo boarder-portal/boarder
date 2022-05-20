@@ -53,7 +53,7 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
 
     this.game = game;
     this.age = options.age;
-    this.playersData = this.players.map(() => ({
+    this.playersData = this.getPlayersData(() => ({
       hand: [],
       buildEffects: [],
     }));
@@ -85,11 +85,11 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
     const ageCards = CARDS_BY_AGE[this.age];
     const addedGuildCards = shuffle(ageCards.filter(({ type }) => type === ECardType.GUILD)).slice(
       0,
-      this.players.length + 2,
+      this.playersCount + 2,
     );
     const usedCards = ageCards.reduce<ICard[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
-        if (cardPlayersCount > this.players.length) {
+        if (cardPlayersCount > this.playersCount) {
           return cards;
         }
 
@@ -97,12 +97,12 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
       }, cards);
     }, addedGuildCards);
 
-    const shuffledCards = chunk(shuffle(usedCards), usedCards.length / this.players.length);
+    const shuffledCards = chunk(shuffle(usedCards), usedCards.length / this.playersCount);
 
-    this.playersData = this.players.map(({ index }) => ({
-      hand: shuffledCards[index],
+    this.playersData = this.getPlayersData((playerIndex) => ({
+      hand: shuffledCards[playerIndex],
       buildEffects: this.game
-        .getAllPlayerEffects(index)
+        .getAllPlayerEffects(playerIndex)
         .filter(isBuildCardEffect)
         .filter((effect) => effect.period !== EFreeCardPeriod.NOW),
     }));
@@ -134,7 +134,7 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
 
     const ageVictoryPoints = 2 * this.age + 1;
 
-    this.players.forEach(({ index: playerIndex }) => {
+    this.forEachPlayer((playerIndex) => {
       const effects = this.game.getAllPlayerEffects(playerIndex);
       const playerShieldsCount = this.game.getPlayerShieldsCount(playerIndex);
 
@@ -265,7 +265,7 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
   }
 
   executePlayersActions = (playersData: ITurnPlayerData[]): number[] => {
-    const receivedCoins = this.players.map(() => 0);
+    const receivedCoins = this.getPlayersData(() => 0);
     const newPlayersEffects: {
       playerIndex: number;
       effects: TEffect[];
@@ -291,7 +291,7 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
 
   getWaitingActions = (): (TWaitingAction | null)[] => {
     const isLastTurn = this.isLastTurn();
-    const waitingActions: (TWaitingAction | null)[] = this.players.map(() => null);
+    const waitingActions: (TWaitingAction | null)[] = this.getPlayersData(() => null);
     let someoneBuildsLastCard = false;
 
     if (isLastTurn) {
@@ -388,8 +388,8 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
   }
 
   withdrawPlayersCoins(receivedCoins: number[]): void {
-    this.players.forEach(({ index }) => {
-      this.game.changePlayerCoins(index, receivedCoins[index]);
+    this.forEachPlayer((playerIndex) => {
+      this.game.changePlayerCoins(playerIndex, receivedCoins[playerIndex]);
     });
   }
 }

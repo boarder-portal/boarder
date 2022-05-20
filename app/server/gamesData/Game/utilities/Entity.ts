@@ -61,14 +61,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   #abortCallbacks = new Set<TAbortCallback>();
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
-  players: TGamePlayer<Game>[];
 
   constructor(parentOrContext: IEntityContext<Game> | Entity<Game>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;
     this.options = context.game.options;
-    this.players = context.game.players;
   }
 
   protected abstract lifecycle(): TGenerator<Result>;
@@ -201,19 +199,27 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
   }
 
-  getPlayersData<Data>(mapper: (player: TGamePlayer<Game>) => Data): Data[] {
-    return this.players.map((player) => mapper(player));
+  forEachPlayer(callback: (playerIndex: number) => unknown): void {
+    this.getPlayers().forEach(({ index }) => callback(index));
+  }
+
+  getPlayers(): TGamePlayer<Game>[] {
+    return this.context.game.players;
+  }
+
+  getPlayersData<Data>(callback: (playerIndex: number) => Data): Data[] {
+    return this.getPlayers().map(({ index }) => callback(index));
   }
 
   getPlayersWithData<Data>(mapper: (player: TGamePlayer<Game>) => Data): (TGamePlayer<Game> & { data: Data })[] {
-    return this.players.map((player) => ({
+    return this.getPlayers().map((player) => ({
       ...player,
       data: mapper(player),
     }));
   }
 
   get playersCount(): number {
-    return this.players.length;
+    return this.getPlayers().length;
   }
 
   *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
