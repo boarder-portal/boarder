@@ -191,42 +191,13 @@ export default class SurvivalOnlineGame extends Entity<EGame.SURVIVAL_ONLINE> {
     const cellsToUpdate: IServerCell[] = [];
 
     for (const zombie of this.zombies) {
-      let closestPlayer = this.players[0];
-      let closestPlayerDistance = Infinity;
-
-      this.players.forEach((player) => {
-        const distance = Math.abs(zombie.cell.x - player.cell.x) + Math.abs(zombie.cell.y - player.cell.y);
-
-        if (distance < closestPlayerDistance) {
-          closestPlayer = player;
-          closestPlayerDistance = distance;
-        }
-      });
-
-      const possibleDirections: EDirection[] = [];
-
-      if (zombie.cell.x !== closestPlayer.cell.x) {
-        possibleDirections.push(zombie.cell.x < closestPlayer.cell.x ? EDirection.RIGHT : EDirection.LEFT);
-      }
-
-      if (zombie.cell.y !== closestPlayer.cell.y) {
-        possibleDirections.push(zombie.cell.y < closestPlayer.cell.y ? EDirection.DOWN : EDirection.UP);
-      }
-
-      const changedCells = this.moveEntityInDirection(zombie, getRandomElement(possibleDirections));
-
-      zombie.cell = changedCells[1] ?? zombie.cell;
-
-      cellsToUpdate.push(...changedCells);
+      cellsToUpdate.push(...zombie.move());
     }
 
     this.sendGameUpdate(cellsToUpdate, false);
   }
 
-  placeEntity<Entity extends TEntity>(
-    entity: Entity,
-    cell: IServerCell,
-  ): asserts cell is IServerCellWithEntity<Entity> {
+  placeEntity<Entity extends TEntity>(entity: Entity, cell: IServerCell): void {
     cell.entity = entity;
   }
 

@@ -56,6 +56,11 @@ export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event exte
   validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
 }
 
+export interface ITrigger<Value = void> {
+  (value: Value): void;
+  callbacks: Set<(value: Value) => unknown>;
+}
+
 export default abstract class Entity<Game extends EGame, Result = unknown> {
   #children = new Set<Entity<Game>>();
   #lifecycle: Promise<Result> | null = null;
@@ -342,6 +347,18 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return null;
   }
 
+  trigger<Value = void>(): ITrigger<Value> {
+    const trigger = ((value) => {
+      for (const callback of trigger.callbacks) {
+        callback(value);
+      }
+    }) as ITrigger<Value>;
+
+    trigger.callbacks = new Set();
+
+    return trigger;
+  }
+
   *waitForPlayerSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     options: IWaitForPlayerSocketEventOptions<Game, Event>,
@@ -380,6 +397,16 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           // empty
         }
       });
+    };
+  }
+
+  *waitForTrigger<Value = void>(trigger: ITrigger<Value>): TEffectGenerator<Value> {
+    return yield (resolve) => {
+      trigger.callbacks.add(resolve);
+
+      return () => {
+        trigger.callbacks.delete(resolve);
+      };
     };
   }
 }
