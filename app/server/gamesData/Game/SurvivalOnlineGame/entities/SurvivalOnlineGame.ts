@@ -94,18 +94,14 @@ export default class SurvivalOnlineGame extends Entity<EGame.SURVIVAL_ONLINE> {
       this.map[baseCell.y + 1][baseCell.x],
     ];
 
-    this.forEachPlayer((playerIndex) => {
-      const cell = cellsAroundBase[playerIndex];
-
-      this.players.push(
-        this.spawnEntity(
-          new Player(this, {
-            cell,
-            index: playerIndex,
-          }),
-        ),
-      );
-    });
+    this.players = this.getPlayersData((playerIndex) =>
+      this.spawnEntity(
+        new Player(this, {
+          cell: cellsAroundBase[playerIndex],
+          index: playerIndex,
+        }),
+      ),
+    );
 
     for (let i = 0; i < START_TREE_COUNT; i++) {
       this.spawnEntity(new Tree(this, { cell: this.getRandomFreeCell() }));
