@@ -58,7 +58,7 @@ export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event exte
 
 export interface ITrigger<Value = void> {
   (value: Value): void;
-  callbacks: Set<(value: Value) => unknown>;
+  [Symbol.iterator](): TEffectGenerator<Value>;
 }
 
 export default abstract class Entity<Game extends EGame, Result = unknown> {
@@ -348,13 +348,22 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   trigger<Value = void>(): ITrigger<Value> {
+    const callbacks = new Set<(value: Value) => unknown>();
     const trigger = ((value) => {
-      for (const callback of trigger.callbacks) {
+      for (const callback of callbacks) {
         callback(value);
       }
     }) as ITrigger<Value>;
 
-    trigger.callbacks = new Set();
+    trigger[Symbol.iterator] = function* () {
+      return yield (resolve) => {
+        callbacks.add(resolve);
+
+        return () => {
+          callbacks.delete(resolve);
+        };
+      };
+    };
 
     return trigger;
   }
@@ -397,16 +406,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           // empty
         }
       });
-    };
-  }
-
-  *waitForTrigger<Value = void>(trigger: ITrigger<Value>): TEffectGenerator<Value> {
-    return yield (resolve) => {
-      trigger.callbacks.add(resolve);
-
-      return () => {
-        trigger.callbacks.delete(resolve);
-      };
     };
   }
 }
