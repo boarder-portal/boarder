@@ -16,13 +16,7 @@ export enum EGame {
   HEARTS = 'hearts',
 }
 
-export interface IGamesParams {
-  [EGame.SURVIVAL_ONLINE]: {
-    eventMap: SurvivalOnlineTypes.IEventMap;
-    options: SurvivalOnlineTypes.IGameOptions;
-    player: SurvivalOnlineTypes.IPlayer;
-  };
-}
+export interface IGamesParams {}
 
 export type TGamePlayer<Game extends EGame> = IGamesParams[Game]['player'];
 

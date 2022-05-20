@@ -18,8 +18,8 @@ export default function renderMap({
 }): void {
   context.clearRect(0, 0, VIEW_SIZE.width * CELL_SIZE, VIEW_SIZE.height * CELL_SIZE);
 
-  const startX = player.x - Math.floor(VIEW_SIZE.width / 2);
-  const startY = player.y - Math.floor(VIEW_SIZE.height / 2);
+  const startX = player.data.cell.x - Math.floor(VIEW_SIZE.width / 2);
+  const startY = player.data.cell.y - Math.floor(VIEW_SIZE.height / 2);
 
   const { map } = gameInfo;
 

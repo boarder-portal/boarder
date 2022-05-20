@@ -227,6 +227,7 @@
     ],
     "quote-props": ["error", "as-needed"],
     "quotes": ["error", "single"],
+    "require-yield": "off",
     "semi": ["error", "always"],
     "semi-spacing": [
       "error",

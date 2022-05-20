@@ -67,7 +67,7 @@ export default class OnitamaGame extends Entity<EGame.ONITAMA> {
   }
 
   getGamePlayers(): IPlayer[] {
-    return this.getPlayersWithData(({ index }) => this.playersData[index]);
+    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
   toJSON(): IGame {

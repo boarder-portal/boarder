@@ -1,5 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -11,10 +12,12 @@ export enum EGameEvent {
 
 export interface IGameOptions extends ICommonGameOptions {}
 
+export interface IPlayerData {
+  cell: ICellWithObject<IPlayerObject>;
+}
+
 export interface IPlayer extends ICommonPlayer {
-  x: number;
-  y: number;
-  object: IPlayerObject;
+  data: IPlayerData;
 }
 
 export enum EBiome {
@@ -41,26 +44,21 @@ export interface IObject {
 
 export interface IBaseObject extends IObject {
   type: EObject.BASE;
-  hp: number;
 }
 
 export interface IPlayerObject extends IObject {
   type: EObject.PLAYER;
-  login: string;
-  hp: number;
+  index: number;
   direction: EDirection;
-  isMoving: boolean;
 }
 
 export interface IZombieObject extends IObject {
   type: EObject.ZOMBIE;
-  hp: number;
   direction: EDirection;
 }
 
 export interface ITreeObject extends IObject {
   type: EObject.TREE;
-  hp: number;
 }
 
 export type TObject = IBaseObject | IPlayerObject | IZombieObject | ITreeObject;
@@ -83,6 +81,11 @@ export interface IGameInfoEvent {
   players: IPlayer[];
 }
 
+export interface IGame {
+  map: TMap;
+  players: IPlayer[];
+}
+
 export interface IUpdateGameEvent {
   players: IPlayer[] | null;
   cells: ICell[];
@@ -94,4 +97,14 @@ export interface IEventMap {
 
   [EGameEvent.GAME_INFO]: IGameInfoEvent;
   [EGameEvent.UPDATE_GAME]: IUpdateGameEvent;
+}
+
+declare module 'common/types/game' {
+  interface IGamesParams {
+    [EGame.SURVIVAL_ONLINE]: {
+      eventMap: IEventMap;
+      options: IGameOptions;
+      player: ICommonPlayer;
+    };
+  }
 }

@@ -35,6 +35,8 @@ export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infe
 
 type TAbortCallback = () => unknown;
 
+type TCancelTask = (() => void) | undefined;
+
 type TAllEffectReturnValue<T extends TGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
 };
@@ -80,7 +82,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   #getGeneratorResult<Result>(generator: TGenerator<Result>): IGeneratorResult<Result> {
-    let cancel: (() => void) | undefined;
+    let cancel: TCancelTask;
 
     return {
       run: async () => {
@@ -95,13 +97,9 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
           const effectResult = this.#handleAnyEffect(value);
 
-          cancel = () => {
-            effectResult?.cancel();
-          };
+          cancel = effectResult.cancel;
 
-          if (effectResult) {
-            prevResult = await effectResult.promise;
-          }
+          prevResult = await effectResult.promise;
 
           cancel = undefined;
         }
@@ -113,7 +111,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   #handleAnyEffect<Result>(callback: TEffectCallback<Result>): IEffectResult<Result> {
-    let unregisterEffect: (() => void) | undefined;
+    let unregisterEffect: TCancelTask;
 
     return {
       cancel: () => unregisterEffect?.(),
@@ -189,6 +187,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
+  *eternity(): TEffectGenerator<void> {
+    yield () => {
+      // empty
+    };
+  }
+
   destroy(): void {
     for (const child of this.#children) {
       child.destroy();
@@ -211,10 +215,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return this.getPlayers().map(({ index }) => callback(index));
   }
 
-  getPlayersWithData<Data>(mapper: (player: TGamePlayer<Game>) => Data): (TGamePlayer<Game> & { data: Data })[] {
+  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (TGamePlayer<Game> & { data: Data })[] {
     return this.getPlayers().map((player) => ({
       ...player,
-      data: mapper(player),
+      data: callback(player.index),
     }));
   }
 
@@ -242,14 +246,21 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *repeatTask<Result = void>(ms: number, task: () => Result | Promise<Result>): TEffectGenerator<Result> {
+  *repeatTask<Result = void>(ms: number, task: (this: this) => TGenerator<Result | void>): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
       let promiseChain = Promise.resolve();
+      let cancelTask: TCancelTask;
 
       const interval = setInterval(() => {
         promiseChain = promiseChain.then(async () => {
           try {
-            const result = await task();
+            const { run, cancel } = this.#getGeneratorResult(task.call(this));
+
+            cancelTask = cancel;
+
+            const result = await run();
+
+            cancelTask = undefined;
 
             if (result !== undefined) {
               clearInterval(interval);
@@ -264,6 +275,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
       return () => {
         clearInterval(interval);
+        cancelTask?.();
       };
     };
   }
@@ -274,14 +286,18 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
 
     return (this.#lifecycle = (async () => {
-      let cancelGenerator: (() => void) | undefined;
+      let cancelGenerator: TCancelTask;
 
       try {
         const { run, cancel } = this.#getGeneratorResult(this.lifecycle());
 
         cancelGenerator = cancel;
 
-        return await run();
+        const result = await run();
+
+        cancelGenerator = undefined;
+
+        return result;
       } finally {
         cancelGenerator?.();
 
@@ -299,7 +315,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   spawnEntity<E extends Entity<Game>>(entity: E): E {
-    entity.context = this.context;
     entity.#parent = this;
 
     this.#children.add(entity);

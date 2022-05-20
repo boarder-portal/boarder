@@ -41,10 +41,10 @@ export default class HeartsGame extends Entity<EGame.HEARTS> {
   }
 
   getGamePlayers(): IPlayer[] {
-    return this.getPlayersWithData(({ index }) => ({
-      ...this.playersData[index],
-      hand: this.hand?.playersData[index] ?? null,
-      turn: this.hand?.turn?.playersData[index] ?? null,
+    return this.getPlayersWithData((playerIndex) => ({
+      ...this.playersData[playerIndex],
+      hand: this.hand?.playersData[playerIndex] ?? null,
+      turn: this.hand?.turn?.playersData[playerIndex] ?? null,
     }));
   }
 

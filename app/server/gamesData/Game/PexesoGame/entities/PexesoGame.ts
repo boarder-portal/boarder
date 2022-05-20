@@ -114,7 +114,7 @@ export default class PexesoGame extends Entity<EGame.PEXESO> {
   }
 
   getGamePlayers(): IPlayer[] {
-    return this.getPlayersWithData(({ index }) => this.playersData[index]);
+    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
   isCardInGame(cardIndex: number): boolean {

@@ -354,11 +354,12 @@ export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
   getGamePlayers(): IPlayer[] {
     const turn = this.phase?.type === EGamePhase.DRAFT_LEADERS ? this.phase.leadersDraft.turn : this.phase?.age.turn;
 
-    return this.getPlayersWithData(({ index }) => ({
-      ...this.playersData[index],
-      leadersDraft: this.phase?.type === EGamePhase.DRAFT_LEADERS ? this.phase.leadersDraft.playersData[index] : null,
-      age: this.phase?.type === EGamePhase.AGE ? this.phase.age.playersData[index] : null,
-      turn: turn?.playersData[index] ?? null,
+    return this.getPlayersWithData((playerIndex) => ({
+      ...this.playersData[playerIndex],
+      leadersDraft:
+        this.phase?.type === EGamePhase.DRAFT_LEADERS ? this.phase.leadersDraft.playersData[playerIndex] : null,
+      age: this.phase?.type === EGamePhase.AGE ? this.phase.age.playersData[playerIndex] : null,
+      turn: turn?.playersData[playerIndex] ?? null,
     }));
   }
 
