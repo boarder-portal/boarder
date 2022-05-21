@@ -6,7 +6,7 @@ import Entity from 'server/gamesData/Game/utilities/Entity';
 import SurvivalOnlineGame, {
   IServerCell,
   IServerCellWithEntity,
-} from 'server/gamesData/Game/SurvivalOnlineGame/entities/SurvivalOnlineGame';
+} from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
 export interface ITreeOptions {
   cell: IServerCell;

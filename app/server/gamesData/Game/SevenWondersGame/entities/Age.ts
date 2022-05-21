@@ -33,7 +33,7 @@ import {
 import rotateObjects from 'common/utilities/rotateObjects';
 
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
 export interface IAgeOptions {
   age: number;

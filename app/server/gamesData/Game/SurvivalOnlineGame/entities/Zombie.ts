@@ -7,7 +7,7 @@ import { getRandomElement } from 'common/utilities/random';
 import SurvivalOnlineGame, {
   IServerCell,
   IServerCellWithEntity,
-} from 'server/gamesData/Game/SurvivalOnlineGame/entities/SurvivalOnlineGame';
+} from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
 export interface IZombieOptions {
   cell: IServerCell;

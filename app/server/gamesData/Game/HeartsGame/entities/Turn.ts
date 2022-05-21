@@ -6,7 +6,7 @@ import Entity from 'server/gamesData/Game/utilities/Entity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
 
-import HeartsGame from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
 export interface ITurnResult {

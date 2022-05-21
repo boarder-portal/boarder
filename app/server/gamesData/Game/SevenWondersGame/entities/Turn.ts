@@ -16,7 +16,7 @@ import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import getPlayerHandCards from 'app/common/utilities/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'app/common/utilities/random';
 
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
 export interface ITurnOptions {
   startingWaitingAction: Exclude<EWaitingActionType, EWaitingActionType.EFFECT_BUILD_CARD>;

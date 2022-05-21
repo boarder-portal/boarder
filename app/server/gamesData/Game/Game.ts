@@ -19,13 +19,13 @@ import removeNamespace from 'server/utilities/removeNamespace';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import ioInstance from 'server/io';
-import PexesoGame from 'server/gamesData/Game/PexesoGame/entities/PexesoGame';
-import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/entities/SurvivalOnlineGame';
-import SetGame from 'server/gamesData/Game/SetGame/entities/SetGame';
-import OnitamaGame from 'server/gamesData/Game/OnitamaGame/entities/OnitamaGame';
-import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
-import HeartsGame from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
+import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
+import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
+import SetGame from 'server/gamesData/Game/SetGame/SetGame';
+import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
+import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 
 export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,

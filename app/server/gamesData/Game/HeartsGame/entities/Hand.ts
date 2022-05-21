@@ -13,7 +13,7 @@ import { ESuit, ICard } from 'common/types/cards';
 import Entity from 'server/gamesData/Game/utilities/Entity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
-import HeartsGame from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Turn from 'server/gamesData/Game/HeartsGame/entities/Turn';
 
 const ALL_SCORE = 26;

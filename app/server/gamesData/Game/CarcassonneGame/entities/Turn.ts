@@ -3,7 +3,7 @@ import { EGameEvent, ITurn } from 'common/types/carcassonne';
 
 import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
+import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
 export interface ITurnOptions {
   activePlayerIndex: number;

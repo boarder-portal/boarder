@@ -5,7 +5,7 @@ import { EWaitingActionType, ILeadersDraftPlayerData } from 'common/types/sevenW
 import Entity from 'server/gamesData/Game/utilities/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
 
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
 export default class LeadersDraft extends Entity<EGame.SEVEN_WONDERS, ICard[][]> {

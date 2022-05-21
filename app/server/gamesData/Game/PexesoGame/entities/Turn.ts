@@ -3,7 +3,7 @@ import { EGameEvent, ITurn } from 'common/types/pexeso';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
 
-import PexesoGame from 'server/gamesData/Game/PexesoGame/entities/PexesoGame';
+import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 
 export interface ITurnOptions {
   activePlayerIndex: number;
