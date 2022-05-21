@@ -1,0 +1,19 @@
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+
+  &.open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+}
+
+.container {
+  padding: 12px 24px;
+  background: white;
+  border-radius: 8px;
+}

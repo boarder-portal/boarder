@@ -5,8 +5,8 @@ import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
 import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import Box from 'client/components/common/Box/Box';
-import Modal from 'client/components/common/Modal/Modal';
 import ResourcesAndPrice from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
+import Modal from 'client/components/common/Modal/Modal';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 

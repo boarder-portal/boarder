@@ -1,45 +1,34 @@
-import React from 'react';
-import MuiModal from '@material-ui/core/Modal';
-import styled from 'styled-components';
-import block from 'bem-cn';
+import { FC, useCallback, useMemo, MouseEvent } from 'react';
+import { createPortal } from 'react-dom';
+import classNames from 'classnames/bind';
+
+import styles from './Modal.pcss';
 
 interface IModalProps {
-  className?: string;
   containerClassName?: string;
-  children: React.ReactNode;
   open: boolean;
-  onClose(): void;
+  onClose?(): void;
 }
 
-const b = block('Modal');
+const Modal: FC<IModalProps> = (props) => {
+  const { containerClassName, open, children, onClose } = props;
 
-const Root = styled(MuiModal)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  const handleContainerClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
-  .Modal {
-    &__container {
-      display: flex;
-      flex-direction: column;
-      background: white;
-      outline: none;
-      border-radius: 8px;
-      padding: 16px 32px;
-    }
-  }
-`;
-
-const Modal: React.FC<IModalProps> = (props) => {
-  const { className, containerClassName, children, open, onClose } = props;
-
-  return (
-    <Root className={b.mix(className)} open={open} onClose={onClose}>
-      <div className={b('container').mix(containerClassName)}>{children}</div>
-    </Root>
+  const content = useMemo(
+    () => (
+      <div className={classNames(styles.overlay, { [styles.open]: open })} onClick={onClose}>
+        <div className={classNames(styles.container, containerClassName)} onClick={handleContainerClick}>
+          {children}
+        </div>
+      </div>
+    ),
+    [children, containerClassName, handleContainerClick, onClose, open],
   );
+
+  return createPortal(content, document.querySelector('#root')!);
 };
 
-export default React.memo(Modal);
+export default Modal;
