@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import { EDirection, EGameEvent, IGameInfoEvent, IPlayer, IUpdateGameEvent } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
+import { EDirection, EGameEvent, IPlayer, TMap } from 'common/types/survivalOnline';
+import { EGame, TGameEventMap } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
@@ -13,86 +13,58 @@ import Box from 'client/components/common/Box/Box';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
+import useSocket from 'client/hooks/useSocket';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import styles from './SurvivalOnlineGame.pcss';
 
-interface ISurvivalOnlineGameProps extends IGameProps<EGame.SURVIVAL_ONLINE> {
-  players: IPlayer[];
-}
+const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
+  ArrowUp: EDirection.UP,
+  ArrowDown: EDirection.DOWN,
+  ArrowRight: EDirection.RIGHT,
+  ArrowLeft: EDirection.LEFT,
+};
 
-const MOVES_KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
+const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) => {
+  const { io, gameInfo } = props;
 
-const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
-  const { io } = props;
+  const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
+  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const gameInfoRef = useRef<IGameInfoEvent | null>(null);
-  const playerRef = useRef<IPlayer | null>(null);
-  const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const mapRef = useRef<TMap>(gameInfo.map);
 
   const user = useRecoilValue(userAtom);
 
-  useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
+  const player = useMemo(() => {
+    return players.find(({ login }) => user?.login === login) ?? null;
+  }, [players, user]);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo) => {
-      console.log('GAME_INFO', gameInfo);
+  const render = useImmutableCallback(() => {
+    const context = contextRef.current;
 
-      gameInfoRef.current = gameInfo;
+    if (context && player) {
+      renderMap({ context, map: mapRef.current, player });
+    }
+  });
 
-      const context = contextRef.current;
-
-      if (!context || !user) {
-        return;
-      }
-
-      const player = (playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null);
-
-      if (!player) {
-        return;
-      }
-
-      renderMap({ context, gameInfo, player });
-    });
-
-    io.on(EGameEvent.UPDATE_GAME, ({ players, cells }: IUpdateGameEvent) => {
+  useSocket<TGameEventMap<EGame.SURVIVAL_ONLINE>>(io, {
+    [EGameEvent.UPDATE_GAME]: ({ players, cells }) => {
       console.log('UPDATE_GAME', { players, cells });
-
-      const context = contextRef.current;
-      const gameInfo = gameInfoRef.current;
-
-      if (!gameInfo || !context || !user) {
-        return;
-      }
-
-      if (players) {
-        gameInfo.players = players;
-
-        playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null;
-      }
 
       cells.forEach((cell) => {
         gameInfo.map[cell.y][cell.x] = cell;
       });
 
-      if (!playerRef.current) {
-        return;
+      if (players) {
+        setPlayers(players);
+      } else {
+        render();
       }
-
-      renderMap({
-        context,
-        gameInfo,
-        player: playerRef.current,
-      });
-    });
-
-    return () => {
-      io.off(EGameEvent.GAME_INFO);
-      io.off(EGameEvent.UPDATE_GAME);
-    };
-  }, [io, user]);
+    },
+  });
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -112,17 +84,10 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
     });
 
     document.addEventListener('keydown', (e) => {
-      if (MOVES_KEY_CODES.includes(e.key)) {
-        io.emit(
-          EGameEvent.MOVE_PLAYER,
-          e.key === 'ArrowUp'
-            ? EDirection.UP
-            : e.key === 'ArrowRight'
-            ? EDirection.RIGHT
-            : e.key === 'ArrowDown'
-            ? EDirection.DOWN
-            : EDirection.LEFT,
-        );
+      const direction = DIRECTIONS_MAP[e.key];
+
+      if (direction) {
+        io.emit(EGameEvent.MOVE_PLAYER, direction);
       }
     });
 
@@ -135,6 +100,10 @@ const SurvivalOnlineGame: React.FC<ISurvivalOnlineGameProps> = (props) => {
       });
     });
   }, [io]);
+
+  useEffect(() => {
+    render();
+  }, [player, render]);
 
   return (
     <Box className={styles.root} flex justifyContent="center" alignItems="center" column innerRef={containerRef}>

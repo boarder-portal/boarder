@@ -9,26 +9,7 @@ import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import removeNamespace from 'server/utilities/removeNamespace';
 
 import ioInstance from 'server/io';
-import Game, { IGameCreateOptions } from 'server/gamesData/Game/Game';
-import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
-import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
-import SetGame from 'server/gamesData/Game/SetGame/SetGame';
-import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
-import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
-import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
-
-const GAMES_MAP: {
-  [G in EGame]: { new (options: IGameCreateOptions<G>): Game<G> };
-} = {
-  [EGame.PEXESO]: PexesoGame,
-  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
-  [EGame.SET]: SetGame,
-  [EGame.ONITAMA]: OnitamaGame,
-  [EGame.CARCASSONNE]: CarcassonneGame,
-  [EGame.SEVEN_WONDERS]: SevenWondersGame,
-  [EGame.HEARTS]: HeartsGame,
-};
+import Game from 'server/gamesData/Game/Game';
 
 class Room<G extends EGame> {
   io: Namespace;
@@ -105,14 +86,12 @@ class Room<G extends EGame> {
         this.sendRoomInfo();
 
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
-          if (game in GAMES_MAP) {
-            this.game = new (GAMES_MAP[game] as any)({
-              game,
-              options,
-              players: this.players,
-              onDeleteGame: this.deleteRoom,
-            });
-          }
+          this.game = new Game({
+            game,
+            options,
+            players: this.players,
+            onDeleteGame: this.deleteRoom,
+          });
 
           if (!this.game) {
             return;

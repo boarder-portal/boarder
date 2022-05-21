@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { EGame, TGameEvent, TGameEventData, TGameOptions, TGamePlayer } from 'common/types/game';
+import { EGame, TGameEvent, TGameEventData, TGameOptions } from 'common/types/game';
+import { IGamePlayer } from 'common/types';
 
 import Game from 'server/gamesData/Game/Game';
 
@@ -66,6 +67,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   #lifecycle: Promise<Result> | null = null;
   #parent: Entity<Game> | null = null;
   #abortCallbacks = new Set<TAbortCallback>();
+  spawned = false;
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
 
@@ -212,7 +214,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
-  getPlayers(): TGamePlayer<Game>[] {
+  getPlayers(): IGamePlayer[] {
     return this.context.game.players;
   }
 
@@ -220,7 +222,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return this.getPlayers().map(({ index }) => callback(index));
   }
 
-  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (TGamePlayer<Game> & { data: Data })[] {
+  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer & { data: Data })[] {
     return this.getPlayers().map((player) => ({
       ...player,
       data: callback(player.index),
@@ -290,6 +292,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
       return this.#lifecycle;
     }
 
+    if (!this.spawned) {
+      throw new Error('You need to spawn the entity first');
+    }
+
     return (this.#lifecycle = (async () => {
       let cancelGenerator: TCancelTask;
 
@@ -320,6 +326,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   spawnEntity<E extends Entity<Game>>(entity: E): E {
+    entity.spawned = true;
     entity.#parent = this;
 
     this.#children.add(entity);

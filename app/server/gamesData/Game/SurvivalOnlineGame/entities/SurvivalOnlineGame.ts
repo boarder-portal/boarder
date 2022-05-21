@@ -3,7 +3,8 @@ import times from 'lodash/times';
 import { EGame } from 'common/types/game';
 import { EBiome, EDirection, EGameEvent, ICell, IGame, IPlayer } from 'common/types/survivalOnline';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
 
 import Base from 'server/gamesData/Game/SurvivalOnlineGame/entities/Base';
@@ -52,7 +53,7 @@ const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 0.25);
 const ZOMBIES_MOVE_INTERVAL = 500;
 const ZOMBIES_GENERATE_INTERVAL = 30 * 1000;
 
-export default class SurvivalOnlineGame extends Entity<EGame.SURVIVAL_ONLINE> {
+export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE> {
   players: Player[] = [];
   map: IServerCell[][] = [];
   base: Base | null = null;

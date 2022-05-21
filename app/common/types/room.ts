@@ -17,3 +17,10 @@ export interface IRoomUpdateEvent<Game extends EGame> {
   players: Room<Game>['players'];
   options: Room<Game>['options'];
 }
+
+export interface IRoomEventMap<Game extends EGame> {
+  [ERoomEvent.TOGGLE_USER_STATE]: undefined;
+
+  [ERoomEvent.UPDATE]: IRoomUpdateEvent<Game>;
+  [ERoomEvent.START_GAME]: string;
+}

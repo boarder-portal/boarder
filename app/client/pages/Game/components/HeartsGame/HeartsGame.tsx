@@ -5,7 +5,7 @@ import ArrowLeft from '@material-ui/icons/ArrowLeft';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
-import { EGameEvent, EHandStage, EPassDirection, IGame, IPlayer } from 'common/types/hearts';
+import { EGameEvent, EHandStage, EPassDirection, IPlayer } from 'common/types/hearts';
 import { ESuit } from 'common/types/cards';
 import { EGame } from 'common/types/game';
 
@@ -20,10 +20,8 @@ import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './HeartsGame.pcss';
 
-interface IHeartsGameProps extends IGameProps<EGame.HEARTS> {}
-
-const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
-  const { io } = props;
+const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
+  const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
@@ -62,32 +60,22 @@ const HeartsGame: React.FC<IHeartsGameProps> = (props) => {
   }, [passDirection]);
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
+    console.log(EGameEvent.GAME_INFO, gameInfo);
 
-    io.on(EGameEvent.GAME_INFO, (game: IGame) => {
-      if (!user) {
-        return;
-      }
-
-      console.log(EGameEvent.GAME_INFO, game);
-
-      batchedUpdates(() => {
-        setPlayers(game.players);
-        setActivePlayerIndex(game.hand?.turn?.activePlayerIndex ?? -1);
-        setStage(game.hand?.stage ?? EHandStage.PASS);
-        setHeartsEnteredPlay(game.hand?.heartsEnteredPlay ?? false);
-        setPlayedSuit(
-          game.hand?.turn ? game.players[game.hand.turn.startPlayerIndex].data.turn?.playedCard?.suit ?? null : null,
-        );
-        setIsFirstTurn(game.players.some(({ data }) => isDeuceOfClubs(data.turn?.playedCard)) ?? false);
-        setPassDirection(game.passDirection);
-      });
+    batchedUpdates(() => {
+      setPlayers(gameInfo.players);
+      setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
+      setStage(gameInfo.hand?.stage ?? EHandStage.PASS);
+      setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
+      setPlayedSuit(
+        gameInfo.hand?.turn
+          ? gameInfo.players[gameInfo.hand.turn.startPlayerIndex].data.turn?.playedCard?.suit ?? null
+          : null,
+      );
+      setIsFirstTurn(gameInfo.players.some(({ data }) => isDeuceOfClubs(data.turn?.playedCard)) ?? false);
+      setPassDirection(gameInfo.passDirection);
     });
-
-    return () => {
-      io.off(EGameEvent.GET_GAME_INFO);
-    };
-  }, [io, user]);
+  }, [gameInfo]);
 
   if (!player) {
     return null;

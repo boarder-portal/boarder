@@ -74,7 +74,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
           playerChosenCardsIndexes.push(cardIndex);
         }
 
-        this.game.sendInfo();
+        this.game.sendGameInfo();
       }
 
       const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>
@@ -103,7 +103,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
         }),
       );
 
-      this.game.sendInfo();
+      this.game.sendGameInfo();
 
       const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.turn;
 

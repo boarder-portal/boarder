@@ -13,7 +13,6 @@ import {
   EMeepleType,
   IAttachCardEvent,
   ICard,
-  IGame,
   IPlacedMeeple,
   IPlayer,
   TBoard,
@@ -44,8 +43,6 @@ import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { playSound, POP_SOUND } from 'client/sounds';
 import { IGameProps } from 'client/pages/Game/Game';
-
-interface ICarcassonneGameProps extends IGameProps<EGame.CARCASSONNE> {}
 
 const b = block('CarcassonneGame');
 
@@ -226,8 +223,8 @@ const Root = styled(Box)`
   }
 `;
 
-const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
-  const { io } = props;
+const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
+  const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
@@ -535,37 +532,25 @@ const CarcassonneGame: React.FC<ICarcassonneGameProps> = (props) => {
   });
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
+    console.log(EGameEvent.GAME_INFO, gameInfo);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
-      if (!user) {
-        return;
-      }
+    setPlayers(gameInfo.players);
+    setActivePlayerIndex(gameInfo.activePlayerIndex);
+    setBoard(gameInfo.board);
+    setObjects(gameInfo.objects);
+    setCardsLeft(gameInfo.cardsLeft);
+    setTurnEndsAt(gameInfo.turn?.endsAt ?? null);
 
-      console.log(EGameEvent.GAME_INFO, gameInfo);
+    const boardCardsCount =
+      gameInfo.cardsLeft +
+      gameInfo.players.reduce((playersCardsCount, player) => playersCardsCount + player.data.cards.length, 0);
 
-      setPlayers(gameInfo.players);
-      setActivePlayerIndex(gameInfo.activePlayerIndex);
-      setBoard(gameInfo.board);
-      setObjects(gameInfo.objects);
-      setCardsLeft(gameInfo.cardsLeft);
-      setTurnEndsAt(gameInfo.turn?.endsAt ?? null);
+    if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
+      playSound(POP_SOUND);
+    }
 
-      const boardCardsCount =
-        gameInfo.cardsLeft +
-        gameInfo.players.reduce((playersCardsCount, player) => playersCardsCount + player.data.cards.length, 0);
-
-      if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
-        playSound(POP_SOUND);
-      }
-
-      boardCardsCountRef.current = boardCardsCount;
-    });
-
-    return () => {
-      io.off(EGameEvent.GAME_INFO);
-    };
-  }, [io, user]);
+    boardCardsCountRef.current = boardCardsCount;
+  }, [gameInfo]);
 
   return (
     <Root className={b()}>

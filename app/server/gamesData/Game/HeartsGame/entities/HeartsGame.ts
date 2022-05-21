@@ -2,13 +2,13 @@ import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 import { END_GAME_SCORE } from 'common/constants/games/hearts';
 
 import { EGame } from 'common/types/game';
-import { EGameEvent, EHandStage, EPassDirection, IGame, IGamePlayerData, IPlayer } from 'common/types/hearts';
+import { EHandStage, EPassDirection, IGame, IGamePlayerData, IPlayer } from 'common/types/hearts';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
-export default class HeartsGame extends Entity<EGame.HEARTS> {
+export default class HeartsGame extends GameEntity<EGame.HEARTS> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => ({ score: 0 }));
   handIndex = -1;
   passDirection: EPassDirection = EPassDirection.NONE;
@@ -26,7 +26,7 @@ export default class HeartsGame extends Entity<EGame.HEARTS> {
         }),
       );
 
-      this.sendInfo();
+      this.sendGameInfo();
 
       const scoreIncrements = yield* this.hand;
 
@@ -34,7 +34,7 @@ export default class HeartsGame extends Entity<EGame.HEARTS> {
         this.playersData[playerIndex].score += scoreIncrement;
       });
 
-      this.sendInfo();
+      this.sendGameInfo();
     }
 
     this.hand = null;
@@ -46,10 +46,6 @@ export default class HeartsGame extends Entity<EGame.HEARTS> {
       hand: this.hand?.playersData[playerIndex] ?? null,
       turn: this.hand?.turn?.playersData[playerIndex] ?? null,
     }));
-  }
-
-  sendInfo(): void {
-    this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
   toJSON(): IGame {

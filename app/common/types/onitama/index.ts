@@ -1,6 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { ICoords, IGamePlayer as ICommonPlayer } from 'common/types';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -64,7 +64,7 @@ export interface IMovePieceEvent {
   cardIndex: number;
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.ONITAMA> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.MOVE_PIECE]: IMovePieceEvent;
 
@@ -76,7 +76,7 @@ declare module 'common/types/game' {
     [EGame.ONITAMA]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

@@ -3,7 +3,7 @@ import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -237,7 +237,7 @@ export enum EAgePhase {
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.SEVEN_WONDERS> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.EXECUTE_ACTION]: IExecuteActionEvent;
   [EGameEvent.CANCEL_ACTION]: undefined;
@@ -250,7 +250,7 @@ declare module 'common/types/game' {
     [EGame.SEVEN_WONDERS]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

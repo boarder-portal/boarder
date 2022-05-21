@@ -1,7 +1,7 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/cards';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   // client events
@@ -66,7 +66,7 @@ export enum EPassDirection {
   NONE = 'NONE',
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.HEARTS> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.CHOOSE_CARD]: number;
 
@@ -78,7 +78,7 @@ declare module 'common/types/game' {
     [EGame.HEARTS]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

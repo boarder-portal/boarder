@@ -3,26 +3,29 @@ import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 
-import { IGameEvent } from 'server/types';
 import { EPlayerStatus, IGamePlayer } from 'common/types';
 import {
   EGame,
   ECommonGameEvent,
-  IGameUpdateEvent,
   TGameEvent,
   TGameEventData,
   TGameEventListener,
   TGameOptions,
-  TGamePlayer,
 } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-import Entity, { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
+import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
 import removeNamespace from 'server/utilities/removeNamespace';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import ioInstance from 'server/io';
-
-export type TEventHandlers<Game extends EGame> = Partial<Record<TGameEvent<Game>, (event: IGameEvent<any>) => void>>;
+import PexesoGame from 'server/gamesData/Game/PexesoGame/entities/PexesoGame';
+import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/entities/SurvivalOnlineGame';
+import SetGame from 'server/gamesData/Game/SetGame/entities/SetGame';
+import OnitamaGame from 'server/gamesData/Game/OnitamaGame/entities/OnitamaGame';
+import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/entities/CarcassonneGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/entities/SevenWondersGame';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/entities/HeartsGame';
 
 export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,
@@ -42,18 +45,29 @@ interface IBatchedAction<Game extends EGame, Event extends TGameEvent<Game>> {
   socket?: Socket;
 }
 
-abstract class Game<Game extends EGame> {
+const GAME_ENTITIES_MAP: {
+  [Game in EGame]: { new (context: IEntityContext<Game>): GameEntity<Game> };
+} = {
+  [EGame.PEXESO]: PexesoGame,
+  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
+  [EGame.SET]: SetGame,
+  [EGame.ONITAMA]: OnitamaGame,
+  [EGame.CARCASSONNE]: CarcassonneGame,
+  [EGame.SEVEN_WONDERS]: SevenWondersGame,
+  [EGame.HEARTS]: HeartsGame,
+};
+
+class Game<Game extends EGame> {
   io: Namespace;
   game: Game;
   id: string;
-  players: TGamePlayer<Game>[];
+  players: IGamePlayer[];
   options: TGameOptions<Game>;
+  gameEntity: GameEntity<Game>;
   deleted = false;
   batchedActions: IBatchedAction<Game, TGameEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
   onDeleteGame: () => void;
-
-  abstract handlers: TEventHandlers<Game>;
 
   temporaryListeners: {
     [Event in TGameEvent<Game>]?: Set<TGameEventListener<Game, Event>>;
@@ -63,15 +77,10 @@ abstract class Game<Game extends EGame> {
     this.game = game;
     this.id = uuid();
     this.options = options;
-    this.players = shuffle(players).map((player, index) =>
-      this.createPlayer(
-        {
-          ...player,
-          index,
-        },
-        index,
-      ),
-    );
+    this.players = shuffle(players).map((player, index) => ({
+      ...player,
+      index,
+    }));
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
 
@@ -95,14 +104,6 @@ abstract class Game<Game extends EGame> {
         }
       }
 
-      this.sendBaseGameInfo();
-
-      forEach(this.handlers, (handler, event) => {
-        socket.on(event, (data) => {
-          handler?.call(this, { socket, data });
-        });
-      });
-
       forEach(this.temporaryListeners, (listeners, event) => {
         listeners?.forEach((listener) => {
           socket.on(event, listener);
@@ -122,16 +123,16 @@ abstract class Game<Game extends EGame> {
 
         player.status = EPlayerStatus.DISCONNECTED;
 
-        this.sendBaseGameInfo();
-
         if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
           deleteGameTimeout = setTimeout(() => this.delete(), 10000);
         }
       });
-    });
-  }
 
-  abstract createPlayer(roomPlayer: IGamePlayer, index: number): TGamePlayer<Game>;
+      this.gameEntity.sendGameInfo(socket);
+    });
+
+    this.gameEntity = this.initMainGameEntity();
+  }
 
   delete(): void {
     removeNamespace(this.io);
@@ -145,12 +146,12 @@ abstract class Game<Game extends EGame> {
     this.io.emit(ECommonGameEvent.END);
   }
 
-  getPlayerByLogin(login: string | undefined): TGamePlayer<Game> | undefined {
+  getPlayerByLogin(login: string | undefined): IGamePlayer | undefined {
     return this.players.find((player) => player.login === login);
   }
 
-  initMainGameEntity<E extends Entity<Game>>(callback: (context: IEntityContext<Game>) => E): E {
-    const entity = callback({
+  initMainGameEntity(): GameEntity<Game> {
+    const entity = new GAME_ENTITIES_MAP[this.game]({
       game: this,
     });
 
@@ -202,15 +203,6 @@ abstract class Game<Game extends EGame> {
 
       (this.temporaryListeners[event] ||= new Set())?.delete(playerListener);
     };
-  }
-
-  sendBaseGameInfo(): void {
-    const updatedData: IGameUpdateEvent = {
-      id: this.id,
-      players: this.players,
-    };
-
-    this.io.emit(ECommonGameEvent.UPDATE, updatedData);
   }
 
   sendSocketEvent<Event extends TGameEvent<Game>>(

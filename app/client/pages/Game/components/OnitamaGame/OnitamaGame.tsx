@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import { ECardType, EGameEvent, EPlayerColor, IGame, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
+import { ECardType, EGameEvent, EPlayerColor, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
 import { ICoords } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -18,8 +18,6 @@ import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './OnitamaGame.pcss';
-
-interface IOnitamaGameProps extends IGameProps<EGame.ONITAMA> {}
 
 const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IPlayer): ICoords[] => {
   const cells: ICoords[] = [];
@@ -45,8 +43,8 @@ const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IP
   return cells;
 };
 
-const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
-  const { io, isGameEnd } = props;
+const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
+  const { io, gameInfo, isGameEnd } = props;
 
   const [board, setBoard] = useState<TBoard>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
@@ -100,31 +98,23 @@ const OnitamaGame: React.FC<IOnitamaGameProps> = (props) => {
   );
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
+    if (!user) {
+      return;
+    }
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
-      if (!user) {
-        return;
-      }
+    console.log(gameInfo);
 
-      console.log(gameInfo);
+    const player = gameInfo.players.find(({ login }) => login === user.login) || null;
 
-      const player = gameInfo.players.find(({ login }) => login === user.login) || null;
-
-      setBoard(gameInfo.board);
-      setPlayers(gameInfo.players);
-      setActivePlayerIndex(gameInfo.activePlayerIndex);
-      setFifthCard(gameInfo.fifthCard);
-      setPlayer(player);
-      setSelectedCardIndex(-1);
-      setSelectedFrom(null);
-      setLegalMoves([]);
-    });
-
-    return () => {
-      io.off(EGameEvent.GAME_INFO);
-    };
-  }, [io, user]);
+    setBoard(gameInfo.board);
+    setPlayers(gameInfo.players);
+    setActivePlayerIndex(gameInfo.activePlayerIndex);
+    setFifthCard(gameInfo.fifthCard);
+    setPlayer(player);
+    setSelectedCardIndex(-1);
+    setSelectedFrom(null);
+    setLegalMoves([]);
+  }, [gameInfo, user]);
 
   if (isGameEnd) {
     return <GameEnd></GameEnd>;

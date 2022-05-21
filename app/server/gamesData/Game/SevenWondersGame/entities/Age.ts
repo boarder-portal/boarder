@@ -60,6 +60,13 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
   }
 
   *lifecycle() {
+    this.forEachPlayer((playerIndex) => {
+      this.playersData[playerIndex].buildEffects = this.game
+        .getAllPlayerEffects(playerIndex)
+        .filter(isBuildCardEffect)
+        .filter((effect) => effect.period !== EFreeCardPeriod.NOW);
+    });
+
     this.turn = this.spawnEntity(
       new Turn(this.game, {
         startingWaitingAction: EWaitingActionType.RECRUIT_LEADER,
@@ -99,13 +106,9 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
 
     const shuffledCards = chunk(shuffle(usedCards), usedCards.length / this.playersCount);
 
-    this.playersData = this.getPlayersData((playerIndex) => ({
-      hand: shuffledCards[playerIndex],
-      buildEffects: this.game
-        .getAllPlayerEffects(playerIndex)
-        .filter(isBuildCardEffect)
-        .filter((effect) => effect.period !== EFreeCardPeriod.NOW),
-    }));
+    this.forEachPlayer((playerIndex) => {
+      this.playersData[playerIndex].hand = shuffledCards[playerIndex];
+    });
 
     while (!this.isLastTurn()) {
       this.turn = this.spawnEntity(

@@ -16,7 +16,7 @@ import {
   IShuffleCardsIndexes,
 } from 'common/types/pexeso';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
 
 import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
@@ -24,7 +24,7 @@ import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
 const OPEN_CLOSE_ANIMATION_DURATION = 300;
 const OPEN_DURATION = 1600;
 
-export default class PexesoGame extends Entity<EGame.PEXESO> {
+export default class PexesoGame extends GameEntity<EGame.PEXESO> {
   cards: ICard[] = [];
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     score: 0,

@@ -54,7 +54,7 @@ export default class Turn extends Entity<EGame.HEARTS, ITurnResult> {
 
       this.activePlayerIndex = i === this.playersCount - 1 ? -1 : (this.activePlayerIndex + 1) % this.playersCount;
 
-      this.game.sendInfo();
+      this.game.sendGameInfo();
     }
 
     const playedCards = this.playersData.map(({ playedCard }) => playedCard);

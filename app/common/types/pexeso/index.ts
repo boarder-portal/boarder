@@ -1,6 +1,6 @@
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   GAME_INFO = 'GAME_INFO',
@@ -113,7 +113,7 @@ export interface IRemoveCardsEvent {
   shuffleIndexes: IShuffleCardsIndexes | null;
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.PEXESO> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.OPEN_CARD]: number;
 
@@ -128,7 +128,7 @@ declare module 'common/types/game' {
     [EGame.PEXESO]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

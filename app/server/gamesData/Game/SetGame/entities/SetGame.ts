@@ -24,14 +24,14 @@ import {
   ISendSetEvent,
 } from 'common/types/set';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
 
-export default class SetGame extends Entity<EGame.SET> {
+export default class SetGame extends GameEntity<EGame.SET> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));
@@ -109,7 +109,7 @@ export default class SetGame extends Entity<EGame.SET> {
           playerData.score += WRONG_SET_POINTS;
         }
 
-        this.sendGameUpdate();
+        this.sendGameInfo();
 
         if (!isAnySet(this.cardsStack)) {
           break;
@@ -124,17 +124,13 @@ export default class SetGame extends Entity<EGame.SET> {
           this.maxCardsToShow += NEW_CARDS_COUNT;
         }
 
-        this.sendGameUpdate();
+        this.sendGameInfo();
       }
     }
   }
 
   getGamePlayers(): IPlayer[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
-  }
-
-  sendGameUpdate(): void {
-    this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
   toJSON(): IGame {

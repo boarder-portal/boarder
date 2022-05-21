@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ComponentType, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import io, { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 
-import { EPlayerStatus } from 'common/types';
-import { EGame, ECommonGameEvent, IGameUpdateEvent, TGameSocketEventMap } from 'common/types/game';
-import { IPlayer as ISurvivalOnlinePlayer } from 'common/types/survivalOnline';
-import { IPlayer as ISetPlayer } from 'common/types/set';
+import { EGame, ECommonGameEvent, TGameSocketEventMap, TGameInfo, TGameEventMap } from 'common/types/game';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -16,91 +13,60 @@ import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/Seve
 import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
+import useSocket from 'client/hooks/useSocket';
 
 export interface IGameProps<Game extends EGame> {
   io: Socket<TGameSocketEventMap<Game>>;
+  gameInfo: TGameInfo<Game>;
   isGameEnd: boolean;
 }
 
-const Game: React.FC = () => {
-  const { game, gameId } = useParams<{ game: EGame; gameId: string }>();
-  const ioRef = useRef<Socket>();
+const GAMES_MAP: {
+  [Game in EGame]: ComponentType<IGameProps<Game>>;
+} = {
+  [EGame.PEXESO]: PexesoGame,
+  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
+  [EGame.SET]: SetGame,
+  [EGame.ONITAMA]: OnitamaGame,
+  [EGame.CARCASSONNE]: CarcassonneGame,
+  [EGame.SEVEN_WONDERS]: SevenWondersGame,
+  [EGame.HEARTS]: HeartsGame,
+};
 
-  const [gameData, setGameData] = useState<IGameUpdateEvent | null>(null);
+function Game<G extends EGame>() {
+  const { game, gameId } = useParams<{ game: G; gameId: string }>();
+
+  const [gameInfo, setGameInfo] = useState<TGameInfo<G> | null>(null);
 
   const { value: isGameEnd, setTrue: endGame } = useBoolean(false);
 
   const history = useHistory();
 
-  useEffect(() => {
-    const socket = (ioRef.current = io(`/${game}/game/${gameId}`));
-
-    socket.on(ECommonGameEvent.UPDATE, (updatedGameData: IGameUpdateEvent) => {
-      setGameData(updatedGameData);
-    });
-
-    socket.on(ECommonGameEvent.END, () => {
+  const socket = useSocket<TGameEventMap<EGame>>(`/${game}/game/${gameId}`, {
+    [ECommonGameEvent.GET_INFO]: (info: TGameInfo<G>) => {
+      setGameInfo(info);
+    },
+    [ECommonGameEvent.END]: () => {
       console.log('GAME_END');
 
       endGame();
-    });
+    },
 
-    socket.on('connect_error', (err) => {
+    // eslint-disable-next-line camelcase
+    connect_error: (err: Error) => {
       if (err.message === 'Invalid namespace') {
         history.push(`/${game}/lobby`);
       }
-    });
+    },
+  });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [endGame, game, gameId, history]);
-
-  if (!gameData || !ioRef.current) {
+  if (!gameInfo || !socket) {
     return null;
   }
 
-  if (
-    gameData.players.some(({ status }) => status !== EPlayerStatus.PLAYING && status !== EPlayerStatus.DISCONNECTED)
-  ) {
-    return <div>Ожидание игроков...</div>;
-  }
+  const Game: ComponentType<IGameProps<G>> = GAMES_MAP[game];
 
-  if (game === EGame.PEXESO) {
-    return <PexesoGame io={ioRef.current} isGameEnd={isGameEnd} />;
-  }
-
-  if (game === EGame.SURVIVAL_ONLINE) {
-    return (
-      <SurvivalOnlineGame
-        io={ioRef.current}
-        players={gameData.players as ISurvivalOnlinePlayer[]}
-        isGameEnd={isGameEnd}
-      />
-    );
-  }
-
-  if (game === EGame.SET) {
-    return <SetGame io={ioRef.current} players={gameData.players as ISetPlayer[]} isGameEnd={isGameEnd} />;
-  }
-
-  if (game === EGame.ONITAMA) {
-    return <OnitamaGame io={ioRef.current} isGameEnd={isGameEnd} />;
-  }
-
-  if (game === EGame.CARCASSONNE) {
-    return <CarcassonneGame io={ioRef.current} isGameEnd={isGameEnd} />;
-  }
-
-  if (game === EGame.SEVEN_WONDERS) {
-    return <SevenWondersGame io={ioRef.current} isGameEnd={isGameEnd} />;
-  }
-
-  if (game === EGame.HEARTS) {
-    return <HeartsGame io={ioRef.current} isGameEnd={isGameEnd} />;
-  }
-
-  return null;
-};
+  return <Game io={socket} isGameEnd={isGameEnd} gameInfo={gameInfo} />;
+}
 
 export default React.memo(Game);

@@ -17,10 +17,8 @@ import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './SevenWondersGame.pcss';
 
-interface ISevenWondersGameProps extends IGameProps<EGame.SEVEN_WONDERS> {}
-
-const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
-  const { io } = props;
+const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
+  const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [discard, setDiscard] = useState<ICard[]>([]);
@@ -52,34 +50,22 @@ const SevenWondersGame: React.FC<ISevenWondersGameProps> = (props) => {
   );
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
+    console.log(EGameEvent.GAME_INFO, gameInfo);
 
-    io.on(EGameEvent.GAME_INFO, (gameInfo) => {
-      if (!user) {
-        return;
+    batchedUpdates(() => {
+      setPlayers(gameInfo.players);
+      setDiscard(gameInfo.discard);
+      setGamePhase(gameInfo.phase?.type ?? null);
+
+      if (gameInfo.phase?.type === EGamePhase.AGE) {
+        setAge(gameInfo.phase.age);
+        setAgePhase(gameInfo.phase.phase);
+      } else {
+        setAge(null);
+        setAgePhase(null);
       }
-
-      console.log(EGameEvent.GAME_INFO, gameInfo);
-
-      batchedUpdates(() => {
-        setPlayers(gameInfo.players);
-        setDiscard(gameInfo.discard);
-        setGamePhase(gameInfo.phase?.type ?? null);
-
-        if (gameInfo.phase?.type === EGamePhase.AGE) {
-          setAge(gameInfo.phase.age);
-          setAgePhase(gameInfo.phase.phase);
-        } else {
-          setAge(null);
-          setAgePhase(null);
-        }
-      });
     });
-
-    return () => {
-      io.off(EGameEvent.GAME_INFO);
-    };
-  }, [io, user]);
+  }, [gameInfo]);
 
   if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {
     return null;

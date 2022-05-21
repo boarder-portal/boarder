@@ -1,8 +1,7 @@
-import { IGamePlayer as ICommonPlayer } from 'common/types';
-import * as SurvivalOnlineTypes from 'common/types/survivalOnline';
+import { TSocketEventMap } from 'common/types/socket';
 
 export enum ECommonGameEvent {
-  UPDATE = 'UPDATE',
+  GET_INFO = 'GET_INFO',
   END = 'END',
 }
 
@@ -18,20 +17,18 @@ export enum EGame {
 
 export interface IGamesParams {}
 
-export type TGamePlayer<Game extends EGame> = IGamesParams[Game]['player'];
+export interface ICommonEventMap<Game extends EGame> {
+  [ECommonGameEvent.GET_INFO]: TGameInfo<Game>;
+  [ECommonGameEvent.END]: undefined;
+}
+
+export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];
 
 export type TGameEvent<Game extends EGame> = keyof TGameEventMap<Game> & string;
 
 export type TGameEventMap<Game extends EGame> = IGamesParams[Game]['eventMap'];
 
-export type TGameEventArgs<
-  Game extends EGame,
-  Event extends keyof TGameEventMap<Game>,
-> = TGameEventMap<Game>[Event] extends undefined ? [] : [TGameEventMap<Game>[Event]];
-
-export type TGameSocketEventMap<Game extends EGame> = {
-  [Event in keyof TGameEventMap<Game>]: (...args: TGameEventArgs<Game, Event>) => void;
-};
+export type TGameSocketEventMap<Game extends EGame> = TSocketEventMap<TGameEventMap<Game>>;
 
 export type TGameEventData<Game extends EGame, Event extends TGameEvent<Game>> = TGameEventMap<Game>[Event];
 
@@ -40,8 +37,3 @@ export type TGameEventListener<Game extends EGame, Event extends TGameEvent<Game
 ) => unknown;
 
 export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];
-
-export interface IGameUpdateEvent {
-  id: string;
-  players: ICommonPlayer[];
-}

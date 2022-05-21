@@ -1,34 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import chunk from 'lodash/chunk';
 
-import { EGameEvent, ICard, IGame, IPlayer, ISendSetEvent } from 'common/types/set';
+import { EGameEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
 import Button from 'client/components/common/Button/Button';
 
-import userAtom from 'client/atoms/userAtom';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './SetGame.pcss';
 
-interface ISetGameProps extends IGameProps<EGame.SET> {
-  players: IPlayer[];
-}
-
-const SetGame: React.FC<ISetGameProps> = (props) => {
-  const { io, isGameEnd } = props;
+const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
+  const { io, gameInfo, isGameEnd } = props;
 
   const [cards, setCards] = useState<ICard[]>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
-
-  const playerRef = useRef<IPlayer | null>(null);
-
-  const user = useRecoilValue(userAtom);
 
   const handleCardClick = useImmutableCallback((card: ICard) => {
     if (isGameEnd) {
@@ -69,30 +59,10 @@ const SetGame: React.FC<ISetGameProps> = (props) => {
   }, [io]);
 
   useEffect(() => {
-    io.emit(EGameEvent.GET_GAME_INFO);
-
-    io.on(EGameEvent.GAME_INFO, (gameInfo: IGame) => {
-      console.log('GAME_INFO', gameInfo);
-
-      if (!user) {
-        return;
-      }
-
-      const player = (playerRef.current = gameInfo.players.find(({ login }) => login === user.login) || null);
-
-      if (!player) {
-        return;
-      }
-
-      setCards(gameInfo.cards);
-      setPlayers(gameInfo.players);
-      setSelectedCardsIds(new Set());
-    });
-
-    return () => {
-      io.off(EGameEvent.GAME_INFO);
-    };
-  }, [io, user]);
+    setCards(gameInfo.cards);
+    setPlayers(gameInfo.players);
+    setSelectedCardsIds(new Set());
+  }, [gameInfo.cards, gameInfo.players]);
 
   const playersBlock = useMemo(() => {
     return (

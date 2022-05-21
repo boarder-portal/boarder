@@ -1,6 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -55,7 +55,7 @@ export interface ISendSetEvent {
   cardsIds: number[];
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.SET> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.SEND_SET]: ISendSetEvent;
   [EGameEvent.SEND_NO_SET]: undefined;
@@ -68,7 +68,7 @@ declare module 'common/types/game' {
     [EGame.SET]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

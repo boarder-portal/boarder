@@ -6,7 +6,6 @@ import { ALL_LEADERS } from 'common/constants/games/sevenWonders';
 import { EGame } from 'common/types/game';
 import {
   ECity,
-  EGameEvent,
   EGamePhase,
   ENeighborSide,
   EPlayerDirection,
@@ -27,7 +26,8 @@ import {
 } from 'common/types/sevenWonders/effects';
 import { EPlayerStatus } from 'common/types';
 
-import Entity, { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
+import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 import {
@@ -55,7 +55,7 @@ interface IAgePhase {
   age: Age;
 }
 
-export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
+export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => this.getPlayerInitialData(false));
   phase: ILeadersDraftPhase | IAgePhase | null = null;
   discard: ICard[] = [];
@@ -409,10 +409,6 @@ export default class SevenWondersGame extends Entity<EGame.SEVEN_WONDERS> {
     }
 
     return target;
-  }
-
-  sendGameInfo(): void {
-    this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
   toJSON(): IGame {

@@ -1,6 +1,6 @@
 import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { ICoords, IGamePlayer as ICommonPlayer } from 'common/types';
-import { EGame } from 'common/types/game';
+import { EGame, ICommonEventMap } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -180,7 +180,7 @@ export interface IAttachCardEvent {
   meeple: IPlacedMeeple | null;
 }
 
-export interface IEventMap {
+export interface IEventMap extends ICommonEventMap<EGame.CARCASSONNE> {
   [EGameEvent.GET_GAME_INFO]: undefined;
   [EGameEvent.ATTACH_CARD]: IAttachCardEvent;
 
@@ -192,7 +192,7 @@ declare module 'common/types/game' {
     [EGame.CARCASSONNE]: {
       eventMap: IEventMap;
       options: IGameOptions;
-      player: ICommonPlayer;
+      info: IGame;
     };
   }
 }

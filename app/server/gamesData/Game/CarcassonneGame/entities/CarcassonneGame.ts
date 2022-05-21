@@ -9,7 +9,6 @@ import { EGame } from 'common/types/game';
 import {
   ECardObject,
   ECityGoods,
-  EGameEvent,
   EMeepleType,
   EPlayerColor,
   ICard,
@@ -26,7 +25,7 @@ import {
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -61,7 +60,7 @@ interface IAttachPlayerCardOptions {
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
+export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     color: EPlayerColor.RED,
     score: [],
@@ -612,10 +611,6 @@ export default class CarcassonneGame extends Entity<EGame.CARCASSONNE> {
         });
       });
     });
-  }
-
-  sendGameInfo(): void {
-    this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
   }
 
   returnMeeples(object: TGameObject): void {

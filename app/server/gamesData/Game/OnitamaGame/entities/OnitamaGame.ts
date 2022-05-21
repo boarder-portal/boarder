@@ -4,12 +4,12 @@ import shuffle from 'lodash/shuffle';
 import { EGame } from 'common/types/game';
 import { ECardType, EGameEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { equalsCoords } from 'common/utilities/coords';
 
 const ALL_CARDS = Object.values(ECardType);
 
-export default class OnitamaGame extends Entity<EGame.ONITAMA> {
+export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
   playersData: IPlayerData[] = this.getPlayersData((playerIndex) => ({
     color: playerIndex === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
     cards: [],
@@ -52,7 +52,7 @@ export default class OnitamaGame extends Entity<EGame.ONITAMA> {
       this.fifthCard = playedCard;
       this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
 
-      this.sendSocketEvent(EGameEvent.GAME_INFO, this.toJSON());
+      this.sendGameInfo();
 
       const isWayOfStoneWin = !!toPiece?.isMaster;
       const isWayOfStreamWin = equalsCoords(to, {
