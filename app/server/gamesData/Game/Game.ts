@@ -45,6 +45,11 @@ interface IBatchedAction<Game extends EGame, Event extends TGameEvent<Game>> {
   socket?: Socket;
 }
 
+export interface ISendSocketEventOptions {
+  socket?: Socket;
+  batch?: boolean;
+}
+
 const GAME_ENTITIES_MAP: {
   [Game in EGame]: { new (context: IEntityContext<Game>): GameEntity<Game> };
 } = {
@@ -210,15 +215,21 @@ class Game<Game extends EGame> {
   sendSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     data: TGameEventData<Game, Event>,
-    socket?: Socket,
+    options?: ISendSocketEventOptions,
   ): void {
+    if (!options?.batch) {
+      (options?.socket ?? this.io).emit(event, data);
+
+      return;
+    }
+
     const existingEventIndex = this.batchedActions.findIndex(
-      (action) => action.event === event && action.socket === socket,
+      (action) => action.event === event && action.socket === options.socket,
     );
     const batchedAction: IBatchedAction<Game, Event> = {
       event,
       data,
-      socket,
+      socket: options.socket,
     };
 
     if (existingEventIndex === -1) {

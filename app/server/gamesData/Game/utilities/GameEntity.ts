@@ -10,6 +10,9 @@ export default abstract class GameEntity<Game extends EGame> extends Entity<Game
   abstract toJSON(): TGameInfo<Game>;
 
   sendGameInfo(socket?: Socket): void {
-    this.sendSocketEvent(ECommonGameEvent.GET_INFO, this.toJSON(), socket);
+    this.sendSocketEvent(ECommonGameEvent.GET_INFO, this.toJSON(), {
+      socket,
+      batch: true,
+    });
   }
 }

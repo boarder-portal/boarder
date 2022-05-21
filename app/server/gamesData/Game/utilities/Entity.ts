@@ -1,9 +1,7 @@
-import { Socket } from 'socket.io';
-
 import { EGame, TGameEvent, TGameEventData, TGameOptions } from 'common/types/game';
 import { IGamePlayer } from 'common/types';
 
-import Game from 'server/gamesData/Game/Game';
+import Game, { ISendSocketEventOptions } from 'server/gamesData/Game/Game';
 
 export interface IEntityContext<G extends EGame> {
   game: Game<G>;
@@ -167,9 +165,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           }
         }, reject);
 
-        return () => {
-          cancel();
-        };
+        return cancel;
       });
 
       return () => {
@@ -182,6 +178,27 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   *async<Result>(callback: TEffectCallback<Result>): TEffectGenerator<Result> {
     return yield callback;
+  }
+
+  createTrigger<Value = void>(): ITrigger<Value> {
+    const callbacks = new Set<(value: Value) => unknown>();
+    const trigger = ((value) => {
+      for (const callback of callbacks) {
+        callback(value);
+      }
+    }) as ITrigger<Value>;
+
+    trigger[Symbol.iterator] = function* () {
+      return yield (resolve) => {
+        callbacks.add(resolve);
+
+        return () => {
+          callbacks.delete(resolve);
+        };
+      };
+    };
+
+    return trigger;
   }
 
   *delay(ms: number): TEffectGenerator<void> {
@@ -240,9 +257,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
         run().then(resolve as any, reject);
 
-        return () => {
-          cancel();
-        };
+        return cancel;
       });
 
       return () => {
@@ -320,9 +335,9 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   sendSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     data: TGameEventData<Game, Event>,
-    socket?: Socket,
+    options?: ISendSocketEventOptions,
   ): void {
-    this.context.game.sendSocketEvent(event, data, socket);
+    this.context.game.sendSocketEvent(event, data, options);
   }
 
   spawnEntity<E extends Entity<Game>>(entity: E): E {
@@ -344,6 +359,21 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return entity;
   }
 
+  spawnTask<Result>(action: TGenerator<Result>): TGenerator<Result> {
+    const { run } = this.#getGeneratorResult(action);
+    const promise = run();
+
+    promise.catch(() => {
+      // empty
+    });
+
+    return (function* (): TEffectGenerator<Result> {
+      return yield (resolve, reject) => {
+        promise.then(resolve, reject);
+      };
+    })();
+  }
+
   *[Symbol.iterator](): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
       this.run().then(resolve, reject);
@@ -352,27 +382,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   toJSON(): unknown {
     return null;
-  }
-
-  trigger<Value = void>(): ITrigger<Value> {
-    const callbacks = new Set<(value: Value) => unknown>();
-    const trigger = ((value) => {
-      for (const callback of callbacks) {
-        callback(value);
-      }
-    }) as ITrigger<Value>;
-
-    trigger[Symbol.iterator] = function* () {
-      return yield (resolve) => {
-        callbacks.add(resolve);
-
-        return () => {
-          callbacks.delete(resolve);
-        };
-      };
-    };
-
-    return trigger;
   }
 
   *waitForPlayerSocketEvent<Event extends TGameEvent<Game>>(

@@ -1,8 +1,8 @@
 import { TSocketEventMap } from 'common/types/socket';
 
 export enum ECommonGameEvent {
-  GET_INFO = 'GET_INFO',
-  END = 'END',
+  GET_INFO = '$$GET_INFO',
+  END = '$$END',
 }
 
 export enum EGame {

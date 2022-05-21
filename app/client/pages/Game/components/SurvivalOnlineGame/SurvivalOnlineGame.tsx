@@ -55,7 +55,7 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
       console.log('UPDATE_GAME', { players, cells });
 
       cells.forEach((cell) => {
-        gameInfo.map[cell.y][cell.x] = cell;
+        mapRef.current[cell.y][cell.x] = cell;
       });
 
       if (players) {

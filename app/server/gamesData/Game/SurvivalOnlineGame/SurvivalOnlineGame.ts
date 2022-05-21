@@ -65,7 +65,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     yield* this.race([
       this.repeatTask(ZOMBIES_MOVE_INTERVAL, this.moveZombies),
       this.repeatTask(ZOMBIES_GENERATE_INTERVAL, function* () {
-        this.generateZombies(NEW_ZOMBIES_COUNT);
+        this.spawnZombies(NEW_ZOMBIES_COUNT);
       }),
     ]);
   }
@@ -108,27 +108,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
       this.spawnEntity(new Tree(this, { cell: this.getRandomFreeCell() }));
     }
 
-    this.generateZombies(START_ZOMBIE_COUNT);
-  }
-
-  generateZombies(count: number): void {
-    for (let i = 0; i < count; i++) {
-      if (EDGE_CELLS.every(({ x, y }) => this.map[y][x].entity)) {
-        break;
-      }
-
-      let zombieCell: IServerCell;
-
-      do {
-        const { x, y } = getRandomElement(EDGE_CELLS);
-
-        zombieCell = this.map[y][x];
-      } while (zombieCell.entity);
-
-      const zombie = this.spawnEntity(new Zombie(this, { cell: zombieCell as IServerCellWithEntity<Zombie> }));
-
-      this.zombies.add(zombie);
-    }
+    this.spawnZombies(START_ZOMBIE_COUNT);
   }
 
   getCellInDirection(fromCell: IServerCell, direction: EDirection): IServerCell | null {
@@ -191,7 +171,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
       cellsToUpdate.push(...zombie.move());
     }
 
-    this.sendGameUpdate(cellsToUpdate, false);
+    this.sendGameUpdate([...new Set(cellsToUpdate)], false);
   }
 
   placeEntity<Entity extends TEntity>(entity: Entity, cell: IServerCell): void {
@@ -208,6 +188,34 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
         cells: cells.map(this.transformCell),
         players: withPlayers ? this.getGamePlayers() : null,
       });
+    }
+  }
+
+  *spawnZombie(cell: IServerCellWithEntity<Zombie>): TGenerator {
+    const zombie = this.spawnEntity(new Zombie(this, { cell }));
+
+    this.zombies.add(zombie);
+
+    yield* zombie;
+
+    this.zombies.delete(zombie);
+  }
+
+  spawnZombies(count: number): void {
+    for (let i = 0; i < count; i++) {
+      if (EDGE_CELLS.every(({ x, y }) => this.map[y][x].entity)) {
+        break;
+      }
+
+      let zombieCell: IServerCell;
+
+      do {
+        const { x, y } = getRandomElement(EDGE_CELLS);
+
+        zombieCell = this.map[y][x];
+      } while (zombieCell.entity);
+
+      this.spawnTask(this.spawnZombie(zombieCell as IServerCellWithEntity<Zombie>));
     }
   }
 
