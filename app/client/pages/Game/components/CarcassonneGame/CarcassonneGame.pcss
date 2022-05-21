@@ -1,0 +1,178 @@
+.boardWrapper {
+  height: calc(100vh - 48px);
+  overflow: hidden;
+  background-color: #faefe0;
+}
+
+.board {
+  transform-origin: 0 0;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+  border: 1px solid #ddd;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.meeple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.hand {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px;
+  border: 1px solid black;
+  background-color: #fff;
+}
+
+.handCard {
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+  border: 1px solid #ddd;
+
+  &.selected {
+    border: 1px solid #f00;
+  }
+}
+
+.handCardImage {
+  width: 100%;
+  height: 100%;
+}
+
+.cardsLeft {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 4px;
+  background-color: #fff;
+}
+
+.draggingCard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+  pointer-events: none;
+}
+
+.draggingCardImage {
+  width: 100%;
+  height: 100%;
+}
+
+.allowedMove {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+}
+
+.selectedCard {
+  position: relative;
+  display: none;
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+  border: 1px solid #ddd;
+
+  &.placed {
+    cursor: pointer;
+  }
+
+  &:not(.placed) {
+    pointer-events: none;
+  }
+}
+
+.selectedCardImage {
+  width: 100%;
+  height: 100%;
+}
+
+.players {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.allowedMeeplePlaceCircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  background-color: #0005;
+}
+
+.allowedMeeples {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  transform-origin: calc(var(--meeple-size) / 2) calc(var(--meeple-size) / 2);
+}
+
+.allowedMeeple {
+  width: var(--meeple-size);
+  height: var(--meeple-size);
+}
+
+.allowedMeeplePlace {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &:hover {
+    .allowedMeeplePlaceCircle {
+      background-color: #000a;
+    }
+
+    .allowedMeeples {
+      display: flex;
+    }
+  }
+}
+
+.lastMoveContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--base-card-size);
+  height: var(--base-card-size);
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+
+.lastMove {
+  width: 100%;
+  height: 100%;
+  border: 3px solid;
+}
+
+.root {
+  --base-card-size: 100px;
+  --meeple-size: 20px;
+
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+}
+

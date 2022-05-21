@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
-import block from 'bem-cn';
 import { useRecoilValue } from 'recoil';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
+import classNames from 'classnames';
 
 import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
@@ -34,8 +33,8 @@ import {
 import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
 
 import Box from 'client/components/common/Box/Box';
-import Players from 'client/pages/Game/components/CarcassonneGame/components/Players';
-import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
+import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
+import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import Image from 'client/components/common/Image/Image';
 
@@ -44,184 +43,7 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 import { playSound, POP_SOUND } from 'client/sounds';
 import { IGameProps } from 'client/pages/Game/Game';
 
-const b = block('CarcassonneGame');
-
-const Root = styled(Box)`
-  position: absolute;
-  top: 48px;
-  left: 0;
-  right: 0;
-
-  .CarcassonneGame {
-    &__boardWrapper {
-      height: calc(100vh - 48px);
-      overflow: hidden;
-      background-color: #faefe0;
-    }
-
-    &__board {
-      transform-origin: 0 0;
-    }
-
-    &__card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-      border: 1px solid #ddd;
-    }
-
-    &__cardImage {
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    &__meeple {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 20px;
-      height: 20px;
-    }
-
-    &__hand {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 4px;
-      border: 1px solid black;
-      background-color: #fff;
-    }
-
-    &__handCard {
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-      border: 1px solid #ddd;
-
-      &_selected {
-        border: 1px solid #f00;
-      }
-    }
-
-    &__handCardImage {
-      width: 100%;
-      height: 100%;
-    }
-
-    &__cardsLeft {
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      padding: 4px;
-      background-color: #fff;
-    }
-
-    &__draggingCard {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-      pointer-events: none;
-    }
-
-    &__draggingCardImage {
-      width: 100%;
-      height: 100%;
-    }
-
-    &__allowedMove {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-    }
-
-    &__selectedCard {
-      position: relative;
-      display: none;
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-      border: 1px solid #ddd;
-
-      &_placed {
-        cursor: pointer;
-      }
-
-      &:not(&_placed) {
-        pointer-events: none;
-      }
-    }
-
-    &__selectedCardImage {
-      width: 100%;
-      height: 100%;
-    }
-
-    &__players {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
-
-    &__allowedMeeplePlaceCircle {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 1px solid #000;
-      background-color: #0005;
-    }
-
-    &__allowedMeeples {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: none;
-      transform-origin: ${MEEPLE_SIZE / 2}px ${MEEPLE_SIZE / 2}px;
-    }
-
-    &__allowedMeeple {
-      width: ${MEEPLE_SIZE}px;
-      height: ${MEEPLE_SIZE}px;
-    }
-
-    &__allowedMeeplePlace {
-      position: absolute;
-      top: 0;
-      left: 0;
-
-      &:hover {
-        .${b()}__allowedMeeplePlaceCircle {
-          background-color: #000a;
-        }
-
-        .${b()}__allowedMeeples {
-          display: flex;
-        }
-      }
-    }
-
-    &__lastMoveContainer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: ${BASE_CARD_SIZE}px;
-      height: ${BASE_CARD_SIZE}px;
-      border: 1px solid rgba(0, 0, 0, 0);
-    }
-
-    &__lastMove {
-      width: 100%;
-      height: 100%;
-      border: 3px solid;
-    }
-  }
-`;
+import styles from './CarcassonneGame.pcss';
 
 const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   const { io, gameInfo } = props;
@@ -553,9 +375,9 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   }, [gameInfo]);
 
   return (
-    <Root className={b()}>
+    <Box className={styles.root}>
       <div
-        className={b('boardWrapper')}
+        className={styles.boardWrapper}
         ref={boardWrapperRef}
         onMouseDown={handleBoardMouseDown}
         onMouseMove={handleBoardMouseMove}
@@ -563,13 +385,13 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         onWheel={handleBoardMouseWheel}
         onContextMenu={handleContextMenu}
       >
-        <div className={b('board')} ref={boardRef}>
+        <div className={styles.board} ref={boardRef}>
           {map(board, (row) =>
             map(row, (card) => {
               return (
                 card && (
                   <div
-                    className={b('card')}
+                    className={styles.card}
                     key={`${card.y}-${card.x}`}
                     style={{
                       transform: `
@@ -578,7 +400,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
                     `,
                     }}
                   >
-                    <Image className={b('cardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+                    <Image className={styles.cardImage} src={`/carcassonne/tiles/${card.id}.jpg`} />
                   </div>
                 )
               );
@@ -590,13 +412,13 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
               return (
                 <div
                   key={index}
-                  className={b('lastMoveContainer')}
+                  className={styles.lastMoveContainer}
                   style={{
                     transform: `translate(${coords.x * BASE_CARD_SIZE}px, ${coords.y * BASE_CARD_SIZE}px)`,
                   }}
                 >
                   <div
-                    className={b('lastMove')}
+                    className={styles.lastMove}
                     style={{
                       borderColor: color,
                     }}
@@ -619,7 +441,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
               return (
                 <Meeple
                   key={card.x}
-                  className={b('meeple')}
+                  className={styles.meeple}
                   type={card.meeple.type}
                   color={players[card.meeple.playerIndex].data.color}
                   style={{
@@ -639,7 +461,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
             return (
               <div
                 key={`${coords.y}-${coords.x}`}
-                className={b('allowedMove')}
+                className={styles.allowedMove}
                 style={{
                   transform: `translate(${coords.x * BASE_CARD_SIZE}px, ${coords.y * BASE_CARD_SIZE}px)`,
                 }}
@@ -651,13 +473,13 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
           })}
 
           <div
-            className={b('selectedCard', { placed: !!placedCardCoords })}
+            className={classNames(styles.selectedCard, { [styles.placed]: !!placedCardCoords })}
             ref={selectedCardRef}
             onClick={() => attachCard(null)}
           >
             {selectedCard && (
               <>
-                <Image className={b('selectedCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
+                <Image className={styles.selectedCardImage} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
 
                 {placedCardCoords &&
                   selectedCard.objects.map(({ meepleCoords }, objectId) => {
@@ -670,7 +492,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
                     return (
                       <div
                         key={objectId}
-                        className={b('allowedMeeplePlace')}
+                        className={styles.allowedMeeplePlace}
                         style={{
                           transform: `translate(
                           calc(${meepleCoords.x * BASE_CARD_SIZE}px - 50%),
@@ -679,12 +501,11 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <div className={b('allowedMeeplePlaceCircle')} />
+                        <div className={styles.allowedMeeplePlaceCircle} />
 
                         {player && (
-                          <Box
-                            className={b('allowedMeeples')}
-                            flex
+                          <div
+                            className={styles.allowedMeeples}
                             style={{
                               transform: `
                               rotate(-${selectedCardRotationRef.current * 90}deg)
@@ -696,14 +517,14 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
                               return (
                                 <Meeple
                                   key={meepleType}
-                                  className={b('allowedMeeple')}
+                                  className={styles.allowedMeeple}
                                   type={meepleType}
                                   color={player.data.color}
                                   onClick={() => onPlaceMeepleClick({ type: meepleType, cardObjectId: objectId })}
                                 />
                               );
                             })}
-                          </Box>
+                          </div>
                         )}
                       </div>
                     );
@@ -714,33 +535,35 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         </div>
       </div>
 
-      <Box className={b('hand')} flex between={4}>
+      <Box className={styles.hand} flex between={4}>
         {player?.data.cards.map((card, index) => {
           return (
             <div
               key={index}
-              className={b('handCard', { selected: index === selectedCardIndex })}
+              className={classNames(styles.handCard, { [styles.selected]: index === selectedCardIndex })}
               onClick={(e) => onHandCardClick(e, index)}
             >
-              <Image className={b('handCardImage')} src={`/carcassonne/tiles/${card.id}.jpg`} />
+              <Image className={styles.handCardImage} src={`/carcassonne/tiles/${card.id}.jpg`} />
             </div>
           );
         })}
       </Box>
 
       <Players
-        className={b('players')}
+        className={styles.players}
         players={players}
         activePlayerIndex={activePlayerIndex}
         turnEndsAt={turnEndsAt}
       />
 
-      <div className={b('cardsLeft')}>{cardsLeft}</div>
+      <div className={styles.cardsLeft}>{cardsLeft}</div>
 
-      <div className={b('draggingCard')} ref={draggingCardRef}>
-        {selectedCard && <Image className={b('draggingCardImage')} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />}
+      <div className={styles.draggingCard} ref={draggingCardRef}>
+        {selectedCard && (
+          <Image className={styles.draggingCardImage} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
+        )}
       </div>
-    </Root>
+    </Box>
   );
 };
 

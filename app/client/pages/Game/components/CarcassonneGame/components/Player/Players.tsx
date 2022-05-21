@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import block from 'bem-cn';
-import styled from 'styled-components';
 import map from 'lodash/map';
 import times from 'lodash/times';
 import sumBy from 'lodash/sumBy';
+import classNames from 'classnames';
 
 import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
 
 import Box from 'client/components/common/Box/Box';
-import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple';
+import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
+
+import styles from './Player.pcss';
 
 interface IPlayersProps {
   className?: string;
@@ -16,33 +17,6 @@ interface IPlayersProps {
   activePlayerIndex: number;
   turnEndsAt: number | null;
 }
-
-const b = block('Players');
-
-const Root = styled(Box)`
-  width: 250px;
-  border: 1px solid #000;
-  background-color: #fff;
-
-  .Players {
-    &__player {
-      padding: 4px;
-
-      &_active {
-        background-color: yellowgreen;
-      }
-
-      &:not(:first-child) {
-        border-top: 1px solid #000;
-      }
-    }
-
-    &__meeple {
-      width: 20px;
-      height: 20px;
-    }
-  }
-`;
 
 const Players: React.FC<IPlayersProps> = (props) => {
   const { className, players, activePlayerIndex, turnEndsAt } = props;
@@ -66,12 +40,12 @@ const Players: React.FC<IPlayersProps> = (props) => {
   }, [turnEndsAt]);
 
   return (
-    <Root flex column className={b.mix(className)}>
+    <Box flex column className={classNames(styles.root, className)}>
       {players.map((player) => {
         const isActive = player.index === activePlayerIndex;
 
         return (
-          <div key={player.login} className={b('player', { active: isActive })}>
+          <div key={player.login} className={classNames(styles.player, { [styles.active]: isActive })}>
             <div>
               <span>{player.login}</span>
               {isActive && <span> {turnSecondsLeft}</span>}
@@ -89,7 +63,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
                 times(count, (index) => (
                   <Meeple
                     key={`${type}-${index}`}
-                    className={b('meeple')}
+                    className={styles.meeple}
                     type={type as EMeepleType}
                     color={player.data.color}
                   />
@@ -99,7 +73,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
           </div>
         );
       })}
-    </Root>
+    </Box>
   );
 };
 
