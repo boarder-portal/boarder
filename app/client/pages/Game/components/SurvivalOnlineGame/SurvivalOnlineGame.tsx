@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import { EDirection, EGameEvent, IPlayer, TMap } from 'common/types/survivalOnline';
-import { EGame, TGameEventMap } from 'common/types/game';
+import { EGame } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
@@ -50,7 +50,7 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
     }
   });
 
-  useSocket<TGameEventMap<EGame.SURVIVAL_ONLINE>>(io, {
+  useSocket(io, {
     [EGameEvent.UPDATE_GAME]: ({ players, cells }) => {
       console.log('UPDATE_GAME', { players, cells });
 

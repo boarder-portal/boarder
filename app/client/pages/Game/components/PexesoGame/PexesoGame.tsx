@@ -8,7 +8,7 @@ import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
 import { EFieldLayout, EGameEvent, ICard, IPlayer, IShuffleCardsIndexes } from 'common/types/pexeso';
 import { ICoords } from 'common/types';
-import { EGame, TGameEventMap } from 'common/types/game';
+import { EGame } from 'common/types/game';
 
 import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
@@ -77,7 +77,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     return players.find(({ login }) => login === user?.login);
   }, [players, user]);
 
-  useSocket<TGameEventMap<EGame.PEXESO>>(io, {
+  useSocket(io, {
     [EGameEvent.OPEN_CARD]: (cardIndex) => {
       setCards((cards) => {
         cards[cardIndex].closed = false;
