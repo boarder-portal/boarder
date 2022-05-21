@@ -284,9 +284,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
   }
 
   calculateScientificCardsPoints(symbols: EScientificSymbol[], setValue: number): number {
-    const symbolsCounts = [EScientificSymbol.GEAR, EScientificSymbol.COMPASS, EScientificSymbol.TABLET].map(
-      (symbol) => symbols.filter((s) => s === symbol).length,
-    );
+    const symbolsCounts = Object.values(EScientificSymbol).map((symbol) => symbols.filter((s) => s === symbol).length);
     const setsCount = Math.min(...symbolsCounts);
 
     return symbolsCounts.reduce((points, count) => points + count ** 2, setsCount * setValue);
