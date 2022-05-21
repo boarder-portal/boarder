@@ -140,6 +140,8 @@ class Game<Game extends EGame> {
     this.onDeleteGame();
 
     this.deleted = true;
+
+    this.gameEntity.destroy();
   }
 
   end(): void {
