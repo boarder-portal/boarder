@@ -10,6 +10,7 @@
     "prod": "npm-run-all -c build prodStartServer",
     "prodStartServer": "NODE_ENV=production ts-node --transpile-only -r tsconfig-paths/register ./app/server/server.ts",
     "build": "NODE_ENV=production webpack -c webpack/webpack.config.ts",
+    "analyzeBundle": "ANALYZE_BUNDLE=1 NODE_ENV=production webpack -c webpack/webpack.config.ts",
     "initDb": "ts-node -r tsconfig-paths/register ./app/server/db/initDB.ts",
     "createPexesoSet": "ts-node scripts/createPexesoSet.ts",
     "typecheck": "tsc --noEmit",

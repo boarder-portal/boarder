@@ -1,4 +1,4 @@
-import { first } from 'lodash';
+import first from 'lodash/first';
 
 import { IPlayer, IPrice } from 'common/types/sevenWonders';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';

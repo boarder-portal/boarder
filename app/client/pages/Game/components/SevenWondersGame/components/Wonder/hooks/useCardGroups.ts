@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
