@@ -6,8 +6,9 @@ import { ERoomEvent, IRoomEventMap, IRoomUpdateEvent } from 'common/types/room';
 import { EGame } from 'common/types/game';
 import { EPlayerStatus } from 'common/types';
 
-import Box from 'client/components/common/Box/Box';
 import Button from 'client/components/common/Button/Button';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import useSocket from 'client/hooks/useSocket';
@@ -43,13 +44,13 @@ function Room<Game extends EGame>() {
 
   return (
     <div>
-      <Box size="xxl" bold>
+      <Text size="xxl" weight="bold">
         Комната {game}
-      </Box>
+      </Text>
 
-      <Box mt={20} between={12}>
+      <Flex className={styles.players} between={3}>
         {room.players.map(({ login, status }) => (
-          <Box key={login} className={styles.user} flex alignItems="center" between={8}>
+          <Flex key={login} className={styles.user} alignItems="center" between={2}>
             <div>{login}</div>
             <div>{status === EPlayerStatus.NOT_READY ? 'Не готов' : 'Готов'}</div>
 
@@ -62,9 +63,9 @@ function Room<Game extends EGame>() {
                 {status === EPlayerStatus.NOT_READY ? 'Готов' : 'Не готов'}
               </Button>
             )}
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
     </div>
   );
 }

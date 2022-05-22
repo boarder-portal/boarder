@@ -4,6 +4,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import block from 'bem-cn';
 
 import Box, { IBoxProps } from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -52,9 +53,9 @@ const Dropdown: React.FC<IDropdownProps> = (props) => {
     <Root {...boxProps}>
       <GlobalStyle />
 
-      <Box innerRef={toggleElRef} onClick={toggle}>
+      <Flex ref={toggleElRef} onClick={toggle}>
         {children}
-      </Box>
+      </Flex>
 
       <Popover
         classes={{

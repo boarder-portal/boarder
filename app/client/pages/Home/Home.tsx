@@ -3,7 +3,8 @@ import { useHistory } from 'react-router-dom';
 
 import { EGame } from 'common/types/game';
 
-import Box from 'client/components/common/Box/Box';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Home.pcss';
 
@@ -29,28 +30,27 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <Box size="xxl" bold>
+      <Text size="xxl" weight="bold">
         Игры
-      </Box>
+      </Text>
 
-      <Box className={styles.games} mt={20}>
+      <div className={styles.games}>
         {Object.values(EGame).map((game) => (
-          <Box
+          <Flex
             key={game}
             className={styles.game}
-            flex
-            alignItems="flex-end"
-            justifyContent="flex-start"
-            size="xl"
+            alignItems="flexEnd"
             style={{
               backgroundImage: `url("/games/backgrounds/${game}.png")`,
             }}
             onClick={() => handleGameClick(game)}
           >
-            <span className={styles.caption}>{GAME_NAMES[game]}</span>
-          </Box>
+            <Text className={styles.caption} size="xl">
+              {GAME_NAMES[game]}
+            </Text>
+          </Flex>
         ))}
-      </Box>
+      </div>
     </div>
   );
 };

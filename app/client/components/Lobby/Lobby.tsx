@@ -5,8 +5,11 @@ import { EGame, TGameOptions } from 'common/types/game';
 import { ILobbyUpdateEvent } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';
-import Box from 'client/components/common/Box/Box';
 import LobbyRoom from 'client/components/Lobby/components/Room/Room';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
+
+import styles from './Lobby.pcss';
 
 interface ILobbyProps<Game extends EGame> {
   game: EGame;
@@ -22,12 +25,12 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
 
   return (
     <div>
-      <Box size="xxl" bold>
+      <Text size="xxl" weight="bold">
         {game}
-      </Box>
+      </Text>
 
-      <Box flex mt={20}>
-        <Box flex column grow between={12}>
+      <Flex className={styles.roomsAndOptions}>
+        <Flex className={styles.rooms} direction="column" between={3}>
           {rooms.length ? (
             rooms.map((room) => (
               <LobbyRoom
@@ -41,28 +44,26 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
               />
             ))
           ) : (
-            <Box flex alignItems="center" justifyContent="center" grow size="xl">
-              Комнат пока нет
-            </Box>
+            <Flex className={styles.rooms} alignItems="center" justifyContent="center">
+              <Text size="xl">Комнат пока нет</Text>
+            </Flex>
           )}
-        </Box>
+        </Flex>
 
-        <Box ml={40}>
-          <Box flex column between={16}>
-            <Box size="xxl">Настройки комнаты</Box>
+        <Flex className={styles.options} direction="column" between={4}>
+          <Text size="xxl">Настройки комнаты</Text>
 
-            {options}
+          {options}
 
-            <Button
-              onClick={() => {
-                onCreateRoom();
-              }}
-            >
-              Создать комнату
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+          <Button
+            onClick={() => {
+              onCreateRoom();
+            }}
+          >
+            Создать комнату
+          </Button>
+        </Flex>
+      </Flex>
     </div>
   );
 };

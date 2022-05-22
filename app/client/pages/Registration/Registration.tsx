@@ -5,8 +5,9 @@ import { useSetRecoilState } from 'recoil';
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Input from 'client/components/common/Input/Input';
-import Box from 'client/components/common/Box/Box';
 import Button from 'client/components/common/Button/Button';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -38,10 +39,10 @@ const Registration: React.FC = () => {
   );
 
   return (
-    <Box className={styles.root} flex column>
-      <Box size="xxl" bold>
+    <Flex className={styles.root} direction="column">
+      <Text size="xxl" weight="bold">
         Регистрация
-      </Box>
+      </Text>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <Input label="Логин" value={login} onChange={setLogin} />
@@ -60,7 +61,7 @@ const Registration: React.FC = () => {
           Регистрация
         </Button>
       </form>
-    </Box>
+    </Flex>
   );
 };
 

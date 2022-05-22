@@ -6,8 +6,9 @@ import { IUser } from 'common/types';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import Box from 'client/components/common/Box/Box';
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
+import Flex from 'client/components/common/Flex/Flex';
+import Text from 'client/components/common/Text/Text';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -30,20 +31,18 @@ const Header: React.FC<IHeaderProps> = (props) => {
 
   const userPopup = useMemo(() => {
     return (
-      <Box px={16} py={12}>
-        <Box className={styles.logout} onClick={logout}>
-          Выйти
-        </Box>
-      </Box>
+      <div className={styles.userPopup} onClick={logout}>
+        Выйти
+      </div>
     );
   }, [logout]);
 
   return (
-    <Box py={12} flex alignItems="center">
+    <Flex className={styles.root} alignItems="center">
       <Link to="/">
-        <Box size="l" bold>
+        <Text size="l" weight="bold">
           Boarder
-        </Box>
+        </Text>
       </Link>
 
       {user ? (
@@ -61,7 +60,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
           </Link>
         </>
       )}
-    </Box>
+    </Flex>
   );
 };
 
