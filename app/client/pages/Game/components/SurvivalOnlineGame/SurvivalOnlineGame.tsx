@@ -9,7 +9,7 @@ import { EGame } from 'common/types/game';
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
 
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -106,14 +106,14 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
   }, [player, render]);
 
   return (
-    <Box className={styles.root} flex justifyContent="center" alignItems="center" column innerRef={containerRef}>
+    <Flex className={styles.root} justifyContent="center" alignItems="center" direction="column" ref={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
         width={VIEW_SIZE.width * CELL_SIZE}
         height={VIEW_SIZE.height * CELL_SIZE}
         ref={canvasRef}
       />
-    </Box>
+    </Flex>
   );
 };
 

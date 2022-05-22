@@ -1,107 +1,119 @@
 .root {
   display: flex;
+}
 
-  &.direction_row {
-    flex-direction: row;
-  }
+.direction_row {
+  flex-direction: row;
+}
 
-  &.direction_column {
-    flex-direction: column;
-  }
+.direction_rowReverse {
+  flex-direction: row-reverse;
+}
 
-  &.justifyContent_center {
-    justify-content: center;
-  }
+.direction_column {
+  flex-direction: column;
+}
 
-  &.justifyContent_flexStart {
-    justify-content: flex-start;
-  }
+.direction_columnReverse {
+  flex-direction: column-reverse;
+}
 
-  &.justifyContent_flexEnd {
-    justify-content: flex-end;
-  }
+.justifyContent_center {
+  justify-content: center;
+}
 
-  &.justifyContent_spaceBetween {
-    justify-content: space-between;
-  }
+.justifyContent_flexStart {
+  justify-content: flex-start;
+}
 
-  &.alignItems_center {
-    align-items: center;
-  }
+.justifyContent_flexEnd {
+  justify-content: flex-end;
+}
 
-  &.alignItems_flexStart {
-    align-items: flex-start;
-  }
+.justifyContent_spaceBetween {
+  justify-content: space-between;
+}
 
-  &.alignItems_flexEnd {
-    align-items: flex-end;
-  }
+.alignItems_center {
+  align-items: center;
+}
 
-  &.alignItems_stretch {
-    align-items: stretch;
-  }
+.alignItems_flexStart {
+  align-items: flex-start;
+}
 
-  &:not(.direction_column) {
-    &.between_1 {
-      > :not(:first-child) {
-        margin-left: 4px;
-      }
+.alignItems_flexEnd {
+  align-items: flex-end;
+}
+
+.alignItems_stretch {
+  align-items: stretch;
+}
+
+.between_1 {
+  --space: 4px;
+}
+
+.between_2 {
+  --space: 8px;
+}
+
+.between_3 {
+  --space: 12px;
+}
+
+.between_4 {
+  --space: 16px;
+}
+
+.between_5 {
+  --space: 20px;
+}
+
+.direction_row {
+  &.between_1,
+  &.between_2,
+  &.between_3,
+  &.between_4,
+  &.between_5 {
+    > :not(:first-child) {
+      margin-left: var(--space);
     }
+  }
+}
 
-    &.between_2 {
-      > :not(:first-child) {
-        margin-left: 8px;
-      }
-    }
-
-    &.between_3 {
-      > :not(:first-child) {
-        margin-left: 12px;
-      }
-    }
-
-    &.between_4 {
-      > :not(:first-child) {
-        margin-left: 16px;
-      }
-    }
-
-    &.between_5 {
-      > :not(:first-child) {
-        margin-left: 20px;
-      }
+.direction_rowReverse {
+  &.between_1,
+  &.between_2,
+  &.between_3,
+  &.between_4,
+  &.between_5 {
+    > :not(:last-child) {
+      margin-left: var(--space);
     }
   }
+}
 
-  &.direction_column {
-    &.between_1 {
-      > :not(:first-child) {
-        margin-top: 4px;
-      }
+.direction_column {
+  &.between_1,
+  &.between_2,
+  &.between_3,
+  &.between_4,
+  &.between_5 {
+    > :not(:first-child) {
+      margin-top: var(--space);
     }
+  }
+}
 
-    &.between_2 {
-      > :not(:first-child) {
-        margin-top: 8px;
-      }
-    }
-
-    &.between_3 {
-      > :not(:first-child) {
-        margin-top: 12px;
-      }
-    }
-
-    &.between_4 {
-      > :not(:first-child) {
-        margin-top: 16px;
-      }
-    }
-
-    &.between_5 {
-      > :not(:first-child) {
-        margin-top: 20px;
-      }
+.direction_columnReverse {
+  &.between_1,
+  &.between_2,
+  &.between_3,
+  &.between_4,
+  &.between_5 {
+    > :not(:last-child) {
+      margin-top: var(--space);
     }
   }
 }

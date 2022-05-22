@@ -48,11 +48,11 @@ function Room<Game extends EGame>() {
         Комната {game}
       </Text>
 
-      <Flex className={styles.players} between={3}>
+      <Flex className={styles.players} direction="column" between={3}>
         {room.players.map(({ login, status }) => (
-          <Flex key={login} className={styles.user} alignItems="center" between={2}>
+          <Flex key={login} className={styles.user} alignItems="center">
             <div>{login}</div>
-            <div>{status === EPlayerStatus.NOT_READY ? 'Не готов' : 'Готов'}</div>
+            <div className={styles.status}>{status === EPlayerStatus.NOT_READY ? 'Не готов' : 'Готов'}</div>
 
             {login === user.login && (
               <Button

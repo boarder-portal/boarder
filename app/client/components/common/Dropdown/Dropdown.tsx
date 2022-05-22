@@ -1,14 +1,15 @@
 import React, { useRef } from 'react';
 import Popover, { PopoverOrigin, PopoverProps } from '@material-ui/core/Popover';
-import styled, { createGlobalStyle } from 'styled-components';
-import block from 'bem-cn';
+import classNames from 'classnames';
 
-import Box, { IBoxProps } from 'client/components/common/Box/Box';
 import Flex from 'client/components/common/Flex/Flex';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
-interface IDropdownProps extends IBoxProps {
+import styles from './Dropdown.pcss';
+
+interface IDropdownProps {
+  className?: string;
   popup: React.ReactNode;
   anchorOrigin?: PopoverOrigin;
   transformOrigin?: PopoverProps['transformOrigin'];
@@ -24,25 +25,13 @@ const DEFAULT_TRANSFORM_ORIGIN: PopoverProps['transformOrigin'] = {
   vertical: 'top',
 };
 
-const b = block('Dropdown');
-
-const Root = styled(Box)`
-  cursor: pointer;
-`;
-
-const GlobalStyle = createGlobalStyle`
-  .Dropdown__popup {
-    margin-top: 4px;
-  }
-`;
-
 const Dropdown: React.FC<IDropdownProps> = (props) => {
   const {
+    className,
     children,
     popup,
     anchorOrigin = DEFAULT_ANCHOR_ORIGIN,
     transformOrigin = DEFAULT_TRANSFORM_ORIGIN,
-    ...boxProps
   } = props;
 
   const toggleElRef = useRef<HTMLDivElement | null>(null);
@@ -50,16 +39,14 @@ const Dropdown: React.FC<IDropdownProps> = (props) => {
   const { value: opened, setFalse: close, toggle } = useBoolean(false);
 
   return (
-    <Root {...boxProps}>
-      <GlobalStyle />
-
+    <div className={classNames(styles.root, className)}>
       <Flex ref={toggleElRef} onClick={toggle}>
         {children}
       </Flex>
 
       <Popover
         classes={{
-          paper: b('popup').toString(),
+          paper: styles.popup,
         }}
         open={opened}
         anchorEl={toggleElRef.current}
@@ -70,8 +57,8 @@ const Dropdown: React.FC<IDropdownProps> = (props) => {
       >
         {popup}
       </Popover>
-    </Root>
+    </div>
   );
 };
 
-export default React.memo(Dropdown);
+export default Dropdown;

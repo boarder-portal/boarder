@@ -1,9 +1,9 @@
-import { forwardRef, ReactNode } from 'react';
+import { forwardRef, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 
 import styles from './Text.pcss';
 
-interface IHeadingProps {
+interface IHeadingProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
   weight?: 'normal' | 'bold';
@@ -11,10 +11,14 @@ interface IHeadingProps {
 }
 
 const Text = forwardRef<HTMLDivElement | null, IHeadingProps>((props, ref) => {
-  const { className, size = 'm', weight = 'normal', children } = props;
+  const { className, size = 'm', weight = 'normal', children, ...restProps } = props;
 
   return (
-    <div className={classNames(styles.root, styles[`size_${size}`], styles[`weight_${weight}`], className)} ref={ref}>
+    <div
+      className={classNames(styles.root, styles[`size_${size}`], styles[`weight_${weight}`], className)}
+      ref={ref}
+      {...restProps}
+    >
       {children}
     </div>
   );

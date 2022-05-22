@@ -6,7 +6,6 @@ import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/seven
 import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
-import Box from 'client/components/common/Box/Box';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 
@@ -82,7 +81,7 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
 
   return (
     <>
-      <Box onClick={handleClick}>{getTitle(buildType)}</Box>
+      <div onClick={handleClick}>{getTitle(buildType)}</div>
 
       <TradeModal
         isVisible={isTradeModalVisible}

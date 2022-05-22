@@ -1,12 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 
-const Root = styled.span`
-  white-space: pre-wrap;
-`;
+import styles from './DotSeparator.pcss';
 
 const DotSeparator: React.FC = () => {
-  return <Root>{'  •  '}</Root>;
+  return <span className={styles.root}>{'  •  '}</span>;
 };
 
 export default React.memo(DotSeparator);

@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 
 import { ECardActionType, TAction, TPayments } from 'common/types/sevenWonders';
 
-import Box from 'client/components/common/Box/Box';
-
 interface IDraftLeaderActionProps {
   className?: string;
   onCardAction(action: TAction, payments?: TPayments): void;
@@ -19,9 +17,9 @@ const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
   }, [onCardAction]);
 
   return (
-    <Box className={className}>
+    <div className={className}>
       <div onClick={handleSelect}>Выбрать</div>
-    </Box>
+    </div>
   );
 };
 

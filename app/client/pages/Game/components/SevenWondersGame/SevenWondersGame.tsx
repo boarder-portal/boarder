@@ -8,9 +8,9 @@ import { EGame } from 'common/types/game';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
-import Box from 'client/components/common/Box/Box';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -72,8 +72,8 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   }
 
   return (
-    <Box className={styles.root} flex column>
-      <Box className={styles.otherPlayers} flex between={20} justifyContent="center">
+    <Flex className={styles.root} direction="column">
+      <Flex className={styles.otherPlayers} justifyContent="center" between={5}>
         {otherPlayers.map((otherPlayer) => (
           <Wonder
             key={otherPlayer.login}
@@ -83,7 +83,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
             isOtherPlayer
           />
         ))}
-      </Box>
+      </Flex>
 
       <MainBoard
         className={styles.mainBoard}
@@ -96,7 +96,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
         leftNeighbor={leftNeighbor}
         rightNeighbor={rightNeighbor}
       />
-    </Box>
+    </Flex>
   );
 };
 

@@ -8,8 +8,8 @@ import { ESuit, ICard } from 'common/types/cards';
 
 import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
-import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Hand.pcss';
 
@@ -99,14 +99,13 @@ const Hand: React.FC<IHandProps> = (props) => {
   } = props;
 
   return (
-    <Box
+    <Flex
       className={classNames(styles.root, isOwnHand ? styles.ownHand : undefined, className)}
-      flex
-      column
+      direction="column"
       alignItems="center"
-      between={20}
+      between={5}
     >
-      <Box flex>
+      <Flex>
         {hand.map((card, index) => {
           const state = getCardState(
             card,
@@ -130,8 +129,8 @@ const Hand: React.FC<IHandProps> = (props) => {
             />
           );
         })}
-      </Box>
-    </Box>
+      </Flex>
+    </Flex>
   );
 };
 

@@ -6,9 +6,10 @@ import { EHandStage, IPlayer } from 'common/types/hearts';
 
 import { EPlayerPosition } from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 
-import Box from 'client/components/common/Box/Box';
 import Hand from 'client/pages/Game/components/HeartsGame/components/Hand/Hand';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
+import Text from 'client/components/common/Text/Text';
+import Flex, { IFlexProps } from 'client/components/common/Flex/Flex';
 
 import styles from './Player.pcss';
 
@@ -23,6 +24,22 @@ interface IPlayerProps {
   isOwnHand: boolean;
   isFirstTurn: boolean;
   onSelectCard(cardIndex: number): void;
+}
+
+function getFlexDirection(position: EPlayerPosition): IFlexProps['direction'] {
+  if (position === EPlayerPosition.TOP) {
+    return 'columnReverse';
+  }
+
+  if (position === EPlayerPosition.BOTTOM) {
+    return 'column';
+  }
+
+  if (position === EPlayerPosition.LEFT) {
+    return 'rowReverse';
+  }
+
+  return 'row';
 }
 
 const Player: React.FC<IPlayerProps> = (props) => {
@@ -44,17 +61,15 @@ const Player: React.FC<IPlayerProps> = (props) => {
   const chosenCardsIndexes = useMemo(() => player.data.hand?.chosenCardsIndexes ?? [], [player.data.hand]);
 
   return (
-    <Box
+    <Flex
       className={classNames(
         styles.root,
         position === EPlayerPosition.LEFT || position === EPlayerPosition.RIGHT ? styles[position] : undefined,
         className,
       )}
-      flex
       alignItems="center"
-      column={position === EPlayerPosition.BOTTOM || position === EPlayerPosition.TOP}
-      reverseDirection={position === EPlayerPosition.LEFT || position === EPlayerPosition.TOP}
-      between={20}
+      direction={getFlexDirection(position)}
+      between={5}
     >
       {player.data.turn?.playedCard && <Card card={player.data.turn.playedCard} isVisible />}
 
@@ -71,13 +86,13 @@ const Player: React.FC<IPlayerProps> = (props) => {
         onSelectCard={onSelectCard}
       />
 
-      <Box flex column alignItems="center">
-        <Box size="xl" bold>
+      <Flex direction="column" alignItems="center">
+        <Text size="xl" weight="bold">
           {player.login}
-        </Box>
-        <Box size="l">{player.data.score}</Box>
-      </Box>
-    </Box>
+        </Text>
+        <Text size="l">{player.data.score}</Text>
+      </Flex>
+    </Flex>
   );
 };
 

@@ -6,11 +6,11 @@ import { ECardId } from 'common/types/sevenWonders/cards';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
-import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
 import Image from 'client/components/common/Image/Image';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Wonder.pcss';
 
@@ -67,8 +67,8 @@ const Wonder: React.FC<IWonderProps> = (props) => {
   );
 
   return (
-    <Box className={className}>
-      <Box className={styles.cardGroups} flex justifyContent="space-between">
+    <div className={className}>
+      <Flex className={styles.cardGroups} justifyContent="spaceBetween">
         {cardGroups.map((group, index) => {
           const cardVerticalSpace = Math.min(GROUP_HEIGHT / group.length, CARD_DEFAULT_GROUP_VERTICAL_SPACE);
 
@@ -91,7 +91,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
             </div>
           );
         })}
-      </Box>
+      </Flex>
 
       <div className={styles.wonderImageWrapper}>
         <Image
@@ -109,14 +109,14 @@ const Wonder: React.FC<IWonderProps> = (props) => {
         ))}
       </div>
 
-      <Box flex between={8} mt={16}>
+      <Flex className={styles.info} between={2}>
         <div>{player.login}</div>
         {player.data.points > 0 && <div>{`Очки: ${player.data.points}`}</div>}
         <div>{`Монет: ${player.data.coins}`}</div>
         {warPoints.length ? <div>{`Война ${warPoints.join(', ')}`}</div> : null}
         <div>{currentAction}</div>
-      </Box>
-    </Box>
+      </Flex>
+    </div>
   );
 };
 

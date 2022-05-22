@@ -10,9 +10,9 @@ import { EGame } from 'common/types/game';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 
-import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlayer';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -128,7 +128,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
   const bottomPlayer = players[isFlipped ? 1 : 0];
 
   return (
-    <Box className={styles.root} flex column between={10} alignItems="flex-start">
+    <Flex className={styles.root} direction="column" between={2} alignItems="flexStart">
       <OnitamaPlayer
         player={topPlayer}
         fifthCard={fifthCard}
@@ -137,16 +137,17 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
         selectedCardIndex={-1}
       />
 
-      <Box
+      <Flex
         className={classNames(styles.board, {
           [styles.isFlipped]: isFlipped,
         })}
-        between={2}
+        direction="column"
+        between={1}
       >
         {board.map((row, y) => (
-          <Box key={y} flex between={2}>
+          <Flex key={y} between={1}>
             {row.map((piece, x) => (
-              <Box
+              <div
                 key={x}
                 className={classNames(styles.cell, {
                   [styles.isSelected]: selectedFrom && equalsCoords({ x, y }, selectedFrom),
@@ -165,11 +166,11 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
                     }}
                   />
                 )}
-              </Box>
+              </div>
             ))}
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
 
       <OnitamaPlayer
         player={bottomPlayer}
@@ -179,7 +180,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
         selectedCardIndex={selectedCardIndex}
         onCardClick={handleCardClick}
       />
-    </Box>
+    </Flex>
   );
 };
 

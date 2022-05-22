@@ -6,8 +6,8 @@ import classNames from 'classnames';
 
 import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
 
-import Box from 'client/components/common/Box/Box';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Player.pcss';
 
@@ -40,7 +40,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
   }, [turnEndsAt]);
 
   return (
-    <Box flex column className={classNames(styles.root, className)}>
+    <Flex className={classNames(styles.root, className)} direction="column">
       {players.map((player) => {
         const isActive = player.index === activePlayerIndex;
 
@@ -58,7 +58,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
               {player.data.goods[ECityGoods.WINE]}
             </div>
 
-            <Box flex between={2}>
+            <Flex between={1}>
               {map(player.data.meeples, (count, type) =>
                 times(count, (index) => (
                   <Meeple
@@ -69,11 +69,11 @@ const Players: React.FC<IPlayersProps> = (props) => {
                   />
                 )),
               )}
-            </Box>
+            </Flex>
           </div>
         );
       })}
-    </Box>
+    </Flex>
   );
 };
 

@@ -4,7 +4,9 @@ import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/seven
 
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 
-import Box from 'client/components/common/Box/Box';
+import Text from 'client/components/common/Text/Text';
+
+import styles from './DiscardAction.pcss';
 
 interface IDiscardActionProps {
   player: IPlayer;
@@ -33,9 +35,9 @@ const DiscardAction: React.FC<IDiscardActionProps> = (props) => {
   }
 
   return (
-    <Box size="s" textAlign="center" onClick={onClick}>
+    <Text className={styles.root} size="s" onClick={onClick}>
       {title}
-    </Box>
+    </Text>
   );
 };
 

@@ -6,7 +6,7 @@ import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import { ECardType } from 'common/types/onitama';
 
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './OnitamaCard.pcss';
 
@@ -28,45 +28,44 @@ const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
   }, [card, onClick]);
 
   return (
-    <Box
-      className={styles.root}
-      column
+    <Flex
+      className={classNames(styles.root, { [styles.selected]: isSelected })}
+      direction="column"
       alignItems="center"
-      between={4}
-      background={isSelected ? '#7f7' : undefined}
+      between={1}
       onClick={onClick && handleClick}
     >
-      <Box
+      <Flex
         className={classNames(styles.cells, {
           [styles.isFlipped]: isFlipped,
         })}
-        flex
-        column
-        between={1}
+        direction="column"
         alignItems="center"
+        between={1}
       >
         {times(5, (y) => (
-          <Box key={y} flex between={1}>
+          <Flex key={y} between={1}>
             {times(5, (x) => (
-              <Box
+              <div
                 key={x}
-                width={10}
-                height={10}
-                background={
-                  x === 2 && y === 2
-                    ? '#000'
-                    : legalMoves.some(([cellY, cellX]) => cellY === y - 2 && cellX === x - 2)
-                    ? '#900'
-                    : '#eee'
-                }
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  background:
+                    x === 2 && y === 2
+                      ? '#000'
+                      : legalMoves.some(([cellY, cellX]) => cellY === y - 2 && cellX === x - 2)
+                      ? '#900'
+                      : '#eee',
+                }}
               />
             ))}
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
 
       <div style={{ textAlign: 'center' }}>{card}</div>
-    </Box>
+    </Flex>
   );
 };
 

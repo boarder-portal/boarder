@@ -2,8 +2,8 @@ import React from 'react';
 
 import { ECardType, IPlayer } from 'common/types/onitama';
 
-import Box from 'client/components/common/Box/Box';
 import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';
+import Flex from 'client/components/common/Flex/Flex';
 
 interface IOnitamaPlayerProps {
   player: IPlayer;
@@ -19,7 +19,7 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
 
   return (
     <div>
-      <Box flex between={8} alignItems="center">
+      <Flex between={2} alignItems="center">
         {player.data.cards.map((card, index) => (
           <OnitamaCard
             key={card}
@@ -40,7 +40,7 @@ const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
             <OnitamaCard card={fifthCard} isFlipped={isFlipped} isSelected={false} />
           </div>
         )}
-      </Box>
+      </Flex>
     </div>
   );
 };

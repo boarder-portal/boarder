@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { ICard } from 'common/types/set';
 
 import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Card.pcss';
 
@@ -23,21 +23,20 @@ const Card: React.FC<ICardProps> = (props) => {
   }, [card, onClick]);
 
   return (
-    <Box
+    <Flex
       className={classNames(styles.root, {
         [styles.selected]: isSelected,
       })}
-      between={20}
-      flex
-      column
+      direction="column"
       alignItems="center"
       justifyContent="center"
+      between={5}
       onClick={handleClick}
     >
       {times(card.count).map((objIndex) => (
         <CardObject key={objIndex} card={card} />
       ))}
-    </Box>
+    </Flex>
   );
 };
 

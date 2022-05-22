@@ -36,7 +36,7 @@ import getResourcePoolsWithAdditionalResources from 'client/pages/Game/component
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import { usePrevious } from 'client/hooks/usePrevious';
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
@@ -182,7 +182,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [hand.length, prevHand.length]);
 
   return (
-    <Box className={classNames(styles.root, className)} flex alignItems="center" column between={12}>
+    <Flex className={classNames(styles.root, className)} alignItems="center" direction="column" between={3}>
       <div className={styles.wonderWrapper}>
         <Wonder player={player} />
 
@@ -195,8 +195,8 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
         )}
       </div>
 
-      <Box className={styles.handWrapper}>
-        <Box flex between={-35}>
+      <div className={styles.handWrapper}>
+        <Flex className={styles.cards}>
           {hand.map((card, index) => (
             <HandCard
               key={index}
@@ -221,15 +221,15 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               onStartCopyingLeader={handleStartCopyingLeader}
             />
           ))}
-        </Box>
+        </Flex>
 
         {cardsDirection === ENeighborSide.LEFT ? (
           <ArrowLeft className={styles.leftArrow} />
         ) : (
           <ArrowRight className={styles.rightArrow} />
         )}
-      </Box>
-    </Box>
+      </div>
+    </Flex>
   );
 };
 

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { ESuit, ICard } from 'common/types/cards';
 
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Card.pcss';
 
@@ -26,14 +26,13 @@ const Card: React.FC<ICardProps> = (props) => {
   const { className, card, isVisible, onClick } = props;
 
   return (
-    <Box
+    <Flex
       className={classNames(
         styles.root,
         isVisible ? styles.visible : undefined,
         RED_COLORS.includes(card.suit) ? styles.red : styles.black,
         className,
       )}
-      flex
       justifyContent="center"
       alignItems="center"
       onClick={onClick}
@@ -45,7 +44,7 @@ const Card: React.FC<ICardProps> = (props) => {
           <span className={styles.suit}>{SUITS_MAP[card.suit]}</span>
         </div>
       )}
-    </Box>
+    </Flex>
   );
 };
 

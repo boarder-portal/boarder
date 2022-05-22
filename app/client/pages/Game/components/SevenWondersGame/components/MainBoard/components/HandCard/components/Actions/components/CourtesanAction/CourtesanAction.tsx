@@ -4,8 +4,6 @@ import { ISevenWondersCourtesansBuildInfo } from 'client/pages/Game/components/S
 import { TAction, TPayments } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 
-import Box from 'client/components/common/Box/Box';
-
 interface ICourtesanActionProps {
   className?: string;
   card: ICard;
@@ -28,9 +26,9 @@ const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
   }, [card, courtesansBuildInfo.action, courtesansBuildInfo.cardIndex, courtesansBuildInfo.payments, onCardAction]);
 
   return (
-    <Box className={className}>
+    <div className={className}>
       <div onClick={handleSelect}>Выбрать</div>
-    </Box>
+    </div>
   );
 };
 

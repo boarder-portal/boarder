@@ -46,7 +46,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
       </Link>
 
       {user ? (
-        <Dropdown popup={userPopup} ml="auto">
+        <Dropdown className={styles.login} popup={userPopup}>
           {user.login}
         </Dropdown>
       ) : (

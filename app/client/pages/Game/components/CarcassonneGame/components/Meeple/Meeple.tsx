@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import { EMeepleType, EPlayerColor } from 'common/types/carcassonne';
 
-import Box from 'client/components/common/Box/Box';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Meeple.pcss';
 
@@ -19,9 +19,9 @@ const Meeple: React.FC<IMeepleProps> = (props) => {
   const { className, style, type, color, onClick } = props;
 
   return (
-    <Box className={className} style={style} flex alignItems="center" justifyContent="center" onClick={onClick}>
+    <Flex className={className} style={style} alignItems="center" justifyContent="center" onClick={onClick}>
       <div className={classNames(styles.meeple, styles[type])} style={{ backgroundColor: color }} />
-    </Box>
+    </Flex>
   );
 };
 

@@ -4,9 +4,10 @@ import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
 
 import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import Box from 'client/components/common/Box/Box';
 import ResourcesAndPrice from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
 import Modal from 'client/components/common/Modal/Modal';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -36,28 +37,27 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
   return (
     <Modal containerClassName={styles.container} open={isVisible} onClose={onClose}>
-      <Box className={styles.title} size="xxl" bold>
+      <Text className={styles.title} size="xxl" weight="bold">
         Торговые варианты
-      </Box>
+      </Text>
 
-      <Box flex justifyContent="space-between" mt={20}>
-        <Box bold size="l">
+      <Flex className={styles.head} justifyContent="spaceBetween">
+        <Text weight="bold" size="l">
           Left
-        </Box>
-        <Box bold size="l">
+        </Text>
+        <Text weight="bold" size="l">
           Bank
-        </Box>
-        <Box bold size="l">
+        </Text>
+        <Text weight="bold" size="l">
           Right
-        </Box>
-      </Box>
+        </Text>
+      </Flex>
 
-      <Box flex column between={8} mt={8}>
+      <Flex className={styles.variants} direction="column" between={2}>
         {tradeVariants.map((tradeVariant, index) => (
-          <Box
+          <Flex
             className={styles.tradeVariant}
             key={index}
-            flex
             onMouseEnter={handleHoverTradeVariant}
             onClick={handleSelectTradeVariant.bind(null, tradeVariant.payments)}
           >
@@ -76,9 +76,9 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
               resources={tradeVariant.resources.filter((resource) => resource.owner === ENeighborSide.RIGHT)}
               reverse
             />
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
     </Modal>
   );
 };

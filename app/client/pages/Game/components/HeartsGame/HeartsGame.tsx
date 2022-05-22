@@ -12,7 +12,6 @@ import { EGame } from 'common/types/game';
 import { isDeuceOfClubs } from 'common/utilities/hearts';
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 
-import Box from 'client/components/common/Box/Box';
 import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 
 import userAtom from 'client/atoms/userAtom';
@@ -82,7 +81,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
   }
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       {sortedPlayers.map((localPlayer, index) => {
         const position = getPlayerPosition(index, players.length);
 
@@ -104,7 +103,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
       })}
 
       {stage === EHandStage.PASS && directionBlock}
-    </Box>
+    </div>
   );
 };
 

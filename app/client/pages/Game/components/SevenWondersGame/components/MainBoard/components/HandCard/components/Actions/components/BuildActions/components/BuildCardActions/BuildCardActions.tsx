@@ -9,12 +9,14 @@ import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersG
 import getObjectSpecificResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
 import getResourcePoolsWithAdditionalResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
 
-import Box from 'client/components/common/Box/Box';
 import useCardBuildInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildInfo';
 import useCardBuildFreeWithEffectInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
 import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
+import Text from 'client/components/common/Text/Text';
 
 import { useBoolean } from 'client/hooks/useBoolean';
+
+import styles from './BuildCardActions.pcss';
 
 interface IBuildCardActionsProps {
   card: ICard;
@@ -125,15 +127,15 @@ const BuildCardActions: React.FC<IBuildCardActionsProps> = (props) => {
   return (
     <>
       {isBuildActionAvailable && (
-        <Box size="s" textAlign="center" onClick={handleBuildActionClick}>
+        <Text className={styles.action} size="s" onClick={handleBuildActionClick}>
           {cardBuildInfo.title}
-        </Box>
+        </Text>
       )}
 
       {isBuildFreeWithEffectActionAvailable && (
-        <Box size="s" textAlign="center" onClick={cardBuildFreeWithEffectInfo.onBuild}>
+        <Text className={styles.action} size="s" onClick={cardBuildFreeWithEffectInfo.onBuild}>
           {cardBuildFreeWithEffectInfo.title}
-        </Box>
+        </Text>
       )}
 
       <TradeModal

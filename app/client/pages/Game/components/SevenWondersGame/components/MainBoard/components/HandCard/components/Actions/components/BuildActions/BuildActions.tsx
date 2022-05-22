@@ -8,7 +8,6 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
 import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import Box from 'client/components/common/Box/Box';
 import DiscardAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
 import BuildWonderLevelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
 import BuildCardActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildCardActions/BuildCardActions';
@@ -46,7 +45,7 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
 
   return (
     <>
-      <Box className={className}>
+      <div className={className}>
         <BuildCardActions
           card={card}
           cardIndex={cardIndex}
@@ -67,7 +66,7 @@ const BuildActions: React.FC<IBuildActionsProps> = (props) => {
         />
 
         <DiscardAction player={player} onCardAction={onCardAction} />
-      </Box>
+      </div>
     </>
   );
 };

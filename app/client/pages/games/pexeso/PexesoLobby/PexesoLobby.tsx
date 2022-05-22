@@ -6,9 +6,9 @@ import { IGameOptions } from 'common/types/pexeso';
 import { EGame } from 'common/types/game';
 
 import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
-import Box from 'client/components/common/Box/Box';
 import Lobby from 'client/components/Lobby/Lobby';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
+import Flex from 'client/components/common/Flex/Flex';
 
 import useLobby from 'client/hooks/useLobby';
 
@@ -23,7 +23,7 @@ const PexesoLobby: React.FC = () => {
 
   const renderRoomOptions = useCallback((roomOptions: IGameOptions) => {
     return (
-      <Box>
+      <Flex>
         {roomOptions.set}
         <>
           <DotSeparator />
@@ -52,7 +52,7 @@ const PexesoLobby: React.FC = () => {
             вариативные
           </>
         )}
-      </Box>
+      </Flex>
     );
   }, []);
 

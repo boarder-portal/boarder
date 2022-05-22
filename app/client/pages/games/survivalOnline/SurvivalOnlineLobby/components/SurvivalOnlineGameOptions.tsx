@@ -5,8 +5,8 @@ import { MAX_PLAYERS_COUNT, MIN_PLAYERS_COUNT } from 'common/constants/games/sur
 
 import { IGameOptions } from 'common/types/survivalOnline';
 
-import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
+import Flex from 'client/components/common/Flex/Flex';
 
 interface ISurvivalOnlineGameOptionsProps {
   options: IGameOptions;
@@ -27,7 +27,7 @@ const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (pr
   );
 
   return (
-    <Box flex column between={12}>
+    <Flex direction="column" between={3}>
       <Select
         label="Количество игроков"
         name="survivalOnlinePlayersCount"
@@ -38,7 +38,7 @@ const SurvivalOnlineGameOptions: React.FC<ISurvivalOnlineGameOptionsProps> = (pr
         }))}
         onChange={handlePlayersCountChange}
       />
-    </Box>
+    </Flex>
   );
 };
 

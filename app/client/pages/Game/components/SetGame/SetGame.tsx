@@ -4,9 +4,10 @@ import chunk from 'lodash/chunk';
 import { EGameEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
-import Box from 'client/components/common/Box/Box';
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
 import Button from 'client/components/common/Button/Button';
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -66,25 +67,25 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
 
   const playersBlock = useMemo(() => {
     return (
-      <Box between={8}>
-        <Box bold size="l">
+      <Flex direction="column" between={2}>
+        <Text weight="bold" size="l">
           Игроки:{' '}
-        </Box>
+        </Text>
 
         {players.map((player) => (
-          <Box key={player.login}>
+          <div key={player.login}>
             {player.login}: {player.data.score}
-          </Box>
+          </div>
         ))}
-      </Box>
+      </Flex>
     );
   }, [players]);
 
   return (
-    <Box className={styles.root}>
-      <Box between={20}>
+    <div className={styles.root}>
+      <Flex direction="column" between={5}>
         {chunk(cards, cards.length / 3).map((cardsRow, index) => (
-          <Box key={index} flex between={20}>
+          <Flex key={index} between={5}>
             {cardsRow.map((card, cardRowIndex) => (
               <Card
                 key={cardRowIndex}
@@ -93,22 +94,22 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
                 onClick={handleCardClick}
               />
             ))}
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
 
-      <Box className={styles.info} between={20}>
+      <Flex className={styles.info} direction="column" between={5}>
         {playersBlock}
 
         {!isGameEnd && <Button onClick={handleNoSetClick}>Нет сета</Button>}
 
         {isGameEnd && (
-          <Box bold size="l">
+          <Text weight="bold" size="l">
             Игра окончена
-          </Box>
+          </Text>
         )}
-      </Box>
-    </Box>
+      </Flex>
+    </div>
   );
 };
 

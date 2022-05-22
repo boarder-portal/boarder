@@ -14,7 +14,6 @@ import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersG
 
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import Actions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/Actions';
-import Box from 'client/components/common/Box/Box';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -68,7 +67,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
   }, [isDisabled]);
 
   return (
-    <Box
+    <div
       className={classNames(styles.root, {
         [styles.isChosen]: isChosen,
         [styles.isDisabled]: isDisabled,
@@ -98,7 +97,7 @@ const HandCard: React.FC<IHandCardProps> = (props) => {
           />
         )}
       </div>
-    </Box>
+    </div>
   );
 };
 

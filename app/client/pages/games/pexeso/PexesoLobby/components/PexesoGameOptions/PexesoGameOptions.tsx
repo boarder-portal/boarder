@@ -15,10 +15,10 @@ import { EFieldLayout, ESet, EShuffleType, IGameOptions, TShuffleOptions } from 
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
-import Box from 'client/components/common/Box/Box';
 import Select from 'client/components/common/Select/Select';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './PexesoGameOptions.pcss';
 
@@ -189,7 +189,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   );
 
   return (
-    <Box className={styles.root} flex column between={12}>
+    <Flex className={styles.root} direction="column" between={3}>
       <Select
         label="Сет"
         name="pexesoSet"
@@ -312,7 +312,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           </div>
         </div>
       )}
-    </Box>
+    </Flex>
   );
 };
 

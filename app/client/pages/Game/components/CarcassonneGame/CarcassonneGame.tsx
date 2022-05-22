@@ -32,11 +32,11 @@ import {
 } from 'common/utilities/carcassonne';
 import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
 
-import Box from 'client/components/common/Box/Box';
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import Image from 'client/components/common/Image/Image';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
@@ -375,7 +375,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   }, [gameInfo]);
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       <div
         className={styles.boardWrapper}
         ref={boardWrapperRef}
@@ -535,7 +535,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         </div>
       </div>
 
-      <Box className={styles.hand} flex between={4}>
+      <Flex className={styles.hand} between={1}>
         {player?.data.cards.map((card, index) => {
           return (
             <div
@@ -547,7 +547,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
             </div>
           );
         })}
-      </Box>
+      </Flex>
 
       <Players
         className={styles.players}
@@ -563,7 +563,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
           <Image className={styles.draggingCardImage} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
         )}
       </div>
-    </Box>
+    </div>
   );
 };
 

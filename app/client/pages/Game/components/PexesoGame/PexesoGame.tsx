@@ -10,9 +10,9 @@ import { EFieldLayout, EGameEvent, ICard, IPlayer, IShuffleCardsIndexes } from '
 import { ICoords } from 'common/types';
 import { EGame } from 'common/types/game';
 
-import Box from 'client/components/common/Box/Box';
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import Image from 'client/components/common/Image/Image';
+import Flex from 'client/components/common/Flex/Flex';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -197,20 +197,19 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
 
   const playersBlock = useMemo(() => {
     return (
-      <Box between={8}>
+      <Flex direction="column" between={2}>
         {players.map((localPlayer) => (
-          <Box
+          <Flex
             key={localPlayer.login}
             className={classNames(styles.player, {
               [styles.isActive]: localPlayer.index === activePlayerIndex,
             })}
-            flex
             alignItems="center"
           >
             <span>{`${localPlayer.login} ${localPlayer.data.score}`}</span>
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
     );
   }, [activePlayerIndex, players]);
 
@@ -270,7 +269,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   }
 
   return (
-    <Box className={styles.root} flex between={20}>
+    <Flex className={styles.root} between={5}>
       <div ref={cardsLayoutContainerRef}>
         <div ref={cardsLayoutRef} className={styles.cardsLayout}>
           {sortBy(
@@ -317,7 +316,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       </div>
 
       {playersBlock}
-    </Box>
+    </Flex>
   );
 };
 
