@@ -25,7 +25,7 @@ export default class Turn extends Entity<EGame.CARCASSONNE, boolean> {
     this.endsAt = Date.now() + options.duration;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<boolean> {
     yield* this.race([
       // this.delay(this.endsAt - Date.now()),
       this.makeMoves(),

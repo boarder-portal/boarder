@@ -18,6 +18,7 @@ import {
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
 
@@ -34,7 +35,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
   turn: Turn | null = null;
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     const { imagesCount: setImagesCount, imageVariantsCount } = SETS[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (this.options.pickRandomImages ? shuffle(allIds) : allIds).slice(0, this.options.differentCardsCount);

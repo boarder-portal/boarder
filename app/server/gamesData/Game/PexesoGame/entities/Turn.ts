@@ -1,7 +1,7 @@
 import { EGame } from 'common/types/game';
 import { EGameClientEvent, EGameServerEvent, ITurn } from 'common/types/pexeso';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 
@@ -22,7 +22,7 @@ export default class Turn extends Entity<EGame.PEXESO, number[]> {
     this.activePlayerIndex = options.activePlayerIndex;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<number[]> {
     while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
       const cardIndex = yield* this.waitForPlayerSocketEvent(EGameClientEvent.OPEN_CARD, {
         playerIndex: this.activePlayerIndex,

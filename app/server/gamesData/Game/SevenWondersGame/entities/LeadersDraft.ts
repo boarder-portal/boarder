@@ -2,7 +2,7 @@ import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EWaitingActionType, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
@@ -25,7 +25,7 @@ export default class LeadersDraft extends Entity<EGame.SEVEN_WONDERS, ICard[][]>
     }));
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<ICard[][]> {
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].leadersPool = this.game.extractFromLeadersDeck(4);
     });

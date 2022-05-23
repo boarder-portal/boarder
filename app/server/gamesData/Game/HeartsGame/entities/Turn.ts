@@ -2,7 +2,7 @@ import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/cards';
 import { EGameClientEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
 
@@ -37,7 +37,7 @@ export default class Turn extends Entity<EGame.HEARTS, ITurnResult> {
     this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<ITurnResult> {
     for (let i = 0; i < this.playersCount; i++) {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 

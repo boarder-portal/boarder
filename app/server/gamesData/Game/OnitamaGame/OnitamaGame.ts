@@ -6,6 +6,7 @@ import { ECardType, EGameClientEvent, EPlayerColor, IGame, IPlayer, IPlayerData,
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { equalsCoords } from 'common/utilities/coords';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 const ALL_CARDS = Object.values(ECardType);
 
@@ -24,7 +25,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
   ];
   fifthCard = ECardType.TIGER;
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     let index = 0;
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];

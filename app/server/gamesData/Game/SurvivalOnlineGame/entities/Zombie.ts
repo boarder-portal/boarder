@@ -1,7 +1,7 @@
 import { EGame } from 'common/types/game';
 import { EDirection, EObject, IZombieObject } from 'common/types/survivalOnline';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { getRandomElement } from 'common/utilities/random';
 
 import SurvivalOnlineGame, {
@@ -26,7 +26,7 @@ export default class Zombie extends Entity<EGame.SURVIVAL_ONLINE> {
     this.cell = options.cell as IServerCellWithEntity<Zombie>;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     this.game.placeEntity(this, this.cell);
 
     yield* this.eternity();

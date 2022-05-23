@@ -51,7 +51,7 @@ export default class Turn extends Entity<EGame.SEVEN_WONDERS, number[]> {
     this.executeActions = options.executeActions;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<number[]> {
     while (this.isWaitingForActions()) {
       while (this.isWaitingForActions()) {
         const firstWaitingBotIndex = this.game.playersData.findIndex(

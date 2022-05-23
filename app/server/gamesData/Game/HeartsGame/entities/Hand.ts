@@ -10,7 +10,7 @@ import { EGame } from 'common/types/game';
 import { EGameClientEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
@@ -50,7 +50,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
     }));
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator<number[]> {
     const deck = shuffle(DECKS[this.playersCount]);
     const shuffledDeck = chunk(deck, deck.length / this.playersCount);
 
@@ -61,37 +61,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
     this.sortHands();
 
     if (this.stage === EHandStage.PASS) {
-      while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
-        const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.CHOOSE_CARD);
-
-        const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
-
-        if (playerChosenCardsIndexes.includes(cardIndex)) {
-          this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter(
-            (index) => index !== cardIndex,
-          );
-        } else {
-          playerChosenCardsIndexes.push(cardIndex);
-        }
-
-        this.game.sendGameInfo();
-      }
-
-      const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>
-        chosenCardsIndexes.map((cardIndex) => hand[cardIndex]),
-      );
-
-      this.playersData.forEach((playerData, playerIndex) => {
-        this.playersData[this.getTargetPlayerIndex(playerIndex)].hand.push(...passedCards[playerIndex]);
-
-        playerData.hand = playerData.hand.filter(
-          (_card, cardIndex) => !playerData.chosenCardsIndexes.includes(cardIndex),
-        );
-      });
-
-      this.sortHands();
-
-      this.stage = EHandStage.PLAY;
+      yield* this.passPhase();
     }
 
     let startPlayerIndex = this.playersData.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
@@ -147,6 +117,40 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
     }
 
     return (playerIndex + 2) % this.playersCount;
+  }
+
+  *passPhase(): TGenerator {
+    while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
+      const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.CHOOSE_CARD);
+
+      const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
+
+      if (playerChosenCardsIndexes.includes(cardIndex)) {
+        this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter(
+          (index) => index !== cardIndex,
+        );
+      } else {
+        playerChosenCardsIndexes.push(cardIndex);
+      }
+
+      this.game.sendGameInfo();
+    }
+
+    const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>
+      chosenCardsIndexes.map((cardIndex) => hand[cardIndex]),
+    );
+
+    this.playersData.forEach((playerData, playerIndex) => {
+      this.playersData[this.getTargetPlayerIndex(playerIndex)].hand.push(...passedCards[playerIndex]);
+
+      playerData.hand = playerData.hand.filter(
+        (_card, cardIndex) => !playerData.chosenCardsIndexes.includes(cardIndex),
+      );
+    });
+
+    this.sortHands();
+
+    this.stage = EHandStage.PLAY;
   }
 
   sortHands(): void {

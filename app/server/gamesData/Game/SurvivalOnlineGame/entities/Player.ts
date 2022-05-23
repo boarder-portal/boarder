@@ -1,7 +1,7 @@
 import { EGame } from 'common/types/game';
 import { EDirection, EGameClientEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import SurvivalOnlineGame, {
   IServerCell,
@@ -28,7 +28,7 @@ export default class Player extends Entity<EGame.SURVIVAL_ONLINE> {
     this.cell = options.cell as IServerCellWithEntity<Player>;
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     this.game.placeEntity(this, this.cell);
 
     while (true) {

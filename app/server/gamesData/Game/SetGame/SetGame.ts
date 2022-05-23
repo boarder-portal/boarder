@@ -30,6 +30,7 @@ import isNotUndefined from 'common/utilities/isNotUndefined';
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 export default class SetGame extends GameEntity<EGame.SET> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
@@ -38,7 +39,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
   cardsStack: ICard[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     const notShuffledCardsStack: ICard[] = [];
 
     Object.values(ECardColor).forEach((color) => {

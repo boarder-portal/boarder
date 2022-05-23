@@ -21,7 +21,7 @@ import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import {
   isBuildCardEffect,
   isCommercialCardsPassiveEffect,
@@ -59,7 +59,7 @@ export default class Age extends Entity<EGame.SEVEN_WONDERS> {
     }));
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].buildEffects = this.game
         .getAllPlayerEffects(playerIndex)

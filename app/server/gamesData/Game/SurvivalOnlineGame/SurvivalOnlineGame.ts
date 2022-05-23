@@ -1,14 +1,7 @@
 import times from 'lodash/times';
 
 import { EGame } from 'common/types/game';
-import {
-  EBiome,
-  EDirection,
-  EGameServerEvent,
-  ICell,
-  IGame,
-  IPlayer,
-} from 'common/types/survivalOnline';
+import { EBiome, EDirection, EGameServerEvent, ICell, IGame, IPlayer } from 'common/types/survivalOnline';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
@@ -66,7 +59,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
   base: Base | null = null;
   zombies = new Set<Zombie>();
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     this.generateWorld();
 
     yield* this.race([

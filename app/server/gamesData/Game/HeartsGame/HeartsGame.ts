@@ -5,6 +5,7 @@ import { EGame } from 'common/types/game';
 import { EHandStage, EPassDirection, IGame, IGamePlayerData, IPlayer } from 'common/types/hearts';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
@@ -15,7 +16,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
 
   hand: Hand | null = null;
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     while (this.playersData.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.playersCount][this.handIndex % this.playersCount];

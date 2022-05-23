@@ -38,6 +38,7 @@ import {
   isGameRoad,
   isSideObject,
 } from 'common/utilities/carcassonne';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Turn from 'server/gamesData/Game/CarcassonneGame/entities/Turn';
 
@@ -90,7 +91,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
 
   turn: Turn | null = null;
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     this.attachCard({
       card: ALL_CARDS[0],
       coords: { x: 0, y: 0 },

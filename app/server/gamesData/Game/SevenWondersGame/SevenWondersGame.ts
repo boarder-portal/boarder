@@ -26,7 +26,7 @@ import {
 } from 'common/types/sevenWonders/effects';
 import { EPlayerStatus } from 'common/types';
 
-import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
+import { IEntityContext, TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
@@ -75,7 +75,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     });
   }
 
-  *lifecycle() {
+  *lifecycle(): TGenerator {
     const shuffledCities = shuffle(ALL_CITIES);
 
     this.leadersDeck = shuffle(ALL_LEADERS);
