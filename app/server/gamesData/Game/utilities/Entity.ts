@@ -410,7 +410,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     options?: IWaitForSocketEventOptions<Game, Event>,
   ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
-      this.context.game.listenSocketEvent(event, (data, playerIndex) => {
+      return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
         try {
           if (options?.validate?.(data) ?? true) {
             resolve({
