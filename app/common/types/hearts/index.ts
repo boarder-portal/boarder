@@ -1,6 +1,6 @@
-import { IGamePlayer as ICommonPlayer } from 'common/types';
+import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
 import { ICard } from 'common/types/cards';
-import { EGame, ICommonEventMap, IGameOptions as ICommonGameOptions } from 'common/types/game';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   // client events
@@ -22,7 +22,7 @@ export interface IPlayerData extends IGamePlayerData {
   turn: ITurnPlayerData | null;
 }
 
-export interface IPlayer extends ICommonPlayer {
+export interface IPlayer extends IGamePlayer {
   data: IPlayerData;
 }
 

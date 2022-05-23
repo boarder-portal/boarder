@@ -1,4 +1,5 @@
-import { ECommonGameEvent, EGame, TGameInfo } from 'common/types/game';
+import { EGame, TGameInfo } from 'common/types/game';
+import { ECommonGameEvent } from 'common/types';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
 

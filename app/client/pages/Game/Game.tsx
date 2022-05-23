@@ -4,8 +4,8 @@ import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame, ECommonGameEvent, TGameSocketEventMap, TGameInfo, ICommonEventMap } from 'common/types/game';
-import { EPlayerStatus, IGamePlayer } from 'common/types';
+import { EGame, TGameSocketEventMap, TGameInfo } from 'common/types/game';
+import { ECommonGameEvent, EPlayerStatus, ICommonEventMap, IGamePlayer } from 'common/types';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';

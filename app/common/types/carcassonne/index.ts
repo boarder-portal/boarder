@@ -1,5 +1,5 @@
-import { ICoords, IGamePlayer as ICommonPlayer } from 'common/types';
-import { EGame, ICommonEventMap, IGameOptions as ICommonGameOptions } from 'common/types/game';
+import { ICommonEventMap, ICoords, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import { EGame } from 'common/types/game';
 
 export enum EGameEvent {
   GET_GAME_INFO = 'GET_GAME_INFO',
@@ -145,7 +145,7 @@ export interface IPlayerData {
   lastMoves: ICoords[];
 }
 
-export interface IPlayer extends ICommonPlayer {
+export interface IPlayer extends IGamePlayer {
   data: IPlayerData;
 }
 

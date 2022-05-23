@@ -1,3 +1,5 @@
+import { EGame, IGameData, TGameInfo } from 'common/types/game';
+
 export interface IUser {
   login: string;
 }
@@ -21,4 +23,25 @@ export interface IGamePlayer extends IUser {
 export interface ICoords {
   x: number;
   y: number;
+}
+
+export interface IGameOptions {
+  playersCount: number;
+}
+
+export enum ECommonGameEvent {
+  TOGGLE_READY = '$$TOGGLE_READY',
+  UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
+  GET_DATA = '$$GET_DATA',
+  GET_INFO = '$$GET_INFO',
+  END = '$$END',
+}
+
+export interface ICommonEventMap<Game extends EGame> {
+  [ECommonGameEvent.TOGGLE_READY]: undefined;
+
+  [ECommonGameEvent.GET_DATA]: IGameData<Game>;
+  [ECommonGameEvent.GET_INFO]: TGameInfo<Game>;
+  [ECommonGameEvent.UPDATE_PLAYERS]: IGamePlayer[];
+  [ECommonGameEvent.END]: undefined;
 }

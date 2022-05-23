@@ -1,14 +1,6 @@
 import { TSocketEventMap } from 'common/types/socket';
 import { IGamePlayer } from 'common/types/index';
 
-export enum ECommonGameEvent {
-  TOGGLE_READY = '$$TOGGLE_READY',
-  UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
-  GET_DATA = '$$GET_DATA',
-  GET_INFO = '$$GET_INFO',
-  END = '$$END',
-}
-
 export enum EGame {
   PEXESO = 'pexeso',
   SURVIVAL_ONLINE = 'survivalOnline',
@@ -21,23 +13,10 @@ export enum EGame {
 
 export interface IGamesParams {}
 
-export interface ICommonEventMap<Game extends EGame> {
-  [ECommonGameEvent.TOGGLE_READY]: undefined;
-
-  [ECommonGameEvent.GET_DATA]: IGameData<Game>;
-  [ECommonGameEvent.GET_INFO]: TGameInfo<Game>;
-  [ECommonGameEvent.UPDATE_PLAYERS]: IGamePlayer[];
-  [ECommonGameEvent.END]: undefined;
-}
-
 export interface IGameData<Game extends EGame> {
   name: string;
   info: TGameInfo<Game> | null;
   players: IGamePlayer[];
-}
-
-export interface IGameOptions {
-  playersCount: number;
 }
 
 export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];

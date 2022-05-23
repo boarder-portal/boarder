@@ -3,16 +3,8 @@ import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 
-import { EPlayerStatus, IGamePlayer } from 'common/types';
-import {
-  ECommonGameEvent,
-  EGame,
-  IGameData,
-  TGameEvent,
-  TGameEventData,
-  TGameEventListener,
-  TGameOptions,
-} from 'common/types/game';
+import { ECommonGameEvent, EPlayerStatus, IGamePlayer } from 'common/types';
+import { EGame, IGameData, TGameEvent, TGameEventData, TGameEventListener, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
