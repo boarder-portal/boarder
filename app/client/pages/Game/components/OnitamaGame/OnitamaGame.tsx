@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import { ECardType, EGameEvent, EPlayerColor, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
+import { ECardType, EGameClientEvent, EPlayerColor, IMovePieceEvent, IPlayer, TBoard } from 'common/types/onitama';
 import { ICoords } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -78,7 +78,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
         cardIndex: selectedCardIndex,
       };
 
-      io.emit(EGameEvent.MOVE_PIECE, movePieceEvent);
+      io.emit(EGameClientEvent.MOVE_PIECE, movePieceEvent);
     }
   };
 

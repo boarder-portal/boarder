@@ -1,11 +1,18 @@
 import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame, TGameSocketEventMap, TGameInfo } from 'common/types/game';
-import { ECommonGameEvent, EPlayerStatus, ICommonEventMap, IGamePlayer } from 'common/types';
+import { EGame, TGameInfo } from 'common/types/game';
+import {
+  ECommonGameClientEvent,
+  ECommonGameServerEvent,
+  EPlayerStatus,
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGamePlayer,
+} from 'common/types';
+import { TGameClientSocket } from 'common/types/socket';
 
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -25,7 +32,7 @@ import userAtom from 'client/atoms/userAtom';
 import styles from './Game.pcss';
 
 export interface IGameProps<Game extends EGame> {
-  io: Socket<TGameSocketEventMap<Game>>;
+  io: TGameClientSocket<Game>;
   gameInfo: TGameInfo<Game>;
   isGameEnd: boolean;
 }
@@ -54,21 +61,21 @@ function Game<G extends EGame>() {
   const history = useHistory();
   const user = useRecoilValue(userAtom);
 
-  const socket = useSocket<ICommonEventMap<G>>(`/${game}/game/${gameId}`, {
-    [ECommonGameEvent.GET_DATA]: (data) => {
+  const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(`/${game}/game/${gameId}`, {
+    [ECommonGameServerEvent.GET_DATA]: (data) => {
       batchedUpdates(() => {
         setGameInfo(data.info);
         setPlayers(data.players);
         setGameName(data.name);
       });
     },
-    [ECommonGameEvent.GET_INFO as any]: (info: TGameInfo<G>) => {
+    [ECommonGameServerEvent.GET_INFO]: (info) => {
       setGameInfo(info);
     },
-    [ECommonGameEvent.UPDATE_PLAYERS]: (players) => {
+    [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
       setPlayers(players);
     },
-    [ECommonGameEvent.END]: () => {
+    [ECommonGameServerEvent.END]: () => {
       console.log('GAME_END');
 
       endGame();
@@ -83,7 +90,7 @@ function Game<G extends EGame>() {
   });
 
   const handleUserClick = useCallback(() => {
-    socket?.emit(ECommonGameEvent.TOGGLE_READY);
+    socket?.emit(ECommonGameClientEvent.TOGGLE_READY);
   }, [socket]);
 
   if (!socket || !gameName) {

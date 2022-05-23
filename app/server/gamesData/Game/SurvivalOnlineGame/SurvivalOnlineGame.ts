@@ -1,7 +1,14 @@
 import times from 'lodash/times';
 
 import { EGame } from 'common/types/game';
-import { EBiome, EDirection, EGameEvent, ICell, IGame, IPlayer } from 'common/types/survivalOnline';
+import {
+  EBiome,
+  EDirection,
+  EGameServerEvent,
+  ICell,
+  IGame,
+  IPlayer,
+} from 'common/types/survivalOnline';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
@@ -184,7 +191,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
 
   sendGameUpdate(cells: IServerCell[], withPlayers: boolean): void {
     if (cells.length) {
-      this.sendSocketEvent(EGameEvent.UPDATE_GAME, {
+      this.sendSocketEvent(EGameServerEvent.UPDATE_GAME, {
         cells: cells.map(this.transformCell),
         players: withPlayers ? this.getGamePlayers() : null,
       });

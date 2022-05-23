@@ -7,7 +7,7 @@ import { SETS } from 'common/constants/games/pexeso';
 
 import { EGame } from 'common/types/game';
 import {
-  EGameEvent,
+  EGameServerEvent,
   EShuffleType,
   ICard,
   IGame,
@@ -84,7 +84,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
         isGameEnd = this.cards.every((card) => !card.isInGame);
 
-        this.sendSocketEvent(EGameEvent.REMOVE_CARDS, {
+        this.sendSocketEvent(EGameServerEvent.REMOVE_CARDS, {
           indexes: openedCardsIndexes,
           shuffleIndexes:
             isGameEnd || this.options.shuffleOptions?.type === EShuffleType.TURNED
@@ -94,13 +94,13 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
       } else {
         this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
 
-        this.sendSocketEvent(EGameEvent.HIDE_CARDS, {
+        this.sendSocketEvent(EGameServerEvent.HIDE_CARDS, {
           indexes: openedCardsIndexes,
           shuffleIndexes: this.shuffleCards(openedCardsIndexes),
         });
       }
 
-      this.sendSocketEvent(EGameEvent.UPDATE_PLAYERS, {
+      this.sendSocketEvent(EGameServerEvent.UPDATE_PLAYERS, {
         players: this.getGamePlayers(),
         activePlayerIndex: this.activePlayerIndex,
       });

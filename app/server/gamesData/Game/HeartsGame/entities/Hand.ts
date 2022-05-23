@@ -7,7 +7,7 @@ import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { DECKS } from 'server/gamesData/Game/HeartsGame/constants';
 
 import { EGame } from 'common/types/game';
-import { EGameEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
+import { EGameClientEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
@@ -62,7 +62,7 @@ export default class Hand extends Entity<EGame.HEARTS, number[]> {
 
     if (this.stage === EHandStage.PASS) {
       while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
-        const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameEvent.CHOOSE_CARD);
+        const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.CHOOSE_CARD);
 
         const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
 

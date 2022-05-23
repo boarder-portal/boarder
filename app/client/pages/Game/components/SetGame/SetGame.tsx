@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import chunk from 'lodash/chunk';
 
-import { EGameEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
+import { EGameClientEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
@@ -50,13 +50,13 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
 
         console.log('SEND_SET', data);
 
-        io.emit(EGameEvent.SEND_SET, data);
+        io.emit(EGameClientEvent.SEND_SET, data);
       }
     }
   });
 
   const handleNoSetClick = useCallback(() => {
-    io.emit(EGameEvent.SEND_NO_SET);
+    io.emit(EGameClientEvent.SEND_NO_SET);
   }, [io]);
 
   useEffect(() => {

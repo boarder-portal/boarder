@@ -5,7 +5,7 @@ import ArrowLeft from '@material-ui/icons/ArrowLeft';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
-import { EGameEvent, EHandStage, EPassDirection, IPlayer } from 'common/types/hearts';
+import { EGameClientEvent, EHandStage, EPassDirection, IPlayer } from 'common/types/hearts';
 import { ESuit } from 'common/types/cards';
 import { EGame } from 'common/types/game';
 
@@ -45,7 +45,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
 
   const selectCard = useCallback(
     (cardIndex: number) => {
-      io.emit(EGameEvent.CHOOSE_CARD, cardIndex);
+      io.emit(EGameClientEvent.CHOOSE_CARD, cardIndex);
     },
     [io],
   );
@@ -59,7 +59,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
   }, [passDirection]);
 
   useEffect(() => {
-    console.log(EGameEvent.GAME_INFO, gameInfo);
+    console.log(gameInfo);
 
     batchedUpdates(() => {
       setPlayers(gameInfo.players);

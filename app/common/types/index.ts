@@ -29,19 +29,24 @@ export interface IGameOptions {
   playersCount: number;
 }
 
-export enum ECommonGameEvent {
+export enum ECommonGameClientEvent {
   TOGGLE_READY = '$$TOGGLE_READY',
+}
+
+export enum ECommonGameServerEvent {
   UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
   GET_DATA = '$$GET_DATA',
   GET_INFO = '$$GET_INFO',
   END = '$$END',
 }
 
-export interface ICommonEventMap<Game extends EGame> {
-  [ECommonGameEvent.TOGGLE_READY]: undefined;
+export interface ICommonClientEventMap<Game extends EGame> {
+  [ECommonGameClientEvent.TOGGLE_READY]: undefined;
+}
 
-  [ECommonGameEvent.GET_DATA]: IGameData<Game>;
-  [ECommonGameEvent.GET_INFO]: TGameInfo<Game>;
-  [ECommonGameEvent.UPDATE_PLAYERS]: IGamePlayer[];
-  [ECommonGameEvent.END]: undefined;
+export interface ICommonServerEventMap<Game extends EGame> {
+  [ECommonGameServerEvent.GET_DATA]: IGameData<Game>;
+  [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
+  [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer[];
+  [ECommonGameServerEvent.END]: undefined;
 }

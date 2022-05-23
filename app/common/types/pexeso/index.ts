@@ -1,9 +1,16 @@
-import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import {
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGameOptions as ICommonGameOptions,
+  IGamePlayer,
+} from 'common/types';
 import { EGame } from 'common/types/game';
 
-export enum EGameEvent {
-  GAME_INFO = 'GAME_INFO',
-  GET_GAME_INFO = 'GET_GAME_INFO',
+export enum EGameClientEvent {
+  OPEN_CARD = 'OPEN_CARD',
+}
+
+export enum EGameServerEvent {
   OPEN_CARD = 'OPEN_CARD',
   HIDE_CARDS = 'HIDE_CARDS',
   REMOVE_CARDS = 'REMOVE_CARDS',
@@ -105,20 +112,22 @@ export interface IRemoveCardsEvent {
   shuffleIndexes: IShuffleCardsIndexes | null;
 }
 
-export interface IEventMap extends ICommonEventMap<EGame.PEXESO> {
-  [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.OPEN_CARD]: number;
+export interface IClientEventMap extends ICommonClientEventMap<EGame.PEXESO> {
+  [EGameClientEvent.OPEN_CARD]: number;
+}
 
-  [EGameEvent.GAME_INFO]: IGame;
-  [EGameEvent.UPDATE_PLAYERS]: IUpdatePlayersEvent;
-  [EGameEvent.HIDE_CARDS]: IHideCardsEvent;
-  [EGameEvent.REMOVE_CARDS]: IRemoveCardsEvent;
+export interface IServerEventMap extends ICommonServerEventMap<EGame.PEXESO> {
+  [EGameServerEvent.OPEN_CARD]: number;
+  [EGameServerEvent.UPDATE_PLAYERS]: IUpdatePlayersEvent;
+  [EGameServerEvent.HIDE_CARDS]: IHideCardsEvent;
+  [EGameServerEvent.REMOVE_CARDS]: IRemoveCardsEvent;
 }
 
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.PEXESO]: {
-      eventMap: IEventMap;
+      clientEventMap: IClientEventMap;
+      serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
     };

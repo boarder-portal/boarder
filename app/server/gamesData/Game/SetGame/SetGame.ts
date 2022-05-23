@@ -16,7 +16,7 @@ import {
   ECardColor,
   ECardFill,
   ECardShape,
-  EGameEvent,
+  EGameClientEvent,
   ICard,
   IGame,
   IPlayer,
@@ -61,10 +61,10 @@ export default class SetGame extends GameEntity<EGame.SET> {
 
     while (true) {
       const { data: event, playerIndex } = yield* this.race([
-        this.waitForSocketEvent(EGameEvent.SEND_SET, {
+        this.waitForSocketEvent(EGameClientEvent.SEND_SET, {
           validate: this.validateSendSetEvent,
         }),
-        this.waitForSocketEvent(EGameEvent.SEND_NO_SET, {
+        this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET, {
           validate: (data) => data === undefined,
         }),
       ]);

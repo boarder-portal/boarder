@@ -1,11 +1,16 @@
-import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import {
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGameOptions as ICommonGameOptions,
+  IGamePlayer,
+} from 'common/types';
 import { EGame } from 'common/types/game';
 
-export enum EGameEvent {
-  GET_GAME_INFO = 'GET_GAME_INFO',
+export enum EGameClientEvent {
   MOVE_PLAYER = 'MOVE_PLAYER',
+}
 
-  GAME_INFO = 'GAME_INFO',
+export enum EGameServerEvent {
   UPDATE_GAME = 'UPDATE_GAME',
 }
 
@@ -90,18 +95,19 @@ export interface IUpdateGameEvent {
   cells: ICell[];
 }
 
-export interface IEventMap extends ICommonEventMap<EGame.SURVIVAL_ONLINE> {
-  [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.MOVE_PLAYER]: EDirection;
+export interface IClientEventMap extends ICommonClientEventMap<EGame.SURVIVAL_ONLINE> {
+  [EGameClientEvent.MOVE_PLAYER]: EDirection;
+}
 
-  [EGameEvent.GAME_INFO]: IGameInfoEvent;
-  [EGameEvent.UPDATE_GAME]: IUpdateGameEvent;
+export interface IServerEventMap extends ICommonServerEventMap<EGame.SURVIVAL_ONLINE> {
+  [EGameServerEvent.UPDATE_GAME]: IUpdateGameEvent;
 }
 
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.SURVIVAL_ONLINE]: {
-      eventMap: IEventMap;
+      clientEventMap: IClientEventMap;
+      serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
     };

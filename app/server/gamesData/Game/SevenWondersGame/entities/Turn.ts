@@ -3,7 +3,7 @@ import random from 'lodash/random';
 import { EGame } from 'common/types/game';
 import {
   ECardActionType,
-  EGameEvent,
+  EGameClientEvent,
   EGamePhase,
   EWaitingActionType,
   IExecuteActionEvent,
@@ -59,8 +59,8 @@ export default class Turn extends Entity<EGame.SEVEN_WONDERS, number[]> {
         );
 
         const { data: event, playerIndex } = yield* this.race([
-          this.waitForSocketEvent(EGameEvent.EXECUTE_ACTION),
-          this.waitForSocketEvent(EGameEvent.CANCEL_ACTION),
+          this.waitForSocketEvent(EGameClientEvent.EXECUTE_ACTION),
+          this.waitForSocketEvent(EGameClientEvent.CANCEL_ACTION),
           ...(firstWaitingBotIndex === -1 ? [] : [this.makeRandomMove(firstWaitingBotIndex)]),
         ]);
 

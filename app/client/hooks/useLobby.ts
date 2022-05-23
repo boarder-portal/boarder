@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { useCallback, useState } from 'react';
 
-import { ELobbyEvent, ILobbyEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
+import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
 import { EGame, TGameOptions } from 'common/types/game';
 
 import useSocket from 'client/hooks/useSocket';
@@ -26,7 +26,7 @@ export default function useLobby<Game extends EGame>(
     history.push(`/${game}/game/${gameId}`);
   });
 
-  const socket = useSocket<ILobbyEventMap<Game>>(`/${game}/lobby`, {
+  const socket = useSocket<ILobbyClientEventMap<Game>, ILobbyServerEventMap<Game>>(`/${game}/lobby`, {
     [ELobbyEvent.UPDATE]: (lobbyData) => {
       setLobby(lobbyData);
     },

@@ -8,7 +8,7 @@ import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/Carcas
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import {
-  EGameEvent,
+  EGameClientEvent,
   EMeepleType,
   IAttachCardEvent,
   ICard,
@@ -266,7 +266,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
 
       hideSelectedCard();
 
-      io.emit(EGameEvent.ATTACH_CARD, attachCardEvent);
+      io.emit(EGameClientEvent.ATTACH_CARD, attachCardEvent);
     },
     [board, hideSelectedCard, io, placedCardCoords, player, selectedCard, selectedCardIndex],
   );
@@ -354,7 +354,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   });
 
   useEffect(() => {
-    console.log(EGameEvent.GAME_INFO, gameInfo);
+    console.log(gameInfo);
 
     setPlayers(gameInfo.players);
     setActivePlayerIndex(gameInfo.activePlayerIndex);

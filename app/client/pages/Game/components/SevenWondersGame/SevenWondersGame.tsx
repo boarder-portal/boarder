@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EAgePhase, EGameEvent, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
+import { EAgePhase, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EGame } from 'common/types/game';
 
@@ -50,7 +50,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   );
 
   useEffect(() => {
-    console.log(EGameEvent.GAME_INFO, gameInfo);
+    console.log(gameInfo);
 
     batchedUpdates(() => {
       setPlayers(gameInfo.players);

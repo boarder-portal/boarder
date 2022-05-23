@@ -2,7 +2,7 @@ import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 
 import { EGame } from 'common/types/game';
-import { ECardType, EGameEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
+import { ECardType, EGameClientEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { equalsCoords } from 'common/utilities/coords';
@@ -38,7 +38,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
     this.fifthCard = getCard();
 
     while (true) {
-      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PIECE, {
+      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(EGameClientEvent.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
       });
 

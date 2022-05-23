@@ -6,7 +6,14 @@ import classNames from 'classnames';
 
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
-import { EFieldLayout, EGameEvent, ICard, IPlayer, IShuffleCardsIndexes } from 'common/types/pexeso';
+import {
+  EFieldLayout,
+  EGameClientEvent,
+  EGameServerEvent,
+  ICard,
+  IPlayer,
+  IShuffleCardsIndexes,
+} from 'common/types/pexeso';
 import { ICoords } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -78,7 +85,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   }, [players, user]);
 
   useSocket(io, {
-    [EGameEvent.OPEN_CARD]: (cardIndex) => {
+    [EGameServerEvent.OPEN_CARD]: (cardIndex) => {
       setCards((cards) => {
         cards[cardIndex].closed = false;
         cards[cardIndex].opened = true;
@@ -87,7 +94,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
         return [...cards];
       });
     },
-    [EGameEvent.HIDE_CARDS]: ({ indexes, shuffleIndexes }) => {
+    [EGameServerEvent.HIDE_CARDS]: ({ indexes, shuffleIndexes }) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isOpen = false;
@@ -100,7 +107,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       });
       setHighlightedCardsIndexes([]);
     },
-    [EGameEvent.REMOVE_CARDS]: ({ indexes, shuffleIndexes }) => {
+    [EGameServerEvent.REMOVE_CARDS]: ({ indexes, shuffleIndexes }) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isInGame = false;
@@ -112,7 +119,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       });
       setHighlightedCardsIndexes([]);
     },
-    [EGameEvent.UPDATE_PLAYERS]: ({ players, activePlayerIndex }) => {
+    [EGameServerEvent.UPDATE_PLAYERS]: ({ players, activePlayerIndex }) => {
       setPlayers(players);
       setActivePlayerIndex(activePlayerIndex);
     },
@@ -126,7 +133,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
 
       setHighlightedCardsIndexes([]);
 
-      io.emit(EGameEvent.OPEN_CARD, cardIndex);
+      io.emit(EGameClientEvent.OPEN_CARD, cardIndex);
     },
     [activePlayerIndex, io, player],
   );

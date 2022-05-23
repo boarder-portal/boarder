@@ -1,15 +1,17 @@
-import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import {
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGameOptions as ICommonGameOptions,
+  IGamePlayer,
+} from 'common/types';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { EGame } from 'common/types/game';
 
-export enum EGameEvent {
-  GET_GAME_INFO = 'GET_GAME_INFO',
+export enum EGameClientEvent {
   EXECUTE_ACTION = 'EXECUTE_ACTION',
   CANCEL_ACTION = 'CANCEL_ACTION',
-
-  GAME_INFO = 'GAME_INFO',
 }
 
 export enum EScientificSymbol {
@@ -236,18 +238,18 @@ export enum EAgePhase {
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',
 }
 
-export interface IEventMap extends ICommonEventMap<EGame.SEVEN_WONDERS> {
-  [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.EXECUTE_ACTION]: IExecuteActionEvent;
-  [EGameEvent.CANCEL_ACTION]: undefined;
-
-  [EGameEvent.GAME_INFO]: IGame;
+export interface IClientEventMap extends ICommonClientEventMap<EGame.SEVEN_WONDERS> {
+  [EGameClientEvent.EXECUTE_ACTION]: IExecuteActionEvent;
+  [EGameClientEvent.CANCEL_ACTION]: undefined;
 }
+
+export interface IServerEventMap extends ICommonServerEventMap<EGame.SEVEN_WONDERS> {}
 
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.SEVEN_WONDERS]: {
-      eventMap: IEventMap;
+      clientEventMap: IClientEventMap;
+      serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
     };

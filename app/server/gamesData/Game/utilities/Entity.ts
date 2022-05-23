@@ -1,4 +1,11 @@
-import { EGame, TGameEvent, TGameEventData, TGameOptions } from 'common/types/game';
+import {
+  EGame,
+  TGameClientEvent,
+  TGameClientEventData,
+  TGameOptions,
+  TGameServerEvent,
+  TGameServerEventData,
+} from 'common/types/game';
 import { IGamePlayer } from 'common/types';
 
 import Game, { ISendSocketEventOptions } from 'server/gamesData/Game/Game';
@@ -40,19 +47,19 @@ type TAllEffectReturnValue<T extends TGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
 };
 
-export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>> {
-  validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
+export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
+  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
 }
 
-export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameEvent<Game>> {
-  data: TGameEventData<Game, Event>;
+export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameClientEvent<Game>> {
+  data: TGameClientEventData<Game, Event>;
   playerIndex: number;
 }
 
-export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameEvent<Game>>
+export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
   extends IWaitForSocketEventOptions<Game, Event> {
   playerIndex: number;
-  validate?(data: unknown): asserts data is TGameEventData<Game, Event>;
+  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
 }
 
 export interface ITrigger<Value = void> {
@@ -332,10 +339,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     })());
   }
 
-  sendSocketEvent<Event extends TGameEvent<Game>>(
+  sendSocketEvent<Event extends TGameServerEvent<Game>>(
     event: Event,
-    data: TGameEventData<Game, Event>,
-    options?: ISendSocketEventOptions,
+    data: TGameServerEventData<Game, Event>,
+    options?: ISendSocketEventOptions<Game>,
   ): void {
     this.context.game.sendSocketEvent(event, data, options);
   }
@@ -384,10 +391,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return null;
   }
 
-  *waitForPlayerSocketEvent<Event extends TGameEvent<Game>>(
+  *waitForPlayerSocketEvent<Event extends TGameClientEvent<Game>>(
     event: Event,
     options: IWaitForPlayerSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<TGameEventData<Game, Event>> {
+  ): TEffectGenerator<TGameClientEventData<Game, Event>> {
     return yield (resolve) => {
       return this.context.game.listenSocketEvent(
         event,
@@ -405,7 +412,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *waitForSocketEvent<Event extends TGameEvent<Game>>(
+  *waitForSocketEvent<Event extends TGameClientEvent<Game>>(
     event: Event,
     options?: IWaitForSocketEventOptions<Game, Event>,
   ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {

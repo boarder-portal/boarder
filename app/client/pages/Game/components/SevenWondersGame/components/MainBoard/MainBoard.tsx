@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ArrowLeft from '@material-ui/icons/ArrowLeft';
 import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
-import { Socket } from 'socket.io-client';
 
 import {
   EAgePhase,
   ECardActionType,
-  EGameEvent,
+  EGameClientEvent,
   EGamePhase,
   ENeighborSide,
   IExecuteActionEvent,
@@ -18,7 +17,8 @@ import {
 import { ICard } from 'common/types/sevenWonders/cards';
 import { ISevenWondersCourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { EGame, TGameSocketEventMap } from 'common/types/game';
+import { EGame } from 'common/types/game';
+import { TGameClientSocket } from 'common/types/socket';
 
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 import getHand from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getHand';
@@ -45,7 +45,7 @@ import styles from './MainBoard.pcss';
 
 interface IMainBoardProps {
   className?: string;
-  io: Socket<TGameSocketEventMap<EGame.SEVEN_WONDERS>>;
+  io: TGameClientSocket<EGame.SEVEN_WONDERS>;
   player: IPlayer;
   discard: ICard[];
   age: number | null;
@@ -84,9 +84,9 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
         payments,
       };
 
-      console.log(EGameEvent.EXECUTE_ACTION, data);
+      console.log(EGameClientEvent.EXECUTE_ACTION, data);
 
-      io.emit(EGameEvent.EXECUTE_ACTION, data);
+      io.emit(EGameClientEvent.EXECUTE_ACTION, data);
     },
     [io],
   );
@@ -94,7 +94,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const cancelCard = useCallback(() => {
     playSound(SELECT_SOUND);
 
-    io.emit(EGameEvent.CANCEL_ACTION);
+    io.emit(EGameClientEvent.CANCEL_ACTION);
   }, [io]);
 
   const handleClickHandSwitcher = useCallback(() => {

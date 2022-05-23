@@ -1,10 +1,19 @@
-import { Namespace, Socket } from 'socket.io';
 import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 
-import { ECommonGameEvent, EPlayerStatus, IGamePlayer } from 'common/types';
-import { EGame, IGameData, TGameEvent, TGameEventData, TGameEventListener, TGameOptions } from 'common/types/game';
+import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePlayer } from 'common/types';
+import {
+  EGame,
+  IGameData,
+  TGameClientEvent,
+  TGameClientEventData,
+  TGameClientEventListener,
+  TGameOptions,
+  TGameServerEvent,
+  TGameServerEventData,
+} from 'common/types/game';
+import { TGameNamespace, TGameServerSocket } from 'common/types/socket';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
@@ -20,12 +29,12 @@ import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGa
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 
-export interface IServerGamePlayer extends IGamePlayer {
-  sockets: Set<Socket>;
+export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
+  sockets: Set<TGameServerSocket<Game>>;
 }
 
-export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
-  data: TGameEventData<Game, Event>,
+export type TPlayerClientEventListener<Game extends EGame, Event extends TGameClientEvent<Game>> = (
+  data: TGameClientEventData<Game, Event>,
   playerIndex: number,
 ) => unknown;
 
@@ -37,14 +46,14 @@ export interface IGameCreateOptions<Game extends EGame> {
   onUpdateGame(gameId: string): void;
 }
 
-interface IBatchedAction<Game extends EGame, Event extends TGameEvent<Game>> {
+interface IBatchedAction<Game extends EGame, Event extends TGameServerEvent<Game>> {
   event: Event;
-  data: TGameEventData<Game, Event>;
-  socket?: Socket;
+  data: TGameServerEventData<Game, Event>;
+  socket?: TGameServerSocket<Game>;
 }
 
-export interface ISendSocketEventOptions {
-  socket?: Socket;
+export interface ISendSocketEventOptions<Game extends EGame> {
+  socket?: TGameServerSocket<Game>;
   batch?: boolean;
 }
 
@@ -61,22 +70,22 @@ const GAME_ENTITIES_MAP: {
 };
 
 class Game<Game extends EGame> {
-  io: Namespace;
+  io: TGameNamespace<Game>;
   game: Game;
   id: string;
   name: string;
-  players: IServerGamePlayer[];
+  players: IServerGamePlayer<Game>[];
   options: TGameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
   deleted = false;
-  batchedActions: IBatchedAction<Game, TGameEvent<Game>>[] = [];
+  batchedActions: IBatchedAction<Game, TGameServerEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
   deleteGameTimeout: NodeJS.Timeout | null = null;
   onDeleteGame: (gameId: string) => void;
   onUpdateGame: (gameId: string) => void;
 
   temporaryListeners: {
-    [Event in TGameEvent<Game>]?: Set<TGameEventListener<Game, Event>>;
+    [Event in TGameClientEvent<Game>]?: Set<TGameClientEventListener<Game, Event>>;
   } = {};
 
   constructor({ game, name, options, onDeleteGame, onUpdateGame }: IGameCreateOptions<Game>) {
@@ -92,7 +101,7 @@ class Game<Game extends EGame> {
     this.io.use(ioSessionMiddleware);
     this.io.on('connection', (socket) => {
       const user = socket.user;
-      let player: IServerGamePlayer | undefined;
+      let player: IServerGamePlayer<Game> | undefined;
 
       if (user) {
         player = this.getPlayerByLogin(user.login);
@@ -119,11 +128,11 @@ class Game<Game extends EGame> {
 
       forEach(this.temporaryListeners, (listeners, event) => {
         listeners?.forEach((listener) => {
-          socket.on(event, listener);
+          socket.on(event as any, listener as any);
         });
       });
 
-      socket.on(ECommonGameEvent.TOGGLE_READY, () => {
+      (socket as TGameServerSocket<EGame>).on(ECommonGameClientEvent.TOGGLE_READY, () => {
         if (!player || this.hasStarted()) {
           return;
         }
@@ -133,7 +142,7 @@ class Game<Game extends EGame> {
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
           this.start();
         } else {
-          this.io.emit(ECommonGameEvent.UPDATE_PLAYERS, this.getClientPlayers());
+          (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
         }
 
         this.onUpdateGame(this.id);
@@ -192,10 +201,10 @@ class Game<Game extends EGame> {
   }
 
   end(): void {
-    this.io.emit(ECommonGameEvent.END);
+    (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.END);
   }
 
-  getPlayerByLogin(login: string | undefined): IServerGamePlayer | undefined {
+  getPlayerByLogin(login: string | undefined): IServerGamePlayer<Game> | undefined {
     return this.players.find((player) => player.login === login);
   }
 
@@ -231,15 +240,15 @@ class Game<Game extends EGame> {
     return entity;
   }
 
-  listenSocketEvent<Event extends TGameEvent<Game>>(
+  listenSocketEvent<Event extends TGameClientEvent<Game>>(
     event: Event,
-    listener: TPlayerEventListener<Game, Event>,
+    listener: TPlayerClientEventListener<Game, Event>,
     playerIndex?: number,
   ): () => void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const game = this;
 
-    const playerListener = function (this: Socket, data: TGameEventData<Game, Event>) {
+    const playerListener = function (this: TGameServerSocket<Game>, data: TGameClientEventData<Game, Event>) {
       const socketPlayer = game.getPlayerByLogin(this.user?.login);
 
       if (!socketPlayer) {
@@ -266,23 +275,25 @@ class Game<Game extends EGame> {
     };
   }
 
-  sendGameData(socket?: Socket): void {
+  sendGameData(socket?: TGameServerSocket<Game>): void {
     const gameData: IGameData<Game> = {
       name: this.name,
       info: this.gameEntity?.getGameInfo() ?? null,
       players: this.getClientPlayers(),
     };
 
-    (socket ?? this.io).emit(ECommonGameEvent.GET_DATA, gameData);
+    // @ts-ignore
+    (socket ?? this.io).emit(ECommonGameServerEvent.GET_DATA, gameData);
   }
 
-  sendSocketEvent<Event extends TGameEvent<Game>>(
+  sendSocketEvent<Event extends TGameServerEvent<Game>>(
     event: Event,
-    data: TGameEventData<Game, Event>,
-    options?: ISendSocketEventOptions,
+    data: TGameServerEventData<Game, Event>,
+    options?: ISendSocketEventOptions<Game>,
   ): void {
     if (!options?.batch) {
-      (options?.socket ?? this.io).emit(event, data);
+      // @ts-ignore
+      (options?.socket ?? this.io).emit(event, data as any);
 
       return;
     }
@@ -305,6 +316,7 @@ class Game<Game extends EGame> {
     if (!this.batchedActionsTimeout) {
       this.batchedActionsTimeout = setTimeout(() => {
         this.batchedActions.forEach(({ event, data, socket }) => {
+          // @ts-ignore
           (socket ?? this.io).emit(event, data);
         });
 

@@ -1,5 +1,5 @@
 import { EGame } from 'common/types/game';
-import { EGameEvent, ITurn } from 'common/types/pexeso';
+import { EGameClientEvent, EGameServerEvent, ITurn } from 'common/types/pexeso';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
 
@@ -24,14 +24,14 @@ export default class Turn extends Entity<EGame.PEXESO, number[]> {
 
   *lifecycle() {
     while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
-      const cardIndex = yield* this.waitForPlayerSocketEvent(EGameEvent.OPEN_CARD, {
+      const cardIndex = yield* this.waitForPlayerSocketEvent(EGameClientEvent.OPEN_CARD, {
         playerIndex: this.activePlayerIndex,
         validate: this.validateOpenCardEvent,
       });
 
       this.openedCardsIndexes.push(cardIndex);
 
-      this.sendSocketEvent(EGameEvent.OPEN_CARD, cardIndex);
+      this.sendSocketEvent(EGameServerEvent.OPEN_CARD, cardIndex);
     }
 
     return this.openedCardsIndexes;

@@ -1,12 +1,14 @@
-import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import {
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGameOptions as ICommonGameOptions,
+  IGamePlayer,
+} from 'common/types';
 import { EGame } from 'common/types/game';
 
-export enum EGameEvent {
-  GET_GAME_INFO = 'GET_GAME_INFO',
+export enum EGameClientEvent {
   SEND_SET = 'SEND_SET',
   SEND_NO_SET = 'SEND_NO_SET',
-
-  GAME_INFO = 'GAME_INFO',
 }
 
 export interface IGameOptions extends ICommonGameOptions {}
@@ -54,18 +56,18 @@ export interface ISendSetEvent {
   cardsIds: number[];
 }
 
-export interface IEventMap extends ICommonEventMap<EGame.SET> {
-  [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.SEND_SET]: ISendSetEvent;
-  [EGameEvent.SEND_NO_SET]: undefined;
-
-  [EGameEvent.GAME_INFO]: IGame;
+export interface IClientEventMap extends ICommonClientEventMap<EGame.SET> {
+  [EGameClientEvent.SEND_SET]: ISendSetEvent;
+  [EGameClientEvent.SEND_NO_SET]: undefined;
 }
+
+export interface IServerEventMap extends ICommonServerEventMap<EGame.SET> {}
 
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.SET]: {
-      eventMap: IEventMap;
+      clientEventMap: IClientEventMap;
+      serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
     };

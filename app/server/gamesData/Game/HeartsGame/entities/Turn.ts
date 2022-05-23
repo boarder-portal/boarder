@@ -1,6 +1,6 @@
 import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/cards';
-import { EGameEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
+import { EGameClientEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
@@ -42,7 +42,7 @@ export default class Turn extends Entity<EGame.HEARTS, ITurnResult> {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
-        chosenCardIndex = yield* this.waitForPlayerSocketEvent(EGameEvent.CHOOSE_CARD, {
+        chosenCardIndex = yield* this.waitForPlayerSocketEvent(EGameClientEvent.CHOOSE_CARD, {
           playerIndex: this.activePlayerIndex,
         });
       }

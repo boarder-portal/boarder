@@ -1,5 +1,5 @@
 import { EGame } from 'common/types/game';
-import { EDirection, EGameEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
+import { EDirection, EGameClientEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
 
@@ -32,7 +32,7 @@ export default class Player extends Entity<EGame.SURVIVAL_ONLINE> {
     this.game.placeEntity(this, this.cell);
 
     while (true) {
-      const direction = yield* this.waitForPlayerSocketEvent(EGameEvent.MOVE_PLAYER, {
+      const direction = yield* this.waitForPlayerSocketEvent(EGameClientEvent.MOVE_PLAYER, {
         playerIndex: this.index,
       });
 

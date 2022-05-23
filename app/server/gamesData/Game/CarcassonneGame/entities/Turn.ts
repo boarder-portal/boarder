@@ -1,5 +1,5 @@
 import { EGame } from 'common/types/game';
-import { EGameEvent, ITurn } from 'common/types/carcassonne';
+import { EGameClientEvent, ITurn } from 'common/types/carcassonne';
 
 import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
@@ -38,9 +38,12 @@ export default class Turn extends Entity<EGame.CARCASSONNE, boolean> {
     let isBuilderMove = false;
 
     while (true) {
-      const { cardIndex, coords, rotation, meeple } = yield* this.waitForPlayerSocketEvent(EGameEvent.ATTACH_CARD, {
-        playerIndex: this.activePlayerIndex,
-      });
+      const { cardIndex, coords, rotation, meeple } = yield* this.waitForPlayerSocketEvent(
+        EGameClientEvent.ATTACH_CARD,
+        {
+          playerIndex: this.activePlayerIndex,
+        },
+      );
 
       const attachedToBuilder = this.game.attachPlayerCard({
         cardIndex,

@@ -1,14 +1,14 @@
-import { ICommonEventMap, IGameOptions as ICommonGameOptions, IGamePlayer } from 'common/types';
+import {
+  ICommonClientEventMap,
+  ICommonServerEventMap,
+  IGameOptions as ICommonGameOptions,
+  IGamePlayer,
+} from 'common/types';
 import { ICard } from 'common/types/cards';
 import { EGame } from 'common/types/game';
 
-export enum EGameEvent {
-  // client events
-  GET_GAME_INFO = 'GET_GAME_INFO',
+export enum EGameClientEvent {
   CHOOSE_CARD = 'CHOOSE_CARD',
-
-  // server events
-  GAME_INFO = 'GAME_INFO',
 }
 
 export interface IGameOptions extends ICommonGameOptions {}
@@ -65,17 +65,17 @@ export enum EPassDirection {
   NONE = 'NONE',
 }
 
-export interface IEventMap extends ICommonEventMap<EGame.HEARTS> {
-  [EGameEvent.GET_GAME_INFO]: undefined;
-  [EGameEvent.CHOOSE_CARD]: number;
-
-  [EGameEvent.GAME_INFO]: IGame;
+export interface IClientEventMap extends ICommonClientEventMap<EGame.HEARTS> {
+  [EGameClientEvent.CHOOSE_CARD]: number;
 }
+
+export interface IServerEventMap extends ICommonServerEventMap<EGame.HEARTS> {}
 
 declare module 'common/types/game' {
   interface IGamesParams {
     [EGame.HEARTS]: {
-      eventMap: IEventMap;
+      clientEventMap: IClientEventMap;
+      serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
     };

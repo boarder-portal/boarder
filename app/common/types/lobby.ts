@@ -7,9 +7,11 @@ export enum ELobbyEvent {
   GAME_CREATED = 'GAME_CREATED',
 }
 
-export interface ILobbyEventMap<Game extends EGame> {
+export interface ILobbyClientEventMap<Game extends EGame> {
   [ELobbyEvent.CREATE_GAME]: TGameOptions<Game>;
+}
 
+export interface ILobbyServerEventMap<Game extends EGame> {
   [ELobbyEvent.GAME_CREATED]: string;
   [ELobbyEvent.UPDATE]: ILobbyUpdateEvent<Game>;
 }
