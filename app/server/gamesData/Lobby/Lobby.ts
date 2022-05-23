@@ -1,86 +1,62 @@
-import { Namespace } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 
 import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
-import { EPlayerStatus } from 'common/types';
 import { EGame, TGameOptions } from 'common/types/game';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
-import Room from 'server/gamesData/Room/Room';
+import Game from 'server/gamesData/Game/Game';
 import ioInstance from 'server/io';
 
-class Lobby<Game extends EGame> {
-  rooms: Room<Game>[] = [];
+class Lobby<G extends EGame> {
+  games: Game<G>[] = [];
   io: Namespace;
-  game: Game;
+  game: G;
 
-  constructor({ game }: { game: Game }) {
+  constructor({ game }: { game: G }) {
     this.io = ioInstance.of(`/${game}/lobby`);
     this.game = game;
 
     this.io.use(ioSessionMiddleware);
     this.io.on('connection', (socket) => {
-      this.sendLobbyUpdate();
+      this.sendLobbyUpdate(socket);
 
-      socket.on(ELobbyEvent.CREATE_ROOM, (options: TGameOptions<Game>) => {
-        this.rooms.push(
-          new Room({
+      socket.on(ELobbyEvent.CREATE_GAME, (options: TGameOptions<G>) => {
+        this.games.push(
+          new Game({
             game,
             options,
-            onUpdateRoom: this.sendLobbyUpdate,
-            onDeleteRoom: this.deleteRoom,
+            onDeleteGame: this.deleteGame,
+            onUpdateGame: () => this.sendLobbyUpdate(),
           }),
         );
-
-        this.sendLobbyUpdate();
-      });
-
-      socket.on(ELobbyEvent.ENTER_ROOM, (roomId: string) => {
-        const room = this.rooms.find(({ id }) => id === roomId);
-        const { user } = socket;
-
-        if (!room || !user || room.players.length === room.options.playersCount) {
-          return;
-        }
-
-        const player = room.players.find(({ login }) => login === user.login);
-
-        if (player) {
-          return;
-        }
-
-        room.players.push({
-          ...user,
-          status: EPlayerStatus.NOT_READY,
-          index: room.players.length,
-        });
 
         this.sendLobbyUpdate();
       });
     });
   }
 
-  sendLobbyUpdate = (): void => {
-    const updatedData: ILobbyUpdateEvent<Game> = {
-      rooms: this.rooms.map(({ id, players, options, game }) => ({
-        id,
-        players,
-        gameIsStarted: Boolean(game),
-        options,
+  sendLobbyUpdate = (socket?: Socket): void => {
+    const updatedData: ILobbyUpdateEvent<G> = {
+      games: this.games.map((game) => ({
+        id: game.id,
+        players: game.players,
+        hasStarted: game.hasStarted(),
+        options: game.options,
       })),
     };
 
-    this.io.emit(ELobbyEvent.UPDATE, updatedData);
+    (socket ?? this.io).emit(ELobbyEvent.UPDATE, updatedData);
   };
 
-  deleteRoom = (id: string): void => {
-    const roomIndex = this.rooms.findIndex(({ id: roomId }) => roomId === id);
+  deleteGame = (id: string): void => {
+    const gameIndex = this.games.findIndex((game) => game.id === id);
 
-    if (roomIndex === -1) {
+    if (gameIndex === -1) {
       return;
     }
 
-    this.rooms = [...this.rooms.slice(0, roomIndex), ...this.rooms.slice(roomIndex + 1)];
+    this.games = [...this.games.slice(0, gameIndex), ...this.games.slice(gameIndex + 1)];
 
     this.sendLobbyUpdate();
   };

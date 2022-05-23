@@ -9,8 +9,8 @@ import useSocket from 'client/hooks/useSocket';
 interface IUseLobbyReturnValue<Game extends EGame> {
   lobby: ILobbyUpdateEvent<Game> | null;
 
-  createRoom(): void;
-  enterRoom(roomId: string): void;
+  createGame(): void;
+  enterGame(gameId: string): void;
 }
 
 export default function useLobby<Game extends EGame>(
@@ -27,23 +27,21 @@ export default function useLobby<Game extends EGame>(
     },
   });
 
-  const createRoom = useCallback(() => {
+  const createGame = useCallback(() => {
     // @ts-ignore
-    socket?.emit(ELobbyEvent.CREATE_ROOM, gameOptions);
+    socket?.emit(ELobbyEvent.CREATE_GAME, gameOptions);
   }, [gameOptions, socket]);
 
-  const enterRoom = useCallback(
-    (roomId: string) => {
-      socket?.emit(ELobbyEvent.ENTER_ROOM, roomId);
-
-      history.push(`/${game}/room/${roomId}`);
+  const enterGame = useCallback(
+    (gameId: string) => {
+      history.push(`/${game}/game/${gameId}`);
     },
-    [game, history, socket],
+    [game, history],
   );
 
   return {
     lobby,
-    createRoom,
-    enterRoom,
+    createGame,
+    enterGame,
   };
 }

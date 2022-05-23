@@ -1,4 +1,4 @@
-import { IDBUser } from 'common/types/index';
+import { IDBUser } from 'common/types';
 
 export interface IRegisterParams {
   user: IDBUser;

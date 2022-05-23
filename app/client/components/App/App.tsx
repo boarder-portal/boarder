@@ -14,7 +14,6 @@ import Header from 'client/components/Header/Header';
 import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
 import Login from 'client/pages/Login/Login';
-import Room from 'client/pages/Room/Room';
 import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
@@ -82,10 +81,6 @@ const App: FC = () => {
 
           <Route exact path={`/${EGame.HEARTS}/lobby`}>
             <HeartsLobby />
-          </Route>
-
-          <Route exact path="/:game/room/:roomId">
-            <Room />
           </Route>
 
           <Route exact path="/:game/game/:gameId">

@@ -5,8 +5,9 @@ import shuffle from 'lodash/shuffle';
 
 import { EPlayerStatus, IGamePlayer } from 'common/types';
 import {
-  EGame,
   ECommonGameEvent,
+  EGame,
+  IGameData,
   TGameEvent,
   TGameEventData,
   TGameEventListener,
@@ -27,6 +28,10 @@ import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGa
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 
+export interface IServerGamePlayer extends IGamePlayer {
+  sockets: Set<Socket>;
+}
+
 export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Game>> = (
   data: TGameEventData<Game, Event>,
   playerIndex: number,
@@ -35,8 +40,8 @@ export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Ga
 export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
   options: TGameOptions<Game>;
-  players: IGamePlayer[];
-  onDeleteGame(): void;
+  onDeleteGame(gameId: string): void;
+  onUpdateGame(gameId: string): void;
 }
 
 interface IBatchedAction<Game extends EGame, Event extends TGameEvent<Game>> {
@@ -66,47 +71,55 @@ class Game<Game extends EGame> {
   io: Namespace;
   game: Game;
   id: string;
-  players: IGamePlayer[];
+  players: IServerGamePlayer[];
   options: TGameOptions<Game>;
-  gameEntity: GameEntity<Game>;
+  gameEntity: GameEntity<Game> | null = null;
   deleted = false;
   batchedActions: IBatchedAction<Game, TGameEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
-  onDeleteGame: () => void;
+  deleteGameTimeout: NodeJS.Timeout | null = null;
+  onDeleteGame: (gameId: string) => void;
+  onUpdateGame: (gameId: string) => void;
 
   temporaryListeners: {
     [Event in TGameEvent<Game>]?: Set<TGameEventListener<Game, Event>>;
   } = {};
 
-  constructor({ game, options, players, onDeleteGame }: IGameCreateOptions<Game>) {
+  constructor({ game, options, onDeleteGame, onUpdateGame }: IGameCreateOptions<Game>) {
     this.game = game;
     this.id = uuid();
     this.options = options;
-    this.players = shuffle(players).map((player, index) => ({
-      ...player,
-      index,
-    }));
+    this.players = [];
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
     this.onDeleteGame = onDeleteGame;
-
-    let deleteGameTimeout: NodeJS.Timeout | null = setTimeout(() => this.delete(), 10000);
+    this.onUpdateGame = onUpdateGame;
 
     this.io.use(ioSessionMiddleware);
     this.io.on('connection', (socket) => {
       const user = socket.user;
+      let player: IServerGamePlayer | undefined;
 
       if (user) {
-        const player = this.getPlayerByLogin(user.login);
+        player = this.getPlayerByLogin(user.login);
+
+        if (!this.hasStarted() && !player) {
+          player = {
+            ...user,
+            status: EPlayerStatus.NOT_READY,
+            index: this.players.length,
+            sockets: new Set([]),
+          };
+
+          this.players.push(player);
+
+          this.onUpdateGame(this.id);
+        }
 
         if (player) {
-          if (deleteGameTimeout) {
-            clearTimeout(deleteGameTimeout);
-
-            deleteGameTimeout = null;
-          }
-
-          player.status = EPlayerStatus.PLAYING;
+          this.clearDeleteTimeout();
         }
+
+        player?.sockets.add(socket);
       }
 
       forEach(this.temporaryListeners, (listeners, event) => {
@@ -115,46 +128,92 @@ class Game<Game extends EGame> {
         });
       });
 
-      socket.on('disconnect', () => {
-        if (!user) {
+      socket.on(ECommonGameEvent.TOGGLE_READY, () => {
+        if (!player || this.hasStarted()) {
           return;
         }
 
-        const player = this.getPlayerByLogin(user.login);
+        player.status = player.status === EPlayerStatus.READY ? EPlayerStatus.NOT_READY : EPlayerStatus.READY;
 
+        if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
+          this.start();
+        } else {
+          this.io.emit(ECommonGameEvent.UPDATE_PLAYERS, this.getClientPlayers());
+        }
+
+        this.onUpdateGame(this.id);
+      });
+
+      socket.on('disconnect', () => {
         if (!player) {
           return;
         }
 
-        player.status = EPlayerStatus.DISCONNECTED;
+        player.sockets.delete(socket);
 
-        if (this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED)) {
-          deleteGameTimeout = setTimeout(() => this.delete(), 10000);
+        if (player.sockets.size > 0) {
+          return;
+        }
+
+        let shouldDeleteGame: boolean;
+
+        if (this.hasStarted()) {
+          player.status = EPlayerStatus.DISCONNECTED;
+
+          shouldDeleteGame = this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED);
+        } else {
+          this.players.splice(player.index);
+
+          shouldDeleteGame = this.players.length === 0;
+        }
+
+        if (shouldDeleteGame) {
+          this.setDeleteTimeout();
         }
       });
 
-      this.gameEntity.sendGameInfo(socket);
+      this.sendGameData(socket);
     });
 
-    this.gameEntity = this.initMainGameEntity();
+    this.setDeleteTimeout();
+  }
+
+  clearDeleteTimeout(): void {
+    if (this.deleteGameTimeout) {
+      clearTimeout(this.deleteGameTimeout);
+
+      this.deleteGameTimeout = null;
+    }
   }
 
   delete(): void {
     removeNamespace(this.io);
 
-    this.onDeleteGame();
+    this.onDeleteGame(this.id);
 
     this.deleted = true;
 
-    this.gameEntity.destroy();
+    this.gameEntity?.destroy();
   }
 
   end(): void {
     this.io.emit(ECommonGameEvent.END);
   }
 
-  getPlayerByLogin(login: string | undefined): IGamePlayer | undefined {
+  getPlayerByLogin(login: string | undefined): IServerGamePlayer | undefined {
     return this.players.find((player) => player.login === login);
+  }
+
+  getClientPlayers(): IGamePlayer[] {
+    return this.players.map((player) => ({
+      login: player.login,
+      status: player.status,
+      index: player.index,
+    }));
+  }
+
+  hasStarted(): boolean {
+    return Boolean(this.gameEntity);
   }
 
   initMainGameEntity(): GameEntity<Game> {
@@ -212,6 +271,15 @@ class Game<Game extends EGame> {
     };
   }
 
+  sendGameData(socket?: Socket): void {
+    const gameData: IGameData<Game> = {
+      info: this.gameEntity?.getGameInfo() ?? null,
+      players: this.getClientPlayers(),
+    };
+
+    (socket ?? this.io).emit(ECommonGameEvent.GET_DATA, gameData);
+  }
+
   sendSocketEvent<Event extends TGameEvent<Game>>(
     event: Event,
     data: TGameEventData<Game, Event>,
@@ -248,6 +316,23 @@ class Game<Game extends EGame> {
         this.batchedActionsTimeout = null;
       }, 0);
     }
+  }
+
+  setDeleteTimeout(): void {
+    this.deleteGameTimeout = setTimeout(() => this.delete(), 10000);
+  }
+
+  start(): void {
+    this.players = shuffle(this.players);
+
+    this.players.forEach((player, index) => {
+      player.index = index;
+      player.status = EPlayerStatus.PLAYING;
+    });
+
+    this.gameEntity = this.initMainGameEntity();
+
+    this.sendGameData();
   }
 }
 

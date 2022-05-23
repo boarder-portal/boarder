@@ -13,13 +13,13 @@ import useLobby from 'client/hooks/useLobby';
 const SetLobby: React.FC = () => {
   const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
-  const { lobby, createRoom, enterRoom } = useLobby(EGame.SET, options);
+  const { lobby, createGame, enterGame } = useLobby(EGame.SET, options);
 
   const optionsBlock = useMemo(() => {
     return <SetGameOptions options={options} onOptionsChange={setOptions} />;
   }, [options]);
 
-  const renderRoomOptions = useCallback(() => {
+  const renderGameOptions = useCallback(() => {
     return null;
   }, []);
 
@@ -30,11 +30,11 @@ const SetLobby: React.FC = () => {
   return (
     <Lobby
       game={EGame.SET}
-      rooms={lobby.rooms}
+      games={lobby.games}
       options={optionsBlock}
-      renderRoomOptions={renderRoomOptions}
-      onEnterRoom={enterRoom}
-      onCreateRoom={createRoom}
+      renderGameOptions={renderGameOptions}
+      onEnterGame={enterGame}
+      onCreateGame={createGame}
     />
   );
 };

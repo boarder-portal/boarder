@@ -1,5 +1,3 @@
-import { Socket } from 'socket.io';
-
 import { ECommonGameEvent, EGame, TGameInfo } from 'common/types/game';
 
 import Entity from 'server/gamesData/Game/utilities/Entity';
@@ -9,9 +7,12 @@ export default abstract class GameEntity<Game extends EGame> extends Entity<Game
 
   abstract toJSON(): TGameInfo<Game>;
 
-  sendGameInfo(socket?: Socket): void {
-    this.sendSocketEvent(ECommonGameEvent.GET_INFO, this.toJSON(), {
-      socket,
+  getGameInfo(): TGameInfo<Game> {
+    return this.toJSON();
+  }
+
+  sendGameInfo(): void {
+    this.sendSocketEvent(ECommonGameEvent.GET_INFO, this.getGameInfo(), {
       batch: true,
     });
   }

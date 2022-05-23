@@ -5,20 +5,20 @@ import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 
-import styles from './Room.pcss';
+import styles from './Game.pcss';
 
-interface ILobbyRoomProps {
+interface ILobbyGameProps {
   className?: string;
   title: string;
   options: React.ReactNode;
   players: number;
   maxPlayers: number;
-  gameIsStarted: boolean;
+  hasStarted: boolean;
   onClick(): void;
 }
 
-const Room: React.FC<ILobbyRoomProps> = (props) => {
-  const { className, title, options, players, maxPlayers, gameIsStarted, onClick } = props;
+const Game: React.FC<ILobbyGameProps> = (props) => {
+  const { className, title, options, players, maxPlayers, hasStarted, onClick } = props;
 
   return (
     <Flex className={classNames(styles.root, className)} alignItems="center" onClick={onClick}>
@@ -28,7 +28,7 @@ const Room: React.FC<ILobbyRoomProps> = (props) => {
 
           <DotSeparator />
 
-          {gameIsStarted ? 'идет игра' : 'ожидание игроков'}
+          {hasStarted ? 'идет игра' : 'ожидание игроков'}
         </Text>
 
         {options}
@@ -39,4 +39,4 @@ const Room: React.FC<ILobbyRoomProps> = (props) => {
   );
 };
 
-export default React.memo(Room);
+export default React.memo(Game);

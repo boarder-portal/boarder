@@ -15,38 +15,38 @@ import useLobby from 'client/hooks/useLobby';
 const PexesoLobby: React.FC = () => {
   const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
-  const { lobby, createRoom, enterRoom } = useLobby(EGame.PEXESO, options);
+  const { lobby, createGame, enterGame } = useLobby(EGame.PEXESO, options);
 
   const optionsBlock = useMemo(() => {
     return <PexesoGameOptions options={options} onOptionsChange={setOptions} />;
   }, [options]);
 
-  const renderRoomOptions = useCallback((roomOptions: IGameOptions) => {
+  const renderGameOptions = useCallback((gameOptions: IGameOptions) => {
     return (
       <Flex>
-        {roomOptions.set}
+        {gameOptions.set}
         <>
           <DotSeparator />
 
-          {`по ${roomOptions.matchingCardsCount} совпадающих`}
+          {`по ${gameOptions.matchingCardsCount} совпадающих`}
         </>
 
-        {roomOptions.differentCardsCount && (
+        {gameOptions.differentCardsCount && (
           <>
             <DotSeparator />
 
-            {`${roomOptions.differentCardsCount} разных`}
+            {`${gameOptions.differentCardsCount} разных`}
           </>
         )}
 
-        {roomOptions.pickRandomImages && (
+        {gameOptions.pickRandomImages && (
           <>
             <DotSeparator />
             случайные
           </>
         )}
 
-        {roomOptions.useImageVariants && (
+        {gameOptions.useImageVariants && (
           <>
             <DotSeparator />
             вариативные
@@ -63,11 +63,11 @@ const PexesoLobby: React.FC = () => {
   return (
     <Lobby
       game={EGame.PEXESO}
-      rooms={lobby.rooms}
+      games={lobby.games}
       options={optionsBlock}
-      renderRoomOptions={renderRoomOptions}
-      onEnterRoom={enterRoom}
-      onCreateRoom={createRoom}
+      renderGameOptions={renderGameOptions}
+      onEnterGame={enterGame}
+      onCreateGame={createGame}
     />
   );
 };

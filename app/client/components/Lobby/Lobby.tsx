@@ -5,7 +5,7 @@ import { EGame, TGameOptions } from 'common/types/game';
 import { ILobbyUpdateEvent } from 'common/types/lobby';
 
 import Button from 'client/components/common/Button/Button';
-import LobbyRoom from 'client/components/Lobby/components/Room/Room';
+import LobbyGame from 'client/components/Lobby/components/Game/Game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -13,15 +13,15 @@ import styles from './Lobby.pcss';
 
 interface ILobbyProps<Game extends EGame> {
   game: EGame;
-  rooms: ILobbyUpdateEvent<Game>['rooms'];
+  games: ILobbyUpdateEvent<Game>['games'];
   options?: React.ReactNode;
-  renderRoomOptions?(options: TGameOptions<Game>): React.ReactNode;
-  onCreateRoom(): void;
-  onEnterRoom(roomId: string): void;
+  renderGameOptions?(options: TGameOptions<Game>): React.ReactNode;
+  onCreateGame(): void;
+  onEnterGame(gameId: string): void;
 }
 
 const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
-  const { game, rooms, options, renderRoomOptions, onCreateRoom, onEnterRoom } = props;
+  const { game, games, options, renderGameOptions, onCreateGame, onEnterGame } = props;
 
   return (
     <div>
@@ -29,38 +29,38 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
         {game}
       </Text>
 
-      <Flex className={styles.roomsAndOptions}>
-        <Flex className={styles.rooms} direction="column" between={3}>
-          {rooms.length ? (
-            rooms.map((room) => (
-              <LobbyRoom
-                key={room.id}
-                title={room.id}
-                options={renderRoomOptions?.(room.options)}
-                players={room.players.length}
-                maxPlayers={room.options.playersCount}
-                gameIsStarted={room.gameIsStarted}
-                onClick={() => onEnterRoom(room.id)}
+      <Flex className={styles.gamesAndOptions}>
+        <Flex className={styles.games} direction="column" between={3}>
+          {games.length ? (
+            games.map((game) => (
+              <LobbyGame
+                key={game.id}
+                title={game.id}
+                options={renderGameOptions?.(game.options)}
+                players={game.players.length}
+                maxPlayers={game.options.playersCount}
+                hasStarted={game.hasStarted}
+                onClick={() => onEnterGame(game.id)}
               />
             ))
           ) : (
-            <Flex className={styles.rooms} alignItems="center" justifyContent="center">
-              <Text size="xl">Комнат пока нет</Text>
+            <Flex className={styles.games} alignItems="center" justifyContent="center">
+              <Text size="xl">Игр пока нет</Text>
             </Flex>
           )}
         </Flex>
 
         <Flex className={styles.options} direction="column" between={4}>
-          <Text size="xxl">Настройки комнаты</Text>
+          <Text size="xxl">Настройки игры</Text>
 
           {options}
 
           <Button
             onClick={() => {
-              onCreateRoom();
+              onCreateGame();
             }}
           >
-            Создать комнату
+            Создать игру
           </Button>
         </Flex>
       </Flex>

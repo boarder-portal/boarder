@@ -1,7 +1,6 @@
-import { IGameOptions as ICommonGameOptions } from 'common/types/room';
 import { IGamePlayer as ICommonPlayer } from 'common/types';
 import { ICard } from 'common/types/cards';
-import { EGame, ICommonEventMap } from 'common/types/game';
+import { EGame, ICommonEventMap, IGameOptions as ICommonGameOptions } from 'common/types/game';
 
 export enum EGameEvent {
   // client events

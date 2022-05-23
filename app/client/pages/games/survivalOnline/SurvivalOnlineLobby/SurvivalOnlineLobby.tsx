@@ -13,13 +13,13 @@ import useLobby from 'client/hooks/useLobby';
 const SurvivalOnlineLobby: React.FC = () => {
   const [options, setOptions] = useState<IGameOptions>(DEFAULT_GAME_OPTIONS);
 
-  const { lobby, createRoom, enterRoom } = useLobby(EGame.SURVIVAL_ONLINE, options);
+  const { lobby, createGame, enterGame } = useLobby(EGame.SURVIVAL_ONLINE, options);
 
   const optionsBlock = useMemo(() => {
     return <SurvivalOnlineGameOptions options={options} onOptionsChange={setOptions} />;
   }, [options]);
 
-  const renderRoomOptions = useCallback(() => {
+  const renderGameOptions = useCallback(() => {
     return null;
   }, []);
 
@@ -30,11 +30,11 @@ const SurvivalOnlineLobby: React.FC = () => {
   return (
     <Lobby
       game={EGame.SURVIVAL_ONLINE}
-      rooms={lobby.rooms}
+      games={lobby.games}
       options={optionsBlock}
-      renderRoomOptions={renderRoomOptions}
-      onEnterRoom={enterRoom}
-      onCreateRoom={createRoom}
+      renderGameOptions={renderGameOptions}
+      onEnterGame={enterGame}
+      onCreateGame={createGame}
     />
   );
 };

@@ -9,13 +9,13 @@ import Lobby from 'client/components/Lobby/Lobby';
 import useLobby from 'client/hooks/useLobby';
 
 const SevenWondersLobby: React.FC = () => {
-  const { lobby, createRoom, enterRoom } = useLobby(EGame.SEVEN_WONDERS, DEFAULT_GAME_OPTIONS);
+  const { lobby, createGame, enterGame } = useLobby(EGame.SEVEN_WONDERS, DEFAULT_GAME_OPTIONS);
 
   if (!lobby) {
     return null;
   }
 
-  return <Lobby game={EGame.SEVEN_WONDERS} rooms={lobby.rooms} onEnterRoom={enterRoom} onCreateRoom={createRoom} />;
+  return <Lobby game={EGame.SEVEN_WONDERS} games={lobby.games} onEnterGame={enterGame} onCreateGame={createGame} />;
 };
 
 export default React.memo(SevenWondersLobby);

@@ -1,5 +1,5 @@
 import { TEffect } from 'common/types/sevenWonders/effects';
-import { IPrice } from 'common/types/sevenWonders/index';
+import { IPrice } from 'common/types/sevenWonders';
 
 export enum ECardId {
   // leaders
