@@ -39,6 +39,7 @@ export type TPlayerEventListener<Game extends EGame, Event extends TGameEvent<Ga
 
 export interface IGameCreateOptions<Game extends EGame> {
   game: Game;
+  name: string;
   options: TGameOptions<Game>;
   onDeleteGame(gameId: string): void;
   onUpdateGame(gameId: string): void;
@@ -71,6 +72,7 @@ class Game<Game extends EGame> {
   io: Namespace;
   game: Game;
   id: string;
+  name: string;
   players: IServerGamePlayer[];
   options: TGameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
@@ -85,9 +87,10 @@ class Game<Game extends EGame> {
     [Event in TGameEvent<Game>]?: Set<TGameEventListener<Game, Event>>;
   } = {};
 
-  constructor({ game, options, onDeleteGame, onUpdateGame }: IGameCreateOptions<Game>) {
+  constructor({ game, name, options, onDeleteGame, onUpdateGame }: IGameCreateOptions<Game>) {
     this.game = game;
     this.id = uuid();
+    this.name = name;
     this.options = options;
     this.players = [];
     this.io = ioInstance.of(`/${game}/game/${this.id}`);
@@ -273,6 +276,7 @@ class Game<Game extends EGame> {
 
   sendGameData(socket?: Socket): void {
     const gameData: IGameData<Game> = {
+      name: this.name,
       info: this.gameEntity?.getGameInfo() ?? null,
       players: this.getClientPlayers(),
     };

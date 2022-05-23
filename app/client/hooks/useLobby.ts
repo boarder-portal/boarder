@@ -5,6 +5,7 @@ import { ELobbyEvent, ILobbyEventMap, ILobbyUpdateEvent } from 'common/types/lob
 import { EGame, TGameOptions } from 'common/types/game';
 
 import useSocket from 'client/hooks/useSocket';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 interface IUseLobbyReturnValue<Game extends EGame> {
   lobby: ILobbyUpdateEvent<Game> | null;
@@ -21,10 +22,15 @@ export default function useLobby<Game extends EGame>(
 
   const [lobby, setLobby] = useState<ILobbyUpdateEvent<Game> | null>(null);
 
+  const navigateToGame = useImmutableCallback((gameId: string) => {
+    history.push(`/${game}/game/${gameId}`);
+  });
+
   const socket = useSocket<ILobbyEventMap<Game>>(`/${game}/lobby`, {
     [ELobbyEvent.UPDATE]: (lobbyData) => {
       setLobby(lobbyData);
     },
+    [ELobbyEvent.GAME_CREATED]: navigateToGame,
   });
 
   const createGame = useCallback(() => {
@@ -32,16 +38,9 @@ export default function useLobby<Game extends EGame>(
     socket?.emit(ELobbyEvent.CREATE_GAME, gameOptions);
   }, [gameOptions, socket]);
 
-  const enterGame = useCallback(
-    (gameId: string) => {
-      history.push(`/${game}/game/${gameId}`);
-    },
-    [game, history],
-  );
-
   return {
     lobby,
     createGame,
-    enterGame,
+    enterGame: navigateToGame,
   };
 }

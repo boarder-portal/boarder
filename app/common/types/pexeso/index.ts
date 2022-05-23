@@ -85,13 +85,6 @@ export interface ICard {
   isInGame: boolean;
 }
 
-export interface IGameInfoEvent {
-  options: IGameOptions;
-  cards: ICard[];
-  openedCardsIndexes: number[];
-  players: IPlayer[];
-}
-
 export interface IShuffleCardsIndexes {
   indexes: number[];
   permutation: number[];

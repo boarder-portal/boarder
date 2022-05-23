@@ -35,7 +35,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
             games.map((game) => (
               <LobbyGame
                 key={game.id}
-                title={game.id}
+                title={game.name}
                 options={renderGameOptions?.(game.options)}
                 players={game.players.length}
                 maxPlayers={game.options.playersCount}

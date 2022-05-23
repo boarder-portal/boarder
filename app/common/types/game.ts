@@ -31,6 +31,7 @@ export interface ICommonEventMap<Game extends EGame> {
 }
 
 export interface IGameData<Game extends EGame> {
+  name: string;
   info: TGameInfo<Game> | null;
   players: IGamePlayer[];
 }

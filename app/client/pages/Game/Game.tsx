@@ -2,6 +2,7 @@ import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
+import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { EGame, ECommonGameEvent, TGameSocketEventMap, TGameInfo, ICommonEventMap } from 'common/types/game';
 import { EPlayerStatus, IGamePlayer } from 'common/types';
@@ -44,6 +45,7 @@ const GAMES_MAP: {
 function Game<G extends EGame>() {
   const { game, gameId } = useParams<{ game: G; gameId: string }>();
 
+  const [gameName, setGameName] = useState<string | null>(null);
   const [gameInfo, setGameInfo] = useState<TGameInfo<G> | null>(null);
   const [players, setPlayers] = useState<IGamePlayer[]>([]);
 
@@ -54,8 +56,11 @@ function Game<G extends EGame>() {
 
   const socket = useSocket<ICommonEventMap<G>>(`/${game}/game/${gameId}`, {
     [ECommonGameEvent.GET_DATA]: (data) => {
-      setGameInfo(data.info);
-      setPlayers(data.players);
+      batchedUpdates(() => {
+        setGameInfo(data.info);
+        setPlayers(data.players);
+        setGameName(data.name);
+      });
     },
     [ECommonGameEvent.GET_INFO as any]: (info: TGameInfo<G>) => {
       setGameInfo(info);
@@ -81,7 +86,7 @@ function Game<G extends EGame>() {
     socket?.emit(ECommonGameEvent.TOGGLE_READY);
   }, [socket]);
 
-  if (!socket) {
+  if (!socket || !gameName) {
     return null;
   }
 
@@ -89,7 +94,7 @@ function Game<G extends EGame>() {
     return (
       <div>
         <Text size="xxl" weight="bold">
-          Игра {game}
+          {gameName}
         </Text>
 
         <Flex className={styles.players} direction="column" between={3}>
