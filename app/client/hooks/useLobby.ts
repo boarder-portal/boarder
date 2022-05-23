@@ -1,9 +1,10 @@
 import { useHistory } from 'react-router-dom';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
+import { useCallback, useState } from 'react';
 
-import { ELobbyEvent, ILobbyUpdateEvent } from 'common/types/lobby';
+import { ELobbyEvent, ILobbyEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
 import { EGame, TGameOptions } from 'common/types/game';
+
+import useSocket from 'client/hooks/useSocket';
 
 interface IUseLobbyReturnValue<Game extends EGame> {
   lobby: ILobbyUpdateEvent<Game> | null;
@@ -17,45 +18,28 @@ export default function useLobby<Game extends EGame>(
   gameOptions: TGameOptions<Game>,
 ): IUseLobbyReturnValue<Game> {
   const history = useHistory();
-  const ioRef = useRef<Socket>();
 
   const [lobby, setLobby] = useState<ILobbyUpdateEvent<Game> | null>(null);
 
-  const createRoom = useCallback(() => {
-    if (!ioRef.current) {
-      return;
-    }
+  const socket = useSocket<ILobbyEventMap<Game>>(`/${game}/lobby`, {
+    [ELobbyEvent.UPDATE]: (lobbyData) => {
+      setLobby(lobbyData);
+    },
+  });
 
-    ioRef.current.emit(ELobbyEvent.CREATE_ROOM, gameOptions);
-  }, [gameOptions]);
+  const createRoom = useCallback(() => {
+    // @ts-ignore
+    socket?.emit(ELobbyEvent.CREATE_ROOM, gameOptions);
+  }, [gameOptions, socket]);
 
   const enterRoom = useCallback(
     (roomId: string) => {
-      if (!ioRef.current) {
-        return;
-      }
-
-      ioRef.current.emit(ELobbyEvent.ENTER_ROOM, roomId);
+      socket?.emit(ELobbyEvent.ENTER_ROOM, roomId);
 
       history.push(`/${game}/room/${roomId}`);
     },
-    [game, history],
+    [game, history, socket],
   );
-
-  useEffect(() => {
-    ioRef.current = io(`/${game}/lobby`);
-
-    ioRef.current.on(ELobbyEvent.UPDATE, (lobbyData: ILobbyUpdateEvent<Game>) => {
-      setLobby(lobbyData);
-    });
-
-    return () => {
-      if (ioRef.current) {
-        ioRef.current.disconnect();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game]);
 
   return {
     lobby,

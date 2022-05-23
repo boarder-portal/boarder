@@ -7,6 +7,13 @@ export enum ELobbyEvent {
   ENTER_ROOM = 'enterRoom',
 }
 
+export interface ILobbyEventMap<Game extends EGame> {
+  [ELobbyEvent.CREATE_ROOM]: TGameOptions<Game>;
+  [ELobbyEvent.ENTER_ROOM]: string;
+
+  [ELobbyEvent.UPDATE]: ILobbyUpdateEvent<Game>;
+}
+
 export interface ILobbyUpdateEvent<Game extends EGame> {
   rooms: {
     id: string;
