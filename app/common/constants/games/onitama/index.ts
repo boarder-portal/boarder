@@ -1,7 +1,8 @@
 import { ECardType, IGameOptions } from 'common/types/onitama';
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
-  playersCount: 2,
+  minPlayersCount: 2,
+  maxPlayersCount: 2,
 };
 
 export const ALL_CARDS: Record<ECardType, number[][]> = {

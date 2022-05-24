@@ -1,12 +1,9 @@
 import React, { useCallback, useRef, useState } from 'react';
-import times from 'lodash/times';
 
 import {
   DIFFERENT_CARDS_COUNTS,
   LAYOUT_NAMES,
   MATCHING_CARDS_COUNTS,
-  MAX_PLAYERS_COUNT,
-  MIN_PLAYERS_COUNT,
   SHUFFLE_AFTER_MOVES_COUNTS,
   SHUFFLE_CARDS_COUNTS,
 } from 'common/constants/games/pexeso';
@@ -51,15 +48,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     (updatedSet: ESet) => {
       onOptionsChange({
         set: updatedSet,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handlePlayersCountChange = useCallback(
-    (updatedPlayersCount: number) => {
-      onOptionsChange({
-        playersCount: updatedPlayersCount,
       });
     },
     [onOptionsChange],
@@ -183,7 +171,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     <Flex className={styles.root} direction="column" between={3}>
       <Select
         label="Сет"
-        name="pexesoSet"
+        name="set"
         value={options.set}
         options={Object.values(ESet).map((set) => ({
           value: set,
@@ -194,19 +182,8 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       />
 
       <Select
-        label="Количество игроков"
-        name="pexesoPlayersCount"
-        value={options.playersCount}
-        options={times(MAX_PLAYERS_COUNT - MIN_PLAYERS_COUNT + 1, (index) => ({
-          value: MIN_PLAYERS_COUNT + index,
-          text: MIN_PLAYERS_COUNT + index,
-        }))}
-        onChange={handlePlayersCountChange}
-      />
-
-      <Select
         label="Количество совпадающих карточек"
-        name="pexesoMatchingCardsCount"
+        name="matchingCardsCount"
         value={options.matchingCardsCount}
         options={MATCHING_CARDS_COUNTS.map((matchingCardsCount) => ({
           value: matchingCardsCount,
@@ -218,7 +195,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       <Select
         label="Количество разных карточек"
-        name="pexesoDifferentCardsCount"
+        name="differentCardsCount"
         value={options.differentCardsCount}
         options={DIFFERENT_CARDS_COUNTS.map((differentCardsCount) => ({
           value: differentCardsCount,
@@ -230,7 +207,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       <Select
         label="Расположение карточек"
-        name="pexesoFieldLayout"
+        name="layout"
         value={options.layout}
         options={Object.values(EFieldLayout).map((layout) => ({
           value: layout,

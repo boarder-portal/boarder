@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import times from 'lodash/times';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
@@ -9,10 +10,12 @@ import LobbyGame from 'client/components/Lobby/components/Game/Game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
+import Select from 'client/components/common/Select/Select';
 
 import useGameOptions from 'client/hooks/useGameOptions';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useSocket from 'client/hooks/useSocket';
+import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Lobby.pcss';
 
@@ -69,6 +72,24 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
     [setOptions],
   );
 
+  const handleMinPlayersCountChange = useCallback(
+    (minPlayersCount: number) => {
+      changeOptions({
+        minPlayersCount,
+      });
+    },
+    [changeOptions],
+  );
+
+  const handleMaxPlayersCountChange = useCallback(
+    (maxPlayersCount: number) => {
+      changeOptions({
+        maxPlayersCount,
+      });
+    },
+    [changeOptions],
+  );
+
   const optionsNode = useMemo(() => {
     return renderOptions?.(options, changeOptions);
   }, [changeOptions, options, renderOptions]);
@@ -76,6 +97,8 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
   if (!lobby) {
     return null;
   }
+
+  const { minPlayersCount, maxPlayersCount } = DEFAULT_OPTIONS[game];
 
   return (
     <div>
@@ -92,7 +115,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
                 title={game.name}
                 options={renderGameOptions?.(game.options)}
                 players={game.players.length}
-                maxPlayers={game.options.playersCount}
+                maxPlayers={game.options.maxPlayersCount}
                 hasStarted={game.hasStarted}
                 onClick={() => navigateToGame(game.id)}
               />
@@ -106,6 +129,42 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
 
         <Flex className={styles.options} direction="column" between={4}>
           <Text size="xxl">Настройки игры</Text>
+
+          {minPlayersCount !== maxPlayersCount && (
+            <>
+              <Select
+                label="Минимальное количество игроков"
+                name="minPlayersCount"
+                value={options.minPlayersCount}
+                options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                  const value = minPlayersCount + index;
+
+                  return {
+                    value,
+                    text: value,
+                    disabled: value > options.maxPlayersCount,
+                  };
+                })}
+                onChange={handleMinPlayersCountChange}
+              />
+
+              <Select
+                label="Максимальное количество игроков"
+                name="maxPlayersCount"
+                value={options.maxPlayersCount}
+                options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                  const value = minPlayersCount + index;
+
+                  return {
+                    value,
+                    text: value,
+                    disabled: value < options.minPlayersCount,
+                  };
+                })}
+                onChange={handleMaxPlayersCountChange}
+              />
+            </>
+          )}
 
           {optionsNode}
 

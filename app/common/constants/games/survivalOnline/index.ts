@@ -1,7 +1,8 @@
 import { IGameOptions } from 'common/types/survivalOnline';
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
-  playersCount: 2,
+  minPlayersCount: 1,
+  maxPlayersCount: 4,
 };
 
 export const CELL_SIZE = 100;

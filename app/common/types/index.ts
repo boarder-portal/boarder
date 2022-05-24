@@ -26,7 +26,8 @@ export interface ICoords {
 }
 
 export interface IGameOptions {
-  playersCount: number;
+  minPlayersCount: number;
+  maxPlayersCount: number;
 }
 
 export enum ECommonGameClientEvent {

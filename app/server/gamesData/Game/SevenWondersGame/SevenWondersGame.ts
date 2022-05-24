@@ -65,7 +65,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     super(context);
 
     // FIXME: remove after bot api
-    times(this.options.playersCount - this.playersCount, (index) => {
+    times(this.options.minPlayersCount - this.playersCount, (index) => {
       this.getPlayers().push({
         status: EPlayerStatus.DISCONNECTED,
         login: `bot-${index}`,

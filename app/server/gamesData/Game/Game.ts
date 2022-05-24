@@ -69,6 +69,11 @@ const GAME_ENTITIES_MAP: {
   [EGame.HEARTS]: HeartsGame,
 };
 
+// FIXME: remove after bot api
+const BOTS_AVAILABLE: Partial<Record<EGame, boolean>> = {
+  [EGame.SEVEN_WONDERS]: true,
+};
+
 class Game<Game extends EGame> {
   io: TGameNamespace<Game>;
   game: Game;
@@ -106,7 +111,7 @@ class Game<Game extends EGame> {
       if (user) {
         player = this.getPlayerByLogin(user.login);
 
-        if (!this.hasStarted() && !player) {
+        if (!this.hasStarted() && !player && this.players.length < this.options.maxPlayersCount) {
           player = {
             ...user,
             status: EPlayerStatus.NOT_READY,
@@ -140,7 +145,10 @@ class Game<Game extends EGame> {
 
         player.status = player.status === EPlayerStatus.READY ? EPlayerStatus.NOT_READY : EPlayerStatus.READY;
 
-        if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
+        if (
+          this.players.every(({ status }) => status === EPlayerStatus.READY) &&
+          (this.players.length >= this.options.minPlayersCount || BOTS_AVAILABLE[this.game])
+        ) {
           this.start();
         } else {
           this.sendUpdatePlayersEvent();

@@ -12,7 +12,7 @@ import { EGame, TGameOptions } from 'common/types/game';
 
 import LocalStorageAtom, { EGameDefaultOptionsKey } from 'client/utilities/LocalStorageAtom';
 
-const DEFAULT_OPTIONS: {
+export const DEFAULT_OPTIONS: {
   [Game in EGame]: TGameOptions<Game>;
 } = {
   [EGame.PEXESO]: PEXESO_OPTIONS,

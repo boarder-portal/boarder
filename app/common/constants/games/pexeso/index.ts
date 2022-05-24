@@ -23,8 +23,9 @@ interface IFieldOptions {
 }
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+  minPlayersCount: 1,
+  maxPlayersCount: 8,
   set: ESet.COMMON,
-  playersCount: 2,
   matchingCardsCount: 2,
   differentCardsCount: 30,
   layout: EFieldLayout.RECT,

@@ -1,7 +1,8 @@
 import { IGameOptions } from 'common/types/set';
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
-  playersCount: 2,
+  minPlayersCount: 1,
+  maxPlayersCount: 8,
 };
 
 export const START_CARDS_COUNT = 12;
