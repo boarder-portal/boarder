@@ -4,9 +4,6 @@ export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   playersCount: 2,
 };
 
-export const MIN_PLAYERS_COUNT = 1;
-export const MAX_PLAYERS_COUNT = 4;
-
 export const CELL_SIZE = 100;
 export const VIEW_SIZE = {
   width: 21,
