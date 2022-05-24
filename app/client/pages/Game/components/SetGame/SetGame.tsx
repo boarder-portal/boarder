@@ -5,9 +5,9 @@ import { EGameClientEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/se
 import { EGame } from 'common/types/game';
 
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
-import Button from 'client/components/common/Button/Button';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
+import Button from 'client/components/common/Button/Button';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import { IGameProps } from 'client/pages/Game/Game';

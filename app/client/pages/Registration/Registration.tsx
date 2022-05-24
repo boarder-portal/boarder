@@ -5,9 +5,9 @@ import { useSetRecoilState } from 'recoil';
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Input from 'client/components/common/Input/Input';
-import Button from 'client/components/common/Button/Button';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
+import Button from 'client/components/common/Button/Button';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -57,7 +57,7 @@ const Registration: React.FC = () => {
           onChange={setPasswordForCheck}
         />
 
-        <Button className={styles.submit} isSubmit>
+        <Button className={styles.submit} type="submit">
           Регистрация
         </Button>
       </form>

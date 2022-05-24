@@ -4,10 +4,10 @@ import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
 import { ILobbyUpdateEvent } from 'common/types/lobby';
 
-import Button from 'client/components/common/Button/Button';
 import LobbyGame from 'client/components/Lobby/components/Game/Game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
+import Button from 'client/components/common/Button/Button';
 
 import styles from './Lobby.pcss';
 
@@ -55,13 +55,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
 
           {options}
 
-          <Button
-            onClick={() => {
-              onCreateGame();
-            }}
-          >
-            Создать игру
-          </Button>
+          <Button onClick={onCreateGame}>Создать игру</Button>
         </Flex>
       </Flex>
     </div>

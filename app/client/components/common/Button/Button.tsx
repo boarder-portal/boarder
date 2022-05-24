@@ -1,32 +1,29 @@
-import React from 'react';
-import MuiButton from '@material-ui/core/Button';
+import { ButtonHTMLAttributes, forwardRef } from 'react';
+import classNames from 'classnames';
 
-interface IButtonProps {
+import styles from './Button.pcss';
+
+interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
-  children: React.ReactNode;
-  type?: 'primary' | 'secondary';
-  size?: 'small' | 'medium' | 'large';
+  variant?: 'contained' | 'outlined';
   disabled?: boolean;
-  isSubmit?: boolean;
-  onClick?(): void;
 }
 
-const Button: React.FC<IButtonProps> = (props) => {
-  const { className, disabled = false, type = 'primary', isSubmit = false, size = 'medium', children, onClick } = props;
+const Button = forwardRef<HTMLButtonElement | null, IButtonProps>((props, ref) => {
+  const { className, children, variant = 'contained', disabled, ...restProps } = props;
 
   return (
-    <MuiButton
-      className={className}
-      type={isSubmit ? 'submit' : 'button'}
-      variant={type === 'primary' ? 'contained' : 'outlined'}
-      color="primary"
-      size={size}
+    <button
+      className={classNames(styles.root, styles[variant], { [styles.disabled]: disabled }, className)}
       disabled={disabled}
-      onClick={onClick}
+      ref={ref}
+      {...restProps}
     >
       {children}
-    </MuiButton>
+    </button>
   );
-};
+});
 
-export default React.memo(Button);
+Button.displayName = 'Button';
+
+export default Button;

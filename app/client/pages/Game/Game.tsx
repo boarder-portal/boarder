@@ -113,7 +113,7 @@ function Game<G extends EGame>() {
               {login === user?.login && (
                 <Button
                   className={styles.changeReadyStatusButton}
-                  type={status === EPlayerStatus.NOT_READY ? 'primary' : 'secondary'}
+                  variant={status === EPlayerStatus.NOT_READY ? 'contained' : 'outlined'}
                   onClick={handleUserClick}
                 >
                   {status === EPlayerStatus.NOT_READY ? 'Готов' : 'Не готов'}
