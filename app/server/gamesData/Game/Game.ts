@@ -116,6 +116,7 @@ class Game<Game extends EGame> {
 
           this.players.push(player);
 
+          this.sendUpdatePlayersEvent();
           this.onUpdateGame(this.id);
         }
 
@@ -142,7 +143,7 @@ class Game<Game extends EGame> {
         if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
           this.start();
         } else {
-          (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
+          this.sendUpdatePlayersEvent();
         }
 
         this.onUpdateGame(this.id);
@@ -324,6 +325,10 @@ class Game<Game extends EGame> {
         this.batchedActionsTimeout = null;
       }, 0);
     }
+  }
+
+  sendUpdatePlayersEvent(): void {
+    (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
   }
 
   setDeleteTimeout(): void {
