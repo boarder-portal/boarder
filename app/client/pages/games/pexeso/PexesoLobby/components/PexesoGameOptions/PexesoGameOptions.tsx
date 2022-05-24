@@ -12,6 +12,7 @@ import {
 } from 'common/constants/games/pexeso';
 
 import { EFieldLayout, ESet, EShuffleType, IGameOptions, TShuffleOptions } from 'common/types/pexeso';
+import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
@@ -19,12 +20,13 @@ import Select from 'client/components/common/Select/Select';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Flex from 'client/components/common/Flex/Flex';
+import { TChangeOptions } from 'client/components/Lobby/Lobby';
 
 import styles from './PexesoGameOptions.pcss';
 
 interface IPexesoGameOptionsProps {
   options: IGameOptions;
-  onOptionsChange(options: IGameOptions): void;
+  onOptionsChange: TChangeOptions<EGame.PEXESO>;
 }
 
 const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
@@ -48,81 +50,73 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
   const handleSetChange = useCallback(
     (updatedSet: ESet) => {
       onOptionsChange({
-        ...options,
         set: updatedSet,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handlePlayersCountChange = useCallback(
     (updatedPlayersCount: number) => {
       onOptionsChange({
-        ...options,
         playersCount: updatedPlayersCount,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleMatchingCardsCountChange = useCallback(
     (matchingCardsCount: number) => {
       onOptionsChange({
-        ...options,
         matchingCardsCount,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleDifferentCardsCountChange = useCallback(
     (differentCardsCount: number) => {
       onOptionsChange({
-        ...options,
         differentCardsCount,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleLayoutChange = useCallback(
     (layout: EFieldLayout) => {
       onOptionsChange({
-        ...options,
         layout,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handlePickRandomImagesChange = useCallback(
     (pickRandomImages: boolean) => {
       onOptionsChange({
-        ...options,
         pickRandomImages,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleUseImageVariantsChange = useCallback(
     (useImageVariants: boolean) => {
       onOptionsChange({
-        ...options,
         useImageVariants,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleShuffleCheckboxChange = useCallback(
     (shuffle: boolean) => {
       onOptionsChange({
-        ...options,
         shuffleOptions: shuffle ? lastShuffleOptions.current : null,
       });
     },
-    [onOptionsChange, options],
+    [onOptionsChange],
   );
 
   const handleShuffleAfterMovesCountChange = useCallback(
@@ -132,7 +126,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       }
 
       onOptionsChange({
-        ...options,
         shuffleOptions: {
           ...options.shuffleOptions,
           afterMovesCount,
@@ -162,11 +155,10 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       lastShuffleOptions.current = newShuffleOptions;
 
       onOptionsChange({
-        ...options,
         shuffleOptions: newShuffleOptions,
       });
     },
-    [onOptionsChange, options, shuffleCardsCount],
+    [onOptionsChange, shuffleCardsCount],
   );
 
   const handleShuffleCardsCountChange = useCallback(
@@ -177,7 +169,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       setShuffleCardsCount(cardsCount);
       onOptionsChange({
-        ...options,
         shuffleOptions: {
           type: EShuffleType.RANDOM,
           afterMovesCount: options.shuffleOptions.afterMovesCount,

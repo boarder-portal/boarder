@@ -24,7 +24,7 @@ const DEFAULT_OPTIONS: {
   [EGame.HEARTS]: HEARTS_OPTIONS,
 };
 
-export const gameOptionsAtoms = mapValues(mapKeys(EGame), (game: EGame) => {
+export const gameOptionsAtoms = mapValues(mapKeys(EGame), (game) => {
   return new LocalStorageAtom(`game/${game}/defaultOptions`, DEFAULT_OPTIONS[game]);
 }) as {
   [Game in EGame]: LocalStorageAtom<EGameDefaultOptionsKey<Game>>;

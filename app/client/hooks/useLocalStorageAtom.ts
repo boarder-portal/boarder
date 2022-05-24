@@ -10,7 +10,7 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 export default function useLocalStorageAtom<Key extends TLocalStorageKey>(
   atom: LocalStorageAtom<Key>,
-): [TLocalStorageValue<Key>, (value: TLocalStorageValue<Key> | null, options: ISetValueOptions) => void] {
+): [TLocalStorageValue<Key>, (value: TLocalStorageValue<Key> | null, options?: ISetValueOptions) => void] {
   const [value, setValue] = useState<TLocalStorageValue<Key>>(atom.value);
 
   useEffect(() => {

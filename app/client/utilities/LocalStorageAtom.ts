@@ -2,11 +2,11 @@ import { EGame, TGameOptions } from 'common/types/game';
 
 export type EGameDefaultOptionsKey<Game extends EGame> = `game/${Game}/defaultOptions`;
 
-type TGameOptionsAtoms = {
+type TGameOptionsValues = {
   [Game in EGame as EGameDefaultOptionsKey<Game>]: TGameOptions<Game>;
 };
 
-interface ILocalStorageValues extends TGameOptionsAtoms {}
+interface ILocalStorageValues extends TGameOptionsValues {}
 
 export type TLocalStorageKey = keyof ILocalStorageValues;
 
@@ -31,6 +31,10 @@ export default class LocalStorageAtom<Key extends TLocalStorageKey> {
   }
 
   getInitialValue(): TLocalStorageValue<Key> | null {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
+
     const rawValue = localStorage.getItem(this.key);
 
     return rawValue && JSON.parse(rawValue);
@@ -43,10 +47,12 @@ export default class LocalStorageAtom<Key extends TLocalStorageKey> {
 
     this.value = value ?? this.defaultValue;
 
-    if (value === null) {
-      localStorage.removeItem(this.key);
-    } else {
-      localStorage.setItem(this.key, JSON.stringify(value));
+    if (typeof localStorage !== 'undefined') {
+      if (value === null) {
+        localStorage.removeItem(this.key);
+      } else {
+        localStorage.setItem(this.key, JSON.stringify(value));
+      }
     }
 
     for (const subscriber of this.subscribers) {

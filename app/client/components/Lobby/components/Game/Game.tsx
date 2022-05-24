@@ -14,7 +14,7 @@ interface ILobbyGameProps {
   players: number;
   maxPlayers: number;
   hasStarted: boolean;
-  onClick(): void;
+  onClick?(): void;
 }
 
 const Game: React.FC<ILobbyGameProps> = (props) => {
