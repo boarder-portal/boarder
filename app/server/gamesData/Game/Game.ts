@@ -169,6 +169,9 @@ class Game<Game extends EGame> {
         } else {
           this.players.splice(player.index);
 
+          this.sendUpdatePlayersEvent();
+          this.onUpdateGame(this.id);
+
           shouldDeleteGame = this.players.length === 0;
         }
 
