@@ -29,8 +29,6 @@ export default class Player extends Entity<EGame.SURVIVAL_ONLINE> {
   }
 
   *lifecycle(): TGenerator {
-    this.game.placeEntity(this, this.cell);
-
     while (true) {
       const direction = yield* this.waitForPlayerSocketEvent(EGameClientEvent.MOVE_PLAYER, {
         playerIndex: this.index,

@@ -25,8 +25,6 @@ export default class Base extends Entity<EGame.SURVIVAL_ONLINE> {
   }
 
   *lifecycle(): TGenerator {
-    this.game.placeEntity(this, this.cell);
-
     yield* this.eternity();
   }
 

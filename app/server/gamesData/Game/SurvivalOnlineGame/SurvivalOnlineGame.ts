@@ -14,16 +14,18 @@ import Zombie from 'server/gamesData/Game/SurvivalOnlineGame/entities/Zombie';
 
 export type TEntity = Base | Player | Tree | Zombie;
 
+export type TMapEntity = Base | Player | Tree | Zombie;
+
 export type TMovingEntity = Player | Zombie;
 
-export interface IServerCell<Entity extends TEntity = TEntity> {
+export interface IServerCell<Entity extends TMapEntity = TMapEntity> {
   x: number;
   y: number;
   biome: EBiome;
   entity: Entity | null;
 }
 
-export interface IServerCellWithEntity<Entity extends TEntity> extends IServerCell<Entity> {
+export interface IServerCellWithEntity<Entity extends TMapEntity> extends IServerCell<Entity> {
   entity: Entity;
 }
 
@@ -86,7 +88,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
 
     const baseCell = this.map[Math.floor(MAP_HEIGHT / 2)][Math.floor(MAP_WIDTH / 2)];
 
-    this.base = this.spawnEntity(new Base(this, { cell: baseCell }));
+    this.base = this.spawnMapEntity(new Base(this, { cell: baseCell }), baseCell);
 
     const cellsAroundBase = [
       this.map[baseCell.y][baseCell.x - 1],
@@ -95,17 +97,22 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
       this.map[baseCell.y + 1][baseCell.x],
     ];
 
-    this.players = this.getPlayersData((playerIndex) =>
-      this.spawnEntity(
+    this.players = this.getPlayersData((playerIndex) => {
+      const cell = cellsAroundBase[playerIndex];
+
+      return this.spawnMapEntity(
         new Player(this, {
-          cell: cellsAroundBase[playerIndex],
+          cell,
           index: playerIndex,
         }),
-      ),
-    );
+        cell,
+      );
+    });
 
     for (let i = 0; i < START_TREE_COUNT; i++) {
-      this.spawnEntity(new Tree(this, { cell: this.getRandomFreeCell() }));
+      const cell = this.getRandomFreeCell();
+
+      this.spawnMapEntity(new Tree(this, { cell }), cell);
     }
 
     this.spawnZombies(START_ZOMBIE_COUNT);
@@ -174,7 +181,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     this.sendGameUpdate([...new Set(cellsToUpdate)], false);
   }
 
-  placeEntity<Entity extends TEntity>(entity: Entity, cell: IServerCell): void {
+  placeEntity<Entity extends TMapEntity>(entity: Entity, cell: IServerCell): void {
     cell.entity = entity;
   }
 
@@ -191,8 +198,15 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     }
   }
 
+  spawnMapEntity<Entity extends TMapEntity>(entity: Entity, cell: IServerCell): Entity {
+    this.spawnEntity(entity);
+    this.placeEntity(entity, cell);
+
+    return entity;
+  }
+
   *spawnZombie(cell: IServerCellWithEntity<Zombie>): TGenerator {
-    const zombie = this.spawnEntity(new Zombie(this, { cell }));
+    const zombie = this.spawnMapEntity(new Zombie(this, { cell }), cell);
 
     this.zombies.add(zombie);
 

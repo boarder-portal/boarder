@@ -27,8 +27,6 @@ export default class Zombie extends Entity<EGame.SURVIVAL_ONLINE> {
   }
 
   *lifecycle(): TGenerator {
-    this.game.placeEntity(this, this.cell);
-
     yield* this.eternity();
   }
 
