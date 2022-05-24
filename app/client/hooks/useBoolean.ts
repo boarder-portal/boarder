@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 export interface IUseBoolean {
   value: boolean;
-  setValue(value: boolean): void;
+  setValue(value: boolean | ((value: boolean) => boolean)): void;
   toggle(): void;
   setTrue(): void;
   setFalse(): void;

@@ -1,62 +1,51 @@
-import React, { useRef } from 'react';
-import Popover, { PopoverOrigin, PopoverProps } from '@material-ui/core/Popover';
+import { FC, ReactNode, useCallback, MouseEvent } from 'react';
 import classNames from 'classnames';
 
-import Flex from 'client/components/common/Flex/Flex';
-
 import { useBoolean } from 'client/hooks/useBoolean';
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './Dropdown.pcss';
 
 interface IDropdownProps {
   className?: string;
-  popup: React.ReactNode;
-  anchorOrigin?: PopoverOrigin;
-  transformOrigin?: PopoverProps['transformOrigin'];
+  popup: ReactNode;
+  popupPosition?: 'bottomLeft' | 'bottomCenter' | 'bottomRight';
 }
 
-const DEFAULT_ANCHOR_ORIGIN: PopoverOrigin = {
-  vertical: 'bottom',
-  horizontal: 'center',
-};
+const Dropdown: FC<IDropdownProps> = (props) => {
+  const { className, popup, popupPosition = 'bottomCenter', children } = props;
 
-const DEFAULT_TRANSFORM_ORIGIN: PopoverProps['transformOrigin'] = {
-  horizontal: 'center',
-  vertical: 'top',
-};
+  const { value: visible, setFalse: close, setValue } = useBoolean(false);
 
-const Dropdown: React.FC<IDropdownProps> = (props) => {
-  const {
-    className,
-    children,
-    popup,
-    anchorOrigin = DEFAULT_ANCHOR_ORIGIN,
-    transformOrigin = DEFAULT_TRANSFORM_ORIGIN,
-  } = props;
+  useGlobalListener('click', document, close);
 
-  const toggleElRef = useRef<HTMLDivElement | null>(null);
+  const handleTriggerClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
 
-  const { value: opened, setFalse: close, toggle } = useBoolean(false);
+      setValue((v) => !v);
+    },
+    [setValue],
+  );
+
+  const handlePopupClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   return (
     <div className={classNames(styles.root, className)}>
-      <Flex ref={toggleElRef} onClick={toggle}>
+      <div className={styles.trigger} onClick={handleTriggerClick}>
         {children}
-      </Flex>
+      </div>
 
-      <Popover
-        classes={{
-          paper: styles.popup,
-        }}
-        open={opened}
-        anchorEl={toggleElRef.current}
-        anchorOrigin={anchorOrigin}
-        transformOrigin={transformOrigin}
-        elevation={3}
-        onClose={close}
-      >
-        {popup}
-      </Popover>
+      {visible && (
+        <div
+          className={classNames(styles.popup, styles[popupPosition], { [styles.visible]: visible })}
+          onClick={handlePopupClick}
+        >
+          {popup}
+        </div>
+      )}
     </div>
   );
 };

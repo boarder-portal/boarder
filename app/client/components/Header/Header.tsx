@@ -6,9 +6,9 @@ import { IUser } from 'common/types';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
+import Dropdown from 'client/components/common/Dropdown/Dropdown';
 
 import userAtom from 'client/atoms/userAtom';
 
@@ -46,7 +46,7 @@ const Header: React.FC<IHeaderProps> = (props) => {
       </Link>
 
       {user ? (
-        <Dropdown className={styles.login} popup={userPopup}>
+        <Dropdown className={styles.login} popup={userPopup} popupPosition="bottomRight">
           {user.login}
         </Dropdown>
       ) : (
