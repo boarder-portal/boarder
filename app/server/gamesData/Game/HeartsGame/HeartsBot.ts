@@ -22,9 +22,9 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
         if (hand) {
           const indexes = shuffle(hand.map((_, index) => index)).slice(0, 3);
 
-          for (const index of indexes) {
-            yield* this.delay(random(200, 300));
+          yield* this.delay(random(200, 300));
 
+          for (const index of indexes) {
             this.sendSocketEvent(EGameClientEvent.CHOOSE_CARD, index);
           }
         }
