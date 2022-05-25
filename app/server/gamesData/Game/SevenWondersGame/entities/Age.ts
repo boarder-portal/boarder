@@ -377,7 +377,7 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
   };
 
   isLastTurn(): boolean {
-    return this.playersData.some(({ hand }) => hand.length <= 1);
+    return this.phase === EAgePhase.BUILD_STRUCTURES && this.playersData.some(({ hand }) => hand.length <= 1);
   }
 
   toJSON(): IAge {
