@@ -8,13 +8,8 @@ export interface IEntityContext<G extends EGame> {
   game: Game<G>;
 }
 
-interface IEffectResult<Result> {
-  promise: Promise<Result>;
-  cancel(): void;
-}
-
 interface IGeneratorResult<Result> {
-  run(): Promise<Result>;
+  run(resolve: TResolve<Result>, reject: TReject): void;
   cancel(): void;
 }
 
@@ -33,10 +28,10 @@ export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
 export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
 
-type TGeneratorPrevResult<Next> =
+type TEffectResult<Result> =
   | {
       type: 'success';
-      value: Next;
+      value: Result;
     }
   | {
       type: 'error';
@@ -46,6 +41,10 @@ type TGeneratorPrevResult<Next> =
 type TAbortCallback = () => unknown;
 
 type TCancelTask = (() => void) | undefined;
+
+type TResolve<Result> = (result: Result) => unknown;
+
+type TReject = (err: unknown) => unknown;
 
 type TAllEffectReturnValue<T extends TGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
@@ -73,14 +72,16 @@ export interface ITrigger<Value = void> {
 
 export default abstract class Entity<Game extends EGame, Result = unknown> {
   #children = new Set<Entity<Game>>();
-  #lifecycle: Promise<Result> | null = null;
-  #parent: Entity<Game> | null = null;
+  #parent: Entity<Game, any> | null = null;
   #abortCallbacks = new Set<TAbortCallback>();
+  #successCallbacks = new Set<TResolve<Result>>();
+  #errorCallbacks = new Set<TReject>();
+  #started = false;
   spawned = false;
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
 
-  constructor(parentOrContext: IEntityContext<Game> | Entity<Game>) {
+  constructor(parentOrContext: IEntityContext<Game> | Entity<Game, any>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;
@@ -101,38 +102,51 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     let cancel: TCancelTask;
 
     return {
-      run: async () => {
-        let prevResult: TGeneratorPrevResult<never> = {
+      run: (resolve, reject) => {
+        let prevResult: TEffectResult<never> = {
           type: 'success',
           value: undefined as never,
         };
 
-        while (true) {
-          const { value, done } =
-            prevResult.type === 'success' ? generator.next(prevResult.value) : generator.throw(prevResult.error);
+        const runIteration = () => {
+          let iteratorResult: IteratorResult<TEffectCallback<unknown>, Result>;
 
-          if (done) {
-            return value;
+          try {
+            iteratorResult =
+              prevResult.type === 'success' ? generator.next(prevResult.value) : generator.throw(prevResult.error);
+          } catch (err) {
+            reject(err);
+
+            return;
           }
 
-          const effectResult: IEffectResult<unknown> = this.#handleAnyEffect(value);
+          if (iteratorResult.done) {
+            return resolve(iteratorResult.value);
+          }
+
+          const effectResult: IGeneratorResult<unknown> = this.#handleAnyEffect(iteratorResult.value);
 
           cancel = effectResult.cancel;
 
-          try {
-            prevResult = {
-              type: 'success',
-              value: (await effectResult.promise) as never,
-            };
-          } catch (err) {
-            prevResult = {
-              type: 'error',
-              error: err,
-            };
-          }
+          effectResult.run(
+            (result) => {
+              prevResult = {
+                type: 'success',
+                value: result as never,
+              };
 
-          cancel = undefined;
-        }
+              runIteration();
+            },
+            (error) => {
+              prevResult = {
+                type: 'error',
+                error,
+              };
+            },
+          );
+        };
+
+        runIteration();
       },
       cancel() {
         cancel?.();
@@ -140,20 +154,36 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #handleAnyEffect<Result>(callback: TEffectCallback<Result>): IEffectResult<Result> {
+  #handleAnyEffect<Result>(callback: TEffectCallback<Result>): IGeneratorResult<Result> {
     let unregisterEffect: TCancelTask;
 
     return {
-      cancel: () => unregisterEffect?.(),
-      promise: new Promise<Result>((resolve, reject) => {
+      run: (resolve, reject) => {
+        let async = false;
+        let syncResult: TEffectResult<Result> | undefined;
+
         const cleanup = callback(
           (result) => {
-            unregisterEffect?.();
-            resolve(result);
+            if (async) {
+              unregisterEffect?.();
+              resolve(result);
+            } else {
+              syncResult = {
+                type: 'success',
+                value: result,
+              };
+            }
           },
           (error) => {
-            unregisterEffect?.();
-            reject(error);
+            if (async) {
+              unregisterEffect?.();
+              reject(error);
+            } else {
+              syncResult = {
+                type: 'error',
+                error,
+              };
+            }
           },
         );
 
@@ -168,7 +198,16 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
           unregisterEffect = undefined;
         };
-      }).finally(() => unregisterEffect?.()),
+
+        if (syncResult?.type === 'success') {
+          resolve(syncResult.value);
+        } else if (syncResult?.type === 'error') {
+          reject(syncResult.error);
+        }
+
+        async = true;
+      },
+      cancel: () => unregisterEffect?.(),
     };
   }
 
@@ -184,7 +223,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
       const cancels = generators.map((generator, index) => {
         const { run, cancel } = this.#getGeneratorResult(generator);
 
-        run().then((result) => {
+        run((result) => {
           results[index] = result;
 
           resultsLeft--;
@@ -265,7 +304,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
       const cancels = generators.map((generator) => {
         const { run, cancel } = this.#getGeneratorResult(generator);
 
-        run().then(resolve as any, reject);
+        run(resolve as any, reject);
 
         return cancel;
       });
@@ -290,7 +329,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
             cancelTask = cancel;
 
-            const result = await run();
+            const result = await new Promise(run);
 
             cancelTask = undefined;
 
@@ -312,89 +351,103 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  async run(): Promise<Result> {
-    if (this.#lifecycle) {
-      return this.#lifecycle;
+  run(resolve: TResolve<Result>, reject: TReject): void {
+    this.#successCallbacks.add(resolve);
+    this.#errorCallbacks.add(reject);
+
+    if (this.#started) {
+      return;
     }
 
     if (!this.spawned) {
       throw new Error('You need to spawn the entity first');
     }
 
-    return (this.#lifecycle = (async () => {
-      let cancelGenerator: TCancelTask;
+    this.#started = true;
 
-      try {
-        const beforeLifecycleGenerator = this.#getGeneratorResult(this.beforeLifecycle());
+    ((resolve: TResolve<Result>, reject: TReject) => {
+      this.#getGeneratorResult(this.beforeLifecycle()).run(() => {
+        const runAfterLifecycle = (resolve: TResolve<void>, reject: TReject) => {
+          this.#getGeneratorResult(this.afterLifecycle()).run(resolve, reject);
+        };
 
-        cancelGenerator = beforeLifecycleGenerator.cancel;
-
-        await beforeLifecycleGenerator.run();
-
-        const lifecycleGenerator = this.#getGeneratorResult(this.lifecycle());
-
-        cancelGenerator = lifecycleGenerator.cancel;
-
-        const result = await lifecycleGenerator.run();
-
-        cancelGenerator = undefined;
-
-        return result;
-      } finally {
-        cancelGenerator?.();
-
-        try {
-          const afterLifecycleGenerator = this.#getGeneratorResult(this.afterLifecycle());
-
-          cancelGenerator = afterLifecycleGenerator.cancel;
-
-          await afterLifecycleGenerator.run();
-        } finally {
-          cancelGenerator?.();
-
-          this.destroy();
-        }
-      }
-    })());
+        this.#getGeneratorResult(this.lifecycle()).run(
+          (result) => {
+            runAfterLifecycle(() => resolve(result), reject);
+          },
+          (err) => {
+            runAfterLifecycle(() => reject(err), reject);
+          },
+        );
+      }, reject);
+    })(
+      (result) => {
+        this.#successCallbacks.forEach((successCallback) => successCallback(result));
+      },
+      (err) => {
+        this.#errorCallbacks.forEach((errorCallback) => errorCallback(err));
+      },
+    );
   }
 
-  spawnEntity<E extends Entity<Game>>(entity: E): E {
+  spawnEntity<E extends Entity<Game, any>>(entity: E): E {
     entity.spawned = true;
     entity.#parent = this;
 
     this.#children.add(entity);
 
-    (async () => {
-      try {
-        await entity.run();
-      } catch {
-        // empty
-      } finally {
-        this.#children.delete(entity);
-      }
-    })();
+    const removeFromChildren = () => {
+      this.#children.delete(entity);
+    };
+
+    entity.run(removeFromChildren, removeFromChildren);
 
     return entity;
   }
 
   spawnTask<Result>(action: TGenerator<Result>): TGenerator<Result> {
     const { run } = this.#getGeneratorResult(action);
-    const promise = run();
 
-    promise.catch(() => {
-      // empty
-    });
+    let taskResult: TEffectResult<Result> | undefined;
+    let taskResolve: TResolve<Result> | undefined;
+    let taskReject: TReject | undefined;
+
+    run(
+      (result) => {
+        taskResult = {
+          type: 'success',
+          value: result,
+        };
+
+        taskResolve?.(result);
+      },
+      (error) => {
+        taskResult = {
+          type: 'error',
+          error,
+        };
+
+        taskReject?.(error);
+      },
+    );
 
     return (function* (): TEffectGenerator<Result> {
       return yield (resolve, reject) => {
-        promise.then(resolve, reject);
+        if (taskResult?.type === 'success') {
+          resolve(taskResult.value);
+        } else if (taskResult?.type === 'error') {
+          reject(taskResult.error);
+        } else {
+          taskResolve = resolve;
+          taskReject = reject;
+        }
       };
     })();
   }
 
   *[Symbol.iterator](): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
-      this.run().then(resolve, reject);
+      this.run(resolve, reject);
     };
   }
 

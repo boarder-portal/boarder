@@ -282,17 +282,16 @@ class Game<Game extends EGame> {
       game: this,
     });
 
-    (async () => {
-      await entity.run();
+    entity.run(
+      () => this.end(),
+      (err) => {
+        if (!this.deleted) {
+          console.log('Error in game', err);
 
-      this.end();
-    })().catch((err) => {
-      if (!this.deleted) {
-        console.log('Error in game', err);
-
-        this.delete();
-      }
-    });
+          this.delete();
+        }
+      },
+    );
 
     return entity;
   }
@@ -404,6 +403,8 @@ class Game<Game extends EGame> {
     });
 
     this.gameEntity = this.initMainGameEntity();
+
+    this.sendGameData();
   }
 }
 

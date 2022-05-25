@@ -110,6 +110,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       leadersDraft: this.spawnEntity(new LeadersDraft(this)),
     };
 
+    this.sendGameInfo();
+
     const pickedLeaders = yield* this.phase.leadersDraft;
 
     this.playersData.forEach((playerData, index) => {

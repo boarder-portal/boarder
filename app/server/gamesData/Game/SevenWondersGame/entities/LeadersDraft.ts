@@ -31,8 +31,6 @@ export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICar
       this.playersData[playerIndex].leadersPool = this.game.extractFromLeadersDeck(4);
     });
 
-    this.game.sendGameInfo();
-
     while (this.playersData.every(({ leadersPool }) => leadersPool.length !== 1)) {
       this.turn = this.spawnEntity(
         new Turn(this.game, {
