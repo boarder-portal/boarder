@@ -42,4 +42,8 @@ export type TGameClientEventListener<Game extends EGame, Event extends TGameClie
   data: TGameClientEventData<Game, Event>,
 ) => unknown;
 
+export type TGameServerEventListener<Game extends EGame, Event extends TGameServerEvent<Game>> = (
+  data: TGameServerEventData<Game, Event>,
+) => unknown;
+
 export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];

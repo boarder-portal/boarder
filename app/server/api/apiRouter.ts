@@ -22,9 +22,11 @@ apiRouter
 
     await writeDB(db);
 
-    res.status(200).json({
+    req.session.user = {
       login: user.login,
-    });
+    };
+
+    res.status(200).json(req.session.user);
   })
   .post('/login', async (req: Request<unknown, unknown, ILoginParams, unknown>, res) => {
     const { user } = req.body;
@@ -41,9 +43,7 @@ apiRouter
       login: authUser.login,
     };
 
-    res.status(200).json({
-      login: authUser.login,
-    });
+    res.status(200).json(req.session.user);
   })
   .post('/logout', async (req: Request, res) => {
     req.session.destroy?.();

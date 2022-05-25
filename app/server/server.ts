@@ -7,6 +7,8 @@ import multer from 'multer';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 
+import { PORT } from 'server/constants';
+
 import { IUser } from 'common/types';
 
 import app from 'server/expressApp';
@@ -52,7 +54,7 @@ app
   .use('/api', apiRouter)
   .get('*', render);
 
-httpServer.listen(2222, () => console.log('\nListening on port 2222...'));
+httpServer.listen(PORT, () => console.log(`\nListening on port ${PORT}...\n`));
 
 declare module 'express-session' {
   interface SessionData {

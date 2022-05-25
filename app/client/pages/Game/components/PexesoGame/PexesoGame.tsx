@@ -213,7 +213,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
             })}
             alignItems="center"
           >
-            <span>{`${localPlayer.login} ${localPlayer.data.score}`}</span>
+            <span>{`${localPlayer.name} ${localPlayer.data.score}`}</span>
           </Flex>
         ))}
       </Flex>

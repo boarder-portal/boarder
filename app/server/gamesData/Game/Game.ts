@@ -1,6 +1,8 @@
 import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
+import pick from 'lodash/pick';
+import times from 'lodash/times';
 
 import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePlayer } from 'common/types';
 import {
@@ -19,6 +21,7 @@ import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
 import removeNamespace from 'server/utilities/removeNamespace';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 
 import ioInstance from 'server/io';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
@@ -28,6 +31,7 @@ import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
+import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
 export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
   sockets: Set<TGameServerSocket<Game>>;
@@ -69,10 +73,11 @@ const GAME_ENTITIES_MAP: {
   [EGame.HEARTS]: HeartsGame,
 };
 
-// FIXME: remove after bot api
-const BOTS_AVAILABLE: Partial<Record<EGame, boolean>> = {
-  [EGame.SEVEN_WONDERS]: true,
+export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {
+  [EGame.SEVEN_WONDERS]: SevenWondersBot,
 };
+
+const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];
 
 class Game<Game extends EGame> {
   io: TGameNamespace<Game>;
@@ -106,20 +111,16 @@ class Game<Game extends EGame> {
     this.io.use(ioSessionMiddleware);
     this.io.on('connection', (socket) => {
       const user = socket.user;
-      let player: IServerGamePlayer<Game> | undefined;
+      let player = this.getSocketPlayer(socket);
 
       if (user) {
-        player = this.getPlayerByLogin(user.login);
-
         if (!this.hasStarted() && !player && this.players.length < this.options.maxPlayersCount) {
-          player = {
+          player = this.addPlayer({
             ...user,
+            name: user.login,
             status: EPlayerStatus.NOT_READY,
-            index: this.players.length,
-            sockets: new Set([]),
-          };
-
-          this.players.push(player);
+            isBot: false,
+          });
 
           this.sendUpdatePlayersEvent();
           this.onUpdateGame(this.id);
@@ -128,9 +129,9 @@ class Game<Game extends EGame> {
         if (player) {
           this.clearDeleteTimeout();
         }
-
-        player?.sockets.add(socket);
       }
+
+      player?.sockets.add(socket);
 
       forEach(this.temporaryListeners, (listeners, event) => {
         listeners?.forEach((listener) => {
@@ -145,10 +146,28 @@ class Game<Game extends EGame> {
 
         player.status = player.status === EPlayerStatus.READY ? EPlayerStatus.NOT_READY : EPlayerStatus.READY;
 
-        if (
-          this.players.every(({ status }) => status === EPlayerStatus.READY) &&
-          (this.players.length >= this.options.minPlayersCount || this.areBotsAvailable())
-        ) {
+        let isEnoughPlayers = false;
+
+        if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
+          isEnoughPlayers = this.players.length >= this.options.minPlayersCount;
+
+          if (!isEnoughPlayers && this.areBotsAvailable()) {
+            const botNames = shuffle(BOT_NAMES);
+
+            times(this.options.minPlayersCount - this.players.length, (index) => {
+              this.addPlayer({
+                login: `bot-${index}`,
+                name: botNames[index],
+                status: EPlayerStatus.READY,
+                isBot: true,
+              });
+            });
+
+            isEnoughPlayers = true;
+          }
+        }
+
+        if (isEnoughPlayers) {
           this.start();
         } else {
           this.sendUpdatePlayersEvent();
@@ -194,8 +213,20 @@ class Game<Game extends EGame> {
     this.setDeleteTimeout();
   }
 
+  addPlayer(playerData: Omit<IGamePlayer, 'index'>): IServerGamePlayer<Game> {
+    const player: IServerGamePlayer<Game> = {
+      ...playerData,
+      index: this.players.length,
+      sockets: new Set(),
+    };
+
+    this.players.push(player);
+
+    return player;
+  }
+
   areBotsAvailable(): boolean {
-    return Boolean(process.env.NODE_ENV !== 'production' && BOTS_AVAILABLE[this.game]);
+    return Boolean(process.env.NODE_ENV !== 'production' && BOTS[this.game]);
   }
 
   clearDeleteTimeout(): void {
@@ -220,16 +251,20 @@ class Game<Game extends EGame> {
     (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.END);
   }
 
-  getPlayerByLogin(login: string | undefined): IServerGamePlayer<Game> | undefined {
-    return this.players.find((player) => player.login === login);
+  getClientPlayers(): IGamePlayer[] {
+    return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot']));
   }
 
-  getClientPlayers(): IGamePlayer[] {
-    return this.players.map((player) => ({
-      login: player.login,
-      status: player.status,
-      index: player.index,
-    }));
+  getSocketPlayer(socket: TGameServerSocket<Game>): IServerGamePlayer<Game> | undefined {
+    const user = socket.user;
+
+    if (user) {
+      return this.players.find(({ login }) => user.login === login);
+    }
+
+    const botIndex = Number(socket.handshake.query.botIndex);
+
+    return this.players[botIndex];
   }
 
   hasStarted(): boolean {
@@ -265,7 +300,7 @@ class Game<Game extends EGame> {
     const game = this;
 
     const playerListener = function (this: TGameServerSocket<Game>, data: TGameClientEventData<Game, Event>) {
-      const socketPlayer = game.getPlayerByLogin(this.user?.login);
+      const socketPlayer = game.getSocketPlayer(this);
 
       if (!socketPlayer) {
         return;

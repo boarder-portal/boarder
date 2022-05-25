@@ -88,7 +88,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
 
       <Flex direction="column" alignItems="center">
         <Text size="xl" weight="bold">
-          {player.login}
+          {player.name}
         </Text>
         <Text size="l">{player.data.score}</Text>
       </Flex>

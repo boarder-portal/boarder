@@ -47,7 +47,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
         return (
           <div key={player.login} className={classNames(styles.player, { [styles.active]: isActive })}>
             <div>
-              <span>{player.login}</span>
+              <span>{player.name}</span>
               {isActive && <span> {turnSecondsLeft}</span>}
             </div>
 

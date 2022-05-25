@@ -16,8 +16,10 @@ export enum EPlayerStatus {
 }
 
 export interface IGamePlayer extends IUser {
+  name: string;
   status: EPlayerStatus;
   index: number;
+  isBot: boolean;
 }
 
 export interface ICoords {

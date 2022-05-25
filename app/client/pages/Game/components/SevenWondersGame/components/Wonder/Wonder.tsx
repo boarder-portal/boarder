@@ -110,7 +110,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       </div>
 
       <Flex className={styles.info} between={2}>
-        <div>{player.login}</div>
+        <div>{player.name}</div>
         {player.data.points > 0 && <div>{`Очки: ${player.data.points}`}</div>}
         <div>{`Монет: ${player.data.coins}`}</div>
         {warPoints.length ? <div>{`Война ${warPoints.join(', ')}`}</div> : null}

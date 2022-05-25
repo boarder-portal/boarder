@@ -74,7 +74,7 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
 
         {players.map((player) => (
           <div key={player.login}>
-            {player.login}: {player.data.score}
+            {player.name}: {player.data.score}
           </div>
         ))}
       </Flex>

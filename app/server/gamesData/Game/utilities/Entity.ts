@@ -1,14 +1,6 @@
-import {
-  EGame,
-  TGameClientEvent,
-  TGameClientEventData,
-  TGameOptions,
-  TGameServerEvent,
-  TGameServerEventData,
-} from 'common/types/game';
-import { IGamePlayer } from 'common/types';
+import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
 
-import Game, { ISendSocketEventOptions } from 'server/gamesData/Game/Game';
+import Game from 'server/gamesData/Game/Game';
 
 export interface IEntityContext<G extends EGame> {
   game: Game<G>;
@@ -38,6 +30,16 @@ export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = G
 export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
 export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
+
+type TGeneratorPrevResult<Next> =
+  | {
+      type: 'success';
+      value: Next;
+    }
+  | {
+      type: 'error';
+      error: unknown;
+    };
 
 type TAbortCallback = () => unknown;
 
@@ -98,20 +100,34 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
     return {
       run: async () => {
-        let prevResult: unknown;
+        let prevResult: TGeneratorPrevResult<never> = {
+          type: 'success',
+          value: undefined as never,
+        };
 
         while (true) {
-          const { value, done } = generator.next(prevResult as never);
+          const { value, done } =
+            prevResult.type === 'success' ? generator.next(prevResult.value) : generator.throw(prevResult.error);
 
           if (done) {
             return value;
           }
 
-          const effectResult = this.#handleAnyEffect(value);
+          const effectResult: IEffectResult<unknown> = this.#handleAnyEffect(value);
 
           cancel = effectResult.cancel;
 
-          prevResult = await effectResult.promise;
+          try {
+            prevResult = {
+              type: 'success',
+              value: (await effectResult.promise) as never,
+            };
+          } catch (err) {
+            prevResult = {
+              type: 'error',
+              error: err,
+            };
+          }
 
           cancel = undefined;
         }
@@ -154,6 +170,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
+  *afterLifecycle(): TGenerator {
+    // empty
+  }
+
   *all<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
@@ -181,6 +201,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
         });
       };
     };
+  }
+
+  *beforeLifecycle(): TGenerator {
+    // empty
   }
 
   *async<Result>(callback: TEffectCallback<Result>): TEffectGenerator<Result> {
@@ -232,29 +256,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     for (const unsubscriber of this.#abortCallbacks) {
       unsubscriber();
     }
-  }
-
-  forEachPlayer(callback: (playerIndex: number) => unknown): void {
-    this.getPlayers().forEach(({ index }) => callback(index));
-  }
-
-  getPlayers(): IGamePlayer[] {
-    return this.context.game.players;
-  }
-
-  getPlayersData<Data>(callback: (playerIndex: number) => Data): Data[] {
-    return this.getPlayers().map(({ index }) => callback(index));
-  }
-
-  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer & { data: Data })[] {
-    return this.getPlayers().map((player) => ({
-      ...player,
-      data: callback(player.index),
-    }));
-  }
-
-  get playersCount(): number {
-    return this.getPlayers().length;
   }
 
   *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
@@ -322,11 +323,23 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
       let cancelGenerator: TCancelTask;
 
       try {
-        const { run, cancel } = this.#getGeneratorResult(this.lifecycle());
+        const beforeLifecycleGenerator = this.#getGeneratorResult(this.beforeLifecycle());
 
-        cancelGenerator = cancel;
+        cancelGenerator = beforeLifecycleGenerator.cancel;
 
-        const result = await run();
+        await beforeLifecycleGenerator.run();
+
+        const lifecycleGenerator = this.#getGeneratorResult(this.lifecycle());
+
+        cancelGenerator = lifecycleGenerator.cancel;
+
+        const result = await lifecycleGenerator.run();
+
+        const afterLifecycleGenerator = this.#getGeneratorResult(this.afterLifecycle());
+
+        cancelGenerator = afterLifecycleGenerator.cancel;
+
+        await afterLifecycleGenerator.run();
 
         cancelGenerator = undefined;
 

@@ -93,7 +93,6 @@ export interface IGamePlayerData {
   coins: number;
   victoryPoints: number[];
   defeatPoints: number[];
-  isBot: boolean;
   leadersHand: ICard[];
   copiedCard: ICard | null;
 }

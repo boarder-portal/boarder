@@ -1,5 +1,4 @@
 import shuffle from 'lodash/shuffle';
-import times from 'lodash/times';
 
 import { ALL_LEADERS } from 'common/constants/games/sevenWonders';
 
@@ -24,9 +23,8 @@ import {
   IScientificSymbolsEffect,
   TEffect,
 } from 'common/types/sevenWonders/effects';
-import { EPlayerStatus } from 'common/types';
 
-import { IEntityContext, TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
@@ -56,24 +54,21 @@ interface IAgePhase {
 }
 
 export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
-  playersData: IGamePlayerData[] = this.getPlayersData(() => this.getPlayerInitialData(false));
+  playersData: IGamePlayerData[] = this.getPlayersData(() => ({
+    points: 0,
+    builtCards: [],
+    city: ECity.RHODOS,
+    citySide: Number(Math.random() > 0.5),
+    builtStages: [],
+    coins: 6,
+    victoryPoints: [],
+    defeatPoints: [],
+    leadersHand: [],
+    copiedCard: null,
+  }));
   phase: ILeadersDraftPhase | IAgePhase | null = null;
   discard: ICard[] = [];
   leadersDeck: ICard[] = [];
-
-  constructor(context: IEntityContext<EGame.SEVEN_WONDERS>) {
-    super(context);
-
-    // FIXME: remove after bot api
-    times(this.options.minPlayersCount - this.playersCount, (index) => {
-      this.getPlayers().push({
-        status: EPlayerStatus.DISCONNECTED,
-        login: `bot-${index}`,
-        index: this.getPlayers().length,
-      });
-      this.playersData.push(this.getPlayerInitialData(true));
-    });
-  }
 
   *lifecycle(): TGenerator {
     const shuffledCities = shuffle(ALL_CITIES);
@@ -367,22 +362,6 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
 
   getPlayerCity(playerIndex: number): ICitySide {
     return getPlayerCity(this.playersData[playerIndex]);
-  }
-
-  getPlayerInitialData(isBot: boolean): IGamePlayerData {
-    return {
-      points: 0,
-      builtCards: [],
-      city: ECity.RHODOS,
-      citySide: Number(Math.random() > 0.5),
-      builtStages: [],
-      coins: 6,
-      victoryPoints: [],
-      defeatPoints: [],
-      isBot,
-      leadersHand: [],
-      copiedCard: null,
-    };
   }
 
   getPlayerShieldsCount(playerIndex: number): number {
