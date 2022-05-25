@@ -1,22 +1,14 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { GAME_NAMES } from 'common/constants/games/common';
+
 import { EGame } from 'common/types/game';
 
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Home.pcss';
-
-const GAME_NAMES: Record<EGame, string> = {
-  [EGame.PEXESO]: 'Pexeso',
-  [EGame.SURVIVAL_ONLINE]: 'Выживать онлайн',
-  [EGame.SET]: 'Сет',
-  [EGame.ONITAMA]: 'Онитама',
-  [EGame.CARCASSONNE]: 'Каркассон',
-  [EGame.SEVEN_WONDERS]: 'Семь чудес',
-  [EGame.HEARTS]: 'Червы',
-};
 
 const Home: React.FC = () => {
   const history = useHistory();

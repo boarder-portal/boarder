@@ -24,6 +24,7 @@ import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
+import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import useSocket from 'client/hooks/useSocket';
@@ -47,6 +48,7 @@ const GAMES_MAP: {
   [EGame.CARCASSONNE]: CarcassonneGame,
   [EGame.SEVEN_WONDERS]: SevenWondersGame,
   [EGame.HEARTS]: HeartsGame,
+  [EGame.BOMBERS]: BombersGame,
 };
 
 function Game<G extends EGame>() {

@@ -31,6 +31,7 @@ import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
+import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 
@@ -72,6 +73,7 @@ const GAME_ENTITIES_MAP: {
   [EGame.CARCASSONNE]: CarcassonneGame,
   [EGame.SEVEN_WONDERS]: SevenWondersGame,
   [EGame.HEARTS]: HeartsGame,
+  [EGame.BOMBERS]: BombersGame,
 };
 
 export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {

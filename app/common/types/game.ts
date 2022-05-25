@@ -8,6 +8,7 @@ export enum EGame {
   CARCASSONNE = 'carcassonne',
   SEVEN_WONDERS = 'sevenWonders',
   HEARTS = 'hearts',
+  BOMBERS = 'bombers',
 }
 
 export interface IGamesParams {}
