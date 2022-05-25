@@ -254,7 +254,7 @@ class Game<Game extends EGame> {
   }
 
   end(): void {
-    (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.END);
+    this.sendSocketEvent(ECommonGameServerEvent.END, undefined);
   }
 
   getClientPlayers(): IGamePlayer[] {
@@ -317,14 +317,16 @@ class Game<Game extends EGame> {
       }
     };
 
-    this.io.sockets.forEach((socket) => {
+    const { sockets } = playerIndex === undefined ? this.io : this.players[playerIndex];
+
+    sockets.forEach((socket) => {
       socket.on(event, playerListener as any);
     });
 
     (this.temporaryListeners[event] ||= new Set())?.add(playerListener);
 
     return () => {
-      this.io.sockets.forEach((socket) => {
+      sockets.forEach((socket) => {
         socket.off(event, playerListener);
       });
 
@@ -339,8 +341,10 @@ class Game<Game extends EGame> {
       players: this.getClientPlayers(),
     };
 
-    // @ts-ignore
-    (socket ?? this.io).emit(ECommonGameServerEvent.GET_DATA, gameData);
+    this.sendSocketEvent(ECommonGameServerEvent.GET_DATA, gameData as any, {
+      socket,
+      batch: true,
+    });
   }
 
   sendSocketEvent<Event extends TGameServerEvent<Game>>(
@@ -384,7 +388,7 @@ class Game<Game extends EGame> {
   }
 
   sendUpdatePlayersEvent(): void {
-    (this.io as TGameNamespace<EGame>).emit(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
+    this.sendSocketEvent(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
   }
 
   setDeleteTimeout(): void {
@@ -400,8 +404,6 @@ class Game<Game extends EGame> {
     });
 
     this.gameEntity = this.initMainGameEntity();
-
-    this.sendGameData();
   }
 }
 

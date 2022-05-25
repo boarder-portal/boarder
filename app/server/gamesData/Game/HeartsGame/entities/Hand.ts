@@ -60,6 +60,7 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
     });
 
     this.sortHands();
+    this.game.sendGameInfo();
 
     if (this.stage === EHandStage.PASS) {
       yield* this.passPhase();

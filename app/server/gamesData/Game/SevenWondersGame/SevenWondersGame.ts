@@ -110,8 +110,6 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       leadersDraft: this.spawnEntity(new LeadersDraft(this)),
     };
 
-    this.sendGameInfo();
-
     const pickedLeaders = yield* this.phase.leadersDraft;
 
     this.playersData.forEach((playerData, index) => {
@@ -128,8 +126,6 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         ),
       };
 
-      this.sendGameInfo();
-
       yield* this.phase.age;
 
       this.sendGameInfo();
@@ -138,6 +134,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     this.playersData.forEach((playerData, playerIndex) => {
       playerData.points = this.calculatePlayerMaxPoints(playerIndex);
     });
+
+    this.phase = null;
 
     this.sendGameInfo();
   }

@@ -17,6 +17,11 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     yield* super.beforeLifecycle();
 
     this.spawnTask(this.spawnBots());
+
+    // FIXME: remove this nasty hack
+    setTimeout(() => {
+      this.context.game.sendGameData();
+    }, 0);
   }
 
   getGameInfo(): TGameInfo<Game> {
