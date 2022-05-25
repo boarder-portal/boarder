@@ -19,6 +19,6 @@ export default function useGameOptions<Game extends EGame>(game: Game): IUseGame
   return {
     options,
     setOptions,
-    refreshDefaultOptions: useImmutableCallback(() => setDefaultOptions(options as any, { refreshDefault: true })),
+    refreshDefaultOptions: useImmutableCallback(() => setDefaultOptions(options, { refreshDefault: true })),
   };
 }

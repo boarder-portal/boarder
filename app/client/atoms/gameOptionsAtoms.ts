@@ -10,7 +10,7 @@ import { DEFAULT_GAME_OPTIONS as HEARTS_OPTIONS } from 'common/constants/games/h
 
 import { EGame, TGameOptions } from 'common/types/game';
 
-import LocalStorageAtom, { EGameDefaultOptionsKey } from 'client/utilities/LocalStorageAtom';
+import LocalStorageAtom, { GAME_OPTIONS_KEYS } from 'client/utilities/LocalStorageAtom';
 
 export const DEFAULT_OPTIONS: {
   [Game in EGame]: TGameOptions<Game>;
@@ -25,7 +25,5 @@ export const DEFAULT_OPTIONS: {
 };
 
 export const gameOptionsAtoms = mapValues(mapKeys(EGame), (game) => {
-  return new LocalStorageAtom(`game/${game}/defaultOptions`, DEFAULT_OPTIONS[game]);
-}) as {
-  [Game in EGame]: LocalStorageAtom<EGameDefaultOptionsKey<Game>>;
-};
+  return new LocalStorageAtom(GAME_OPTIONS_KEYS[game], DEFAULT_OPTIONS[game]);
+});

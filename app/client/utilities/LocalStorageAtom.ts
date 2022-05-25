@@ -1,9 +1,7 @@
 import { EGame, TGameOptions } from 'common/types/game';
 
-export type EGameDefaultOptionsKey<Game extends EGame> = `game/${Game}/defaultOptions`;
-
 type TGameOptionsValues = {
-  [Game in EGame as EGameDefaultOptionsKey<Game>]: TGameOptions<Game>;
+  [Game in EGame as typeof GAME_OPTIONS_KEYS[Game]]: TGameOptions<Game>;
 };
 
 interface ILocalStorageValues extends TGameOptionsValues {}
@@ -17,6 +15,16 @@ export type TLocalStorageSubscriber<Key extends TLocalStorageKey> = (value: TLoc
 export interface ISetValueOptions {
   refreshDefault?: boolean;
 }
+
+export const GAME_OPTIONS_KEYS = {
+  [EGame.PEXESO]: 'game/pexeso/defaultOptions/v1',
+  [EGame.SURVIVAL_ONLINE]: 'game/survivalOnline/defaultOptions/v1',
+  [EGame.SET]: 'game/set/defaultOptions/v1',
+  [EGame.ONITAMA]: 'game/onitama/defaultOptions/v1',
+  [EGame.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
+  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v1',
+  [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
+} as const;
 
 export default class LocalStorageAtom<Key extends TLocalStorageKey> {
   key: Key;
