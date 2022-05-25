@@ -1,7 +1,8 @@
 import { EGame } from 'common/types/game';
 import { EDirection, EGameClientEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {
   IServerCell,
@@ -13,7 +14,7 @@ export interface IPlayerOptions {
   cell: IServerCell;
 }
 
-export default class Player extends Entity<EGame.SURVIVAL_ONLINE> {
+export default class Player extends ServerEntity<EGame.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
   cell: IServerCellWithEntity<Player>;

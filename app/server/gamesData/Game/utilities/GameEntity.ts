@@ -1,9 +1,9 @@
 import { EGame, TGameInfo } from 'common/types/game';
 import { ECommonGameServerEvent } from 'common/types';
 
-import Entity from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-export default abstract class GameEntity<Game extends EGame> extends Entity<Game, void> {
+export default abstract class GameEntity<Game extends EGame> extends ServerEntity<Game, void> {
   spawned = true;
 
   abstract toJSON(): TGameInfo<Game>;

@@ -147,7 +147,7 @@ class Game<Game extends EGame> {
 
         if (
           this.players.every(({ status }) => status === EPlayerStatus.READY) &&
-          (this.players.length >= this.options.minPlayersCount || BOTS_AVAILABLE[this.game])
+          (this.players.length >= this.options.minPlayersCount || this.areBotsAvailable())
         ) {
           this.start();
         } else {
@@ -192,6 +192,10 @@ class Game<Game extends EGame> {
     });
 
     this.setDeleteTimeout();
+  }
+
+  areBotsAvailable(): boolean {
+    return Boolean(process.env.NODE_ENV !== 'production' && BOTS_AVAILABLE[this.game]);
   }
 
   clearDeleteTimeout(): void {

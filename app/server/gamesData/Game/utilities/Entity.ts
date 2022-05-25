@@ -339,14 +339,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     })());
   }
 
-  sendSocketEvent<Event extends TGameServerEvent<Game>>(
-    event: Event,
-    data: TGameServerEventData<Game, Event>,
-    options?: ISendSocketEventOptions<Game>,
-  ): void {
-    this.context.game.sendSocketEvent(event, data, options);
-  }
-
   spawnEntity<E extends Entity<Game>>(entity: E): E {
     entity.spawned = true;
     entity.#parent = this;
@@ -389,46 +381,5 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   toJSON(): unknown {
     return null;
-  }
-
-  *waitForPlayerSocketEvent<Event extends TGameClientEvent<Game>>(
-    event: Event,
-    options: IWaitForPlayerSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<TGameClientEventData<Game, Event>> {
-    return yield (resolve) => {
-      return this.context.game.listenSocketEvent(
-        event,
-        (data) => {
-          try {
-            if (options?.validate?.(data) ?? true) {
-              resolve(data);
-            }
-          } catch {
-            // empty
-          }
-        },
-        options.playerIndex,
-      );
-    };
-  }
-
-  *waitForSocketEvent<Event extends TGameClientEvent<Game>>(
-    event: Event,
-    options?: IWaitForSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
-    return yield (resolve) => {
-      return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
-        try {
-          if (options?.validate?.(data) ?? true) {
-            resolve({
-              data,
-              playerIndex,
-            });
-          }
-        } catch {
-          // empty
-        }
-      });
-    };
   }
 }

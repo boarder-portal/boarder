@@ -1,7 +1,8 @@
 import { EGame } from 'common/types/game';
 import { EObject, IBaseObject } from 'common/types/survivalOnline';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {
   IServerCell,
@@ -12,7 +13,7 @@ export interface IBaseOptions {
   cell: IServerCell;
 }
 
-export default class Base extends Entity<EGame.SURVIVAL_ONLINE> {
+export default class Base extends ServerEntity<EGame.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
   cell: IServerCellWithEntity<Base>;

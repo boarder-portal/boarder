@@ -10,7 +10,8 @@ import { EGame } from 'common/types/game';
 import { EGameClientEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
@@ -29,7 +30,7 @@ export interface IHandOptions {
   startStage: EHandStage;
 }
 
-export default class Hand extends Entity<EGame.HEARTS, number[]> {
+export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
   game: HeartsGame;
 
   stage: EHandStage;

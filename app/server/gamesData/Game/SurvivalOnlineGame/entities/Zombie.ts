@@ -1,7 +1,8 @@
 import { EGame } from 'common/types/game';
 import { EDirection, EObject, IZombieObject } from 'common/types/survivalOnline';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getRandomElement } from 'common/utilities/random';
 
 import SurvivalOnlineGame, {
@@ -13,7 +14,7 @@ export interface IZombieOptions {
   cell: IServerCell;
 }
 
-export default class Zombie extends Entity<EGame.SURVIVAL_ONLINE> {
+export default class Zombie extends ServerEntity<EGame.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
   cell: IServerCellWithEntity<Zombie>;

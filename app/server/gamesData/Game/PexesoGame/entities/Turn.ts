@@ -1,7 +1,8 @@
 import { EGame } from 'common/types/game';
 import { EGameClientEvent, EGameServerEvent, ITurn } from 'common/types/pexeso';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 
@@ -9,7 +10,7 @@ export interface ITurnOptions {
   activePlayerIndex: number;
 }
 
-export default class Turn extends Entity<EGame.PEXESO, number[]> {
+export default class Turn extends ServerEntity<EGame.PEXESO, number[]> {
   game: PexesoGame;
   activePlayerIndex: number;
 

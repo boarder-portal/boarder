@@ -19,9 +19,10 @@ import { EFreeCardPeriod, EFreeCardSource, TEffect } from 'common/types/sevenWon
 import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { ECardType, ICard } from 'common/types/sevenWonders/cards';
 
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import {
   isBuildCardEffect,
   isCommercialCardsPassiveEffect,
@@ -39,7 +40,7 @@ export interface IAgeOptions {
   age: number;
 }
 
-export default class Age extends Entity<EGame.SEVEN_WONDERS> {
+export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
   game: SevenWondersGame;
 
   age: number;

@@ -2,7 +2,8 @@ import { EGame } from 'common/types/game';
 import { ICard } from 'common/types/cards';
 import { EGameClientEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
 
@@ -18,7 +19,7 @@ export interface ITurnOptions {
   startPlayerIndex: number;
 }
 
-export default class Turn extends Entity<EGame.HEARTS, ITurnResult> {
+export default class Turn extends ServerEntity<EGame.HEARTS, ITurnResult> {
   game: HeartsGame;
   hand: Hand;
 
