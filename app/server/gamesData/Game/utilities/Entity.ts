@@ -1,5 +1,7 @@
 import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
 
+import AbortError from 'server/gamesData/Game/utilities/AbortError';
+
 import Game from 'server/gamesData/Game/Game';
 
 export interface IEntityContext<G extends EGame> {
@@ -157,7 +159,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
         const removeUnsubscriber = this.#addAbortCallback(() => {
           cleanup?.();
-          reject(new Error('Effect aborted'));
+          reject(new AbortError('Effect aborted'));
         });
 
         unregisterEffect = () => {
@@ -335,19 +337,23 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
         const result = await lifecycleGenerator.run();
 
-        const afterLifecycleGenerator = this.#getGeneratorResult(this.afterLifecycle());
-
-        cancelGenerator = afterLifecycleGenerator.cancel;
-
-        await afterLifecycleGenerator.run();
-
         cancelGenerator = undefined;
 
         return result;
       } finally {
         cancelGenerator?.();
 
-        this.destroy();
+        try {
+          const afterLifecycleGenerator = this.#getGeneratorResult(this.afterLifecycle());
+
+          cancelGenerator = afterLifecycleGenerator.cancel;
+
+          await afterLifecycleGenerator.run();
+        } finally {
+          cancelGenerator?.();
+
+          this.destroy();
+        }
       }
     })());
   }

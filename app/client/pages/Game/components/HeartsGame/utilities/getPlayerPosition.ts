@@ -23,7 +23,7 @@ export default function getPlayerPosition(index: number, playersCount: number): 
       return EPlayerPosition.RIGHT;
     }
 
-    return EPlayerPosition.RIGHT;
+    return EPlayerPosition.TOP;
   }
 
   return EPlayerPosition.RIGHT;

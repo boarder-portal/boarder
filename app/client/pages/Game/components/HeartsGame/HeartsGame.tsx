@@ -9,8 +9,9 @@ import { EGameClientEvent, EHandStage, EPassDirection, IPlayer } from 'common/ty
 import { ESuit } from 'common/types/cards';
 import { EGame } from 'common/types/game';
 
-import { isDeuceOfClubs } from 'common/utilities/hearts';
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
+import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
+import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 
 import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 
@@ -66,12 +67,8 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
       setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
       setStage(gameInfo.hand?.stage ?? EHandStage.PASS);
       setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
-      setPlayedSuit(
-        gameInfo.hand?.turn
-          ? gameInfo.players[gameInfo.hand.turn.startPlayerIndex].data.turn?.playedCard?.suit ?? null
-          : null,
-      );
-      setIsFirstTurn(gameInfo.players.some(({ data }) => isDeuceOfClubs(data.turn?.playedCard)) ?? false);
+      setPlayedSuit(getPlayedSuit(gameInfo));
+      setIsFirstTurn(getIsFirstTurn(gameInfo));
       setPassDirection(gameInfo.passDirection);
     });
   }, [gameInfo]);

@@ -18,7 +18,6 @@ import { ECommonGameServerEvent } from 'common/types';
 import Entity, { TEffectGenerator, TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 export default abstract class ClientEntity<Game extends EGame, Result = unknown> extends Entity<Game, Result> {
-  #gameData: IGameData<Game> | null = null;
   #socket: TGameClientSocket<Game> | null = null;
 
   #getSocket(): TGameClientSocket<Game> {
@@ -42,10 +41,16 @@ export default abstract class ClientEntity<Game extends EGame, Result = unknown>
     };
   }
 
+  *afterLifecycle(): TGenerator {
+    this.#socket?.disconnect();
+  }
+
   *beforeLifecycle(): TGenerator {
     yield* super.beforeLifecycle();
 
-    this.#socket = io(this.getSocketAddress());
+    this.#socket = io(this.getSocketAddress(), {
+      forceNew: true,
+    });
   }
 
   getSocketAddress(): string {

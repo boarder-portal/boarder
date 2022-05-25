@@ -32,6 +32,7 @@ import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGa
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
+import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 
 export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
   sockets: Set<TGameServerSocket<Game>>;
@@ -75,6 +76,7 @@ const GAME_ENTITIES_MAP: {
 
 export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {
   [EGame.SEVEN_WONDERS]: SevenWondersBot,
+  [EGame.HEARTS]: HeartsBot,
 };
 
 const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];
@@ -129,6 +131,10 @@ class Game<Game extends EGame> {
         if (player) {
           this.clearDeleteTimeout();
         }
+      }
+
+      if (this.hasStarted() && player) {
+        player.status = EPlayerStatus.PLAYING;
       }
 
       player?.sockets.add(socket);
@@ -192,7 +198,7 @@ class Game<Game extends EGame> {
         if (this.hasStarted()) {
           player.status = EPlayerStatus.DISCONNECTED;
 
-          shouldDeleteGame = this.players.every(({ status }) => status === EPlayerStatus.DISCONNECTED);
+          shouldDeleteGame = this.players.every(({ status, isBot }) => status === EPlayerStatus.DISCONNECTED || isBot);
         } else {
           this.players.splice(player.index);
 

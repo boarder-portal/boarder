@@ -4,6 +4,7 @@ import { ECommonGameServerEvent } from 'common/types';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
+import AbortError from 'server/gamesData/Game/utilities/AbortError';
 
 import { BOTS } from 'server/gamesData/Game/Game';
 
@@ -32,7 +33,9 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     try {
       yield* this.spawnEntity(new Bot(this, { playerIndex }));
     } catch (err) {
-      console.log(`Bot #${playerIndex} error`, err);
+      if (!(err instanceof AbortError)) {
+        console.log(`Bot #${playerIndex} error`, err);
+      }
     }
   }
 

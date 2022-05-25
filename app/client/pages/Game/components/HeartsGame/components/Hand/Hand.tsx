@@ -6,7 +6,7 @@ import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { EHandStage } from 'common/types/hearts';
 import { ESuit, ICard } from 'common/types/cards';
 
-import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
+import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
 
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
 import Flex from 'client/components/common/Flex/Flex';
@@ -30,28 +30,6 @@ interface IHandProps {
   isOwnHand: boolean;
   isFirstTurn: boolean;
   onSelectCard(cardIndex: number): void;
-}
-
-function isCardAllowed(
-  card: ICard,
-  suit: ESuit | null,
-  hand: ICard[],
-  heartsEnteredPlay: boolean,
-  isFirstTurn: boolean,
-): boolean {
-  if (hand.some((card) => card.suit === suit)) {
-    return card.suit === suit;
-  }
-
-  if (isQueenOfSpades(card)) {
-    return !isFirstTurn;
-  }
-
-  if (!isHeart(card)) {
-    return true;
-  }
-
-  return !isFirstTurn && (suit !== null || heartsEnteredPlay || hand.every(isHeart));
 }
 
 function getCardState(
@@ -79,7 +57,7 @@ function getCardState(
     return ECardState.DISABLED;
   }
 
-  return isCardAllowed(card, playedSuit, hand, heartsEnteredPlay, isFirstTurn)
+  return isCardAllowed({ card, suit: playedSuit, hand, heartsEnteredPlay, isFirstTurn })
     ? ECardState.DEFAULT
     : ECardState.DISABLED;
 }
