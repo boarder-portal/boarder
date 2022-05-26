@@ -1,0 +1,37 @@
+.circle {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #666;
+  border-radius: 50%;
+
+  &.selected {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background: #666;
+      border-radius: 50%;
+    }
+  }
+}
+
+.option {
+  cursor: pointer;
+
+  &:hover {
+    .circle:not(.selected) {
+      background: #bbb;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}

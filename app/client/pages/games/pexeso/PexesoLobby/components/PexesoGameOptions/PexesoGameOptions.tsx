@@ -13,11 +13,11 @@ import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
-import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Flex from 'client/components/common/Flex/Flex';
 import { TChangeOptions } from 'client/components/Lobby/Lobby';
 import Select from 'client/components/common/Select/Select';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
 import styles from './PexesoGameOptions.pcss';
 
@@ -227,6 +227,7 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
       {options.shuffleOptions && (
         <div className={styles.shuffleOptions}>
           <RadioGroup
+            value={options.shuffleOptions.type}
             options={[
               {
                 text: 'перевернутые только что карточки',
@@ -251,7 +252,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
                 value: EShuffleType.RANDOM,
               },
             ]}
-            value={options.shuffleOptions.type}
             onChange={handleShuffleTypeChange}
           />
 
