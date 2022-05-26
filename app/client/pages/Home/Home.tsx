@@ -10,6 +10,8 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Home.pcss';
 
+const GAMES_IN_DEVELOPMENT = [EGame.BOMBERS];
+
 const Home: React.FC = () => {
   const history = useHistory();
 
@@ -27,21 +29,23 @@ const Home: React.FC = () => {
       </Text>
 
       <div className={styles.games}>
-        {Object.values(EGame).map((game) => (
-          <Flex
-            key={game}
-            className={styles.game}
-            alignItems="flexEnd"
-            style={{
-              backgroundImage: `url("/games/backgrounds/${game}.png")`,
-            }}
-            onClick={() => handleGameClick(game)}
-          >
-            <Text className={styles.caption} size="xl">
-              {GAME_NAMES[game]}
-            </Text>
-          </Flex>
-        ))}
+        {Object.values(EGame)
+          .filter((game) => process.env.NODE_ENV !== 'production' || !GAMES_IN_DEVELOPMENT.includes(game))
+          .map((game) => (
+            <Flex
+              key={game}
+              className={styles.game}
+              alignItems="flexEnd"
+              style={{
+                backgroundImage: `url("/games/backgrounds/${game}.png")`,
+              }}
+              onClick={() => handleGameClick(game)}
+            >
+              <Text className={styles.caption} size="xl">
+                {GAME_NAMES[game]}
+              </Text>
+            </Flex>
+          ))}
       </div>
     </div>
   );
