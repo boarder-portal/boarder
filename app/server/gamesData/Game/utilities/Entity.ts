@@ -1,7 +1,6 @@
 import map from 'lodash/map';
 
 import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
-import { OneKey } from 'common/types/util';
 
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 
@@ -58,6 +57,13 @@ type TReject = (err: unknown) => unknown;
 type TAllEffectReturnValue<T extends TIterableOrGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
 };
+
+type IRaceObjectReturnValue<T> = {
+  [P in keyof T]: {
+    type: P;
+    value: T extends Record<string, TIterableOrGenerator<unknown>> ? TGeneratorReturnValue<T[P]> : never;
+  };
+}[keyof T];
 
 export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
   validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
@@ -312,20 +318,18 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   race<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[keyof T]>>;
   race<T extends Record<string, TIterableOrGenerator<unknown>>>(
     generators: T,
-  ): TEffectGenerator<OneKey<{ [K in keyof T]: TGeneratorReturnValue<T[K]> }>>;
+  ): TEffectGenerator<IRaceObjectReturnValue<T>>;
   *race<T extends TIterableOrGenerator<unknown>[] | Record<string, TIterableOrGenerator<unknown>>>(
     generators: T,
   ): TEffectGenerator<
-    T extends TIterableOrGenerator<unknown>[]
-      ? TGeneratorReturnValue<T[keyof T]>
-      : OneKey<{ [K in keyof T]: TGeneratorReturnValue<T[K]> }>
+    T extends TIterableOrGenerator<unknown>[] ? TGeneratorReturnValue<T[keyof T]> : IRaceObjectReturnValue<T>
   > {
     return yield (resolve, reject) => {
       const cancels = map(generators, (generator, key) => {
         const { run, cancel } = this.#getGeneratorResult(generator as any as TGenerator<Result>);
 
         run((result) => {
-          resolve(Array.isArray(generators) ? result : ({ [key]: result } as any));
+          resolve(Array.isArray(generators) ? result : ({ type: key, value: result } as any));
         }, reject);
 
         return cancel;
