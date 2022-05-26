@@ -45,6 +45,17 @@
     "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-var-requires": 0,
     "no-unused-expressions": 0,
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "lodash",
+            "message": "Import [module] from lodash/[module] instead"
+          }
+        ]
+      }
+    ],
     "@typescript-eslint/no-unused-expressions": "error",
     "react/react-in-jsx-scope": "off",
     "react-hooks/rules-of-hooks": "error",
