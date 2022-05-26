@@ -134,7 +134,6 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
             <>
               <Select
                 label="Минимальное количество игроков"
-                name="minPlayersCount"
                 value={options.minPlayersCount}
                 options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
                   const value = minPlayersCount + index;
@@ -150,7 +149,6 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
 
               <Select
                 label="Максимальное количество игроков"
-                name="maxPlayersCount"
                 value={options.maxPlayersCount}
                 options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
                   const value = minPlayersCount + index;

@@ -1,0 +1,49 @@
+.label {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.trigger {
+  margin: 2px 0 4px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: #666;
+  }
+}
+
+.option {
+  background: white;
+  padding: 12px 24px;
+  cursor: pointer;
+
+  &.selected {
+    background: color(white shade(5%));
+  }
+
+  &.disabled {
+    color: #bbb;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: color(white shade(5%));
+  }
+}
+
+.root {
+  transition: 0.2s;
+
+  &:hover {
+    .trigger {;
+      &::after {
+        height: 2px;
+        background: #333;
+      }
+    }
+  }
+}

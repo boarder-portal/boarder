@@ -13,11 +13,11 @@ import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
-import Select from 'client/components/common/Select/Select';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Flex from 'client/components/common/Flex/Flex';
 import { TChangeOptions } from 'client/components/Lobby/Lobby';
+import Select from 'client/components/common/Select/Select';
 
 import styles from './PexesoGameOptions.pcss';
 
@@ -171,7 +171,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
     <Flex className={styles.root} direction="column" between={3}>
       <Select
         label="Сет"
-        name="set"
         value={options.set}
         options={Object.values(ESet).map((set) => ({
           value: set,
@@ -183,7 +182,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       <Select
         label="Количество совпадающих карточек"
-        name="matchingCardsCount"
         value={options.matchingCardsCount}
         options={MATCHING_CARDS_COUNTS.map((matchingCardsCount) => ({
           value: matchingCardsCount,
@@ -195,7 +193,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       <Select
         label="Количество разных карточек"
-        name="differentCardsCount"
         value={options.differentCardsCount}
         options={DIFFERENT_CARDS_COUNTS.map((differentCardsCount) => ({
           value: differentCardsCount,
@@ -207,7 +204,6 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
 
       <Select
         label="Расположение карточек"
-        name="layout"
         value={options.layout}
         options={Object.values(EFieldLayout).map((layout) => ({
           value: layout,
@@ -241,13 +237,12 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
                   <>
                     случайные{' '}
                     <Select
-                      name="shuffleCardsCount"
+                      className={styles.shuffleCardsCountSelect}
                       value={shuffleCardsCount}
                       options={SHUFFLE_CARDS_COUNTS.map((cardsCount) => ({
                         value: cardsCount,
                         text: cardsCount,
                       }))}
-                      style={{ margin: '0 4px' }}
                       onChange={handleShuffleCardsCountChange}
                     />{' '}
                     {shuffleCardsCount > 4 ? 'карточек' : 'карточки'}
@@ -263,13 +258,12 @@ const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
           <div className={styles.shuffleAfterMovesCount}>
             {options.shuffleOptions.afterMovesCount === 1 ? 'каждый' : 'каждые'}{' '}
             <Select
-              name="shuffleAfterMovesCount"
+              className={styles.shuffleAfterMovesCountSelect}
               value={options.shuffleOptions.afterMovesCount}
               options={SHUFFLE_AFTER_MOVES_COUNTS.map((afterMovesCount) => ({
                 value: afterMovesCount,
                 text: afterMovesCount,
               }))}
-              style={{ margin: '0 4px' }}
               onChange={handleShuffleAfterMovesCountChange}
             />{' '}
             {options.shuffleOptions.afterMovesCount === 1

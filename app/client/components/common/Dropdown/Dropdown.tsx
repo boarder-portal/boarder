@@ -28,10 +28,6 @@ const Dropdown: FC<IDropdownProps> = (props) => {
     [setValue],
   );
 
-  const handlePopupClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
-
   return (
     <div className={classNames(styles.root, className)}>
       <div className={styles.trigger} onClick={handleTriggerClick}>
@@ -39,12 +35,7 @@ const Dropdown: FC<IDropdownProps> = (props) => {
       </div>
 
       {visible && (
-        <div
-          className={classNames(styles.popup, styles[popupPosition], { [styles.visible]: visible })}
-          onClick={handlePopupClick}
-        >
-          {popup}
-        </div>
+        <div className={classNames(styles.popup, styles[popupPosition], { [styles.visible]: visible })}>{popup}</div>
       )}
     </div>
   );

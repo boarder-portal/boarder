@@ -1,66 +1,60 @@
-import React, { useCallback } from 'react';
-import { FormControl, InputLabel, MenuItem, Select as MuiSelect } from '@material-ui/core';
+import { ReactNode, useMemo } from 'react';
+import classNames from 'classnames';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
-import typedReactMemo from 'client/types/typedReactMemo';
+import Dropdown from 'client/components/common/Dropdown/Dropdown';
+import Flex from 'client/components/common/Flex/Flex';
 
-interface ISelectCommonProps<Value> {
-  label?: string;
-  name: string;
+import styles from './Select.pcss';
+
+interface ISelectProps<Value> {
+  className?: string;
+  value: Value;
   options: {
-    text: React.ReactNode;
+    text: ReactNode;
     value: Value;
     disabled?: boolean;
   }[];
-  style?: React.CSSProperties;
-}
-
-interface ISelectSingleProps<Value> extends ISelectCommonProps<Value> {
-  value: Value;
-  multiple?: false;
+  label?: string;
   onChange(newValue: Value): void;
 }
 
-interface ISelectMultipleProps<Value> extends ISelectCommonProps<Value> {
-  value: Value[];
-  multiple: true;
-  onChange(newValue: Value[]): void;
-}
+const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.Element => {
+  const { className, value, options, label, onChange } = props;
 
-type TSelectProps<Value> = ISelectSingleProps<Value> | ISelectMultipleProps<Value>;
+  const selectedText = useMemo(() => options.find((option) => option.value === value)?.text, [options, value]);
 
-const Select = <Value extends string | number>(props: TSelectProps<Value>) => {
-  const { label, name, value, options, style, multiple = false, onChange } = props;
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<{ value: unknown }>) => {
-      onChange(e.target.value as any);
-    },
-    [onChange],
+  const popup = useMemo(
+    () => (
+      <>
+        {options.map((option) => (
+          <div
+            key={option.value}
+            className={classNames(styles.option, {
+              [styles.disabled]: option.disabled,
+              [styles.selected]: option.value === value,
+            })}
+            onClick={() => onChange(option.value)}
+          >
+            {option.text}
+          </div>
+        ))}
+      </>
+    ),
+    [onChange, options, value],
   );
 
   return (
-    // FIXME: wtf is fromBlock
-    <FormControl className="fromBlock" style={style}>
-      {label && <InputLabel id={name}>{label}</InputLabel>}
+    <Dropdown className={classNames(styles.root, className)} popup={popup} popupPosition="bottomLeft">
+      {label && <div className={styles.label}>{label}</div>}
 
-      <MuiSelect
-        labelId={name}
-        value={value}
-        multiple={multiple}
-        MenuProps={{
-          disableAutoFocusItem: true,
-          getContentAnchorEl: null,
-        }}
-        onChange={handleChange}
-      >
-        {options.map(({ text, value, disabled }) => (
-          <MenuItem key={value} value={value} disabled={disabled}>
-            {text}
-          </MenuItem>
-        ))}
-      </MuiSelect>
-    </FormControl>
+      <Flex className={styles.trigger} justifyContent="spaceBetween" alignItems="center">
+        <div>{selectedText}</div>
+
+        <ArrowDropDown />
+      </Flex>
+    </Dropdown>
   );
 };
 
-export default typedReactMemo(Select);
+export default Select;
