@@ -1,4 +1,7 @@
+import map from 'lodash/map';
+
 import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
+import { OneKey } from 'common/types/util';
 
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 
@@ -24,6 +27,12 @@ export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = G
   Yield
 >;
 
+export type TIterableOrGenerator<Result = void, Yield = never, EffectResult = unknown> =
+  | TGenerator<Result, Yield, EffectResult>
+  | {
+      [Symbol.iterator](): TGenerator<Result, Yield, EffectResult>;
+    };
+
 export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
 export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
@@ -46,7 +55,7 @@ type TResolve<Result> = (result: Result) => unknown;
 
 type TReject = (err: unknown) => unknown;
 
-type TAllEffectReturnValue<T extends TGenerator<unknown>[]> = {
+type TAllEffectReturnValue<T extends TIterableOrGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
 };
 
@@ -98,7 +107,8 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #getGeneratorResult<Result>(generator: TGenerator<Result>): IGeneratorResult<Result> {
+  #getGeneratorResult<Result>(generatorOrIterable: TIterableOrGenerator<Result>): IGeneratorResult<Result> {
+    const generator: TGenerator<Result> = generatorOrIterable[Symbol.iterator]();
     let cancel: TCancelTask;
 
     return {
@@ -215,7 +225,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
-  *all<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
+  *all<T extends TIterableOrGenerator<Result>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
       let resultsLeft = generators.length;
@@ -299,12 +309,24 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
   }
 
-  *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
+  race<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[keyof T]>>;
+  race<T extends Record<string, TIterableOrGenerator<unknown>>>(
+    generators: T,
+  ): TEffectGenerator<OneKey<{ [K in keyof T]: TGeneratorReturnValue<T[K]> }>>;
+  *race<T extends TIterableOrGenerator<unknown>[] | Record<string, TIterableOrGenerator<unknown>>>(
+    generators: T,
+  ): TEffectGenerator<
+    T extends TIterableOrGenerator<unknown>[]
+      ? TGeneratorReturnValue<T[keyof T]>
+      : OneKey<{ [K in keyof T]: TGeneratorReturnValue<T[K]> }>
+  > {
     return yield (resolve, reject) => {
-      const cancels = generators.map((generator) => {
-        const { run, cancel } = this.#getGeneratorResult(generator);
+      const cancels = map(generators, (generator, key) => {
+        const { run, cancel } = this.#getGeneratorResult(generator as any as TGenerator<Result>);
 
-        run(resolve as any, reject);
+        run((result) => {
+          resolve(Array.isArray(generators) ? result : ({ [key]: result } as any));
+        }, reject);
 
         return cancel;
       });

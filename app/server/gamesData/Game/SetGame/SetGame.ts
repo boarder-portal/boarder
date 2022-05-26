@@ -61,20 +61,19 @@ export default class SetGame extends GameEntity<EGame.SET> {
     this.cardsStack = shuffle(notShuffledCardsStack);
 
     while (true) {
-      const { data: event, playerIndex } = yield* this.race([
-        this.waitForSocketEvent(EGameClientEvent.SEND_SET, {
+      const { sendSet, sendNoSet } = yield* this.race({
+        sendSet: this.waitForSocketEvent(EGameClientEvent.SEND_SET, {
           validate: this.validateSendSetEvent,
         }),
-        this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET, {
+        sendNoSet: this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET, {
           validate: (data) => data === undefined,
         }),
-      ]);
+      });
 
-      const playerData = this.playersData[playerIndex];
+      const playerData = this.playersData[(sendSet ?? sendNoSet).playerIndex];
 
-      if (event) {
-        // SEND_SET event
-        const { cardsIds } = event;
+      if (sendSet) {
+        const { cardsIds } = sendSet.data;
 
         const cards = cardsIds
           .map((cardId) => this.cardsStack.find((card) => card.id === cardId))
@@ -116,7 +115,6 @@ export default class SetGame extends GameEntity<EGame.SET> {
           break;
         }
       } else {
-        // SEND_NO_SET event
         if (isAnySet(this.cardsStack.slice(0, this.maxCardsToShow))) {
           playerData.score += WRONG_NO_SET_POINTS;
         } else {
