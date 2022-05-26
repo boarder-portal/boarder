@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import classNames from 'classnames';
 
@@ -15,8 +14,8 @@ import Player from 'client/pages/Game/components/HeartsGame/components/Player/Pl
 import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
-import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './HeartsGame.pcss';
 
@@ -30,7 +29,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
   const [playedSuit, setPlayedSuit] = useState<ESuit | null>(null);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
   const [passDirection, setPassDirection] = useState<EPassDirection>(EPassDirection.NONE);
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
 
   const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
 

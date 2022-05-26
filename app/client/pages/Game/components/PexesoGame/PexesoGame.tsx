@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import times from 'lodash/times';
 import sortBy from 'lodash/sortBy';
 import classNames from 'classnames';
@@ -21,9 +20,9 @@ import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
-import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './PexesoGame.pcss';
 
@@ -78,7 +77,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   const cardsLayoutContainerRef = useRef<HTMLDivElement | null>(null);
   const cardsLayoutRef = useRef<HTMLDivElement | null>(null);
 
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
 
   const player = useMemo(() => {
     return players.find(({ login }) => login === user?.login);

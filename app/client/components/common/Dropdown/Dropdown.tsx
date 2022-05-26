@@ -17,7 +17,7 @@ const Dropdown: FC<IDropdownProps> = (props) => {
 
   const { value: visible, setFalse: close, setValue } = useBoolean(false);
 
-  useGlobalListener('click', document, close);
+  useGlobalListener('click', typeof document === 'undefined' ? null : document, close);
 
   const handleTriggerClick = useCallback(
     (e: MouseEvent) => {

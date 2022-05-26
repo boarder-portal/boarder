@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
 import classNames from 'classnames';
@@ -38,10 +37,10 @@ import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
-import userAtom from 'client/atoms/userAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { playSound, POP_SOUND } from 'client/sounds';
 import { IGameProps } from 'client/pages/Game/Game';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './CarcassonneGame.pcss';
 
@@ -63,7 +62,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
   const boardCardsCountRef = useRef<number | null>(null);
 
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
 
   const player = useMemo(() => {
     return players.find(({ login }) => login === user?.login);

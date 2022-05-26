@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 export default function useGlobalListener<
-  T extends Document | Window,
+  T extends Document | Window | null,
   M extends T extends Document ? DocumentEventMap : WindowEventMap,
   K extends keyof M,
 >(type: K, target: T, listener: (event: M[K]) => void): void {
@@ -16,10 +16,10 @@ export default function useGlobalListener<
       listenerRef.current(e);
     };
 
-    target.addEventListener(type as any, localListener as any);
+    target?.addEventListener(type as any, localListener as any);
 
     return () => {
-      target.removeEventListener(type as any, localListener as any);
+      target?.removeEventListener(type as any, localListener as any);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, target]);

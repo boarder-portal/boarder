@@ -1,8 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-
-import { IUser } from 'common/types';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
@@ -10,18 +7,14 @@ import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 
-import userAtom from 'client/atoms/userAtom';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './Header.pcss';
 
-interface IHeaderProps {
-  user: IUser | null;
-}
+interface IHeaderProps {}
 
-const Header: React.FC<IHeaderProps> = (props) => {
-  const { user } = props;
-
-  const setUser = useSetRecoilState(userAtom);
+const Header: React.FC<IHeaderProps> = () => {
+  const [user, setUser] = useAtom('user');
 
   const logout = useCallback(async () => {
     await httpClient.logout();

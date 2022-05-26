@@ -4,6 +4,8 @@ import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
 import { renderToString } from 'react-dom/server';
 
+import createStore, { getInitialState, IStore } from 'client/utilities/store';
+
 const nodeStats = path.resolve('./build/node/loadable-stats.json');
 
 const webStats = path.resolve('./build/web/loadable-stats.json');
@@ -34,10 +36,14 @@ export default async function render(req: Request, res: Response): Promise<Respo
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
     const { default: App } = nodeExtractor.requireEntrypoint();
 
+    const store: IStore = createStore(getInitialState());
+
+    store.value.user = req.session.user || null;
+
     const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
     // @ts-ignore
-    const jsx = webExtractor.collectChunks(<App url={req.url} />);
+    const jsx = webExtractor.collectChunks(<App url={req.url} store={store} />);
     const html = renderToString(jsx);
 
     const linkTags = webExtractor.getLinkTags();
@@ -53,6 +59,7 @@ export default async function render(req: Request, res: Response): Promise<Respo
       `
         ${linkTags}
         ${styleTags}
+        <script>window.initialState='${JSON.stringify(store.value)}'</script>
       `,
     );
   } catch (err) {

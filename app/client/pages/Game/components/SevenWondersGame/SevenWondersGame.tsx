@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { EAgePhase, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
@@ -12,8 +11,8 @@ import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Won
 import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 import Flex from 'client/components/common/Flex/Flex';
 
-import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './SevenWondersGame.pcss';
 
@@ -26,7 +25,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   const [gamePhase, setGamePhase] = useState<EGamePhase | null>(null);
   const [agePhase, setAgePhase] = useState<EAgePhase | null>(null);
 
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
 
   const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
 

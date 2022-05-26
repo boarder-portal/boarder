@@ -2,15 +2,23 @@ import 'regenerator-runtime/runtime';
 import React from 'react';
 import { hydrate } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
+import { loadableReady } from '@loadable/component';
+
+import createStore, { StoreContext } from 'client/utilities/store';
 
 import App from 'client/components/App/App';
 
-hydrate(
-  <BrowserRouter>
-    <RecoilRoot>
-      <App />
-    </RecoilRoot>
-  </BrowserRouter>,
-  document.querySelector('#root'),
-);
+(async () => {
+  await loadableReady();
+
+  const store = createStore(JSON.parse(window.initialState));
+
+  hydrate(
+    <BrowserRouter>
+      <StoreContext.Provider value={store}>
+        <App />
+      </StoreContext.Provider>
+    </BrowserRouter>,
+    document.querySelector('#root'),
+  );
+})();

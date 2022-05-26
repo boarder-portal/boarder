@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import classNames from 'classnames';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
@@ -14,8 +13,8 @@ import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlayer';
 import Flex from 'client/components/common/Flex/Flex';
 
-import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './OnitamaGame.pcss';
 
@@ -55,7 +54,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
   const [legalMoves, setLegalMoves] = useState<ICoords[]>([]);
   const [player, setPlayer] = useState<IPlayer | null>(null);
 
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
   const isFlipped = player?.data.color === EPlayerColor.RED;
 
   const handleCellClick = (cell: ICoords) => {

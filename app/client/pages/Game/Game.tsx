@@ -1,6 +1,5 @@
 import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { EGame, TGameInfo } from 'common/types/game';
@@ -27,7 +26,7 @@ import Button from 'client/components/common/Button/Button';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import useSocket from 'client/hooks/useSocket';
-import userAtom from 'client/atoms/userAtom';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './Game.pcss';
 
@@ -59,7 +58,7 @@ function Game<G extends EGame>() {
   const { value: isGameEnd, setTrue: endGame } = useBoolean(false);
 
   const history = useHistory();
-  const user = useRecoilValue(userAtom);
+  const [user] = useAtom('user');
 
   const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(`/${game}/game/${gameId}`, {
     [ECommonGameServerEvent.GET_DATA]: (data) => {

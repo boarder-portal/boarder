@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
@@ -9,13 +8,13 @@ import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 import Input from 'client/components/common/Input/Input';
 
-import userAtom from 'client/atoms/userAtom';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './Registration.pcss';
 
 const Registration: React.FC = () => {
   const history = useHistory();
-  const setUser = useSetRecoilState(userAtom);
+  const [, setUser] = useAtom('user');
 
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');

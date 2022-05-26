@@ -1,20 +1,16 @@
 import '../../styles/reset.pcss';
 import '../../styles/styles.css';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
 import { Container } from 'boarder-components';
 
 import { EGame } from 'common/types/game';
-
-import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import Header from 'client/components/Header/Header';
 
 import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
 import Login from 'client/pages/Login/Login';
-import userAtom from 'client/atoms/userAtom';
 import Game from 'client/pages/Game/Game';
 import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
 import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/SurvivalOnlineLobby';
@@ -27,20 +23,10 @@ import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
 import styles from './App.pcss';
 
 const App: FC = () => {
-  const [user, setUser] = useRecoilState(userAtom);
-
-  useEffect(() => {
-    (async () => {
-      const user = await httpClient.getUser();
-
-      setUser(user);
-    })();
-  }, [setUser]);
-
   return (
     <>
       <Container className={styles.app}>
-        <Header user={user} />
+        <Header />
 
         <Switch>
           <Route exact path="/">

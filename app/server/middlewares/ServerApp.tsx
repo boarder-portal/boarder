@@ -1,21 +1,23 @@
 import React, { FC } from 'react';
 import { StaticRouter } from 'react-router-dom';
-import { RecoilRoot } from 'recoil';
+
+import { IStore, StoreContext } from 'client/utilities/store';
 
 import App from 'client/components/App/App';
 
 interface IServerAppProps {
   url: string;
+  store: IStore;
 }
 
 const ServerApp: FC<IServerAppProps> = (props) => {
-  const { url } = props;
+  const { url, store } = props;
 
   return (
     <StaticRouter location={url}>
-      <RecoilRoot>
+      <StoreContext.Provider value={store}>
         <App />
-      </RecoilRoot>
+      </StoreContext.Provider>
     </StaticRouter>
   );
 };
