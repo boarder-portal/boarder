@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import classNames from 'classnames';
-import Check from '@material-ui/icons/Check';
 
 import Flex from 'client/components/common/Flex/Flex';
+import CheckIcon from 'client/components/icons/CheckIcon/CheckIcon';
 
 import styles from './Checkbox.pcss';
 
@@ -25,7 +25,7 @@ const Checkbox: FC<ICheckboxProps> = (props) => {
       onClick={() => onChange(!checked)}
     >
       <Flex className={classNames(styles.box)} justifyContent="center" alignItems="center">
-        {checked && <Check className={styles.checkIcon} />}
+        {checked && <CheckIcon className={styles.checkIcon} />}
       </Flex>
 
       <div>{label}</div>

@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import ArrowLeft from '@material-ui/icons/ArrowLeft';
-import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
 import {
@@ -37,6 +35,8 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import Flex from 'client/components/common/Flex/Flex';
+import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
+import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
 import { usePrevious } from 'client/hooks/usePrevious';
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
@@ -224,9 +224,9 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
         </Flex>
 
         {cardsDirection === ENeighborSide.LEFT ? (
-          <ArrowLeft className={styles.leftArrow} />
+          <ArrowLeftIcon className={styles.leftArrow} />
         ) : (
-          <ArrowRight className={styles.rightArrow} />
+          <ArrowRightIcon className={styles.rightArrow} />
         )}
       </div>
     </Flex>

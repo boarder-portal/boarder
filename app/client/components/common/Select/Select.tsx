@@ -1,9 +1,9 @@
 import { ReactNode, useMemo } from 'react';
 import classNames from 'classnames';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
+import ArrowDropDownIcon from 'client/components/icons/ArrowDropDownIcon/ArrowDropDownIcon';
 
 import styles from './Select.pcss';
 
@@ -51,7 +51,7 @@ const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.
       <Flex className={styles.trigger} justifyContent="spaceBetween" alignItems="center">
         <div>{selectedText}</div>
 
-        <ArrowDropDown />
+        <ArrowDropDownIcon className={styles.icon} />
       </Flex>
     </Dropdown>
   );

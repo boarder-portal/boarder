@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
-import ArrowLeft from '@material-ui/icons/ArrowLeft';
-import ArrowRight from '@material-ui/icons/ArrowRight';
 import classNames from 'classnames';
 
 import { EGameClientEvent, EHandStage, EPassDirection, IPlayer } from 'common/types/hearts';
@@ -14,6 +12,8 @@ import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
 import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 
 import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
+import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
+import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
 import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
@@ -53,9 +53,9 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
 
   const directionBlock = useMemo(() => {
     return passDirection === EPassDirection.LEFT ? (
-      <ArrowLeft className={styles.direction} />
+      <ArrowLeftIcon className={styles.direction} />
     ) : (
-      <ArrowRight className={styles.direction} />
+      <ArrowRightIcon className={styles.direction} />
     );
   }, [passDirection]);
 

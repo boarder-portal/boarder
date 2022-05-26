@@ -1,4 +1,5 @@
-import { mapKeys, mapValues } from 'lodash';
+import mapKeys from 'lodash/mapKeys';
+import mapValues from 'lodash/mapValues';
 
 import { DEFAULT_GAME_OPTIONS as PEXESO_OPTIONS } from 'common/constants/games/pexeso';
 import { DEFAULT_GAME_OPTIONS as SURVIVAL_ONLINE_OPTIONS } from 'common/constants/games/survivalOnline';
