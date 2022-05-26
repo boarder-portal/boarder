@@ -1,6 +1,10 @@
-import React, { useCallback } from 'react';
-import MuiCheckbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { FC } from 'react';
+import classNames from 'classnames';
+import Check from '@material-ui/icons/Check';
+
+import Flex from 'client/components/common/Flex/Flex';
+
+import styles from './Checkbox.pcss';
 
 interface ICheckboxProps {
   className?: string;
@@ -10,23 +14,23 @@ interface ICheckboxProps {
   onChange(newValue: boolean): void;
 }
 
-const Checkbox: React.FC<ICheckboxProps> = (props) => {
-  const { className, checked, disabled, label, onChange } = props;
-
-  const onCheckboxChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.checked);
-    },
-    [onChange],
-  );
+const Checkbox: FC<ICheckboxProps> = (props) => {
+  const { checked, disabled, label, onChange } = props;
 
   return (
-    <FormControlLabel
-      control={<MuiCheckbox className={className} checked={checked} onChange={onCheckboxChange} />}
-      label={label}
-      disabled={disabled}
-    />
+    <Flex
+      className={classNames(styles.root, { [styles.disabled]: disabled })}
+      alignItems="center"
+      between={2}
+      onClick={() => onChange(!checked)}
+    >
+      <Flex className={classNames(styles.box)} justifyContent="center" alignItems="center">
+        {checked && <Check className={styles.checkIcon} />}
+      </Flex>
+
+      <div>{label}</div>
+    </Flex>
   );
 };
 
-export default React.memo(Checkbox);
+export default Checkbox;

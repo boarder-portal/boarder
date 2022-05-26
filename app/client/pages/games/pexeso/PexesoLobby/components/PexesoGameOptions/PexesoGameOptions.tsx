@@ -13,11 +13,11 @@ import { EGame } from 'common/types/game';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Flex from 'client/components/common/Flex/Flex';
 import { TChangeOptions } from 'client/components/Lobby/Lobby';
 import Select from 'client/components/common/Select/Select';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
 
 import styles from './PexesoGameOptions.pcss';
 
