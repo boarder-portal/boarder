@@ -1,8 +1,9 @@
 import { EGame } from 'common/types/game';
-import { EDirection } from 'common/types/bombers';
+import { EDirection, EGameClientEvent } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import PlayerEntity from 'server/gamesData/Game/utilities/PlayerEntity';
 
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
@@ -12,7 +13,7 @@ export interface IPlayerOptions {
   coords: ICoords;
 }
 
-export default class Player extends Entity<EGame.BOMBERS> {
+export default class Player extends PlayerEntity<EGame.BOMBERS> {
   index: number;
 
   coords: ICoords;
@@ -25,10 +26,10 @@ export default class Player extends Entity<EGame.BOMBERS> {
   invincibleEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
 
-  hit = this.createTrigger();
+  hit = this.createTrigger<number>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
-    super(game);
+    super(game, options);
 
     this.index = options.index;
     this.coords = options.coords;
@@ -43,7 +44,28 @@ export default class Player extends Entity<EGame.BOMBERS> {
   }
 
   *lifecycle(): TGenerator {
-    yield* this.eternity();
+    this.spawnTask(this.listenForEvents());
+
+    while (true) {
+      const damage = yield* this.hit;
+
+      this.hp = Math.max(0, this.hp - damage);
+
+      if (this.hp === 0) {
+        return;
+      }
+    }
+  }
+
+  *listenForEvents(): TGenerator {
+    yield* this.all([
+      this.listenForOwnEvent(EGameClientEvent.START_MOVING, (direction) => {
+        console.log('move', direction);
+      }),
+      this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, () => {
+        console.log('stop moving');
+      }),
+    ]);
   }
 
   placeBomb(bomb: Bomb): void {

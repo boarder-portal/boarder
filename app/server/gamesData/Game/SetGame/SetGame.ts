@@ -65,9 +65,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
         sendSet: this.waitForSocketEvent(EGameClientEvent.SEND_SET, {
           validate: this.validateSendSetEvent,
         }),
-        sendNoSet: this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET, {
-          validate: (data) => data === undefined,
-        }),
+        sendNoSet: this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET),
       });
 
       const playerData = this.playersData[value.playerIndex];

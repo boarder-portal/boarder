@@ -1,6 +1,6 @@
 import map from 'lodash/map';
 
-import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
+import { EGame, TGameOptions } from 'common/types/game';
 
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 
@@ -9,6 +9,8 @@ import Game from 'server/gamesData/Game/Game';
 export interface IEntityContext<G extends EGame> {
   game: Game<G>;
 }
+
+export type TParentOrContext<Game extends EGame> = IEntityContext<Game> | Entity<Game, any>;
 
 interface IGeneratorResult<Result> {
   run(resolve: TResolve<Result>, reject: TReject): void;
@@ -34,7 +36,13 @@ export type TIterableOrGenerator<Result = void, Yield = never, EffectResult = un
 
 export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
-export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
+export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result>
+  ? Result
+  : Generator extends {
+      [Symbol.iterator](): TGenerator<infer Result>;
+    }
+  ? Result
+  : never;
 
 type TEffectResult<Result> =
   | {
@@ -65,21 +73,6 @@ type IRaceObjectReturnValue<T> = {
   };
 }[keyof T];
 
-export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
-}
-
-export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  data: TGameClientEventData<Game, Event>;
-  playerIndex: number;
-}
-
-export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
-  extends IWaitForSocketEventOptions<Game, Event> {
-  playerIndex: number;
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
-}
-
 export interface ITrigger<Value = void> {
   (value: Value): void;
   [Symbol.iterator](): TEffectGenerator<Value>;
@@ -96,7 +89,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
 
-  constructor(parentOrContext: IEntityContext<Game> | Entity<Game, any>) {
+  constructor(parentOrContext: TParentOrContext<Game>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;

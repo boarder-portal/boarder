@@ -2,7 +2,8 @@ import { EGame } from 'common/types/game';
 import { EBonus, EObject, IBonus } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
-import Entity, { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
@@ -11,7 +12,7 @@ export interface IBonusOptions {
   coords: ICoords;
 }
 
-export default class Bonus extends Entity<EGame.BOMBERS> {
+export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   type: EBonus;
   coords: ICoords;
 
