@@ -1,3 +1,5 @@
+import pick from 'lodash/pick';
+
 import {
   EGame,
   TGameClientEvent,
@@ -31,7 +33,7 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
 
   getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer & { data: Data })[] {
     return this.getPlayers().map((player) => ({
-      ...player,
+      ...pick(player, ['login', 'name', 'status', 'index', 'isBot']),
       data: callback(player.index),
     }));
   }

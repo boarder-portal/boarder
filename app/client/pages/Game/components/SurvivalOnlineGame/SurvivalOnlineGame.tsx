@@ -7,7 +7,7 @@ import { EDirection, EGameClientEvent, EGameServerEvent, IPlayer, TMap } from 'c
 import { EGame } from 'common/types/game';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
-import getCellScreenSize from 'client/pages/Game/components/SurvivalOnlineGame/utilities/getCellScreenSize';
+import getCellScreenSize from 'client/utilities/getCellScreenSize';
 
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -15,6 +15,7 @@ import userAtom from 'client/atoms/userAtom';
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './SurvivalOnlineGame.pcss';
 
@@ -50,6 +51,21 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
     }
   });
 
+  const changeCellSize = useImmutableCallback(() => {
+    const containerEl = containerRef.current;
+
+    if (!containerEl) {
+      return;
+    }
+
+    const cellSize = getCellScreenSize(containerEl, VIEW_SIZE);
+
+    setCanvasSize({
+      width: VIEW_SIZE.width * cellSize,
+      height: VIEW_SIZE.height * cellSize,
+    });
+  });
+
   useSocket(io, {
     [EGameServerEvent.UPDATE_GAME]: ({ players, cells }) => {
       console.log('UPDATE_GAME', { players, cells });
@@ -68,38 +84,25 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
-    const containerEl = containerRef.current;
 
-    if (!canvasEl || !containerEl) {
+    if (!canvasEl) {
       return;
     }
 
     contextRef.current = canvasEl.getContext('2d');
 
-    const cellSize = getCellScreenSize(containerEl);
+    changeCellSize();
+  }, [changeCellSize, io]);
 
-    setCanvasSize({
-      width: VIEW_SIZE.width * cellSize,
-      height: VIEW_SIZE.height * cellSize,
-    });
+  useGlobalListener('keydown', document, (e) => {
+    const direction = DIRECTIONS_MAP[e.key];
 
-    document.addEventListener('keydown', (e) => {
-      const direction = DIRECTIONS_MAP[e.key];
+    if (direction) {
+      io.emit(EGameClientEvent.MOVE_PLAYER, direction);
+    }
+  });
 
-      if (direction) {
-        io.emit(EGameClientEvent.MOVE_PLAYER, direction);
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      const cellSize = getCellScreenSize(containerEl);
-
-      setCanvasSize({
-        width: VIEW_SIZE.width * cellSize,
-        height: VIEW_SIZE.height * cellSize,
-      });
-    });
-  }, [io]);
+  useGlobalListener('resize', window, changeCellSize);
 
   useEffect(() => {
     render();
