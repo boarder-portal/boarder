@@ -1,25 +1,33 @@
-import React, { useCallback } from 'react';
-import TextField from '@material-ui/core/TextField';
+import { ChangeEvent, FC, InputHTMLAttributes, useCallback } from 'react';
 
-interface IInputProps {
+import Flex from 'client/components/common/Flex/Flex';
+
+import styles from './Input.pcss';
+
+interface IInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   className?: string;
   label: string;
   value: string;
-  type?: 'text' | 'password';
   onChange(newValue: string): void;
 }
 
-const Input: React.FC<IInputProps> = (props) => {
-  const { className, value, label, type = 'text', onChange } = props;
+const Input: FC<IInputProps> = (props) => {
+  const { className, label, onChange, ...restProps } = props;
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       onChange(e.target.value);
     },
     [onChange],
   );
 
-  return <TextField className={className} value={value} label={label} type={type} onChange={handleChange} />;
+  return (
+    <Flex className={className} direction="column" between={1}>
+      <div>{label}</div>
+
+      <input className={styles.input} onChange={handleChange} {...restProps} />
+    </Flex>
+  );
 };
 
-export default React.memo(Input);
+export default Input;

@@ -4,10 +4,10 @@ import { useSetRecoilState } from 'recoil';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import Input from 'client/components/common/Input/Input';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
+import Input from 'client/components/common/Input/Input';
 
 import userAtom from 'client/atoms/userAtom';
 
