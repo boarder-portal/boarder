@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import times from 'lodash/times';
 
+import { GAME_NAMES } from 'common/constants/games/common';
+
 import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
 import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
@@ -103,7 +105,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
   return (
     <div>
       <Text size="xxl" weight="bold">
-        {game}
+        {GAME_NAMES[game]}
       </Text>
 
       <Flex className={styles.gamesAndOptions}>

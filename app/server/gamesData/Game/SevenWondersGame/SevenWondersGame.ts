@@ -128,6 +128,8 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         ),
       };
 
+      this.sendGameInfo();
+
       yield* this.phase.age;
 
       this.sendGameInfo();

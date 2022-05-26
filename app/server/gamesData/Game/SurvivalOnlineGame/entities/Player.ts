@@ -2,7 +2,7 @@ import { EGame } from 'common/types/game';
 import { EDirection, EGameClientEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import PlayerEntity from 'server/gamesData/Game/utilities/PlayerEntity';
 
 import SurvivalOnlineGame, {
   IServerCell,
@@ -14,7 +14,7 @@ export interface IPlayerOptions {
   cell: IServerCell;
 }
 
-export default class Player extends ServerEntity<EGame.SURVIVAL_ONLINE> {
+export default class Player extends PlayerEntity<EGame.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
   cell: IServerCellWithEntity<Player>;
@@ -22,7 +22,7 @@ export default class Player extends ServerEntity<EGame.SURVIVAL_ONLINE> {
   direction = EDirection.DOWN;
 
   constructor(game: SurvivalOnlineGame, options: IPlayerOptions) {
-    super(game);
+    super(game, options);
 
     this.game = game;
     this.index = options.index;
@@ -30,13 +30,17 @@ export default class Player extends ServerEntity<EGame.SURVIVAL_ONLINE> {
   }
 
   *lifecycle(): TGenerator {
-    while (true) {
-      const direction = yield* this.waitForPlayerSocketEvent(EGameClientEvent.MOVE_PLAYER, {
-        playerIndex: this.index,
-      });
+    yield* this.spawnTask(this.listenForEvents());
 
-      this.game.sendGameUpdate(this.game.moveEntityInDirection(this, direction), true);
-    }
+    yield* this.eternity();
+  }
+
+  *listenForEvents(): TGenerator {
+    yield* this.all([
+      this.listenForOwnEvent(EGameClientEvent.MOVE_PLAYER, (direction) => {
+        this.game.sendGameUpdate(this.game.moveEntityInDirection(this, direction), true);
+      }),
+    ]);
   }
 
   toPlayerData(): IPlayerData {

@@ -13,7 +13,7 @@ export default function useRaf(callback: RafCallback): void {
     let frameId: number | null = null;
 
     const step = (time: number) => {
-      if (ended) {
+      if (ended.current) {
         return;
       }
 

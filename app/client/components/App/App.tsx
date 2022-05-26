@@ -1,7 +1,7 @@
 import '../../styles/reset.pcss';
 import '../../styles/styles.css';
-import { FC } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { ComponentType, FC } from 'react';
+import { Switch, Route, match } from 'react-router-dom';
 import { Container } from 'boarder-components';
 
 import { EGame } from 'common/types/game';
@@ -19,8 +19,20 @@ import OnitamaLobby from 'client/pages/games/onitama/OnitamaLobby/OnitamaLobby';
 import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
 import SevenWondersLobby from 'client/pages/games/sevenWonders/SevenWonders/SevenWondersLobby';
 import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
+import BombersLobby from 'client/pages/games/bombers/BombersLobby/BombersLobby';
 
 import styles from './App.pcss';
+
+const LOBBIES: Record<EGame, ComponentType> = {
+  [EGame.PEXESO]: PexesoLobby,
+  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineLobby,
+  [EGame.SET]: SetLobby,
+  [EGame.ONITAMA]: OnitamaLobby,
+  [EGame.CARCASSONNE]: CarcassonneLobby,
+  [EGame.SEVEN_WONDERS]: SevenWondersLobby,
+  [EGame.HEARTS]: HeartsLobby,
+  [EGame.BOMBERS]: BombersLobby,
+};
 
 const App: FC = () => {
   return (
@@ -45,28 +57,13 @@ const App: FC = () => {
             <PexesoLobby />
           </Route>
 
-          <Route exact path={`/${EGame.SURVIVAL_ONLINE}/lobby`}>
-            <SurvivalOnlineLobby />
-          </Route>
+          <Route exact path="/:game/lobby">
+            {/* TODO: move to separate component */}
+            {(props: { match: match<{ game: EGame }> }) => {
+              const Lobby = LOBBIES[props.match.params.game];
 
-          <Route exact path={`/${EGame.SET}/lobby`}>
-            <SetLobby />
-          </Route>
-
-          <Route exact path={`/${EGame.ONITAMA}/lobby`}>
-            <OnitamaLobby />
-          </Route>
-
-          <Route exact path={`/${EGame.CARCASSONNE}/lobby`}>
-            <CarcassonneLobby />
-          </Route>
-
-          <Route exact path={`/${EGame.SEVEN_WONDERS}/lobby`}>
-            <SevenWondersLobby />
-          </Route>
-
-          <Route exact path={`/${EGame.HEARTS}/lobby`}>
-            <HeartsLobby />
+              return <Lobby />;
+            }}
           </Route>
 
           <Route exact path="/:game/game/:gameId">

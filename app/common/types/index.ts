@@ -27,6 +27,11 @@ export interface ICoords {
   y: number;
 }
 
+export interface ISize {
+  width: number;
+  height: number;
+}
+
 export interface IGameOptions {
   minPlayersCount: number;
   maxPlayersCount: number;

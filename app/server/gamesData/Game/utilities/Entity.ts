@@ -1,4 +1,6 @@
-import { EGame, TGameClientEvent, TGameClientEventData, TGameOptions } from 'common/types/game';
+import map from 'lodash/map';
+
+import { EGame, TGameOptions } from 'common/types/game';
 
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 
@@ -7,6 +9,8 @@ import Game from 'server/gamesData/Game/Game';
 export interface IEntityContext<G extends EGame> {
   game: Game<G>;
 }
+
+export type TParentOrContext<Game extends EGame> = IEntityContext<Game> | Entity<Game, any>;
 
 interface IGeneratorResult<Result> {
   run(resolve: TResolve<Result>, reject: TReject): void;
@@ -24,9 +28,21 @@ export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = G
   Yield
 >;
 
+export type TIterableOrGenerator<Result = void, Yield = never, EffectResult = unknown> =
+  | TGenerator<Result, Yield, EffectResult>
+  | {
+      [Symbol.iterator](): TGenerator<Result, Yield, EffectResult>;
+    };
+
 export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
 
-export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result> ? Result : never;
+export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result>
+  ? Result
+  : Generator extends {
+      [Symbol.iterator](): TGenerator<infer Result>;
+    }
+  ? Result
+  : never;
 
 type TEffectResult<Result> =
   | {
@@ -46,24 +62,16 @@ type TResolve<Result> = (result: Result) => unknown;
 
 type TReject = (err: unknown) => unknown;
 
-type TAllEffectReturnValue<T extends TGenerator<unknown>[]> = {
+type TAllEffectReturnValue<T extends TIterableOrGenerator<unknown>[]> = {
   [P in keyof T]: TGeneratorReturnValue<T[number]>;
 };
 
-export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
-}
-
-export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  data: TGameClientEventData<Game, Event>;
-  playerIndex: number;
-}
-
-export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
-  extends IWaitForSocketEventOptions<Game, Event> {
-  playerIndex: number;
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
-}
+type IRaceObjectReturnValue<T> = {
+  [P in keyof T]: {
+    type: P;
+    value: T extends Record<string, TIterableOrGenerator<unknown>> ? TGeneratorReturnValue<T[P]> : never;
+  };
+}[keyof T];
 
 export interface ITrigger<Value = void> {
   (value: Value): void;
@@ -81,7 +89,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
 
-  constructor(parentOrContext: IEntityContext<Game> | Entity<Game, any>) {
+  constructor(parentOrContext: TParentOrContext<Game>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;
@@ -98,7 +106,8 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #getGeneratorResult<Result>(generator: TGenerator<Result>): IGeneratorResult<Result> {
+  #getGeneratorResult<Result>(generatorOrIterable: TIterableOrGenerator<Result>): IGeneratorResult<Result> {
+    const generator: TGenerator<Result> = generatorOrIterable[Symbol.iterator]();
     let cancel: TCancelTask;
 
     return {
@@ -215,7 +224,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
-  *all<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
+  *all<T extends TIterableOrGenerator<Result>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
       let resultsLeft = generators.length;
@@ -299,12 +308,22 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
   }
 
-  *race<T extends TGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[number]>> {
+  race<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[keyof T]>>;
+  race<T extends Record<string, TIterableOrGenerator<unknown>>>(
+    generators: T,
+  ): TEffectGenerator<IRaceObjectReturnValue<T>>;
+  *race<T extends TIterableOrGenerator<unknown>[] | Record<string, TIterableOrGenerator<unknown>>>(
+    generators: T,
+  ): TEffectGenerator<
+    T extends TIterableOrGenerator<unknown>[] ? TGeneratorReturnValue<T[keyof T]> : IRaceObjectReturnValue<T>
+  > {
     return yield (resolve, reject) => {
-      const cancels = generators.map((generator) => {
-        const { run, cancel } = this.#getGeneratorResult(generator);
+      const cancels = map(generators, (generator, key) => {
+        const { run, cancel } = this.#getGeneratorResult(generator as any as TGenerator<Result>);
 
-        run(resolve as any, reject);
+        run((result) => {
+          resolve(Array.isArray(generators) ? result : ({ type: key, value: result } as any));
+        }, reject);
 
         return cancel;
       });
