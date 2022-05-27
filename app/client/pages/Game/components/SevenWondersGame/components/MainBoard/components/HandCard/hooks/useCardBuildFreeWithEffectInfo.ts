@@ -25,9 +25,9 @@ export default function useCardBuildFreeWithEffectInfo(
 
   const infinityBuildEffectIndex = useMemo(() => {
     return (
-      player.data.age?.buildEffects
-        .filter((effect) => effect.count === undefined)
-        .findIndex((effect) => effect.cardTypes?.includes(card.type) ?? true) ?? -1
+      player.data.age?.buildEffects.findIndex(
+        (effect) => effect.count === undefined && (effect.cardTypes?.includes(card.type) ?? true),
+      ) ?? -1
     );
   }, [card.type, player.data.age]);
 

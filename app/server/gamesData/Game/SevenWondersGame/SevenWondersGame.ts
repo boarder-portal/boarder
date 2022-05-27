@@ -88,18 +88,19 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.BILKIS));
       // }
 
-      // if (this.players[playerIndex].login === '123') {
+      // if (this.getPlayers()[playerIndex].login === '123') {
       //   playerData.city = ECity.ROMA;
       //   playerData.citySide = 1;
       //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.SOLOMON));
       // }
       //
-      // if (this.players[playerIndex].login === '234') {
+      // if (this.getPlayers()[playerIndex].login === '234') {
       //   playerData.city = ECity.BABYLON;
       //   playerData.citySide = 1;
+      //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.RAMSES));
       // }
       //
-      // if (this.players[playerIndex].login === '345') {
+      // if (this.getPlayers()[playerIndex].login === '345') {
       //   playerData.city = ECity.HALIKARNASSOS;
       //   playerData.citySide = 1;
       // }
