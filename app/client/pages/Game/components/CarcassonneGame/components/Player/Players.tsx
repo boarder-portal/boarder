@@ -15,17 +15,18 @@ interface IPlayersProps {
   className?: string;
   players: IPlayer[];
   activePlayerIndex: number;
+  timeDiff: number;
   turnEndsAt: number | null;
 }
 
 const Players: React.FC<IPlayersProps> = (props) => {
-  const { className, players, activePlayerIndex, turnEndsAt } = props;
+  const { className, players, activePlayerIndex, timeDiff, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
 
   useEffect(() => {
     const setSecondsLeft = () => {
-      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - Date.now()) / 1000) : 0;
+      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - timeDiff - Date.now()) / 1000) : 0;
 
       setTurnSecondsLeft(secondsLeft);
     };
@@ -37,7 +38,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
     return () => {
       clearInterval(interval);
     };
-  }, [turnEndsAt]);
+  }, [timeDiff, turnEndsAt]);
 
   return (
     <Flex className={classNames(styles.root, className)} direction="column">

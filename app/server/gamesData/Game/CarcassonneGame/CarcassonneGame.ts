@@ -92,6 +92,8 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
   turn: Turn | null = null;
 
   *lifecycle(): TGenerator {
+    this.spawnTask(this.pingIndefinitely(15 * 1000));
+
     this.attachCard({
       card: ALL_CARDS[0],
       coords: { x: 0, y: 0 },

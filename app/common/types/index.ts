@@ -45,6 +45,7 @@ export enum ECommonGameServerEvent {
   UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
   GET_DATA = '$$GET_DATA',
   GET_INFO = '$$GET_INFO',
+  PING = '$$PING',
   END = '$$END',
 }
 
@@ -56,5 +57,6 @@ export interface ICommonServerEventMap<Game extends EGame> {
   [ECommonGameServerEvent.GET_DATA]: IGameData<Game>;
   [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
   [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer[];
+  [ECommonGameServerEvent.PING]: number;
   [ECommonGameServerEvent.END]: undefined;
 }

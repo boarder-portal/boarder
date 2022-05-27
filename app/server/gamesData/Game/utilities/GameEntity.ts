@@ -23,6 +23,16 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     return this.toJSON();
   }
 
+  ping(): void {
+    this.sendSocketEvent(ECommonGameServerEvent.PING, Date.now());
+  }
+
+  *pingIndefinitely(interval: number): TGenerator {
+    yield* this.repeatTask(interval, function* () {
+      this.ping();
+    });
+  }
+
   sendGameInfo(): void {
     this.sendSocketEvent(ECommonGameServerEvent.GET_INFO, this.getGameInfo(), {
       batch: true,

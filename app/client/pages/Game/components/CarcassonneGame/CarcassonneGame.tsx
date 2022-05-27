@@ -45,7 +45,7 @@ import useAtom from 'client/hooks/useAtom';
 import styles from './CarcassonneGame.pcss';
 
 const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameInfo, timeDiff } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
@@ -552,6 +552,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         className={styles.players}
         players={players}
         activePlayerIndex={activePlayerIndex}
+        timeDiff={timeDiff}
         turnEndsAt={turnEndsAt}
       />
 

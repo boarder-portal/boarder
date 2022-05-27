@@ -34,6 +34,7 @@ import styles from './Game.pcss';
 export interface IGameProps<Game extends EGame> {
   io: TGameClientSocket<Game>;
   gameInfo: TGameInfo<Game>;
+  timeDiff: number;
   isGameEnd: boolean;
 }
 
@@ -56,6 +57,7 @@ function Game<G extends EGame>() {
   const [gameName, setGameName] = useState<string | null>(null);
   const [gameInfo, setGameInfo] = useState<TGameInfo<G> | null>(null);
   const [players, setPlayers] = useState<IGamePlayer[]>([]);
+  const [timeDiff, setTimeDiff] = useState(0);
 
   const { value: isGameEnd, setTrue: endGame } = useBoolean(false);
 
@@ -75,6 +77,9 @@ function Game<G extends EGame>() {
     },
     [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
       setPlayers(players);
+    },
+    [ECommonGameServerEvent.PING]: (serverTimestamp) => {
+      setTimeDiff(serverTimestamp - Date.now());
     },
     [ECommonGameServerEvent.END]: () => {
       console.log('GAME_END');
@@ -129,7 +134,7 @@ function Game<G extends EGame>() {
 
   const Game: ComponentType<IGameProps<G>> = GAMES_MAP[game];
 
-  return <Game io={socket} isGameEnd={isGameEnd} gameInfo={gameInfo} />;
+  return <Game io={socket} isGameEnd={isGameEnd} gameInfo={gameInfo} timeDiff={timeDiff} />;
 }
 
 export default React.memo(Game);
