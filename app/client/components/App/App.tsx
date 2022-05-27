@@ -58,7 +58,7 @@ const App: FC = () => {
           </Route>
 
           <Route exact path="/:game/lobby">
-            {/* TODO: move to separate component */}
+            {/* TODO: move to separate component & IMPORTANT: change game generation */}
             {(props: { match: match<{ game: EGame }> }) => {
               const Lobby = LOBBIES[props.match.params.game];
 

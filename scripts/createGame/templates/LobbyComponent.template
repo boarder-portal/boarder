@@ -1,0 +1,11 @@
+import React from 'react';
+
+import { EGame } from 'common/types/game';
+
+import Lobby from 'client/components/Lobby/Lobby';
+
+const {{pascalCased}}Lobby: React.FC = () => {
+  return <Lobby game={EGame.{{constCased}}} />;
+};
+
+export default React.memo({{pascalCased}}Lobby);

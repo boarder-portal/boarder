@@ -13,6 +13,9 @@ import {
 } from 'common/types';
 import { TGameClientSocket } from 'common/types/socket';
 
+import Text from 'client/components/common/Text/Text';
+import Flex from 'client/components/common/Flex/Flex';
+import Button from 'client/components/common/Button/Button';
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
@@ -20,9 +23,6 @@ import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
 import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/CarcassonneGame';
 import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
-import Text from 'client/components/common/Text/Text';
-import Flex from 'client/components/common/Flex/Flex';
-import Button from 'client/components/common/Button/Button';
 import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';

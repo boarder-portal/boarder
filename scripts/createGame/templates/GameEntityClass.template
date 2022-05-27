@@ -1,0 +1,21 @@
+import { EGame } from 'common/types/game';
+import { IGame, IPlayer, IPlayerData } from '{{typesFilename}}';
+
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+
+export default class {{pascalCased}}Game extends GameEntity<EGame.{{constCased}}> {
+  playersData: IPlayerData[] = this.getPlayersData(() => ({}));
+
+  *lifecycle(): TGenerator {}
+
+  getGamePlayers(): IPlayer[] {
+    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+  }
+
+  toJSON(): IGame {
+    return {
+      players: this.getGamePlayers(),
+    };
+  }
+}

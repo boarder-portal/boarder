@@ -23,6 +23,9 @@ import removeNamespace from 'server/utilities/removeNamespace';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 
+import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
+import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
+
 import ioInstance from 'server/io';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -32,8 +35,6 @@ import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGa
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
-import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
-import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 
 export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
   sockets: Set<TGameServerSocket<Game>>;
@@ -363,6 +364,7 @@ class Game<Game extends EGame> {
     const existingEventIndex = this.batchedActions.findIndex(
       (action) => action.event === event && action.socket === options.socket,
     );
+
     const batchedAction: IBatchedAction<Game, Event> = {
       event,
       data,
