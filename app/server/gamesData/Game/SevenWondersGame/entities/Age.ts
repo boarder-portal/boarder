@@ -388,7 +388,11 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
   }
 
   usePlayerBuildEffect(playerIndex: number, effectIndex: number): void {
-    this.playersData[playerIndex].buildEffects.splice(effectIndex, 1);
+    const buildEffect = this.playersData[playerIndex].buildEffects[effectIndex];
+
+    if (buildEffect.period !== EFreeCardPeriod.ETERNITY) {
+      this.playersData[playerIndex].buildEffects.splice(effectIndex, 1);
+    }
   }
 
   withdrawPlayersCoins(receivedCoins: number[]): void {
