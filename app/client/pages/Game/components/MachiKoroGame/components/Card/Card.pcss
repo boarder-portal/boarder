@@ -1,0 +1,33 @@
+.root {
+  width: 75px;
+  border-radius: 8px;
+  transition: 0.2s;
+
+  &.inactive {
+    filter: grayscale(1);
+  }
+
+  &:hover {
+    position: relative;
+    animation-name: show;
+    animation-delay: 0.4s;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+    z-index: 2;
+  }
+
+  &.selectable:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes show {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(3);
+  }
+}

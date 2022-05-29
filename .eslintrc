@@ -169,7 +169,7 @@
     "no-throw-literal": 2,
     "no-undef": 0,
     "no-undef-init": 2,
-    "no-unmodified-loop-condition": 2,
+    "no-unmodified-loop-condition": 0,
     "no-unneeded-ternary": 2,
     "no-unused-vars": 0,
     "no-use-before-define": 0,

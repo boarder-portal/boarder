@@ -24,6 +24,7 @@ import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/Carcas
 import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/SevenWondersGame';
 import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
+import MachiKoroGame from 'client/pages/Game/components/MachiKoroGame/MachiKoroGame';
 
 import { useBoolean } from 'client/hooks/useBoolean';
 import useSocket from 'client/hooks/useSocket';
@@ -49,6 +50,7 @@ const GAMES_MAP: {
   [EGame.SEVEN_WONDERS]: SevenWondersGame,
   [EGame.HEARTS]: HeartsGame,
   [EGame.BOMBERS]: BombersGame,
+  [EGame.MACHI_KORO]: MachiKoroGame,
 };
 
 function Game<G extends EGame>() {

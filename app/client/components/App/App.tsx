@@ -1,8 +1,6 @@
 import '../../styles/reset.pcss';
-import '../../styles/styles.css';
 import { ComponentType, FC } from 'react';
 import { Switch, Route, match } from 'react-router-dom';
-import { Container } from 'boarder-components';
 
 import { EGame } from 'common/types/game';
 
@@ -20,6 +18,7 @@ import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/Ca
 import SevenWondersLobby from 'client/pages/games/sevenWonders/SevenWonders/SevenWondersLobby';
 import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
 import BombersLobby from 'client/pages/games/bombers/BombersLobby/BombersLobby';
+import MachiKoroLobby from 'client/pages/games/machiKoro/MachiKoroLobby/MachiKoroLobby';
 
 import styles from './App.pcss';
 
@@ -32,12 +31,13 @@ const LOBBIES: Record<EGame, ComponentType> = {
   [EGame.SEVEN_WONDERS]: SevenWondersLobby,
   [EGame.HEARTS]: HeartsLobby,
   [EGame.BOMBERS]: BombersLobby,
+  [EGame.MACHI_KORO]: MachiKoroLobby,
 };
 
 const App: FC = () => {
   return (
     <>
-      <Container className={styles.app}>
+      <div className={styles.app}>
         <Header />
 
         <Switch>
@@ -70,7 +70,7 @@ const App: FC = () => {
             <Game />
           </Route>
         </Switch>
-      </Container>
+      </div>
     </>
   );
 };

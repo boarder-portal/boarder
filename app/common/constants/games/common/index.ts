@@ -9,4 +9,5 @@ export const GAME_NAMES: Record<EGame, string> = {
   [EGame.SEVEN_WONDERS]: 'Семь чудес',
   [EGame.HEARTS]: 'Червы',
   [EGame.BOMBERS]: 'Бомберы',
+  [EGame.MACHI_KORO]: 'Machi Koro',
 };
