@@ -22,7 +22,9 @@ export enum EGameServerEvent {
   BONUS_CONSUMED = 'BONUS_CONSUMED',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface IGameOptions extends ICommonGameOptions {
+  mapType: EMap;
+}
 
 export enum EDirection {
   UP = 'UP',
@@ -46,6 +48,7 @@ export interface IPlayer extends IGamePlayer {
 }
 
 export enum EObject {
+  PLAYER = 'PLAYER',
   BOX = 'BOX',
   WALL = 'WALL',
   BOMB = 'BOMB',
@@ -87,6 +90,10 @@ export interface ICell {
 
 export type TMap = ICell[][];
 
+export enum EMap {
+  DEFAULT = 'DEFAULT',
+}
+
 export interface IGame {
   players: IPlayer[];
   map: TMap;
@@ -119,6 +126,7 @@ export interface IBombsExplodedEvent {
 
 export interface IWallCreatedEvent {
   coords: ICoords;
+  deadPlayers: number[];
 }
 
 export interface IBonusConsumedEvent {

@@ -151,6 +151,8 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
                 type: 'error',
                 error,
               };
+
+              runIteration();
             },
           );
         };
@@ -409,6 +411,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     );
   }
 
+  // TODO: deprecate
   spawnEntity<E extends Entity<Game, any>>(entity: E): E {
     entity.spawned = true;
     entity.#parent = this;
@@ -430,6 +433,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     let taskResult: TEffectResult<Result> | undefined;
     let taskResolve: TResolve<Result> | undefined;
     let taskReject: TReject | undefined;
+    let async = false;
 
     run(
       (result) => {
@@ -446,9 +450,17 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           error,
         };
 
-        taskReject?.(error);
+        if (taskReject) {
+          taskReject(error);
+        } else if (async) {
+          console.log('Unhandled spawnTask error', error);
+        } else {
+          throw error;
+        }
       },
     );
+
+    async = true;
 
     return (function* (): TEffectGenerator<Result> {
       return yield (resolve, reject) => {

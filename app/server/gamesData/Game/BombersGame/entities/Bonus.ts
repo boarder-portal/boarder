@@ -16,6 +16,8 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   type: EBonus;
   coords: ICoords;
 
+  consume = this.createTrigger();
+
   constructor(game: BombersGame, options: IBonusOptions) {
     super(game);
 
@@ -24,7 +26,7 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   }
 
   *lifecycle(): TGenerator {
-    yield* this.eternity();
+    yield* this.consume;
   }
 
   toJSON(): IBonus {

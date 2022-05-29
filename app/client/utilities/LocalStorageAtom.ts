@@ -24,7 +24,7 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
   [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v1',
   [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
-  [EGame.BOMBERS]: 'game/bombers/defaultOptions/v1',
+  [EGame.BOMBERS]: 'game/bombers/defaultOptions/v0.1',
 } as const;
 
 export default class LocalStorageAtom<Key extends TLocalStorageKey> {

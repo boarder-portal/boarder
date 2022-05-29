@@ -5,26 +5,32 @@ import { ICoords } from 'common/types';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBombOptions {
-  coords: ICoords;
+  cell: IServerCell;
+  explodesAt: number;
 }
 
 export default class Bomb extends ServerEntity<EGame.BOMBERS> {
-  coords: ICoords;
-  explodesAt = 0;
+  cell: IServerCell;
+  explodesAt: number;
+
+  explodeTrigger = this.createTrigger();
 
   constructor(game: BombersGame, options: IBombOptions) {
     super(game);
 
-    this.coords = options.coords;
+    this.cell = options.cell;
+    this.explodesAt = options.explodesAt;
   }
 
   *lifecycle(): TGenerator {
-    this.explodesAt = Date.now() + 1000;
+    yield* this.explodeTrigger;
+  }
 
-    yield* this.delay(this.explodesAt - Date.now());
+  explode(): void {
+    this.explodeTrigger();
   }
 
   toJSON(): IBomb {

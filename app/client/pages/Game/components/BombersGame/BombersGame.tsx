@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { CELL_SIZE, VIEW_SIZE } from 'client/pages/Game/components/BombersGame/constants';
+import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
 import { EGame } from 'common/types/game';
 import { EDirection, EGameClientEvent, IPlayer, TMap } from 'common/types/bombers';
@@ -38,6 +38,11 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const mapRef = useRef<TMap>(gameInfo.map);
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
+  const viewSize: ISize = {
+    width: gameInfo.map[0].length,
+    height: gameInfo.map.length,
+  };
+
   const changeCellSize = useImmutableCallback(() => {
     const containerEl = containerRef.current;
 
@@ -45,11 +50,11 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       return;
     }
 
-    const cellSize = getCellScreenSize(containerEl, VIEW_SIZE);
+    const cellSize = getCellScreenSize(containerEl, viewSize);
 
     setCanvasSize({
-      width: VIEW_SIZE.width * cellSize,
-      height: VIEW_SIZE.height * cellSize,
+      width: viewSize.width * cellSize,
+      height: viewSize.height * cellSize,
     });
   });
 
@@ -69,7 +74,13 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keyup', document, (e) => {
-    const direction = DIRECTIONS_MAP[e.key];
+    if (e.code === 'Space') {
+      io.emit(EGameClientEvent.PLACE_BOMB);
+
+      return;
+    }
+
+    const direction = DIRECTIONS_MAP[e.code];
     const pressedDirections = pressedDirectionsRef.current;
 
     if (direction) {
@@ -121,8 +132,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     <Flex className={styles.root} justifyContent="center" alignItems="center" direction="column" ref={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
-        width={VIEW_SIZE.width * CELL_SIZE}
-        height={VIEW_SIZE.height * CELL_SIZE}
+        width={viewSize.width * CELL_SIZE}
+        height={viewSize.height * CELL_SIZE}
         ref={canvasRef}
       />
     </Flex>
