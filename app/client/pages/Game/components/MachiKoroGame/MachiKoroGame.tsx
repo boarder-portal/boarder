@@ -176,7 +176,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
 
   return (
     <Flex direction="column" between={5}>
-      <Flex direction="column" between={3}>
+      <Flex style={{ flexWrap: 'wrap' }}>
         {players.map((player) => (
           <Player
             key={player.login}

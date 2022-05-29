@@ -43,7 +43,7 @@ const Player: FC<IPlayerProps> = (props) => {
   }, [active, player.data.waitingAction]);
 
   return (
-    <Flex direction="column" between={2}>
+    <Flex direction="column" between={2} style={{ flex: '1 1 50%' }}>
       <Text weight="bold" onClick={onClick}>
         {player.name}
       </Text>

@@ -14,7 +14,7 @@ import Turn from 'server/gamesData/Game/MachiKoroGame/entities/Turn';
 
 export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
-    coins: 30,
+    coins: 3,
     cardsIds: [ECardId.WHEAT_FIELD, ECardId.BAKERY],
     landmarksIds: [],
     waitingAction: null,
