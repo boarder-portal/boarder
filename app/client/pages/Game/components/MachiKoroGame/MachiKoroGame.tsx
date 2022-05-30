@@ -16,16 +16,18 @@ import getCard from 'common/utilities/machiKoro/getCard';
 import Flex from 'client/components/common/Flex/Flex';
 import Board from 'client/pages/Game/components/MachiKoroGame/components/Board/Board';
 import Player from 'client/pages/Game/components/MachiKoroGame/components/Player/Player';
-import Actions from 'client/pages/Game/components/MachiKoroGame/components/Actions/Actions';
+import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/components/StatusAndActions/StatusAndActions';
 
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useAtom from 'client/hooks/useAtom';
 
+import styles from './MachiKoroGame.pcss';
+
 const FORBIDDEN_TO_SWAP_CARD_TYPES: ECardType[] = [ECardType.MAJOR];
 
 const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameInfo, isGameEnd } = props;
 
   const [user] = useAtom('user');
   const [board, setBoard] = useState(gameInfo.board);
@@ -46,9 +48,15 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   );
 
   const player = useMemo(() => players.find((p) => p.login === user?.login), [players, user?.login]);
-  const isWaitingForAction = useMemo(() => Boolean(player?.data.waitingAction), [player?.data.waitingAction]);
+
+  const otherPlayers = useMemo(() => {
+    const playerIndex = players.findIndex(({ login }) => login === player?.login);
+
+    return [...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)].reverse();
+  }, [player, players]);
 
   const waitingAction = player?.data.waitingAction;
+  const isWaitingForAction = Boolean(waitingAction);
 
   const buildCard = useCallback(
     (cardId: ECardId) => {
@@ -175,42 +183,64 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   }, [gameInfo]);
 
   return (
-    <Flex direction="column" between={5}>
-      <Flex style={{ flexWrap: 'wrap' }}>
-        {players.map((player) => (
+    <>
+      <Flex direction="column" between={5}>
+        <Flex className={styles.players}>
+          {otherPlayers.map((player) => (
+            <Player
+              key={player.login}
+              player={player}
+              active={player.index === activePlayerIndex}
+              dices={player.index === activePlayerIndex ? dices : []}
+              forbiddenToClickCardTypes={FORBIDDEN_TO_SWAP_CARD_TYPES}
+              onEndTurn={endTurn}
+              onCardClick={getCardClickHandler(player.index)}
+              onLandmarkBuild={buildLandmark}
+              onClick={player.index === activePlayerIndex ? undefined : () => choosePlayer(player.index)}
+            />
+          ))}
+        </Flex>
+
+        {player && (
           <Player
+            className={styles.activePlayer}
             key={player.login}
             player={player}
+            main
             active={player.index === activePlayerIndex}
             dices={player.index === activePlayerIndex ? dices : []}
-            withActions={isActive && player.index === activePlayerIndex && !isWaitingForAction}
+            withActions={isActive && !isWaitingForAction}
             forbiddenToClickCardTypes={FORBIDDEN_TO_SWAP_CARD_TYPES}
             onEndTurn={endTurn}
             onCardClick={getCardClickHandler(player.index)}
             onLandmarkBuild={buildLandmark}
             onClick={player.index === activePlayerIndex ? undefined : () => choosePlayer(player.index)}
           />
-        ))}
+        )}
+
+        <Board
+          board={board}
+          withActions={isActive && !isWaitingForAction}
+          availableCoins={player?.data.coins || 0}
+          builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === ECardType.MAJOR) || []}
+          onSelect={buildCard}
+        />
       </Flex>
 
-      <Board
-        board={board}
-        withActions={isActive && !isWaitingForAction}
-        availableCoins={player?.data.coins || 0}
-        builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === ECardType.MAJOR) || []}
-        onSelect={buildCard}
-      />
-
       {player && (
-        <Actions
+        <StatusAndActions
+          className={styles.statusAndActions}
           player={player}
+          activePlayer={players[activePlayerIndex]}
           isPlayerActive={isActive}
+          dices={dices}
+          isGameEnd={isGameEnd}
           onEndTurn={endTurn}
           onSelectDicesCount={chooseDicesCount}
           onSelectNeedToReroll={chooseNeedToReroll}
         />
       )}
-    </Flex>
+    </>
   );
 };
 

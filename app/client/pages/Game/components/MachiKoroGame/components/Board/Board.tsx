@@ -1,12 +1,13 @@
 import { memo, FC, useMemo } from 'react';
-import groupBy from 'lodash/groupBy';
 
 import { ECardId } from 'common/types/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
+import isNotUndefined from 'common/utilities/isNotUndefined';
 
-import Flex from 'client/components/common/Flex/Flex';
-import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
+import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
+
+import styles from './Board.pcss';
 
 interface IBoardProps {
   board: ECardId[];
@@ -19,29 +20,22 @@ interface IBoardProps {
 const Board: FC<IBoardProps> = (props) => {
   const { board, withActions, availableCoins, builtMajors, onSelect } = props;
 
-  const groupedCards = useMemo(() => Object.values(groupBy(board, (cardId) => cardId)), [board]);
+  const disabledIds = useMemo(() => {
+    if (!withActions) {
+      return [];
+    }
 
-  return (
-    <Flex between={2}>
-      {groupedCards.map((group, groupIndex) => (
-        <Flex key={groupIndex} direction="column">
-          {group.map((cardId, cardIndex) => {
-            const card = getCard(cardId);
-            const alreadyBuilt = builtMajors.includes(cardId);
+    return board
+      .map((cardId) => {
+        const card = getCard(cardId);
+        const hasAlreadyBuiltUniqCard = builtMajors.includes(cardId);
 
-            return (
-              <Card
-                key={cardIndex}
-                id={cardId}
-                inactive={availableCoins < card.cost || alreadyBuilt}
-                onClick={!alreadyBuilt && withActions && availableCoins >= card.cost ? onSelect : undefined}
-              />
-            );
-          })}
-        </Flex>
-      ))}
-    </Flex>
-  );
+        return hasAlreadyBuiltUniqCard || availableCoins < card.cost ? cardId : undefined;
+      })
+      .filter(isNotUndefined);
+  }, [availableCoins, board, builtMajors, withActions]);
+
+  return <CardLine className={styles.root} cardsIds={board} disabledIds={disabledIds} onClick={onSelect} />;
 };
 
 export default memo(Board);

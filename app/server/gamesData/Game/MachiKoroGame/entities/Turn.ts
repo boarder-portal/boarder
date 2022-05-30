@@ -49,7 +49,7 @@ function getCardTypeCount(cardsIds: ECardId[], type: ECardType): number {
 }
 
 function getShopsAndRestaurantIncreasedIncome(player: IPlayerData): number {
-  const withShoppingMol = player.landmarksIds.includes(ELandmarkId.SHOPPING_MOL);
+  const withShoppingMol = player.landmarksIds.includes(ELandmarkId.SHOPPING_MALL);
 
   return withShoppingMol ? 1 : 0;
 }

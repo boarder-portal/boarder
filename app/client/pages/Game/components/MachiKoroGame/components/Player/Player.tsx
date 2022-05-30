@@ -5,16 +5,22 @@ import { ALL_LANDMARK_CARDS } from 'common/constants/games/machiKoro';
 import { ECardId, ECardType, ELandmarkId, EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
+import isNotUndefined from 'common/utilities/isNotUndefined';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
+import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
+
+import styles from './Player.pcss';
 
 interface IPlayerProps {
+  className?: string;
   player: IPlayer;
+  main?: boolean;
   active: boolean;
   dices: number[];
-  withActions: boolean;
+  withActions?: boolean;
   forbiddenToClickCardTypes: ECardType[];
   onEndTurn(): void;
   onCardClick?(playerIndex: number, cardId: ECardId): void;
@@ -23,66 +29,59 @@ interface IPlayerProps {
 }
 
 const Player: FC<IPlayerProps> = (props) => {
-  const { player, active, dices, withActions, forbiddenToClickCardTypes, onClick, onLandmarkBuild, onCardClick } =
-    props;
+  const { className, player, withActions, forbiddenToClickCardTypes, onClick, onLandmarkBuild, onCardClick } = props;
 
-  const status = useMemo(() => {
-    if (!active) {
-      return null;
-    }
+  const disabledCardsIds = useMemo(
+    () =>
+      player.data.cardsIds
+        .map((cardId) => {
+          const card = getCard(cardId);
 
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
-      return 'Выбирает у кого взять монеты';
-    }
+          if (!onCardClick) {
+            return undefined;
+          }
 
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
-      return 'Выбирает карты для обмена';
-    }
-
-    return 'Ходит';
-  }, [active, player.data.waitingAction]);
+          return forbiddenToClickCardTypes.includes(card.type) ? cardId : undefined;
+        })
+        .filter(isNotUndefined),
+    [forbiddenToClickCardTypes, onCardClick, player.data.cardsIds],
+  );
 
   return (
-    <Flex direction="column" between={2} style={{ flex: '1 1 50%' }}>
-      <Text weight="bold" onClick={onClick}>
-        {player.name}
-      </Text>
+    <Flex className={className} direction="column" between={2}>
+      <Flex between={3} alignItems="center">
+        <div>
+          <Text weight="bold" onClick={onClick}>
+            {player.name}
+          </Text>
 
-      <Flex between={2} alignItems="center">
-        <div>Монеты: {player.data.coins}</div>
-        {status && <div>{status}</div>}
-        {Boolean(dices.length) && <div>{`Кубик${dices.length === 2 ? 'и' : ''}: ${dices.join(',')}`}</div>}
+          <Flex between={2} alignItems="center">
+            <div>Монеты: {player.data.coins}</div>
+          </Flex>
+        </div>
+
+        <Flex between={2}>
+          {ALL_LANDMARK_CARDS.map((landmark) => {
+            const hasBuilt = player.data.landmarksIds.includes(landmark.id);
+
+            return (
+              <Card
+                className={styles.landmark}
+                key={landmark.id}
+                id={landmark.id}
+                inactive={!hasBuilt}
+                onClick={hasBuilt || !withActions || player.data.coins < landmark.cost ? undefined : onLandmarkBuild}
+              />
+            );
+          })}
+        </Flex>
       </Flex>
 
-      <Flex between={2}>
-        {ALL_LANDMARK_CARDS.map((landmark) => {
-          const hasBuilt = player.data.landmarksIds.includes(landmark.id);
-
-          return (
-            <Card
-              key={landmark.id}
-              id={landmark.id}
-              inactive={!hasBuilt}
-              onClick={hasBuilt || !withActions || player.data.coins < landmark.cost ? undefined : onLandmarkBuild}
-            />
-          );
-        })}
-      </Flex>
-
-      <Flex between={2}>
-        {player.data.cardsIds.map((cardId, index) => {
-          const card = getCard(cardId);
-          const isForbiddenToClick = forbiddenToClickCardTypes.includes(card.type);
-
-          return (
-            <Card
-              key={index}
-              id={cardId}
-              onClick={onCardClick && !isForbiddenToClick ? (cardId) => onCardClick(player.index, cardId) : undefined}
-            />
-          );
-        })}
-      </Flex>
+      <CardLine
+        cardsIds={player.data.cardsIds}
+        disabledIds={disabledCardsIds}
+        onClick={onCardClick ? (cardId) => onCardClick(player.index, cardId) : undefined}
+      />
     </Flex>
   );
 };

@@ -31,7 +31,7 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
 
     yield* this.delay(500);
 
-    while (true) {
+    while (this.playersData.every((playerData) => playerData.landmarksIds.length !== 4)) {
       yield* this.spawnEntity(
         new Turn(this, {
           activePlayerIndex: this.activePlayerIndex,

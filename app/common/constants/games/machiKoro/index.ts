@@ -149,7 +149,7 @@ export const ALL_LANDMARK_CARDS: ILandmarkCard[] = [
     cost: 4,
   },
   {
-    id: ELandmarkId.SHOPPING_MOL,
+    id: ELandmarkId.SHOPPING_MALL,
     cost: 10,
   },
   {
