@@ -1,5 +1,4 @@
 import { FC, memo, useMemo } from 'react';
-import sum from 'lodash/sum';
 import classNames from 'classnames';
 
 import { EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
@@ -7,6 +6,7 @@ import { EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Button from 'client/components/common/Button/Button';
+import Dice, { TDice } from 'client/components/Dice/Dice';
 
 import styles from './StatusAndAction.pcss';
 
@@ -63,13 +63,11 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
           <div>{status}</div>
         </Flex>
 
-        <div>
-          {Boolean(dices.length) && (
-            <div>{`Кубик${dices.length === 2 ? 'и' : ''}: ${dices.join(',')} ${
-              dices.length === 2 ? `(${sum(dices)})` : ''
-            }`}</div>
-          )}
-        </div>
+        <Flex between={2}>
+          {dices.map((dice, index) => (
+            <Dice key={index} number={dice as TDice} />
+          ))}
+        </Flex>
       </Flex>
     ),
     [activePlayer.name, dices, status],

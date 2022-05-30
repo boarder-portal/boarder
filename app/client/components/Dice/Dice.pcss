@@ -1,0 +1,153 @@
+.root {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: #ddd;
+
+  &.number_1 {
+    .circle:nth-child(1) {
+      top: 50%;
+      left: 50%;
+    }
+
+    .circle:nth-child(n + 2) {
+      display: none;
+    }
+  }
+
+  &.number_2 {
+    .circle:nth-child(1) {
+      top: 30%;
+      left: 30%;
+    }
+
+    .circle:nth-child(2) {
+      top: 70%;
+      left: 70%;
+    }
+
+    .circle:nth-child(n + 3) {
+      display: none;
+    }
+  }
+
+  &.number_3 {
+    .circle:nth-child(1) {
+      top: 30%;
+      left: 30%;
+    }
+
+    .circle:nth-child(2) {
+      top: 50%;
+      left: 50%;
+    }
+
+    .circle:nth-child(3) {
+      top: 70%;
+      left: 70%;
+    }
+
+    .circle:nth-child(n + 4) {
+      display: none;
+    }
+  }
+
+  &.number_4 {
+    .circle:nth-child(1) {
+      top: 30%;
+      left: 30%;
+    }
+
+    .circle:nth-child(2) {
+      top: 30%;
+      left: 70%;
+    }
+
+    .circle:nth-child(3) {
+      top: 70%;
+      left: 30%;
+    }
+
+    .circle:nth-child(4) {
+      top: 70%;
+      left: 70%;
+    }
+
+    .circle:nth-child(n + 5) {
+      display: none;
+    }
+  }
+
+  &.number_5 {
+    .circle:nth-child(1) {
+      top: 30%;
+      left: 30%;
+    }
+
+    .circle:nth-child(2) {
+      top: 30%;
+      left: 70%;
+    }
+
+    .circle:nth-child(3) {
+      top: 70%;
+      left: 30%;
+    }
+
+    .circle:nth-child(4) {
+      top: 70%;
+      left: 70%;
+    }
+
+    .circle:nth-child(5) {
+      top: 50%;
+      left: 50%;
+    }
+
+    .circle:nth-child(n + 6) {
+      display: none;
+    }
+  }
+
+  &.number_6 {
+    .circle:nth-child(1) {
+      top: 30%;
+      left: 30%;
+    }
+
+    .circle:nth-child(2) {
+      top: 50%;
+      left: 30%;
+    }
+
+    .circle:nth-child(3) {
+      top: 70%;
+      left: 30%;
+    }
+
+    .circle:nth-child(4) {
+      top: 30%;
+      left: 70%;
+    }
+
+    .circle:nth-child(5) {
+      top: 50%;
+      left: 70%;
+    }
+
+    .circle:nth-child(6) {
+      top: 70%;
+      left: 70%;
+    }
+  }
+}
+
+.circle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #333;
+  transform: translate(-50%, -50%);
+}
