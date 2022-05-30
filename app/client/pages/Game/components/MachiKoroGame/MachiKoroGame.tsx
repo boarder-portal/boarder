@@ -55,7 +55,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const otherPlayers = useMemo(() => {
     const playerIndex = players.findIndex(({ login }) => login === player?.login);
 
-    return [...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)].reverse();
+    return [...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)];
   }, [player, players]);
 
   const waitingAction = player?.data.waitingAction;
