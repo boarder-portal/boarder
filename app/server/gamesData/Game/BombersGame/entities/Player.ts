@@ -73,7 +73,10 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   getCurrentCell(): IServerCell {
-    return this.game.map[Math.round(this.coords.y - 0.5)][Math.round(this.coords.x - 0.5)];
+    return this.game.getCell({
+      x: Math.round(this.coords.x - 0.5),
+      y: Math.round(this.coords.y - 0.5),
+    });
   }
 
   isAlive(): boolean {
