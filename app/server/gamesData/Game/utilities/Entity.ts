@@ -85,6 +85,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   #successCallbacks = new Set<TResolve<Result>>();
   #errorCallbacks = new Set<TReject>();
   #started = false;
+  #destroyed = false;
   spawned = false;
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
@@ -301,6 +302,8 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   destroy(): void {
+    this.#destroyed = true;
+
     for (const child of this.#children) {
       child.destroy();
     }
@@ -450,12 +453,14 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           error,
         };
 
+        if (!async) {
+          throw error;
+        }
+
         if (taskReject) {
           taskReject(error);
-        } else if (async) {
+        } else if (!this.#destroyed) {
           console.log('Unhandled spawnTask error', error);
-        } else {
-          throw error;
         }
       },
     );
