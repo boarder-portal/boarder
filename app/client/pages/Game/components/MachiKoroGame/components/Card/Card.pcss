@@ -10,7 +10,7 @@
 
   &:hover {
     position: relative;
-    animation-name: show;
+    animation-name: zoomX3;
     animation-delay: 0.8s;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
@@ -21,14 +21,28 @@
     cursor: pointer;
     transform: scale(1.05);
   }
+
+  &.extraZoom:hover {
+    animation-name: zoomX5;
+  }
 }
 
-@keyframes show {
+@keyframes zoomX3 {
   from {
     transform: scale(1);
   }
 
   to {
     transform: scale(3);
+  }
+}
+
+@keyframes zoomX5{
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(5);
   }
 }

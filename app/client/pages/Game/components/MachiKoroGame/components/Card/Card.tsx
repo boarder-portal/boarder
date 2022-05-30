@@ -13,11 +13,12 @@ interface ICardProps<ID> {
   style?: CSSProperties;
   id: ID;
   inactive?: boolean;
+  zoom?: 'normal' | 'extra';
   onClick?(id: ID): void;
 }
 
 const Card = <ID extends ECardId | ELandmarkId>(props: ICardProps<ID>) => {
-  const { className, style, id, inactive, onClick } = props;
+  const { className, style, id, inactive, zoom = 'norm', onClick } = props;
 
   return (
     <Image
@@ -26,6 +27,7 @@ const Card = <ID extends ECardId | ELandmarkId>(props: ICardProps<ID>) => {
         {
           [styles.selectable]: Boolean(onClick),
           [styles.inactive]: Boolean(inactive),
+          [styles.extraZoom]: zoom === 'extra',
         },
         className,
       )}

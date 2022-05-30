@@ -71,6 +71,7 @@ const Player: FC<IPlayerProps> = (props) => {
                 key={landmark.id}
                 id={landmark.id}
                 inactive={!hasBuilt}
+                zoom="extra"
                 onClick={hasBuilt || !withActions || player.data.coins < landmark.cost ? undefined : onLandmarkBuild}
               />
             );
