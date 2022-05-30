@@ -1,6 +1,5 @@
 import { EGame } from 'common/types/game';
 import { EObject, IBomb } from 'common/types/bombers';
-import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

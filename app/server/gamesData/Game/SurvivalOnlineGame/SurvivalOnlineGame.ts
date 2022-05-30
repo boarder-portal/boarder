@@ -64,7 +64,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
   *lifecycle(): TGenerator {
     this.generateWorld();
 
-    yield* this.race([
+    yield* this.all([
       this.repeatTask(ZOMBIES_MOVE_INTERVAL, this.moveZombies),
       this.repeatTask(ZOMBIES_GENERATE_INTERVAL, function* () {
         this.spawnZombies(NEW_ZOMBIES_COUNT);

@@ -36,7 +36,7 @@ export enum EDirection {
 export interface IPlayerData {
   coords: ICoords;
   direction: EDirection;
-  isMoving: boolean;
+  startMovingTimestamp: number | null;
   speed: number;
   maxBombCount: number;
   bombRange: number;
@@ -48,7 +48,6 @@ export interface IPlayer extends IGamePlayer {
 }
 
 export enum EObject {
-  PLAYER = 'PLAYER',
   BOX = 'BOX',
   WALL = 'WALL',
   BOMB = 'BOMB',
@@ -102,10 +101,12 @@ export interface IGame {
 export interface IStartMovingEvent {
   playerIndex: number;
   direction: EDirection;
+  startMovingTimestamp: number;
 }
 
 export interface IStopMovingEvent {
   playerIndex: number;
+  coords: ICoords;
 }
 
 export interface IPlaceBombEvent {

@@ -1,7 +1,9 @@
+import pick from 'lodash/pick';
+
 import { MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EBonus, EDirection, EGameClientEvent } from 'common/types/bombers';
+import { EBonus, EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -20,7 +22,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   coords: ICoords;
   direction = EDirection.DOWN;
-  isMoving = false;
+  startMovingTimestamp: number | null = null;
   speed = 1;
   maxBombCount = 1;
   bombRange = 1;
@@ -45,10 +47,14 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
       this.hp = Math.max(0, this.hp - damage);
 
-      if (this.hp === 0) {
+      if (!this.isAlive()) {
         return;
       }
     }
+  }
+
+  canPlaceBombs(): boolean {
+    return this.placedBombs.size < this.maxBombCount;
   }
 
   consumeBonus(bonus: Bonus): void {
@@ -69,15 +75,14 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     return this.game.map[Math.round(this.coords.y - 0.5)][Math.round(this.coords.x - 0.5)];
   }
 
+  isAlive(): boolean {
+    return this.hp > 0;
+  }
+
   *listenForEvents(): TGenerator {
     yield* this.all([
-      this.listenForOwnEvent(EGameClientEvent.START_MOVING, (direction) => {
-        this.direction = direction;
-        this.isMoving = true;
-      }),
-      this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, () => {
-        this.isMoving = false;
-      }),
+      this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
+      this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
       this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
         this.game.placeBomb(this, this.getCurrentCell());
       }),
@@ -98,5 +103,31 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   removeBomb(bomb: Bomb): void {
     this.placedBombs.delete(bomb);
+  }
+
+  startMoving = (direction: EDirection): void => {
+    this.direction = direction;
+    this.startMovingTimestamp = Date.now();
+
+    this.sendSocketEvent(EGameServerEvent.START_MOVING, {
+      playerIndex: this.index,
+      direction,
+      startMovingTimestamp: this.startMovingTimestamp,
+    });
+  };
+
+  stopMoving = (): void => {
+    this.startMovingTimestamp = null;
+
+    // TODO: move player
+
+    this.sendSocketEvent(EGameServerEvent.STOP_MOVING, {
+      playerIndex: this.index,
+      coords: this.coords,
+    });
+  };
+
+  toJSON(): IPlayerData {
+    return pick(this, ['coords', 'direction', 'startMovingTimestamp', 'speed', 'maxBombCount', 'bombRange', 'hp']);
   }
 }

@@ -1,20 +1,19 @@
 import { EGame } from 'common/types/game';
 import { EBonus, EObject, IBonus } from 'common/types/bombers';
-import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBonusOptions {
   type: EBonus;
-  coords: ICoords;
+  cell: IServerCell;
 }
 
 export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   type: EBonus;
-  coords: ICoords;
+  cell: IServerCell;
 
   consume = this.createTrigger();
 
@@ -22,7 +21,7 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
     super(game);
 
     this.type = options.type;
-    this.coords = options.coords;
+    this.cell = options.cell;
   }
 
   *lifecycle(): TGenerator {
