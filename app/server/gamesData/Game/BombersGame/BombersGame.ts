@@ -92,9 +92,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
     this.spawnTask(this.repeatTask(FRAME_DURATION, this.movePlayers));
 
+    const finishGamePlayersCount = Math.min(this.playersCount - 1, 1);
     let alivePlayers: Player[];
 
-    while ((alivePlayers = this.getAlivePlayers()).length > 1) {
+    while ((alivePlayers = this.getAlivePlayers()).length > finishGamePlayersCount) {
       yield* this.race(alivePlayers);
     }
 
@@ -178,8 +179,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   placeBomb(player: Player, cell: IServerCell): void {
     this.spawnTask(
-      this.spawnBomb(player, {
-        cell,
+      this.spawnBomb(player, cell, {
         explodesAt: this.lastExplosionTickTimestamp + EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION,
       }),
     );
@@ -225,25 +225,25 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     yield* this.repeatTask(1000, this.spawnArtificialWall);
   }
 
-  *spawnBomb(player: Player, options: IBombOptions): TGenerator {
-    if (options.cell.object || !player.canPlaceBombs()) {
+  *spawnBomb(player: Player, cell: IServerCell, options: IBombOptions): TGenerator {
+    if (cell.object || !player.canPlaceBombs()) {
       return;
     }
 
     const bomb = this.spawnEntity(new Bomb(this, options));
 
-    this.placeMapObject(bomb, options.cell);
+    this.placeMapObject(bomb, cell);
     player.placeBomb(bomb);
     last(this.bombsToExplode)?.push(bomb);
 
     yield* bomb;
 
     player.removeBomb(bomb);
-    this.removeMapObject(options.cell);
+    this.removeMapObject(cell);
   }
 
   *spawnBonus(type: EBonus, cell: IServerCell): TGenerator {
-    const bonus = this.spawnEntity(new Bonus(this, { type, cell }));
+    const bonus = this.spawnEntity(new Bonus(this, { type }));
 
     this.placeMapObject(bonus, cell);
 
@@ -254,7 +254,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   *spawnBox(coords: ICoords): TGenerator {
     const cell = this.getCell(coords);
-    const box = this.spawnEntity(new Box(this, { cell }));
+    const box = this.spawnEntity(new Box(this));
 
     this.placeMapObject(box, cell);
     this.boxes.add(box);
@@ -278,7 +278,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   *spawnWall(coords: ICoords): TGenerator {
     const cell = this.getCell(coords);
-    const wall = this.spawnEntity(new Wall(this, { cell }));
+    const wall = this.spawnEntity(new Wall(this));
 
     this.placeMapObject(wall, cell);
 

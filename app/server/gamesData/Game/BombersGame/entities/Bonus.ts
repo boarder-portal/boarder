@@ -4,16 +4,14 @@ import { EBonus, EObject, IBonus } from 'common/types/bombers';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBonusOptions {
   type: EBonus;
-  cell: IServerCell;
 }
 
 export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   type: EBonus;
-  cell: IServerCell;
 
   consume = this.createTrigger();
 
@@ -21,7 +19,6 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
     super(game);
 
     this.type = options.type;
-    this.cell = options.cell;
   }
 
   *lifecycle(): TGenerator {

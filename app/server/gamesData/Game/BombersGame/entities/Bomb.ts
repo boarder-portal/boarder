@@ -4,15 +4,13 @@ import { EObject, IBomb } from 'common/types/bombers';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBombOptions {
-  cell: IServerCell;
   explodesAt: number;
 }
 
 export default class Bomb extends ServerEntity<EGame.BOMBERS> {
-  cell: IServerCell;
   explodesAt: number;
 
   explodeTrigger = this.createTrigger();
@@ -20,7 +18,6 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   constructor(game: BombersGame, options: IBombOptions) {
     super(game);
 
-    this.cell = options.cell;
     this.explodesAt = options.explodesAt;
   }
 
