@@ -13,6 +13,8 @@ import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Car
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
 import Image from 'client/components/common/Image/Image';
 
+import { usePrevious } from 'client/hooks/usePrevious';
+
 import styles from './Player.pcss';
 
 interface IPlayerProps {
@@ -31,6 +33,13 @@ interface IPlayerProps {
 
 const Player: FC<IPlayerProps> = (props) => {
   const { className, player, withActions, forbiddenToClickCardTypes, onClick, onLandmarkBuild, onCardClick } = props;
+
+  const {
+    data: { coins },
+  } = player;
+
+  const prevCoins = usePrevious(coins);
+  const coinsChange = coins - prevCoins;
 
   const disabledCardsIds = useMemo(
     () =>
@@ -58,7 +67,9 @@ const Player: FC<IPlayerProps> = (props) => {
         <Flex between={2} alignItems="center">
           <Image className={styles.coin} src="/coin.png" />
 
-          <div className={styles.coinsCount}>{player.data.coins}</div>
+          <div className={styles.coinsCount}>{`${coins}${
+            coinsChange === 0 ? '' : `(${coinsChange > 0 ? '+' : ''}${coinsChange})`
+          }`}</div>
         </Flex>
 
         <Flex between={2}>
@@ -72,7 +83,7 @@ const Player: FC<IPlayerProps> = (props) => {
                 id={landmark.id}
                 inactive={!hasBuilt}
                 zoom="extra"
-                onClick={hasBuilt || !withActions || player.data.coins < landmark.cost ? undefined : onLandmarkBuild}
+                onClick={hasBuilt || !withActions || coins < landmark.cost ? undefined : onLandmarkBuild}
               />
             );
           })}

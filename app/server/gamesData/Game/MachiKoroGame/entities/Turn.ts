@@ -205,7 +205,7 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
       } else if (card.id === ECardId.BAKERY) {
         player.coins += 1 + shopsAndRestaurantIncreasedIncome;
       } else if (card.id === ECardId.CONVENIENCE_STORE) {
-        player.coins += 4 + shopsAndRestaurantIncreasedIncome;
+        player.coins += 3 + shopsAndRestaurantIncreasedIncome;
       } else if (card.id === ECardId.CHEESE_FACTORY) {
         const farmsCount = getCardTypeCount(player.cardsIds, ECardType.FARM);
 
