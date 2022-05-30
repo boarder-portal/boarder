@@ -11,6 +11,7 @@ import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
+import Image from 'client/components/common/Image/Image';
 
 import styles from './Player.pcss';
 
@@ -50,15 +51,15 @@ const Player: FC<IPlayerProps> = (props) => {
   return (
     <Flex className={className} direction="column" between={2}>
       <Flex between={3} alignItems="center">
-        <div>
-          <Text weight="bold" onClick={onClick}>
-            {player.name}
-          </Text>
+        <Text weight="bold" onClick={onClick}>
+          {player.name}
+        </Text>
 
-          <Flex between={2} alignItems="center">
-            <div>Монеты: {player.data.coins}</div>
-          </Flex>
-        </div>
+        <Flex between={2} alignItems="center">
+          <Image className={styles.coin} src="/coin.png" />
+
+          <div className={styles.coinsCount}>{player.data.coins}</div>
+        </Flex>
 
         <Flex between={2}>
           {ALL_LANDMARK_CARDS.map((landmark) => {
