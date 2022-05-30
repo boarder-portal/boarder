@@ -97,6 +97,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     while ((alivePlayers = this.getAlivePlayers()).length > 1) {
       yield* this.race(alivePlayers);
     }
+
+    this.players.forEach((player) => player.disable());
   }
 
   createWall(coords: ICoords): void {

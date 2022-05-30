@@ -30,6 +30,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   invincibleEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
 
+  disable = this.createTrigger();
   hit = this.createTrigger<number>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
@@ -80,12 +81,15 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   *listenForEvents(): TGenerator {
-    yield* this.all([
-      this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
-      this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
-      this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
-        this.game.placeBomb(this, this.getCurrentCell());
-      }),
+    yield* this.race([
+      this.disable,
+      this.all([
+        this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
+        this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
+        this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
+          this.game.placeBomb(this, this.getCurrentCell());
+        }),
+      ]),
     ]);
   }
 
