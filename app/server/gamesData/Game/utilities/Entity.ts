@@ -86,6 +86,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   #errorCallbacks = new Set<TReject>();
   #started = false;
   #destroyed = false;
+  #result: TEffectResult<Result> | undefined;
   spawned = false;
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
@@ -376,6 +377,16 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   }
 
   run(resolve: TResolve<Result>, reject: TReject): void {
+    if (this.#result) {
+      if (this.#result.type === 'success') {
+        resolve(this.#result.value);
+      } else {
+        reject(this.#result.error);
+      }
+
+      return;
+    }
+
     this.#successCallbacks.add(resolve);
     this.#errorCallbacks.add(reject);
 
@@ -406,9 +417,19 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
       }, reject);
     })(
       (result) => {
+        this.#result = {
+          type: 'success',
+          value: result,
+        };
+
         this.#successCallbacks.forEach((successCallback) => successCallback(result));
       },
       (err) => {
+        this.#result = {
+          type: 'error',
+          error: err,
+        };
+
         this.#errorCallbacks.forEach((errorCallback) => errorCallback(err));
       },
     );

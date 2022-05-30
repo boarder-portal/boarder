@@ -39,6 +39,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   mapHeight: number;
   bombsToExplode: Bomb[][] = times(EXPLOSION_TICKS_COUNT, () => []);
   boxes = new Set<Box>();
+  alivePlayers = new Set<Player>();
   lastMoveTimestamp = 0;
   lastExplosionTickTimestamp = 0;
   artificialWallsPath: ICoords[] = [];
@@ -93,10 +94,9 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.spawnTask(this.repeatTask(FRAME_DURATION, this.movePlayers));
 
     const finishGamePlayersCount = Math.min(this.playersCount - 1, 1);
-    let alivePlayers: Player[];
 
-    while ((alivePlayers = this.getAlivePlayers()).length > finishGamePlayersCount) {
-      yield* this.race(alivePlayers);
+    while (this.alivePlayers.size > finishGamePlayersCount) {
+      yield* this.race([...this.alivePlayers]);
     }
 
     this.players.forEach((player) => player.disable());
@@ -118,10 +118,6 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     bombsToExplode.forEach((bomb) => {
       bomb.explode();
     });
-  }
-
-  getAlivePlayers(): Player[] {
-    return this.players.filter((player) => player.isAlive());
   }
 
   getCell(coords: ICoords): IServerCell {
@@ -272,8 +268,11 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const player = this.spawnEntity(new Player(this, { index: playerIndex, coords }));
 
     this.players.push(player);
+    this.alivePlayers.add(player);
 
     yield* player;
+
+    this.alivePlayers.delete(player);
   }
 
   *spawnWall(coords: ICoords): TGenerator {
