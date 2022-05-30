@@ -88,14 +88,15 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.lastMoveTimestamp = Date.now();
     this.lastExplosionTickTimestamp = Date.now();
 
-    yield* this.race([
-      this.waitForWinner(),
-      this.all([
-        this.spawnArtificialWalls(),
-        this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs),
-        this.repeatTask(FRAME_DURATION, this.movePlayers),
-      ]),
-    ]);
+    this.spawnTask(this.spawnArtificialWalls());
+    this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
+    this.spawnTask(this.repeatTask(FRAME_DURATION, this.movePlayers));
+
+    let alivePlayers: Player[];
+
+    while ((alivePlayers = this.getAlivePlayers()).length > 1) {
+      yield* this.race(alivePlayers);
+    }
   }
 
   createWall(coords: ICoords): void {
@@ -287,13 +288,5 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       players: this.getGamePlayers(),
       map: this.getClientMap(),
     };
-  }
-
-  *waitForWinner(): TGenerator {
-    let alivePlayers: Player[];
-
-    while ((alivePlayers = this.getAlivePlayers()).length > 1) {
-      yield* this.race(alivePlayers);
-    }
   }
 }
