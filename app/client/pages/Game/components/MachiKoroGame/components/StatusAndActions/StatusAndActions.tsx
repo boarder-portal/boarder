@@ -16,7 +16,7 @@ interface IActionsProps {
   activePlayer: IPlayer;
   isPlayerActive: boolean;
   dices: number[];
-  isGameEnd: boolean;
+  winner: string | null;
   onEndTurn(): void;
   onSelectDicesCount(count: number): void;
   onSelectNeedToReroll(needToReroll: boolean): void;
@@ -29,7 +29,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
     activePlayer,
     isPlayerActive,
     dices,
-    isGameEnd,
+    winner,
     onEndTurn,
     onSelectDicesCount,
     onSelectNeedToReroll,
@@ -119,11 +119,12 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
     }
   }, [isPlayerActive, onEndTurn, onSelectDicesCount, onSelectNeedToReroll, player.data.waitingAction]);
 
-  if (isGameEnd) {
+  if (winner) {
     return (
-      <Text size="l" weight="bold">
-        Конец!
-      </Text>
+      <Flex between={2} className={classNames(styles.root, className)}>
+        <Text weight="bold">{winner}</Text>
+        <div>победил(а)!</div>
+      </Flex>
     );
   }
 
