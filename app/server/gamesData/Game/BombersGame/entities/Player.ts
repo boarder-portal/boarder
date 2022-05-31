@@ -17,6 +17,7 @@ import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { IPlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 import { now } from 'server/utilities/time';
 import { isFloatZero } from 'common/utilities/float';
+import isNotUndefined from 'common/utilities/isNotUndefined';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
@@ -224,6 +225,29 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     return isOnVertical ? ELine.VERTICAL : ELine.HORIZONTAL;
   }
 
+  getOccupiedCells(): IServerCell[] {
+    const bomberCell = this.getCurrentCell();
+    const occupiedCells: (IServerCell | undefined)[] = [bomberCell];
+
+    if (this.coords.x + BOMBER_CELL_SIZE / 2 > bomberCell.x + 1) {
+      occupiedCells.push(this.game.getCell({ x: bomberCell.x + 1, y: bomberCell.y }));
+    }
+
+    if (this.coords.x - BOMBER_CELL_SIZE / 2 < bomberCell.x) {
+      occupiedCells.push(this.game.getCell({ x: bomberCell.x - 1, y: bomberCell.y }));
+    }
+
+    if (this.coords.y + BOMBER_CELL_SIZE / 2 > bomberCell.y + 1) {
+      occupiedCells.push(this.game.getCell({ x: bomberCell.x, y: bomberCell.y + 1 }));
+    }
+
+    if (this.coords.y + BOMBER_CELL_SIZE / 2 < bomberCell.y) {
+      occupiedCells.push(this.game.getCell({ x: bomberCell.x, y: bomberCell.y - 1 }));
+    }
+
+    return occupiedCells.filter(isNotUndefined);
+  }
+
   isAlive(): boolean {
     return this.hp > 0;
   }
@@ -316,6 +340,15 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         break;
       }
     }
+
+    this.getOccupiedCells().forEach((cell) => {
+      if (cell.object instanceof Bonus) {
+        this.consumeBonus(cell.object, {
+          x: cell.x,
+          y: cell.y,
+        });
+      }
+    });
 
     this.startMovingTimestamp = newMoveTimestamp;
   }
