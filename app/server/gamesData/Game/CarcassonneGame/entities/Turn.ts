@@ -3,6 +3,7 @@ import { EGameClientEvent, ITurn } from 'common/types/carcassonne';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import { now } from 'server/utilities/time';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
@@ -23,12 +24,12 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
 
     this.game = game;
     this.activePlayerIndex = options.activePlayerIndex;
-    this.endsAt = Date.now() + options.duration;
+    this.endsAt = now() + options.duration;
   }
 
   *lifecycle(): TGenerator<boolean> {
     yield* this.race([
-      // this.delay(this.endsAt - Date.now()),
+      // this.delay(this.endsAt - now()),
       this.makeMoves(),
     ]);
 

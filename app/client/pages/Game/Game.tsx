@@ -13,6 +13,8 @@ import {
 } from 'common/types';
 import { TGameClientSocket } from 'common/types/socket';
 
+import { now } from 'client/utilities/time';
+
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
@@ -81,7 +83,7 @@ function Game<G extends EGame>() {
       setPlayers(players);
     },
     [ECommonGameServerEvent.PING]: (serverTimestamp) => {
-      setTimeDiff(serverTimestamp - Date.now());
+      setTimeDiff(serverTimestamp - now());
     },
     [ECommonGameServerEvent.END]: () => {
       console.log('GAME_END');

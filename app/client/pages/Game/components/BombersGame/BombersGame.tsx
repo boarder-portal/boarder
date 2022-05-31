@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
 import { EGame } from 'common/types/game';
-import { EDirection, EGameClientEvent, IPlayer, TMap } from 'common/types/bombers';
+import { EDirection, EGameClientEvent, EGameServerEvent, IPlayer, TMap } from 'common/types/bombers';
 import { ISize } from 'common/types';
 
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
@@ -58,7 +58,22 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     });
   });
 
-  useSocket(io, {});
+  useSocket(io, {
+    [EGameServerEvent.UPDATE_PLAYERS_COORDS]: (coords) => {
+      players.forEach((player) => {
+        player.data.coords = coords[player.index];
+      });
+    },
+    [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp }) => {
+      const playerData = players[playerIndex].data;
+
+      playerData.direction = direction;
+      playerData.startMovingTimestamp = startMovingTimestamp;
+    },
+    [EGameServerEvent.STOP_MOVING]: ({ playerIndex, coords }) => {
+      players[playerIndex].data.coords = coords;
+    },
+  });
 
   useGlobalListener('keydown', document, (e) => {
     const direction = DIRECTIONS_MAP[e.key];

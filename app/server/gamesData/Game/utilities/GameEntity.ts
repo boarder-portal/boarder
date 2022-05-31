@@ -5,6 +5,7 @@ import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
+import { now } from 'server/utilities/time';
 
 import { BOTS } from 'server/gamesData/Game/Game';
 
@@ -24,7 +25,7 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
   }
 
   ping(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.PING, Date.now());
+    this.sendSocketEvent(ECommonGameServerEvent.PING, now());
   }
 
   *pingIndefinitely(interval: number): TGenerator {

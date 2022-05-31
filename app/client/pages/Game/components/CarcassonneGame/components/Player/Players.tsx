@@ -6,6 +6,8 @@ import classNames from 'classnames';
 
 import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
 
+import { now } from 'client/utilities/time';
+
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -26,7 +28,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
 
   useEffect(() => {
     const setSecondsLeft = () => {
-      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - timeDiff - Date.now()) / 1000) : 0;
+      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - timeDiff - now()) / 1000) : 0;
 
       setTurnSecondsLeft(secondsLeft);
     };

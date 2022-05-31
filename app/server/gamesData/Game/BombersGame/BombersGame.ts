@@ -5,11 +5,12 @@ import shuffle from 'lodash/shuffle';
 import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EBonus, EObject, IGame, IPlayer, TMap } from 'common/types/bombers';
+import { EBonus, EGameServerEvent, EObject, IGame, IPlayer, TMap } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator, TParentOrContext } from 'server/gamesData/Game/utilities/Entity';
+import { now } from 'server/utilities/time';
 
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
@@ -40,7 +41,6 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   bombsToExplode: Bomb[][] = times(EXPLOSION_TICKS_COUNT, () => []);
   boxes = new Set<Box>();
   alivePlayers = new Set<Player>();
-  lastMoveTimestamp = 0;
   lastExplosionTickTimestamp = 0;
   artificialWallsPath: ICoords[] = [];
   artificialWallsSpawned = 0;
@@ -66,7 +66,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       });
     });
 
-    let spawnPoints: ICoords[] = [];
+    const spawnPoints: ICoords[] = [];
 
     this.mapLayout.forEach((row, y) => {
       row.forEach((objectType, x) => {
@@ -80,14 +80,13 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       });
     });
 
-    spawnPoints = shuffle(spawnPoints);
+    // spawnPoints = shuffle(spawnPoints);
 
     this.forEachPlayer((playerIndex) => {
       this.spawnTask(this.spawnPlayer(playerIndex, spawnPoints[playerIndex]));
     });
 
-    this.lastMoveTimestamp = Date.now();
-    this.lastExplosionTickTimestamp = Date.now();
+    this.lastExplosionTickTimestamp = now();
 
     this.spawnTask(this.spawnArtificialWalls());
     this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
@@ -120,8 +119,12 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     });
   }
 
-  getCell(coords: ICoords): IServerCell {
-    return this.map[coords.y][coords.x];
+  getCell(coords: ICoords): IServerCell | undefined {
+    if (coords.x < 0 || coords.y < 0) {
+      return;
+    }
+
+    return this.map.at(coords.y)?.at(coords.x);
   }
 
   getClientMap(): TMap {
@@ -166,11 +169,17 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       );
   }
 
-  *movePlayers(): TGenerator {
-    const newMoveTimestamp = Date.now();
-    const timePassed = newMoveTimestamp - this.lastMoveTimestamp;
+  isPassableObject(object: TServerMapObject | null | undefined): boolean {
+    return !object || object instanceof Bonus;
+  }
 
-    this.lastMoveTimestamp = newMoveTimestamp;
+  *movePlayers(): TGenerator {
+    this.players.forEach((player) => player.move());
+
+    this.sendSocketEvent(
+      EGameServerEvent.UPDATE_PLAYERS_COORDS,
+      this.players.map(({ coords }) => coords),
+    );
   }
 
   placeBomb(player: Player, cell: IServerCell): void {
@@ -198,7 +207,13 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     this.artificialWallsSpawned++;
 
-    const { object } = this.getCell(coords);
+    const cell = this.getCell(coords);
+
+    if (!cell) {
+      return;
+    }
+
+    const { object } = cell;
 
     if (object instanceof Wall) {
       return;
@@ -250,6 +265,11 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   *spawnBox(coords: ICoords): TGenerator {
     const cell = this.getCell(coords);
+
+    if (!cell) {
+      return;
+    }
+
     const box = this.spawnEntity(new Box(this));
 
     this.placeMapObject(box, cell);
@@ -277,6 +297,11 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   *spawnWall(coords: ICoords): TGenerator {
     const cell = this.getCell(coords);
+
+    if (!cell) {
+      return;
+    }
+
     const wall = this.spawnEntity(new Wall(this));
 
     this.placeMapObject(wall, cell);
