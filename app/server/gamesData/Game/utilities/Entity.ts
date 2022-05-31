@@ -63,7 +63,7 @@ type TResolve<Result> = (result: Result) => unknown;
 type TReject = (err: unknown) => unknown;
 
 type TAllEffectReturnValue<T extends TIterableOrGenerator<unknown>[]> = {
-  [P in keyof T]: TGeneratorReturnValue<T[number]>;
+  [P in keyof T]: TGeneratorReturnValue<T[P]>;
 };
 
 type IRaceObjectReturnValue<T> = {
@@ -257,12 +257,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *beforeLifecycle(): TGenerator {
-    // empty
-  }
-
   *async<Result>(callback: TEffectCallback<Result>): TEffectGenerator<Result> {
     return yield callback;
+  }
+
+  *beforeLifecycle(): TGenerator {
+    // empty
   }
 
   createTrigger<Value = void>(): ITrigger<Value> {
@@ -435,7 +435,6 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     );
   }
 
-  // TODO: deprecate
   spawnEntity<E extends Entity<Game, any>>(entity: E): E {
     entity.spawned = true;
     entity.#parent = this;
