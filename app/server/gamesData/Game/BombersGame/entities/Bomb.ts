@@ -68,13 +68,13 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
       let currentCell: IServerCell = this.cell;
 
       for (let i = 0; i < this.range; i++) {
-        const newServerCell = this.game.getCellBehind(currentCell, direction);
+        const newCellInDirection = this.game.getCellBehind(currentCell, direction);
 
-        if (!newServerCell) {
+        if (!newCellInDirection) {
           break;
         }
 
-        currentCell = newServerCell;
+        currentCell = newCellInDirection;
 
         addCell(currentCell);
 
