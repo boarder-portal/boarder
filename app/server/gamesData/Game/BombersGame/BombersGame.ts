@@ -185,6 +185,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   placeBomb(player: Player, cell: IServerCell): void {
     this.spawnTask(
       this.spawnBomb(player, cell, {
+        range: player.bombRange,
         explodesAt: this.lastExplosionTickTimestamp + EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION,
       }),
     );

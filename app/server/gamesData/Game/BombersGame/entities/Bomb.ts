@@ -7,10 +7,12 @@ import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBombOptions {
+  range: number;
   explodesAt: number;
 }
 
 export default class Bomb extends ServerEntity<EGame.BOMBERS> {
+  range: number;
   explodesAt: number;
 
   explodeTrigger = this.createTrigger();
@@ -18,6 +20,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   constructor(game: BombersGame, options: IBombOptions) {
     super(game);
 
+    this.range = options.range;
     this.explodesAt = options.explodesAt;
   }
 
