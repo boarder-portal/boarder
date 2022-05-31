@@ -1,6 +1,13 @@
 import pick from 'lodash/pick';
 
-import { BOMBER_CELL_SIZE, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
+import {
+  BOMBER_CELL_SIZE,
+  CELLS_PER_SECOND,
+  MAX_BOMB_COUNT,
+  MAX_BOMB_RANGE,
+  MAX_HP,
+  MAX_SPEED,
+} from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
 import { EBonus, EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
@@ -33,8 +40,6 @@ interface IClosestLineInfo {
   line: number;
   distance: number;
 }
-
-const CELLS_PER_SECOND = 1.5;
 
 export default class Player extends PlayerEntity<EGame.BOMBERS> {
   game: BombersGame;
@@ -96,9 +101,6 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     });
   }
 
-  /**
-   * If unpassable return closest cell, otherwise the one behind
-   */
   getClosestOrBehindCell(direction: EDirection): IClosestCellInfo {
     const closestCellInfo = this.getClosestCell(direction);
     const canPass = Boolean(closestCellInfo.cell && this.game.isPassableObject(closestCellInfo.cell.object));
