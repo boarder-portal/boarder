@@ -172,11 +172,18 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
     return {
       run: (resolve, reject) => {
+        let resolvedOrRejected = false;
         let async = false;
         let syncResult: TEffectResult<Result> | undefined;
 
         const cleanup = callback(
           (result) => {
+            if (resolvedOrRejected) {
+              return;
+            }
+
+            resolvedOrRejected = true;
+
             if (async) {
               unregisterEffect?.();
               resolve(result);
@@ -188,6 +195,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
             }
           },
           (error) => {
+            if (resolvedOrRejected) {
+              return;
+            }
+
+            resolvedOrRejected = true;
+
             if (async) {
               unregisterEffect?.();
               reject(error);
@@ -376,7 +389,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  run(resolve: TResolve<Result>, reject: TReject): void {
+  run(resolve: TResolve<Result>, reject: TReject): () => void {
+    const unsubscribe = () => {
+      this.#successCallbacks.delete(resolve);
+      this.#errorCallbacks.delete(reject);
+    };
+
     if (this.#result) {
       if (this.#result.type === 'success') {
         resolve(this.#result.value);
@@ -384,14 +402,14 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
         reject(this.#result.error);
       }
 
-      return;
+      return unsubscribe;
     }
 
     this.#successCallbacks.add(resolve);
     this.#errorCallbacks.add(reject);
 
     if (this.#started) {
-      return;
+      return unsubscribe;
     }
 
     if (!this.spawned) {
@@ -433,6 +451,8 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
         this.#errorCallbacks.forEach((errorCallback) => errorCallback(err));
       },
     );
+
+    return unsubscribe;
   }
 
   spawnEntity<E extends Entity<Game, any>>(entity: E): E {
@@ -503,7 +523,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   *[Symbol.iterator](): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
-      this.run(resolve, reject);
+      return this.run(resolve, reject);
     };
   }
 

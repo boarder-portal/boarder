@@ -1,17 +1,29 @@
 import { EGame } from 'common/types/game';
-import { EObject, IBomb } from 'common/types/bombers';
+import { EDirection, EObject, IBomb } from 'common/types/bombers';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import Box from 'server/gamesData/Game/BombersGame/entities/Box';
 
 export interface IBombOptions {
+  cell: IServerCell;
   range: number;
   explodesAt: number;
 }
 
+export interface IExplosionResult {
+  hitPlayers: number[];
+  explodedBoxes: Box[];
+}
+
+const ALL_DIRECTIONS = Object.values(EDirection);
+
 export default class Bomb extends ServerEntity<EGame.BOMBERS> {
+  game: BombersGame;
+
+  cell: IServerCell;
   range: number;
   explodesAt: number;
 
@@ -20,6 +32,8 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   constructor(game: BombersGame, options: IBombOptions) {
     super(game);
 
+    this.game = game;
+    this.cell = options.cell;
     this.range = options.range;
     this.explodesAt = options.explodesAt;
   }
@@ -28,13 +42,55 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
     yield* this.explodeTrigger;
   }
 
-  explode(): void {
+  explode(): IExplosionResult {
     this.explodeTrigger();
+
+    const hitPlayers: number[] = [];
+    const explodedBoxes: Box[] = [];
+
+    const playersOccupiedCells = this.game.players.map((player) => player.getOccupiedCells());
+
+    const addCell = (cell: IServerCell): void => {
+      playersOccupiedCells.forEach((cells, playerIndex) => {
+        if (cells.includes(cell)) {
+          hitPlayers.push(playerIndex);
+        }
+      });
+
+      if (cell.object instanceof Box) {
+        explodedBoxes.push(cell.object);
+      }
+    };
+
+    addCell(this.cell);
+
+    ALL_DIRECTIONS.forEach((direction) => {
+      let currentCell: IServerCell = this.cell;
+
+      for (let i = 0; i < this.range; i++) {
+        const newServerCell = this.game.getCellBehind(currentCell, direction);
+
+        if (!newServerCell) {
+          break;
+        }
+
+        currentCell = newServerCell;
+
+        addCell(currentCell);
+
+        if (!this.game.isPassableObject(currentCell.object)) {
+          break;
+        }
+      }
+    });
+
+    return { hitPlayers, explodedBoxes };
   }
 
   toJSON(): IBomb {
     return {
       type: EObject.BOMB,
+      range: this.range,
       explodesAt: this.explodesAt,
     };
   }

@@ -46,6 +46,7 @@ export interface IPlayerData {
   maxBombCount: number;
   bombRange: number;
   hp: number;
+  invincibilityEndsAt: number | null;
 }
 
 export interface IPlayer extends IGamePlayer {
@@ -76,6 +77,7 @@ export interface IWall {
 
 export interface IBomb {
   type: EObject.BOMB;
+  range: number;
   explodesAt: number;
 }
 
@@ -116,6 +118,7 @@ export interface IStopMovingEvent {
 
 export interface IPlaceBombEvent {
   coords: ICoords;
+  bomb: IBomb;
 }
 
 export interface IExplodedBox {
@@ -132,12 +135,13 @@ export interface IBombsExplodedEvent {
 
 export interface IWallCreatedEvent {
   coords: ICoords;
+  wall: IWall;
   deadPlayers: number[];
 }
 
 export interface IBonusConsumedEvent {
   coords: ICoords;
-  playedIndex: number;
+  playerIndex: number;
 }
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {

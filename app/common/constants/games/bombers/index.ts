@@ -25,5 +25,6 @@ export const MAX_BOMB_COUNT = 10;
 export const MAX_BOMB_RANGE = 10;
 export const MAX_HP = 3;
 
-export const BOMBER_CELL_SIZE = 0.8;
+export const BOMBER_CELL_SIZE = 0.7;
 export const CELLS_PER_SECOND = 1.5;
+export const SPEED_INCREMENT = 0.3;

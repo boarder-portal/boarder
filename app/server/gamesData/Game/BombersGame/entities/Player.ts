@@ -1,16 +1,9 @@
 import pick from 'lodash/pick';
 
-import {
-  BOMBER_CELL_SIZE,
-  CELLS_PER_SECOND,
-  MAX_BOMB_COUNT,
-  MAX_BOMB_RANGE,
-  MAX_HP,
-  MAX_SPEED,
-} from 'common/constants/games/bombers';
+import { BOMBER_CELL_SIZE, CELLS_PER_SECOND, MAX_HP, SPEED_INCREMENT } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EBonus, EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
+import { EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -52,11 +45,11 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   maxBombCount = 1;
   bombRange = 1;
   hp = MAX_HP;
-  invincibleEndsAt: number | null = null;
+  invincibilityEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
 
   disable = this.createTrigger();
-  hit = this.createTrigger<number>();
+  hit = this.createTrigger<{ damage: number; invincibilityEndsAt: number }>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
     super(game, options);
@@ -69,14 +62,21 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.spawnTask(this.listenForEvents());
 
     while (true) {
-      const damage = yield* this.hit;
+      const { damage, invincibilityEndsAt } = yield* this.hit;
 
       this.hp = Math.max(0, this.hp - damage);
 
       if (!this.isAlive()) {
-        return;
+        break;
       }
+
+      this.spawnTask(this.makeInvincible(invincibilityEndsAt));
+
+      yield* this.delay(0);
     }
+
+    this.startMovingTimestamp = null;
+    this.invincibilityEndsAt = null;
   }
 
   canPlaceBombs(): boolean {
@@ -86,74 +86,40 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   consumeBonus(bonus: Bonus, coords: ICoords): void {
     bonus.consume();
 
-    if (bonus.type === EBonus.SPEED) {
-      this.speed = Math.min(MAX_SPEED, this.speed + 1);
-    } else if (bonus.type === EBonus.BOMB_COUNT) {
-      this.maxBombCount = Math.min(MAX_BOMB_COUNT, this.maxBombCount + 1);
-    } else if (bonus.type === EBonus.BOMB_RANGE) {
-      this.bombRange = Math.min(MAX_BOMB_RANGE, this.bombRange + 1);
-    } else if (bonus.type === EBonus.HP) {
-      this.hp = Math.min(MAX_HP, this.hp + 1);
-    }
+    this.game.sharedDataManager.consumePlayerBonus(this.index, bonus);
 
     this.sendSocketEvent(EGameServerEvent.BONUS_CONSUMED, {
-      playedIndex: this.index,
+      playerIndex: this.index,
       coords,
     });
   }
 
   getClosestOrBehindCell(direction: EDirection): IClosestCellInfo {
     const closestCellInfo = this.getClosestCell(direction);
-    const canPass = Boolean(closestCellInfo.cell && this.game.isPassableObject(closestCellInfo.cell.object));
+    const canPass = Boolean(this.game.isPassableObject(closestCellInfo.cell?.object));
 
     if (!canPass || !isFloatZero(closestCellInfo.distance)) {
       return closestCellInfo;
     }
 
-    let coordsBehind: ICoords | undefined;
-
-    if (closestCellInfo.cell) {
-      if (direction === EDirection.UP) {
-        coordsBehind = {
-          x: closestCellInfo.cell.x,
-          y: closestCellInfo.cell.y - 1,
-        };
-      } else if (direction === EDirection.DOWN) {
-        coordsBehind = {
-          x: closestCellInfo.cell.x,
-          y: closestCellInfo.cell.y + 1,
-        };
-      } else if (direction === EDirection.LEFT) {
-        coordsBehind = {
-          x: closestCellInfo.cell.x - 1,
-          y: closestCellInfo.cell.y,
-        };
-      } else if (direction === EDirection.RIGHT) {
-        coordsBehind = {
-          x: closestCellInfo.cell.x + 1,
-          y: closestCellInfo.cell.y,
-        };
-      }
-    }
-
     return {
-      cell: coordsBehind && this.game.getCell(coordsBehind),
+      cell: closestCellInfo.cell && this.game.getCellBehind(closestCellInfo.cell, direction),
       distance: closestCellInfo.distance + 1,
     };
   }
 
   getClosestCell(direction: EDirection): IClosestCellInfo {
     if (direction === EDirection.DOWN) {
-      const bottom = this.coords.y + BOMBER_CELL_SIZE / 2;
+      const bottom = this.coords.y + 0.5;
 
       return {
         cell: this.game.getCell({ x: Math.floor(this.coords.x), y: Math.ceil(bottom) }),
-        distance: 1 - (bottom % 1),
+        distance: bottom % 1 && 1 - (bottom % 1),
       };
     }
 
     if (direction === EDirection.UP) {
-      const top = this.coords.y - BOMBER_CELL_SIZE / 2;
+      const top = this.coords.y - 0.5;
 
       return {
         cell: this.game.getCell({ x: Math.floor(this.coords.x), y: Math.floor(top) - 1 }),
@@ -162,15 +128,15 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     }
 
     if (direction === EDirection.RIGHT) {
-      const right = this.coords.x + BOMBER_CELL_SIZE / 2;
+      const right = this.coords.x + 0.5;
 
       return {
         cell: this.game.getCell({ x: Math.ceil(right), y: Math.floor(this.coords.y) }),
-        distance: 1 - (right % 1),
+        distance: right % 1 && 1 - (right % 1),
       };
     }
 
-    const left = this.coords.x - BOMBER_CELL_SIZE / 2;
+    const left = this.coords.x - 0.5;
 
     return {
       cell: this.game.getCell({ x: Math.floor(left) - 1, y: Math.floor(this.coords.y) }),
@@ -182,10 +148,6 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     const coord = line === ELine.VERTICAL ? this.coords.x : this.coords.y;
     const closestLine = Math.floor(coord) + 0.5;
     const distance = Math.abs(coord - closestLine);
-
-    if (Math.abs(coord - closestLine) > 1 - BOMBER_CELL_SIZE) {
-      return null;
-    }
 
     return {
       line: closestLine,
@@ -230,19 +192,19 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     const occupiedCells: (IServerCell | undefined)[] = [bomberCell];
 
     if (this.coords.x + BOMBER_CELL_SIZE / 2 > bomberCell.x + 1) {
-      occupiedCells.push(this.game.getCell({ x: bomberCell.x + 1, y: bomberCell.y }));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.RIGHT));
     }
 
     if (this.coords.x - BOMBER_CELL_SIZE / 2 < bomberCell.x) {
-      occupiedCells.push(this.game.getCell({ x: bomberCell.x - 1, y: bomberCell.y }));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.LEFT));
     }
 
     if (this.coords.y + BOMBER_CELL_SIZE / 2 > bomberCell.y + 1) {
-      occupiedCells.push(this.game.getCell({ x: bomberCell.x, y: bomberCell.y + 1 }));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.DOWN));
     }
 
-    if (this.coords.y + BOMBER_CELL_SIZE / 2 < bomberCell.y) {
-      occupiedCells.push(this.game.getCell({ x: bomberCell.x, y: bomberCell.y - 1 }));
+    if (this.coords.y - BOMBER_CELL_SIZE / 2 < bomberCell.y) {
+      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.UP));
     }
 
     return occupiedCells.filter(isNotUndefined);
@@ -266,11 +228,11 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   *makeInvincible(upToTimestamp: number): TGenerator {
-    this.invincibleEndsAt = upToTimestamp;
+    this.invincibilityEndsAt = upToTimestamp;
 
     yield* this.delay(upToTimestamp - now());
 
-    this.invincibleEndsAt = null;
+    this.invincibilityEndsAt = null;
   }
 
   move(): void {
@@ -281,28 +243,23 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     const newMoveTimestamp = now();
     const timePassed = newMoveTimestamp - this.startMovingTimestamp;
     const desiredLine = this.getDesiredLine();
-    let distanceLeft = (this.speed * CELLS_PER_SECOND * timePassed) / 1000;
+    let distanceLeft = ((CELLS_PER_SECOND + this.speed * SPEED_INCREMENT) * timePassed) / 1000;
     let movingDirection = this.direction;
 
     while (!isFloatZero(distanceLeft)) {
       const line = this.getLine();
       const { cell: closestCell, distance: distanceToClosestCell } =
         line === desiredLine ? this.getClosestOrBehindCell(this.direction) : this.getClosestCell(this.direction);
-      const canPass = Boolean(closestCell && this.game.isPassableObject(closestCell.object));
+      const canPass = Boolean(this.game.isPassableObject(closestCell?.object));
       let distanceToPass: number;
 
       if (line === desiredLine) {
         movingDirection = this.direction;
+        distanceToPass = distanceToClosestCell;
 
-        if (canPass) {
-          distanceToPass = distanceToClosestCell;
-        } else {
-          distanceToPass = distanceToClosestCell - (1 - BOMBER_CELL_SIZE) / 2;
-
-          // in front of the object or map edge
-          if (isFloatZero(distanceToPass)) {
-            break;
-          }
+        // in front of the object or map edge
+        if (!canPass && (isFloatZero(distanceToPass) || distanceToPass < 0)) {
+          break;
         }
       } else {
         if (!canPass) {
@@ -343,10 +300,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
     this.getOccupiedCells().forEach((cell) => {
       if (cell.object instanceof Bonus) {
-        this.consumeBonus(cell.object, {
-          x: cell.x,
-          y: cell.y,
-        });
+        this.consumeBonus(cell.object, this.game.getCellCoords(cell));
       }
     });
 
@@ -396,6 +350,15 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   };
 
   toJSON(): IPlayerData {
-    return pick(this, ['coords', 'direction', 'startMovingTimestamp', 'speed', 'maxBombCount', 'bombRange', 'hp']);
+    return pick(this, [
+      'coords',
+      'direction',
+      'startMovingTimestamp',
+      'speed',
+      'maxBombCount',
+      'bombRange',
+      'hp',
+      'invincibilityEndsAt',
+    ]);
   }
 }

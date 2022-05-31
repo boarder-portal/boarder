@@ -1,13 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
 import { EGame } from 'common/types/game';
-import { EDirection, EGameClientEvent, EGameServerEvent, IPlayer, TMap } from 'common/types/bombers';
+import {
+  EDirection,
+  EGameClientEvent,
+  EGameServerEvent,
+  EObject,
+  IPlayer,
+  IPlayerData,
+  TMap,
+} from 'common/types/bombers';
 import { ISize } from 'common/types';
 
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
+import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -36,7 +45,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mapRef = useRef<TMap>(gameInfo.map);
+  const playersDataRef = useRef<IPlayerData[]>(players.map((player) => player.data));
   const pressedDirectionsRef = useRef<EDirection[]>([]);
+
+  const sharedDataManager = useMemo(() => {
+    return new SharedDataManager(mapRef.current, playersDataRef.current);
+  }, []);
 
   const viewSize: ISize = {
     width: gameInfo.map[0].length,
@@ -60,18 +74,67 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
   useSocket(io, {
     [EGameServerEvent.UPDATE_PLAYERS_COORDS]: (coords) => {
-      players.forEach((player) => {
-        player.data.coords = coords[player.index];
+      playersDataRef.current.forEach((playerData, playerIndex) => {
+        playerData.coords = coords[playerIndex];
       });
     },
     [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp }) => {
-      const playerData = players[playerIndex].data;
+      const playerData = playersDataRef.current[playerIndex];
 
       playerData.direction = direction;
       playerData.startMovingTimestamp = startMovingTimestamp;
     },
     [EGameServerEvent.STOP_MOVING]: ({ playerIndex, coords }) => {
-      players[playerIndex].data.coords = coords;
+      playersDataRef.current[playerIndex].coords = coords;
+    },
+    [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
+      mapRef.current[coords.y][coords.x].object = bomb;
+    },
+    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombsCoords, hitPlayers, explodedBoxes, invincibilityEndsAt }) => {
+      console.log(...hitPlayers);
+
+      bombsCoords.forEach((coords) => {
+        mapRef.current[coords.y][coords.x].object = null;
+      });
+
+      hitPlayers.forEach((playerIndex) => {
+        const playerData = playersDataRef.current[playerIndex];
+
+        playerData.hp -= 1;
+        playerData.invincibilityEndsAt = invincibilityEndsAt;
+      });
+
+      explodedBoxes.forEach(({ coords, bonus }) => {
+        mapRef.current[coords.y][coords.x].object = bonus;
+      });
+
+      setTimeout(() => {
+        hitPlayers.forEach((playerIndex) => {
+          playersDataRef.current[playerIndex].invincibilityEndsAt = null;
+        });
+      }, invincibilityEndsAt);
+    },
+    [EGameServerEvent.WALL_CREATED]: ({ coords, wall, deadPlayers }) => {
+      mapRef.current[coords.y][coords.x].object = wall;
+
+      deadPlayers.forEach((playerIndex) => {
+        const playerData = playersDataRef.current[playerIndex];
+
+        playerData.hp = 0;
+        playerData.startMovingTimestamp = null;
+        playerData.invincibilityEndsAt = null;
+      });
+    },
+    [EGameServerEvent.BONUS_CONSUMED]: ({ coords, playerIndex }) => {
+      const cell = mapRef.current[coords.y][coords.x];
+
+      if (cell.object?.type === EObject.BONUS) {
+        sharedDataManager.consumePlayerBonus(playerIndex, {
+          type: cell.object.bonusType,
+        });
+
+        cell.object = null;
+      }
     },
   });
 
@@ -126,7 +189,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
     // TODO: move players
 
-    renderMap({ ctx, map: mapRef.current, players });
+    renderMap({ ctx, map: mapRef.current, playersData: playersDataRef.current });
   });
 
   useEffect(() => {

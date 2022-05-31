@@ -1,21 +1,21 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { BOMBER_CELL_SIZE } from 'common/constants/games/bombers';
 
-import { IPlayer } from 'common/types/bombers';
+import { IPlayerData } from 'common/types/bombers';
 
 export interface IRenderPlayerOptions {
   ctx: CanvasRenderingContext2D;
-  player: IPlayer;
+  playerData: IPlayerData;
 }
 
 export default function renderPlayer(options: IRenderPlayerOptions): void {
-  const { ctx, player } = options;
+  const { ctx, playerData } = options;
 
   ctx.fillStyle = 'blue';
 
   ctx.fillRect(
-    (player.data.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE,
-    (player.data.coords.y - BOMBER_CELL_SIZE / 2) * CELL_SIZE,
+    (playerData.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE,
+    (playerData.coords.y - BOMBER_CELL_SIZE / 2) * CELL_SIZE,
     CELL_SIZE * BOMBER_CELL_SIZE,
     CELL_SIZE * BOMBER_CELL_SIZE,
   );

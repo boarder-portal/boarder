@@ -1,16 +1,25 @@
 import times from 'lodash/times';
 import last from 'lodash/last';
-import shuffle from 'lodash/shuffle';
 
 import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EBonus, EGameServerEvent, EObject, IGame, IPlayer, TMap } from 'common/types/bombers';
+import {
+  EBonus,
+  EDirection,
+  EGameServerEvent,
+  EObject,
+  IExplodedBox,
+  IGame,
+  IPlayer,
+  TMap,
+} from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator, TParentOrContext } from 'server/gamesData/Game/utilities/Entity';
 import { now } from 'server/utilities/time';
+import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
@@ -35,6 +44,7 @@ const FRAME_DURATION = 1000 / 60;
 export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   players: Player[] = [];
   map: TServerMap = [];
+  sharedDataManager = new SharedDataManager(this.map, this.players);
   mapLayout: TMapLayout;
   mapWidth: number;
   mapHeight: number;
@@ -110,12 +120,53 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     this.bombsToExplode.push([]);
 
-    if (!bombsToExplode) {
+    if (!bombsToExplode?.length) {
       return;
     }
 
+    const hitPlayers = new Set<number>();
+    const explodedBoxes = new Set<Box>();
+    const explodedBoxesInfo: IExplodedBox[] = [];
+    const invincibilityEndsAt = now() + 1000;
+
     bombsToExplode.forEach((bomb) => {
-      bomb.explode();
+      const { hitPlayers: bombHitPlayers, explodedBoxes: bombExplodedBoxes } = bomb.explode();
+
+      bombHitPlayers.forEach((playerIndex) => {
+        if (this.players[playerIndex].invincibilityEndsAt === null) {
+          hitPlayers.add(playerIndex);
+        }
+      });
+
+      bombExplodedBoxes.forEach((explodedBox) => {
+        explodedBoxes.add(explodedBox);
+      });
+    });
+
+    hitPlayers.forEach((playerIndex) => {
+      this.players[playerIndex].hit({ damage: 1, invincibilityEndsAt });
+    });
+
+    explodedBoxes.forEach((explodedBox) => {
+      explodedBox.explode();
+
+      let bonus: Bonus | null = null;
+
+      if (explodedBox.cell.object instanceof Bonus) {
+        bonus = explodedBox.cell.object;
+      }
+
+      explodedBoxesInfo.push({
+        bonus: bonus?.toJSON() ?? null,
+        coords: this.getCellCoords(explodedBox.cell),
+      });
+    });
+
+    this.sendSocketEvent(EGameServerEvent.BOMBS_EXPLODED, {
+      bombsCoords: bombsToExplode.map(({ cell }) => this.getCellCoords(cell)),
+      hitPlayers: [...hitPlayers],
+      explodedBoxes: explodedBoxesInfo,
+      invincibilityEndsAt: now() + 1000,
     });
   }
 
@@ -127,12 +178,46 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     return this.map.at(coords.y)?.at(coords.x);
   }
 
+  getCellBehind(cell: IServerCell, direction: EDirection): IServerCell | undefined {
+    let coordsBehind: ICoords;
+
+    if (direction === EDirection.UP) {
+      coordsBehind = {
+        x: cell.x,
+        y: cell.y - 1,
+      };
+    } else if (direction === EDirection.DOWN) {
+      coordsBehind = {
+        x: cell.x,
+        y: cell.y + 1,
+      };
+    } else if (direction === EDirection.LEFT) {
+      coordsBehind = {
+        x: cell.x - 1,
+        y: cell.y,
+      };
+    } else {
+      coordsBehind = {
+        x: cell.x + 1,
+        y: cell.y,
+      };
+    }
+
+    return this.getCell(coordsBehind);
+  }
+
+  getCellCoords(cell: IServerCell): ICoords {
+    return {
+      x: cell.x,
+      y: cell.y,
+    };
+  }
+
   getClientMap(): TMap {
     return this.map.map((row) => {
       return row.map((cell) => {
         return {
-          x: cell.x,
-          y: cell.y,
+          ...this.getCellCoords(cell),
           object: cell.object?.toJSON() ?? null,
         };
       });
@@ -170,7 +255,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   isPassableObject(object: TServerMapObject | null | undefined): boolean {
-    return !object || object instanceof Bonus;
+    return object === null || object instanceof Bonus;
   }
 
   *movePlayers(): TGenerator {
@@ -184,7 +269,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   placeBomb(player: Player, cell: IServerCell): void {
     this.spawnTask(
-      this.spawnBomb(player, cell, {
+      this.spawnBomb(player, {
+        cell,
         range: player.bombRange,
         explodesAt: this.lastExplosionTickTimestamp + EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION,
       }),
@@ -237,7 +323,9 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     yield* this.repeatTask(1000, this.spawnArtificialWall);
   }
 
-  *spawnBomb(player: Player, cell: IServerCell, options: IBombOptions): TGenerator {
+  *spawnBomb(player: Player, options: IBombOptions): TGenerator {
+    const { cell } = options;
+
     if (cell.object || !player.canPlaceBombs()) {
       return;
     }
@@ -247,6 +335,11 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.placeMapObject(bomb, cell);
     player.placeBomb(bomb);
     last(this.bombsToExplode)?.push(bomb);
+
+    this.sendSocketEvent(EGameServerEvent.PLACE_BOMB, {
+      coords: this.getCellCoords(cell),
+      bomb: bomb.toJSON(),
+    });
 
     yield* bomb;
 
@@ -271,7 +364,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       return;
     }
 
-    const box = this.spawnEntity(new Box(this));
+    const box = this.spawnEntity(new Box(this, { cell }));
 
     this.placeMapObject(box, cell);
     this.boxes.add(box);
@@ -279,6 +372,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const bonusType = yield* box;
 
     this.boxes.delete(box);
+    this.removeMapObject(cell);
 
     if (bonusType) {
       this.spawnTask(this.spawnBonus(bonusType, cell));
@@ -308,6 +402,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.placeMapObject(wall, cell);
 
     yield* wall;
+
+    this.removeMapObject(cell);
   }
 
   toJSON(): IGame {
