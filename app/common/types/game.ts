@@ -17,10 +17,13 @@ export interface IGamesParams {}
 export interface IGameData<Game extends EGame> {
   name: string;
   info: TGameInfo<Game> | null;
+  result: TGameResult<Game> | null;
   players: IGamePlayer[];
 }
 
 export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];
+
+export type TGameResult<Game extends EGame> = IGamesParams[Game]['result'];
 
 export type TGameClientEvent<Game extends EGame> = keyof TGameClientEventMap<Game> & string;
 

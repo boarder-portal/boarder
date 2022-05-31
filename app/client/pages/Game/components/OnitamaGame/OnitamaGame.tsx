@@ -43,7 +43,7 @@ const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IP
 };
 
 const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
-  const { io, gameInfo, isGameEnd } = props;
+  const { io, gameInfo, gameResult } = props;
 
   const [board, setBoard] = useState<TBoard>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
@@ -115,7 +115,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
     setLegalMoves([]);
   }, [gameInfo, user]);
 
-  if (isGameEnd) {
+  if (gameResult !== null) {
     return <GameEnd></GameEnd>;
   }
 

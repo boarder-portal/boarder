@@ -15,14 +15,14 @@ import { IGameProps } from 'client/pages/Game/Game';
 import styles from './SetGame.pcss';
 
 const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
-  const { io, gameInfo, isGameEnd } = props;
+  const { io, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<ICard[]>([]);
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
 
   const handleCardClick = useImmutableCallback((card: ICard) => {
-    if (isGameEnd) {
+    if (gameResult) {
       return;
     }
 
@@ -101,9 +101,9 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
       <Flex className={styles.info} direction="column" between={5}>
         {playersBlock}
 
-        {!isGameEnd && <Button onClick={handleNoSetClick}>Нет сета</Button>}
+        {!gameResult && <Button onClick={handleNoSetClick}>Нет сета</Button>}
 
-        {isGameEnd && (
+        {gameResult && (
           <Text weight="bold" size="l">
             Игра окончена
           </Text>

@@ -56,7 +56,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     io,
     gameInfo,
     gameInfo: { options },
-    isGameEnd,
+    gameResult,
   } = props;
 
   const [cards, setCards] = useState<IPexesoClientCard[]>(
@@ -219,7 +219,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     );
   }, [activePlayerIndex, players]);
 
-  if (isGameEnd) {
+  if (gameResult) {
     return <GameEnd>{playersBlock}</GameEnd>;
   }
 

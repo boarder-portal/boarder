@@ -39,7 +39,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
   cardsStack: ICard[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<number[]> {
     const notShuffledCardsStack: ICard[] = [];
 
     Object.values(ECardColor).forEach((color) => {
@@ -124,6 +124,8 @@ export default class SetGame extends GameEntity<EGame.SET> {
         this.sendGameInfo();
       }
     }
+
+    return this.playersData.map(({ score }) => score);
   }
 
   getGamePlayers(): IPlayer[] {

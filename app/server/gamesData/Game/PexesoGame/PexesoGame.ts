@@ -35,7 +35,7 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
 
   turn: Turn | null = null;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<number[]> {
     const { imagesCount: setImagesCount, imageVariantsCount } = SETS[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (this.options.pickRandomImages ? shuffle(allIds) : allIds).slice(0, this.options.differentCardsCount);
@@ -112,6 +112,8 @@ export default class PexesoGame extends GameEntity<EGame.PEXESO> {
     }
 
     this.turn = null;
+
+    return this.playersData.map(({ score }) => score);
   }
 
   getGamePlayers(): IPlayer[] {

@@ -25,14 +25,15 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
 
   turn: Turn | null = null;
   dices: number[] = [];
-  winner: string | null = null;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<number> {
     this.fillBoard();
 
     yield* this.delay(500);
 
-    while (!this.winner) {
+    let winner = -1;
+
+    while (winner === -1) {
       yield* this.spawnEntity(
         new Turn(this, {
           activePlayerIndex: this.activePlayerIndex,
@@ -43,10 +44,10 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
 
       this.sendSocketEvent(EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
 
-      this.winner = this.getGamePlayers().find((player) => player.data.landmarksIds.length === 4)?.login || null;
+      winner = this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 4);
     }
 
-    this.sendSocketEvent(EGameServerEvent.WINNER, this.winner);
+    return winner;
   }
 
   fillBoard(): void {
@@ -80,7 +81,6 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
       players: this.getGamePlayers(),
       board: this.board,
       dices: this.dices,
-      winner: this.winner,
     };
   }
 }

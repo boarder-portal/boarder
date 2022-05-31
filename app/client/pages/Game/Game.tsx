@@ -2,7 +2,7 @@ import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame, TGameInfo } from 'common/types/game';
+import { EGame, TGameInfo, TGameResult } from 'common/types/game';
 import {
   ECommonGameClientEvent,
   ECommonGameServerEvent,
@@ -37,8 +37,8 @@ import styles from './Game.pcss';
 export interface IGameProps<Game extends EGame> {
   io: TGameClientSocket<Game>;
   gameInfo: TGameInfo<Game>;
+  gameResult: TGameResult<Game> | null;
   timeDiff: number;
-  isGameEnd: boolean;
 }
 
 const GAMES_MAP: {
@@ -60,10 +60,9 @@ function Game<G extends EGame>() {
 
   const [gameName, setGameName] = useState<string | null>(null);
   const [gameInfo, setGameInfo] = useState<TGameInfo<G> | null>(null);
+  const [gameResult, setGameResult] = useState<TGameResult<G> | null>(null);
   const [players, setPlayers] = useState<IGamePlayer[]>([]);
   const [timeDiff, setTimeDiff] = useState(0);
-
-  const { value: isGameEnd, setTrue: endGame } = useBoolean(false);
 
   const history = useHistory();
   const [user] = useAtom('user');
@@ -72,6 +71,7 @@ function Game<G extends EGame>() {
     [ECommonGameServerEvent.GET_DATA]: (data) => {
       batchedUpdates(() => {
         setGameInfo(data.info);
+        setGameResult(data.result);
         setPlayers(data.players);
         setGameName(data.name);
       });
@@ -85,10 +85,10 @@ function Game<G extends EGame>() {
     [ECommonGameServerEvent.PING]: (serverTimestamp) => {
       setTimeDiff(serverTimestamp - now());
     },
-    [ECommonGameServerEvent.END]: () => {
-      console.log('GAME_END');
+    [ECommonGameServerEvent.END]: (result) => {
+      console.log('GAME_END', result);
 
-      endGame();
+      setGameResult(result);
     },
 
     // eslint-disable-next-line camelcase
@@ -138,7 +138,7 @@ function Game<G extends EGame>() {
 
   const Game: ComponentType<IGameProps<G>> = GAMES_MAP[game];
 
-  return <Game io={socket} isGameEnd={isGameEnd} gameInfo={gameInfo} timeDiff={timeDiff} />;
+  return <Game io={socket} gameInfo={gameInfo} gameResult={gameResult} timeDiff={timeDiff} />;
 }
 
 export default React.memo(Game);

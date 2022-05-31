@@ -1,4 +1,4 @@
-import { EGame, IGameData, TGameInfo } from 'common/types/game';
+import { EGame, IGameData, TGameInfo, TGameResult } from 'common/types/game';
 
 export interface IUser {
   login: string;
@@ -58,5 +58,5 @@ export interface ICommonServerEventMap<Game extends EGame> {
   [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
   [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer[];
   [ECommonGameServerEvent.PING]: number;
-  [ECommonGameServerEvent.END]: undefined;
+  [ECommonGameServerEvent.END]: TGameResult<Game>;
 }

@@ -163,6 +163,7 @@ declare module 'common/types/game' {
       serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
+      result: void;
     };
   }
 }

@@ -25,7 +25,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
   ];
   fifthCard = ECardType.TIGER;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<number> {
     let index = 0;
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];
@@ -51,20 +51,25 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
       this.board[from.y][from.x] = null;
 
       this.fifthCard = playedCard;
-      this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
-
-      this.sendGameInfo();
 
       const isWayOfStoneWin = !!toPiece?.isMaster;
       const isWayOfStreamWin = equalsCoords(to, {
         x: 2,
-        y: this.activePlayerIndex === 1 ? 4 : 0,
+        y: this.activePlayerIndex === 0 ? 4 : 0,
       });
 
       if (isWayOfStoneWin || isWayOfStreamWin) {
+        this.sendGameInfo();
+
         break;
       }
+
+      this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
+
+      this.sendGameInfo();
     }
+
+    return this.activePlayerIndex;
   }
 
   getGamePlayers(): IPlayer[] {

@@ -35,7 +35,7 @@ interface ICardsToSwap {
 }
 
 const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameInfo, gameResult } = props;
 
   const [user] = useAtom('user');
   const [board, setBoard] = useState(gameInfo.board);
@@ -43,7 +43,6 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
   const [dices, setDices] = useState(gameInfo.dices);
   const [cardsToSwap, setCardsToSwap] = useState<ICardsToSwap>({ from: null, toCardId: null });
-  const [winner, setWinner] = useState<null | string>(gameInfo.winner);
 
   const isActive = useMemo(
     () => players[activePlayerIndex].login === user?.login,
@@ -179,11 +178,6 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
 
       setPlayers(data.players);
     },
-    [EGameServerEvent.WINNER]: (data) => {
-      console.log(EGameServerEvent.WINNER, data);
-
-      setWinner(data);
-    },
   });
 
   useEffect(() => {
@@ -242,7 +236,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
           activePlayer={players[activePlayerIndex]}
           isPlayerActive={isActive}
           dices={dices}
-          winner={winner}
+          winner={gameResult === null ? null : players[gameResult].login}
           onEndTurn={endTurn}
           onSelectDicesCount={chooseDicesCount}
           onSelectNeedToReroll={chooseNeedToReroll}

@@ -117,7 +117,6 @@ export interface IGame {
   players: IPlayer[];
   board: ECardId[];
   dices: number[];
-  winner: string | null;
 }
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MACHI_KORO> {
@@ -156,7 +155,6 @@ export interface IServerEventMap extends ICommonServerEventMap<EGame.MACHI_KORO>
   [EGameServerEvent.WAIT_ACTION]: {
     players: IPlayer[];
   };
-  [EGameServerEvent.WINNER]: string;
 }
 
 declare module 'common/types/game' {
@@ -166,6 +164,7 @@ declare module 'common/types/game' {
       serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
+      result: number;
     };
   }
 }

@@ -12,6 +12,7 @@ import {
   TGameClientEventData,
   TGameClientEventListener,
   TGameOptions,
+  TGameResult,
   TGameServerEvent,
   TGameServerEventData,
 } from 'common/types/game';
@@ -94,6 +95,7 @@ class Game<Game extends EGame> {
   players: IServerGamePlayer<Game>[];
   options: TGameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
+  result: TGameResult<Game> | null = null;
   deleted = false;
   batchedActions: IBatchedAction<Game, TGameServerEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
@@ -258,8 +260,10 @@ class Game<Game extends EGame> {
     this.gameEntity?.destroy();
   }
 
-  end(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.END, undefined);
+  end(result: TGameResult<Game>): void {
+    this.result = result;
+
+    this.sendSocketEvent(ECommonGameServerEvent.END, result);
   }
 
   getClientPlayers(): IGamePlayer[] {
@@ -288,7 +292,7 @@ class Game<Game extends EGame> {
     });
 
     entity.run(
-      () => this.end(),
+      (result) => this.end(result),
       (err) => {
         if (!this.deleted) {
           console.log('Error in game', err);
@@ -342,6 +346,7 @@ class Game<Game extends EGame> {
     const gameData: IGameData<Game> = {
       name: this.name,
       info: this.gameEntity?.getGameInfo() ?? null,
+      result: this.result,
       players: this.getClientPlayers(),
     };
 
