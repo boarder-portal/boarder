@@ -52,7 +52,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   boxes = new Set<Box>();
   alivePlayers = new Set<Player>();
   lastExplosionTickTimestamp = 0;
-  artificialWallsPath: ICoords[] = [];
+  artificialWallsPath: IServerCell[] = [];
   artificialWallsSpawned = 0;
 
   constructor(parentOrContext: TParentOrContext<EGame.BOMBERS>) {
@@ -75,13 +75,14 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
         };
       });
     });
+    this.artificialWallsPath = this.getArtificialWallsPath();
 
     const spawnPoints: ICoords[] = [];
 
     this.mapLayout.forEach((row, y) => {
       row.forEach((objectType, x) => {
         if (objectType === EObject.WALL) {
-          this.createWall({ x, y });
+          this.createWall({ x, y }, false);
         } else if (objectType === EObject.BOX) {
           this.spawnTask(this.spawnBox({ x, y }));
         } else if (typeof objectType === 'number') {
@@ -98,21 +99,18 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     this.lastExplosionTickTimestamp = now();
 
-    this.spawnTask(this.spawnArtificialWalls());
     this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
-    this.spawnTask(this.repeatTask(FRAME_DURATION, this.movePlayers));
 
-    const finishGamePlayersCount = Math.min(this.playersCount - 1, 1);
-
-    while (this.alivePlayers.size > finishGamePlayersCount) {
-      yield* this.race([...this.alivePlayers]);
-    }
+    yield* this.race([
+      this.waitForWinner(),
+      this.all([this.spawnArtificialWalls(), this.repeatTask(FRAME_DURATION, this.movePlayers)]),
+    ]);
 
     this.players.forEach((player) => player.disable());
   }
 
-  createWall(coords: ICoords): void {
-    this.spawnTask(this.spawnWall(coords));
+  createWall(coords: ICoords, isArtificial: boolean): void {
+    this.spawnTask(this.spawnWall(coords, isArtificial));
   }
 
   *explodeBombs(): TGenerator {
@@ -168,6 +166,37 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       explodedBoxes: explodedBoxesInfo,
       invincibilityEndsAt: now() + 1000,
     });
+  }
+
+  getArtificialWallsPath(): IServerCell[] {
+    const directionsRotation = [EDirection.RIGHT, EDirection.DOWN, EDirection.LEFT, EDirection.UP];
+    let currentCell: IServerCell = this.map[0][0];
+    let currentDirection = EDirection.RIGHT;
+    let justRotated = false;
+
+    const wallsPath: IServerCell[] = [currentCell];
+
+    while (true) {
+      const cellBehind = this.getCellBehind(currentCell, currentDirection);
+
+      if (!cellBehind || wallsPath.includes(cellBehind)) {
+        if (justRotated) {
+          break;
+        }
+
+        currentDirection = directionsRotation[(directionsRotation.indexOf(currentDirection) + 1) % 4];
+        justRotated = true;
+
+        continue;
+      }
+
+      currentCell = cellBehind;
+      justRotated = false;
+
+      wallsPath.push(currentCell);
+    }
+
+    return wallsPath;
   }
 
   getCell(coords: ICoords): IServerCell | undefined {
@@ -286,15 +315,13 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   *spawnArtificialWall(): TGenerator {
-    const coords = this.artificialWallsPath.at(this.artificialWallsSpawned);
+    const cell = this.artificialWallsPath.at(this.artificialWallsSpawned);
 
-    if (!coords) {
+    if (!cell) {
       return;
     }
 
     this.artificialWallsSpawned++;
-
-    const cell = this.getCell(coords);
 
     if (!cell) {
       return;
@@ -310,7 +337,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       object.consume();
     }
 
-    this.createWall(coords);
+    this.createWall(cell, true);
   }
 
   *spawnArtificialWalls(): TGenerator {
@@ -390,14 +417,14 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.alivePlayers.delete(player);
   }
 
-  *spawnWall(coords: ICoords): TGenerator {
+  *spawnWall(coords: ICoords, isArtificial: boolean): TGenerator {
     const cell = this.getCell(coords);
 
     if (!cell) {
       return;
     }
 
-    const wall = this.spawnEntity(new Wall(this));
+    const wall = this.spawnEntity(new Wall(this, { cell, isArtificial }));
 
     this.placeMapObject(wall, cell);
 
@@ -411,5 +438,13 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       players: this.getGamePlayers(),
       map: this.getClientMap(),
     };
+  }
+
+  *waitForWinner(): TGenerator {
+    const finishGamePlayersCount = Math.min(this.playersCount - 1, 1);
+
+    while (this.alivePlayers.size > finishGamePlayersCount) {
+      yield* this.race([...this.alivePlayers]);
+    }
   }
 }

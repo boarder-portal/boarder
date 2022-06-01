@@ -49,7 +49,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   placedBombs = new Set<Bomb>();
 
   disable = this.createTrigger();
-  hit = this.createTrigger<{ damage: number; invincibilityEndsAt: number }>();
+  hit = this.createTrigger<{ damage: number; invincibilityEndsAt: number | null }>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
     super(game, options);
@@ -70,7 +70,9 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         break;
       }
 
-      this.spawnTask(this.makeInvincible(invincibilityEndsAt));
+      if (invincibilityEndsAt) {
+        this.spawnTask(this.makeInvincible(invincibilityEndsAt));
+      }
 
       yield* this.delay(0);
     }
