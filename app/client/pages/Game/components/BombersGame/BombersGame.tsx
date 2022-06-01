@@ -78,9 +78,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
-    [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp }) => {
+    [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
 
+      playerData.coords = coords;
       playerData.direction = direction;
       playerData.startMovingTimestamp = startMovingTimestamp - timeDiff;
     },

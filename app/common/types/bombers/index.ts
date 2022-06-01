@@ -104,6 +104,7 @@ export interface IStartMovingEvent {
   playerIndex: number;
   direction: EDirection;
   startMovingTimestamp: number;
+  coords: ICoords;
 }
 
 export interface IStopMovingEvent {

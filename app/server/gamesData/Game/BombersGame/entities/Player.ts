@@ -176,6 +176,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       playerIndex: this.index,
       direction,
       startMovingTimestamp: this.startMovingTimestamp,
+      coords: this.coords,
     });
   };
 
