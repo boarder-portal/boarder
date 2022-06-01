@@ -1,10 +1,12 @@
 import classNames from 'classnames';
-import { CSSProperties } from 'react';
+import { CSSProperties, useCallback } from 'react';
 
 import { ECardId, ELandmarkId } from 'common/types/machiKoro';
 import typedReactMemo from 'client/types/typedReactMemo';
 
 import Image from 'client/components/common/Image/Image';
+
+import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './Card.pcss';
 
@@ -20,6 +22,12 @@ interface ICardProps<ID> {
 const Card = <ID extends ECardId | ELandmarkId>(props: ICardProps<ID>) => {
   const { className, style, id, inactive, zoom = 'norm', onClick } = props;
 
+  const handleHover = useCallback(() => {
+    if (onClick) {
+      playSound(HOVER_SOUND);
+    }
+  }, [onClick]);
+
   return (
     <Image
       className={classNames(
@@ -34,6 +42,7 @@ const Card = <ID extends ECardId | ELandmarkId>(props: ICardProps<ID>) => {
       style={style}
       src={`/machiKoro/${id}.jpg`}
       onClick={() => onClick?.(id)}
+      onMouseEnter={handleHover}
     />
   );
 };

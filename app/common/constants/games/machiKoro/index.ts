@@ -31,6 +31,30 @@ export const ALL_CARDS: ICard[] = [
     dice: [9, 10],
     count: 6,
   },
+  {
+    id: ECardId.SUSHI_BAR,
+    color: ECardColor.RED,
+    type: ECardType.RESTAURANT,
+    cost: 2,
+    dice: [1],
+    count: 6,
+  },
+  {
+    id: ECardId.PIZZA_JOINT,
+    color: ECardColor.RED,
+    type: ECardType.RESTAURANT,
+    cost: 1,
+    dice: [7],
+    count: 6,
+  },
+  {
+    id: ECardId.HAMBURGER_STAND,
+    color: ECardColor.RED,
+    type: ECardType.RESTAURANT,
+    cost: 1,
+    dice: [8],
+    count: 6,
+  },
 
   // green
   {
@@ -71,6 +95,22 @@ export const ALL_CARDS: ICard[] = [
     type: ECardType.MARKET,
     cost: 2,
     dice: [11, 12],
+    count: 6,
+  },
+  {
+    id: ECardId.FLOWER_SHOP,
+    color: ECardColor.GREEN,
+    type: ECardType.SHOP,
+    cost: 1,
+    dice: [6],
+    count: 6,
+  },
+  {
+    id: ECardId.FOOD_WAREHOUSE,
+    color: ECardColor.GREEN,
+    type: ECardType.FACTORY,
+    cost: 2,
+    dice: [12, 13],
     count: 6,
   },
 
@@ -115,6 +155,30 @@ export const ALL_CARDS: ICard[] = [
     dice: [10],
     count: 6,
   },
+  {
+    id: ECardId.FLOWER_GARDEN,
+    color: ECardColor.BLUE,
+    type: ECardType.WHEAT,
+    cost: 2,
+    dice: [4],
+    count: 6,
+  },
+  {
+    id: ECardId.MACKEREL_BOAT,
+    color: ECardColor.BLUE,
+    type: ECardType.BOAT,
+    cost: 2,
+    dice: [8],
+    count: 6,
+  },
+  {
+    id: ECardId.TUNA_BOAT,
+    color: ECardColor.BLUE,
+    type: ECardType.BOAT,
+    cost: 5,
+    dice: [12, 13, 14],
+    count: 6,
+  },
 
   // purple
   {
@@ -141,9 +205,33 @@ export const ALL_CARDS: ICard[] = [
     dice: [6],
     count: 5,
   },
+  {
+    id: ECardId.PUBLISHER,
+    color: ECardColor.PURPLE,
+    type: ECardType.MAJOR,
+    cost: 5,
+    dice: [7],
+    count: 5,
+  },
+  {
+    id: ECardId.TAX_OFFICE,
+    color: ECardColor.PURPLE,
+    type: ECardType.MAJOR,
+    cost: 4,
+    dice: [8, 9],
+    count: 5,
+  },
 ];
 
 export const ALL_LANDMARK_CARDS: ILandmarkCard[] = [
+  {
+    id: ELandmarkId.CITY_HALL,
+    cost: 0,
+  },
+  {
+    id: ELandmarkId.HARBOR,
+    cost: 2,
+  },
   {
     id: ELandmarkId.TRAIN_STATION,
     cost: 4,
@@ -159,5 +247,9 @@ export const ALL_LANDMARK_CARDS: ILandmarkCard[] = [
   {
     id: ELandmarkId.RADIO_TOWER,
     cost: 22,
+  },
+  {
+    id: ELandmarkId.AIRPORT,
+    cost: 30,
   },
 ];

@@ -15,8 +15,8 @@ const Dice: FC<IDiceProps> = (props) => {
 
   return (
     <div className={classNames(styles.root, styles[`number_${number}`])}>
-      {times(6, () => (
-        <div className={styles.circle} />
+      {times(6, (index) => (
+        <div key={index} className={styles.circle} />
       ))}
     </div>
   );

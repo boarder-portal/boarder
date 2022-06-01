@@ -21,6 +21,7 @@ import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/compone
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useAtom from 'client/hooks/useAtom';
+import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MachiKoroGame.pcss';
 
@@ -42,6 +43,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const [players, setPlayers] = useState(gameInfo.players);
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
   const [dices, setDices] = useState(gameInfo.dices);
+  const [withHarborEffect, setWithHarborEffect] = useState(gameInfo.withHarborEffect);
   const [cardsToSwap, setCardsToSwap] = useState<ICardsToSwap>({ from: null, toCardId: null });
 
   const isActive = useMemo(
@@ -101,6 +103,20 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
     [io],
   );
 
+  const chooseNeedToUseHarbor = useCallback(
+    (needToUse: boolean) => {
+      io.emit(EGameClientEvent.NEED_TO_USE_HARBOR, needToUse);
+    },
+    [io],
+  );
+
+  const choosePublisherTarget = useCallback(
+    (publisherTarget: ECardType.SHOP | ECardType.RESTAURANT) => {
+      io.emit(EGameClientEvent.PUBLISHER_TARGET, publisherTarget);
+    },
+    [io],
+  );
+
   const getCardClickHandler = useCallback(
     (playerIndex: number) => {
       if (waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
@@ -138,6 +154,12 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
     [activePlayerIndex, cardsToSwap.from, cardsToSwap.toCardId, io, waitingAction],
   );
 
+  useEffect(() => {
+    if (isActive && document.hidden) {
+      playSound(NEW_TURN);
+    }
+  }, [isActive]);
+
   useSocket(io, {
     [EGameServerEvent.UPDATE_PLAYERS]: (data) => {
       console.log(EGameServerEvent.UPDATE_PLAYERS, data);
@@ -146,7 +168,11 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
 
     [EGameServerEvent.DICES_ROLL]: (data) => {
       console.log(EGameServerEvent.DICES_ROLL, data);
-      setDices(data);
+
+      batchedUpdates(() => {
+        setDices(data);
+        setWithHarborEffect(false);
+      });
     },
     [EGameServerEvent.CARDS_EFFECTS_RESULTS]: (data) => {
       console.log(EGameServerEvent.CARDS_EFFECTS_RESULTS, data);
@@ -177,6 +203,14 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
       console.log(EGameServerEvent.WAIT_ACTION, data);
 
       setPlayers(data.players);
+    },
+    [EGameServerEvent.HARBOR_EFFECT]: (data) => {
+      console.log(EGameServerEvent.HARBOR_EFFECT, data);
+
+      batchedUpdates(() => {
+        setPlayers(data.players);
+        setWithHarborEffect(data.withEffect);
+      });
     },
   });
 
@@ -236,10 +270,13 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
           activePlayer={players[activePlayerIndex]}
           isPlayerActive={isActive}
           dices={dices}
+          withHarborEffect={withHarborEffect}
           winner={gameResult === null ? null : players[gameResult].login}
           onEndTurn={endTurn}
           onSelectDicesCount={chooseDicesCount}
           onSelectNeedToReroll={chooseNeedToReroll}
+          onSelectNeedToUseHarbor={chooseNeedToUseHarbor}
+          onSelectPublisherTarget={choosePublisherTarget}
         />
       )}
     </>

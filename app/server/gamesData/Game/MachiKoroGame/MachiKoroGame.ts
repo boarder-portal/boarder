@@ -5,7 +5,7 @@ import times from 'lodash/times';
 import { ALL_CARDS } from 'common/constants/games/machiKoro';
 
 import { EGame } from 'common/types/game';
-import { ECardId, EGameServerEvent, ICard, IGame, IPlayer, IPlayerData } from 'common/types/machiKoro';
+import { ECardId, EGameServerEvent, ELandmarkId, ICard, IGame, IPlayer, IPlayerData } from 'common/types/machiKoro';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -16,7 +16,7 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     coins: 3,
     cardsIds: [ECardId.WHEAT_FIELD, ECardId.BAKERY],
-    landmarksIds: [],
+    landmarksIds: [ELandmarkId.CITY_HALL],
     waitingAction: null,
   }));
   activePlayerIndex = 0;
@@ -31,23 +31,21 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
 
     yield* this.delay(500);
 
-    let winner = -1;
+    let winnerIndex = -1;
 
-    while (winner === -1) {
-      yield* this.spawnEntity(
-        new Turn(this, {
-          activePlayerIndex: this.activePlayerIndex,
-        }),
-      );
+    while (winnerIndex === -1) {
+      this.turn = this.spawnEntity(new Turn(this));
+
+      yield* this.turn;
 
       this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
 
       this.sendSocketEvent(EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
 
-      winner = this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 4);
+      winnerIndex = this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 7);
     }
 
-    return winner;
+    return winnerIndex;
   }
 
   fillBoard(): void {
@@ -81,6 +79,7 @@ export default class MachiKoroGame extends GameEntity<EGame.MACHI_KORO> {
       players: this.getGamePlayers(),
       board: this.board,
       dices: this.dices,
+      withHarborEffect: Boolean(this.turn?.withHarborEffect),
     };
   }
 }

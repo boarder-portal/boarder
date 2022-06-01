@@ -6,5 +6,6 @@ export default function useImmutableCallback<Func extends (...props: any[]) => a
 
   connectedRef.current = callback;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(((...args: any[]) => connectedRef.current(...args)) as any, []);
 }

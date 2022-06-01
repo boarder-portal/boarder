@@ -1,7 +1,7 @@
 import { FC, memo, useMemo } from 'react';
 import classNames from 'classnames';
 
-import { EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
+import { ECardType, EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
@@ -16,10 +16,13 @@ interface IActionsProps {
   activePlayer: IPlayer;
   isPlayerActive: boolean;
   dices: number[];
+  withHarborEffect: boolean;
   winner: string | null;
   onEndTurn(): void;
   onSelectDicesCount(count: number): void;
   onSelectNeedToReroll(needToReroll: boolean): void;
+  onSelectNeedToUseHarbor(needToUse: boolean): void;
+  onSelectPublisherTarget(publisherTarget: ECardType.SHOP | ECardType.RESTAURANT): void;
 }
 
 const StatusAndActions: FC<IActionsProps> = (props) => {
@@ -29,10 +32,13 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
     activePlayer,
     isPlayerActive,
     dices,
+    withHarborEffect,
     winner,
     onEndTurn,
     onSelectDicesCount,
     onSelectNeedToReroll,
+    onSelectNeedToUseHarbor,
+    onSelectPublisherTarget,
   } = props;
 
   const status = useMemo(() => {
@@ -44,12 +50,20 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       return 'Выбирает перекинуть ли кубики';
     }
 
+    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+      return 'Выбирает добавить ли к кубикам 2';
+    }
+
     if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
       return 'Выбирает карты для обмена';
     }
 
     if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
       return 'Выбирает игрока';
+    }
+
+    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+      return 'Выбирает тип зданий для Издательства';
     }
 
     return 'Ходит';
@@ -63,14 +77,18 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
           <div>{status}</div>
         </Flex>
 
-        <Flex between={2}>
-          {dices.map((dice, index) => (
-            <Dice key={index} number={dice as TDice} />
-          ))}
-        </Flex>
+        {dices.length > 0 && (
+          <Flex between={2} alignItems="center">
+            {dices.map((dice, index) => (
+              <Dice key={index} number={dice as TDice} />
+            ))}
+
+            {withHarborEffect && <div>+2</div>}
+          </Flex>
+        )}
       </Flex>
     ),
-    [activePlayer.name, dices, status],
+    [activePlayer.name, dices, status, withHarborEffect],
   );
 
   const actions = useMemo(() => {
@@ -100,8 +118,45 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
             <Button size="s" onClick={() => onSelectNeedToReroll(true)}>
               Да
             </Button>
+
             <Button size="s" onClick={() => onSelectNeedToReroll(false)}>
               Нет
+            </Button>
+          </Flex>
+        </Flex>
+      );
+    }
+
+    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+      return (
+        <Flex between={2} alignItems="center">
+          <Text>Прибавить к кубикам 2?</Text>
+
+          <Flex between={2} alignItems="center">
+            <Button size="s" onClick={() => onSelectNeedToUseHarbor(true)}>
+              Да
+            </Button>
+
+            <Button size="s" onClick={() => onSelectNeedToUseHarbor(false)}>
+              Нет
+            </Button>
+          </Flex>
+        </Flex>
+      );
+    }
+
+    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+      return (
+        <Flex between={2} alignItems="center">
+          <Text>За что взять монеты?</Text>
+
+          <Flex between={2} alignItems="center">
+            <Button size="s" onClick={() => onSelectPublisherTarget(ECardType.SHOP)}>
+              Магазины
+            </Button>
+
+            <Button size="s" onClick={() => onSelectPublisherTarget(ECardType.RESTAURANT)}>
+              Рестораны
             </Button>
           </Flex>
         </Flex>
@@ -115,7 +170,15 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
         </Button>
       );
     }
-  }, [isPlayerActive, onEndTurn, onSelectDicesCount, onSelectNeedToReroll, player.data.waitingAction]);
+  }, [
+    isPlayerActive,
+    onEndTurn,
+    onSelectDicesCount,
+    onSelectNeedToReroll,
+    onSelectNeedToUseHarbor,
+    onSelectPublisherTarget,
+    player.data.waitingAction,
+  ]);
 
   if (winner) {
     return (

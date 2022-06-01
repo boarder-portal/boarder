@@ -14,6 +14,8 @@ export enum EGameClientEvent {
   END_TURN = 'END_TURN',
   CHOOSE_PLAYER = 'CHOOSE_PLAYER',
   CARDS_TO_SWAP = 'CARDS_TO_SWAP',
+  PUBLISHER_TARGET = 'PUBLISHER_TARGET',
+  NEED_TO_USE_HARBOR = 'NEED_TO_USE_HARBOR',
 }
 
 export enum EGameServerEvent {
@@ -25,7 +27,7 @@ export enum EGameServerEvent {
   BUILD_LANDMARK = 'BUILD_LANDMARK',
   CHANGE_ACTIVE_PLAYER_INDEX = 'CHANGE_ACTIVE_PLAYER_INDEX',
   WAIT_ACTION = 'WAIT_ACTION',
-  WINNER = 'WINNER',
+  HARBOR_EFFECT = 'HARBOR_EFFECT',
 }
 
 export interface IGameOptions extends ICommonGameOptions {}
@@ -35,12 +37,17 @@ export enum EPlayerWaitingAction {
   CHOOSE_NEED_TO_REROLL = 'CHOOSE_NEED_TO_REROLL',
   CHOOSE_PLAYER = 'CHOOSE_PLAYER',
   CHOOSE_CARDS_TO_SWAP = 'CHOOSE_CARDS_TO_SWAP',
+  CHOOSE_PUBLISHER_TARGET = 'CHOOSE_PUBLISHER_TARGET',
+  CHOOSE_NEED_TO_USE_HARBOR = 'CHOOSE_NEED_TO_USE_HARBOR',
 }
 
 export enum ECardId {
   // red
   CAFE = 'CAFE',
   RESTAURANT = 'RESTAURANT',
+  SUSHI_BAR = 'SUSHI_BAR',
+  PIZZA_JOINT = 'PIZZA_JOINT',
+  HAMBURGER_STAND = 'HAMBURGER_STAND',
 
   // green
   BAKERY = 'BAKERY',
@@ -48,6 +55,8 @@ export enum ECardId {
   CHEESE_FACTORY = 'CHEESE_FACTORY',
   FURNITURE_FACTORY = 'FURNITURE_FACTORY',
   PRODUCE_MARKET = 'PRODUCE_MARKET',
+  FLOWER_SHOP = 'FLOWER_SHOP',
+  FOOD_WAREHOUSE = 'FOOD_WAREHOUSE',
 
   // blue
   WHEAT_FIELD = 'WHEAT_FIELD',
@@ -55,18 +64,26 @@ export enum ECardId {
   FOREST = 'FOREST',
   MINE = 'MINE',
   APPLE_ORCHARD = 'APPLE_ORCHARD',
+  FLOWER_GARDEN = 'FLOWER_GARDEN',
+  MACKEREL_BOAT = 'MACKEREL_BOAT',
+  TUNA_BOAT = 'TUNA_BOAT',
 
   // purple
   STADIUM = 'STADIUM',
   TV_STATION = 'TV_STATION',
   BUSINESS_COMPLEX = 'BUSINESS_COMPLEX',
+  PUBLISHER = 'PUBLISHER',
+  TAX_OFFICE = 'TAX_OFFICE',
 }
 
 export enum ELandmarkId {
+  CITY_HALL = 'CITY_HALL',
+  HARBOR = 'HARBOR',
   TRAIN_STATION = 'TRAIN_STATION',
   SHOPPING_MALL = 'SHOPPING_MALL',
   AMUSEMENT_PARK = 'AMUSEMENT_PARK',
   RADIO_TOWER = 'RADIO_TOWER',
+  AIRPORT = 'AIRPORT',
 }
 
 export enum ECardColor {
@@ -84,6 +101,7 @@ export enum ECardType {
   WHEAT = 'WHEAT',
   FARM = 'FARM',
   GEAR = 'GEAR',
+  BOAT = 'BOAT',
   MAJOR = 'MAJOR',
 }
 
@@ -117,6 +135,7 @@ export interface IGame {
   players: IPlayer[];
   board: ECardId[];
   dices: number[];
+  withHarborEffect: boolean;
 }
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MACHI_KORO> {
@@ -133,6 +152,8 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.MACHI_KORO>
     };
     toCardId: ECardId;
   };
+  [EGameClientEvent.PUBLISHER_TARGET]: ECardType.RESTAURANT | ECardType.SHOP;
+  [EGameClientEvent.NEED_TO_USE_HARBOR]: boolean;
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.MACHI_KORO> {
@@ -154,6 +175,10 @@ export interface IServerEventMap extends ICommonServerEventMap<EGame.MACHI_KORO>
   };
   [EGameServerEvent.WAIT_ACTION]: {
     players: IPlayer[];
+  };
+  [EGameServerEvent.HARBOR_EFFECT]: {
+    players: IPlayer[];
+    withEffect: boolean;
   };
 }
 
