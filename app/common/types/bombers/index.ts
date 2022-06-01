@@ -14,11 +14,6 @@ export enum EGameClientEvent {
 }
 
 export enum EGameServerEvent {
-  // TODO: deprecate
-  /**
-   * @deprecated
-   */
-  UPDATE_PLAYERS_COORDS = 'UPDATE_PLAYERS_COORDS',
   START_MOVING = 'START_MOVING',
   STOP_MOVING = 'STOP_MOVING',
   PLACE_BOMB = 'PLACE_BOMB',
@@ -151,7 +146,6 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
-  [EGameServerEvent.UPDATE_PLAYERS_COORDS]: ICoords[];
   [EGameServerEvent.START_MOVING]: IStartMovingEvent;
   [EGameServerEvent.STOP_MOVING]: IStopMovingEvent;
   [EGameServerEvent.PLACE_BOMB]: IPlaceBombEvent;

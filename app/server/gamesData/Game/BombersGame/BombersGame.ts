@@ -20,6 +20,7 @@ import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator, TParentOrContext } from 'server/gamesData/Game/utilities/Entity';
 import { now } from 'server/utilities/time';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
+import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
@@ -44,7 +45,7 @@ const FRAME_DURATION = 1000 / 60;
 export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   players: Player[] = [];
   map: TServerMap = [];
-  sharedDataManager = new SharedDataManager(this.map, this.players);
+  sharedDataManager: SharedDataManager<TServerMapObject>;
   mapLayout: TMapLayout;
   mapWidth: number;
   mapHeight: number;
@@ -61,12 +62,18 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.mapLayout = this.getMapLayout();
     this.mapWidth = this.mapLayout[0].length;
     this.mapHeight = this.mapLayout.length;
+
+    this.sharedDataManager = new SharedDataManager<TServerMapObject>({
+      map: this.map,
+      players: this.players,
+      isPassableObject: this.isPassableObject,
+    });
   }
 
   *lifecycle(): TGenerator {
     this.spawnTask(this.pingIndefinitely(5 * 1000));
 
-    this.map = this.mapLayout.map((row, y) => {
+    this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) => {
       return row.map((objectType, x) => {
         return {
           x,
@@ -208,31 +215,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   getCellBehind(cell: IServerCell, direction: EDirection): IServerCell | undefined {
-    let coordsBehind: ICoords;
-
-    if (direction === EDirection.UP) {
-      coordsBehind = {
-        x: cell.x,
-        y: cell.y - 1,
-      };
-    } else if (direction === EDirection.DOWN) {
-      coordsBehind = {
-        x: cell.x,
-        y: cell.y + 1,
-      };
-    } else if (direction === EDirection.LEFT) {
-      coordsBehind = {
-        x: cell.x - 1,
-        y: cell.y,
-      };
-    } else {
-      coordsBehind = {
-        x: cell.x + 1,
-        y: cell.y,
-      };
-    }
-
-    return this.getCell(coordsBehind);
+    return this.getCell(getCoordsBehind(cell, direction));
   }
 
   getCellCoords(cell: IServerCell): ICoords {
@@ -289,11 +272,6 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   *movePlayers(): TGenerator {
     this.players.forEach((player) => player.move());
-
-    this.sendSocketEvent(
-      EGameServerEvent.UPDATE_PLAYERS_COORDS,
-      this.players.map(({ coords }) => coords),
-    );
   }
 
   placeBomb(player: Player, cell: IServerCell): void {

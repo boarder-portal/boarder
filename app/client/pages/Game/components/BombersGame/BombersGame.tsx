@@ -17,6 +17,7 @@ import { ISize } from 'common/types';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
+import { now } from 'client/utilities/time';
 
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -36,7 +37,7 @@ const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
 };
 
 const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameInfo, timeDiff } = props;
 
   const [players] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
@@ -49,7 +50,11 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
   const sharedDataManager = useMemo(() => {
-    return new SharedDataManager(mapRef.current, playersDataRef.current);
+    return new SharedDataManager({
+      map: mapRef.current,
+      players: playersDataRef.current,
+      isPassableObject: (object) => object === null || object?.type === EObject.BONUS,
+    });
   }, []);
 
   const viewSize: ISize = {
@@ -73,25 +78,21 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
-    [EGameServerEvent.UPDATE_PLAYERS_COORDS]: (coords) => {
-      playersDataRef.current.forEach((playerData, playerIndex) => {
-        playerData.coords = coords[playerIndex];
-      });
-    },
     [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp }) => {
       const playerData = playersDataRef.current[playerIndex];
 
       playerData.direction = direction;
-      playerData.startMovingTimestamp = startMovingTimestamp;
+      playerData.startMovingTimestamp = startMovingTimestamp - timeDiff;
     },
     [EGameServerEvent.STOP_MOVING]: ({ playerIndex, coords }) => {
       playersDataRef.current[playerIndex].coords = coords;
+      playersDataRef.current[playerIndex].startMovingTimestamp = null;
     },
     [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].object = bomb;
     },
     [EGameServerEvent.BOMBS_EXPLODED]: ({ bombsCoords, hitPlayers, explodedBoxes, invincibilityEndsAt }) => {
-      console.log(...hitPlayers);
+      invincibilityEndsAt -= timeDiff;
 
       bombsCoords.forEach((coords) => {
         mapRef.current[coords.y][coords.x].object = null;
@@ -187,7 +188,18 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       return;
     }
 
-    // TODO: move players
+    playersDataRef.current.forEach((playerData, playerIndex) => {
+      if (!playerData.startMovingTimestamp || playerData.hp === 0) {
+        return;
+      }
+
+      const newMoveTimestamp = now();
+      const timePassed = newMoveTimestamp - playerData.startMovingTimestamp;
+
+      sharedDataManager.movePlayer(playerIndex, timePassed);
+
+      playerData.startMovingTimestamp = newMoveTimestamp;
+    });
 
     renderMap({ ctx, map: mapRef.current, playersData: playersDataRef.current });
   });

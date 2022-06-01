@@ -28,7 +28,6 @@ import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 import MachiKoroGame from 'client/pages/Game/components/MachiKoroGame/MachiKoroGame';
 
-import { useBoolean } from 'client/hooks/useBoolean';
 import useSocket from 'client/hooks/useSocket';
 import useAtom from 'client/hooks/useAtom';
 
