@@ -132,7 +132,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const hitPlayers = new Set<number>();
     const explodedBoxes = new Set<Box>();
     const explodedBoxesInfo: IExplodedBox[] = [];
-    const invincibilityEndsAt = now() + 1000;
+    const invincibilityEndsAt = now() + 1200;
 
     bombsToExplode.forEach((bomb) => {
       const { hitPlayers: bombHitPlayers, explodedBoxes: bombExplodedBoxes } = bomb.explode();
@@ -268,6 +268,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   isPassableObject(object: TServerMapObject | null | undefined): boolean {
     return object === null || object instanceof Bonus;
+  }
+
+  isExplosionPassableObject(object: TServerMapObject | null | undefined): boolean {
+    return object === null || object instanceof Bonus || object instanceof Bomb;
   }
 
   *movePlayers(): TGenerator {

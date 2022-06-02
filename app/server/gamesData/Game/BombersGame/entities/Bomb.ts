@@ -78,7 +78,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
         addCell(currentCell);
 
-        if (!this.game.isPassableObject(currentCell.object)) {
+        if (!this.game.isExplosionPassableObject(currentCell.object)) {
           break;
         }
       }
