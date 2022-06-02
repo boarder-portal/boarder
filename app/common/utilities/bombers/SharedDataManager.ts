@@ -8,10 +8,11 @@ import {
 } from 'common/constants/games/bombers';
 
 import { ICoords } from 'common/types';
-import { EBonus, EDirection } from 'common/types/bombers';
+import { EBonus, EDirection, ELine } from 'common/types/bombers';
 
 import { isFloatZero } from 'common/utilities/float';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
+import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 
 export interface ISharedCell<MapObject> {
   x: number;
@@ -39,11 +40,6 @@ export interface ISharedDataManagerOptions<MapObject> {
   map: TSharedMap<MapObject>;
   players: ISharedPlayer[];
   isPassableObject(object: MapObject | null | undefined): boolean;
-}
-
-enum ELine {
-  HORIZONTAL = 'HORIZONTAL',
-  VERTICAL = 'VERTICAL',
 }
 
 interface IClosestCellInfo<MapObject> {
@@ -151,9 +147,7 @@ export default class SharedDataManager<MapObject> {
   }
 
   getDesiredPlayerLine(player: ISharedPlayer): ELine {
-    return player.direction === EDirection.UP || player.direction === EDirection.DOWN
-      ? ELine.VERTICAL
-      : ELine.HORIZONTAL;
+    return getDirectionLine(player.direction);
   }
 
   getPlayerLine(player: ISharedPlayer): ELine {

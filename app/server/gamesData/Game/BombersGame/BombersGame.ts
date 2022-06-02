@@ -11,6 +11,7 @@ import {
   EGameServerEvent,
   EObject,
   EPlayerColor,
+  IExplodedBomb,
   IExplodedBox,
   IGame,
   IPlayer,
@@ -139,12 +140,18 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     }
 
     const hitPlayers = new Set<number>();
+    const explodedBombs: IExplodedBomb[] = [];
     const explodedBoxes = new Set<Box>();
     const explodedBoxesInfo: IExplodedBox[] = [];
     const invincibilityEndsAt = now() + 1200;
 
     bombsToExplode.forEach((bomb) => {
-      const { hitPlayers: bombHitPlayers, explodedBoxes: bombExplodedBoxes } = bomb.explode();
+      const { hitPlayers: bombHitPlayers, explodedBoxes: bombExplodedBoxes, explodedDirections } = bomb.explode();
+
+      explodedBombs.push({
+        coords: this.getCellCoords(bomb.cell),
+        explodedDirections,
+      });
 
       bombHitPlayers.forEach((playerIndex) => {
         if (this.players[playerIndex].invincibilityEndsAt === null) {
@@ -177,7 +184,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     });
 
     this.sendSocketEvent(EGameServerEvent.BOMBS_EXPLODED, {
-      bombsCoords: bombsToExplode.map(({ cell }) => this.getCellCoords(cell)),
+      bombs: explodedBombs,
       hitPlayers: [...hitPlayers],
       explodedBoxes: explodedBoxesInfo,
       invincibilityEndsAt: now() + 1000,

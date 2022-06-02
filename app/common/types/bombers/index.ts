@@ -33,6 +33,11 @@ export enum EDirection {
   RIGHT = 'RIGHT',
 }
 
+export enum ELine {
+  HORIZONTAL = 'HORIZONTAL',
+  VERTICAL = 'VERTICAL',
+}
+
 export enum EPlayerColor {
   BLUE = 'BLUE',
   ORANGE = 'ORANGE',
@@ -130,8 +135,20 @@ export interface IExplodedBox {
   bonus: IBonus | null;
 }
 
+export interface IExplodedBomb {
+  coords: ICoords;
+  explodedDirections: TExplodedDirections;
+}
+
+export interface IExplodedDirection {
+  start: ICoords;
+  end: ICoords;
+}
+
+export type TExplodedDirections = Record<ELine, IExplodedDirection>;
+
 export interface IBombsExplodedEvent {
-  bombsCoords: ICoords[];
+  bombs: IExplodedBomb[];
   hitPlayers: number[];
   explodedBoxes: IExplodedBox[];
   invincibilityEndsAt: number;

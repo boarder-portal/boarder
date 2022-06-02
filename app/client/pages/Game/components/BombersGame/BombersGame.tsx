@@ -7,7 +7,9 @@ import {
   EDirection,
   EGameClientEvent,
   EGameServerEvent,
+  ELine,
   EObject,
+  IExplodedDirection,
   IPlayer,
   IPlayerData,
   TMap,
@@ -52,6 +54,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       startMovingTimestamp: player.data.startMovingTimestamp && player.data.startMovingTimestamp - timeDiff,
     })),
   );
+  const explodedDirectionsRef = useRef(new Set<IExplodedDirection>());
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
   const sharedDataManager = useMemo(() => {
@@ -97,11 +100,14 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].object = bomb;
     },
-    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombsCoords, hitPlayers, explodedBoxes, invincibilityEndsAt }) => {
+    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombs, hitPlayers, explodedBoxes, invincibilityEndsAt }) => {
       invincibilityEndsAt -= timeDiff;
 
-      bombsCoords.forEach((coords) => {
+      bombs.forEach(({ coords, explodedDirections }) => {
         mapRef.current[coords.y][coords.x].object = null;
+
+        explodedDirectionsRef.current.add(explodedDirections[ELine.HORIZONTAL]);
+        explodedDirectionsRef.current.add(explodedDirections[ELine.VERTICAL]);
       });
 
       hitPlayers.forEach((playerIndex) => {
@@ -120,6 +126,13 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
           playersDataRef.current[playerIndex].invincibilityEndsAt = null;
         });
       }, invincibilityEndsAt);
+
+      setTimeout(() => {
+        bombs.forEach(({ explodedDirections }) => {
+          explodedDirectionsRef.current.delete(explodedDirections[ELine.HORIZONTAL]);
+          explodedDirectionsRef.current.delete(explodedDirections[ELine.VERTICAL]);
+        });
+      }, 250);
     },
     [EGameServerEvent.WALL_CREATED]: ({ coords, wall, deadPlayers }) => {
       mapRef.current[coords.y][coords.x].object = wall;
@@ -207,7 +220,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       playerData.startMovingTimestamp = newMoveTimestamp;
     });
 
-    renderMap({ ctx, map: mapRef.current, playersData: playersDataRef.current });
+    renderMap({
+      ctx,
+      map: mapRef.current,
+      playersData: playersDataRef.current,
+      explodedDirections: explodedDirectionsRef.current,
+    });
   });
 
   useEffect(() => {

@@ -1,8 +1,11 @@
+import mapValues from 'lodash/mapValues';
+
 import { EGame } from 'common/types/game';
-import { EDirection, EObject, IBomb } from 'common/types/bombers';
+import { EDirection, ELine, EObject, IBomb, TExplodedDirections } from 'common/types/bombers';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
@@ -16,6 +19,7 @@ export interface IBombOptions {
 export interface IExplosionResult {
   hitPlayers: number[];
   explodedBoxes: Box[];
+  explodedDirections: TExplodedDirections;
 }
 
 const ALL_DIRECTIONS = Object.values(EDirection);
@@ -47,6 +51,16 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
     const hitPlayers: number[] = [];
     const explodedBoxes: Box[] = [];
+    const explodedDirections: Record<ELine, { start: IServerCell; end: IServerCell }> = {
+      [ELine.HORIZONTAL]: {
+        start: this.cell,
+        end: this.cell,
+      },
+      [ELine.VERTICAL]: {
+        start: this.cell,
+        end: this.cell,
+      },
+    };
 
     const playersOccupiedCells = this.game.players.map((player) => player.getOccupiedCells());
 
@@ -78,13 +92,28 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
         addCell(currentCell);
 
+        const line = getDirectionLine(direction);
+
+        if (direction === EDirection.LEFT || direction === EDirection.UP) {
+          explodedDirections[line].start = currentCell;
+        } else {
+          explodedDirections[line].end = currentCell;
+        }
+
         if (!this.game.isExplosionPassableObject(currentCell.object)) {
           break;
         }
       }
     });
 
-    return { hitPlayers, explodedBoxes };
+    return {
+      hitPlayers,
+      explodedBoxes,
+      explodedDirections: mapValues(explodedDirections, ({ start, end }) => ({
+        start: this.game.getCellCoords(start),
+        end: this.game.getCellCoords(end),
+      })),
+    };
   }
 
   toJSON(): IBomb {
