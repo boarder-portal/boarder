@@ -172,6 +172,10 @@ export default class SharedDataManager<MapObject> {
   }
 
   movePlayer(playerIndex: number, timePassed: number): void {
+    if (timePassed <= 0) {
+      return;
+    }
+
     const player = this.players[playerIndex];
 
     const desiredLine = this.getDesiredPlayerLine(player);
