@@ -3,7 +3,7 @@ import pick from 'lodash/pick';
 import { BOMBER_CELL_SIZE, MAX_HP } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
+import { EPlayerColor, EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -16,12 +16,14 @@ import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
 
 export interface IPlayerOptions extends ICommonPlayerOptions {
+  color: EPlayerColor;
   coords: ICoords;
 }
 
 export default class Player extends PlayerEntity<EGame.BOMBERS> {
   game: BombersGame;
 
+  color: EPlayerColor;
   coords: ICoords;
   direction = EDirection.DOWN;
   startMovingTimestamp: number | null = null;
@@ -39,6 +41,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     super(game, options);
 
     this.game = game;
+    this.color = options.color;
     this.coords = options.coords;
   }
 
@@ -193,6 +196,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   toJSON(): IPlayerData {
     return pick(this, [
+      'color',
       'coords',
       'direction',
       'startMovingTimestamp',

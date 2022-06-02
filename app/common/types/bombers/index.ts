@@ -33,7 +33,15 @@ export enum EDirection {
   RIGHT = 'RIGHT',
 }
 
+export enum EPlayerColor {
+  BLUE = 'BLUE',
+  ORANGE = 'ORANGE',
+  PINK = 'PINK',
+  INDIGO = 'INDIGO',
+}
+
 export interface IPlayerData {
+  color: EPlayerColor;
   coords: ICoords;
   direction: EDirection;
   startMovingTimestamp: number | null;

@@ -24,7 +24,7 @@ export default function renderPlayer(options: IRenderPlayerOptions): void {
   const startX = (playerData.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
   const startY = (playerData.coords.y - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
 
-  ctx.fillStyle = 'blue';
+  ctx.fillStyle = playerData.color;
 
   ctx.fillRect(startX, startY, BOMBER_SIZE, BOMBER_SIZE);
 

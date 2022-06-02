@@ -1,5 +1,6 @@
 import times from 'lodash/times';
 import last from 'lodash/last';
+import shuffle from 'lodash/shuffle';
 
 import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS } from 'common/constants/games/bombers';
 
@@ -9,6 +10,7 @@ import {
   EDirection,
   EGameServerEvent,
   EObject,
+  EPlayerColor,
   IExplodedBox,
   IGame,
   IPlayer,
@@ -25,7 +27,7 @@ import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
-import Player from 'server/gamesData/Game/BombersGame/entities/Player';
+import Player, { IPlayerOptions } from 'server/gamesData/Game/BombersGame/entities/Player';
 import Wall from 'server/gamesData/Game/BombersGame/entities/Wall';
 
 export type TServerMapObject = Bomb | Bonus | Box | Wall;
@@ -85,6 +87,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     this.artificialWallsPath = this.getArtificialWallsPath();
 
     const spawnPoints: ICoords[] = [];
+    const colors = shuffle(Object.values(EPlayerColor));
 
     this.mapLayout.forEach((row, y) => {
       row.forEach((objectType, x) => {
@@ -101,7 +104,13 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     // spawnPoints = shuffle(spawnPoints);
 
     this.forEachPlayer((playerIndex) => {
-      this.spawnTask(this.spawnPlayer(playerIndex, spawnPoints[playerIndex]));
+      this.spawnTask(
+        this.spawnPlayer({
+          index: playerIndex,
+          coords: spawnPoints[playerIndex],
+          color: colors[playerIndex],
+        }),
+      );
     });
 
     this.lastExplosionTickTimestamp = now();
@@ -390,8 +399,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     }
   }
 
-  *spawnPlayer(playerIndex: number, coords: ICoords): TGenerator {
-    const player = this.spawnEntity(new Player(this, { index: playerIndex, coords }));
+  *spawnPlayer(options: IPlayerOptions): TGenerator {
+    const player = this.spawnEntity(new Player(this, options));
 
     this.players.push(player);
     this.alivePlayers.add(player);
