@@ -19,6 +19,7 @@ export interface IGameData<Game extends EGame> {
   info: TGameInfo<Game> | null;
   result: TGameResult<Game> | null;
   players: IGamePlayer[];
+  timestamp: number;
 }
 
 export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];

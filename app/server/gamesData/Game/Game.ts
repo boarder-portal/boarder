@@ -23,6 +23,7 @@ import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
 import removeNamespace from 'server/utilities/removeNamespace';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
+import { now } from 'server/utilities/time';
 
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
@@ -348,6 +349,7 @@ class Game<Game extends EGame> {
       info: this.gameEntity?.getGameInfo() ?? null,
       result: this.result,
       players: this.getClientPlayers(),
+      timestamp: now(),
     };
 
     this.sendSocketEvent(ECommonGameServerEvent.GET_DATA, gameData as any, {

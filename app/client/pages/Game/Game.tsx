@@ -73,6 +73,7 @@ function Game<G extends EGame>() {
         setGameResult(data.result);
         setPlayers(data.players);
         setGameName(data.name);
+        setTimeDiff(data.timestamp - now());
       });
     },
     [ECommonGameServerEvent.GET_INFO]: (info) => {

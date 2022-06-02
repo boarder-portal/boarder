@@ -71,7 +71,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   *lifecycle(): TGenerator {
-    this.spawnTask(this.pingIndefinitely(5 * 1000));
+    this.spawnTask(this.pingIndefinitely(1000));
 
     this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) => {
       return row.map((objectType, x) => {
