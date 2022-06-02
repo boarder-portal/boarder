@@ -10,7 +10,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Home.pcss';
 
-const GAMES_IN_DEVELOPMENT = [EGame.BOMBERS];
+const GAMES_IN_DEVELOPMENT: EGame[] = [];
 
 const Home: React.FC = () => {
   const history = useHistory();
