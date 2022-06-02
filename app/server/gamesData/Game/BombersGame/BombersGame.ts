@@ -288,8 +288,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     cell.object = object;
   }
 
-  removeMapObject(cell: IServerCell): void {
-    cell.object = null;
+  removeMapObject(cell: IServerCell, object: TServerMapObject): void {
+    if (cell.object === object) {
+      cell.object = null;
+    }
   }
 
   *spawnArtificialWall(): TGenerator {
@@ -349,7 +351,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     yield* bomb;
 
     player.removeBomb(bomb);
-    this.removeMapObject(cell);
+    this.removeMapObject(cell, bomb);
   }
 
   *spawnBonus(type: EBonus, cell: IServerCell): TGenerator {
@@ -359,7 +361,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     yield* bonus;
 
-    this.removeMapObject(cell);
+    this.removeMapObject(cell, bonus);
   }
 
   *spawnBox(coords: ICoords): TGenerator {
@@ -377,7 +379,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const bonusType = yield* box;
 
     this.boxes.delete(box);
-    this.removeMapObject(cell);
+    this.removeMapObject(cell, box);
 
     if (bonusType) {
       this.spawnTask(this.spawnBonus(bonusType, cell));
@@ -408,7 +410,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     yield* wall;
 
-    this.removeMapObject(cell);
+    this.removeMapObject(cell, wall);
   }
 
   toJSON(): IGame {
