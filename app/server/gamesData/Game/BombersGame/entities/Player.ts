@@ -127,7 +127,6 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
         this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
         this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
-          console.log(this.coords, this.game.getCellCoords(this.getCurrentCell()));
           this.game.placeBomb(this, this.getCurrentCell());
         }),
       ]),
