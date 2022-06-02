@@ -26,6 +26,7 @@ import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './BombersGame.pcss';
 
@@ -41,6 +42,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
   const [players] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
+
+  const [user] = useAtom('user');
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -156,6 +159,14 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   useGlobalListener('keyup', document, (e) => {
     if (e.code === 'Space') {
       io.emit(EGameClientEvent.PLACE_BOMB);
+
+      const playerIndex = players.findIndex(({ login }) => login === user?.login);
+      const playerData = playersDataRef.current[playerIndex];
+
+      console.log(playerData.coords, {
+        x: Math.floor(playerData.coords.x),
+        y: Math.floor(playerData.coords.y),
+      });
 
       return;
     }

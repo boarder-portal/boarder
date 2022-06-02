@@ -82,8 +82,8 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   getCurrentCell(): IServerCell {
     const cell = this.game.getCell({
-      x: Math.round(this.coords.x - 0.5),
-      y: Math.round(this.coords.y - 0.5),
+      x: Math.floor(this.coords.x),
+      y: Math.floor(this.coords.y),
     });
 
     if (!cell) {
@@ -127,6 +127,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
         this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
         this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
+          console.log(this.coords, this.game.getCellCoords(this.getCurrentCell()));
           this.game.placeBomb(this, this.getCurrentCell());
         }),
       ]),
