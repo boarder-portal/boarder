@@ -159,7 +159,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keydown', document, (e) => {
-    if (e.code === 'Space') {
+    if (e.code === 'Space' || e.key === 'v') {
       io.emit(EGameClientEvent.PLACE_BOMB);
 
       return;
