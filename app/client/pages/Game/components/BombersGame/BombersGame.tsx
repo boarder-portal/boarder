@@ -46,7 +46,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mapRef = useRef<TMap>(gameInfo.map);
-  const playersDataRef = useRef<IPlayerData[]>(players.map((player) => player.data));
+  const playersDataRef = useRef<IPlayerData[]>(
+    players.map((player) => ({
+      ...player.data,
+      startMovingTimestamp: player.data.startMovingTimestamp && player.data.startMovingTimestamp - timeDiff,
+    })),
+  );
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
   const sharedDataManager = useMemo(() => {

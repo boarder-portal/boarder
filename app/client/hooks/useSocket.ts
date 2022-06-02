@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { ReservedOrUserEventNames } from '@socket.io/component-emitter';
 import forEach from 'lodash/forEach';
+import mapValues from 'lodash/mapValues';
 import { ReservedOrUserListener } from 'socket.io/dist/typed-events';
 
 import { TSocketListenEventMap, TClientSocket } from 'common/types/socket';
@@ -48,11 +49,16 @@ export default function useSocket<ClientEvents = Record<never, never>, ServerEve
   );
   const eventMapRef = useRef(eventMap);
 
+  eventMapRef.current = eventMap;
+
   useEffect(() => {
     const socket = (socketRef.current = typeof socketOrUrl === 'string' ? io(socketOrUrl) : socketOrUrl);
-    const eventMap = eventMapRef.current;
 
-    forEach(eventMap, (listener: any, event) => {
+    const listeners = mapValues(eventMapRef.current, (_, event) => {
+      return (...args: unknown[]) => (eventMapRef.current as any)[event]?.(...args);
+    });
+
+    forEach(listeners, (listener, event) => {
       if (listener) {
         socket.on(event as any, listener);
       }
@@ -62,7 +68,7 @@ export default function useSocket<ClientEvents = Record<never, never>, ServerEve
       if (typeof socketOrUrl === 'string') {
         socket.disconnect();
       } else {
-        forEach(eventMap, (listener: any, event) => {
+        forEach(listeners, (listener, event) => {
           if (listener) {
             socket.off(event as any, listener);
           }
