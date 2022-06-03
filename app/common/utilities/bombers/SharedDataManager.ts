@@ -52,6 +52,11 @@ interface IClosestLineInfo {
   distance: number;
 }
 
+interface IMovePlayerResult {
+  distanceLeft: number;
+  distanceWalked: number;
+}
+
 export default class SharedDataManager<MapObject> {
   map: TSharedMap<MapObject>;
   players: ISharedPlayer[];
@@ -165,15 +170,16 @@ export default class SharedDataManager<MapObject> {
     return isOnVertical ? ELine.VERTICAL : ELine.HORIZONTAL;
   }
 
-  movePlayer(playerIndex: number, timePassed: number): void {
+  movePlayer(playerIndex: number, timePassed: number): IMovePlayerResult {
     if (timePassed <= 0) {
-      return;
+      return { distanceLeft: 0, distanceWalked: 0 };
     }
 
     const player = this.players[playerIndex];
 
     const desiredLine = this.getDesiredPlayerLine(player);
     let distanceLeft = ((CELLS_PER_SECOND + player.speed * SPEED_INCREMENT) * timePassed) / 1000;
+    let distanceWalked = 0;
     let movingDirection = player.direction;
 
     while (!isFloatZero(distanceLeft)) {
@@ -219,7 +225,8 @@ export default class SharedDataManager<MapObject> {
 
       const distancePassed = Math.min(distanceLeft, distanceToPass);
 
-      distanceLeft = Math.max(0, distanceLeft - distanceToPass);
+      distanceLeft -= distancePassed;
+      distanceWalked += distancePassed;
 
       this.movePlayerDistance(player, distancePassed, movingDirection);
 
@@ -229,6 +236,11 @@ export default class SharedDataManager<MapObject> {
         break;
       }
     }
+
+    return {
+      distanceLeft,
+      distanceWalked,
+    };
   }
 
   movePlayerDistance(player: ISharedPlayer, distance: number, direction: EDirection): void {

@@ -14,8 +14,7 @@ export enum EGameClientEvent {
 }
 
 export enum EGameServerEvent {
-  START_MOVING = 'START_MOVING',
-  STOP_MOVING = 'STOP_MOVING',
+  SYNC_COORDS = 'SYNC_COORDS',
   PLACE_BOMB = 'PLACE_BOMB',
   BOMBS_EXPLODED = 'BOMBS_EXPLODED',
   WALL_CREATED = 'WALL_CREATED',
@@ -113,15 +112,10 @@ export interface IGame {
   map: TMap;
 }
 
-export interface IStartMovingEvent {
+export interface ISyncCoordsEvent {
   playerIndex: number;
   direction: EDirection;
-  startMovingTimestamp: number;
-  coords: ICoords;
-}
-
-export interface IStopMovingEvent {
-  playerIndex: number;
+  startMovingTimestamp: number | null;
   coords: ICoords;
 }
 
@@ -172,8 +166,7 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
-  [EGameServerEvent.START_MOVING]: IStartMovingEvent;
-  [EGameServerEvent.STOP_MOVING]: IStopMovingEvent;
+  [EGameServerEvent.SYNC_COORDS]: ISyncCoordsEvent;
   [EGameServerEvent.PLACE_BOMB]: IPlaceBombEvent;
   [EGameServerEvent.BOMBS_EXPLODED]: IBombsExplodedEvent;
   [EGameServerEvent.WALL_CREATED]: IWallCreatedEvent;

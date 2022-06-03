@@ -9,6 +9,7 @@ import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
+import Wall from 'server/gamesData/Game/BombersGame/entities/Wall';
 
 export interface IBombOptions {
   cell: IServerCell;
@@ -92,12 +93,14 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
         addCell(currentCell);
 
-        const line = getDirectionLine(direction);
+        if (!(currentCell.object instanceof Wall)) {
+          const line = getDirectionLine(direction);
 
-        if (direction === EDirection.LEFT || direction === EDirection.UP) {
-          explodedDirections[line].start = currentCell;
-        } else {
-          explodedDirections[line].end = currentCell;
+          if (direction === EDirection.LEFT || direction === EDirection.UP) {
+            explodedDirections[line].start = currentCell;
+          } else {
+            explodedDirections[line].end = currentCell;
+          }
         }
 
         if (!this.game.isExplosionPassableObject(currentCell.object)) {

@@ -86,16 +86,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
-    [EGameServerEvent.START_MOVING]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
+    [EGameServerEvent.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
 
       playerData.coords = coords;
       playerData.direction = direction;
-      playerData.startMovingTimestamp = startMovingTimestamp - timeDiff;
-    },
-    [EGameServerEvent.STOP_MOVING]: ({ playerIndex, coords }) => {
-      playersDataRef.current[playerIndex].coords = coords;
-      playersDataRef.current[playerIndex].startMovingTimestamp = null;
+      playerData.startMovingTimestamp = startMovingTimestamp && startMovingTimestamp - timeDiff;
     },
     [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].object = bomb;
@@ -104,7 +100,9 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       invincibilityEndsAt -= timeDiff;
 
       bombs.forEach(({ coords, explodedDirections }) => {
-        mapRef.current[coords.y][coords.x].object = null;
+        if (mapRef.current[coords.y][coords.x].object?.type === EObject.BOMB) {
+          mapRef.current[coords.y][coords.x].object = null;
+        }
 
         explodedDirectionsRef.current.add(explodedDirections[ELine.HORIZONTAL]);
         explodedDirectionsRef.current.add(explodedDirections[ELine.VERTICAL]);

@@ -10,6 +10,7 @@ import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { IPlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 import { now } from 'server/utilities/time';
 import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isFloatZero } from 'common/utilities/float';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
@@ -31,10 +32,11 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   maxBombCount = 1;
   bombRange = 1;
   hp = MAX_HP;
+  isInvincible = false;
   invincibilityEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
 
-  disable = this.createTrigger();
+  disableTrigger = this.createTrigger();
   hit = this.createTrigger<{ damage: number; invincibilityEndsAt: number | null }>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
@@ -83,6 +85,14 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     });
   }
 
+  disable(): void {
+    this.stopMoving();
+    this.disableTrigger();
+
+    this.isInvincible = true;
+    this.invincibilityEndsAt = null;
+  }
+
   getCurrentCell(): IServerCell {
     const cell = this.game.getCell({
       x: Math.floor(this.coords.x),
@@ -125,7 +135,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   *listenForEvents(): TGenerator {
     yield* this.race([
-      this.disable,
+      this.disableTrigger,
       this.all([
         this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
         this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
@@ -137,10 +147,12 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   *makeInvincible(upToTimestamp: number): TGenerator {
+    this.isInvincible = true;
     this.invincibilityEndsAt = upToTimestamp;
 
     yield* this.delay(upToTimestamp - now());
 
+    this.isInvincible = false;
     this.invincibilityEndsAt = null;
   }
 
@@ -152,7 +164,12 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     const newMoveTimestamp = now();
     const timePassed = newMoveTimestamp - this.startMovingTimestamp;
 
-    this.game.sharedDataManager.movePlayer(this.index, timePassed);
+    const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(this.index, timePassed);
+
+    // got stuck just now
+    if (!isFloatZero(distanceLeft) && !isFloatZero(distanceWalked)) {
+      this.syncCoords();
+    }
 
     this.getOccupiedCells().forEach((cell) => {
       if (cell.object instanceof Bonus) {
@@ -175,12 +192,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.direction = direction;
     this.startMovingTimestamp = now();
 
-    this.sendSocketEvent(EGameServerEvent.START_MOVING, {
-      playerIndex: this.index,
-      direction,
-      startMovingTimestamp: this.startMovingTimestamp,
-      coords: this.coords,
-    });
+    this.syncCoords();
   };
 
   stopMoving = (): void => {
@@ -188,11 +200,17 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
     this.startMovingTimestamp = null;
 
-    this.sendSocketEvent(EGameServerEvent.STOP_MOVING, {
+    this.syncCoords();
+  };
+
+  syncCoords(): void {
+    this.sendSocketEvent(EGameServerEvent.SYNC_COORDS, {
       playerIndex: this.index,
+      direction: this.direction,
+      startMovingTimestamp: this.startMovingTimestamp,
       coords: this.coords,
     });
-  };
+  }
 
   toJSON(): IPlayerData {
     return pick(this, [
