@@ -3,6 +3,7 @@ import {
   MAX_BOMB_COUNT,
   MAX_BOMB_RANGE,
   MAX_HP,
+  MAX_HP_RESERVE,
   MAX_SPEED,
   SPEED_INCREMENT,
 } from 'common/constants/games/bombers';
@@ -30,6 +31,7 @@ export interface ISharedPlayer {
   maxBombCount: number;
   bombRange: number;
   hp: number;
+  hpReserve: number;
 }
 
 export interface ISharedBonus {
@@ -78,7 +80,11 @@ export default class SharedDataManager<MapObject> {
     } else if (bonus.type === EBonus.BOMB_RANGE) {
       player.bombRange = Math.min(MAX_BOMB_RANGE, player.bombRange + 1);
     } else if (bonus.type === EBonus.HP) {
-      player.hp = Math.min(MAX_HP, player.hp + 1);
+      if (player.hp === MAX_HP) {
+        player.hpReserve = Math.min(MAX_HP_RESERVE, player.hpReserve + 1);
+      } else {
+        player.hp = Math.min(MAX_HP, player.hp + 1);
+      }
     }
   }
 

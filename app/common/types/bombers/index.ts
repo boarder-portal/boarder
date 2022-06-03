@@ -11,6 +11,7 @@ export enum EGameClientEvent {
   START_MOVING = 'START_MOVING',
   STOP_MOVING = 'STOP_MOVING',
   PLACE_BOMB = 'PLACE_BOMB',
+  HEAL = 'HEAL',
 }
 
 export enum EGameServerEvent {
@@ -19,6 +20,7 @@ export enum EGameServerEvent {
   BOMBS_EXPLODED = 'BOMBS_EXPLODED',
   WALL_CREATED = 'WALL_CREATED',
   BONUS_CONSUMED = 'BONUS_CONSUMED',
+  PLAYER_HEALED = 'PLAYER_HEALED',
 }
 
 export interface IGameOptions extends ICommonGameOptions {
@@ -53,6 +55,7 @@ export interface IPlayerData {
   maxBombCount: number;
   bombRange: number;
   hp: number;
+  hpReserve: number;
   invincibilityEndsAt: number | null;
 }
 
@@ -163,6 +166,7 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
   [EGameClientEvent.START_MOVING]: EDirection;
   [EGameClientEvent.STOP_MOVING]: undefined;
   [EGameClientEvent.PLACE_BOMB]: undefined;
+  [EGameClientEvent.HEAL]: undefined;
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
@@ -171,6 +175,7 @@ export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
   [EGameServerEvent.BOMBS_EXPLODED]: IBombsExplodedEvent;
   [EGameServerEvent.WALL_CREATED]: IWallCreatedEvent;
   [EGameServerEvent.BONUS_CONSUMED]: IBonusConsumedEvent;
+  [EGameServerEvent.PLAYER_HEALED]: number;
 }
 
 declare module 'common/types/game' {

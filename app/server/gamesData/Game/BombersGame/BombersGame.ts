@@ -154,7 +154,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       });
 
       bombHitPlayers.forEach((playerIndex) => {
-        if (this.players[playerIndex].isInvincible) {
+        if (!this.players[playerIndex].isInvincible) {
           hitPlayers.add(playerIndex);
         }
       });

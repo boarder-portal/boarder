@@ -3,7 +3,7 @@ import pick from 'lodash/pick';
 import { BOMBER_CELL_SIZE, MAX_HP } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EPlayerColor, EDirection, EGameClientEvent, EGameServerEvent, IPlayerData } from 'common/types/bombers';
+import { EDirection, EGameClientEvent, EGameServerEvent, EPlayerColor, IPlayerData } from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -32,6 +32,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   maxBombCount = 1;
   bombRange = 1;
   hp = MAX_HP;
+  hpReserve = 0;
   isInvincible = false;
   invincibilityEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
@@ -129,6 +130,17 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     return occupiedCells.filter(isNotUndefined);
   }
 
+  heal = (): void => {
+    if (!this.hpReserve) {
+      return;
+    }
+
+    this.hpReserve--;
+    this.hp++;
+
+    this.sendSocketEvent(EGameServerEvent.PLAYER_HEALED, this.index);
+  };
+
   isAlive(): boolean {
     return this.hp > 0;
   }
@@ -142,6 +154,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
           this.game.placeBomb(this, this.getCurrentCell());
         }),
+        this.listenForOwnEvent(EGameClientEvent.HEAL, this.heal),
       ]),
     ]);
   }
@@ -222,6 +235,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       'maxBombCount',
       'bombRange',
       'hp',
+      'hpReserve',
       'invincibilityEndsAt',
     ]);
   }

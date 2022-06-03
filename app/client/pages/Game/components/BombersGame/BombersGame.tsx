@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
+import { MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
 import {
@@ -22,12 +23,15 @@ import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 import { now } from 'client/utilities/time';
 
 import Flex from 'client/components/common/Flex/Flex';
+import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
+import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
 
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
+import useAtom from 'client/hooks/useAtom';
 
 import styles from './BombersGame.pcss';
 
@@ -36,13 +40,19 @@ const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
   ArrowDown: EDirection.DOWN,
   ArrowRight: EDirection.RIGHT,
   ArrowLeft: EDirection.LEFT,
+  KeyW: EDirection.UP,
+  KeyS: EDirection.DOWN,
+  KeyD: EDirection.RIGHT,
+  KeyA: EDirection.LEFT,
 };
 
 const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const { io, gameInfo, timeDiff } = props;
 
-  const [players] = useState<IPlayer[]>(gameInfo.players);
+  const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
+
+  const [user] = useAtom('user');
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -56,6 +66,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   );
   const explodedDirectionsRef = useRef(new Set<IExplodedDirection>());
   const pressedDirectionsRef = useRef<EDirection[]>([]);
+
+  const player = useMemo(() => {
+    return players.find(({ login }) => login === user?.login);
+  }, [players, user]);
 
   const sharedDataManager = useMemo(() => {
     return new SharedDataManager({
@@ -77,12 +91,23 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       return;
     }
 
-    const cellSize = getCellScreenSize(containerEl, viewSize);
+    const cellSize = getCellScreenSize(containerEl, viewSize, {
+      width: 252,
+    });
 
     setCanvasSize({
       width: viewSize.width * cellSize,
       height: viewSize.height * cellSize,
     });
+  });
+
+  const refreshPlayersData = useImmutableCallback(() => {
+    setPlayers(
+      players.map((player) => ({
+        ...player,
+        data: { ...playersDataRef.current[player.index] },
+      })),
+    );
   });
 
   useSocket(io, {
@@ -119,6 +144,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         mapRef.current[coords.y][coords.x].object = bonus;
       });
 
+      if (hitPlayers.length > 0) {
+        refreshPlayersData();
+      }
+
       setTimeout(() => {
         hitPlayers.forEach((playerIndex) => {
           playersDataRef.current[playerIndex].invincibilityEndsAt = null;
@@ -142,6 +171,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         playerData.startMovingTimestamp = null;
         playerData.invincibilityEndsAt = null;
       });
+
+      if (deadPlayers.length > 0) {
+        refreshPlayersData();
+      }
     },
     [EGameServerEvent.BONUS_CONSUMED]: ({ coords, playerIndex }) => {
       const cell = mapRef.current[coords.y][coords.x];
@@ -153,17 +186,31 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
         cell.object = null;
       }
+
+      if (playerIndex === player?.index) {
+        refreshPlayersData();
+      }
+    },
+    [EGameServerEvent.PLAYER_HEALED]: (playerIndex) => {
+      const playerData = playersDataRef.current[playerIndex];
+
+      playerData.hpReserve--;
+      playerData.hp++;
+
+      if (playerIndex === player?.index) {
+        refreshPlayersData();
+      }
     },
   });
 
   useGlobalListener('keydown', document, (e) => {
-    if (e.code === 'Space' || e.key === 'v') {
+    if (e.code === 'Space' || e.code === 'KeyV') {
       io.emit(EGameClientEvent.PLACE_BOMB);
 
       return;
     }
 
-    const direction = DIRECTIONS_MAP[e.key];
+    const direction = DIRECTIONS_MAP[e.code];
     const pressedDirections = pressedDirectionsRef.current;
 
     if (direction && !pressedDirections.includes(direction)) {
@@ -176,6 +223,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keyup', document, (e) => {
+    if (e.code === 'KeyH') {
+      io.emit(EGameClientEvent.HEAL);
+
+      return;
+    }
+
     const direction = DIRECTIONS_MAP[e.code];
     const pressedDirections = pressedDirectionsRef.current;
 
@@ -241,13 +294,34 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   }, [changeCellSize, gameInfo]);
 
   return (
-    <Flex className={styles.root} justifyContent="center" alignItems="center" direction="column" ref={containerRef}>
+    <Flex className={styles.root} justifyContent="center" alignItems="stretch" ref={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
         width={viewSize.width * CELL_SIZE}
         height={viewSize.height * CELL_SIZE}
         ref={canvasRef}
       />
+
+      <Flex className={styles.rightPanel} direction="column" between={4}>
+        <Flex direction="column" between={1}>
+          {players.map((player) => (
+            <Player key={player.login} player={player} />
+          ))}
+        </Flex>
+
+        {player && (
+          <Flex direction="column" between={2}>
+            <Stat label="Скорость" value={player.data.speed} maxValue={MAX_SPEED} />
+            <Stat label="Количество бомб" value={player.data.maxBombCount} maxValue={MAX_BOMB_COUNT} />
+            <Stat label="Радиус взрыва" value={player.data.bombRange} maxValue={MAX_BOMB_RANGE} />
+            <Stat
+              label={`HP${player.data.hpReserve > 0 ? ` (+${player.data.hpReserve})` : ''}`}
+              value={player.data.hp}
+              maxValue={MAX_HP}
+            />
+          </Flex>
+        )}
+      </Flex>
     </Flex>
   );
 };
