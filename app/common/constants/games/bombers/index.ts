@@ -32,4 +32,11 @@ export const SPEED_INCREMENT = 0.3;
 
 export const MAP_NAMES: Record<EMap, string> = {
   [EMap.CHESS]: 'Шахматы',
+  [EMap.HALL]: 'Комната',
+  [EMap.BUG]: 'Жук',
+  [EMap.BUNKER]: 'Бункер',
+  [EMap.BUTTERFLY]: 'Бабочка',
+  [EMap.CABINET]: 'Шкаф',
+  [EMap.RACE]: 'Гонка',
+  [EMap.LIBRARY]: 'Библиотека',
 };

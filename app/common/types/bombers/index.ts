@@ -108,6 +108,13 @@ export type TMap = ICell[][];
 
 export enum EMap {
   CHESS = 'CHESS',
+  HALL = 'HALL',
+  BUG = 'BUG',
+  BUNKER = 'BUNKER',
+  BUTTERFLY = 'BUTTERFLY',
+  CABINET = 'CABINET',
+  RACE = 'RACE',
+  LIBRARY = 'LIBRARY',
 }
 
 export interface IGame {
