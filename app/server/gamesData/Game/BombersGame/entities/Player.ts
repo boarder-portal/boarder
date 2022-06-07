@@ -131,7 +131,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   heal = (): void => {
-    if (!this.hpReserve) {
+    if (!this.hpReserve || this.hp === MAX_HP) {
       return;
     }
 

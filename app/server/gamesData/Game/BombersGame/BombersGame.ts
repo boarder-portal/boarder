@@ -9,6 +9,7 @@ import {
   EBonus,
   EDirection,
   EGameServerEvent,
+  EMap,
   EObject,
   EPlayerColor,
   IExplodedBomb,
@@ -24,6 +25,7 @@ import { TGenerator, TParentOrContext } from 'server/gamesData/Game/utilities/En
 import { now } from 'server/utilities/time';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
+import { getRandomElement } from 'common/utilities/random';
 
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
@@ -44,6 +46,8 @@ export type TServerMap = IServerCell[][];
 type TMapLayout = (EObject.BOX | EObject.WALL | number | null)[][];
 
 const FRAME_DURATION = 1000 / 60;
+
+const ALL_MAPS = Object.values(EMap);
 
 export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   players: Player[] = [];
@@ -257,28 +261,25 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   getMapLayout(): TMapLayout {
-    const stringLayout = MAPS[this.options.mapType];
+    const stringLayout = MAPS[this.options.mapType ?? getRandomElement(ALL_MAPS)];
 
     return stringLayout
       .trim()
       .split('\n')
       .map((row) =>
-        row
-          .trim()
-          .split('')
-          .map((char) => {
-            if (char === 'w') {
-              return EObject.WALL;
-            }
+        [...row.trim()].map((char) => {
+          if (char === 'w') {
+            return EObject.WALL;
+          }
 
-            if (char === 'b') {
-              return EObject.BOX;
-            }
+          if (char === 'b') {
+            return EObject.BOX;
+          }
 
-            const number = Number(char);
+          const number = Number(char);
 
-            return Number.isNaN(number) ? null : number;
-          }),
+          return Number.isNaN(number) ? null : number;
+        }),
       );
   }
 

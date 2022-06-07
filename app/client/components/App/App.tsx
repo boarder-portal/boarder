@@ -1,8 +1,6 @@
 import '../../styles/reset.pcss';
-import { ComponentType, FC } from 'react';
-import { Switch, Route, match } from 'react-router-dom';
-
-import { EGame } from 'common/types/game';
+import { FC } from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import Header from 'client/components/Header/Header';
 
@@ -10,29 +8,9 @@ import Home from 'client/pages/Home/Home';
 import Registration from 'client/pages/Registration/Registration';
 import Login from 'client/pages/Login/Login';
 import Game from 'client/pages/Game/Game';
-import PexesoLobby from 'client/pages/games/pexeso/PexesoLobby/PexesoLobby';
-import SurvivalOnlineLobby from 'client/pages/games/survivalOnline/SurvivalOnlineLobby/SurvivalOnlineLobby';
-import SetLobby from 'client/pages/games/set/SetLobby/SetLobby';
-import OnitamaLobby from 'client/pages/games/onitama/OnitamaLobby/OnitamaLobby';
-import CarcassonneLobby from 'client/pages/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
-import SevenWondersLobby from 'client/pages/games/sevenWonders/SevenWonders/SevenWondersLobby';
-import HeartsLobby from 'client/pages/games/hearts/Hearts/HeartsLobby';
-import BombersLobby from 'client/pages/games/bombers/BombersLobby/BombersLobby';
-import MachiKoroLobby from 'client/pages/games/machiKoro/MachiKoroLobby/MachiKoroLobby';
+import Lobby from 'client/pages/Lobby/Lobby';
 
 import styles from './App.pcss';
-
-const LOBBIES: Record<EGame, ComponentType> = {
-  [EGame.PEXESO]: PexesoLobby,
-  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineLobby,
-  [EGame.SET]: SetLobby,
-  [EGame.ONITAMA]: OnitamaLobby,
-  [EGame.CARCASSONNE]: CarcassonneLobby,
-  [EGame.SEVEN_WONDERS]: SevenWondersLobby,
-  [EGame.HEARTS]: HeartsLobby,
-  [EGame.BOMBERS]: BombersLobby,
-  [EGame.MACHI_KORO]: MachiKoroLobby,
-};
 
 const App: FC = () => {
   return (
@@ -53,17 +31,8 @@ const App: FC = () => {
             <Login />
           </Route>
 
-          <Route exact path={`/${EGame.PEXESO}/lobby`}>
-            <PexesoLobby />
-          </Route>
-
           <Route exact path="/:game/lobby">
-            {/* TODO: move to separate component & IMPORTANT: change game generation */}
-            {(props: { match: match<{ game: EGame }> }) => {
-              const Lobby = LOBBIES[props.match.params.game];
-
-              return <Lobby />;
-            }}
+            <Lobby />
           </Route>
 
           <Route exact path="/:game/game/:gameId">

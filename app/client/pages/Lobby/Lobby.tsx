@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { ComponentType, useCallback, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import times from 'lodash/times';
 
 import { GAME_NAMES } from 'common/constants/games/common';
@@ -8,11 +8,15 @@ import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
 import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
 
-import LobbyGame from 'client/components/Lobby/components/Game/Game';
+import LobbyGame from 'client/pages/Lobby/components/Game/Game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 import Select from 'client/components/common/Select/Select';
+import PexesoCreateGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoCreateGameOptions/PexesoCreateGameOptions';
+import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
+import BombersCreateGameOptions from 'client/pages/games/bombers/BombersLobby/components/BombersCreateGameOptions/BombersCreateGameOptions';
+import BombersGameOptions from 'client/pages/games/bombers/BombersLobby/components/BombersGameOptions/BombersGameOptions';
 
 import useGameOptions from 'client/hooks/useGameOptions';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
@@ -25,21 +29,31 @@ export type TChangeOptions<Game extends EGame> = <K extends keyof TGameOptions<G
   optionsChange: Pick<TGameOptions<Game>, K>,
 ) => void;
 
-export type TRenderOptions<Game extends EGame> = (
-  options: TGameOptions<Game>,
-  changeOptions: TChangeOptions<Game>,
-) => React.ReactNode;
-
-export type TRenderGameOptions<Game extends EGame> = (options: TGameOptions<Game>) => React.ReactNode;
-
-interface ILobbyProps<Game extends EGame> {
-  game: Game;
-  renderOptions?: TRenderOptions<Game>;
-  renderGameOptions?: TRenderGameOptions<Game>;
+export interface ICreateGameOptionsProps<Game extends EGame> {
+  options: TGameOptions<Game>;
+  changeOptions: TChangeOptions<Game>;
 }
 
-const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
-  const { game, renderOptions, renderGameOptions } = props;
+export interface IGameOptionsProps<Game extends EGame> {
+  options: TGameOptions<Game>;
+}
+
+const CREATE_GAME_OPTIONS_MAP: Partial<{
+  [Game in EGame]: ComponentType<ICreateGameOptionsProps<Game>>;
+}> = {
+  [EGame.PEXESO]: PexesoCreateGameOptions,
+  [EGame.BOMBERS]: BombersCreateGameOptions,
+};
+
+const GAME_OPTIONS_MAP: Partial<{
+  [Game in EGame]: ComponentType<IGameOptionsProps<Game>>;
+}> = {
+  [EGame.PEXESO]: PexesoGameOptions,
+  [EGame.BOMBERS]: BombersGameOptions,
+};
+
+const Lobby = <Game extends EGame>() => {
+  const { game } = useParams<{ game: Game; gameId: string }>();
 
   const [lobby, setLobby] = useState<ILobbyUpdateEvent<Game> | null>(null);
 
@@ -92,15 +106,16 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
     [changeOptions],
   );
 
-  const optionsNode = useMemo(() => {
-    return renderOptions?.(options, changeOptions);
-  }, [changeOptions, options, renderOptions]);
-
   if (!lobby) {
     return null;
   }
 
   const { minPlayersCount, maxPlayersCount } = DEFAULT_OPTIONS[game];
+
+  const CreateGameOptions = CREATE_GAME_OPTIONS_MAP[game] as ComponentType<ICreateGameOptionsProps<Game>> | undefined;
+  const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<IGameOptionsProps<Game>>;
+
+  const showPlayerCounts = minPlayersCount !== maxPlayersCount;
 
   return (
     <div>
@@ -115,7 +130,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
               <LobbyGame
                 key={game.id}
                 title={game.name}
-                options={renderGameOptions?.(game.options)}
+                options={GameOptions && <GameOptions options={game.options} />}
                 players={game.players.length}
                 maxPlayers={game.options.maxPlayersCount}
                 hasStarted={game.hasStarted}
@@ -129,10 +144,10 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
           )}
         </Flex>
 
-        <Flex className={styles.options} direction="column" between={4}>
-          <Text size="xxl">Настройки игры</Text>
+        <Flex className={styles.options} direction="column" between={3}>
+          {(showPlayerCounts || CreateGameOptions) && <Text size="xxl">Настройки игры</Text>}
 
-          {minPlayersCount !== maxPlayersCount && (
+          {showPlayerCounts && (
             <>
               <Select
                 label="Минимальное количество игроков"
@@ -166,7 +181,7 @@ const Lobby = <Game extends EGame>(props: ILobbyProps<Game>) => {
             </>
           )}
 
-          {optionsNode}
+          {CreateGameOptions && <CreateGameOptions options={options} changeOptions={changeOptions} />}
 
           <Button onClick={createGame}>Создать игру</Button>
         </Flex>

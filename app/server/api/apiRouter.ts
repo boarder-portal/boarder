@@ -1,4 +1,5 @@
-import express, { Request } from 'express';
+import { Request } from 'express';
+import PromiseRouter from 'express-promise-router';
 import bodyParser from 'body-parser';
 
 import { ILoginParams, IRegisterParams } from 'common/types/requestParams';
@@ -6,7 +7,7 @@ import { ILoginParams, IRegisterParams } from 'common/types/requestParams';
 import getDB from 'server/db/getDB';
 import writeDB from 'server/db/writeDB';
 
-const apiRouter = express.Router();
+const apiRouter = PromiseRouter();
 
 apiRouter
   .use(bodyParser.json())

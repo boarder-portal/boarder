@@ -1,281 +1,47 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { FC, memo } from 'react';
 
-import {
-  DIFFERENT_CARDS_COUNTS,
-  LAYOUT_NAMES,
-  MATCHING_CARDS_COUNTS,
-  SHUFFLE_AFTER_MOVES_COUNTS,
-  SHUFFLE_CARDS_COUNTS,
-} from 'common/constants/games/pexeso';
-
-import { EFieldLayout, ESet, EShuffleType, IGameOptions, TShuffleOptions } from 'common/types/pexeso';
 import { EGame } from 'common/types/game';
 
-import { arePexesoOptionsValid } from 'common/utilities/pexeso';
-
 import Flex from 'client/components/common/Flex/Flex';
-import { TChangeOptions } from 'client/components/Lobby/Lobby';
-import Select from 'client/components/common/Select/Select';
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
-import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
+import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 
-import styles from './PexesoGameOptions.pcss';
+import { IGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-interface IPexesoGameOptionsProps {
-  options: IGameOptions;
-  onOptionsChange: TChangeOptions<EGame.PEXESO>;
-}
-
-const PexesoGameOptions: React.FC<IPexesoGameOptionsProps> = (props) => {
-  const { options, onOptionsChange } = props;
-
-  const [shuffleCardsCount, setShuffleCardsCount] = useState(2);
-  const lastShuffleOptions = useRef<NonNullable<TShuffleOptions>>(
-    options.shuffleOptions || {
-      type: EShuffleType.TURNED,
-      afterMovesCount: 1,
-    },
-  );
-
-  const areOptionsValid = <K extends keyof IGameOptions>(values: Pick<IGameOptions, K>): boolean => {
-    return arePexesoOptionsValid({
-      ...options,
-      ...values,
-    });
-  };
-
-  const handleSetChange = useCallback(
-    (updatedSet: ESet) => {
-      onOptionsChange({
-        set: updatedSet,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleMatchingCardsCountChange = useCallback(
-    (matchingCardsCount: number) => {
-      onOptionsChange({
-        matchingCardsCount,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleDifferentCardsCountChange = useCallback(
-    (differentCardsCount: number) => {
-      onOptionsChange({
-        differentCardsCount,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleLayoutChange = useCallback(
-    (layout: EFieldLayout) => {
-      onOptionsChange({
-        layout,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handlePickRandomImagesChange = useCallback(
-    (pickRandomImages: boolean) => {
-      onOptionsChange({
-        pickRandomImages,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleUseImageVariantsChange = useCallback(
-    (useImageVariants: boolean) => {
-      onOptionsChange({
-        useImageVariants,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleShuffleCheckboxChange = useCallback(
-    (shuffle: boolean) => {
-      onOptionsChange({
-        shuffleOptions: shuffle ? lastShuffleOptions.current : null,
-      });
-    },
-    [onOptionsChange],
-  );
-
-  const handleShuffleAfterMovesCountChange = useCallback(
-    (afterMovesCount) => {
-      if (!options.shuffleOptions) {
-        return;
-      }
-
-      onOptionsChange({
-        shuffleOptions: {
-          ...options.shuffleOptions,
-          afterMovesCount,
-        },
-      });
-    },
-    [onOptionsChange, options],
-  );
-
-  const handleShuffleTypeChange = useCallback(
-    (type: EShuffleType) => {
-      let newShuffleOptions: NonNullable<TShuffleOptions>;
-
-      if (type === EShuffleType.TURNED) {
-        newShuffleOptions = {
-          type,
-          afterMovesCount: lastShuffleOptions.current.afterMovesCount,
-        };
-      } else {
-        newShuffleOptions = {
-          type,
-          afterMovesCount: lastShuffleOptions.current.afterMovesCount,
-          cardsCount: shuffleCardsCount,
-        };
-      }
-
-      lastShuffleOptions.current = newShuffleOptions;
-
-      onOptionsChange({
-        shuffleOptions: newShuffleOptions,
-      });
-    },
-    [onOptionsChange, shuffleCardsCount],
-  );
-
-  const handleShuffleCardsCountChange = useCallback(
-    (cardsCount: number) => {
-      if (!options.shuffleOptions) {
-        return;
-      }
-
-      setShuffleCardsCount(cardsCount);
-      onOptionsChange({
-        shuffleOptions: {
-          type: EShuffleType.RANDOM,
-          afterMovesCount: options.shuffleOptions.afterMovesCount,
-          cardsCount,
-        },
-      });
-    },
-    [onOptionsChange, options],
-  );
+const PexesoGameOptions: FC<IGameOptionsProps<EGame.PEXESO>> = (props) => {
+  const { options } = props;
 
   return (
-    <Flex className={styles.root} direction="column" between={3}>
-      <Select
-        label="Сет"
-        value={options.set}
-        options={Object.values(ESet).map((set) => ({
-          value: set,
-          text: set,
-          disabled: !areOptionsValid({ set }),
-        }))}
-        onChange={handleSetChange}
-      />
+    <Flex>
+      {options.set}
+      <>
+        <DotSeparator />
 
-      <Select
-        label="Количество совпадающих карточек"
-        value={options.matchingCardsCount}
-        options={MATCHING_CARDS_COUNTS.map((matchingCardsCount) => ({
-          value: matchingCardsCount,
-          text: matchingCardsCount,
-          disabled: !areOptionsValid({ matchingCardsCount }),
-        }))}
-        onChange={handleMatchingCardsCountChange}
-      />
+        {`по ${options.matchingCardsCount} совпадающих`}
+      </>
 
-      <Select
-        label="Количество разных карточек"
-        value={options.differentCardsCount}
-        options={DIFFERENT_CARDS_COUNTS.map((differentCardsCount) => ({
-          value: differentCardsCount,
-          text: differentCardsCount,
-          disabled: !areOptionsValid({ differentCardsCount }),
-        }))}
-        onChange={handleDifferentCardsCountChange}
-      />
+      {options.differentCardsCount && (
+        <>
+          <DotSeparator />
 
-      <Select
-        label="Расположение карточек"
-        value={options.layout}
-        options={Object.values(EFieldLayout).map((layout) => ({
-          value: layout,
-          text: LAYOUT_NAMES[layout],
-          disabled: !areOptionsValid({ layout }),
-        }))}
-        onChange={handleLayoutChange}
-      />
+          {`${options.differentCardsCount} разных`}
+        </>
+      )}
 
-      <Checkbox label="Случайные картинки" checked={options.pickRandomImages} onChange={handlePickRandomImagesChange} />
+      {options.pickRandomImages && (
+        <>
+          <DotSeparator />
+          случайные
+        </>
+      )}
 
-      <Checkbox
-        label="Вариативные карточки"
-        checked={options.useImageVariants}
-        disabled={!areOptionsValid({ useImageVariants: !options.useImageVariants })}
-        onChange={handleUseImageVariantsChange}
-      />
-
-      <Checkbox label="Перемешивать" checked={!!options.shuffleOptions} onChange={handleShuffleCheckboxChange} />
-
-      {options.shuffleOptions && (
-        <div className={styles.shuffleOptions}>
-          <RadioGroup
-            value={options.shuffleOptions.type}
-            options={[
-              {
-                text: 'перевернутые только что карточки',
-                value: EShuffleType.TURNED,
-              },
-              {
-                text: (
-                  <>
-                    случайные{' '}
-                    <Select
-                      className={styles.shuffleCardsCountSelect}
-                      value={shuffleCardsCount}
-                      options={SHUFFLE_CARDS_COUNTS.map((cardsCount) => ({
-                        value: cardsCount,
-                        text: cardsCount,
-                      }))}
-                      onChange={handleShuffleCardsCountChange}
-                    />{' '}
-                    {shuffleCardsCount > 4 ? 'карточек' : 'карточки'}
-                  </>
-                ),
-                value: EShuffleType.RANDOM,
-              },
-            ]}
-            onChange={handleShuffleTypeChange}
-          />
-
-          <div className={styles.shuffleAfterMovesCount}>
-            {options.shuffleOptions.afterMovesCount === 1 ? 'каждый' : 'каждые'}{' '}
-            <Select
-              className={styles.shuffleAfterMovesCountSelect}
-              value={options.shuffleOptions.afterMovesCount}
-              options={SHUFFLE_AFTER_MOVES_COUNTS.map((afterMovesCount) => ({
-                value: afterMovesCount,
-                text: afterMovesCount,
-              }))}
-              onChange={handleShuffleAfterMovesCountChange}
-            />{' '}
-            {options.shuffleOptions.afterMovesCount === 1
-              ? 'ход'
-              : options.shuffleOptions.afterMovesCount > 4
-              ? 'ходов'
-              : 'хода'}
-          </div>
-        </div>
+      {options.useImageVariants && (
+        <>
+          <DotSeparator />
+          вариативные
+        </>
       )}
     </Flex>
   );
 };
 
-export default React.memo(PexesoGameOptions);
+export default memo(PexesoGameOptions);

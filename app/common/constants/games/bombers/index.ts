@@ -5,7 +5,7 @@ export { default as MAPS } from './maps';
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   minPlayersCount: 1,
   maxPlayersCount: 4,
-  mapType: EMap.DEFAULT,
+  mapType: null,
 };
 
 export const EXPLOSION_TICK_DURATION = 1000;
@@ -29,3 +29,7 @@ export const MAX_HP_RESERVE = 1;
 export const BOMBER_CELL_SIZE = 0.7;
 export const CELLS_PER_SECOND = 1.5;
 export const SPEED_INCREMENT = 0.3;
+
+export const MAP_NAMES: Record<EMap, string> = {
+  [EMap.CHESS]: 'Шахматы',
+};

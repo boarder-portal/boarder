@@ -24,7 +24,7 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
   [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v1',
   [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
-  [EGame.BOMBERS]: 'game/bombers/defaultOptions/v0.1',
+  [EGame.BOMBERS]: 'game/bombers/defaultOptions/v1',
   [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
 } as const;
 

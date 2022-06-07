@@ -8,14 +8,12 @@ import addGameEnumField from './utilities/addGameEnumField';
 import addLocalStorageOptionsKey from './utilities/addLocalStorageOptionsKey';
 import addGameName from './utilities/addGameName';
 import addDefaultOptions from './utilities/addDefaultOptions';
-import addLobby from './utilities/addLobby';
 import addGame from './utilities/addGame';
 import addGameEntity from './utilities/addGameEntity';
 import addConstants from './utilities/addConstants';
 import addGameComponent from './utilities/addGameComponent';
 import addGameStyles from './utilities/addGameStyles';
 import addGameEntityClass from './utilities/addGameEntityClass';
-import addLobbyComponent from './utilities/addLobbyComponent';
 import addTypes from './utilities/addTypes';
 
 const [gameName] = process.argv.slice(2);
@@ -63,14 +61,12 @@ export interface IGenerateOptions {
     addLocalStorageOptionsKey(options),
     addGameName(options),
     addDefaultOptions(options),
-    addLobby(options),
     addGame(options),
     addGameEntity(options),
     addConstants(options),
     addGameComponent(options),
     addGameEntityClass(options),
     addGameStyles(options),
-    addLobbyComponent(options),
     addTypes(options),
   ]);
 })().catch((err) => {

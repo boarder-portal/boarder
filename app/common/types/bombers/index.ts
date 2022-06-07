@@ -24,7 +24,7 @@ export enum EGameServerEvent {
 }
 
 export interface IGameOptions extends ICommonGameOptions {
-  mapType: EMap;
+  mapType: EMap | null;
 }
 
 export enum EDirection {
@@ -107,7 +107,7 @@ export interface ICell {
 export type TMap = ICell[][];
 
 export enum EMap {
-  DEFAULT = 'DEFAULT',
+  CHESS = 'CHESS',
 }
 
 export interface IGame {
