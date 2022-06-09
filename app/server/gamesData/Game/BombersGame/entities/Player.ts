@@ -67,8 +67,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       yield* this.delay(0);
     }
 
-    this.startMovingTimestamp = null;
-    this.invincibilityEndsAt = null;
+    this.disable();
   }
 
   canPlaceBombs(): boolean {
