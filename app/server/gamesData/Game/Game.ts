@@ -311,7 +311,6 @@ class Game<Game extends EGame> {
     listener: TPlayerClientEventListener<Game, Event>,
     playerIndex?: number,
   ): () => void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const game = this;
 
     const playerListener = function (this: TGameServerSocket<Game>, data: TGameClientEventData<Game, Event>) {

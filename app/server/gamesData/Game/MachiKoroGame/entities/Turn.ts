@@ -19,7 +19,6 @@ import {
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import getCard from 'common/utilities/machiKoro/getCard';
-import isLandmark from 'common/utilities/machiKoro/isLandmark';
 import getLandmark from 'common/utilities/machiKoro/getLandmark';
 
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
@@ -175,19 +174,14 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
 
       this.sendSocketEvent(EGameServerEvent.CARDS_EFFECTS_RESULTS, { players: this.game.getGamePlayers() });
 
-      const data = yield* this.race([
-        this.waitForPlayerSocketEvent(EGameClientEvent.BUILD_CARD, {
+      const { event, data } = yield* this.waitForPlayerSocketEvents(
+        [EGameClientEvent.BUILD_CARD, EGameClientEvent.BUILD_LANDMARK, EGameClientEvent.END_TURN],
+        {
           playerIndex: this.game.activePlayerIndex,
-        }),
-        this.waitForPlayerSocketEvent(EGameClientEvent.BUILD_LANDMARK, {
-          playerIndex: this.game.activePlayerIndex,
-        }),
-        this.waitForPlayerSocketEvent(EGameClientEvent.END_TURN, {
-          playerIndex: this.game.activePlayerIndex,
-        }),
-      ]);
+        },
+      );
 
-      if (!data) {
+      if (event === EGameClientEvent.END_TURN) {
         if (withAirport) {
           activePlayer.coins += 10;
 
@@ -197,7 +191,7 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         continue;
       }
 
-      if (isLandmark(data)) {
+      if (event === EGameClientEvent.BUILD_LANDMARK) {
         const landmarkId = data;
 
         const landmark = getLandmark(landmarkId);

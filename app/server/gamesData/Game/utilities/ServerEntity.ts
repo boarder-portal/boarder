@@ -9,7 +9,7 @@ import {
 } from 'common/types/game';
 import { IGamePlayer } from 'common/types';
 
-import Entity, { TEffectGenerator } from 'server/gamesData/Game/utilities/Entity';
+import Entity, { TEffectGenerator, TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import { ISendSocketEventOptions } from 'server/gamesData/Game/Game';
 
@@ -17,16 +17,37 @@ export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TG
   validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
 }
 
+export interface IWaitForSocketEventsOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
+  validate?(event: Event, data: unknown): asserts data is TGameClientEventData<Game, Event>;
+}
+
 export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameClientEvent<Game>> {
   data: TGameClientEventData<Game, Event>;
   playerIndex: number;
 }
 
+export type IWaitForSocketEventsResult<Game extends EGame, Event extends TGameClientEvent<Game>> = {
+  [E in Event]: {
+    event: E;
+  } & IWaitForSocketEventResult<Game, E>;
+}[Event];
+
 export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
   extends IWaitForSocketEventOptions<Game, Event> {
   playerIndex: number;
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
 }
+
+export interface IWaitForPlayerSocketEventsOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
+  extends IWaitForSocketEventsOptions<Game, Event> {
+  playerIndex: number;
+}
+
+export type TWaitForPlayerSocketEventsResult<Game extends EGame, Event extends TGameClientEvent<Game>> = {
+  [E in Event]: {
+    event: E;
+    data: TGameClientEventData<Game, E>;
+  };
+}[Event];
 
 export default abstract class ServerEntity<Game extends EGame, Result = unknown> extends Entity<Game, Result> {
   static #validate(data: unknown, validator?: (data: unknown) => unknown): boolean {
@@ -138,6 +159,27 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
+  waitForPlayerSocketEvents<Event extends TGameClientEvent<Game>>(
+    events: Event[],
+    options: IWaitForPlayerSocketEventsOptions<Game, Event>,
+  ): TEffectGenerator<TWaitForPlayerSocketEventsResult<Game, Event>> {
+    const entity = this;
+
+    return this.race(
+      events.map(function* (event): TGenerator<TWaitForPlayerSocketEventsResult<Game, Event>> {
+        return {
+          event,
+          data: yield* entity.waitForPlayerSocketEvent<Event>(event, {
+            ...options,
+            validate: (data) => {
+              options?.validate?.(event, data);
+            },
+          }),
+        };
+      }),
+    );
+  }
+
   *waitForSocketEvent<Event extends TGameClientEvent<Game>>(
     event: Event,
     options?: IWaitForSocketEventOptions<Game, Event>,
@@ -152,5 +194,26 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
         }
       });
     };
+  }
+
+  waitForSocketEvents<Event extends TGameClientEvent<Game>>(
+    events: Event[],
+    options?: IWaitForSocketEventsOptions<Game, Event>,
+  ): TEffectGenerator<IWaitForSocketEventsResult<Game, Event>> {
+    const entity = this;
+
+    return this.race(
+      events.map(function* (event): TGenerator<IWaitForSocketEventsResult<Game, Event>> {
+        return {
+          event,
+          ...(yield* entity.waitForSocketEvent<Event>(event, {
+            ...options,
+            validate: (data) => {
+              options?.validate?.(event, data);
+            },
+          })),
+        };
+      }),
+    );
   }
 }

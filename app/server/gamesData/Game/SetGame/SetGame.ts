@@ -61,17 +61,21 @@ export default class SetGame extends GameEntity<EGame.SET> {
     this.cardsStack = shuffle(notShuffledCardsStack);
 
     while (true) {
-      const { type, value } = yield* this.race({
-        sendSet: this.waitForSocketEvent(EGameClientEvent.SEND_SET, {
-          validate: this.validateSendSetEvent,
-        }),
-        sendNoSet: this.waitForSocketEvent(EGameClientEvent.SEND_NO_SET),
-      });
+      const { event, data, playerIndex } = yield* this.waitForSocketEvents(
+        [EGameClientEvent.SEND_SET, EGameClientEvent.SEND_NO_SET],
+        {
+          validate: (event, data) => {
+            if (event === EGameClientEvent.SEND_SET) {
+              this.validateSendSetEvent(data);
+            }
+          },
+        },
+      );
 
-      const playerData = this.playersData[value.playerIndex];
+      const playerData = this.playersData[playerIndex];
 
-      if (type === 'sendSet') {
-        const { cardsIds } = value.data;
+      if (event === EGameClientEvent.SEND_SET) {
+        const { cardsIds } = data;
 
         const cards = cardsIds
           .map((cardId) => this.cardsStack.find((card) => card.id === cardId))
@@ -139,7 +143,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
     };
   }
 
-  validateSendSetEvent = (event: unknown): asserts event is ISendSetEvent => {
+  validateSendSetEvent(event: unknown): asserts event is ISendSetEvent {
     if (!event || typeof event !== 'object') {
       throw new Error('Wrong event object');
     }
@@ -153,5 +157,5 @@ export default class SetGame extends GameEntity<EGame.SET> {
     if (!isArray(cardsIds) || !cardsIds.every(isNumber)) {
       throw new Error('Wrong cardIds property');
     }
-  };
+  }
 }

@@ -37,9 +37,9 @@ export default class Turn extends ServerEntity<EGame.SEVEN_WONDERS, number[]> {
   *lifecycle(): TGenerator<number[]> {
     while (this.isWaitingForActions()) {
       while (this.isWaitingForActions()) {
-        const { data: event, playerIndex } = yield* this.race([
-          this.waitForSocketEvent(EGameClientEvent.EXECUTE_ACTION),
-          this.waitForSocketEvent(EGameClientEvent.CANCEL_ACTION),
+        const { data: event, playerIndex } = yield* this.waitForSocketEvents([
+          EGameClientEvent.EXECUTE_ACTION,
+          EGameClientEvent.CANCEL_ACTION,
         ]);
 
         this.playersData[playerIndex].chosenActionEvent = event ?? null;
