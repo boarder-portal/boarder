@@ -4,18 +4,17 @@ import shuffle from 'lodash/shuffle';
 import { EGame } from 'common/types/game';
 import { ECardType, EGameClientEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 import { equalsCoords } from 'common/utilities/coords';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 const ALL_CARDS = Object.values(ECardType);
 
-export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
+export default class OnitamaGame extends TurnGameEntity<EGame.ONITAMA> {
   playersData: IPlayerData[] = this.getPlayersData((playerIndex) => ({
     color: playerIndex === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
     cards: [],
   }));
-  activePlayerIndex = 0;
   board: TBoard = [
     times(5, (index) => ({ color: EPlayerColor.BLUE, isMaster: index === 2 })),
     times(5, () => null),
@@ -64,7 +63,7 @@ export default class OnitamaGame extends GameEntity<EGame.ONITAMA> {
         break;
       }
 
-      this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
+      this.passTurn();
 
       this.sendGameInfo();
     }

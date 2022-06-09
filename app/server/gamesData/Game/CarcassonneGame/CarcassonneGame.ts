@@ -25,7 +25,7 @@ import {
 } from 'common/types/carcassonne';
 import { ICoords } from 'common/types';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -61,7 +61,7 @@ interface IAttachPlayerCardOptions {
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
+export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
   playersData: IPlayerData[] = this.getPlayersData(() => ({
     color: EPlayerColor.RED,
     score: [],
@@ -79,7 +79,6 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
     },
     lastMoves: [],
   }));
-  activePlayerIndex = 0;
   deck: ICard[] = shuffle(
     cloneDeep(ALL_CARDS)
       .map((card) => times(card.count, () => card))
@@ -128,7 +127,7 @@ export default class CarcassonneGame extends GameEntity<EGame.CARCASSONNE> {
         activePlayerData.lastMoves = [];
       }
 
-      this.activePlayerIndex = this.getPlayerIndexWithCards((this.activePlayerIndex + 1) % this.playersCount);
+      this.activePlayerIndex = this.getPlayerIndexWithCards(this.getNextPlayerIndex());
     }
 
     this.turn = null;

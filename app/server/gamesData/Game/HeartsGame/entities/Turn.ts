@@ -3,7 +3,7 @@ import { ICard } from 'common/types/cards';
 import { EGameClientEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
 
@@ -19,23 +19,24 @@ export interface ITurnOptions {
   startPlayerIndex: number;
 }
 
-export default class Turn extends ServerEntity<EGame.HEARTS, ITurnResult> {
+export default class Turn extends TurnEntity<EGame.HEARTS, ITurnResult> {
   game: HeartsGame;
   hand: Hand;
 
   playersData: ITurnPlayerData[];
   startPlayerIndex: number;
-  activePlayerIndex: number;
 
   constructor(hand: Hand, options: ITurnOptions) {
-    super(hand);
+    super(hand, {
+      activePlayerIndex: options.startPlayerIndex,
+    });
 
     this.game = hand.game;
     this.hand = hand;
     this.playersData = this.getPlayersData(() => ({
       playedCard: null,
     }));
-    this.activePlayerIndex = this.startPlayerIndex = options.startPlayerIndex;
+    this.startPlayerIndex = options.startPlayerIndex;
   }
 
   *lifecycle(): TGenerator<ITurnResult> {
@@ -53,7 +54,7 @@ export default class Turn extends ServerEntity<EGame.HEARTS, ITurnResult> {
         chosenCardIndex,
       );
 
-      this.activePlayerIndex = i === this.playersCount - 1 ? -1 : (this.activePlayerIndex + 1) % this.playersCount;
+      this.activePlayerIndex = i === this.playersCount - 1 ? -1 : this.getNextPlayerIndex();
 
       this.game.sendGameInfo();
     }
