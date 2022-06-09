@@ -10,6 +10,7 @@ export enum EGame {
   HEARTS = 'hearts',
   BOMBERS = 'bombers',
   MACHI_KORO = 'machiKoro',
+  MAHJONG = 'mahjong',
 }
 
 export interface IGamesParams {}

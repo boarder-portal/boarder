@@ -10,6 +10,7 @@ import { DEFAULT_GAME_OPTIONS as SEVEN_WONDERS_OPTIONS } from 'common/constants/
 import { DEFAULT_GAME_OPTIONS as HEARTS_OPTIONS } from 'common/constants/games/hearts';
 import { DEFAULT_GAME_OPTIONS as BOMBERS_OPTIONS } from 'common/constants/games/bombers';
 import { DEFAULT_GAME_OPTIONS as MACHI_KORO_OPTIONS } from 'common/constants/games/machiKoro';
+import { DEFAULT_GAME_OPTIONS as MAHJONG_OPTIONS } from 'common/constants/games/mahjong';
 
 import { EGame, TGameOptions } from 'common/types/game';
 
@@ -27,6 +28,7 @@ export const DEFAULT_OPTIONS: {
   [EGame.HEARTS]: HEARTS_OPTIONS,
   [EGame.BOMBERS]: BOMBERS_OPTIONS,
   [EGame.MACHI_KORO]: MACHI_KORO_OPTIONS,
+  [EGame.MAHJONG]: MAHJONG_OPTIONS,
 };
 
 export const gameOptionsAtoms = mapValues(mapKeys(EGame), (game) => {

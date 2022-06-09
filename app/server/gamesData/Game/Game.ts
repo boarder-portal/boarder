@@ -38,6 +38,7 @@ import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWonder
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
+import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 
 export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
   sockets: Set<TGameServerSocket<Game>>;
@@ -79,6 +80,7 @@ const GAME_ENTITIES_MAP: {
   [EGame.HEARTS]: HeartsGame,
   [EGame.BOMBERS]: BombersGame,
   [EGame.MACHI_KORO]: MachiKoroGame,
+  [EGame.MAHJONG]: MahjongGame,
 };
 
 export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {
