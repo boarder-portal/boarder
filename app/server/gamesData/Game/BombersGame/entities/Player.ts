@@ -63,8 +63,6 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       if (invincibilityEndsAt) {
         this.spawnTask(this.makeInvincible(invincibilityEndsAt));
       }
-
-      yield* this.delay(0);
     }
 
     this.disable();

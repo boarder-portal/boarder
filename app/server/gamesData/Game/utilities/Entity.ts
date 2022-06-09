@@ -281,8 +281,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   createTrigger<Value = void>(): ITrigger<Value> {
     const callbacks = new Set<(value: Value) => unknown>();
     const trigger = ((value) => {
+      const startingCallbacks = new Set(callbacks);
+
       for (const callback of callbacks) {
-        callback(value);
+        if (startingCallbacks.has(callback)) {
+          callback(value);
+        }
       }
     }) as ITrigger<Value>;
 
