@@ -17,13 +17,11 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
     coins: 3,
     cardsIds: [ECardId.WHEAT_FIELD, ECardId.BAKERY],
     landmarksIds: [ELandmarkId.CITY_HALL],
-    waitingAction: null,
   }));
   deck: ICard[] = shuffle(cloneDeep(ALL_CARDS).flatMap((card) => times(card.count, () => card)));
   board: ECardId[] = [];
 
   turn: Turn | null = null;
-  dices: number[] = [];
 
   *lifecycle(): TGenerator<number> {
     this.fillBoard();
@@ -41,7 +39,7 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
 
       this.sendSocketEvent(EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
 
-      winnerIndex = this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 7);
+      winnerIndex = this.getWinnerIndex();
     }
 
     return winnerIndex;
@@ -62,14 +60,18 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
     }
   }
 
+  getGamePlayers(): IPlayer[] {
+    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+  }
+
+  getWinnerIndex(): number {
+    return this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 7);
+  }
+
   pickCardAndFillBoard(cardId: ECardId): void {
     this.board.splice(this.board.indexOf(cardId), 1);
 
     this.fillBoard();
-  }
-
-  getGamePlayers(): IPlayer[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
   toJSON(): IGame {
@@ -77,8 +79,7 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
       activePlayerIndex: this.activePlayerIndex,
       players: this.getGamePlayers(),
       board: this.board,
-      dices: this.dices,
-      withHarborEffect: Boolean(this.turn?.withHarborEffect),
+      turn: this.turn?.toJSON() ?? null,
     };
   }
 }

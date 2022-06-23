@@ -42,8 +42,9 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const [board, setBoard] = useState(gameInfo.board);
   const [players, setPlayers] = useState(gameInfo.players);
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
-  const [dices, setDices] = useState(gameInfo.dices);
-  const [withHarborEffect, setWithHarborEffect] = useState(gameInfo.withHarborEffect);
+  const [waitingAction, setWaitingAction] = useState(gameInfo.turn?.waitingAction ?? null);
+  const [dices, setDices] = useState(gameInfo.turn?.dices ?? []);
+  const [withHarborEffect, setWithHarborEffect] = useState(gameInfo.turn?.withHarborEffect ?? false);
   const [cardsToSwap, setCardsToSwap] = useState<ICardsToSwap>({ from: null, toCardId: null });
 
   const isActive = useMemo(
@@ -59,7 +60,6 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
     return [...players.slice(playerIndex + 1), ...players.slice(0, playerIndex)];
   }, [player, players]);
 
-  const waitingAction = player?.data.waitingAction;
   const isWaitingForAction = Boolean(waitingAction);
 
   const buildCard = useCallback(
@@ -199,18 +199,15 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
         setDices([]);
       });
     },
-    [EGameServerEvent.WAIT_ACTION]: (data) => {
-      console.log(EGameServerEvent.WAIT_ACTION, data);
+    [EGameServerEvent.WAIT_ACTION]: (waitingAction) => {
+      console.log(EGameServerEvent.WAIT_ACTION, waitingAction);
 
-      setPlayers(data.players);
+      setWaitingAction(waitingAction);
     },
-    [EGameServerEvent.HARBOR_EFFECT]: (data) => {
-      console.log(EGameServerEvent.HARBOR_EFFECT, data);
+    [EGameServerEvent.HARBOR_EFFECT]: (withHarborEffect) => {
+      console.log(EGameServerEvent.HARBOR_EFFECT, withHarborEffect);
 
-      batchedUpdates(() => {
-        setPlayers(data.players);
-        setWithHarborEffect(data.withEffect);
-      });
+      setWithHarborEffect(withHarborEffect);
     },
   });
 
@@ -266,11 +263,11 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
       {player && (
         <StatusAndActions
           className={styles.statusAndActions}
-          player={player}
           activePlayer={players[activePlayerIndex]}
           isPlayerActive={isActive}
           dices={dices}
           withHarborEffect={withHarborEffect}
+          waitingAction={waitingAction}
           winner={gameResult === null ? null : players[gameResult].login}
           onEndTurn={endTurn}
           onSelectDicesCount={chooseDicesCount}

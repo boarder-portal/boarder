@@ -14,6 +14,7 @@ import {
   EPlayerWaitingAction,
   ICard,
   IPlayerData,
+  ITurn,
 } from 'common/types/machiKoro';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -50,14 +51,17 @@ function getCardIdCount(cardsIds: ECardId[], id: ECardId): number {
 }
 
 function getShopsAndRestaurantIncreasedIncome(player: IPlayerData): number {
-  const withShoppingMol = player.landmarksIds.includes(ELandmarkId.SHOPPING_MALL);
+  const withShoppingMall = player.landmarksIds.includes(ELandmarkId.SHOPPING_MALL);
 
-  return withShoppingMol ? 1 : 0;
+  return withShoppingMall ? 1 : 0;
 }
 
 export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
   game: MachiKoroGame;
+
+  dices: number[] = [];
   withHarborEffect = false;
+  waitingAction: EPlayerWaitingAction | null = null;
 
   constructor(game: MachiKoroGame) {
     super(game);
@@ -66,17 +70,16 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
   }
 
   *lifecycle(): TGenerator {
-    let dices: number[] = [];
-
     const activePlayer = this.game.playersData[this.game.activePlayerIndex];
     const withCityHall = activePlayer.landmarksIds.includes(ELandmarkId.CITY_HALL);
     const withHarbor = activePlayer.landmarksIds.includes(ELandmarkId.HARBOR);
     const withAmusementPark = activePlayer.landmarksIds.includes(ELandmarkId.AMUSEMENT_PARK);
     const withAirport = activePlayer.landmarksIds.includes(ELandmarkId.AIRPORT);
-    let canRerollDices = activePlayer.landmarksIds.includes(ELandmarkId.RADIO_TOWER);
 
-    while (dices.length === 0 || (withAmusementPark && dices[0] === dices[1])) {
+    while (this.dices.length === 0 || (withAmusementPark && this.dices[0] === this.dices[1])) {
       this.withHarborEffect = false;
+
+      let canRerollDices = activePlayer.landmarksIds.includes(ELandmarkId.RADIO_TOWER);
 
       while (true) {
         const withTrainStation = activePlayer.landmarksIds.includes(ELandmarkId.TRAIN_STATION);
@@ -84,73 +87,54 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         let dicesCount = 1;
 
         if (withTrainStation) {
-          activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_DICES_COUNT;
-
-          this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-            players: this.game.getGamePlayers(),
-          });
+          this.setWaitingAction(EPlayerWaitingAction.CHOOSE_DICES_COUNT);
 
           dicesCount = yield* this.waitForPlayerSocketEvent(EGameClientEvent.DICES_COUNT, {
             playerIndex: this.game.activePlayerIndex,
           });
 
-          activePlayer.waitingAction = null;
-
-          this.sendSocketEvent(EGameServerEvent.UPDATE_PLAYERS, this.game.getGamePlayers());
+          this.clearWaitingAction();
         }
 
-        this.game.dices = dices = times(dicesCount, () => random(1, 6));
+        this.dices = times(dicesCount, () => random(1, 6));
 
-        this.sendSocketEvent(EGameServerEvent.DICES_ROLL, dices);
+        this.sendSocketEvent(EGameServerEvent.DICES_ROLL, this.dices);
 
-        if (canRerollDices) {
-          activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL;
-
-          this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-            players: this.game.getGamePlayers(),
-          });
-
-          const needToReroll = yield* this.waitForPlayerSocketEvent(EGameClientEvent.NEED_TO_REROLL, {
-            playerIndex: this.game.activePlayerIndex,
-          });
-
-          activePlayer.waitingAction = null;
-
-          this.sendSocketEvent(EGameServerEvent.UPDATE_PLAYERS, this.game.getGamePlayers());
-
-          if (!needToReroll) {
-            break;
-          }
-
-          canRerollDices = false;
-        } else {
+        if (!canRerollDices) {
           break;
         }
+
+        this.setWaitingAction(EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL);
+
+        const needToReroll = yield* this.waitForPlayerSocketEvent(EGameClientEvent.NEED_TO_REROLL, {
+          playerIndex: this.game.activePlayerIndex,
+        });
+
+        this.clearWaitingAction();
+
+        if (!needToReroll) {
+          break;
+        }
+
+        canRerollDices = false;
       }
 
-      let dicesSum = sum(dices);
+      let dicesSum = sum(this.dices);
 
       if (withHarbor && dicesSum >= 10) {
-        activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR;
-
-        this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-          players: this.game.getGamePlayers(),
-        });
+        this.setWaitingAction(EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR);
 
         this.withHarborEffect = yield* this.waitForPlayerSocketEvent(EGameClientEvent.NEED_TO_USE_HARBOR, {
           playerIndex: this.game.activePlayerIndex,
         });
 
-        activePlayer.waitingAction = null;
+        this.clearWaitingAction();
 
         if (this.withHarborEffect) {
           dicesSum += 2;
         }
 
-        this.sendSocketEvent(EGameServerEvent.HARBOR_EFFECT, {
-          players: this.game.getGamePlayers(),
-          withEffect: this.withHarborEffect,
-        });
+        this.sendSocketEvent(EGameServerEvent.HARBOR_EFFECT, this.withHarborEffect);
       }
 
       for (let i = 0; i < this.playersCount; i++) {
@@ -203,6 +187,10 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
           players: this.game.getGamePlayers(),
         });
 
+        if (this.game.getWinnerIndex() !== -1) {
+          return;
+        }
+
         continue;
       }
 
@@ -220,6 +208,10 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         board: this.game.board,
       });
     }
+  }
+
+  clearWaitingAction(): void {
+    this.setWaitingAction(null);
   }
 
   *runCardsEffects(cards: ICard[], players: IPlayerData[], playerIndex: number, activePlayerIndex: number): TGenerator {
@@ -308,17 +300,13 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
           activePlayer.coins += coins;
         });
       } else if (card.id === ECardId.TV_STATION) {
-        activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_PLAYER;
-
-        this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-          players: this.game.getGamePlayers(),
-        });
+        this.setWaitingAction(EPlayerWaitingAction.CHOOSE_PLAYER);
 
         const selectedPlayerIndex = yield* this.waitForPlayerSocketEvent(EGameClientEvent.CHOOSE_PLAYER, {
           playerIndex: this.game.activePlayerIndex,
         });
 
-        activePlayer.waitingAction = null;
+        this.clearWaitingAction();
 
         const selectedPlayer = players[selectedPlayerIndex];
         const coins = Math.min(selectedPlayer.coins, 5);
@@ -326,17 +314,13 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         selectedPlayer.coins -= coins;
         activePlayer.coins += coins;
       } else if (card.id === ECardId.BUSINESS_COMPLEX) {
-        activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP;
-
-        this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-          players: this.game.getGamePlayers(),
-        });
+        this.setWaitingAction(EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP);
 
         const { from, toCardId } = yield* this.waitForPlayerSocketEvent(EGameClientEvent.CARDS_TO_SWAP, {
           playerIndex: this.game.activePlayerIndex,
         });
 
-        activePlayer.waitingAction = null;
+        this.clearWaitingAction();
 
         const fromPlayer = players[from.playerIndex];
 
@@ -346,17 +330,13 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         activePlayer.cardsIds.push(from.cardId);
         fromPlayer.cardsIds.push(toCardId);
       } else if (card.id === ECardId.PUBLISHER) {
-        activePlayer.waitingAction = EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET;
-
-        this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, {
-          players: this.game.getGamePlayers(),
-        });
+        this.setWaitingAction(EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET);
 
         const publisherTarget = yield* this.waitForPlayerSocketEvent(EGameClientEvent.PUBLISHER_TARGET, {
           playerIndex: this.game.activePlayerIndex,
         });
 
-        activePlayer.waitingAction = null;
+        this.clearWaitingAction();
 
         players.forEach((localPlayer, localPlayerIndex) => {
           if (localPlayerIndex === activePlayerIndex) {
@@ -383,5 +363,19 @@ export default class Turn extends ServerEntity<EGame.MACHI_KORO> {
         });
       }
     }
+  }
+
+  setWaitingAction(waitingAction: EPlayerWaitingAction | null): void {
+    this.waitingAction = waitingAction;
+
+    this.sendSocketEvent(EGameServerEvent.WAIT_ACTION, waitingAction);
+  }
+
+  toJSON(): ITurn {
+    return {
+      dices: this.dices,
+      withHarborEffect: this.withHarborEffect,
+      waitingAction: this.waitingAction,
+    };
   }
 }

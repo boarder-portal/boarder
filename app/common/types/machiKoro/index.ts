@@ -123,19 +123,23 @@ export interface IPlayerData {
   coins: number;
   cardsIds: ECardId[];
   landmarksIds: ELandmarkId[];
-  waitingAction: EPlayerWaitingAction | null;
 }
 
 export interface IPlayer extends IGamePlayer {
   data: IPlayerData;
 }
 
+export interface ITurn {
+  dices: number[];
+  withHarborEffect: boolean;
+  waitingAction: EPlayerWaitingAction | null;
+}
+
 export interface IGame {
   activePlayerIndex: number;
   players: IPlayer[];
   board: ECardId[];
-  dices: number[];
-  withHarborEffect: boolean;
+  turn: ITurn | null;
 }
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MACHI_KORO> {
@@ -173,13 +177,8 @@ export interface IServerEventMap extends ICommonServerEventMap<EGame.MACHI_KORO>
   [EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX]: {
     index: number;
   };
-  [EGameServerEvent.WAIT_ACTION]: {
-    players: IPlayer[];
-  };
-  [EGameServerEvent.HARBOR_EFFECT]: {
-    players: IPlayer[];
-    withEffect: boolean;
-  };
+  [EGameServerEvent.WAIT_ACTION]: EPlayerWaitingAction | null;
+  [EGameServerEvent.HARBOR_EFFECT]: boolean;
 }
 
 declare module 'common/types/game' {

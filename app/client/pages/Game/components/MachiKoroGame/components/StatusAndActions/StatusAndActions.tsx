@@ -12,11 +12,11 @@ import styles from './StatusAndAction.pcss';
 
 interface IActionsProps {
   className?: string;
-  player: IPlayer;
   activePlayer: IPlayer;
   isPlayerActive: boolean;
   dices: number[];
   withHarborEffect: boolean;
+  waitingAction: EPlayerWaitingAction | null;
   winner: string | null;
   onEndTurn(): void;
   onSelectDicesCount(count: number): void;
@@ -28,11 +28,11 @@ interface IActionsProps {
 const StatusAndActions: FC<IActionsProps> = (props) => {
   const {
     className,
-    player,
     activePlayer,
     isPlayerActive,
     dices,
     withHarborEffect,
+    waitingAction,
     winner,
     onEndTurn,
     onSelectDicesCount,
@@ -42,32 +42,32 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
   } = props;
 
   const status = useMemo(() => {
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
       return 'Выбирает количество кубиков';
     }
 
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
       return 'Выбирает перекинуть ли кубики';
     }
 
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
       return 'Выбирает добавить ли к кубикам 2';
     }
 
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
       return 'Выбирает карты для обмена';
     }
 
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
       return 'Выбирает игрока';
     }
 
-    if (activePlayer.data.waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
       return 'Выбирает тип зданий для Издательства';
     }
 
     return 'Ходит';
-  }, [activePlayer]);
+  }, [waitingAction]);
 
   const commonInfo = useMemo(
     () => (
@@ -92,7 +92,11 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
   );
 
   const actions = useMemo(() => {
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
+    if (!isPlayerActive) {
+      return null;
+    }
+
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Сколько кубиков кинуть?</Text>
@@ -109,7 +113,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Перекинуть кубики?</Text>
@@ -127,7 +131,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Прибавить к кубикам 2?</Text>
@@ -145,7 +149,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (player.data.waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+    if (waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
       return (
         <Flex between={2} alignItems="center">
           <Text>За что взять монеты?</Text>
@@ -163,7 +167,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (!player.data.waitingAction && isPlayerActive) {
+    if (!waitingAction) {
       return (
         <Button size="s" onClick={onEndTurn}>
           Завершить ход
@@ -177,7 +181,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
     onSelectNeedToReroll,
     onSelectNeedToUseHarbor,
     onSelectPublisherTarget,
-    player.data.waitingAction,
+    waitingAction,
   ]);
 
   if (winner) {
