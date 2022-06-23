@@ -181,6 +181,12 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
     }
   }, [hand.length, prevHand.length]);
 
+  useEffect(() => {
+    if (agePhase === EAgePhase.RECRUIT_LEADERS) {
+      setIsViewingLeaders(false);
+    }
+  }, [agePhase]);
+
   return (
     <Flex className={classNames(styles.root, className)} alignItems="center" direction="column" between={3}>
       <div className={styles.wonderWrapper}>
@@ -207,9 +213,10 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
               leftNeighbor={leftNeighbor}
               rightNeighbor={rightNeighbor}
               courtesansBuildInfo={courtesansBuildInfo}
-              isChosen={index === chosenCardIndex}
+              isChosen={index === chosenCardIndex && !isViewingLeaders}
               isDisabled={
-                chosenCardIndex === undefined ? !player.data.turn?.waitingForAction : index !== chosenCardIndex
+                (chosenCardIndex === undefined ? !player.data.turn?.waitingForAction : index !== chosenCardIndex) &&
+                !isViewingLeaders
               }
               isViewingLeaders={isViewingLeaders}
               resourceTradePrices={resourceTradePrices}
