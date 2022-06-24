@@ -4,7 +4,7 @@ import { ESuit, EValue, ICard } from 'common/types/cards';
 import { EPassDirection } from 'common/types/hearts';
 
 import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
-import getCard from 'common/utilities/cards/getCard';
+import card from 'common/utilities/cards/card';
 
 export const PASS_DIRECTIONS: Record<number, EPassDirection[]> = {
   2: [EPassDirection.LEFT, EPassDirection.NONE],
@@ -18,7 +18,7 @@ export const DECKS: Record<number, ICard[]> = {
   4: DECK,
 };
 
-const removedCardIndex = DECKS[3].findIndex(isEqualCardsCallback(getCard(EValue.DEUCE, ESuit.DIAMONDS)));
+const removedCardIndex = DECKS[3].findIndex(isEqualCardsCallback(card(EValue.DEUCE, ESuit.DIAMONDS)));
 
 if (removedCardIndex !== -1) {
   DECKS[3].splice(removedCardIndex, 1);
