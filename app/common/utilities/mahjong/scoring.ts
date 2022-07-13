@@ -1,10 +1,31 @@
-import { GREEN_TILES, ORPHANS, REVERSIBLE_TILES } from '../../constants/games/mahjong';
+import { ALL_SUITS, GREEN_TILES, KNITTED_SEQUENCES, ORPHANS, REVERSIBLE_TILES } from '../../constants/games/mahjong';
+import { FAN_SCORES } from '../../constants/games/mahjong/fans';
 
 import { EFan, EFanType, ESuit, EWind, ISet, TTile } from 'common/types/mahjong';
 
-import { getSetsVariations } from 'common/utilities/mahjong/sets';
+import {
+  getSetsCombinations,
+  getSetsVariations,
+  getSetTile,
+  isChow,
+  isPair,
+  isPung,
+} from 'common/utilities/mahjong/sets';
 
-import { isHonor, isSuited, isTerminal, isTileSubset } from './tiles';
+import {
+  getSortedValuesString,
+  isDragon,
+  isEqualTiles,
+  isFlush,
+  isHonor,
+  isStraight,
+  isSuited,
+  isTerminal,
+  isTerminalOrHonor,
+  isTileSubset,
+  isWind,
+  tilesContainTile,
+} from './tiles';
 
 export interface IHandScoreOptions {
   hand: TTile[];
@@ -48,19 +69,14 @@ export interface IHandMahjong {
 
 export function getHandMahjong(options: IHandScoreOptions): IHandMahjong | null {
   const { hand, concealedSets, meldedSets, winningTile, seatWind, roundWind } = options;
-  const isConcealed = meldedSets.length === 0;
-  const declaredAnySets = !isConcealed || concealedSets.length !== 0;
   const wholeHand = [
     ...hand,
     ...concealedSets.flatMap(({ tiles }) => tiles),
     ...meldedSets.flatMap(({ tiles }) => tiles),
     winningTile,
   ];
-  const wholeHandFans = getWholeHandFans(wholeHand, declaredAnySets);
-  const specialFans = getSpecialFans({
-    ...options,
-    isConcealed,
-  });
+  const wholeHandFans = getWholeHandFans(wholeHand);
+  const specialFans = getSpecialFans(options);
 
   const setsVariations = getSetsVariations({
     hand: [...hand, winningTile],
@@ -68,14 +84,128 @@ export function getHandMahjong(options: IHandScoreOptions): IHandMahjong | null 
     isSelfDraw: options.isSelfDraw,
   });
 
-  return null;
+  let mahjong: IHandMahjong | undefined;
+
+  if (setsVariations.length > 0) {
+    setsVariations.forEach((sets) => {
+      const wholeHandSetsFans = getWholeHandSetsFans(sets, options.isSelfDraw);
+      const setsFans: TFan[] = [];
+
+      getSetsCombinations(sets).forEach((sets) => {
+        setsFans.push(...getSetsFans(sets));
+      });
+
+      const fans = [...wholeHandFans, ...wholeHandSetsFans, ...setsFans, ...specialFans];
+
+      if (fans.every((fan) => fan.fan === EFan.FLOWER_TILES)) {
+        fans.push({
+          type: EFanType.HAND,
+          fan: EFan.CHICKEN_HAND,
+        });
+      }
+
+      const fansMahjong = getBestFansMahjong([...wholeHandFans, ...wholeHandSetsFans, ...setsFans, ...specialFans]);
+
+      if (!mahjong || fansMahjong.score > mahjong.score) {
+        mahjong = fansMahjong;
+      }
+    });
+  } else {
+    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans]);
+  }
+
+  if (!mahjong) {
+    return null;
+  }
+
+  return mahjong;
 }
 
 function getSetsFans(sets: ISet[]): TFan[] {
-  return [];
+  const firstSet = sets.at(0);
+
+  if (!firstSet) {
+    return [];
+  }
+
+  const fans: TFan[] = [];
+
+  return fans;
 }
 
-function getWholeHandFans(hand: TTile[], declaredAnySets: boolean): TFan[] {
+function getWholeHandSetsFans(sets: ISet[], isSelfDraw: boolean): TFan[] {
+  const fans: EFan[] = [];
+  const meldedSets = sets.filter(({ concealed }) => !concealed);
+  const setsTiles = sets.map(getSetTile);
+
+  if (sets.length === 7 && sets.every(isPair)) {
+    fans.push(isFlush(setsTiles) && isStraight(setsTiles) ? EFan.SEVEN_SHIFTED_PAIRS : EFan.SEVEN_PAIRS);
+  }
+
+  if (sets.length === 5) {
+    const chows = sets.filter(isChow);
+    const pair = sets.find(isPair);
+
+    if (chows.length === 4 && pair) {
+      const chowTiles = chows.map(getSetTile);
+      const pairTile = getSetTile(pair);
+
+      if (
+        isFlush(chowTiles) &&
+        isSuited(pairTile) &&
+        chowTiles[0].suit === pairTile.suit &&
+        getSortedValuesString(chowTiles) === '2288' &&
+        pairTile.value === 5
+      ) {
+        fans.push(EFan.PURE_TERMINAL_CHOWS);
+      }
+    }
+
+    if (sets.every(isPung) && setsTiles.every((tile) => isSuited(tile) && tile.value === 0)) {
+      fans.push(EFan.ALL_EVEN_PUNGS);
+    }
+
+    if (sets.every(({ tiles }) => tiles.some((tile) => isSuited(tile) && tile.value === 5))) {
+      fans.push(EFan.ALL_FIVES);
+    }
+
+    if (sets.every((set) => isPung(set) || isPair(set))) {
+      fans.push(EFan.ALL_PUNGS);
+    }
+
+    if (sets.every((set) => (isChow(set) || isPair(set)) && !isHonor(getSetTile(set)))) {
+      fans.push(EFan.ALL_CHOWS);
+    }
+  }
+
+  if (
+    ALL_SUITS.every((suit) => setsTiles.some((tile) => isSuited(tile) && tile.suit === suit)) &&
+    setsTiles.some(isDragon) &&
+    setsTiles.some(isWind)
+  ) {
+    fans.push(EFan.ALL_TYPES);
+  }
+
+  if (meldedSets.length === 0) {
+    fans.push(EFan.FULLY_CONCEALED_HAND);
+  } else if (meldedSets.length === 1 && !isSelfDraw) {
+    fans.push(EFan.CONCEALED_HAND);
+  } else if (meldedSets.length === sets.length) {
+    fans.push(EFan.MELDED_HAND);
+  }
+
+  if (sets.every((set) => set.tiles.some(isTerminalOrHonor))) {
+    fans.push(EFan.OUTSIDE_HAND);
+  }
+
+  return fans.map((fan) => ({
+    type: EFanType.HAND,
+    fan,
+  }));
+}
+
+function getWholeHandFans(hand: TTile[]): TFan[] {
+  const noDeclaredSets = hand.length === 14;
   const handWithoutWinningTile = hand.slice(0, -1);
   const winningTile = hand.at(-1);
   const suits = hand.reduce((suits, tile) => {
@@ -96,21 +226,30 @@ function getWholeHandFans(hand: TTile[], declaredAnySets: boolean): TFan[] {
     fans.push(EFan.THIRTEEN_ORPHANS);
   }
 
-  // TODO: knitted tiles
+  const isHonorsAndKnittedTiles =
+    noDeclaredSets &&
+    hand.every((tile, index) => hand.every((tile2, index2) => index === index2 || !isEqualTiles(tile, tile2))) &&
+    KNITTED_SEQUENCES.some((sets) => {
+      const knittedTiles = sets.flat();
+
+      return hand.every((tile) => isHonor(tile) || tilesContainTile(knittedTiles, tile));
+    });
+
+  if (isHonorsAndKnittedTiles) {
+    fans.push(
+      hand.filter(isHonor).length === 7 ? EFan.GREATER_HONORS_AND_KNITTED_TILES : EFan.LESSER_HONORS_AND_KNITTED_TILES,
+    );
+  }
 
   if (isTileSubset(hand, GREEN_TILES)) {
     fans.push(EFan.ALL_GREEN);
   }
 
   if (
-    !declaredAnySets &&
+    noDeclaredSets &&
     isSuited(winningTile) &&
-    handWithoutWinningTile.every(isSuited) &&
-    handWithoutWinningTile.every(({ suit }) => suit === winningTile.suit) &&
-    handWithoutWinningTile
-      .map(({ value }) => value)
-      .sort()
-      .join('') === '1112345678999'
+    isFlush(handWithoutWinningTile) &&
+    getSortedValuesString(handWithoutWinningTile) === '1112345678999'
   ) {
     fans.push(EFan.NINE_GATES);
   }
@@ -119,7 +258,7 @@ function getWholeHandFans(hand: TTile[], declaredAnySets: boolean): TFan[] {
     fans.push(EFan.ALL_TERMINALS);
   } else if (hand.every(isHonor)) {
     fans.push(EFan.ALL_HONORS);
-  } else if (hand.every((tile) => isTerminal(tile) || isHonor(tile))) {
+  } else if (hand.every(isTerminalOrHonor)) {
     fans.push(EFan.ALL_TERMINALS_AND_HONORS);
   }
 
@@ -143,7 +282,7 @@ function getWholeHandFans(hand: TTile[], declaredAnySets: boolean): TFan[] {
     fans.push(EFan.REVERSIBLE_TILES);
   }
 
-  if (hand.every((tile) => !isHonor(tile) && !isTerminal(tile))) {
+  if (hand.every((tile) => !isTerminalOrHonor(tile))) {
     fans.push(EFan.ALL_SIMPLES);
   }
 
@@ -161,7 +300,7 @@ function getWholeHandFans(hand: TTile[], declaredAnySets: boolean): TFan[] {
   }));
 }
 
-function getSpecialFans(options: IHandScoreOptions & { isConcealed: boolean }): TFan[] {
+function getSpecialFans(options: IHandScoreOptions): TFan[] {
   const fans: TFan[] = [];
 
   if (options.isLastWallTile) {
@@ -184,14 +323,6 @@ function getSpecialFans(options: IHandScoreOptions & { isConcealed: boolean }): 
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.ROBBING_THE_KONG,
-      tiles: [],
-    });
-  }
-
-  if (options.isConcealed) {
-    fans.push({
-      type: EFanType.SPECIAL,
-      fan: options.isSelfDraw ? EFan.FULLY_CONCEALED_HAND : EFan.CONCEALED_HAND,
       tiles: [],
     });
   }
@@ -229,4 +360,11 @@ function getSpecialFans(options: IHandScoreOptions & { isConcealed: boolean }): 
   fans.push(...flowerFans);
 
   return fans;
+}
+
+function getBestFansMahjong(fans: TFan[]): IHandMahjong {
+  const pickedFans: TFan[] = [];
+  // TODO: implied fans
+
+  return { fans: pickedFans, score: pickedFans.reduce((score, { fan }) => score + FAN_SCORES[fan], 0) };
 }

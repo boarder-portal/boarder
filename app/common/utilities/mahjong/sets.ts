@@ -12,13 +12,14 @@ import {
   isTileSubset,
   tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
+import { getAllCombinations } from 'common/utilities/combinations';
 
 export function isPair(set: ISet): boolean {
   return set.type === ESet.PAIR;
 }
 
 export function isPung(set: ISet): boolean {
-  return set.type === ESet.PUNG;
+  return set.type === ESet.PUNG || set.type === ESet.KONG;
 }
 
 export function isKong(set: ISet): boolean {
@@ -31,6 +32,10 @@ export function isChow(set: ISet): boolean {
 
 export function isKnittedChow(set: ISet): boolean {
   return set.type === ESet.KNITTED_CHOW;
+}
+
+export function getSetTile(set: ISet): TTile {
+  return set.type === ESet.CHOW || set.type === ESet.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
 }
 
 export interface ISetsVariationsOptions {
@@ -75,6 +80,10 @@ export function getSetsVariations(options: ISetsVariationsOptions): ISet[][] {
 
     return variations.map((sets) => [...options.knownSets, ...sets]);
   });
+}
+
+export function getSetsCombinations(sets: ISet[]): ISet[][] {
+  return getAllCombinations(sets.map((set) => [[set], []])).map((sets) => sets.flat());
 }
 
 interface ISplitSetsOptions {

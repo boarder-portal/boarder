@@ -58,6 +58,10 @@ export function isTerminal(tile: TTile): boolean {
   return isSuited(tile) && (tile.value === 1 || tile.value === 9);
 }
 
+export function isTerminalOrHonor(tile: TTile): boolean {
+  return isTerminal(tile) || isHonor(tile);
+}
+
 export function isEqualTiles(tile1: TTile, tile2: TTile | null | undefined): boolean {
   if (tile1.type !== tile2?.type) {
     return false;
@@ -92,6 +96,30 @@ export function tilesContainTile(tiles: TTile[], tile: TTile): boolean {
 
 export function isTileSubset(tiles: TTile[], tilesSet: TTile[]): boolean {
   return tiles.every((tile) => tilesContainTile(tilesSet, tile));
+}
+
+export function isFlush(tiles: TTile[]): tiles is ISuitedTile[] {
+  if (!tiles.every(isSuited)) {
+    return false;
+  }
+
+  return tiles.every((tile) => tile.suit === tiles.at(0)?.suit);
+}
+
+export function isStraight(tiles: TTile[]): tiles is ISuitedTile[] {
+  if (!tiles.every(isSuited)) {
+    return false;
+  }
+
+  return getSortedValues(tiles).every((value, index, array) => index === 0 || array[index - 1] === value - 1);
+}
+
+export function getSortedValues(tiles: ISuitedTile[]): number[] {
+  return tiles.map(({ value }) => value).sort();
+}
+
+export function getSortedValuesString(tiles: ISuitedTile[]): string {
+  return getSortedValues(tiles).join('');
 }
 
 export function getTileSortValue(tile: TTile): number {
