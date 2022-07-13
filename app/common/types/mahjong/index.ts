@@ -189,11 +189,12 @@ export enum ESet {
   PUNG = 'PUNG',
   KONG = 'KONG',
   CHOW = 'CHOW',
+  KNITTED_CHOW = 'KNITTED_CHOW',
 }
 
 export interface ISet {
   type: ESet;
-  tile: TTile;
+  tiles: TTile[];
   concealed: boolean;
 }
 

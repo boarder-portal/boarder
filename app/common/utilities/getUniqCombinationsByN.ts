@@ -1,5 +1,5 @@
 export default function getUniqCombinationsByN<T>(a: T[], c: number): T[][] {
-  const index = [];
+  const index: number[] = [];
   const n = a.length;
 
   for (let j = 0; j < c; j++) {
@@ -9,10 +9,10 @@ export default function getUniqCombinationsByN<T>(a: T[], c: number): T[][] {
   index[c] = n;
 
   let ok = true;
-  const result = [];
+  const result: T[][] = [];
 
   while (ok) {
-    const comb = [];
+    const comb: T[] = [];
 
     for (let j = 0; j < c; j++) {
       comb[j] = a[index[j]];

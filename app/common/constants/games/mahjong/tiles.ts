@@ -1,37 +1,34 @@
 import times from 'lodash/times';
 
-import { EDragon, ESuit, ETileType, EWind, TTile } from 'common/types/mahjong';
+import { ALL_DRAGONS, ALL_SUITS, ALL_VALUES, ALL_WINDS } from 'common/constants/games/mahjong/index';
+
+import { EDragon, ESuit, ETileType, EWind, ISuitedTile, TTile } from 'common/types/mahjong';
 
 import { dragon, suited, wind } from 'common/utilities/mahjong/tiles';
+import { getPermutations } from 'common/utilities/permutations';
 
 export const STANDARD_TILES: TTile[] = [
-  ...Object.values(ESuit)
-    .map((suit) =>
-      times(9, (value) => {
-        return {
-          type: ETileType.SUIT,
-          suit,
-          value: value + 1,
-        } as const;
-      }),
-    )
-    .flat(),
-  ...Object.values(EDragon)
-    .map((color) => {
+  ...ALL_SUITS.map((suit) =>
+    ALL_VALUES.map((value) => {
       return {
-        type: ETileType.DRAGON,
-        color,
+        type: ETileType.SUIT,
+        suit,
+        value,
       } as const;
-    })
-    .flat(),
-  ...Object.values(EWind)
-    .map((side) => {
-      return {
-        type: ETileType.WIND,
-        side,
-      } as const;
-    })
-    .flat(),
+    }),
+  ).flat(),
+  ...ALL_DRAGONS.map((color) => {
+    return {
+      type: ETileType.DRAGON,
+      color,
+    } as const;
+  }).flat(),
+  ...ALL_WINDS.map((side) => {
+    return {
+      type: ETileType.WIND,
+      side,
+    } as const;
+  }).flat(),
 ];
 
 export const DECK: TTile[] = [
@@ -85,3 +82,11 @@ export const REVERSIBLE_TILES: TTile[] = [
   suited(9, ESuit.BAMBOOS),
   dragon(EDragon.WHITE),
 ];
+
+export const KNITTED_SEQUENCES: ISuitedTile[][][] = getPermutations([
+  [1, 4, 7],
+  [2, 5, 8],
+  [3, 6, 9],
+]).map((knittedChows) =>
+  knittedChows.map((knittedChow, index) => knittedChow.map((value) => suited(value, ALL_SUITS[index]))),
+);
