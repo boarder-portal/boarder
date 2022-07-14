@@ -99,19 +99,41 @@ export function isTileSubset(tiles: TTile[], tilesSet: TTile[]): boolean {
 }
 
 export function isFlush(tiles: TTile[]): tiles is ISuitedTile[] {
-  if (!tiles.every(isSuited)) {
+  if (!areSuited(tiles)) {
     return false;
   }
 
-  return tiles.every((tile) => tile.suit === tiles.at(0)?.suit);
+  return getSuitsCount(tiles) === 1;
 }
 
-export function isStraight(tiles: TTile[]): tiles is ISuitedTile[] {
-  if (!tiles.every(isSuited)) {
+export function isStraight(tiles: TTile[], possibleShifts = [1]): tiles is ISuitedTile[] {
+  if (!areSuited(tiles)) {
     return false;
   }
 
-  return getSortedValues(tiles).every((value, index, array) => index === 0 || array[index - 1] === value - 1);
+  const sortedValues = getSortedValues(tiles);
+
+  return possibleShifts.some((shift) =>
+    sortedValues.every((value, index, array) => index === 0 || array[index - 1] === value - shift),
+  );
+}
+
+export function areSuited(tiles: TTile[]): tiles is ISuitedTile[] {
+  return tiles.every(isSuited);
+}
+
+export function areSameValues(tiles: ISuitedTile[]): boolean {
+  return tiles.every((tile) => tile.value === tiles.at(0)?.value);
+}
+
+export function getSuitsCount(tiles: TTile[]): number {
+  return tiles.reduce((suits, tile) => {
+    if (isSuited(tile)) {
+      suits.add(tile.suit);
+    }
+
+    return suits;
+  }, new Set<ESuit>()).size;
 }
 
 export function getSortedValues(tiles: ISuitedTile[]): number[] {

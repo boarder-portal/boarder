@@ -34,6 +34,18 @@ export function isKnittedChow(set: ISet): boolean {
   return set.type === ESet.KNITTED_CHOW;
 }
 
+export function arePungs(sets: ISet[]): boolean {
+  return sets.every(isPung);
+}
+
+export function areKongs(sets: ISet[]): boolean {
+  return sets.every(isKong);
+}
+
+export function areChows(sets: ISet[]): boolean {
+  return sets.every(isChow);
+}
+
 export function getSetTile(set: ISet): TTile {
   return set.type === ESet.CHOW || set.type === ESet.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
 }

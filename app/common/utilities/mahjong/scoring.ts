@@ -1,21 +1,29 @@
 import { ALL_SUITS, GREEN_TILES, KNITTED_SEQUENCES, ORPHANS, REVERSIBLE_TILES } from '../../constants/games/mahjong';
 import { FAN_SCORES } from '../../constants/games/mahjong/fans';
 
-import { EFan, EFanType, ESuit, EWind, ISet, TTile } from 'common/types/mahjong';
+import { EFan, EFanType, EWind, ISet, TTile } from 'common/types/mahjong';
 
 import {
+  areChows,
+  areKongs,
+  arePungs,
   getSetsCombinations,
   getSetsVariations,
   getSetTile,
   isChow,
+  isKnittedChow,
   isPair,
   isPung,
 } from 'common/utilities/mahjong/sets';
 
 import {
+  areSameValues,
+  areSuited,
   getSortedValuesString,
+  getSuitsCount,
   isDragon,
   isEqualTiles,
+  isEqualTilesCallback,
   isFlush,
   isHonor,
   isStraight,
@@ -128,9 +136,159 @@ function getSetsFans(sets: ISet[]): TFan[] {
     return [];
   }
 
-  const fans: TFan[] = [];
+  const setsTiles = sets.map(getSetTile);
+  const firstSetTile = getSetTile(firstSet);
+  const suitsCount = getSuitsCount(setsTiles);
+  const areAllSuited = areSuited(setsTiles);
+  const areAllSameValues = areAllSuited && areSameValues(setsTiles);
+  const areAllPungs = arePungs(sets);
+  const areAllKongs = areKongs(sets);
+  const areAllChows = areChows(sets);
+  const areWinds = setsTiles.every(isWind);
+  const areDragons = setsTiles.every(isDragon);
+  const areConcealedPungs = areAllPungs && sets.every((set) => set.concealed);
+  const arePureChows = areAllChows && setsTiles.every(isEqualTilesCallback(firstSetTile));
+  const arePureShiftedPungs = areAllPungs && isFlush(setsTiles) && isStraight(setsTiles);
+  const arePureShiftedChows = areAllChows && isFlush(setsTiles) && isStraight(setsTiles, [1, 2]);
+  const isPureStraight = areAllChows && isFlush(setsTiles) && isStraight(setsTiles, [3]);
+  const areSamePungs = areAllPungs && areAllSuited && areAllSameValues;
+  const areMixedChows = areAllChows && areAllSuited && areAllSameValues && suitsCount === sets.length;
+  const fans: EFan[] = [];
 
-  return fans;
+  if (sets.length === 4) {
+    if (areWinds) {
+      fans.push(areAllPungs ? EFan.BIG_FOUR_WINDS : EFan.LITTLE_FOUR_WINDS);
+    }
+
+    if (areAllKongs) {
+      fans.push(EFan.FOUR_KONGS);
+    }
+
+    if (areConcealedPungs) {
+      fans.push(EFan.FOUR_CONCEALED_PUNGS);
+    }
+
+    if (arePureChows) {
+      fans.push(EFan.QUADRUPLE_CHOWS);
+    }
+
+    if (arePureShiftedPungs) {
+      fans.push(EFan.FOUR_PURE_SHIFTED_PUNGS);
+    }
+
+    if (arePureShiftedChows) {
+      fans.push(EFan.FOUR_PURE_SHIFTED_CHOWS);
+    }
+  } else if (sets.length === 3) {
+    if (areDragons) {
+      fans.push(areAllPungs ? EFan.BIG_THREE_DRAGONS : EFan.LITTLE_THREE_DRAGONS);
+    }
+
+    if (areAllKongs) {
+      fans.push(EFan.THREE_KONGS);
+    }
+
+    if (arePureChows) {
+      fans.push(EFan.PURE_TRIPLE_CHOW);
+    }
+
+    if (arePureShiftedPungs) {
+      fans.push(EFan.PURE_SHIFTED_PUNGS);
+    }
+
+    if (isPureStraight) {
+      fans.push(EFan.PURE_STRAIGHT);
+    }
+
+    if (arePureShiftedChows) {
+      fans.push(EFan.PURE_SHIFTED_CHOWS);
+    }
+
+    if (areSamePungs) {
+      fans.push(EFan.TRIPLE_PUNG);
+    }
+
+    if (areConcealedPungs) {
+      fans.push(EFan.THREE_CONCEALED_PUNGS);
+    }
+
+    if (sets.every(isKnittedChow)) {
+      fans.push(EFan.KNITTED_STRAIGHT);
+    }
+
+    if (areWinds && areAllPungs) {
+      fans.push(EFan.BIG_THREE_WINDS);
+    }
+
+    if (areAllChows && areAllSuited && suitsCount === 3 && isStraight(setsTiles, [3])) {
+      fans.push(EFan.MIXED_STRAIGHT);
+    }
+
+    if (areMixedChows) {
+      fans.push(EFan.MIXED_TRIPLE_CHOW);
+    }
+
+    if (areAllPungs && areAllSuited && suitsCount === 3 && isStraight(setsTiles)) {
+      fans.push(EFan.MIXED_SHIFTED_PUNGS);
+    }
+
+    if (areAllChows && areAllSuited && suitsCount === 3 && isStraight(setsTiles)) {
+      fans.push(EFan.MIXED_SHIFTED_CHOWS);
+    }
+  } else if (sets.length === 2) {
+    if (areAllKongs) {
+      fans.push(areConcealedPungs ? EFan.TWO_CONCEALED_KONGS : EFan.TWO_MELDED_KONGS);
+    }
+
+    if (areDragons && areAllPungs) {
+      fans.push(EFan.TWO_DRAGON_PUNGS);
+    }
+
+    if (areSamePungs) {
+      fans.push(EFan.DOUBLE_PUNG);
+    }
+
+    if (areConcealedPungs) {
+      fans.push(EFan.TWO_CONCEALED_PUNGS);
+    }
+
+    if (arePureChows) {
+      fans.push(EFan.PURE_DOUBLE_CHOW);
+    }
+
+    if (areMixedChows) {
+      fans.push(EFan.MIXED_DOUBLE_CHOW);
+    }
+
+    if (isPureStraight) {
+      fans.push(EFan.SHORT_STRAIGHT);
+    }
+
+    if (areAllChows && isFlush(setsTiles) && isStraight(setsTiles, [6])) {
+      fans.push(EFan.TWO_TERMINAL_CHOWS);
+    }
+  } else if (sets.length === 1) {
+    if (areDragons && areAllPungs) {
+      fans.push(EFan.DRAGON_PUNG);
+    }
+
+    // TODO: prevalent wind
+    // TODO: seat wind
+
+    if (areAllKongs) {
+      fans.push(areConcealedPungs ? EFan.CONCEALED_KONG : EFan.MELDED_KONG);
+    }
+
+    if (areAllPungs && isHonor(firstSetTile)) {
+      fans.push(EFan.PUNG_OF_TERMINALS_OR_HONORS);
+    }
+  }
+
+  return fans.map((fan) => ({
+    type: EFanType.SETS,
+    fan,
+    sets,
+  }));
 }
 
 function getWholeHandSetsFans(sets: ISet[], isSelfDraw: boolean): TFan[] {
@@ -159,6 +317,8 @@ function getWholeHandSetsFans(sets: ISet[], isSelfDraw: boolean): TFan[] {
       ) {
         fans.push(EFan.PURE_TERMINAL_CHOWS);
       }
+
+      // TODO: three-suited terminal chows
     }
 
     if (sets.every(isPung) && setsTiles.every((tile) => isSuited(tile) && tile.value === 0)) {
@@ -208,13 +368,7 @@ function getWholeHandFans(hand: TTile[]): TFan[] {
   const noDeclaredSets = hand.length === 14;
   const handWithoutWinningTile = hand.slice(0, -1);
   const winningTile = hand.at(-1);
-  const suits = hand.reduce((suits, tile) => {
-    if (isSuited(tile)) {
-      suits.add(tile.suit);
-    }
-
-    return suits;
-  }, new Set<ESuit>());
+  const suitsCount = getSuitsCount(hand);
 
   if (!winningTile) {
     return [];
@@ -262,8 +416,8 @@ function getWholeHandFans(hand: TTile[]): TFan[] {
     fans.push(EFan.ALL_TERMINALS_AND_HONORS);
   }
 
-  if (suits.size === 1) {
-    fans.push(hand.every(isSuited) ? EFan.FULL_FLUSH : EFan.HALF_FLUSH);
+  if (suitsCount === 1) {
+    fans.push(areSuited(hand) ? EFan.FULL_FLUSH : EFan.HALF_FLUSH);
   }
 
   if (hand.every((tile) => isSuited(tile) && tile.value >= 7)) {
@@ -286,7 +440,7 @@ function getWholeHandFans(hand: TTile[]): TFan[] {
     fans.push(EFan.ALL_SIMPLES);
   }
 
-  if (suits.size === 2) {
+  if (suitsCount === 2) {
     fans.push(EFan.ONE_VOIDED_SUIT);
   }
 
