@@ -157,7 +157,6 @@ export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
   toJSON(): IGame {
     return {
       players: this.getGamePlayers(),
-      options: this.options,
       activePlayerIndex: this.activePlayerIndex,
       cards: this.cards,
       turn: this.turn?.toJSON() ?? null,

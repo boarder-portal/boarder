@@ -17,6 +17,7 @@ export interface IGamesParams {}
 
 export interface IGameData<Game extends EGame> {
   name: string;
+  options: TGameOptions<Game>;
   info: TGameInfo<Game> | null;
   result: TGameResult<Game> | null;
   players: IGamePlayer[];

@@ -52,12 +52,7 @@ const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsI
 const getOrthogonalFieldCardCoord = (coord: number): number => (CARD_SIZE + CARDS_MARGIN) * coord;
 
 const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
-  const {
-    io,
-    gameInfo,
-    gameInfo: { options },
-    gameResult,
-  } = props;
+  const { io, gameOptions, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<IPexesoClientCard[]>(
     gameInfo.cards.map((card, index) => ({
@@ -156,18 +151,18 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   );
 
   useEffect(() => {
-    const { imagesCount, imageVariantsCount } = SETS[options.set];
+    const { imagesCount, imageVariantsCount } = SETS[gameOptions.set];
 
     times(imagesCount, (id) => {
       times(imageVariantsCount, (variant) => {
         const image = new window.Image();
 
-        image.src = `/pexeso/sets/${options.set}/${id}/${variant}.jpg`;
+        image.src = `/pexeso/sets/${gameOptions.set}/${id}/${variant}.jpg`;
 
         imagesRef.current.push(image);
       });
     });
-  }, [options]);
+  }, [gameOptions]);
 
   useLayoutEffect(() => {
     const cardsLayoutContainer = cardsLayoutContainerRef.current;
@@ -227,7 +222,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     return null;
   }
 
-  const { set, differentCardsCount, matchingCardsCount, layout } = options;
+  const { set, differentCardsCount, matchingCardsCount, layout } = gameOptions;
   const cardsOptions: (ICoords & { angle?: number })[] = [];
 
   if (layout === EFieldLayout.RECT) {
@@ -257,7 +252,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       }
     }
   } else {
-    const cardsCount = options.differentCardsCount * options.matchingCardsCount;
+    const cardsCount = gameOptions.differentCardsCount * gameOptions.matchingCardsCount;
     const startingAngle = -Math.PI / 2;
     let angle = startingAngle;
 

@@ -347,6 +347,7 @@ class Game<Game extends EGame> {
   sendGameData(socket?: TGameServerSocket<Game>): void {
     const gameData: IGameData<Game> = {
       name: this.name,
+      options: this.options,
       info: this.gameEntity?.getGameInfo() ?? null,
       result: this.result,
       players: this.getClientPlayers(),

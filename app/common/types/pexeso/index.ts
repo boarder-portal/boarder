@@ -76,7 +76,6 @@ export interface IPlayer extends IGamePlayer {
 
 export interface IGame {
   players: IPlayer[];
-  options: IGameOptions;
   activePlayerIndex: number;
   cards: ICard[];
   turn: ITurn | null;
