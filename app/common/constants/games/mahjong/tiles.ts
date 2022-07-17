@@ -2,7 +2,17 @@ import times from 'lodash/times';
 
 import { ALL_DRAGONS, ALL_SUITS, ALL_VALUES, ALL_WINDS } from 'common/constants/games/mahjong/index';
 
-import { EDragon, ESuit, ETileType, EWind, ISuitedTile, TTile } from 'common/types/mahjong';
+import {
+  EDragon,
+  ESet,
+  ESetConcealedType,
+  ESuit,
+  ETileType,
+  EWind,
+  ISuitedTile,
+  TSet,
+  TTile,
+} from 'common/types/mahjong';
 
 import { dragon, suited, wind } from 'common/utilities/mahjong/tiles';
 import { getPermutations } from 'common/utilities/permutations';
@@ -89,4 +99,22 @@ export const KNITTED_SEQUENCES: ISuitedTile[][][] = getPermutations([
   [3, 6, 9],
 ]).map((knittedChows) =>
   knittedChows.map((knittedChow, index) => knittedChow.map((value) => suited(value, ALL_SUITS[index]))),
+);
+
+export const TERMINAL_CHOWS_SETS: TSet[][] = getPermutations([
+  [
+    [1, 2, 3],
+    [7, 8, 9],
+  ],
+  [
+    [1, 2, 3],
+    [7, 8, 9],
+  ],
+  [[5, 5]],
+]).map((sets) =>
+  sets.flat().map((values, index) => ({
+    type: values.length === 2 ? ESet.PAIR : ESet.CHOW,
+    tiles: values.map((value) => suited(value, ALL_SUITS[index])),
+    concealedType: ESetConcealedType.CONCEALED,
+  })),
 );

@@ -2,7 +2,18 @@ import sortBy from 'lodash/sortBy';
 
 import { KNITTED_SEQUENCES } from 'common/constants/games/mahjong';
 
-import { ESet, ISet, TTile } from 'common/types/mahjong';
+import {
+  ESet,
+  ESetConcealedType,
+  IChowSet,
+  IKnittedChowSet,
+  IKongSet,
+  IPairSet,
+  IPungSet,
+  ISuitedTile,
+  TSet,
+  TTile,
+} from 'common/types/mahjong';
 
 import {
   getTileSortValue,
@@ -14,49 +25,81 @@ import {
 } from 'common/utilities/mahjong/tiles';
 import { getAllCombinations } from 'common/utilities/combinations';
 
-export function isPair(set: ISet): boolean {
+export function isPair(set: TSet): set is IPairSet {
   return set.type === ESet.PAIR;
 }
 
-export function isPung(set: ISet): boolean {
+export function isPung(set: TSet): set is IPungSet {
   return set.type === ESet.PUNG || set.type === ESet.KONG;
 }
 
-export function isKong(set: ISet): boolean {
+export function isKong(set: TSet): set is IKongSet {
   return set.type === ESet.KONG;
 }
 
-export function isChow(set: ISet): boolean {
+export function isChow(set: TSet): set is IChowSet {
   return set.type === ESet.CHOW;
 }
 
-export function isKnittedChow(set: ISet): boolean {
+export function isKnittedChow(set: TSet): set is IKnittedChowSet {
   return set.type === ESet.KNITTED_CHOW;
 }
 
-export function arePungs(sets: ISet[]): boolean {
+export function isConcealed(set: TSet): boolean {
+  return set.concealedType === ESetConcealedType.CONCEALED;
+}
+
+export function arePungs(sets: TSet[]): sets is IPungSet[] {
   return sets.every(isPung);
 }
 
-export function areKongs(sets: ISet[]): boolean {
+export function areKongs(sets: TSet[]): sets is IKongSet[] {
   return sets.every(isKong);
 }
 
-export function areChows(sets: ISet[]): boolean {
+export function areChows(sets: TSet[]): sets is IChowSet[] {
   return sets.every(isChow);
 }
 
-export function getSetTile(set: ISet): TTile {
+export function isEqualSets(set1: TSet, set2: TSet): boolean {
+  return (
+    set1.type === set2.type &&
+    set1.tiles.length === set2.tiles.length &&
+    set1.tiles.every((tile, index) => isEqualTiles(tile, set2.tiles.at(index)))
+  );
+}
+
+export function isEqualSetOfSets(sets1: TSet[], sets2: TSet[]): boolean {
+  if (sets1.length !== sets2.length) {
+    return false;
+  }
+
+  const sets2Copy = [...sets2];
+
+  return sets1.every((set) => {
+    const equalSetIndex = sets2Copy.findIndex((set2) => isEqualSets(set, set2));
+
+    if (equalSetIndex === -1) {
+      return false;
+    }
+
+    sets2Copy.splice(equalSetIndex, 1);
+
+    return true;
+  });
+}
+
+export function getSetTile<Set extends TSet>(set: Set): Set['tiles'][number] {
   return set.type === ESet.CHOW || set.type === ESet.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
 }
 
 export interface ISetsVariationsOptions {
   hand: TTile[];
-  knownSets: ISet[];
+  knownSets: TSet[];
   isSelfDraw: boolean;
 }
 
-export function getSetsVariations(options: ISetsVariationsOptions): ISet[][] {
+export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
   const sortedHand = sortBy(options.hand, getTileSortValue);
   const winningTile = sortedHand.at(-1);
 
@@ -75,7 +118,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): ISet[][] {
       return [[...options.knownSets, ...sets]];
     }
 
-    const variations: ISet[][] = [];
+    const variations: TSet[][] = [];
 
     sets.forEach((set, setIndex) => {
       if (tilesContainTile(set.tiles, winningTile)) {
@@ -83,7 +126,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): ISet[][] {
           ...sets.slice(0, setIndex),
           {
             ...set,
-            concealed: false,
+            concealedType: ESetConcealedType.WINNING_MELDED,
           },
           ...sets.slice(setIndex + 1),
         ]);
@@ -94,7 +137,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): ISet[][] {
   });
 }
 
-export function getSetsCombinations(sets: ISet[]): ISet[][] {
+export function getSetsCombinations(sets: TSet[]): TSet[][] {
   return getAllCombinations(sets.map((set) => [[set], []])).map((sets) => sets.flat());
 }
 
@@ -104,7 +147,7 @@ interface ISplitSetsOptions {
   allPairsAllowed: boolean;
 }
 
-function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
+function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
   const { hand, pairsFound, allPairsAllowed } = options;
 
   const firstTile = hand.at(0);
@@ -113,7 +156,7 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
     return [];
   }
 
-  const sets: ISet[][] = [];
+  const sets: TSet[][] = [];
 
   if (pairsFound === 0 || allPairsAllowed) {
     const hasPair = isEqualTiles(firstTile, hand.at(1));
@@ -128,8 +171,8 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
           {
             type: ESet.PAIR,
             tiles: hand.slice(0, 2),
-            concealed: true,
-          },
+            concealedType: ESetConcealedType.CONCEALED,
+          } as const,
           ...sets,
         ]),
       );
@@ -149,8 +192,8 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
           {
             type: ESet.PUNG,
             tiles: hand.slice(0, 3),
-            concealed: true,
-          },
+            concealedType: ESetConcealedType.CONCEALED,
+          } as const,
           ...sets,
         ]),
       );
@@ -179,8 +222,8 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
             }).map((sets) => [
               {
                 type: ESet.CHOW,
-                tiles: [firstTile, hand[higherBy1TileIndex], hand[higherBy2TileIndex]],
-                concealed: true,
+                tiles: [firstTile, hand[higherBy1TileIndex] as ISuitedTile, hand[higherBy2TileIndex] as ISuitedTile],
+                concealedType: ESetConcealedType.CONCEALED,
               },
               ...sets,
             ]),
@@ -219,7 +262,7 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
               ...knittedSequence.map((tiles) => ({
                 type: ESet.KNITTED_CHOW,
                 tiles,
-                concealed: true,
+                concealedType: ESetConcealedType.CONCEALED,
               })),
               ...sets,
             ]),
@@ -230,4 +273,22 @@ function splitIntoSets(options: ISplitSetsOptions): ISet[][] {
   }
 
   return sets;
+}
+
+export function getTileHogs(sets: TSet[]): TTile[] {
+  const tileHogs: TTile[] = [];
+
+  sets
+    .flatMap(({ tiles }) => tiles)
+    .forEach((tile) => {
+      if (tilesContainTile(tileHogs, tile)) {
+        return;
+      }
+
+      if (sets.some((set) => isKong(set) && isEqualTiles(getSetTile(set), tile))) {
+        return;
+      }
+    });
+
+  return tileHogs;
 }

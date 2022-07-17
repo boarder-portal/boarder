@@ -192,11 +192,40 @@ export enum ESet {
   KNITTED_CHOW = 'KNITTED_CHOW',
 }
 
-export interface ISet {
-  type: ESet;
-  tiles: TTile[];
-  concealed: boolean;
+export enum ESetConcealedType {
+  CONCEALED = 'CONCEALED',
+  MELDED = 'MELDED',
+  WINNING_MELDED = 'WINNING_MELDED',
 }
+
+export interface IBaseSet {
+  tiles: TTile[];
+  concealedType: ESetConcealedType;
+}
+
+export interface IPairSet extends IBaseSet {
+  type: ESet.PAIR;
+}
+
+export interface IPungSet extends IBaseSet {
+  type: ESet.PUNG;
+}
+
+export interface IKongSet extends IBaseSet {
+  type: ESet.KONG;
+}
+
+export interface IChowSet extends IBaseSet {
+  type: ESet.CHOW;
+  tiles: ISuitedTile[];
+}
+
+export interface IKnittedChowSet extends IBaseSet {
+  type: ESet.KNITTED_CHOW;
+  tiles: ISuitedTile[];
+}
+
+export type TSet = IPairSet | IPungSet | IKongSet | IChowSet | IKnittedChowSet;
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {}
 
