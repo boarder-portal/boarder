@@ -106,3 +106,9 @@ export const FAN_SCORES: Record<EFan, number> = {
   [EFan.SELF_DRAWN]: 1,
   [EFan.FLOWER_TILES]: 1,
 };
+
+export const NO_SETS_FANS = [
+  EFan.THIRTEEN_ORPHANS,
+  EFan.GREATER_HONORS_AND_KNITTED_TILES,
+  EFan.LESSER_HONORS_AND_KNITTED_TILES,
+];

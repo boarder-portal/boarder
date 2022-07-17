@@ -532,7 +532,13 @@ function isAccountOncePrincipleKept(fans: TFan[]): boolean {
   const setsFans = fans.filter(isSetsFan).filter((fan) => fan.sets.length > 1);
 
   return setsFans.every((fan) =>
-    fan.sets.every((set) => setsFans.filter((otherFan) => fan !== otherFan && otherFan.sets.includes(set)).length <= 1),
+    fan.sets.every(
+      (set) =>
+        setsFans.filter(
+          (otherFan) =>
+            fan !== otherFan && otherFan.sets.includes(set) && fan.sets.some((set) => !otherFan.sets.includes(set)),
+        ).length <= 1,
+    ),
   );
 }
 

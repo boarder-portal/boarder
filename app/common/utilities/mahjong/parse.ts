@@ -6,7 +6,7 @@ import {
   SUITED_STRING_VALUES,
 } from 'common/constants/games/mahjong';
 
-import { ETileType, TTile } from 'common/types/mahjong';
+import { ESet, ESetConcealedType, ETileType, IKongSet, IPungSet, TTile } from 'common/types/mahjong';
 
 export function parseTiles(tilesString: string): TTile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
@@ -74,5 +74,21 @@ export function parseTile(tileString: string): TTile {
     type: ETileType.SUIT,
     suit,
     value,
+  };
+}
+
+export function parsePung(pungTileString: string, concealedType = ESetConcealedType.CONCEALED): IPungSet {
+  return {
+    type: ESet.PUNG,
+    tiles: parseTiles(pungTileString.repeat(3)),
+    concealedType,
+  };
+}
+
+export function parseKong(kongTileString: string, concealedType = ESetConcealedType.CONCEALED): IKongSet {
+  return {
+    type: ESet.KONG,
+    tiles: parseTiles(kongTileString.repeat(3)),
+    concealedType,
   };
 }

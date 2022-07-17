@@ -1,4 +1,7 @@
+import sortBy from 'lodash/sortBy';
+
 import { STANDARD_TILES } from '../../constants/games/mahjong';
+import { FAN_SCORES, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import { EFan, EFanType, EWind, TSet, TTile } from 'common/types/mahjong';
 
@@ -81,6 +84,12 @@ export function getAllWaits(options: IHandScoreOptions): TTile[] {
 
 export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
   const { hand, concealedSets, meldedSets, winningTile, seatWind, roundWind } = options;
+  const knownSets = [...concealedSets, ...meldedSets];
+
+  if (knownSets.length * 3 + hand.length !== 13) {
+    return null;
+  }
+
   const wholeHand = [
     ...hand,
     ...concealedSets.flatMap(({ tiles }) => tiles),
@@ -97,6 +106,15 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   });
 
   let mahjong: IHandMahjong | null = null;
+
+  if (
+    setsVariations.length === 0 &&
+    NO_SETS_FANS.every((fanType) => wholeHandFans.every(({ fan }) => fan !== fanType))
+  ) {
+    return null;
+  }
+
+  console.log(setsVariations);
 
   if (setsVariations.length > 0) {
     setsVariations.forEach((sets) => {
@@ -117,7 +135,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
         });
       }
 
-      const fansMahjong = getBestFansMahjong([...wholeHandFans, ...wholeHandSetsFans, ...setsFans, ...specialFans]);
+      const fansMahjong = getBestFansMahjong(fans);
 
       if (!mahjong || (fansMahjong && fansMahjong.score > mahjong.score)) {
         mahjong = fansMahjong;
@@ -135,35 +153,39 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 }
 
 function getBestFansMahjong(fans: TFan[]): IHandMahjong | null {
-  const fansCombinations: TFan[][] = [];
+  fans = sortBy(fans, ({ fan }) => -FAN_SCORES[fan]);
 
-  const buildFansCombinations = (fansLeft: TFan[], includedFans: TFan[]): void => {
+  let pickedFans = null as TFan[] | null;
+  let maxScore = 0;
+
+  const calculateBestMahjong = (fansLeft: TFan[], includedFans: TFan[]): void => {
     const firstFan = fansLeft.at(0);
 
     if (!firstFan) {
-      if (includedFans) {
-        fansCombinations.push(includedFans);
+      const score = getFansScore(includedFans);
+
+      if (score > maxScore || !pickedFans) {
+        maxScore = score;
+        pickedFans = includedFans;
       }
 
       return;
     }
 
-    buildFansCombinations(fansLeft.slice(1), includedFans);
+    const restFans = fansLeft.slice(1);
 
     if (canAddFan(includedFans, firstFan)) {
-      buildFansCombinations(fansLeft.slice(1), [...includedFans, firstFan]);
+      calculateBestMahjong(restFans, [...includedFans, firstFan]);
+    }
+
+    const maxPossibleScore = getFansScore([...includedFans, ...restFans]);
+
+    if (maxPossibleScore > maxScore) {
+      calculateBestMahjong(restFans, includedFans);
     }
   };
 
-  buildFansCombinations(fans, []);
-
-  const maxScore = Math.max(...fansCombinations.map(getFansScore));
-
-  if (maxScore === -Infinity) {
-    return null;
-  }
-
-  const pickedFans = fansCombinations.find((fans) => getFansScore(fans) === maxScore);
+  calculateBestMahjong(fans, []);
 
   if (!pickedFans) {
     return null;

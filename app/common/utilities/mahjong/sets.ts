@@ -153,7 +153,7 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
   const firstTile = hand.at(0);
 
   if (!firstTile) {
-    return [];
+    return [[]];
   }
 
   const sets: TSet[][] = [];
