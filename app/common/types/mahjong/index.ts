@@ -227,6 +227,14 @@ export interface IKnittedChowSet extends IBaseSet {
 
 export type TSet = IPairSet | IPungSet | IKongSet | IChowSet | IKnittedChowSet;
 
+export type TConcealedSet<Set extends TSet = TSet> = Set & {
+  concealedType: ESetConcealedType.CONCEALED;
+};
+
+export type TMeldedSet<Set extends TSet = TSet> = Set & {
+  concealedType: ESetConcealedType.MELDED | ESetConcealedType.WINNING_MELDED;
+};
+
 export interface IHandFan {
   type: EFanType.HAND;
   fan: EFan;

@@ -3,7 +3,18 @@ import sortBy from 'lodash/sortBy';
 import { STANDARD_TILES } from '../../constants/games/mahjong';
 import { FAN_SCORES, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
-import { EFan, EFanType, EWind, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
+import {
+  EFan,
+  EFanType,
+  EWind,
+  IHandMahjong,
+  IKongSet,
+  TConcealedSet,
+  TFan,
+  TMeldedSet,
+  TSet,
+  TTile,
+} from 'common/types/mahjong';
 
 import { getSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
 import {
@@ -18,8 +29,8 @@ import {
 
 export interface IHandScoreOptions {
   hand: TTile[];
-  concealedSets: TSet[];
-  meldedSets: TSet[];
+  concealedSets: TConcealedSet<IKongSet>[];
+  meldedSets: TMeldedSet[];
   flowers: TTile[];
   seatWind: EWind;
   roundWind: EWind;

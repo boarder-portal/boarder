@@ -6,17 +6,17 @@ import {
   WIND_TO_STRING_MAP,
 } from 'common/constants/games/mahjong';
 
-import { ESet, ETileType, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
+import { ESet, ESetConcealedType, ETileType, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
 
 import { isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import { getSetTile } from 'common/utilities/mahjong/sets';
 
 const SET_NAMES: Record<ESet, string> = {
-  [ESet.PAIR]: 'pa',
-  [ESet.PUNG]: 'pu',
-  [ESet.KONG]: 'ko',
-  [ESet.CHOW]: 'ch',
-  [ESet.KNITTED_CHOW]: 'kn',
+  [ESet.PAIR]: 'pair',
+  [ESet.PUNG]: 'pung',
+  [ESet.KONG]: 'kong',
+  [ESet.CHOW]: 'chow',
+  [ESet.KNITTED_CHOW]: 'knit',
 };
 
 export function stringifyTile(tile: TTile): string {
@@ -36,7 +36,9 @@ export function stringifyTile(tile: TTile): string {
 }
 
 export function stringifySet(set: TSet): string {
-  return `${SET_NAMES[set.type]} ${stringifyTile(getSetTile(set))}`;
+  return `${set.concealedType === ESetConcealedType.CONCEALED ? 'c' : 'm'}_${SET_NAMES[set.type]} ${stringifyTile(
+    getSetTile(set),
+  )}`;
 }
 
 export function stringifyFan(fan: TFan): string {

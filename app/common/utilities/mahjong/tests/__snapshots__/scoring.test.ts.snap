@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`mahjong scoring basic scoring basic mahjong 1`] = `
+"221
+
+BIG_FOUR_WINDS (c_pung We, c_pung Ws, c_pung Ww, c_pung Wn)
+ALL_HONORS
+FOUR_CONCEALED_PUNGS (c_pung We, c_pung Ws, c_pung Ww, c_pung Wn)
+FULLY_CONCEALED_HAND
+SINGLE_WAIT
+
+c_pung We
+c_pung Ws
+c_pung Ww
+c_pung Wn
+c_pair Dr"
+`;
+
+exports[`mahjong scoring big four winds basic big four winds 1`] = `
+"171
+
+BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)
+ALL_HONORS
+THREE_CONCEALED_PUNGS (c_kong We, c_pung Ww, c_pung Wn)
+CONCEALED_KONG (c_kong We)
+SELF_DRAWN
+
+c_kong We
+m_pung Ws
+c_pung Ww
+c_pung Wn
+c_pair Dr"
+`;
