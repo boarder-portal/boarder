@@ -234,7 +234,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
       fans.push(areConcealedPungs ? EFan.CONCEALED_KONG : EFan.MELDED_KONG);
     }
 
-    if (areAllPungs && isHonor(firstSetTile)) {
+    if (areAllPungs && isTerminalOrHonor(firstSetTile)) {
       fans.push(EFan.PUNG_OF_TERMINALS_OR_HONORS);
     }
   }

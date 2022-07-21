@@ -300,7 +300,6 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
-
     describe('little four winds', () => {
       test('half flush', () => {
         expect(
@@ -331,6 +330,39 @@ describe('mahjong', () => {
               ],
               hand: parseTiles('WnWnDgDg'),
               winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('little three dragons', () => {
+      test('pung of terminals', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dr', ESetConcealedType.MELDED), parsePung('Dw', ESetConcealedType.MELDED)],
+              hand: parseTiles('DgDgd3d5c1c1c1'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all terminals and honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Dw', ESetConcealedType.MELDED),
+                parsePung('Dg', ESetConcealedType.MELDED),
+                parsePung('b1', ESetConcealedType.MELDED),
+                parsePung('b9', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('Dr'),
+              winningTile: parseTile('Dr'),
+              isSelfDraw: false,
             }),
           ),
         ).toMatchSnapshot();

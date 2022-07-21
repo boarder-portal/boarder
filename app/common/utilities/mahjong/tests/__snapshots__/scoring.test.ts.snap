@@ -256,6 +256,37 @@ c_chow d8
 c_pair Wn"
 `;
 
+exports[`mahjong scoring little three dragons all terminals and honors 1`] = `
+"108
+
+LITTLE_THREE_DRAGONS (m_pung Dw, m_pung Dg, m_pair Dr)
+ALL_TERMINALS_AND_HONORS
+HALF_FLUSH
+MELDED_HAND
+
+m_pung Dw
+m_pung Dg
+m_pung b1
+m_pung b9
+m_pair Dr"
+`;
+
+exports[`mahjong scoring little three dragons pung of terminals 1`] = `
+"68
+
+LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dw, c_pair Dg)
+ONE_VOIDED_SUIT
+PUNG_OF_TERMINALS_OR_HONORS (c_pung c1)
+SELF_DRAWN
+CLOSED_WAIT
+
+m_pung Dr
+m_pung Dw
+c_pung c1
+c_chow d4
+c_pair Dg"
+`;
+
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 
