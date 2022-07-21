@@ -300,5 +300,41 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('little four winds', () => {
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('We', ESetConcealedType.MELDED),
+                parsePung('Ws', ESetConcealedType.MELDED),
+                parsePung('Ww', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('Wnd7d8d9'),
+              winningTile: parseTile('Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('We', ESetConcealedType.MELDED),
+                parsePung('Ws', ESetConcealedType.MELDED),
+                parsePung('Ww', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('WnWnDgDg'),
+              winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

@@ -221,6 +221,41 @@ m_kong Wn
 m_pair We"
 `;
 
+exports[`mahjong scoring little four winds all honors 1`] = `
+"135
+
+ALL_HONORS
+LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
+PREVALENT_WIND (m_pung We)
+SEAT_WIND (m_pung We)
+DRAGON_PUNG (c_pung Dg)
+SELF_DRAWN
+
+m_pung We
+m_pung Ws
+m_pung Ww
+c_pung Dg
+c_pair Wn"
+`;
+
+exports[`mahjong scoring little four winds half flush 1`] = `
+"80
+
+LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
+HALF_FLUSH
+OUTSIDE_HAND
+PREVALENT_WIND (m_pung We)
+SEAT_WIND (m_pung We)
+SELF_DRAWN
+SINGLE_WAIT
+
+m_pung We
+m_pung Ws
+m_pung Ww
+c_chow d8
+c_pair Wn"
+`;
+
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 
