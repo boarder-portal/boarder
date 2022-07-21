@@ -60,5 +60,5 @@ export function stringifyMahjong(mahjong: IHandMahjong | null): string {
 
   return `${mahjong.score}
 
-${mahjong.fans.map(stringifyFan).join('\n')}${mahjong.sets && `\n\n${mahjong.sets.map(stringifySet).join('\n')}`}`;
+${mahjong.fans.map(stringifyFan).join('\n')}${mahjong.sets ? `\n\n${mahjong.sets.map(stringifySet).join('\n')}` : ''}`;
 }

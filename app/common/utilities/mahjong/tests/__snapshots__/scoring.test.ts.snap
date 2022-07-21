@@ -234,3 +234,10 @@ c_pair b6
 c_pair b7
 c_pair b8"
 `;
+
+exports[`mahjong scoring thirteen orphans basic 1`] = `
+"89
+
+THIRTEEN_ORPHANS
+SELF_DRAWN"
+`;

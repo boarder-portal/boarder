@@ -252,5 +252,18 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('thirteen orphans', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c9b1b9d1d9DrDgDwWwWeWsWn'),
+              winningTile: parseTile('Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
