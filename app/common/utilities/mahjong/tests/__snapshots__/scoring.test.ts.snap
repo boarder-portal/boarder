@@ -51,6 +51,39 @@ m_pung b8
 m_pair b6"
 `;
 
+exports[`mahjong scoring all honors big three winds 1`] = `
+"83
+
+ALL_HONORS
+BIG_THREE_WINDS (m_pung Ww, m_pung We, m_pung Wn)
+PREVALENT_WIND (m_pung We)
+SEAT_WIND (m_pung We)
+DRAGON_PUNG (c_pung Dw)
+SELF_DRAWN
+
+m_pung Ww
+m_pung We
+m_pung Wn
+c_pung Dw
+c_pair Dg"
+`;
+
+exports[`mahjong scoring all honors little three dragons 1`] = `
+"138
+
+ALL_HONORS
+LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pair Dw)
+MELDED_HAND
+PREVALENT_WIND (m_pung We)
+SEAT_WIND (m_pung We)
+
+m_pung Dr
+m_pung Dg
+m_pung We
+m_pung Ww
+m_pair Dw"
+`;
+
 exports[`mahjong scoring all terminals double pung x2 1`] = `
 "72
 

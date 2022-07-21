@@ -368,5 +368,42 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('all honors', () => {
+      test('big three winds', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Ww', ESetConcealedType.MELDED),
+                parsePung('We', ESetConcealedType.MELDED),
+                parsePung('Wn', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('DwDw DgDg'),
+              winningTile: parseTile('Dw'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('little three dragons', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Dr', ESetConcealedType.MELDED),
+                parsePung('Dg', ESetConcealedType.MELDED),
+                parsePung('We', ESetConcealedType.MELDED),
+                parsePung('Ww', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('Dw'),
+              winningTile: parseTile('Dw'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
