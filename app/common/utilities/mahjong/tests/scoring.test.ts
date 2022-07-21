@@ -78,5 +78,61 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('big three dragons', () => {
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Dr', ESetConcealedType.MELDED),
+                parsePung('Dg', ESetConcealedType.MELDED),
+                parsePung('Dw', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('c5c5c6c7'),
+              waits: parseTiles('c5c8'),
+              winningTile: parseTile('c5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('terminals', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Dr', ESetConcealedType.MELDED),
+                parsePung('Dg', ESetConcealedType.MELDED),
+                parsePung('Dw', ESetConcealedType.MELDED),
+                parsePung('d9', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('b1'),
+              waits: parseTiles('b1'),
+              winningTile: parseTile('b1'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('DrDrDr DgDgDg DwDwDw WwWwWw Wn'),
+              waits: parseTiles('Wn'),
+              winningTile: parseTile('Wn'),
+              isSelfDraw: false,
+              roundWind: EWind.WEST,
+              seatWind: EWind.WEST,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

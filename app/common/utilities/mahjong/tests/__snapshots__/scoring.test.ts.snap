@@ -31,6 +31,22 @@ c_pung Wn
 c_pair c6"
 `;
 
+exports[`mahjong scoring big four winds honors 1`] = `
+"171
+
+BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)
+ALL_HONORS
+THREE_CONCEALED_PUNGS (c_kong We, c_pung Ww, c_pung Wn)
+CONCEALED_KONG (c_kong We)
+SELF_DRAWN
+
+c_kong We
+m_pung Ws
+c_pung Ww
+c_pung Wn
+c_pair Dr"
+`;
+
 exports[`mahjong scoring big four winds terminals 1`] = `
 "144
 
@@ -47,18 +63,48 @@ m_pung Wn
 c_pair b9"
 `;
 
-exports[`mahjong scoring big four winds honors 1`] = `
-"171
+exports[`mahjong scoring big three dragons half flush 1`] = `
+"95
 
-BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)
-ALL_HONORS
-THREE_CONCEALED_PUNGS (c_kong We, c_pung Ww, c_pung Wn)
-CONCEALED_KONG (c_kong We)
+BIG_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pung Dw)
+HALF_FLUSH
 SELF_DRAWN
 
-c_kong We
-m_pung Ws
+m_pung Dr
+m_pung Dg
+m_pung Dw
+c_chow c6
+c_pair c5"
+`;
+
+exports[`mahjong scoring big three dragons honors 1`] = `
+"221
+
+BIG_THREE_DRAGONS (c_pung Dg, c_pung Dr, c_pung Dw)
+ALL_HONORS
+FOUR_CONCEALED_PUNGS (c_pung Ww, c_pung Dg, c_pung Dr, c_pung Dw)
+PREVALENT_WIND (c_pung Ww)
+SEAT_WIND (c_pung Ww)
+SINGLE_WAIT
+
 c_pung Ww
-c_pung Wn
-c_pair Dr"
+c_pung Dg
+c_pung Dr
+c_pung Dw
+m_pair Wn"
+`;
+
+exports[`mahjong scoring big three dragons terminals 1`] = `
+"127
+
+BIG_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pung Dw)
+ALL_TERMINALS_AND_HONORS
+MELDED_HAND
+ONE_VOIDED_SUIT
+
+m_pung Dr
+m_pung Dg
+m_pung Dw
+m_pung d9
+m_pair b1"
 `;

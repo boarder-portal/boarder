@@ -117,7 +117,7 @@ export interface ISetsVariationsOptions {
 
 export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
   const sortedHand = sortBy(options.hand, getTileSortValue);
-  const winningTile = sortedHand.at(-1);
+  const winningTile = options.hand.at(-1);
 
   if (!winningTile) {
     return [];
