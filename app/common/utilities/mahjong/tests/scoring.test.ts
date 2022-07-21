@@ -35,7 +35,35 @@ describe('mahjong', () => {
     });
 
     describe('big four winds', () => {
-      test('basic big four winds', () => {
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('We', ESetConcealedType.MELDED), parsePung('Ws', ESetConcealedType.MELDED)],
+              hand: parseTiles('WwWwWw WnWn c6c6'),
+              waits: parseTiles('Wnc6'),
+              winningTile: parseTile('Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('terminals', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('WeWeWe WsWsWs WwWwWw WnWn b9b9'),
+              waits: parseTiles('Wnb9'),
+              winningTile: parseTile('Wn'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('honors', () => {
         expect(
           stringifyMahjong(
             getHandMahjong({
@@ -43,7 +71,7 @@ describe('mahjong', () => {
               concealedSets: [parseKong('We', ESetConcealedType.CONCEALED)],
               meldedSets: [parsePung('Ws', ESetConcealedType.MELDED)],
               hand: parseTiles('WwWwWw WnWn DrDr'),
-              waits: parseTiles('Wn'),
+              waits: parseTiles('WnDr'),
               winningTile: parseTile('Wn'),
             }),
           ),

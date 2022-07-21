@@ -25,6 +25,14 @@ import {
 } from 'common/utilities/mahjong/tiles';
 import { getAllCombinations } from 'common/utilities/combinations';
 
+const SET_SORT_VALUES: Record<ESet, number> = {
+  [ESet.KNITTED_CHOW]: 0,
+  [ESet.KONG]: 1000,
+  [ESet.PUNG]: 2000,
+  [ESet.CHOW]: 3000,
+  [ESet.PAIR]: 4000,
+};
+
 export function isPair(set: TSet): set is IPairSet {
   return set.type === ESet.PAIR;
 }
@@ -93,6 +101,14 @@ export function getSetTile<Set extends TSet>(set: Set): Set['tiles'][number] {
   return set.type === ESet.CHOW || set.type === ESet.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
 }
 
+export function getSetSortValue(set: TSet): number {
+  if (isKnittedChow(set)) {
+    return getSetTile(set).value;
+  }
+
+  return SET_SORT_VALUES[set.type] + getTileSortValue(getSetTile(set));
+}
+
 export interface ISetsVariationsOptions {
   hand: TTile[];
   knownSets: TSet[];
@@ -111,7 +127,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
     hand: sortedHand,
     pairsFound: 0,
     allPairsAllowed: sortedHand.length === 14,
-  });
+  }).map((sets) => sortBy(sets, getSetSortValue));
 
   return setsVariations.flatMap((sets) => {
     if (options.isSelfDraw) {

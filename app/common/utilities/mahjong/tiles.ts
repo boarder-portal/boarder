@@ -146,11 +146,11 @@ export function getSortedValuesString(tiles: ISuitedTile[]): string {
 
 export function getTileSortValue(tile: TTile): number {
   if (isFlower(tile)) {
-    return 10000 + tile.index;
+    return 300 + tile.index;
   }
 
   if (isDragon(tile)) {
-    return 1000 + ALL_DRAGONS.indexOf(tile.color);
+    return 200 + ALL_DRAGONS.indexOf(tile.color);
   }
 
   if (isWind(tile)) {

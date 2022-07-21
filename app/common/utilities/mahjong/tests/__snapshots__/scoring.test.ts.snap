@@ -16,7 +16,38 @@ c_pung Wn
 c_pair Dr"
 `;
 
-exports[`mahjong scoring big four winds basic big four winds 1`] = `
+exports[`mahjong scoring big four winds half flush 1`] = `
+"97
+
+BIG_FOUR_WINDS (m_pung We, m_pung Ws, c_pung Ww, c_pung Wn)
+HALF_FLUSH
+TWO_CONCEALED_PUNGS (c_pung Ww, c_pung Wn)
+SELF_DRAWN
+
+m_pung We
+m_pung Ws
+c_pung Ww
+c_pung Wn
+c_pair c6"
+`;
+
+exports[`mahjong scoring big four winds terminals 1`] = `
+"144
+
+BIG_FOUR_WINDS (c_pung We, c_pung Ws, c_pung Ww, m_pung Wn)
+ALL_TERMINALS_AND_HONORS
+THREE_CONCEALED_PUNGS (c_pung We, c_pung Ws, c_pung Ww)
+HALF_FLUSH
+CONCEALED_HAND
+
+c_pung We
+c_pung Ws
+c_pung Ww
+m_pung Wn
+c_pair b9"
+`;
+
+exports[`mahjong scoring big four winds honors 1`] = `
 "171
 
 BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)

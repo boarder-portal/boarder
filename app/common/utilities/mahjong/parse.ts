@@ -6,14 +6,7 @@ import {
   SUITED_STRING_VALUES,
 } from 'common/constants/games/mahjong';
 
-import {
-  ESet,
-  ESetConcealedType,
-  ETileType,
-  IKongSet,
-  IPungSet,
-  TTile,
-} from 'common/types/mahjong';
+import { ESet, ESetConcealedType, ETileType, IKongSet, IPungSet, TTile } from 'common/types/mahjong';
 
 export function parseTiles(tilesString: string): TTile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
