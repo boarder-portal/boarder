@@ -187,5 +187,33 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('nine gates', () => {
+      test('edge', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c1c1c2c3c4c5c6c7c8c9c9c9'),
+              waits: parseTiles('c1c2c3c4c5c6c7c8c9'),
+              winningTile: parseTile('c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('middle', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c1c1c2c3c4c5c6c7c8c9c9c9'),
+              waits: parseTiles('c1c2c3c4c5c6c7c8c9'),
+              winningTile: parseTile('c5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
