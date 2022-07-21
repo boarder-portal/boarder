@@ -43,7 +43,7 @@ export interface IHandScoreOptions {
 
 export interface IHandScoreFullOptions extends IHandScoreOptions {
   winningTile: TTile;
-  waits: TTile[];
+  waits?: TTile[];
 }
 
 export function getAllWaits(options: IHandScoreOptions): TTile[] {
@@ -70,7 +70,8 @@ export function getAllWaits(options: IHandScoreOptions): TTile[] {
 }
 
 export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
-  const { hand, concealedSets, meldedSets, winningTile, seatWind, roundWind } = options;
+  const { hand, concealedSets, meldedSets, winningTile, seatWind, roundWind, isSelfDraw } = options;
+  const waits = options.waits ?? getAllWaits(options);
   const knownSets = [...concealedSets, ...meldedSets];
 
   if (knownSets.length * 3 + hand.length !== 13) {
@@ -89,7 +90,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   const setsVariations = getSetsVariations({
     hand: [...hand, winningTile],
     knownSets: [...concealedSets, ...meldedSets],
-    isSelfDraw: options.isSelfDraw,
+    isSelfDraw,
   });
 
   let mahjong: IHandMahjong | null = null;
@@ -103,8 +104,8 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 
   if (setsVariations.length > 0) {
     setsVariations.forEach((sets) => {
-      const wholeHandSetsFans = getWholeHandSetsFans(sets, options.isSelfDraw);
-      const specialSetsFans = getSpecialSetsFans(sets, winningTile, options.waits);
+      const wholeHandSetsFans = getWholeHandSetsFans(sets, isSelfDraw);
+      const specialSetsFans = getSpecialSetsFans(sets, winningTile, waits);
       const setsFans: TFan[] = [];
 
       getSetsCombinations(sets).forEach((sets) => {
