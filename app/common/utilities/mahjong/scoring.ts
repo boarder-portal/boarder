@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy';
 import { STANDARD_TILES } from '../../constants/games/mahjong';
 import { FAN_SCORES, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
-import { EFan, EFanType, EWind, TSet, TTile } from 'common/types/mahjong';
+import { EFan, EFanType, EWind, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
 
 import { getSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
 import {
@@ -33,30 +33,6 @@ export interface IHandScoreOptions {
 export interface IHandScoreFullOptions extends IHandScoreOptions {
   winningTile: TTile;
   waits: TTile[];
-}
-
-export interface IHandFan {
-  type: EFanType.HAND;
-  fan: EFan;
-}
-
-export interface ISetsFan {
-  type: EFanType.SETS;
-  fan: EFan;
-  sets: TSet[];
-}
-
-export interface ISpecialFan {
-  type: EFanType.SPECIAL;
-  fan: EFan;
-  tiles: TTile[];
-}
-
-export type TFan = IHandFan | ISetsFan | ISpecialFan;
-
-export interface IHandMahjong {
-  fans: TFan[];
-  score: number;
 }
 
 export function getAllWaits(options: IHandScoreOptions): TTile[] {
@@ -114,8 +90,6 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     return null;
   }
 
-  console.log(setsVariations);
-
   if (setsVariations.length > 0) {
     setsVariations.forEach((sets) => {
       const wholeHandSetsFans = getWholeHandSetsFans(sets, options.isSelfDraw);
@@ -135,14 +109,14 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
         });
       }
 
-      const fansMahjong = getBestFansMahjong(fans);
+      const fansMahjong = getBestFansMahjong(fans, sets);
 
       if (!mahjong || (fansMahjong && fansMahjong.score > mahjong.score)) {
         mahjong = fansMahjong;
       }
     });
   } else {
-    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans]);
+    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans], null);
   }
 
   if (!mahjong) {
@@ -152,7 +126,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   return mahjong;
 }
 
-function getBestFansMahjong(fans: TFan[]): IHandMahjong | null {
+function getBestFansMahjong(fans: TFan[], sets: TSet[] | null): IHandMahjong | null {
   fans = sortBy(fans, ({ fan }) => -FAN_SCORES[fan]);
 
   let pickedFans = null as TFan[] | null;
@@ -197,5 +171,5 @@ function getBestFansMahjong(fans: TFan[]): IHandMahjong | null {
     return null;
   }
 
-  return { fans: pickedFans, score: getFansScore(pickedFans) };
+  return { fans: pickedFans, sets, score: getFansScore(pickedFans) };
 }

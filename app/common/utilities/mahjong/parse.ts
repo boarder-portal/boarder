@@ -88,7 +88,7 @@ export function parsePung(pungTileString: string, concealedType = ESetConcealedT
 export function parseKong(kongTileString: string, concealedType = ESetConcealedType.CONCEALED): IKongSet {
   return {
     type: ESet.KONG,
-    tiles: parseTiles(kongTileString.repeat(3)),
+    tiles: parseTiles(kongTileString.repeat(4)),
     concealedType,
   };
 }

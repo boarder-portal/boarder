@@ -9,5 +9,18 @@
     ],
     "@babel/typescript"
   ],
-  "plugins": ["@loadable/babel-plugin"]
+  "plugins": [
+    "@loadable/babel-plugin",
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "server": "./app/server",
+          "client": "./app/client",
+          "common": "./app/common"
+        }
+      }
+    ]
+  ]
 }

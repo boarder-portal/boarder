@@ -17,6 +17,6 @@
       "common/*": ["./app/common/*"]
     }
   },
-  "include": ["./app/**/*"],
+  "include": ["./app/**/*", "./test/**/*"],
   "exclude": ["**/node_modules/*", "**/build/*", "**/.cache/*", "**/dist/*"]
 }

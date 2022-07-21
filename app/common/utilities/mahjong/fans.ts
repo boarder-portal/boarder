@@ -9,7 +9,18 @@ import {
 } from 'common/constants/games/mahjong';
 import { FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
-import { EFan, EFanType, ESetConcealedType, EWind, TSet, TTile } from 'common/types/mahjong';
+import {
+  EFan,
+  EFanType,
+  ESetConcealedType,
+  EWind,
+  IHandFan,
+  ISetsFan,
+  ISpecialFan,
+  TFan,
+  TSet,
+  TTile,
+} from 'common/types/mahjong';
 
 import {
   areSameValues,
@@ -30,7 +41,7 @@ import {
   tilesContainTile,
   wind,
 } from 'common/utilities/mahjong/tiles';
-import { IHandFan, IHandScoreFullOptions, ISetsFan, ISpecialFan, TFan } from 'common/utilities/mahjong/scoring';
+import { IHandScoreFullOptions } from 'common/utilities/mahjong/scoring';
 import {
   areChows,
   areKongs,
@@ -404,7 +415,7 @@ export function getSpecialSetsFans(sets: TSet[], winningTile: TTile, waits: TTil
   const tileHogFans: TFan[] = getTileHogs(sets).map((tile) => ({
     type: EFanType.SPECIAL,
     fan: EFan.TILE_HOG,
-    tiles: [tile],
+    tile,
   }));
 
   fans.push(...tileHogFans);
@@ -438,7 +449,7 @@ export function getSpecialSetsFans(sets: TSet[], winningTile: TTile, waits: TTil
       const waitFans: TFan[] = waitTypes.slice(0, 1).map((waitFan) => ({
         type: EFanType.SPECIAL,
         fan: waitFan,
-        tiles: [],
+        tile: null,
       }));
 
       fans.push(...waitFans);
@@ -455,7 +466,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     fans.push({
       type: EFanType.SPECIAL,
       fan: options.isSelfDraw ? EFan.LAST_TILE_DRAW : EFan.LAST_TILE_CLAIM,
-      tiles: [],
+      tile: null,
     });
   }
 
@@ -463,7 +474,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.OUT_WITH_REPLACEMENT_TILE,
-      tiles: [],
+      tile: null,
     });
   }
 
@@ -471,7 +482,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.ROBBING_THE_KONG,
-      tiles: [],
+      tile: null,
     });
   }
 
@@ -479,7 +490,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.LAST_TILE,
-      tiles: [],
+      tile: null,
     });
   }
 
@@ -487,14 +498,14 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.SELF_DRAWN,
-      tiles: [],
+      tile: null,
     });
   }
 
   const flowerFans: TFan[] = options.flowers.map((flower) => ({
     type: EFanType.SPECIAL,
     fan: EFan.FLOWER_TILES,
-    tiles: [flower],
+    tile: flower,
   }));
 
   fans.push(...flowerFans);

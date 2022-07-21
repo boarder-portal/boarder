@@ -227,6 +227,31 @@ export interface IKnittedChowSet extends IBaseSet {
 
 export type TSet = IPairSet | IPungSet | IKongSet | IChowSet | IKnittedChowSet;
 
+export interface IHandFan {
+  type: EFanType.HAND;
+  fan: EFan;
+}
+
+export interface ISetsFan {
+  type: EFanType.SETS;
+  fan: EFan;
+  sets: TSet[];
+}
+
+export interface ISpecialFan {
+  type: EFanType.SPECIAL;
+  fan: EFan;
+  tile: TTile | null;
+}
+
+export type TFan = IHandFan | ISetsFan | ISpecialFan;
+
+export interface IHandMahjong {
+  fans: TFan[];
+  sets: TSet[] | null;
+  score: number;
+}
+
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {}
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.MAHJONG> {}
