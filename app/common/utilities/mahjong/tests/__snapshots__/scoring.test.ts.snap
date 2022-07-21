@@ -51,6 +51,37 @@ m_pung b8
 m_pair b6"
 `;
 
+exports[`mahjong scoring all terminals double pung x2 1`] = `
+"72
+
+ALL_TERMINALS
+DOUBLE_PUNG (m_pung d1, m_pung b1)
+DOUBLE_PUNG (c_pung b9, c_pung c9)
+TWO_CONCEALED_PUNGS (c_pung b9, c_pung c9)
+SELF_DRAWN
+SINGLE_WAIT
+
+m_pung d1
+m_pung b1
+c_pung b9
+c_pung c9
+c_pair c1"
+`;
+
+exports[`mahjong scoring all terminals triple pung 1`] = `
+"86
+
+ALL_TERMINALS
+TRIPLE_PUNG (m_pung b9, m_pung d9, m_pung c9)
+MELDED_HAND
+
+m_pung b9
+m_pung d9
+m_pung c9
+m_pung d1
+m_pair b1"
+`;
+
 exports[`mahjong scoring basic scoring basic mahjong 1`] = `
 "221
 
