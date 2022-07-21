@@ -160,6 +160,36 @@ m_pung d9
 m_pair b1"
 `;
 
+exports[`mahjong scoring four kongs all types 1`] = `
+"97
+
+FOUR_KONGS (c_kong b3, m_kong c5, m_kong d8, m_kong Dr)
+ALL_TYPES
+DRAGON_PUNG (m_kong Dr)
+SELF_DRAWN
+
+c_kong b3
+m_kong c5
+m_kong d8
+m_kong Dr
+c_pair We"
+`;
+
+exports[`mahjong scoring four kongs big three dragons 1`] = `
+"246
+
+FOUR_KONGS (m_kong Dr, m_kong Dg, m_kong Dw, m_kong Wn)
+BIG_THREE_DRAGONS (m_kong Dr, m_kong Dg, m_kong Dw)
+ALL_HONORS
+MELDED_HAND
+
+m_kong Dr
+m_kong Dg
+m_kong Dw
+m_kong Wn
+m_pair We"
+`;
+
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 

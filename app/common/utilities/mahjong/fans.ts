@@ -220,12 +220,14 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
       fans.push(EFan.DRAGON_PUNG);
     }
 
-    if (areWinds && isEqualTiles(firstSetTile, wind(roundWind))) {
-      fans.push(EFan.PREVALENT_WIND);
-    }
+    if (areWinds && areAllPungs) {
+      if (isEqualTiles(firstSetTile, wind(roundWind))) {
+        fans.push(EFan.PREVALENT_WIND);
+      }
 
-    if (areWinds && isEqualTiles(firstSetTile, wind(seatWind))) {
-      fans.push(EFan.SEAT_WIND);
+      if (isEqualTiles(firstSetTile, wind(seatWind))) {
+        fans.push(EFan.SEAT_WIND);
+      }
     }
 
     if (areAllKongs) {

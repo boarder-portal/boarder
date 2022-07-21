@@ -215,5 +215,46 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('four kongs', () => {
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              concealedSets: [parseKong('b3', ESetConcealedType.CONCEALED)],
+              meldedSets: [
+                parseKong('c5', ESetConcealedType.MELDED),
+                parseKong('d8', ESetConcealedType.MELDED),
+                parseKong('Dr', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('We'),
+              waits: parseTiles('We'),
+              winningTile: parseTile('We'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('big three dragons', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parseKong('Dr', ESetConcealedType.MELDED),
+                parseKong('Dg', ESetConcealedType.MELDED),
+                parseKong('Dw', ESetConcealedType.MELDED),
+                parseKong('Wn', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('We'),
+              waits: parseTiles('We'),
+              winningTile: parseTile('We'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
