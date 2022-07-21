@@ -1,7 +1,7 @@
 import { ESetConcealedType, EWind } from 'common/types/mahjong';
 
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
-import { parseKong, parsePung, parseTile, parseTiles } from 'common/utilities/mahjong/parse';
+import { parseChow, parseKong, parsePung, parseTile, parseTiles } from 'common/utilities/mahjong/parse';
 import { stringifyMahjong } from 'common/utilities/mahjong/stringify';
 
 const standardOptions = {
@@ -129,6 +129,59 @@ describe('mahjong', () => {
               isSelfDraw: false,
               roundWind: EWind.WEST,
               seatWind: EWind.WEST,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    describe('all green', () => {
+      test('pure shifted pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('b2', ESetConcealedType.MELDED),
+                parsePung('b3', ESetConcealedType.MELDED),
+                parsePung('b4', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('DgDgb6b6'),
+              waits: parseTiles('Dgb6'),
+              winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('triple chow', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parseChow('b3', ESetConcealedType.MELDED),
+                parseChow('b3', ESetConcealedType.MELDED),
+                parseChow('b3', ESetConcealedType.MELDED),
+                parsePung('b8', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('b6'),
+              waits: parseTiles('b6'),
+              winningTile: parseTile('b6'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('seven pairs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b2b2b3b3b4b4b6b6b8b8b8b8Dg'),
+              waits: parseTiles('Dg'),
+              winningTile: parseTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();

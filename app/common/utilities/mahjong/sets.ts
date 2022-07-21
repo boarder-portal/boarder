@@ -296,13 +296,17 @@ export function getTileHogs(sets: TSet[]): TTile[] {
 
   sets
     .flatMap(({ tiles }) => tiles)
-    .forEach((tile) => {
+    .forEach((tile, _, tiles) => {
       if (tilesContainTile(tileHogs, tile)) {
         return;
       }
 
       if (sets.some((set) => isKong(set) && isEqualTiles(getSetTile(set), tile))) {
         return;
+      }
+
+      if (tiles.filter(isEqualTilesCallback(tile)).length === 4) {
+        tileHogs.push(tile);
       }
     });
 

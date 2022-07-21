@@ -1,5 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`mahjong scoring all green pure shifted pungs 1`] = `
+"127
+
+ALL_GREEN
+PURE_SHIFTED_PUNGS (m_pung b2, m_pung b3, m_pung b4)
+HALF_FLUSH
+ALL_PUNGS
+DRAGON_PUNG (c_pung Dg)
+SELF_DRAWN
+
+m_pung b2
+m_pung b3
+m_pung b4
+c_pung Dg
+c_pair b6"
+`;
+
+exports[`mahjong scoring all green seven pairs 1`] = `
+"124
+
+ALL_GREEN
+SEVEN_PAIRS
+HALF_FLUSH
+FULLY_CONCEALED_HAND
+TILE_HOG (b8)
+
+c_pair b2
+c_pair b3
+c_pair b4
+c_pair b6
+c_pair b8
+c_pair b8
+c_pair Dg"
+`;
+
+exports[`mahjong scoring all green triple chow 1`] = `
+"144
+
+ALL_GREEN
+FULL_FLUSH
+PURE_TRIPLE_CHOW (m_chow b3, m_chow b3, m_chow b3)
+MELDED_HAND
+ALL_SIMPLES
+
+m_chow b3
+m_chow b3
+m_chow b3
+m_pung b8
+m_pair b6"
+`;
+
 exports[`mahjong scoring basic scoring basic mahjong 1`] = `
 "221
 

@@ -6,7 +6,9 @@ import {
   SUITED_STRING_VALUES,
 } from 'common/constants/games/mahjong';
 
-import { ESet, ESetConcealedType, ETileType, IKongSet, IPungSet, TTile } from 'common/types/mahjong';
+import { ESet, ESetConcealedType, ETileType, IChowSet, IKongSet, IPungSet, TTile } from 'common/types/mahjong';
+
+import { isSuited, suited } from 'common/utilities/mahjong/tiles';
 
 export function parseTiles(tilesString: string): TTile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
@@ -95,6 +97,23 @@ export function parseKong<ConcealedType extends ESetConcealedType>(
   return {
     type: ESet.KONG,
     tiles: parseTiles(kongTileString.repeat(4)),
+    concealedType,
+  };
+}
+
+export function parseChow<ConcealedType extends ESetConcealedType>(
+  chowTileString: string,
+  concealedType: ConcealedType,
+): IChowSet & { concealedType: ConcealedType } {
+  const chowTile = parseTile(chowTileString);
+
+  if (!isSuited(chowTile) || chowTile.value === 1 || chowTile.value === 9) {
+    throw new Error(`Wrong chow tile ${chowTileString}`);
+  }
+
+  return {
+    type: ESet.CHOW,
+    tiles: [suited(chowTile.value - 1, chowTile.suit), chowTile, suited(chowTile.value + 1, chowTile.suit)],
     concealedType,
   };
 }
