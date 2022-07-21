@@ -1,6 +1,6 @@
 import { ESuit, ICard } from 'common/types/cards';
 
-import { isHeart, isQueenOfSpades } from 'common/utilities/hearts';
+import { isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
 
 export interface IAllowedCardOptions {
   card: ICard;

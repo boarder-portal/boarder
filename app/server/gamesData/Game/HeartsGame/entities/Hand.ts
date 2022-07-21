@@ -12,7 +12,7 @@ import { ESuit, ICard } from 'common/types/cards';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts';
+import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Turn from 'server/gamesData/Game/HeartsGame/entities/Turn';
