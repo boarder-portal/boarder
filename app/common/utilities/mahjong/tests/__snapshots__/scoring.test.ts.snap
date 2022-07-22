@@ -392,6 +392,39 @@ c_chow d8
 c_pair d5"
 `;
 
+exports[`mahjong scoring quadruple chow basic 1`] = `
+"57
+
+QUADRUPLE_CHOW (m_chow b2, c_chow b2, c_chow b2, c_chow b2)
+OUTSIDE_HAND
+ALL_CHOWS
+ONE_VOIDED_SUIT
+SELF_DRAWN
+SINGLE_WAIT
+
+m_chow b2
+c_chow b2
+c_chow b2
+c_chow b2
+c_pair c9"
+`;
+
+exports[`mahjong scoring quadruple chow concealed 1`] = `
+"59
+
+QUADRUPLE_CHOW (c_chow b2, c_chow b2, c_chow b2, c_chow b2)
+FULLY_CONCEALED_HAND
+OUTSIDE_HAND
+ALL_CHOWS
+ONE_VOIDED_SUIT
+
+c_chow b2
+c_chow b2
+c_chow b2
+c_chow b2
+c_pair c9"
+`;
+
 exports[`mahjong scoring seven shifted pairs all simples 1`] = `
 "94
 

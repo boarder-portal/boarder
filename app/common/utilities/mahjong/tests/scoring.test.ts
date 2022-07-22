@@ -430,5 +430,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    // 48 points
+    describe('quadruple chow', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2', ESetConcealedType.MELDED)],
+              hand: parseTiles('b1b1b1 b2b2b2 b3b3b3 c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('concealed', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b1b1b1b1 b2b2b2b2 b3b3b3 c9c9'),
+              winningTile: parseTile('b3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

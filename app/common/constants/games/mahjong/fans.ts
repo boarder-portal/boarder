@@ -19,7 +19,7 @@ export const FAN_SCORES: Record<EFan, number> = {
   [EFan.PURE_TERMINAL_CHOWS]: 64,
 
   // 48 points
-  [EFan.QUADRUPLE_CHOWS]: 48,
+  [EFan.QUADRUPLE_CHOW]: 48,
   [EFan.FOUR_PURE_SHIFTED_PUNGS]: 48,
 
   // 32 points

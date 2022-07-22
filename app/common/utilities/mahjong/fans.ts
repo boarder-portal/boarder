@@ -117,7 +117,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
     }
 
     if (arePureChows) {
-      fans.push(EFan.QUADRUPLE_CHOWS);
+      fans.push(EFan.QUADRUPLE_CHOW);
     }
 
     if (arePureShiftedPungs) {
