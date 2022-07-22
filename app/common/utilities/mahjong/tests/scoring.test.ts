@@ -417,5 +417,18 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('pure terminal chows', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d2', ESetConcealedType.MELDED)],
+              hand: parseTiles('d1d2d3 d5 d7d7d8d8d9d9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
