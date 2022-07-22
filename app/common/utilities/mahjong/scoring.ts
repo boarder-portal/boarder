@@ -1,11 +1,13 @@
 import sortBy from 'lodash/sortBy';
 
-import { STANDARD_TILES } from '../../constants/games/mahjong';
+import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong';
 import { FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
   EFan,
   EFanType,
+  ESet,
+  ESetConcealedType,
   EWind,
   IHandMahjong,
   IKongSet,
@@ -26,6 +28,7 @@ import {
   getWholeHandFans,
   getWholeHandSetsFans,
 } from 'common/utilities/mahjong/fans';
+import { isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
 
 export interface IHandScoreOptions {
   hand: TTile[];
@@ -134,7 +137,31 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
       }
     });
   } else {
-    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans], null, waits);
+    const fans = [...wholeHandFans, ...specialFans];
+
+    if (wholeHandFans.some(({ fan }) => fan === EFan.LESSER_HONORS_AND_KNITTED_TILES)) {
+      const simples = wholeHand.filter((tile) => !isHonor(tile));
+
+      if (simples.length === 9) {
+        const knittedSequence = KNITTED_SEQUENCES.find((knittedChows) =>
+          knittedChows.every((knittedChow) => isTileSubset(knittedChow, simples)),
+        );
+
+        if (knittedSequence) {
+          fans.push({
+            type: EFanType.SETS,
+            fan: EFan.KNITTED_STRAIGHT,
+            sets: knittedSequence.map((tiles) => ({
+              type: ESet.KNITTED_CHOW,
+              tiles,
+              concealedType: ESetConcealedType.CONCEALED,
+            })),
+          });
+        }
+      }
+    }
+
+    mahjong = getBestFansMahjong(fans, null, waits);
   }
 
   if (!mahjong) {

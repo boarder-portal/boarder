@@ -579,3 +579,48 @@ b1 b9 c1 c9 d1 d9 Dg Dr Dw We Ws Ww Wn
 THIRTEEN_ORPHANS
 SELF_DRAWN"
 `;
+
+exports[`mahjong scoring three kongs all types 1`] = `
+"50
+
+b1
+
+THREE_KONGS (c_kong Dr, c_kong c9, m_kong Ww)
+ALL_TYPES
+OUTSIDE_HAND
+DRAGON_PUNG (c_kong Dr)
+TWO_CONCEALED_PUNGS (c_kong Dr, c_kong c9)
+PUNG_OF_TERMINALS_OR_HONORS (c_kong c9)
+PUNG_OF_TERMINALS_OR_HONORS (m_kong Ww)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_kong Dr
+c_kong c9
+m_kong Ww
+c_chow d2
+c_pair b1"
+`;
+
+exports[`mahjong scoring three kongs upper tiles 1`] = `
+"108
+
+d9
+
+THREE_KONGS (c_kong c7, c_kong c8, c_kong c9)
+PURE_SHIFTED_PUNGS (c_kong c7, c_kong c8, c_kong c9)
+UPPER_TILES
+THREE_CONCEALED_PUNGS (c_kong c7, c_kong c8, c_kong c9)
+ALL_PUNGS
+DOUBLE_PUNG (c_kong c9, m_pung b9)
+PUNG_OF_TERMINALS_OR_HONORS (c_kong c9)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung b9)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_kong c7
+c_kong c8
+c_kong c9
+m_pung b9
+c_pair d9"
+`;

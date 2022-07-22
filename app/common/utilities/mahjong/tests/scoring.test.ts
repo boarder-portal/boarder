@@ -467,5 +467,41 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('three kongs', () => {
+      test('upper tiles', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b9')],
+              concealedSets: [
+                parseKong('c7', ESetConcealedType.CONCEALED),
+                parseKong('c8', ESetConcealedType.CONCEALED),
+                parseKong('c9', ESetConcealedType.CONCEALED),
+              ],
+              hand: parseTiles('d9'),
+              winningTile: parseTile('d9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseKong('Ww', ESetConcealedType.MELDED)],
+              concealedSets: [
+                parseKong('Dr', ESetConcealedType.CONCEALED),
+                parseKong('c9', ESetConcealedType.CONCEALED),
+              ],
+              hand: parseTiles('d1d2d3 b1'),
+              winningTile: parseTile('b1'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
