@@ -26,7 +26,6 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               hand: parseTiles('WeWeWe WsWsWs WwWwWw WnWnWn Dr'),
-              winningTile: parseTile('Dr'),
             }),
           ),
         ).toMatchSnapshot();
@@ -105,7 +104,6 @@ describe('mahjong', () => {
                 parsePung('d9', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('b1'),
-              winningTile: parseTile('b1'),
               isSelfDraw: false,
             }),
           ),
@@ -118,7 +116,6 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               hand: parseTiles('DrDrDr DgDgDg DwDwDw WwWwWw Wn'),
-              winningTile: parseTile('Wn'),
               isSelfDraw: false,
               roundWind: EWind.WEST,
               seatWind: EWind.WEST,
@@ -157,7 +154,6 @@ describe('mahjong', () => {
                 parsePung('b8', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('b6'),
-              winningTile: parseTile('b6'),
               isSelfDraw: false,
             }),
           ),
@@ -170,7 +166,6 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               hand: parseTiles('b2b2 b3b3 b4b4 b6b6 b8b8 b8b8 Dg'),
-              winningTile: parseTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -214,7 +209,6 @@ describe('mahjong', () => {
                 parseKong('Dr', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('We'),
-              winningTile: parseTile('We'),
             }),
           ),
         ).toMatchSnapshot();
@@ -232,7 +226,6 @@ describe('mahjong', () => {
                 parseKong('Wn', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('We'),
-              winningTile: parseTile('We'),
               isSelfDraw: false,
             }),
           ),
@@ -275,7 +268,6 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parsePung('d1', ESetConcealedType.MELDED), parsePung('b1', ESetConcealedType.MELDED)],
               hand: parseTiles('b9b9b9 c9c9c9 c1'),
-              winningTile: parseTile('c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -293,7 +285,6 @@ describe('mahjong', () => {
                 parsePung('d1', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('b1'),
-              winningTile: parseTile('b1'),
               isSelfDraw: false,
             }),
           ),
@@ -311,8 +302,7 @@ describe('mahjong', () => {
                 parsePung('Ws', ESetConcealedType.MELDED),
                 parsePung('Ww', ESetConcealedType.MELDED),
               ],
-              hand: parseTiles('Wnd7d8d9'),
-              winningTile: parseTile('Wn'),
+              hand: parseTiles('Wn d7d8d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -328,7 +318,7 @@ describe('mahjong', () => {
                 parsePung('Ws', ESetConcealedType.MELDED),
                 parsePung('Ww', ESetConcealedType.MELDED),
               ],
-              hand: parseTiles('WnWnDgDg'),
+              hand: parseTiles('WnWn DgDg'),
               winningTile: parseTile('Dg'),
             }),
           ),
@@ -342,8 +332,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr', ESetConcealedType.MELDED), parsePung('Dw', ESetConcealedType.MELDED)],
-              hand: parseTiles('DgDgd3d5c1c1c1'),
-              winningTile: parseTile('d4'),
+              hand: parseTiles('DgDg d3d5 c1c1c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -361,7 +350,6 @@ describe('mahjong', () => {
                 parsePung('b9', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('Dr'),
-              winningTile: parseTile('Dr'),
               isSelfDraw: false,
             }),
           ),
@@ -398,8 +386,32 @@ describe('mahjong', () => {
                 parsePung('Ww', ESetConcealedType.MELDED),
               ],
               hand: parseTiles('Dw'),
-              winningTile: parseTile('Dw'),
               isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('four concealed pungs', () => {
+      test('from discard', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d1d1d1 d7d7d7 c8c8c8 b5b5b5 b8'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('from wall', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d3d3d3 d4d4d4 b7b7b7 WwWw c9c9'),
+              winningTile: parseTile('c9'),
             }),
           ),
         ).toMatchSnapshot();

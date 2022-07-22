@@ -42,7 +42,7 @@ export interface IHandScoreOptions {
 }
 
 export interface IHandScoreFullOptions extends IHandScoreOptions {
-  winningTile: TTile;
+  winningTile?: TTile;
   waits?: TTile[];
 }
 
@@ -70,8 +70,14 @@ export function getAllWaits(options: IHandScoreOptions): TTile[] {
 }
 
 export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
-  const { hand, concealedSets, meldedSets, winningTile, seatWind, roundWind, isSelfDraw } = options;
+  const { hand, concealedSets, meldedSets, seatWind, roundWind, isSelfDraw } = options;
   const waits = options.waits ?? getAllWaits(options);
+  const winningTile = options.winningTile ?? waits.at(0);
+
+  if (!winningTile) {
+    return null;
+  }
+
   const knownSets = [...concealedSets, ...meldedSets];
 
   if (knownSets.length * 3 + hand.length !== 13) {

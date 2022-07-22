@@ -224,6 +224,35 @@ m_pung d9
 m_pair b1"
 `;
 
+exports[`mahjong scoring four concealed pungs from discard 1`] = `
+"67
+
+FOUR_CONCEALED_PUNGS (c_pung b5, c_pung c8, c_pung d1, c_pung d7)
+NO_HONORS
+PUNG_OF_TERMINALS_OR_HONORS (c_pung d1)
+SINGLE_WAIT
+
+c_pung b5
+c_pung c8
+c_pung d1
+c_pung d7
+m_pair b8"
+`;
+
+exports[`mahjong scoring four concealed pungs from wall 1`] = `
+"69
+
+FOUR_CONCEALED_PUNGS (c_pung b7, c_pung c9, c_pung d3, c_pung d4)
+FULLY_CONCEALED_HAND
+PUNG_OF_TERMINALS_OR_HONORS (c_pung c9)
+
+c_pung b7
+c_pung c9
+c_pung d3
+c_pung d4
+c_pair Ww"
+`;
+
 exports[`mahjong scoring four kongs all types 1`] = `
 "97
 
