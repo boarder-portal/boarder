@@ -87,6 +87,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
   const setsTiles = sets.map(getSetTile);
   const firstSetTile = getSetTile(firstSet);
   const suitsCount = getSuitsCount(setsTiles);
+  const pungsCount = sets.filter(isPung).length;
   const areAllSuited = areSuited(setsTiles);
   const areAllSameValues = areAllSuited && areSameValues(setsTiles);
   const areAllPungs = arePungs(sets);
@@ -104,7 +105,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
   const fans: EFan[] = [];
 
   if (sets.length === 4) {
-    if (areWinds) {
+    if (areWinds && pungsCount >= 3) {
       fans.push(areAllPungs ? EFan.BIG_FOUR_WINDS : EFan.LITTLE_FOUR_WINDS);
     }
 
@@ -128,7 +129,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
       fans.push(EFan.FOUR_PURE_SHIFTED_CHOWS);
     }
   } else if (sets.length === 3) {
-    if (areDragons) {
+    if (areDragons && pungsCount >= 2) {
       fans.push(areAllPungs ? EFan.BIG_THREE_DRAGONS : EFan.LITTLE_THREE_DRAGONS);
     }
 

@@ -503,5 +503,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('all terminals and honors', () => {
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dr')],
+              hand: parseTiles('c1c1c1 d1d1d1 b9b9b9 Ws'),
+              winningTile: parseTile('Ws'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('seven pairs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c1 c1c1 d1d1 d1d1 DrDr DwDw Dg'),
+              winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

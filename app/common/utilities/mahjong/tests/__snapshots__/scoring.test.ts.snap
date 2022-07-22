@@ -94,6 +94,47 @@ m_pung Ww
 m_pair Dw"
 `;
 
+exports[`mahjong scoring all terminals and honors all types 1`] = `
+"60
+
+Ws
+
+ALL_TERMINALS_AND_HONORS
+THREE_CONCEALED_PUNGS (c_pung b9, c_pung c1, c_pung d1)
+ALL_TYPES
+DRAGON_PUNG (m_pung Dr)
+DOUBLE_PUNG (c_pung c1, c_pung d1)
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung Dr
+c_pung b9
+c_pung c1
+c_pung d1
+c_pair Ws"
+`;
+
+exports[`mahjong scoring all terminals and honors seven pairs 1`] = `
+"65
+
+Dg
+
+ALL_TERMINALS_AND_HONORS
+SEVEN_PAIRS
+FULLY_CONCEALED_HAND
+TILE_HOG (c1)
+TILE_HOG (d1)
+ONE_VOIDED_SUIT
+
+c_pair c1
+c_pair c1
+c_pair d1
+c_pair d1
+c_pair Dg
+c_pair Dr
+c_pair Dw"
+`;
+
 exports[`mahjong scoring all terminals double pung x2 1`] = `
 "72
 
