@@ -18,6 +18,7 @@
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "eslintFix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "test": "jest",
+    "testUpdate": "jest -u",
     "testCoverage": "jest --coverage"
   },
   "alias": {

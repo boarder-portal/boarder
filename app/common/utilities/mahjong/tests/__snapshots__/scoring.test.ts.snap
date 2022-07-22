@@ -3,6 +3,8 @@
 exports[`mahjong scoring all green pure shifted pungs 1`] = `
 "127
 
+b6 Dg
+
 ALL_GREEN
 PURE_SHIFTED_PUNGS (m_pung b2, m_pung b3, m_pung b4)
 HALF_FLUSH
@@ -19,6 +21,8 @@ c_pair b6"
 
 exports[`mahjong scoring all green seven pairs 1`] = `
 "124
+
+Dg
 
 ALL_GREEN
 SEVEN_PAIRS
@@ -38,6 +42,8 @@ c_pair Dg"
 exports[`mahjong scoring all green triple chow 1`] = `
 "144
 
+b6
+
 ALL_GREEN
 FULL_FLUSH
 PURE_TRIPLE_CHOW (m_chow b3, m_chow b3, m_chow b3)
@@ -53,6 +59,8 @@ m_pair b6"
 
 exports[`mahjong scoring all honors big three winds 1`] = `
 "83
+
+Dg Dw
 
 ALL_HONORS
 BIG_THREE_WINDS (m_pung Ww, m_pung We, m_pung Wn)
@@ -71,6 +79,8 @@ c_pair Dg"
 exports[`mahjong scoring all honors little three dragons 1`] = `
 "138
 
+Dw
+
 ALL_HONORS
 LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pair Dw)
 MELDED_HAND
@@ -86,6 +96,8 @@ m_pair Dw"
 
 exports[`mahjong scoring all terminals double pung x2 1`] = `
 "72
+
+c1
 
 ALL_TERMINALS
 DOUBLE_PUNG (m_pung d1, m_pung b1)
@@ -104,6 +116,8 @@ c_pair c1"
 exports[`mahjong scoring all terminals triple pung 1`] = `
 "86
 
+b1
+
 ALL_TERMINALS
 TRIPLE_PUNG (m_pung b9, m_pung d9, m_pung c9)
 MELDED_HAND
@@ -117,6 +131,8 @@ m_pair b1"
 
 exports[`mahjong scoring basic scoring basic mahjong 1`] = `
 "221
+
+Dr
 
 BIG_FOUR_WINDS (c_pung We, c_pung Ws, c_pung Ww, c_pung Wn)
 ALL_HONORS
@@ -134,6 +150,8 @@ c_pair Dr"
 exports[`mahjong scoring big four winds half flush 1`] = `
 "97
 
+c6 Wn
+
 BIG_FOUR_WINDS (m_pung We, m_pung Ws, c_pung Ww, c_pung Wn)
 HALF_FLUSH
 TWO_CONCEALED_PUNGS (c_pung Ww, c_pung Wn)
@@ -148,6 +166,8 @@ c_pair c6"
 
 exports[`mahjong scoring big four winds honors 1`] = `
 "171
+
+Dr Wn
 
 BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)
 ALL_HONORS
@@ -165,6 +185,8 @@ c_pair Dr"
 exports[`mahjong scoring big four winds terminals 1`] = `
 "144
 
+b9 Wn
+
 BIG_FOUR_WINDS (c_pung We, c_pung Ws, c_pung Ww, m_pung Wn)
 ALL_TERMINALS_AND_HONORS
 THREE_CONCEALED_PUNGS (c_pung We, c_pung Ws, c_pung Ww)
@@ -181,6 +203,8 @@ c_pair b9"
 exports[`mahjong scoring big three dragons half flush 1`] = `
 "95
 
+c5 c8
+
 BIG_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pung Dw)
 HALF_FLUSH
 SELF_DRAWN
@@ -194,6 +218,8 @@ c_pair c5"
 
 exports[`mahjong scoring big three dragons honors 1`] = `
 "221
+
+Wn
 
 BIG_THREE_DRAGONS (c_pung Dg, c_pung Dr, c_pung Dw)
 ALL_HONORS
@@ -212,6 +238,8 @@ m_pair Wn"
 exports[`mahjong scoring big three dragons terminals 1`] = `
 "127
 
+b1
+
 BIG_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pung Dw)
 ALL_TERMINALS_AND_HONORS
 MELDED_HAND
@@ -226,6 +254,8 @@ m_pair b1"
 
 exports[`mahjong scoring four concealed pungs from discard 1`] = `
 "67
+
+b8
 
 FOUR_CONCEALED_PUNGS (c_pung b5, c_pung c8, c_pung d1, c_pung d7)
 NO_HONORS
@@ -242,6 +272,8 @@ m_pair b8"
 exports[`mahjong scoring four concealed pungs from wall 1`] = `
 "69
 
+c9 Ww
+
 FOUR_CONCEALED_PUNGS (c_pung b7, c_pung c9, c_pung d3, c_pung d4)
 FULLY_CONCEALED_HAND
 PUNG_OF_TERMINALS_OR_HONORS (c_pung c9)
@@ -255,6 +287,8 @@ c_pair Ww"
 
 exports[`mahjong scoring four kongs all types 1`] = `
 "97
+
+We
 
 FOUR_KONGS (c_kong b3, m_kong c5, m_kong d8, m_kong Dr)
 ALL_TYPES
@@ -271,6 +305,8 @@ c_pair We"
 exports[`mahjong scoring four kongs big three dragons 1`] = `
 "246
 
+We
+
 FOUR_KONGS (m_kong Dr, m_kong Dg, m_kong Dw, m_kong Wn)
 BIG_THREE_DRAGONS (m_kong Dr, m_kong Dg, m_kong Dw)
 ALL_HONORS
@@ -285,6 +321,8 @@ m_pair We"
 
 exports[`mahjong scoring little four winds all honors 1`] = `
 "135
+
+Dg Wn
 
 ALL_HONORS
 LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
@@ -302,6 +340,8 @@ c_pair Wn"
 
 exports[`mahjong scoring little four winds half flush 1`] = `
 "80
+
+Wn
 
 LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
 HALF_FLUSH
@@ -321,6 +361,8 @@ c_pair Wn"
 exports[`mahjong scoring little three dragons all terminals and honors 1`] = `
 "108
 
+Dr
+
 LITTLE_THREE_DRAGONS (m_pung Dw, m_pung Dg, m_pair Dr)
 ALL_TERMINALS_AND_HONORS
 HALF_FLUSH
@@ -335,6 +377,8 @@ m_pair Dr"
 
 exports[`mahjong scoring little three dragons pung of terminals 1`] = `
 "68
+
+d4
 
 LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dw, c_pair Dg)
 ONE_VOIDED_SUIT
@@ -352,6 +396,8 @@ c_pair Dg"
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 
+c1 c2 c3 c4 c5 c6 c7 c8 c9
+
 NINE_GATES
 PURE_STRAIGHT (c_chow c2, c_chow c5, c_chow c8)
 FULLY_CONCEALED_HAND
@@ -367,6 +413,8 @@ c_pair c1"
 exports[`mahjong scoring nine gates middle 1`] = `
 "94
 
+c1 c2 c3 c4 c5 c6 c7 c8 c9
+
 NINE_GATES
 FULLY_CONCEALED_HAND
 TWO_CONCEALED_PUNGS (c_pung c1, c_pung c9)
@@ -381,6 +429,8 @@ c_pair c5"
 exports[`mahjong scoring pure terminal chows basic 1`] = `
 "66
 
+d5
+
 PURE_TERMINAL_CHOWS
 SELF_DRAWN
 SINGLE_WAIT
@@ -394,6 +444,8 @@ c_pair d5"
 
 exports[`mahjong scoring quadruple chow basic 1`] = `
 "57
+
+c9
 
 QUADRUPLE_CHOW (m_chow b2, c_chow b2, c_chow b2, c_chow b2)
 OUTSIDE_HAND
@@ -412,6 +464,8 @@ c_pair c9"
 exports[`mahjong scoring quadruple chow concealed 1`] = `
 "59
 
+b3 c9
+
 QUADRUPLE_CHOW (c_chow b2, c_chow b2, c_chow b2, c_chow b2)
 FULLY_CONCEALED_HAND
 OUTSIDE_HAND
@@ -428,6 +482,8 @@ c_pair c9"
 exports[`mahjong scoring seven shifted pairs all simples 1`] = `
 "94
 
+b2 b5 b8
+
 SEVEN_SHIFTED_PAIRS
 FULLY_CONCEALED_HAND
 ALL_SIMPLES
@@ -443,6 +499,8 @@ c_pair b8"
 
 exports[`mahjong scoring thirteen orphans basic 1`] = `
 "89
+
+b1 b9 c1 c9 d1 d9 Dg Dr Dw We Ws Ww Wn
 
 THIRTEEN_ORPHANS
 SELF_DRAWN"

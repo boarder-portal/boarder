@@ -127,14 +127,14 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
         });
       }
 
-      const fansMahjong = getBestFansMahjong(fans, sets);
+      const fansMahjong = getBestFansMahjong(fans, sets, waits);
 
       if (!mahjong || (fansMahjong && fansMahjong.score > mahjong.score)) {
         mahjong = fansMahjong;
       }
     });
   } else {
-    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans], null);
+    mahjong = getBestFansMahjong([...wholeHandFans, ...specialFans], null, waits);
   }
 
   if (!mahjong) {
@@ -144,7 +144,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   return mahjong;
 }
 
-function getBestFansMahjong(fans: TFan[], sets: TSet[] | null): IHandMahjong | null {
+function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TTile[]): IHandMahjong | null {
   fans = sortBy(fans, ({ fan }) => -FAN_SCORES[fan]);
 
   let pickedFans = null as TFan[] | null;
@@ -189,5 +189,5 @@ function getBestFansMahjong(fans: TFan[], sets: TSet[] | null): IHandMahjong | n
     return null;
   }
 
-  return { fans: pickedFans, sets, score: getFansScore(pickedFans) };
+  return { fans: pickedFans, sets, waits, score: getFansScore(pickedFans) };
 }

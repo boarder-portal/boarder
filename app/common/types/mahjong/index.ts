@@ -257,6 +257,7 @@ export type TFan = IHandFan | ISetsFan | ISpecialFan;
 export interface IHandMahjong {
   fans: TFan[];
   sets: TSet[] | null;
+  waits: TTile[];
   score: number;
 }
 
