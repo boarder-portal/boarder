@@ -6,7 +6,16 @@ import {
   SUITED_STRING_VALUES,
 } from 'common/constants/games/mahjong';
 
-import { ESet, ESetConcealedType, ETileType, IChowSet, IKongSet, IPungSet, TTile } from 'common/types/mahjong';
+import {
+  ESet,
+  ESetConcealedType,
+  ETileType,
+  IChowSet,
+  IKongSet,
+  IPungSet,
+  TMeldedSet,
+  TTile,
+} from 'common/types/mahjong';
 
 import { isSuited, suited } from 'common/utilities/mahjong/tiles';
 
@@ -79,41 +88,35 @@ export function parseTile(tileString: string): TTile {
   };
 }
 
-export function parsePung<ConcealedType extends ESetConcealedType>(
-  pungTileString: string,
-  concealedType: ConcealedType,
-): IPungSet & { concealedType: ConcealedType } {
+export function parsePung(tileString: string): TMeldedSet<IPungSet> {
   return {
     type: ESet.PUNG,
-    tiles: parseTiles(pungTileString.repeat(3)),
-    concealedType,
+    tiles: parseTiles(tileString.repeat(3)),
+    concealedType: ESetConcealedType.MELDED,
   };
 }
 
 export function parseKong<ConcealedType extends ESetConcealedType>(
-  kongTileString: string,
+  tileString: string,
   concealedType: ConcealedType,
 ): IKongSet & { concealedType: ConcealedType } {
   return {
     type: ESet.KONG,
-    tiles: parseTiles(kongTileString.repeat(4)),
+    tiles: parseTiles(tileString.repeat(4)),
     concealedType,
   };
 }
 
-export function parseChow<ConcealedType extends ESetConcealedType>(
-  chowTileString: string,
-  concealedType: ConcealedType,
-): IChowSet & { concealedType: ConcealedType } {
-  const chowTile = parseTile(chowTileString);
+export function parseChow(tileString: string): TMeldedSet<IChowSet> {
+  const chowTile = parseTile(tileString);
 
   if (!isSuited(chowTile) || chowTile.value === 1 || chowTile.value === 9) {
-    throw new Error(`Wrong chow tile ${chowTileString}`);
+    throw new Error(`Wrong chow tile ${tileString}`);
   }
 
   return {
     type: ESet.CHOW,
     tiles: [suited(chowTile.value - 1, chowTile.suit), chowTile, suited(chowTile.value + 1, chowTile.suit)],
-    concealedType,
+    concealedType: ESetConcealedType.MELDED,
   };
 }

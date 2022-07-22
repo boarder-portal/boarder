@@ -39,7 +39,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parsePung('We', ESetConcealedType.MELDED), parsePung('Ws', ESetConcealedType.MELDED)],
+              meldedSets: [parsePung('We'), parsePung('Ws')],
               hand: parseTiles('WwWwWw WnWn c6c6'),
               winningTile: parseTile('Wn'),
             }),
@@ -66,7 +66,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               concealedSets: [parseKong('We', ESetConcealedType.CONCEALED)],
-              meldedSets: [parsePung('Ws', ESetConcealedType.MELDED)],
+              meldedSets: [parsePung('Ws')],
               hand: parseTiles('WwWwWw WnWn DrDr'),
               winningTile: parseTile('Wn'),
             }),
@@ -80,11 +80,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('Dr', ESetConcealedType.MELDED),
-                parsePung('Dg', ESetConcealedType.MELDED),
-                parsePung('Dw', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('Dw')],
               hand: parseTiles('c5c5c6c7'),
               winningTile: parseTile('c5'),
             }),
@@ -97,12 +93,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('Dr', ESetConcealedType.MELDED),
-                parsePung('Dg', ESetConcealedType.MELDED),
-                parsePung('Dw', ESetConcealedType.MELDED),
-                parsePung('d9', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('Dw'), parsePung('d9')],
               hand: parseTiles('b1'),
               isSelfDraw: false,
             }),
@@ -130,11 +121,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('b2', ESetConcealedType.MELDED),
-                parsePung('b3', ESetConcealedType.MELDED),
-                parsePung('b4', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('b2'), parsePung('b3'), parsePung('b4')],
               hand: parseTiles('DgDg b6b6'),
               winningTile: parseTile('Dg'),
             }),
@@ -147,12 +134,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parseChow('b3', ESetConcealedType.MELDED),
-                parseChow('b3', ESetConcealedType.MELDED),
-                parseChow('b3', ESetConcealedType.MELDED),
-                parsePung('b8', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parseChow('b3'), parseChow('b3'), parseChow('b3'), parsePung('b8')],
               hand: parseTiles('b6'),
               isSelfDraw: false,
             }),
@@ -266,7 +248,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parsePung('d1', ESetConcealedType.MELDED), parsePung('b1', ESetConcealedType.MELDED)],
+              meldedSets: [parsePung('d1'), parsePung('b1')],
               hand: parseTiles('b9b9b9 c9c9c9 c1'),
             }),
           ),
@@ -278,12 +260,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('b9', ESetConcealedType.MELDED),
-                parsePung('d9', ESetConcealedType.MELDED),
-                parsePung('c9', ESetConcealedType.MELDED),
-                parsePung('d1', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('b9'), parsePung('d9'), parsePung('c9'), parsePung('d1')],
               hand: parseTiles('b1'),
               isSelfDraw: false,
             }),
@@ -297,11 +274,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('We', ESetConcealedType.MELDED),
-                parsePung('Ws', ESetConcealedType.MELDED),
-                parsePung('Ww', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('We'), parsePung('Ws'), parsePung('Ww')],
               hand: parseTiles('Wn d7d8d9'),
             }),
           ),
@@ -313,11 +286,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('We', ESetConcealedType.MELDED),
-                parsePung('Ws', ESetConcealedType.MELDED),
-                parsePung('Ww', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('We'), parsePung('Ws'), parsePung('Ww')],
               hand: parseTiles('WnWn DgDg'),
               winningTile: parseTile('Dg'),
             }),
@@ -331,7 +300,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parsePung('Dr', ESetConcealedType.MELDED), parsePung('Dw', ESetConcealedType.MELDED)],
+              meldedSets: [parsePung('Dr'), parsePung('Dw')],
               hand: parseTiles('DgDg d3d5 c1c1c1'),
             }),
           ),
@@ -343,12 +312,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('Dw', ESetConcealedType.MELDED),
-                parsePung('Dg', ESetConcealedType.MELDED),
-                parsePung('b1', ESetConcealedType.MELDED),
-                parsePung('b9', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('Dw'), parsePung('Dg'), parsePung('b1'), parsePung('b9')],
               hand: parseTiles('Dr'),
               isSelfDraw: false,
             }),
@@ -362,11 +326,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('Ww', ESetConcealedType.MELDED),
-                parsePung('We', ESetConcealedType.MELDED),
-                parsePung('Wn', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('Ww'), parsePung('We'), parsePung('Wn')],
               hand: parseTiles('DwDw DgDg'),
               winningTile: parseTile('Dw'),
             }),
@@ -379,12 +339,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('Dr', ESetConcealedType.MELDED),
-                parsePung('Dg', ESetConcealedType.MELDED),
-                parsePung('We', ESetConcealedType.MELDED),
-                parsePung('Ww', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('We'), parsePung('Ww')],
               hand: parseTiles('Dw'),
               isSelfDraw: false,
             }),
@@ -423,7 +378,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parseChow('d2', ESetConcealedType.MELDED)],
+              meldedSets: [parseChow('d2')],
               hand: parseTiles('d1d2d3 d5 d7d7d8d8d9d9'),
             }),
           ),
@@ -438,7 +393,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parseChow('b2', ESetConcealedType.MELDED)],
+              meldedSets: [parseChow('b2')],
               hand: parseTiles('b1b1b1 b2b2b2 b3b3b3 c9'),
             }),
           ),
@@ -463,11 +418,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [
-                parsePung('b1', ESetConcealedType.MELDED),
-                parsePung('b2', ESetConcealedType.MELDED),
-                parsePung('b3', ESetConcealedType.MELDED),
-              ],
+              meldedSets: [parsePung('b1'), parsePung('b2'), parsePung('b3')],
               hand: parseTiles('b4b4b4 c1'),
               winningTile: parseTile('c1'),
             }),
@@ -480,9 +431,37 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parsePung('c9', ESetConcealedType.MELDED)],
+              meldedSets: [parsePung('c9')],
               hand: parseTiles('c6c6 c7c7c7 c8c8c8 c5c5'),
               winningTile: parseTile('c6'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    // 32 points
+    describe('four pure shifted chows', () => {
+      test('shifted by 1', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3c4 c3c4c5 c4c5c6 c5c6 c6c6'),
+              winningTile: parseTile('c7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('shifted by 2', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d2')],
+              hand: parseTiles('d3d4d5 d5d6d7 d7d8d9 b9'),
+              winningTile: parseTile('b9'),
             }),
           ),
         ).toMatchSnapshot();

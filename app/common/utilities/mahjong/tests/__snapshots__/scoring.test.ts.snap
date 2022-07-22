@@ -319,6 +319,43 @@ m_kong Wn
 m_pair We"
 `;
 
+exports[`mahjong scoring four pure shifted chows shifted by 1 1`] = `
+"66
+
+c1 c2 c4 c5 c7
+
+FOUR_PURE_SHIFTED_CHOWS (c_chow c3, c_chow c4, c_chow c5, c_chow c6)
+FULL_FLUSH
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+TILE_HOG (c6)
+ALL_SIMPLES
+
+c_chow c3
+c_chow c4
+c_chow c5
+c_chow c6
+c_pair c6"
+`;
+
+exports[`mahjong scoring four pure shifted chows shifted by 2 1`] = `
+"37
+
+b9
+
+FOUR_PURE_SHIFTED_CHOWS (m_chow d2, c_chow d4, c_chow d6, c_chow d8)
+ALL_CHOWS
+ONE_VOIDED_SUIT
+SINGLE_WAIT
+SELF_DRAWN
+
+m_chow d2
+c_chow d4
+c_chow d6
+c_chow d8
+c_pair b9"
+`;
+
 exports[`mahjong scoring four pure shifted pungs full flush 1`] = `
 "90
 
