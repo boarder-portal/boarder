@@ -457,5 +457,36 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('four pure shifted pungs', () => {
+      test('lower four', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('b1', ESetConcealedType.MELDED),
+                parsePung('b2', ESetConcealedType.MELDED),
+                parsePung('b3', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('b4b4b4 c1'),
+              winningTile: parseTile('c1'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('full flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c9', ESetConcealedType.MELDED)],
+              hand: parseTiles('c6c6 c7c7c7 c8c8c8 c5c5'),
+              winningTile: parseTile('c6'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

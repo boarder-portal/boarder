@@ -7,8 +7,8 @@ b6 Dg
 
 ALL_GREEN
 PURE_SHIFTED_PUNGS (m_pung b2, m_pung b3, m_pung b4)
-HALF_FLUSH
 ALL_PUNGS
+HALF_FLUSH
 DRAGON_PUNG (c_pung Dg)
 SELF_DRAWN
 
@@ -64,9 +64,9 @@ Dg Dw
 
 ALL_HONORS
 BIG_THREE_WINDS (m_pung Ww, m_pung We, m_pung Wn)
+DRAGON_PUNG (c_pung Dw)
 PREVALENT_WIND (m_pung We)
 SEAT_WIND (m_pung We)
-DRAGON_PUNG (c_pung Dw)
 SELF_DRAWN
 
 m_pung Ww
@@ -81,8 +81,8 @@ exports[`mahjong scoring all honors little three dragons 1`] = `
 
 Dw
 
-ALL_HONORS
 LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dg, m_pair Dw)
+ALL_HONORS
 MELDED_HAND
 PREVALENT_WIND (m_pung We)
 SEAT_WIND (m_pung We)
@@ -103,8 +103,8 @@ ALL_TERMINALS
 DOUBLE_PUNG (m_pung d1, m_pung b1)
 DOUBLE_PUNG (c_pung b9, c_pung c9)
 TWO_CONCEALED_PUNGS (c_pung b9, c_pung c9)
-SELF_DRAWN
 SINGLE_WAIT
+SELF_DRAWN
 
 m_pung d1
 m_pung b1
@@ -258,8 +258,8 @@ exports[`mahjong scoring four concealed pungs from discard 1`] = `
 b8
 
 FOUR_CONCEALED_PUNGS (c_pung b5, c_pung c8, c_pung d1, c_pung d7)
-NO_HONORS
 PUNG_OF_TERMINALS_OR_HONORS (c_pung d1)
+NO_HONORS
 SINGLE_WAIT
 
 c_pung b5
@@ -307,8 +307,8 @@ exports[`mahjong scoring four kongs big three dragons 1`] = `
 
 We
 
-FOUR_KONGS (m_kong Dr, m_kong Dg, m_kong Dw, m_kong Wn)
 BIG_THREE_DRAGONS (m_kong Dr, m_kong Dg, m_kong Dw)
+FOUR_KONGS (m_kong Dr, m_kong Dg, m_kong Dw, m_kong Wn)
 ALL_HONORS
 MELDED_HAND
 
@@ -319,16 +319,53 @@ m_kong Wn
 m_pair We"
 `;
 
+exports[`mahjong scoring four pure shifted pungs full flush 1`] = `
+"90
+
+c4 c5 c6 c7 c9
+
+FOUR_PURE_SHIFTED_PUNGS (m_pung c9, c_pung c6, c_pung c7, c_pung c8)
+FULL_FLUSH
+THREE_CONCEALED_PUNGS (c_pung c6, c_pung c7, c_pung c8)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung c9)
+SELF_DRAWN
+
+m_pung c9
+c_pung c6
+c_pung c7
+c_pung c8
+c_pair c5"
+`;
+
+exports[`mahjong scoring four pure shifted pungs lower four 1`] = `
+"64
+
+c1
+
+FOUR_PURE_SHIFTED_PUNGS (m_pung b1, m_pung b2, m_pung b3, c_pung b4)
+LOWER_FOUR
+PUNG_OF_TERMINALS_OR_HONORS (m_pung b1)
+ONE_VOIDED_SUIT
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung b1
+m_pung b2
+m_pung b3
+c_pung b4
+c_pair c1"
+`;
+
 exports[`mahjong scoring little four winds all honors 1`] = `
 "135
 
 Dg Wn
 
-ALL_HONORS
 LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
+ALL_HONORS
+DRAGON_PUNG (c_pung Dg)
 PREVALENT_WIND (m_pung We)
 SEAT_WIND (m_pung We)
-DRAGON_PUNG (c_pung Dg)
 SELF_DRAWN
 
 m_pung We
@@ -348,8 +385,8 @@ HALF_FLUSH
 OUTSIDE_HAND
 PREVALENT_WIND (m_pung We)
 SEAT_WIND (m_pung We)
-SELF_DRAWN
 SINGLE_WAIT
+SELF_DRAWN
 
 m_pung We
 m_pung Ws
@@ -381,10 +418,10 @@ exports[`mahjong scoring little three dragons pung of terminals 1`] = `
 d4
 
 LITTLE_THREE_DRAGONS (m_pung Dr, m_pung Dw, c_pair Dg)
-ONE_VOIDED_SUIT
 PUNG_OF_TERMINALS_OR_HONORS (c_pung c1)
-SELF_DRAWN
+ONE_VOIDED_SUIT
 CLOSED_WAIT
+SELF_DRAWN
 
 m_pung Dr
 m_pung Dw
@@ -432,8 +469,8 @@ exports[`mahjong scoring pure terminal chows basic 1`] = `
 d5
 
 PURE_TERMINAL_CHOWS
-SELF_DRAWN
 SINGLE_WAIT
+SELF_DRAWN
 
 m_chow d2
 c_chow d2
@@ -451,8 +488,8 @@ QUADRUPLE_CHOW (m_chow b2, c_chow b2, c_chow b2, c_chow b2)
 OUTSIDE_HAND
 ALL_CHOWS
 ONE_VOIDED_SUIT
-SELF_DRAWN
 SINGLE_WAIT
+SELF_DRAWN
 
 m_chow b2
 c_chow b2
@@ -467,8 +504,8 @@ exports[`mahjong scoring quadruple chow concealed 1`] = `
 b3 c9
 
 QUADRUPLE_CHOW (c_chow b2, c_chow b2, c_chow b2, c_chow b2)
-FULLY_CONCEALED_HAND
 OUTSIDE_HAND
+FULLY_CONCEALED_HAND
 ALL_CHOWS
 ONE_VOIDED_SUIT
 

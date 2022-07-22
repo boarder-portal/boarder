@@ -1,5 +1,7 @@
 import { EFan } from 'common/types/mahjong';
 
+export const FANS = Object.values(EFan);
+
 export const FAN_SCORES: Record<EFan, number> = {
   // 88 points
   [EFan.BIG_FOUR_WINDS]: 88,

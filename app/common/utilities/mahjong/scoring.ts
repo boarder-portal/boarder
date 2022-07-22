@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
 
 import { STANDARD_TILES } from '../../constants/games/mahjong';
-import { FAN_SCORES, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
+import { FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
   EFan,
@@ -145,7 +145,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 }
 
 function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TTile[]): IHandMahjong | null {
-  fans = sortBy(fans, ({ fan }) => -FAN_SCORES[fan]);
+  fans = sortBy(fans, ({ fan }) => FANS.indexOf(fan));
 
   let pickedFans = null as TFan[] | null;
   let maxScore = 0;
