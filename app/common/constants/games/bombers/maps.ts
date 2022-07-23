@@ -92,19 +92,6 @@ const MAPS: Record<EMap, string> = {
     -wb-b-b-b-b-b-bw-
     0--b-b-b-b-b-b--3
   `,
-  [EMap.LIBRARY]: `
-    2--b-b-b-b-b-b--1
-    -wbwbwb-b-bwbwbw-
-    bw-w-w-w-w-w-w-wb
-    bwbwbwbwbwbwbwbwb
-    -b-b-b-bwb-b-b-b-
-    wwwwwwb-b-bwwwwww
-    -b-b-b-bwb-b-b-b-
-    bwbwbwbwbwbwbwbwb
-    bw-w-w-w-w-w-w-wb
-    -wbwbwb-b-bwbwbw-
-    0--b-b-b-b-b-b--3
-  `,
 };
 
 export default MAPS;
