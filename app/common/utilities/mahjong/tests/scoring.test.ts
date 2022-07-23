@@ -529,5 +529,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('seven pairs', () => {
+      test('lower four', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2c3c4 c1c2c4 c1c2c4 c1c2c4'),
+              winningTile: parseTile('c3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('DrDr DgDg DwDw c1c1 d2d2 b3b3 We'),
+              winningTile: parseTile('We'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

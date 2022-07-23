@@ -28,7 +28,7 @@ import {
   getWholeHandFans,
   getWholeHandSetsFans,
 } from 'common/utilities/mahjong/fans';
-import { isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
+import { isEqualTilesCallback, isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
 
 export interface IHandScoreOptions {
   hand: TTile[];
@@ -50,14 +50,24 @@ export interface IHandScoreFullOptions extends IHandScoreOptions {
 }
 
 export function getAllWaits(options: IHandScoreOptions): TTile[] {
-  const waitsWithSingleWait = STANDARD_TILES.filter((tile) =>
+  const { hand, concealedSets, meldedSets } = options;
+  const wholeHand = [
+    ...hand,
+    ...concealedSets.flatMap(({ tiles }) => tiles),
+    ...meldedSets.flatMap(({ tiles }) => tiles),
+  ];
+  const possibleTiles = STANDARD_TILES.filter((tile) => {
+    return wholeHand.filter(isEqualTilesCallback(tile)).length < 4;
+  });
+
+  const waitsWithSingleWait = possibleTiles.filter((tile) =>
     getHandMahjong({
       ...options,
       winningTile: tile,
       waits: [tile],
     }),
   );
-  const waitsWithoutSingleWait = STANDARD_TILES.filter((tile) =>
+  const waitsWithoutSingleWait = possibleTiles.filter((tile) =>
     getHandMahjong({
       ...options,
       winningTile: tile,

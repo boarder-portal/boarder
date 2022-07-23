@@ -594,6 +594,45 @@ c_chow b2
 c_pair c9"
 `;
 
+exports[`mahjong scoring seven pairs all types 1`] = `
+"30
+
+We
+
+SEVEN_PAIRS
+ALL_TYPES
+
+c_pair b3
+c_pair c1
+c_pair d2
+m_pair We
+c_pair Dg
+c_pair Dr
+c_pair Dw"
+`;
+
+exports[`mahjong scoring seven pairs lower four 1`] = `
+"70
+
+c3
+
+SEVEN_PAIRS
+FULL_FLUSH
+LOWER_FOUR
+FULLY_CONCEALED_HAND
+TILE_HOG (c1)
+TILE_HOG (c2)
+TILE_HOG (c4)
+
+c_pair c1
+c_pair c1
+c_pair c2
+c_pair c2
+c_pair c3
+c_pair c4
+c_pair c4"
+`;
+
 exports[`mahjong scoring seven shifted pairs all simples 1`] = `
 "94
 
