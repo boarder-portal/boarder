@@ -279,7 +279,10 @@ export function getWholeHandSetsFans(sets: TSet[], isSelfDraw: boolean): TFan[] 
       }
     }
 
-    if (sets.every(isPung) && setsTiles.every((tile) => isSuited(tile) && tile.value === 0)) {
+    if (
+      sets.every((set) => isPung(set) || isPair(set)) &&
+      setsTiles.every((tile) => isSuited(tile) && tile.value % 2 === 0)
+    ) {
       fans.push(EFan.ALL_EVEN_PUNGS);
     }
 

@@ -1,5 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`mahjong scoring all even pungs double pung 1`] = `
+"29
+
+b8 c8
+
+ALL_EVEN_PUNGS
+DOUBLE_PUNG (m_pung b4, c_pung d4)
+TWO_CONCEALED_PUNGS (c_pung b8, c_pung d4)
+SELF_DRAWN
+
+m_pung b4
+m_pung d6
+c_pung b8
+c_pung d4
+c_pair c8"
+`;
+
+exports[`mahjong scoring all even pungs triple pung 1`] = `
+"53
+
+c8 d8
+
+ALL_EVEN_PUNGS
+TRIPLE_PUNG (m_pung b6, m_pung d6, m_pung c6)
+UPPER_FOUR
+SELF_DRAWN
+
+m_pung b6
+m_pung d6
+m_pung c6
+c_pung c8
+c_pair d8"
+`;
+
 exports[`mahjong scoring all green pure shifted pungs 1`] = `
 "127
 

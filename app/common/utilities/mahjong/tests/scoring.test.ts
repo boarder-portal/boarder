@@ -583,5 +583,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('all even pungs', () => {
+      test('double pung', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b4'), parsePung('d6')],
+              hand: parseTiles('b8b8 d4d4d4 c8c8'),
+              winningTile: parseTile('b8'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('triple pung', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b6'), parsePung('d6'), parsePung('c6')],
+              hand: parseTiles('c8c8 d8d8'),
+              winningTile: parseTile('c8'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
