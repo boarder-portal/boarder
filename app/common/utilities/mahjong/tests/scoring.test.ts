@@ -530,6 +530,7 @@ describe('mahjong', () => {
       });
     });
 
+    // 24 points
     describe('seven pairs', () => {
       test('lower four', () => {
         expect(
@@ -550,6 +551,32 @@ describe('mahjong', () => {
               ...standardOptions,
               hand: parseTiles('DrDr DgDg DwDw c1c1 d2d2 b3b3 We'),
               winningTile: parseTile('We'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('greater honors and knitted tiles', () => {
+      test('d2b2c3', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d1d4 b5b8 c3c6c9 WeWsWwWn DrDg'),
+              winningTile: parseTile('Dw'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('c1d3b3', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d3d6d9 b1b7b4 WeWsWwWn DrDgDw'),
+              winningTile: parseTile('c8'),
               isSelfDraw: false,
             }),
           ),

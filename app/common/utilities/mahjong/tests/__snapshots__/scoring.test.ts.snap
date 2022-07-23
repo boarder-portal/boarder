@@ -434,6 +434,23 @@ c_pung b4
 c_pair c1"
 `;
 
+exports[`mahjong scoring greater honors and knitted tiles c1d3b3 1`] = `
+"24
+
+c2 c5 c8
+
+GREATER_HONORS_AND_KNITTED_TILES"
+`;
+
+exports[`mahjong scoring greater honors and knitted tiles d2b2c3 1`] = `
+"28
+
+b2 d7 Dw
+
+GREATER_HONORS_AND_KNITTED_TILES
+FULLY_CONCEALED_HAND"
+`;
+
 exports[`mahjong scoring little four winds all honors 1`] = `
 "135
 
@@ -652,12 +669,12 @@ c_pair b8"
 `;
 
 exports[`mahjong scoring thirteen orphans basic 1`] = `
-"89
+"92
 
 b1 b9 c1 c9 d1 d9 Dg Dr Dw We Ws Ww Wn
 
 THIRTEEN_ORPHANS
-SELF_DRAWN"
+FULLY_CONCEALED_HAND"
 `;
 
 exports[`mahjong scoring three kongs all types 1`] = `

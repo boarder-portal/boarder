@@ -171,6 +171,13 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
       }
     }
 
+    if (isSelfDraw) {
+      fans.push({
+        type: EFanType.HAND,
+        fan: EFan.FULLY_CONCEALED_HAND,
+      });
+    }
+
     mahjong = getBestFansMahjong(fans, null, waits);
   }
 
