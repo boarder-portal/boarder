@@ -7,7 +7,7 @@ export interface IRenderExplodedDirectionOptions {
   explodedDirection: IExplodedDirection;
 }
 
-const EDGE_MARGIN = 0.1;
+const EDGE_MARGIN = 0.02;
 
 export default function renderExplodedDirection(options: IRenderExplodedDirectionOptions): void {
   const { ctx, explodedDirection } = options;

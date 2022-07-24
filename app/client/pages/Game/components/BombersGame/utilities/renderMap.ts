@@ -2,6 +2,7 @@ import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { TIME_TO_START } from 'common/constants/games/bombers';
 
 import { IExplodedDirection, IPlayer, IPlayerData, TMap } from 'common/types/bombers';
+import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
 
 import renderPlayer from 'client/pages/Game/components/BombersGame/utilities/renderPlayer';
 import renderCell from 'client/pages/Game/components/BombersGame/utilities/renderCell';
@@ -14,14 +15,15 @@ export interface IRenderMapOptions {
   explodedDirections: Set<IExplodedDirection>;
   startsAt: number;
   player: IPlayer | null;
+  images: TBombersImages;
 }
 
 export default function renderMap(options: IRenderMapOptions): void {
-  const { ctx, map, playersData, explodedDirections, startsAt, player } = options;
+  const { ctx, map, playersData, explodedDirections, startsAt, player, images } = options;
 
   map.forEach((row) => {
     row.forEach((cell) => {
-      renderCell({ ctx, cell });
+      renderCell({ ctx, cell, images });
     });
   });
 

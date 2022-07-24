@@ -1,18 +1,18 @@
-import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
-
 import { IBomb } from 'common/types/bombers';
 import { ICoords } from 'common/types';
+import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
+
+import renderCellImage from 'client/pages/Game/components/BombersGame/utilities/renderCellImage';
 
 export interface IRenderBombOptions {
   ctx: CanvasRenderingContext2D;
   bomb: IBomb;
   coords: ICoords;
+  images: TBombersImages;
 }
 
 export default function renderBomb(options: IRenderBombOptions): void {
-  const { ctx, bomb, coords } = options;
+  const { ctx, coords, images } = options;
 
-  ctx.fillStyle = 'black';
-
-  ctx.fillRect(coords.x * CELL_SIZE, coords.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  renderCellImage(ctx, images.bomb, coords);
 }

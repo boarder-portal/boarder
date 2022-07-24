@@ -16,6 +16,7 @@ import {
   TMap,
 } from 'common/types/bombers';
 import { ISize } from 'common/types';
+import { TBomberImage } from 'client/pages/Game/components/BombersGame/types';
 
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
@@ -32,6 +33,7 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
 import useAtom from 'client/hooks/useAtom';
+import useImages from 'client/hooks/useImages';
 
 import styles from './BombersGame.pcss';
 
@@ -86,6 +88,17 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       height: gameInfo.map.length,
     };
   }, [gameInfo.map]);
+
+  const images = useImages<TBomberImage>({
+    grass: '/bombers/grass4.png',
+    wall: '/bombers/wall.png',
+    box: '/bombers/box.png',
+    bomb: '/bombers/bomb.png',
+    bonusBomb: '/bombers/bonusBomb.png',
+    bonusRange: '/bombers/bonusRange.png',
+    bonusSpeed: '/bombers/bonusSpeed.png',
+    bonusHp: '/bombers/bonusHp.png',
+  });
 
   const changeCellSize = useImmutableCallback(() => {
     const containerEl = containerRef.current;
@@ -268,7 +281,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   useRaf(() => {
     const ctx = contextRef.current;
 
-    if (!ctx) {
+    if (!ctx || !images) {
       return;
     }
 
@@ -292,6 +305,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       explodedDirections: explodedDirectionsRef.current,
       startsAt: gameInfo.startsAt - timeDiff,
       player,
+      images,
     });
   });
 

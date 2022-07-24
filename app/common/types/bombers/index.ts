@@ -41,10 +41,10 @@ export enum ELine {
 }
 
 export enum EPlayerColor {
-  BLUE = 'BLUE',
+  DODGERBLUE = 'DODGERBLUE',
   ORANGE = 'ORANGE',
-  PINK = 'PINK',
-  INDIGO = 'INDIGO',
+  RED = 'RED',
+  MAGENTA = 'MAGENTA',
 }
 
 export interface IPlayerData {
