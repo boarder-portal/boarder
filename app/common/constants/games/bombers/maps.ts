@@ -53,7 +53,7 @@ const MAPS: Record<EMap, string> = {
     -wbwbw-wbw-wbwbw-
     0-b-b-b-b-b-b-b-3
   `,
-  [EMap.BUTTERFLY]: `
+  [EMap.TURTLE]: `
     2--b-b-b-b-b-b--1
     -wwwb-b-w-b-bwww-
     bw-b-wwb-bww-b-wb
@@ -156,6 +156,32 @@ const MAPS: Record<EMap, string> = {
     bwbwbwb-b-bwbwbwb
     -b-w-b-bwb-b-w-b-
     0-b-b-b-b-b-b-b-3
+  `,
+  [EMap.BUTTERFLY]: `
+    2-b--b-bbb-b--b-1
+    -wbbb-ww-ww-bbbw-
+    bw-ww-bb-bb-ww-wb
+    b-b-wwb-w-bww-b-b
+    -wwb-wwbwbww-bww-
+    bwbbbb-bbb-bbbbwb
+    -wwb-wwbwbww-bww-
+    b-b-wwb-w-bww-b-b
+    bw-ww-bb-bb-ww-wb
+    -wbbb-ww-ww-bbbw-
+    0-b--b-bbb-b--b-3
+  `,
+  [EMap.SIEGE]: `
+    2-b-bbwbbbwbb-b-1
+    ----bbwbwbwbb----
+    w-b-wwwbbbwww-b-w
+    b----w--w--w----b
+    b-ww-b-bbb-b-ww-b
+    w-bw---bwb---wb-w
+    b-ww-b-bbb-b-ww-b
+    b----w--w--w----b
+    w-b-wwwbbbwww-b-w
+    ----bbwbwbwbb----
+    0-b-bbwbbbwbb-b-3
   `,
 };
 

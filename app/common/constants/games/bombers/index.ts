@@ -38,7 +38,7 @@ export const MAP_NAMES: Record<EMap, string> = {
   [EMap.HALL]: 'Комната',
   [EMap.BUG]: 'Жук',
   [EMap.BUNKER]: 'Бункер',
-  [EMap.BUTTERFLY]: 'Бабочка',
+  [EMap.TURTLE]: 'Черепаха',
   [EMap.CABINET]: 'Шкаф',
   [EMap.RACE]: 'Гонка',
   [EMap.WAVE]: 'Волна',
@@ -46,4 +46,6 @@ export const MAP_NAMES: Record<EMap, string> = {
   [EMap.FIELD]: 'Поле',
   [EMap.SUNFLOWER]: 'Подсолнух',
   [EMap.MEMBRANE]: 'Мембрана',
+  [EMap.BUTTERFLY]: 'Бабочка',
+  [EMap.SIEGE]: 'Осада',
 };

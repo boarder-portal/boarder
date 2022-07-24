@@ -120,7 +120,7 @@ export enum EMap {
   HALL = 'HALL',
   BUG = 'BUG',
   BUNKER = 'BUNKER',
-  BUTTERFLY = 'BUTTERFLY',
+  TURTLE = 'TURTLE',
   CABINET = 'CABINET',
   RACE = 'RACE',
   WAVE = 'WAVE',
@@ -128,6 +128,8 @@ export enum EMap {
   FIELD = 'FIELD',
   SUNFLOWER = 'SUNFLOWER',
   MEMBRANE = 'MEMBRANE',
+  BUTTERFLY = 'BUTTERFLY',
+  SIEGE = 'SIEGE',
 }
 
 export interface IGame {
