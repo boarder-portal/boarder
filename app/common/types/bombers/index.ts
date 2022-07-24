@@ -124,6 +124,7 @@ export enum EMap {
 export interface IGame {
   players: IPlayer[];
   map: TMap;
+  mapType: EMap;
   startsAt: number;
   canControl: boolean;
 }

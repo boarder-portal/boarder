@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
-import { MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
+import { MAP_NAMES, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
 import {
@@ -335,6 +335,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       />
 
       <Flex className={styles.rightPanel} direction="column" between={4}>
+        <div>Карта: {MAP_NAMES[gameInfo.mapType]}</div>
+
         <Flex direction="column" between={1}>
           {players.map((player) => (
             <Player key={player.login} player={player} />

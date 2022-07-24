@@ -55,6 +55,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   startsAt = Date.now() + TIME_TO_START;
   canControl = false;
   sharedDataManager: SharedDataManager<TServerMapObject>;
+  mapType: EMap;
   mapLayout: TMapLayout;
   mapWidth: number;
   mapHeight: number;
@@ -68,6 +69,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   constructor(parentOrContext: TParentOrContext<EGame.BOMBERS>) {
     super(parentOrContext);
 
+    this.mapType = this.options.mapType ?? getRandomElement(ALL_MAPS);
     this.mapLayout = this.getMapLayout();
     this.mapWidth = this.mapLayout[0].length;
     this.mapHeight = this.mapLayout.length;
@@ -279,7 +281,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   getMapLayout(): TMapLayout {
-    const stringLayout = MAPS[this.options.mapType ?? getRandomElement(ALL_MAPS)];
+    const stringLayout = MAPS[this.mapType];
 
     return stringLayout
       .trim()
@@ -452,6 +454,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     return {
       players: this.getGamePlayers(),
       map: this.getClientMap(),
+      mapType: this.mapType,
       startsAt: this.startsAt,
       canControl: this.canControl,
     };

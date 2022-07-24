@@ -13,10 +13,10 @@ import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 import Select from 'client/components/common/Select/Select';
-import PexesoCreateGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoCreateGameOptions/PexesoCreateGameOptions';
-import PexesoGameOptions from 'client/pages/games/pexeso/PexesoLobby/components/PexesoGameOptions/PexesoGameOptions';
-import BombersCreateGameOptions from 'client/pages/games/bombers/BombersLobby/components/BombersCreateGameOptions/BombersCreateGameOptions';
-import BombersGameOptions from 'client/pages/games/bombers/BombersLobby/components/BombersGameOptions/BombersGameOptions';
+import PexesoCreateGameOptions from 'client/pages/games/pexeso/components/PexesoCreateGameOptions/PexesoCreateGameOptions';
+import PexesoGameOptions from 'client/pages/games/pexeso/components/PexesoGameOptions/PexesoGameOptions';
+import BombersCreateGameOptions from 'client/pages/games/bombers/components/BombersCreateGameOptions/BombersCreateGameOptions';
+import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
 
 import useGameOptions from 'client/hooks/useGameOptions';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
