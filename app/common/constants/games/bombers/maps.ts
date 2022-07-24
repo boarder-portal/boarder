@@ -92,6 +92,71 @@ const MAPS: Record<EMap, string> = {
     -wb-b-b-b-b-b-bw-
     0--b-b-b-b-b-b--3
   `,
+  [EMap.WAVE]: `
+    2-b-b-b-b-b-b-b-1
+    -bww--wbwbw--wwb-
+    bwwbbwwb-bwwbbwwb
+    bw-bww--w--wwb-wb
+    -b-wwb-bbb-bww-b-
+    bbb-bbwbbbwbb-bbb
+    -b-wwb-bbb-bww-b-
+    bw-bww--w--wwb-wb
+    bwwbbwwb-bwwbbwwb
+    -bww--wbwbw--wwb-
+    0-b-b-b-b-b-b-b-3
+  `,
+  [EMap.SIGHT]: `
+    2-bb--b-b-b--bb-1
+    -bb-ww-bwb-ww-bb-
+    bww-b-b-b-b-b-wwb
+    bwwbbwww-wwwbbwwb
+    --b--wb-b-bw--b--
+    -bbwb--bwb--bwbb-
+    --b--wb-b-bw--b--
+    bwwbbwww-wwwbbwwb
+    bww-b-b-b-b-b-wwb
+    -bb-ww-bwb-ww-bb-
+    0-bb--b-b-b--bb-3
+  `,
+  [EMap.FIELD]: `
+    2-bb--b-b-b--bb-1
+    -bwb-b-----b-bwb-
+    bbb-----b-----bbb
+    b----w-bbb-w----b
+    --b---bb-bb---b--
+    -b-b-bb---bb-b-b-
+    --b---bb-bb---b--
+    b----w-bbb-w----b
+    bbb-----b-----bbb
+    -bwb-b-----b-bwb-
+    0-bb--b-b-b--bb-3
+  `,
+  [EMap.SUNFLOWER]: `
+    2-b--b--b--b--b-1
+    -bbww-bb-bb-wwbb-
+    bbb--b-bwb-b--bbb
+    -w-wbbw---wbbw-w-
+    -wb----bbb----bw-
+    -bb-bw-bwb-wb-bb-
+    -wb----bbb----bw-
+    -w-wbbw---wbbw-w-
+    bbb--b-bwb-b--bbb
+    -bbww-bb-bb-wwbb-
+    0-b--b--b--b--b-3
+  `,
+  [EMap.MEMBRANE]: `
+    2-b-b-b-b-b-b-b-1
+    -b-w-b-bwb-b-w-b-
+    bwbwbwb-b-bwbwbwb
+    bw-w-w-w-w-w-w-wb
+    -wbwbwbwbwbwbwbw-
+    -b-b-b-b-b-b-b-b-
+    -wbwbwbwbwbwbwbw-
+    bw-w-w-w-w-w-w-wb
+    bwbwbwb-b-bwbwbwb
+    -b-w-b-bwb-b-w-b-
+    0-b-b-b-b-b-b-b-3
+  `,
 };
 
 export default MAPS;

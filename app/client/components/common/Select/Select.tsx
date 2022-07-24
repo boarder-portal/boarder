@@ -45,7 +45,12 @@ const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.
   );
 
   return (
-    <Dropdown className={classNames(styles.root, className)} popup={popup} popupPosition="bottomLeft">
+    <Dropdown
+      className={classNames(styles.root, className)}
+      popupClassName={styles.options}
+      popup={popup}
+      popupPosition="bottomLeft"
+    >
       {label && <div className={styles.label}>{label}</div>}
 
       <Flex className={styles.trigger} justifyContent="spaceBetween" alignItems="center">

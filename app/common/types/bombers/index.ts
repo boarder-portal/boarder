@@ -123,6 +123,11 @@ export enum EMap {
   BUTTERFLY = 'BUTTERFLY',
   CABINET = 'CABINET',
   RACE = 'RACE',
+  WAVE = 'WAVE',
+  SIGHT = 'SIGHT',
+  FIELD = 'FIELD',
+  SUNFLOWER = 'SUNFLOWER',
+  MEMBRANE = 'MEMBRANE',
 }
 
 export interface IGame {

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Map Generator</title>
+    <style>
+      .root {
+        display: flex;
+        gap: 20px;
+      }
+
+      #map {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .row {
+        display: flex;
+        gap: 1px;
+      }
+
+      .cell {
+        width: calc(90vh / 11);
+        height: calc(90vh / 11);
+        background-size: contain;
+      }
+
+      .grass {
+        background-image: url("/bombers/grass4.png");
+      }
+
+      .box {
+        background-image: url("/bombers/box.png");
+      }
+
+      .wall {
+        background-image: url("/bombers/wall.png");
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .modes {
+        display: flex;
+        gap: 4px;
+      }
+
+      .changeModeButton {
+        width: 40px;
+        height: 40px;
+        background-size: contain;
+      }
+
+      #mapString {
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="root">
+      <div id="map"></div>
+
+      <div class="controls">
+        <div class="modes">
+          <div class="changeModeButton grass" onclick="changeMode('grass')"></div>
+          <div class="changeModeButton wall" onclick="changeMode('wall')"></div>
+          <div class="changeModeButton box" onclick="changeMode('box')"></div>
+        </div>
+
+        <textarea id="mapString"></textarea>
+      </div>
+    </div>
+    <script>
+      const MAP_WIDTH = 17;
+      const MAP_HEIGHT = 11;
+      const CHAR_MAP = {
+        grass: '-',
+        wall: 'w',
+        box: 'b',
+      };
+      const CHAR_REVERSE_MAP = {
+        '-': 'grass',
+        w: 'wall',
+        b: 'box',
+      };
+      const map = [];
+      const elementsMap = [];
+      const mapElement = document.getElementById('map');
+      const textarea = document.getElementById('mapString');
+      let selectedMode = 'grass';
+      let isDnd = false;
+
+      new Array(MAP_HEIGHT).fill(0).forEach((_, y) => {
+        const row = [];
+        const elementsRow = [];
+        const rowElement = mapElement.appendChild(document.createElement('div'));
+
+        rowElement.className = 'row';
+
+        map.push(row);
+        elementsMap.push(elementsRow);
+
+        new Array(MAP_WIDTH).fill(0).forEach((_, x) => {
+          const childElement = document.createElement('div');
+
+          childElement.className = 'cell grass';
+          childElement.dataset.x = String(x);
+          childElement.dataset.y = String(y);
+
+          rowElement.appendChild(childElement);
+
+          row.push('grass');
+          elementsRow.push(childElement);
+        });
+      });
+
+      generateMap();
+
+      document.body.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+      });
+
+      document.body.addEventListener('mousedown', (e) => {
+        if (e.button === 2) {
+          selectedMode = 'grass';
+        }
+
+        isDnd = true;
+
+        fillCells(e);
+      });
+
+      document.body.addEventListener('mousemove', (e) => {
+        if (!isDnd) {
+          return;
+        }
+
+        fillCells(e);
+      });
+
+      document.body.addEventListener('mouseup', () => {
+        isDnd = false;
+      });
+
+      textarea.addEventListener('focus', () => {
+        textarea.select();
+      });
+
+      textarea.addEventListener('change', () => {
+        const newValue = textarea.value;
+        const newMapChars = newValue.replace(/`/g, '').trim().split('\n');
+
+        newMapChars.forEach((row, y) => {
+          row.trim().split('').forEach((char, x) => {
+            const type = CHAR_REVERSE_MAP[char];
+
+            console.log(x, y, type);
+
+            if (type) {
+              fillCell(x, y, type);
+            }
+          });
+        });
+      });
+
+      function fillCells(e) {
+        const x = Number(e.target.dataset.x);
+        const y = Number(e.target.dataset.y);
+
+        if (Number.isNaN(x) || Number.isNaN(y)) {
+          return;
+        }
+
+        const coordsToChange = [
+          { x, y },
+          { x, y: MAP_HEIGHT - 1 - y },
+          { x: MAP_WIDTH - 1 - x, y },
+          { x: MAP_WIDTH - 1 - x, y: MAP_HEIGHT - 1 - y },
+        ];
+
+        coordsToChange.forEach(({ x, y }) => {
+          fillCell(x, y, selectedMode);
+        });
+
+        generateMap();
+      }
+
+      function fillCell(x, y, type) {
+        const element = elementsMap[y][x];
+
+        map[y][x] = type;
+
+        element.classList.remove('grass', 'wall', 'box');
+        element.classList.add(type);
+      }
+
+      function changeMode(mode) {
+        selectedMode = mode;
+      }
+
+      function generateMap() {
+        map[MAP_HEIGHT - 1][0] = '0';
+        map[0][MAP_WIDTH - 1] = '1';
+        map[0][0] = '2';
+        map[MAP_HEIGHT - 1][MAP_WIDTH - 1] = '3';
+
+        textarea.value = '`\n' + map.map((row) => '    ' + row.map((type) => CHAR_MAP[type] ?? type).join('')).join('\n') + '\n  `';
+      }
+    </script>
+  </body>
+</html>

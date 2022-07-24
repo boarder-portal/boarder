@@ -8,12 +8,13 @@ import styles from './Dropdown.pcss';
 
 interface IDropdownProps {
   className?: string;
+  popupClassName?: string;
   popup: ReactNode;
   popupPosition?: 'bottomLeft' | 'bottomCenter' | 'bottomRight';
 }
 
 const Dropdown: FC<IDropdownProps> = (props) => {
-  const { className, popup, popupPosition = 'bottomCenter', children } = props;
+  const { className, popupClassName, popup, popupPosition = 'bottomCenter', children } = props;
 
   const { value: visible, setFalse: close, setValue } = useBoolean(false);
 
@@ -35,7 +36,9 @@ const Dropdown: FC<IDropdownProps> = (props) => {
       </div>
 
       {visible && (
-        <div className={classNames(styles.popup, styles[popupPosition], { [styles.visible]: visible })}>{popup}</div>
+        <div className={classNames(styles.popup, styles[popupPosition], { [styles.visible]: visible }, popupClassName)}>
+          {popup}
+        </div>
       )}
     </div>
   );
