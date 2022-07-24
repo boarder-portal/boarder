@@ -35,7 +35,7 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
         if (occupiedCells.includes(this.cell)) {
           deadPlayers.push(player.index);
 
-          player.hit({ damage: Infinity, invincibilityEndsAt: null });
+          player.hit({ damage: Infinity });
         }
       });
 

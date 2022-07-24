@@ -63,6 +63,10 @@ export interface IPlayer extends IGamePlayer {
   data: IPlayerData;
 }
 
+export interface IGameResult {
+  winner: number | null;
+}
+
 export enum EObject {
   BOX = 'BOX',
   WALL = 'WALL',
@@ -191,7 +195,7 @@ declare module 'common/types/game' {
       serverEventMap: IServerEventMap;
       options: IGameOptions;
       info: IGame;
-      result: void;
+      result: IGameResult;
     };
   }
 }

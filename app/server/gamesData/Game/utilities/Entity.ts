@@ -241,7 +241,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
-  *all<T extends TIterableOrGenerator<Result>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
+  *all<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
       let resultsLeft = generators.length;

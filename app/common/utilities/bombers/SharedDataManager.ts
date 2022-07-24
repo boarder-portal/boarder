@@ -1,4 +1,6 @@
 import {
+  BOMBER_CELL_MARGIN,
+  BOMBER_CELL_SIZE,
   CELLS_PER_SECOND,
   MAX_BOMB_COUNT,
   MAX_BOMB_RANGE,
@@ -98,7 +100,7 @@ export default class SharedDataManager<MapObject> {
 
   getClosestCell(player: ISharedPlayer, direction: EDirection): IClosestCellInfo<MapObject> {
     if (direction === EDirection.DOWN) {
-      const bottom = player.coords.y + 0.5;
+      const bottom = player.coords.y + BOMBER_CELL_SIZE / 2;
 
       return {
         cell: this.getCell({ x: Math.floor(player.coords.x), y: Math.ceil(bottom) }),
@@ -107,7 +109,7 @@ export default class SharedDataManager<MapObject> {
     }
 
     if (direction === EDirection.UP) {
-      const top = player.coords.y - 0.5;
+      const top = player.coords.y - BOMBER_CELL_SIZE / 2;
 
       return {
         cell: this.getCell({ x: Math.floor(player.coords.x), y: Math.floor(top) - 1 }),
@@ -116,7 +118,7 @@ export default class SharedDataManager<MapObject> {
     }
 
     if (direction === EDirection.RIGHT) {
-      const right = player.coords.x + 0.5;
+      const right = player.coords.x + BOMBER_CELL_SIZE / 2;
 
       return {
         cell: this.getCell({ x: Math.ceil(right), y: Math.floor(player.coords.y) }),
@@ -124,7 +126,7 @@ export default class SharedDataManager<MapObject> {
       };
     }
 
-    const left = player.coords.x - 0.5;
+    const left = player.coords.x - BOMBER_CELL_SIZE / 2;
 
     return {
       cell: this.getCell({ x: Math.floor(left) - 1, y: Math.floor(player.coords.y) }),
@@ -199,7 +201,7 @@ export default class SharedDataManager<MapObject> {
 
       if (line === desiredLine) {
         movingDirection = player.direction;
-        distanceToPass = distanceToClosestCell;
+        distanceToPass = canPass ? distanceToClosestCell : distanceToClosestCell - BOMBER_CELL_MARGIN;
 
         // in front of the object or map edge
         if (!canPass && (isFloatZero(distanceToPass) || distanceToPass < 0)) {

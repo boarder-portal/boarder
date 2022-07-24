@@ -1,5 +1,4 @@
 import times from 'lodash/times';
-import last from 'lodash/last';
 import shuffle from 'lodash/shuffle';
 
 import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS } from 'common/constants/games/bombers';
@@ -15,6 +14,7 @@ import {
   IExplodedBomb,
   IExplodedBox,
   IGame,
+  IGameResult,
   IPlayer,
   TMap,
 } from 'common/types/bombers';
@@ -77,7 +77,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     });
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<IGameResult> {
     this.spawnTask(this.pingIndefinitely(1000));
 
     this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) => {
@@ -128,6 +128,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     ]);
 
     this.players.forEach((player) => player.disable());
+
+    return {
+      winner: [...this.alivePlayers].at(0)?.index ?? null,
+    };
   }
 
   createWall(coords: ICoords, isArtificial: boolean): void {
@@ -315,18 +319,14 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     }
   }
 
-  *spawnArtificialWall(): TGenerator {
+  *spawnArtificialWall(): TGenerator<undefined | true> {
     const cell = this.artificialWallsPath.at(this.artificialWallsSpawned);
 
     if (!cell) {
-      return;
+      return true;
     }
 
     this.artificialWallsSpawned++;
-
-    if (!cell) {
-      return;
-    }
 
     const { object } = cell;
 
@@ -362,7 +362,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     this.placeMapObject(bomb, cell);
     player.placeBomb(bomb);
-    last(this.bombsToExplode)?.push(bomb);
+    this.bombsToExplode.at(-1)?.push(bomb);
 
     this.sendSocketEvent(EGameServerEvent.PLACE_BOMB, {
       coords: this.getCellCoords(cell),
@@ -447,5 +447,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     while (this.alivePlayers.size > finishGamePlayersCount) {
       yield* this.race([...this.alivePlayers]);
     }
+
+    yield* this.delay(0);
   }
 }

@@ -38,7 +38,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   placedBombs = new Set<Bomb>();
 
   disableTrigger = this.createTrigger();
-  hit = this.createTrigger<{ damage: number; invincibilityEndsAt: number | null }>();
+  hit = this.createTrigger<{ damage: number; invincibilityEndsAt?: number | null }>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
     super(game, options);

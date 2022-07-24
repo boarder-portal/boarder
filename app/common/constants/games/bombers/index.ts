@@ -27,6 +27,7 @@ export const MAX_HP = 3;
 export const MAX_HP_RESERVE = 1;
 
 export const BOMBER_CELL_SIZE = 0.7;
+export const BOMBER_CELL_MARGIN = (1 - BOMBER_CELL_SIZE) / 2;
 export const CELLS_PER_SECOND = 1.5;
 export const SPEED_INCREMENT = 0.3;
 
