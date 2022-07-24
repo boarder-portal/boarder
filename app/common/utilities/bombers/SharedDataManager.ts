@@ -20,7 +20,7 @@ import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 export interface ISharedCell<MapObject> {
   x: number;
   y: number;
-  object: MapObject | null;
+  objects: MapObject[];
 }
 
 export type TSharedMap<MapObject> = ISharedCell<MapObject>[][];
@@ -43,7 +43,7 @@ export interface ISharedBonus {
 export interface ISharedDataManagerOptions<MapObject> {
   map: TSharedMap<MapObject>;
   players: ISharedPlayer[];
-  isPassableObject(object: MapObject | null | undefined): boolean;
+  isPassableObject(object: MapObject): boolean;
 }
 
 interface IClosestCellInfo<MapObject> {
@@ -136,7 +136,7 @@ export default class SharedDataManager<MapObject> {
 
   getClosestOrBehindCell(player: ISharedPlayer, direction: EDirection): IClosestCellInfo<MapObject> {
     const closestCellInfo = this.getClosestCell(player, direction);
-    const canPass = this.isPassableObject(closestCellInfo.cell?.object);
+    const canPass = closestCellInfo.cell?.objects.every(this.isPassableObject);
 
     if (!canPass || !isFloatZero(closestCellInfo.distance)) {
       return closestCellInfo;
@@ -196,7 +196,7 @@ export default class SharedDataManager<MapObject> {
         line === desiredLine
           ? this.getClosestOrBehindCell(player, player.direction)
           : this.getClosestCell(player, player.direction);
-      const canPass = this.isPassableObject(closestCell?.object);
+      const canPass = closestCell?.objects.every(this.isPassableObject);
       let distanceToPass: number;
 
       if (line === desiredLine) {

@@ -84,20 +84,24 @@ export enum EBonus {
 
 export interface IBox {
   type: EObject.BOX;
+  id: number;
 }
 
 export interface IWall {
   type: EObject.WALL;
+  id: number;
 }
 
 export interface IBomb {
   type: EObject.BOMB;
+  id: number;
   range: number;
   explodesAt: number;
 }
 
 export interface IBonus {
   type: EObject.BONUS;
+  id: number;
   bonusType: EBonus;
 }
 
@@ -106,7 +110,7 @@ export type TMapObject = IBox | IWall | IBomb | IBonus;
 export interface ICell {
   x: number;
   y: number;
-  object: TMapObject | null;
+  objects: TMapObject[];
 }
 
 export type TMap = ICell[][];
@@ -142,11 +146,13 @@ export interface IPlaceBombEvent {
 }
 
 export interface IExplodedBox {
+  id: number;
   coords: ICoords;
-  bonus: IBonus | null;
+  bonuses: IBonus[];
 }
 
 export interface IExplodedBomb {
+  id: number;
   coords: ICoords;
   explodedDirections: TExplodedDirections;
 }
@@ -172,6 +178,7 @@ export interface IWallCreatedEvent {
 }
 
 export interface IBonusConsumedEvent {
+  id: number;
   coords: ICoords;
   playerIndex: number;
 }

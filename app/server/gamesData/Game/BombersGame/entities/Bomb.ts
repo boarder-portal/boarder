@@ -9,9 +9,9 @@ import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
-import Wall from 'server/gamesData/Game/BombersGame/entities/Wall';
 
 export interface IBombOptions {
+  id: number;
   cell: IServerCell;
   range: number;
   explodesAt: number;
@@ -28,6 +28,7 @@ const ALL_DIRECTIONS = Object.values(EDirection);
 export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   game: BombersGame;
 
+  id: number;
   cell: IServerCell;
   range: number;
   explodesAt: number;
@@ -38,6 +39,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
     super(game);
 
     this.game = game;
+    this.id = options.id;
     this.cell = options.cell;
     this.range = options.range;
     this.explodesAt = options.explodesAt;
@@ -72,9 +74,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
         }
       });
 
-      if (cell.object instanceof Box) {
-        explodedBoxes.push(cell.object);
-      }
+      explodedBoxes.push(...cell.objects.filter(BombersGame.isBox));
     };
 
     addCell(this.cell);
@@ -93,7 +93,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
         addCell(currentCell);
 
-        if (!(currentCell.object instanceof Wall)) {
+        if (!currentCell.objects.some(BombersGame.isWall)) {
           const line = getDirectionLine(direction);
 
           if (direction === EDirection.LEFT || direction === EDirection.UP) {
@@ -103,7 +103,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
           }
         }
 
-        if (!this.game.isExplosionPassableObject(currentCell.object)) {
+        if (currentCell.objects.some((object) => !this.game.isExplosionPassableObject(object))) {
           break;
         }
       }
@@ -122,6 +122,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   toJSON(): IBomb {
     return {
       type: EObject.BOMB,
+      id: this.id,
       range: this.range,
       explodesAt: this.explodesAt,
     };

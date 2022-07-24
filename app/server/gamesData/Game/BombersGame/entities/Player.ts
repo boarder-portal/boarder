@@ -80,6 +80,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.game.sharedDataManager.consumePlayerBonus(this.index, bonus);
 
     this.sendSocketEvent(EGameServerEvent.BONUS_CONSUMED, {
+      id: bonus.id,
       playerIndex: this.index,
       coords,
     });
@@ -176,9 +177,9 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     }
 
     this.getOccupiedCells().forEach((cell) => {
-      if (cell.object instanceof Bonus) {
-        this.consumeBonus(cell.object, this.game.getCellCoords(cell));
-      }
+      cell.objects.filter(BombersGame.isBonus).forEach((bonus) => {
+        this.consumeBonus(bonus, this.game.getCellCoords(cell));
+      });
     });
 
     this.startMovingTimestamp = newMoveTimestamp;

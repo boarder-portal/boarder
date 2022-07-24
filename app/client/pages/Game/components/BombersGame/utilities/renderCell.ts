@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy';
+
 import { EObject, ICell } from 'common/types/bombers';
 import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
 
@@ -13,18 +15,27 @@ export interface IRenderCellOptions {
   images: TBombersImages;
 }
 
+const OBJECTS_SORT_VALUES: Record<EObject, number> = {
+  [EObject.BONUS]: 0,
+  [EObject.WALL]: 1,
+  [EObject.BOX]: 2,
+  [EObject.BOMB]: 3,
+};
+
 export default function renderCell(options: IRenderCellOptions): void {
   const { ctx, cell, images } = options;
 
   renderCellImage(ctx, images.grass, cell, 0);
 
-  if (cell.object?.type === EObject.BOMB) {
-    renderBomb({ ctx, bomb: cell.object, coords: cell, images });
-  } else if (cell.object?.type === EObject.BOX) {
-    renderBox({ ctx, box: cell.object, coords: cell, images });
-  } else if (cell.object?.type === EObject.BONUS) {
-    renderBonus({ ctx, bonus: cell.object, coords: cell, images });
-  } else if (cell.object?.type === EObject.WALL) {
-    renderWall({ ctx, wall: cell.object, coords: cell, images });
-  }
+  sortBy(cell.objects, ({ type }) => OBJECTS_SORT_VALUES[type]).forEach((object) => {
+    if (object.type === EObject.BOMB) {
+      renderBomb({ ctx, bomb: object, coords: cell, images });
+    } else if (object.type === EObject.BOX) {
+      renderBox({ ctx, box: object, coords: cell, images });
+    } else if (object.type === EObject.BONUS) {
+      renderBonus({ ctx, bonus: object, coords: cell, images });
+    } else if (object.type === EObject.WALL) {
+      renderWall({ ctx, wall: object, coords: cell, images });
+    }
+  });
 }

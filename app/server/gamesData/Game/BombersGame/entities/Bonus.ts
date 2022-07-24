@@ -7,10 +7,12 @@ import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBonusOptions {
+  id: number;
   type: EBonus;
 }
 
 export default class Bonus extends ServerEntity<EGame.BOMBERS> {
+  id: number;
   type: EBonus;
 
   consume = this.createTrigger();
@@ -18,6 +20,7 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   constructor(game: BombersGame, options: IBonusOptions) {
     super(game);
 
+    this.id = options.id;
     this.type = options.type;
   }
 
@@ -28,6 +31,7 @@ export default class Bonus extends ServerEntity<EGame.BOMBERS> {
   toJSON(): IBonus {
     return {
       type: EObject.BONUS,
+      id: this.id,
       bonusType: this.type,
     };
   }

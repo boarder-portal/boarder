@@ -7,6 +7,7 @@ import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IWallOptions {
+  id: number;
   cell: IServerCell;
   isArtificial: boolean;
 }
@@ -14,6 +15,7 @@ export interface IWallOptions {
 export default class Wall extends ServerEntity<EGame.BOMBERS> {
   game: BombersGame;
 
+  id: number;
   cell: IServerCell;
   isArtificial: boolean;
 
@@ -21,6 +23,7 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
     super(game);
 
     this.game = game;
+    this.id = options.id;
     this.cell = options.cell;
     this.isArtificial = options.isArtificial;
   }
@@ -52,6 +55,7 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
   toJSON(): IWall {
     return {
       type: EObject.WALL,
+      id: this.id,
     };
   }
 }

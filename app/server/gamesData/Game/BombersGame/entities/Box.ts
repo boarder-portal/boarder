@@ -10,10 +10,12 @@ import { getWeightedRandomKey } from 'common/utilities/random';
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
 export interface IBoxOptions {
+  id: number;
   cell: IServerCell;
 }
 
 export default class Box extends ServerEntity<EGame.BOMBERS, EBonus | null> {
+  id: number;
   cell: IServerCell;
 
   explodeTrigger = this.createTrigger<EBonus | null>();
@@ -21,6 +23,7 @@ export default class Box extends ServerEntity<EGame.BOMBERS, EBonus | null> {
   constructor(game: BombersGame, options: IBoxOptions) {
     super(game);
 
+    this.id = options.id;
     this.cell = options.cell;
   }
 
@@ -35,6 +38,7 @@ export default class Box extends ServerEntity<EGame.BOMBERS, EBonus | null> {
   toJSON(): IBox {
     return {
       type: EObject.BOX,
+      id: this.id,
     };
   }
 }
