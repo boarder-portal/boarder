@@ -1,7 +1,7 @@
 import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 
-import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS } from 'common/constants/games/bombers';
+import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS, TIME_TO_START } from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
 import {
@@ -52,6 +52,8 @@ const ALL_MAPS = Object.values(EMap);
 export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   players: Player[] = [];
   map: TServerMap = [];
+  startsAt = Date.now() + TIME_TO_START;
+  canControl = false;
   sharedDataManager: SharedDataManager<TServerMapObject>;
   mapLayout: TMapLayout;
   mapWidth: number;
@@ -118,6 +120,16 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       );
     });
 
+    yield* this.delay(this.startsAt - Date.now());
+
+    this.players.forEach((player) => {
+      player.grantControls();
+    });
+
+    this.canControl = true;
+
+    this.sendSocketEvent(EGameServerEvent.CAN_CONTROL);
+
     this.lastExplosionTickTimestamp = now();
 
     this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
@@ -127,7 +139,9 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       this.all([this.spawnArtificialWalls(), this.repeatTask(FRAME_DURATION, this.movePlayers)]),
     ]);
 
-    this.players.forEach((player) => player.disable());
+    this.players.forEach((player) => {
+      player.disable();
+    });
 
     return {
       winner: [...this.alivePlayers].at(0)?.index ?? null,
@@ -438,6 +452,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     return {
       players: this.getGamePlayers(),
       map: this.getClientMap(),
+      startsAt: this.startsAt,
+      canControl: this.canControl,
     };
   }
 

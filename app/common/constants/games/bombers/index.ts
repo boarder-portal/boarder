@@ -8,6 +8,8 @@ export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   mapType: null,
 };
 
+export const TIME_TO_START = 3000;
+
 export const EXPLOSION_TICK_DURATION = 1000;
 export const EXPLOSION_TICKS_COUNT = 3;
 

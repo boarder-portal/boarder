@@ -37,7 +37,8 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   invincibilityEndsAt: number | null = null;
   placedBombs = new Set<Bomb>();
 
-  disableTrigger = this.createTrigger();
+  disable = this.createTrigger();
+  grantControls = this.createTrigger();
   hit = this.createTrigger<{ damage: number; invincibilityEndsAt?: number | null }>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
@@ -49,7 +50,8 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   *lifecycle(): TGenerator {
-    this.spawnTask(this.listenForEvents());
+    this.spawnTask(this.waitForControls());
+    this.spawnTask(this.waitForDisable());
 
     while (true) {
       const { damage, invincibilityEndsAt } = yield* this.hit;
@@ -81,14 +83,6 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       playerIndex: this.index,
       coords,
     });
-  }
-
-  disable(): void {
-    this.stopMoving();
-    this.disableTrigger();
-
-    this.isInvincible = true;
-    this.invincibilityEndsAt = null;
   }
 
   getCurrentCell(): IServerCell {
@@ -144,7 +138,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   *listenForEvents(): TGenerator {
     yield* this.race([
-      this.disableTrigger,
+      this.disable,
       this.all([
         this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
         this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
@@ -235,5 +229,19 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       'hpReserve',
       'invincibilityEndsAt',
     ]);
+  }
+
+  *waitForControls(): TGenerator {
+    yield* this.grantControls;
+    yield* this.listenForEvents();
+  }
+
+  *waitForDisable(): TGenerator {
+    yield* this.disable;
+
+    this.stopMoving();
+
+    this.isInvincible = true;
+    this.invincibilityEndsAt = null;
   }
 }

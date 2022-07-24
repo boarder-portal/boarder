@@ -15,6 +15,7 @@ export enum EGameClientEvent {
 }
 
 export enum EGameServerEvent {
+  CAN_CONTROL = 'CAN_CONTROL',
   SYNC_COORDS = 'SYNC_COORDS',
   PLACE_BOMB = 'PLACE_BOMB',
   BOMBS_EXPLODED = 'BOMBS_EXPLODED',
@@ -123,6 +124,8 @@ export enum EMap {
 export interface IGame {
   players: IPlayer[];
   map: TMap;
+  startsAt: number;
+  canControl: boolean;
 }
 
 export interface ISyncCoordsEvent {
@@ -180,6 +183,7 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
+  [EGameServerEvent.CAN_CONTROL]: undefined;
   [EGameServerEvent.SYNC_COORDS]: ISyncCoordsEvent;
   [EGameServerEvent.PLACE_BOMB]: IPlaceBombEvent;
   [EGameServerEvent.BOMBS_EXPLODED]: IBombsExplodedEvent;

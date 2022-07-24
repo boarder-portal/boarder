@@ -4,6 +4,7 @@ import {
   EGame,
   TGameClientEvent,
   TGameClientEventData,
+  TGameServerDatalessEvent,
   TGameServerEvent,
   TGameServerEventData,
 } from 'common/types/game';
@@ -134,6 +135,16 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
+  sendSocketEvent<Event extends TGameServerDatalessEvent<Game>>(
+    event: Event,
+    data?: undefined,
+    options?: ISendSocketEventOptions<Game>,
+  ): void;
+  sendSocketEvent<Event extends TGameServerEvent<Game>>(
+    event: Event,
+    data: TGameServerEventData<Game, Event>,
+    options?: ISendSocketEventOptions<Game>,
+  ): void;
   sendSocketEvent<Event extends TGameServerEvent<Game>>(
     event: Event,
     data: TGameServerEventData<Game, Event>,

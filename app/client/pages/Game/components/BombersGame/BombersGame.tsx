@@ -58,6 +58,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mapRef = useRef<TMap>(gameInfo.map);
+  const canControlRef = useRef<boolean>(gameInfo.canControl);
   const playersDataRef = useRef<IPlayerData[]>(
     players.map((player) => ({
       ...player.data,
@@ -68,7 +69,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
   const player = useMemo(() => {
-    return players.find(({ login }) => login === user?.login);
+    return players.find(({ login }) => login === user?.login) ?? null;
   }, [players, user]);
 
   const sharedDataManager = useMemo(() => {
@@ -79,10 +80,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     });
   }, []);
 
-  const viewSize: ISize = {
-    width: gameInfo.map[0].length,
-    height: gameInfo.map.length,
-  };
+  const viewSize = useMemo<ISize>(() => {
+    return {
+      width: gameInfo.map[0].length,
+      height: gameInfo.map.length,
+    };
+  }, [gameInfo.map]);
 
   const changeCellSize = useImmutableCallback(() => {
     const containerEl = containerRef.current;
@@ -111,6 +114,9 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
+    [EGameServerEvent.CAN_CONTROL]: () => {
+      canControlRef.current = true;
+    },
     [EGameServerEvent.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
 
@@ -204,6 +210,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keydown', document, (e) => {
+    if (!canControlRef.current) {
+      return;
+    }
+
     if (e.code === 'Space' || e.code === 'KeyV') {
       io.emit(EGameClientEvent.PLACE_BOMB);
 
@@ -223,6 +233,10 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keyup', document, (e) => {
+    if (!canControlRef.current) {
+      return;
+    }
+
     if (e.code === 'KeyH') {
       io.emit(EGameClientEvent.HEAL);
 
@@ -276,12 +290,16 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       map: mapRef.current,
       playersData: playersDataRef.current,
       explodedDirections: explodedDirectionsRef.current,
+      startsAt: gameInfo.startsAt - timeDiff,
+      player,
     });
   });
 
   useEffect(() => {
     console.log(gameInfo);
+  }, [gameInfo]);
 
+  useEffect(() => {
     const canvasEl = canvasRef.current;
 
     if (!canvasEl) {
@@ -291,7 +309,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     contextRef.current = canvasEl.getContext('2d');
 
     changeCellSize();
-  }, [changeCellSize, gameInfo]);
+  }, [changeCellSize]);
 
   return (
     <Flex className={styles.root} justifyContent="center" alignItems="stretch" ref={containerRef}>
