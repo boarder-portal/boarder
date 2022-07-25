@@ -2,51 +2,64 @@ import {
   BOMBER_CELL_MARGIN,
   BOMBER_CELL_SIZE,
   CELLS_PER_SECOND,
+  INVINCIBILITY_COST,
   MAX_BOMB_COUNT,
   MAX_BOMB_RANGE,
   MAX_HP,
-  MAX_HP_RESERVE,
   MAX_SPEED,
   SPEED_INCREMENT,
+  SUPER_BOMB_COST,
+  SUPER_RANGE_COST,
+  SUPER_SPEED,
+  SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
 import { ICoords } from 'common/types';
-import { EBonus, EDirection, ELine } from 'common/types/bombers';
+import { EBonus, EBuff, EDirection, ELine, IBuff } from 'common/types/bombers';
 
 import { isFloatZero } from 'common/utilities/float';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
+import { isSuperSpeed } from 'common/utilities/bombers/buffs';
 
-export interface ISharedCell<MapObject> {
+export interface IMapObjectWithId {
+  id: number;
+}
+
+export interface ISharedCell<MapObject extends IMapObjectWithId> {
   x: number;
   y: number;
   objects: MapObject[];
 }
 
-export type TSharedMap<MapObject> = ISharedCell<MapObject>[][];
+export type TSharedMap<MapObject extends IMapObjectWithId> = ISharedCell<MapObject>[][];
 
 export interface ISharedPlayer {
   coords: ICoords;
   direction: EDirection;
   startMovingTimestamp: number | null;
   speed: number;
+  speedReserve: number;
   maxBombCount: number;
+  maxBombCountReserve: number;
   bombRange: number;
+  bombRangeReserve: number;
   hp: number;
   hpReserve: number;
+  buffs: IBuff[];
 }
 
 export interface ISharedBonus {
   type: EBonus;
 }
 
-export interface ISharedDataManagerOptions<MapObject> {
+export interface ISharedDataManagerOptions<MapObject extends IMapObjectWithId> {
   map: TSharedMap<MapObject>;
   players: ISharedPlayer[];
   isPassableObject(object: MapObject): boolean;
 }
 
-interface IClosestCellInfo<MapObject> {
+interface IClosestCellInfo<MapObject extends IMapObjectWithId> {
   cell: ISharedCell<MapObject> | undefined;
   distance: number;
 }
@@ -61,7 +74,7 @@ interface IMovePlayerResult {
   distanceWalked: number;
 }
 
-export default class SharedDataManager<MapObject> {
+export default class SharedDataManager<MapObject extends IMapObjectWithId> {
   map: TSharedMap<MapObject>;
   players: ISharedPlayer[];
   isPassableObject: ISharedDataManagerOptions<MapObject>['isPassableObject'];
@@ -72,22 +85,89 @@ export default class SharedDataManager<MapObject> {
     this.isPassableObject = options.isPassableObject;
   }
 
+  activatePlayerBuff(playerIndex: number, type: EBuff, endsAt: number): IBuff {
+    const player = this.players[playerIndex];
+
+    if (type === EBuff.SUPER_SPEED) {
+      const amountFromReserve = Math.min(player.speedReserve, SUPER_SPEED_COST);
+
+      player.speedReserve -= amountFromReserve;
+      player.speed -= SUPER_SPEED_COST - amountFromReserve;
+    } else if (type === EBuff.SUPER_BOMB) {
+      const amountFromReserve = Math.min(player.maxBombCountReserve, SUPER_BOMB_COST);
+
+      player.maxBombCountReserve -= amountFromReserve;
+      player.maxBombCount -= SUPER_BOMB_COST - amountFromReserve;
+    } else if (type === EBuff.SUPER_RANGE) {
+      const amountFromReserve = Math.min(player.bombRangeReserve, SUPER_RANGE_COST);
+
+      player.bombRangeReserve -= amountFromReserve;
+      player.bombRange -= SUPER_RANGE_COST - amountFromReserve;
+    } else if (type === EBuff.INVINCIBILITY) {
+      this.deactivatePlayerBuff(playerIndex, EBuff.BOMB_INVINCIBILITY);
+
+      const amountFromReserve = Math.min(player.hpReserve, INVINCIBILITY_COST);
+
+      player.hpReserve -= amountFromReserve;
+      player.hp -= INVINCIBILITY_COST - amountFromReserve;
+    }
+
+    const activeBuff = player.buffs.find((buff) => buff.type === type);
+
+    if (activeBuff) {
+      activeBuff.endsAt = endsAt;
+
+      return activeBuff;
+    }
+
+    const newBuff: IBuff = {
+      type,
+      endsAt,
+    };
+
+    player.buffs.push(newBuff);
+
+    return newBuff;
+  }
+
+  canPlayerPassCell(player: ISharedPlayer, cell: ISharedCell<MapObject> | undefined): boolean {
+    return Boolean(cell?.objects.every((object) => player.buffs.some(isSuperSpeed) || this.isPassableObject(object)));
+  }
+
   consumePlayerBonus(playerIndex: number, bonus: ISharedBonus): void {
     const player = this.players[playerIndex];
 
     if (bonus.type === EBonus.SPEED) {
-      player.speed = Math.min(MAX_SPEED, player.speed + 1);
-    } else if (bonus.type === EBonus.BOMB_COUNT) {
-      player.maxBombCount = Math.min(MAX_BOMB_COUNT, player.maxBombCount + 1);
-    } else if (bonus.type === EBonus.BOMB_RANGE) {
-      player.bombRange = Math.min(MAX_BOMB_RANGE, player.bombRange + 1);
-    } else if (bonus.type === EBonus.HP) {
-      if (player.hp === MAX_HP) {
-        player.hpReserve = Math.min(MAX_HP_RESERVE, player.hpReserve + 1);
+      if (player.speed >= MAX_SPEED) {
+        player.speedReserve++;
       } else {
-        player.hp = Math.min(MAX_HP, player.hp + 1);
+        player.speed++;
+      }
+    } else if (bonus.type === EBonus.BOMB_COUNT) {
+      if (player.maxBombCount >= MAX_BOMB_COUNT) {
+        player.maxBombCountReserve++;
+      } else {
+        player.maxBombCount++;
+      }
+    } else if (bonus.type === EBonus.BOMB_RANGE) {
+      if (player.bombRange >= MAX_BOMB_RANGE) {
+        player.bombRangeReserve++;
+      } else {
+        player.bombRange++;
+      }
+    } else if (bonus.type === EBonus.HP) {
+      if (player.hp >= MAX_HP) {
+        player.hpReserve++;
+      } else {
+        player.hp++;
       }
     }
+  }
+
+  deactivatePlayerBuff(playerIndex: number, type: EBuff): void {
+    const player = this.players[playerIndex];
+
+    player.buffs = player.buffs.filter((buff) => buff.type !== type);
   }
 
   getCell(coords: ICoords): ISharedCell<MapObject> | undefined {
@@ -136,7 +216,7 @@ export default class SharedDataManager<MapObject> {
 
   getClosestOrBehindCell(player: ISharedPlayer, direction: EDirection): IClosestCellInfo<MapObject> {
     const closestCellInfo = this.getClosestCell(player, direction);
-    const canPass = closestCellInfo.cell?.objects.every(this.isPassableObject);
+    const canPass = this.canPlayerPassCell(player, closestCellInfo.cell);
 
     if (!canPass || !isFloatZero(closestCellInfo.distance)) {
       return closestCellInfo;
@@ -178,6 +258,23 @@ export default class SharedDataManager<MapObject> {
     return isOnVertical ? ELine.VERTICAL : ELine.HORIZONTAL;
   }
 
+  getPlayerSpeed(player: ISharedPlayer): number {
+    return player.buffs.some(isSuperSpeed) ? SUPER_SPEED : player.speed;
+  }
+
+  healPlayer(playerIndex: number): boolean {
+    const player = this.players[playerIndex];
+
+    if (!player.hpReserve || player.hp === MAX_HP) {
+      return false;
+    }
+
+    player.hpReserve = 0;
+    player.hp++;
+
+    return true;
+  }
+
   movePlayer(playerIndex: number, timePassed: number): IMovePlayerResult {
     if (timePassed <= 0) {
       return { distanceLeft: 0, distanceWalked: 0 };
@@ -186,7 +283,7 @@ export default class SharedDataManager<MapObject> {
     const player = this.players[playerIndex];
 
     const desiredLine = this.getDesiredPlayerLine(player);
-    let distanceLeft = ((CELLS_PER_SECOND + player.speed * SPEED_INCREMENT) * timePassed) / 1000;
+    let distanceLeft = ((CELLS_PER_SECOND + this.getPlayerSpeed(player) * SPEED_INCREMENT) * timePassed) / 1000;
     let distanceWalked = 0;
     let movingDirection = player.direction;
 
@@ -196,7 +293,7 @@ export default class SharedDataManager<MapObject> {
         line === desiredLine
           ? this.getClosestOrBehindCell(player, player.direction)
           : this.getClosestCell(player, player.direction);
-      const canPass = closestCell?.objects.every(this.isPassableObject);
+      const canPass = this.canPlayerPassCell(player, closestCell);
       let distanceToPass: number;
 
       if (line === desiredLine) {
@@ -260,6 +357,16 @@ export default class SharedDataManager<MapObject> {
       player.coords.x -= distance;
     } else if (direction === EDirection.RIGHT) {
       player.coords.x += distance;
+    }
+  }
+
+  removeMapObject(id: number, coords: ICoords): void {
+    const { objects } = this.map[coords.y][coords.x];
+
+    const wallIndex = objects.findIndex((object) => object.id === id);
+
+    if (wallIndex !== -1) {
+      objects.splice(wallIndex, 1);
     }
   }
 }

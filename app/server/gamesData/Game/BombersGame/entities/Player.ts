@@ -1,9 +1,25 @@
 import pick from 'lodash/pick';
 
-import { BOMBER_CELL_SIZE, MAX_HP } from 'common/constants/games/bombers';
+import {
+  BOMBER_CELL_SIZE,
+  BUFF_DURATIONS,
+  INVINCIBILITY_COST,
+  MAX_HP,
+  SUPER_BOMB_COST,
+  SUPER_RANGE_COST,
+  SUPER_SPEED_COST,
+} from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
-import { EDirection, EGameClientEvent, EGameServerEvent, EPlayerColor, IPlayerData } from 'common/types/bombers';
+import {
+  EBuff,
+  EDirection,
+  EGameClientEvent,
+  EGameServerEvent,
+  EPlayerColor,
+  IBuff,
+  IPlayerData,
+} from 'common/types/bombers';
 import { ICoords } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -11,6 +27,7 @@ import PlayerEntity, { IPlayerOptions as ICommonPlayerOptions } from 'server/gam
 import { now } from 'server/utilities/time';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import { isFloatZero } from 'common/utilities/float';
+import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
@@ -27,19 +44,23 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   color: EPlayerColor;
   coords: ICoords;
   direction = EDirection.DOWN;
+  isDisabled = false;
   startMovingTimestamp: number | null = null;
   speed = 1;
+  speedReserve = 0;
   maxBombCount = 1;
+  maxBombCountReserve = 0;
   bombRange = 1;
+  bombRangeReserve = 0;
   hp = MAX_HP;
   hpReserve = 0;
-  isInvincible = false;
-  invincibilityEndsAt: number | null = null;
+  buffs: IBuff[] = [];
   placedBombs = new Set<Bomb>();
 
   disable = this.createTrigger();
   grantControls = this.createTrigger();
-  hit = this.createTrigger<{ damage: number; invincibilityEndsAt?: number | null }>();
+  cancelBuffTimeout = this.createTrigger<EBuff>();
+  hit = this.createTrigger<number>();
 
   constructor(game: BombersGame, options: IPlayerOptions) {
     super(game, options);
@@ -54,7 +75,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.spawnTask(this.waitForDisable());
 
     while (true) {
-      const { damage, invincibilityEndsAt } = yield* this.hit;
+      const damage = yield* this.hit;
 
       this.hp = Math.max(0, this.hp - damage);
 
@@ -62,12 +83,40 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         break;
       }
 
-      if (invincibilityEndsAt) {
-        this.spawnTask(this.makeInvincible(invincibilityEndsAt));
-      }
+      this.spawnTask(this.activateBuff(EBuff.BOMB_INVINCIBILITY));
     }
 
+    this.sendSocketEvent(EGameServerEvent.PLAYER_DIED, this.index);
+
     this.disable();
+  }
+
+  *activateBuff(type: EBuff): TGenerator {
+    const endsAt = now() + BUFF_DURATIONS[type];
+    const buff = this.game.sharedDataManager.activatePlayerBuff(this.index, type, endsAt);
+
+    this.cancelBuffTimeout(type);
+
+    this.sendSocketEvent(EGameServerEvent.BUFF_ACTIVATED, {
+      playerIndex: this.index,
+      buff,
+    });
+
+    const { type: raceEventType } = yield* this.race({
+      timeout: this.delay(endsAt - now()),
+      cancelTimeout: this.waitForBuffCancel(type),
+    });
+
+    if (raceEventType === 'cancelTimeout') {
+      return;
+    }
+
+    this.game.sharedDataManager.deactivatePlayerBuff(this.index, type);
+
+    this.sendSocketEvent(EGameServerEvent.BUFF_DEACTIVATED, {
+      playerIndex: this.index,
+      type,
+    });
   }
 
   canPlaceBombs(): boolean {
@@ -123,18 +172,17 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   }
 
   heal = (): void => {
-    if (!this.hpReserve || this.hp === MAX_HP) {
-      return;
+    if (this.game.sharedDataManager.healPlayer(this.index)) {
+      this.sendSocketEvent(EGameServerEvent.PLAYER_HEALED, this.index);
     }
-
-    this.hpReserve--;
-    this.hp++;
-
-    this.sendSocketEvent(EGameServerEvent.PLAYER_HEALED, this.index);
   };
 
   isAlive(): boolean {
     return this.hp > 0;
+  }
+
+  kill(): void {
+    this.hit(Infinity);
   }
 
   *listenForEvents(): TGenerator {
@@ -147,42 +195,44 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
           this.game.placeBomb(this, this.getCurrentCell());
         }),
         this.listenForOwnEvent(EGameClientEvent.HEAL, this.heal),
+        this.listenForOwnEvent(EGameClientEvent.ACTIVATE_BUFF, this.tryToActivateBuff),
       ]),
     ]);
   }
 
-  *makeInvincible(upToTimestamp: number): TGenerator {
-    this.isInvincible = true;
-    this.invincibilityEndsAt = upToTimestamp;
-
-    yield* this.delay(upToTimestamp - now());
-
-    this.isInvincible = false;
-    this.invincibilityEndsAt = null;
-  }
-
   move(): void {
-    if (!this.startMovingTimestamp || !this.isAlive()) {
+    if (this.isDisabled || !this.isAlive()) {
       return;
     }
 
-    const newMoveTimestamp = now();
-    const timePassed = newMoveTimestamp - this.startMovingTimestamp;
+    if (this.startMovingTimestamp) {
+      const newMoveTimestamp = now();
+      const timePassed = newMoveTimestamp - this.startMovingTimestamp;
 
-    const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(this.index, timePassed);
+      const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(this.index, timePassed);
 
-    // got stuck just now
-    if (!isFloatZero(distanceLeft) && !isFloatZero(distanceWalked)) {
-      this.syncCoords();
+      // got stuck just now
+      if (!isFloatZero(distanceLeft) && !isFloatZero(distanceWalked)) {
+        this.syncCoords();
+      }
+
+      this.getOccupiedCells().forEach((cell) => {
+        cell.objects.filter(BombersGame.isBonus).forEach((bonus) => {
+          this.consumeBonus(bonus, this.game.getCellCoords(cell));
+        });
+      });
+
+      this.startMovingTimestamp = newMoveTimestamp;
     }
 
-    this.getOccupiedCells().forEach((cell) => {
-      cell.objects.filter(BombersGame.isBonus).forEach((bonus) => {
-        this.consumeBonus(bonus, this.game.getCellCoords(cell));
-      });
-    });
+    if (
+      this.getOccupiedCells().some(({ objects }) => objects.some(BombersGame.isWall)) &&
+      this.buffs.every((buff) => !isSuperSpeed(buff) && !isInvincibility(buff))
+    ) {
+      this.kill();
 
-    this.startMovingTimestamp = newMoveTimestamp;
+      return;
+    }
   }
 
   placeBomb(bomb: Bomb): void {
@@ -224,12 +274,43 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
       'direction',
       'startMovingTimestamp',
       'speed',
+      'speedReserve',
       'maxBombCount',
+      'maxBombCountReserve',
       'bombRange',
+      'bombRangeReserve',
       'hp',
       'hpReserve',
-      'invincibilityEndsAt',
+      'buffs',
     ]);
+  }
+
+  tryToActivateBuff = (type: EBuff): void => {
+    if (!this.game.options.withAbilities) {
+      return;
+    }
+
+    if (
+      (type === EBuff.SUPER_SPEED && this.speed + this.speedReserve <= SUPER_SPEED_COST) ||
+      (type === EBuff.SUPER_BOMB && this.maxBombCount + this.maxBombCountReserve <= SUPER_BOMB_COST) ||
+      (type === EBuff.SUPER_RANGE && this.bombRange + this.bombRangeReserve <= SUPER_RANGE_COST) ||
+      (type === EBuff.INVINCIBILITY && this.hp + this.hpReserve <= INVINCIBILITY_COST) ||
+      type === EBuff.BOMB_INVINCIBILITY
+    ) {
+      return;
+    }
+
+    this.spawnTask(this.activateBuff(type));
+  };
+
+  *waitForBuffCancel(type: EBuff): TGenerator<true> {
+    while (true) {
+      const buffType = yield* this.cancelBuffTimeout;
+
+      if (buffType === type) {
+        return true;
+      }
+    }
   }
 
   *waitForControls(): TGenerator {
@@ -240,9 +321,8 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   *waitForDisable(): TGenerator {
     yield* this.disable;
 
-    this.stopMoving();
+    this.isDisabled = true;
 
-    this.isInvincible = true;
-    this.invincibilityEndsAt = null;
+    this.stopMoving();
   }
 }

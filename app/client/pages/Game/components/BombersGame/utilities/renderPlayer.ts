@@ -1,7 +1,9 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
-import { BOMBER_CELL_SIZE, MAX_HP } from 'common/constants/games/bombers';
+import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games/bombers';
 
-import { EDirection, IPlayerData } from 'common/types/bombers';
+import { EBuff, EDirection, IPlayerData } from 'common/types/bombers';
+
+import { now } from 'client/utilities/time';
 
 export interface IRenderPlayerOptions {
   ctx: CanvasRenderingContext2D;
@@ -17,9 +19,23 @@ const EYE_WIDTH_PROPORTION = 0.2;
 const EYE_EDGE_MARGIN = 0.2;
 
 const BOMBER_SIZE = CELL_SIZE * BOMBER_CELL_SIZE;
+const BUFF_SIZE = BOMBER_SIZE * 0.3;
+const BUFF_RADIUS = BUFF_SIZE / 2;
+const BUFF_TOP_MARGIN = BOMBER_SIZE * 0.1;
+const BUFF_BETWEEN_MARGIN = BUFF_SIZE * 0.1;
+
+const BUFF_COLORS: Record<EBuff, string> = {
+  [EBuff.SUPER_SPEED]: '#00bfff',
+  [EBuff.SUPER_BOMB]: '#000',
+  [EBuff.SUPER_RANGE]: '#b83dba',
+  [EBuff.INVINCIBILITY]: '#f00',
+  [EBuff.BOMB_INVINCIBILITY]: '#f00',
+};
 
 export default function renderPlayer(options: IRenderPlayerOptions): void {
   const { ctx, playerData } = options;
+
+  const nowTimestamp = now();
 
   const startX = (playerData.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
   const startY = (playerData.coords.y - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
@@ -60,4 +76,24 @@ export default function renderPlayer(options: IRenderPlayerOptions): void {
     ctx.strokeRect(barStartX, barStartY, hpBarWidth, hpBarHeight);
     ctx.fillRect(barStartX, barStartY, hpBarWidth, hpBarHeight);
   }
+
+  const buffsWidth = playerData.buffs.length * BUFF_SIZE + (playerData.buffs.length - 1) * BUFF_BETWEEN_MARGIN;
+
+  playerData.buffs.forEach(({ type, endsAt }, index) => {
+    const timeLeftProportion = Math.max(0, (endsAt - nowTimestamp) / BUFF_DURATIONS[type]);
+    const centerX = startX + BOMBER_SIZE / 2 - buffsWidth / 2 + BUFF_RADIUS + index * (BUFF_SIZE + BUFF_BETWEEN_MARGIN);
+    const centerY = startY - BUFF_TOP_MARGIN - BUFF_RADIUS;
+
+    ctx.fillStyle = BUFF_COLORS[type];
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(centerX, centerY - BUFF_RADIUS);
+    ctx.arc(centerX, centerY, BUFF_RADIUS, -Math.PI / 2, (1.5 - 2 * timeLeftProportion) * Math.PI, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  });
 }

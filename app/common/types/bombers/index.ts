@@ -12,6 +12,7 @@ export enum EGameClientEvent {
   STOP_MOVING = 'STOP_MOVING',
   PLACE_BOMB = 'PLACE_BOMB',
   HEAL = 'HEAL',
+  ACTIVATE_BUFF = 'ACTIVATE_BUFF',
 }
 
 export enum EGameServerEvent {
@@ -22,10 +23,15 @@ export enum EGameServerEvent {
   WALL_CREATED = 'WALL_CREATED',
   BONUS_CONSUMED = 'BONUS_CONSUMED',
   PLAYER_HEALED = 'PLAYER_HEALED',
+  PLAYER_DIED = 'PLAYER_DIED',
+  BUFF_ACTIVATED = 'BUFF_ACTIVATED',
+  BUFF_DEACTIVATED = 'BUFF_DEACTIVATED',
+  WALLS_DESTROYED = 'WALLS_DESTROYED',
 }
 
 export interface IGameOptions extends ICommonGameOptions {
   mapType: EMap | null;
+  withAbilities: boolean;
 }
 
 export enum EDirection {
@@ -53,11 +59,14 @@ export interface IPlayerData {
   direction: EDirection;
   startMovingTimestamp: number | null;
   speed: number;
+  speedReserve: number;
   maxBombCount: number;
+  maxBombCountReserve: number;
   bombRange: number;
+  bombRangeReserve: number;
   hp: number;
   hpReserve: number;
-  invincibilityEndsAt: number | null;
+  buffs: IBuff[];
 }
 
 export interface IPlayer extends IGamePlayer {
@@ -82,6 +91,19 @@ export enum EBonus {
   HP = 'HP',
 }
 
+export enum EBuff {
+  SUPER_SPEED = 'SUPER_SPEED',
+  SUPER_BOMB = 'SUPER_BOMB',
+  SUPER_RANGE = 'SUPER_RANGE',
+  INVINCIBILITY = 'INVINCIBILITY',
+  BOMB_INVINCIBILITY = 'BOMB_INVINCIBILITY',
+}
+
+export interface IBuff {
+  type: EBuff;
+  endsAt: number;
+}
+
 export interface IBox {
   type: EObject.BOX;
   id: number;
@@ -96,6 +118,8 @@ export interface IBomb {
   type: EObject.BOMB;
   id: number;
   range: number;
+  isSuperBomb: boolean;
+  isSuperRange: boolean;
   explodesAt: number;
 }
 
@@ -159,6 +183,11 @@ export interface IExplodedBox {
   bonuses: IBonus[];
 }
 
+export interface IDestroyedWall {
+  id: number;
+  coords: ICoords;
+}
+
 export interface IExplodedBomb {
   id: number;
   coords: ICoords;
@@ -172,11 +201,16 @@ export interface IExplodedDirection {
 
 export type TExplodedDirections = Record<ELine, IExplodedDirection>;
 
+export interface IHitPlayer {
+  index: number;
+  damage: number;
+}
+
 export interface IBombsExplodedEvent {
   bombs: IExplodedBomb[];
-  hitPlayers: number[];
+  hitPlayers: IHitPlayer[];
   explodedBoxes: IExplodedBox[];
-  invincibilityEndsAt: number;
+  destroyedWalls: IDestroyedWall[];
 }
 
 export interface IWallCreatedEvent {
@@ -191,11 +225,22 @@ export interface IBonusConsumedEvent {
   playerIndex: number;
 }
 
+export interface IBuffActivatedEvent {
+  playerIndex: number;
+  buff: IBuff;
+}
+
+export interface IBuffDeactivatedEvent {
+  playerIndex: number;
+  type: EBuff;
+}
+
 export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
   [EGameClientEvent.START_MOVING]: EDirection;
   [EGameClientEvent.STOP_MOVING]: undefined;
   [EGameClientEvent.PLACE_BOMB]: undefined;
   [EGameClientEvent.HEAL]: undefined;
+  [EGameClientEvent.ACTIVATE_BUFF]: EBuff;
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
@@ -206,6 +251,10 @@ export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
   [EGameServerEvent.WALL_CREATED]: IWallCreatedEvent;
   [EGameServerEvent.BONUS_CONSUMED]: IBonusConsumedEvent;
   [EGameServerEvent.PLAYER_HEALED]: number;
+  [EGameServerEvent.PLAYER_DIED]: number;
+  [EGameServerEvent.BUFF_ACTIVATED]: IBuffActivatedEvent;
+  [EGameServerEvent.BUFF_DEACTIVATED]: IBuffDeactivatedEvent;
+  [EGameServerEvent.WALLS_DESTROYED]: IDestroyedWall[];
 }
 
 declare module 'common/types/game' {

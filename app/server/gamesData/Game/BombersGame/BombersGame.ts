@@ -1,7 +1,16 @@
 import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
 
-import { EXPLOSION_TICK_DURATION, EXPLOSION_TICKS_COUNT, MAPS, TIME_TO_START } from 'common/constants/games/bombers';
+import {
+  EXPLOSION_TICK_DURATION,
+  EXPLOSION_TICKS_COUNT,
+  MAPS,
+  RESET_WALLS_TIMEOUT,
+  START_SPAWN_WALL_TIMEOUT,
+  START_SPAWN_WALLS_TIMEOUT,
+  SUPER_RANGE,
+  TIME_TO_START,
+} from 'common/constants/games/bombers';
 
 import { EGame } from 'common/types/game';
 import {
@@ -11,6 +20,7 @@ import {
   EMap,
   EObject,
   EPlayerColor,
+  IDestroyedWall,
   IExplodedBomb,
   IExplodedBox,
   IGame,
@@ -26,6 +36,7 @@ import { now } from 'server/utilities/time';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 import { getRandomElement } from 'common/utilities/random';
+import { isBombInvincibility, isInvincibility, isSuperBomb, isSuperRange } from 'common/utilities/bombers/buffs';
 
 import Bomb, { IBombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
@@ -69,8 +80,9 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   objectId = 0;
   players: Player[] = [];
   map: TServerMap = [];
-  startsAt = Date.now() + TIME_TO_START;
+  startsAt = now() + TIME_TO_START;
   canControl = false;
+  isDamagingBombs = true;
   sharedDataManager: SharedDataManager<TServerMapObject>;
   mapType: EMap;
   mapLayout: TMapLayout;
@@ -80,8 +92,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   boxes = new Set<Box>();
   alivePlayers = new Set<Player>();
   lastExplosionTickTimestamp = 0;
+  artificialWalls: Wall[] = [];
   artificialWallsPath: IServerCell[] = [];
   artificialWallsSpawned = 0;
+  artificialWallsSpawnInterval = START_SPAWN_WALL_TIMEOUT;
 
   constructor(parentOrContext: TParentOrContext<EGame.BOMBERS>) {
     super(parentOrContext);
@@ -139,7 +153,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       );
     });
 
-    yield* this.delay(this.startsAt - Date.now());
+    yield* this.delay(this.startsAt - now());
 
     this.players.forEach((player) => {
       player.grantControls();
@@ -162,6 +176,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       player.disable();
     });
 
+    this.isDamagingBombs = false;
+
     return {
       winner: [...this.alivePlayers].at(0)?.index ?? null,
     };
@@ -180,14 +196,20 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       return;
     }
 
-    const hitPlayers = new Set<number>();
+    const hitPlayers = new Map<number, number>();
     const explodedBombs: IExplodedBomb[] = [];
     const explodedBoxes = new Set<Box>();
+    const destroyedWalls = new Set<Wall>();
     const explodedBoxesInfo: IExplodedBox[] = [];
-    const invincibilityEndsAt = now() + 1200;
+    const destroyedWallsInfo: IDestroyedWall[] = [];
 
     bombsToExplode.forEach((bomb) => {
-      const { hitPlayers: bombHitPlayers, explodedBoxes: bombExplodedBoxes, explodedDirections } = bomb.explode();
+      const {
+        hitPlayers: bombHitPlayers,
+        explodedBoxes: bombExplodedBoxes,
+        destroyedWalls: bombExplodedWalls,
+        explodedDirections,
+      } = bomb.explode();
 
       explodedBombs.push({
         id: bomb.id,
@@ -195,20 +217,26 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
         explodedDirections,
       });
 
-      bombHitPlayers.forEach((playerIndex) => {
-        if (!this.players[playerIndex].isInvincible) {
-          hitPlayers.add(playerIndex);
-        }
-      });
+      if (this.isDamagingBombs) {
+        bombHitPlayers.forEach(({ index, damage }) => {
+          if (this.players[index].buffs.every((buff) => !isInvincibility(buff) && !isBombInvincibility(buff))) {
+            hitPlayers.set(index, Math.max(hitPlayers.get(index) ?? 0, damage));
+          }
+        });
+      }
 
       bombExplodedBoxes.forEach((explodedBox) => {
         explodedBoxes.add(explodedBox);
       });
+
+      bombExplodedWalls.forEach((explodedWall) => {
+        destroyedWalls.add(explodedWall);
+      });
     });
 
-    hitPlayers.forEach((playerIndex) => {
-      this.players[playerIndex].hit({ damage: 1, invincibilityEndsAt });
-    });
+    for (const [playerIndex, damage] of hitPlayers.entries()) {
+      this.players[playerIndex].hit(damage);
+    }
 
     explodedBoxes.forEach((explodedBox) => {
       explodedBox.explode();
@@ -222,11 +250,20 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       });
     });
 
+    destroyedWalls.forEach((explodedWall) => {
+      explodedWall.destroy();
+
+      destroyedWallsInfo.push({
+        id: explodedWall.id,
+        coords: this.getCellCoords(explodedWall.cell),
+      });
+    });
+
     this.sendSocketEvent(EGameServerEvent.BOMBS_EXPLODED, {
       bombs: explodedBombs,
-      hitPlayers: [...hitPlayers],
+      hitPlayers: [...hitPlayers.entries()].map(([index, damage]) => ({ index, damage })),
       explodedBoxes: explodedBoxesInfo,
-      invincibilityEndsAt: now() + 1000,
+      destroyedWalls: destroyedWallsInfo,
     });
   }
 
@@ -335,12 +372,20 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   placeBomb(player: Player, cell: IServerCell): void {
+    if (cell.objects.some(BombersGame.isBomb) || !player.canPlaceBombs()) {
+      return;
+    }
+
+    const hasSuperRange = player.buffs.some(isSuperRange);
+
     this.spawnTask(
       this.spawnBomb(player, {
         cell,
         id: this.getNewObjectId(),
-        range: player.bombRange,
+        range: hasSuperRange ? SUPER_RANGE : player.bombRange,
         explodesAt: this.lastExplosionTickTimestamp + EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION,
+        isSuperBomb: player.buffs.some(isSuperBomb),
+        isSuperRange: hasSuperRange,
       }),
     );
   }
@@ -350,18 +395,14 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   }
 
   removeMapObject(cell: IServerCell, object: TServerMapObject): void {
-    const objectIndex = cell.objects.indexOf(object);
-
-    if (objectIndex !== -1) {
-      cell.objects.splice(objectIndex, 1);
-    }
+    this.sharedDataManager.removeMapObject(object.id, cell);
   }
 
-  *spawnArtificialWall(): TGenerator<undefined | true> {
+  *spawnArtificialWall(): TGenerator<boolean> {
     const cell = this.artificialWallsPath.at(this.artificialWallsSpawned);
 
     if (!cell) {
-      return true;
+      return false;
     }
 
     this.artificialWallsSpawned++;
@@ -369,7 +410,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const { objects } = cell;
 
     if (objects.some(BombersGame.isWall)) {
-      return;
+      return true;
     }
 
     objects.filter(BombersGame.isBonus).forEach((bonus) => {
@@ -377,24 +418,47 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     });
 
     this.createWall(cell, true);
+
+    return true;
   }
 
   *spawnArtificialWalls(): TGenerator {
-    while (this.boxes.size > 0) {
-      yield* this.race([...this.boxes]);
+    while (true) {
+      while (this.boxes.size > 0) {
+        yield* this.race([...this.boxes]);
+      }
+
+      yield* this.delay(START_SPAWN_WALLS_TIMEOUT);
+
+      yield* this.repeatTask(this.artificialWallsSpawnInterval, function* (): TGenerator<boolean | void> {
+        const spawnedWall = yield* this.spawnArtificialWall();
+
+        if (!spawnedWall) {
+          return false;
+        }
+      });
+
+      yield* this.delay(RESET_WALLS_TIMEOUT);
+
+      this.artificialWalls.forEach((wall) => {
+        wall.destroy();
+      });
+
+      this.artificialWallsSpawned = 0;
+      this.artificialWallsSpawnInterval /= 2;
+
+      this.sendSocketEvent(
+        EGameServerEvent.WALLS_DESTROYED,
+        this.artificialWalls.map((wall) => ({
+          id: wall.id,
+          coords: this.getCellCoords(wall.cell),
+        })),
+      );
     }
-
-    yield* this.delay(5 * 1000);
-
-    yield* this.repeatTask(1000, this.spawnArtificialWall);
   }
 
   *spawnBomb(player: Player, options: IBombOptions): TGenerator {
     const { cell } = options;
-
-    if (cell.objects.length > 0 || !player.canPlaceBombs()) {
-      return;
-    }
 
     const bomb = this.spawnEntity(new Bomb(this, options));
 
@@ -467,6 +531,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
     this.placeMapObject(wall, cell);
 
+    if (isArtificial) {
+      this.artificialWalls.push(wall);
+    }
+
     yield* wall;
 
     this.removeMapObject(cell, wall);
@@ -489,6 +557,6 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       yield* this.race([...this.alivePlayers]);
     }
 
-    yield* this.delay(0);
+    yield* this.delay(5 * FRAME_DURATION);
   }
 }

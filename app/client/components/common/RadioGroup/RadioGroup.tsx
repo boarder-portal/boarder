@@ -15,14 +15,14 @@ interface IRadioGroupProps<Value> {
   onChange(newValue: Value): void;
 }
 
-const RadioGroup = <Value extends number | string>(props: IRadioGroupProps<Value>): JSX.Element => {
+const RadioGroup = <Value extends unknown>(props: IRadioGroupProps<Value>): JSX.Element => {
   const { value, options, onChange } = props;
 
   return (
     <Flex direction="column" between={2}>
       {options.map((option) => (
         <Flex
-          key={option.value}
+          key={String(option.value)}
           className={classNames(styles.option, { [styles.disabled]: option.disabled })}
           alignItems="center"
           between={2}

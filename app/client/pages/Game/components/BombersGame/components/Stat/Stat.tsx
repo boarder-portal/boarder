@@ -10,10 +10,11 @@ interface IStatProps {
   label: string;
   value: number;
   maxValue: number;
+  overflow: number;
 }
 
 const Stat: FC<IStatProps> = (props) => {
-  const { label, value, maxValue } = props;
+  const { label, value, maxValue, overflow } = props;
 
   return (
     <Flex direction="column" between={1}>
@@ -23,6 +24,8 @@ const Stat: FC<IStatProps> = (props) => {
         {times(maxValue, (index) => (
           <div key={index} className={classNames(styles.bar, { [styles.filled]: index < value })} />
         ))}
+
+        {overflow > 0 && <div>+{overflow}</div>}
       </Flex>
     </Flex>
   );

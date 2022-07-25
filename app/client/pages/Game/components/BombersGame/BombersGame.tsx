@@ -5,6 +5,7 @@ import { MAP_NAMES, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'co
 
 import { EGame } from 'common/types/game';
 import {
+  EBuff,
   EDirection,
   EGameClientEvent,
   EGameServerEvent,
@@ -37,6 +38,13 @@ import useImages from 'client/hooks/useImages';
 
 import styles from './BombersGame.pcss';
 
+const BUFFS_MAP: Partial<Record<string, EBuff>> = {
+  Digit1: EBuff.SUPER_SPEED,
+  Digit2: EBuff.SUPER_BOMB,
+  Digit3: EBuff.SUPER_RANGE,
+  Digit4: EBuff.INVINCIBILITY,
+};
+
 const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
   ArrowUp: EDirection.UP,
   ArrowDown: EDirection.DOWN,
@@ -49,7 +57,7 @@ const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
 };
 
 const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
-  const { io, gameInfo, timeDiff } = props;
+  const { io, gameInfo, gameOptions, timeDiff } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
@@ -140,48 +148,33 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].objects.push(bomb);
     },
-    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombs, hitPlayers, explodedBoxes, invincibilityEndsAt }) => {
-      invincibilityEndsAt -= timeDiff;
-
+    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombs, hitPlayers, explodedBoxes, destroyedWalls }) => {
       bombs.forEach(({ id, coords, explodedDirections }) => {
-        const explodedBombIndex = mapRef.current[coords.y][coords.x].objects.findIndex((object) => object.id === id);
-
-        if (explodedBombIndex !== -1) {
-          mapRef.current[coords.y][coords.x].objects.splice(explodedBombIndex, 1);
-        }
+        sharedDataManager.removeMapObject(id, coords);
 
         explodedDirectionsRef.current.add(explodedDirections[ELine.HORIZONTAL]);
         explodedDirectionsRef.current.add(explodedDirections[ELine.VERTICAL]);
       });
 
-      hitPlayers.forEach((playerIndex) => {
-        const playerData = playersDataRef.current[playerIndex];
+      hitPlayers.forEach(({ index, damage }) => {
+        const playerData = playersDataRef.current[index];
 
-        playerData.hp -= 1;
-        playerData.invincibilityEndsAt = invincibilityEndsAt;
+        playerData.hp -= damage;
       });
 
       explodedBoxes.forEach(({ id, coords, bonuses }) => {
-        const { objects } = mapRef.current[coords.y][coords.x];
-
-        const boxIndex = objects.findIndex((object) => object.id === id);
-
-        if (boxIndex !== -1) {
-          objects.splice(boxIndex, 1);
-        }
+        sharedDataManager.removeMapObject(id, coords);
 
         mapRef.current[coords.y][coords.x].objects.push(...bonuses);
+      });
+
+      destroyedWalls.forEach(({ id, coords }) => {
+        sharedDataManager.removeMapObject(id, coords);
       });
 
       if (hitPlayers.length > 0) {
         refreshPlayersData();
       }
-
-      setTimeout(() => {
-        hitPlayers.forEach((playerIndex) => {
-          playersDataRef.current[playerIndex].invincibilityEndsAt = null;
-        });
-      }, invincibilityEndsAt);
 
       setTimeout(() => {
         bombs.forEach(({ explodedDirections }) => {
@@ -202,7 +195,6 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
         playerData.hp = 0;
         playerData.startMovingTimestamp = null;
-        playerData.invincibilityEndsAt = null;
       });
 
       if (deadPlayers.length > 0) {
@@ -210,19 +202,14 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       }
     },
     [EGameServerEvent.BONUS_CONSUMED]: ({ id, coords, playerIndex }) => {
-      const { objects } = mapRef.current[coords.y][coords.x];
-      const bonusIndex = objects.findIndex((object) => object.id === id);
+      const bonus = mapRef.current[coords.y][coords.x].objects.find((object) => object.id === id);
 
-      if (bonusIndex !== -1) {
-        const bonus = objects.at(bonusIndex);
+      sharedDataManager.removeMapObject(id, coords);
 
-        if (bonus?.type === EObject.BONUS) {
-          sharedDataManager.consumePlayerBonus(playerIndex, {
-            type: bonus.bonusType,
-          });
-
-          objects.splice(bonusIndex, 1);
-        }
+      if (bonus?.type === EObject.BONUS) {
+        sharedDataManager.consumePlayerBonus(playerIndex, {
+          type: bonus.bonusType,
+        });
       }
 
       if (playerIndex === player?.index) {
@@ -230,14 +217,40 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       }
     },
     [EGameServerEvent.PLAYER_HEALED]: (playerIndex) => {
-      const playerData = playersDataRef.current[playerIndex];
-
-      playerData.hpReserve--;
-      playerData.hp++;
+      sharedDataManager.healPlayer(playerIndex);
 
       if (playerIndex === player?.index) {
         refreshPlayersData();
       }
+    },
+    [EGameServerEvent.PLAYER_DIED]: (playerIndex) => {
+      const playerData = playersDataRef.current[playerIndex];
+
+      playerData.hp = 0;
+      playerData.startMovingTimestamp = null;
+
+      if (playerIndex === player?.index) {
+        refreshPlayersData();
+      }
+    },
+    [EGameServerEvent.BUFF_ACTIVATED]: ({ playerIndex, buff }) => {
+      sharedDataManager.activatePlayerBuff(playerIndex, buff.type, buff.endsAt - timeDiff);
+
+      if (playerIndex === player?.index) {
+        refreshPlayersData();
+      }
+    },
+    [EGameServerEvent.BUFF_DEACTIVATED]: ({ playerIndex, type }) => {
+      sharedDataManager.deactivatePlayerBuff(playerIndex, type);
+
+      if (playerIndex === player?.index) {
+        refreshPlayersData();
+      }
+    },
+    [EGameServerEvent.WALLS_DESTROYED]: (destroyedWalls) => {
+      destroyedWalls.forEach(({ id, coords }) => {
+        sharedDataManager.removeMapObject(id, coords);
+      });
     },
   });
 
@@ -266,6 +279,14 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
   useGlobalListener('keyup', document, (e) => {
     if (!canControlRef.current) {
+      return;
+    }
+
+    const buff = BUFFS_MAP[e.code];
+
+    if (gameOptions.withAbilities && buff) {
+      io.emit(EGameClientEvent.ACTIVATE_BUFF, buff);
+
       return;
     }
 
@@ -364,14 +385,20 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
         {player && (
           <Flex direction="column" between={2}>
-            <Stat label="Скорость" value={player.data.speed} maxValue={MAX_SPEED} />
-            <Stat label="Количество бомб" value={player.data.maxBombCount} maxValue={MAX_BOMB_COUNT} />
-            <Stat label="Радиус взрыва" value={player.data.bombRange} maxValue={MAX_BOMB_RANGE} />
+            <Stat label="Скорость" value={player.data.speed} maxValue={MAX_SPEED} overflow={player.data.speedReserve} />
             <Stat
-              label={`HP${player.data.hpReserve > 0 ? ` (+${player.data.hpReserve})` : ''}`}
-              value={player.data.hp}
-              maxValue={MAX_HP}
+              label="Количество бомб"
+              value={player.data.maxBombCount}
+              maxValue={MAX_BOMB_COUNT}
+              overflow={player.data.maxBombCountReserve}
             />
+            <Stat
+              label="Радиус взрыва"
+              value={player.data.bombRange}
+              maxValue={MAX_BOMB_RANGE}
+              overflow={player.data.bombRangeReserve}
+            />
+            <Stat label="HP" value={player.data.hp} maxValue={MAX_HP} overflow={player.data.hpReserve} />
           </Flex>
         )}
       </Flex>

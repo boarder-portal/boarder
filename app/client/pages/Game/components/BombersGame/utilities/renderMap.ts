@@ -7,6 +7,7 @@ import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
 import renderPlayer from 'client/pages/Game/components/BombersGame/utilities/renderPlayer';
 import renderCell from 'client/pages/Game/components/BombersGame/utilities/renderCell';
 import renderExplodedDirection from 'client/pages/Game/components/BombersGame/utilities/renderExplodedDirection';
+import { now } from 'client/utilities/time';
 
 export interface IRenderMapOptions {
   ctx: CanvasRenderingContext2D;
@@ -37,7 +38,7 @@ export default function renderMap(options: IRenderMapOptions): void {
     renderExplodedDirection({ ctx, explodedDirection });
   });
 
-  const timeLeftToStart = startsAt - Date.now();
+  const timeLeftToStart = startsAt - now();
 
   if (timeLeftToStart > 0 && player) {
     const playerCenterX = player.data.coords.x * CELL_SIZE;

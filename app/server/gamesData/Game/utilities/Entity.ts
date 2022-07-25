@@ -126,9 +126,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
             iteratorResult =
               prevResult.type === 'success' ? generator.next(prevResult.value) : generator.throw(prevResult.error);
           } catch (err) {
-            reject(err);
-
-            return;
+            return reject(err);
           }
 
           if (iteratorResult.done) {

@@ -7,6 +7,7 @@ import { EMap } from 'common/types/bombers';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
+import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
 import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
@@ -24,6 +25,12 @@ const BombersCreateGameOptions: FC<ICreateGameOptionsProps<EGame.BOMBERS>> = (pr
     });
   });
 
+  const handleWithAbilitiesChange = useImmutableCallback((withAbilities: boolean) => {
+    changeOptions({
+      withAbilities,
+    });
+  });
+
   return (
     <Flex direction="column" between={3}>
       <Select
@@ -34,6 +41,12 @@ const BombersCreateGameOptions: FC<ICreateGameOptionsProps<EGame.BOMBERS>> = (pr
           value: mapType,
         }))}
         onChange={handleMapChange}
+      />
+
+      <RadioGroup
+        value={options.withAbilities}
+        options={[true, false].map((value) => ({ text: value ? 'Со способностями' : 'Без способностей', value }))}
+        onChange={handleWithAbilitiesChange}
       />
     </Flex>
   );
