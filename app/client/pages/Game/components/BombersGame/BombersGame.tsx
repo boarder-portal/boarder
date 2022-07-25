@@ -90,7 +90,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   }, [gameInfo.map]);
 
   const images = useImages<TBomberImage>({
-    grass: '/bombers/grass4.png',
+    grass: '/bombers/grass.jpg',
     wall: '/bombers/wall.png',
     box: '/bombers/box.png',
     bomb: '/bombers/bomb.png',
