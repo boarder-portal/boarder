@@ -130,6 +130,7 @@ export enum EMap {
   MEMBRANE = 'MEMBRANE',
   BUTTERFLY = 'BUTTERFLY',
   SIEGE = 'SIEGE',
+  CRAB = 'CRAB',
 }
 
 export interface IGame {

@@ -183,6 +183,19 @@ const MAPS: Record<EMap, string> = {
     ----bbwbwbwbb----
     0-b-bbwbbbwbb-b-3
   `,
+  [EMap.CRAB]: `
+    2bb-wwb-b-bww-bb1
+    ---b-b--b--b-b---
+    b-bw---w-w---wb-b
+    b-bwbwb-b-bwbwb-b
+    -b-wbwwwbwwwbw-b-
+    bw-b--bbbbb--b-wb
+    -b-wbwwwbwwwbw-b-
+    b-bwbwb-b-bwbwb-b
+    b-bw---w-w---wb-b
+    ---b-b--b--b-b---
+    0bb-wwb-b-bww-bb3
+  `,
 };
 
 export default MAPS;

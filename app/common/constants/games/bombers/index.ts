@@ -48,4 +48,5 @@ export const MAP_NAMES: Record<EMap, string> = {
   [EMap.MEMBRANE]: 'Мембрана',
   [EMap.BUTTERFLY]: 'Бабочка',
   [EMap.SIEGE]: 'Осада',
+  [EMap.CRAB]: 'Краб',
 };
