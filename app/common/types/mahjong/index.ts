@@ -42,8 +42,8 @@ export interface ISuitedTile {
 }
 
 export enum EDragon {
-  GREEN = 'GREEN',
   RED = 'RED',
+  GREEN = 'GREEN',
   WHITE = 'WHITE',
 }
 

@@ -127,30 +127,32 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
     hand: sortedHand,
     pairsFound: 0,
     allPairsAllowed: sortedHand.length === 14,
-  }).map((sets) => sortBy(sets, getSetSortValue));
-
-  return setsVariations.flatMap((sets) => {
-    if (options.isSelfDraw) {
-      return [[...options.knownSets, ...sets]];
-    }
-
-    const variations: TSet[][] = [];
-
-    sets.forEach((set, setIndex) => {
-      if (tilesContainTile(set.tiles, winningTile)) {
-        variations.push([
-          ...sets.slice(0, setIndex),
-          {
-            ...set,
-            concealedType: ESetConcealedType.WINNING_MELDED,
-          },
-          ...sets.slice(setIndex + 1),
-        ]);
-      }
-    });
-
-    return variations.map((sets) => [...options.knownSets, ...sets]);
   });
+
+  return setsVariations
+    .flatMap((sets) => {
+      if (options.isSelfDraw) {
+        return [[...options.knownSets, ...sets]];
+      }
+
+      const variations: TSet[][] = [];
+
+      sets.forEach((set, setIndex) => {
+        if (tilesContainTile(set.tiles, winningTile)) {
+          variations.push([
+            ...sets.slice(0, setIndex),
+            {
+              ...set,
+              concealedType: ESetConcealedType.WINNING_MELDED,
+            },
+            ...sets.slice(setIndex + 1),
+          ]);
+        }
+      });
+
+      return variations.map((sets) => [...options.knownSets, ...sets]);
+    })
+    .map((sets) => sortBy(sets, getSetSortValue));
 }
 
 export function getSetsCombinations(sets: TSet[]): TSet[][] {

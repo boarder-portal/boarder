@@ -548,14 +548,16 @@ function isNonIdenticalPrincipleKept(fans: TFan[], fan: TFan): boolean {
 function isAccountOncePrincipleKept(fans: TFan[]): boolean {
   const setsFans = fans.filter(isSetsFan).filter((fan) => fan.sets.length > 1);
 
-  return setsFans.every((fan, fanIndex) =>
-    fan.sets.every(
-      (set) =>
-        setsFans
-          .slice(fanIndex + 1)
-          .filter((otherFan) => otherFan.sets.includes(set) && fan.sets.some((set) => !otherFan.sets.includes(set)))
-          .length <= 1,
-    ),
+  return setsFans.every(
+    (fan, fanIndex) =>
+      setsFans
+        .slice(fanIndex + 1)
+        .filter(
+          (otherFan) =>
+            otherFan !== fan &&
+            otherFan.sets.length > 1 &&
+            otherFan.sets.filter((set) => fan.sets.includes(set)).length === 1,
+        ).length <= 1,
   );
 }
 

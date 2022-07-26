@@ -473,14 +473,12 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              meldedSets: [parsePung('b9')],
+              meldedSets: [parseKong('c8', ESetConcealedType.MELDED)],
               concealedSets: [
                 parseKong('c7', ESetConcealedType.CONCEALED),
-                parseKong('c8', ESetConcealedType.CONCEALED),
-                parseKong('c9', ESetConcealedType.CONCEALED),
+                parseKong('b9', ESetConcealedType.CONCEALED),
               ],
-              hand: parseTiles('d9'),
-              winningTile: parseTile('d9'),
+              hand: parseTiles('c9c9c9 d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -694,6 +692,31 @@ describe('mahjong', () => {
               meldedSets: [parsePung('c1'), parsePung('c2')],
               hand: parseTiles('c3c3c3 c9c9 DgDg'),
               winningTile: parseTile('c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('upper tiles', () => {
+      test('mixed triple chow', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c7c8c9 d7d8d9 b7b8b9 b7b8b9 c7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('double pung', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b8')],
+              hand: parseTiles('c8c8 c7c8c9 d7d8d9 d8d8'),
+              winningTile: parseTile('c8'),
             }),
           ),
         ).toMatchSnapshot();
