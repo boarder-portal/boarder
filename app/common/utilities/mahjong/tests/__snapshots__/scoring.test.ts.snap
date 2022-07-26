@@ -574,6 +574,40 @@ GREATER_HONORS_AND_KNITTED_TILES
 FULLY_CONCEALED_HAND"
 `;
 
+exports[`mahjong scoring knitted straight all chows 1`] = `
+"15
+
+d9
+
+KNITTED_STRAIGHT (c_knit c4, c_knit b5, c_knit d6)
+ALL_CHOWS
+SELF_DRAWN
+
+c_knit c4
+c_knit b5
+c_knit d6
+m_chow b3
+c_pair d9"
+`;
+
+exports[`mahjong scoring knitted straight all types 1`] = `
+"22
+
+Ww
+
+KNITTED_STRAIGHT (c_knit d4, c_knit c5, c_knit b6)
+ALL_TYPES
+DRAGON_PUNG (m_pung Dr)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_knit d4
+c_knit c5
+c_knit b6
+m_pung Dr
+c_pair Ww"
+`;
+
 exports[`mahjong scoring lesser honors and knitted tiles bcd 1`] = `
 "16
 

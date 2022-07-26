@@ -955,5 +955,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('knitted straight', () => {
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dr')],
+              hand: parseTiles('d1d4d7 c2c5c8 b3b6b9 Ww'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b3')],
+              hand: parseTiles('c1c4c7 b2b5b8 d3d6d9d9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

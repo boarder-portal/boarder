@@ -294,7 +294,7 @@ export function getWholeHandSetsFans(sets: TSet[], isSelfDraw: boolean): TFan[] 
       fans.push(EFan.ALL_PUNGS);
     }
 
-    if (sets.every((set) => (isChow(set) || isPair(set)) && !isHonor(getSetTile(set)))) {
+    if (sets.every((set) => (isChow(set) || isKnittedChow(set) || isPair(set)) && !isHonor(getSetTile(set)))) {
       fans.push(EFan.ALL_CHOWS);
     }
   }
