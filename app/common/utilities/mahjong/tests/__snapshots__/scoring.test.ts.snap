@@ -994,6 +994,38 @@ c_pung c9
 c_pair d9"
 `;
 
+exports[`mahjong scoring three-suited terminal chows bcd 1`] = `
+"18
+
+d3
+
+THREE_SUITED_TERMINAL_CHOWS
+EDGE_WAIT
+SELF_DRAWN
+
+m_chow b2
+m_chow b8
+c_chow d2
+c_chow d8
+c_pair c5"
+`;
+
+exports[`mahjong scoring three-suited terminal chows cdb 1`] = `
+"21
+
+d5
+
+THREE_SUITED_TERMINAL_CHOWS
+FULLY_CONCEALED_HAND
+SINGLE_WAIT
+
+c_chow b2
+c_chow b8
+c_chow c2
+c_chow c8
+c_pair d5"
+`;
+
 exports[`mahjong scoring upper tiles double pung 1`] = `
 "30
 

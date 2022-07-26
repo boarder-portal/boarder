@@ -112,9 +112,13 @@ export const TERMINAL_CHOWS_SETS: TSet[][] = getPermutations([
   ],
   [[5, 5]],
 ]).map((sets) =>
-  sets.flat().map((values, index) => ({
-    type: values.length === 2 ? ESet.PAIR : ESet.CHOW,
-    tiles: values.map((value) => suited(value, ALL_SUITS[index])),
-    concealedType: ESetConcealedType.CONCEALED,
-  })),
+  sets
+    .map((values, index) =>
+      values.map((values) => ({
+        type: values.length === 2 ? ESet.PAIR : ESet.CHOW,
+        tiles: values.map((value) => suited(value, ALL_SUITS[index])),
+        concealedType: ESetConcealedType.CONCEALED,
+      })),
+    )
+    .flat(),
 );

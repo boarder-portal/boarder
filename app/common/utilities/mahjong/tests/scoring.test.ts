@@ -801,5 +801,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('three-suited terminal chows', () => {
+      test('bcd', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2'), parseChow('b8')],
+              hand: parseTiles('c5c5 d1d2 d7d8d9'),
+              winningTile: parseTile('d3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('cdb', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2c3 c7c8c9 b1b2b3 b7b8b9 d5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
