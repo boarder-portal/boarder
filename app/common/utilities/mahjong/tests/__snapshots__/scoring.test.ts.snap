@@ -718,6 +718,41 @@ c_chow c7
 c_pair c5"
 `;
 
+exports[`mahjong scoring pure shifted chows shifted by 1 1`] = `
+"18
+
+c3
+
+PURE_SHIFTED_CHOWS (c_chow c2, c_chow c3, c_chow c4)
+NO_HONORS
+SELF_DRAWN
+
+m_pung b8
+c_chow c2
+c_chow c3
+c_chow c4
+c_pair d8"
+`;
+
+exports[`mahjong scoring pure shifted chows shifted by 2 1`] = `
+"26
+
+b5 b8
+
+PURE_SHIFTED_CHOWS (c_chow b3, c_chow b5, c_chow b7)
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+ALL_SIMPLES
+MIXED_DOUBLE_CHOW (c_chow b7, c_chow d7)
+ONE_VOIDED_SUIT
+
+c_chow b3
+c_chow b5
+c_chow b7
+c_chow d7
+c_pair b8"
+`;
+
 exports[`mahjong scoring pure shifted pungs half flush 1`] = `
 "41
 
