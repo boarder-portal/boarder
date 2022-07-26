@@ -878,5 +878,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('triple pung', () => {
+      test('outside hand', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d8')],
+              hand: parseTiles('b1c1d1 b1c1d1 b1c1d1 c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all simples', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b4'), parsePung('c4'), parsePung('d4')],
+              hand: parseTiles('c7c8 c7c8'),
+              winningTile: parseTile('c7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

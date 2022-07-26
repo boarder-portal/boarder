@@ -1097,6 +1097,45 @@ c_chow c8
 c_pair d5"
 `;
 
+exports[`mahjong scoring triple pung all simples 1`] = `
+"25
+
+c7 c8
+
+TRIPLE_PUNG (m_pung b4, m_pung c4, m_pung d4)
+ALL_PUNGS
+ALL_SIMPLES
+SELF_DRAWN
+
+m_pung b4
+m_pung c4
+c_pung c7
+m_pung d4
+c_pair c8"
+`;
+
+exports[`mahjong scoring triple pung outside hand 1`] = `
+"42
+
+c9
+
+TRIPLE_PUNG (c_pung b1, c_pung c1, c_pung d1)
+THREE_CONCEALED_PUNGS (c_pung b1, c_pung c1, c_pung d1)
+OUTSIDE_HAND
+PUNG_OF_TERMINALS_OR_HONORS (c_pung b1)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung c1)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung d1)
+NO_HONORS
+SINGLE_WAIT
+SELF_DRAWN
+
+c_pung b1
+c_pung c1
+c_pung d1
+m_chow d8
+c_pair c9"
+`;
+
 exports[`mahjong scoring upper tiles double pung 1`] = `
 "30
 
