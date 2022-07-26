@@ -610,5 +610,43 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('full flush', () => {
+      test('seven pairs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b1b1 b2b2 b4b4 b5b5 b6b6 b8b8 b9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('pure straight', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d2')],
+              hand: parseTiles('d2d2 d5d5 d6d6 d7d7 d8d9'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('short straight', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c1')],
+              hand: parseTiles('c2 c3c3 c4c4 c5c5c5 c6 c8'),
+              winningTile: parseTile('c7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

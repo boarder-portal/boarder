@@ -468,6 +468,59 @@ c_pung b4
 c_pair c1"
 `;
 
+exports[`mahjong scoring full flush pure straight 1`] = `
+"43
+
+d4 d7
+
+FULL_FLUSH
+PURE_STRAIGHT (m_chow d2, c_chow d5, c_chow d8)
+ALL_CHOWS
+SELF_DRAWN
+
+m_chow d2
+c_chow d5
+c_chow d6
+c_chow d8
+c_pair d2"
+`;
+
+exports[`mahjong scoring full flush seven pairs 1`] = `
+"52
+
+b9
+
+SEVEN_PAIRS
+FULL_FLUSH
+FULLY_CONCEALED_HAND
+
+c_pair b1
+c_pair b2
+c_pair b4
+c_pair b5
+c_pair b6
+c_pair b8
+c_pair b9"
+`;
+
+exports[`mahjong scoring full flush short straight 1`] = `
+"28
+
+c7
+
+FULL_FLUSH
+SHORT_STRAIGHT (c_chow c4, c_chow c7)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung c1)
+CLOSED_WAIT
+SELF_DRAWN
+
+m_pung c1
+c_chow c3
+c_chow c4
+c_chow c7
+c_pair c5"
+`;
+
 exports[`mahjong scoring greater honors and knitted tiles c1d3b3 1`] = `
 "24
 
