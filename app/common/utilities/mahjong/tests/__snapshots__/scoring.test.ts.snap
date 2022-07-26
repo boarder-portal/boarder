@@ -701,6 +701,44 @@ c_chow d4
 c_pair Dg"
 `;
 
+exports[`mahjong scoring lower four all chows 1`] = `
+"17
+
+c1 c4
+
+LOWER_FOUR
+ALL_CHOWS
+MIXED_DOUBLE_CHOW (m_chow b2, c_chow d2)
+MIXED_DOUBLE_CHOW (c_chow c3, c_chow d3)
+SELF_DRAWN
+
+m_chow b2
+c_chow c3
+c_chow d2
+c_chow d3
+c_pair c4"
+`;
+
+exports[`mahjong scoring lower four all pungs 1`] = `
+"25
+
+d2
+
+LOWER_FOUR
+ALL_PUNGS
+DOUBLE_PUNG (m_pung b3, m_pung c3)
+TWO_CONCEALED_PUNGS (c_pung b1, c_pung b4)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung b1)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_pung b1
+m_pung b3
+c_pung b4
+m_pung c3
+c_pair d2"
+`;
+
 exports[`mahjong scoring lower tiles mixed shifted pungs 1`] = `
 "47
 

@@ -1005,5 +1005,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('lower four', () => {
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2')],
+              hand: parseTiles('d1d2d3 d2d3d4 c2c3c4c4'),
+              winningTile: parseTile('c4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c3'), parsePung('b3')],
+              hand: parseTiles('b1b1b1 b4b4b4 d2'),
+              winningTile: parseTile('d2'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
