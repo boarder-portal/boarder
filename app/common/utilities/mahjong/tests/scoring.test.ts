@@ -1032,5 +1032,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('big three winds', () => {
+      test('one voided suit', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Ww'), parsePung('Wn'), parsePung('Ws')],
+              hand: parseTiles('d4d5 b8b8'),
+              winningTile: parseTile('d3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Ww'), parsePung('Wn'), parsePung('Ws')],
+              hand: parseTiles('b2b2 DgDg'),
+              winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

@@ -363,6 +363,40 @@ m_pung Dw
 m_pair b1"
 `;
 
+exports[`mahjong scoring big three winds half flush 1`] = `
+"27
+
+b2 Dg
+
+BIG_THREE_WINDS (m_pung Ws, m_pung Ww, m_pung Wn)
+ALL_PUNGS
+HALF_FLUSH
+DRAGON_PUNG (c_pung Dg)
+SELF_DRAWN
+
+m_pung Ws
+m_pung Ww
+m_pung Wn
+c_pung Dg
+c_pair b2"
+`;
+
+exports[`mahjong scoring big three winds one voided suit 1`] = `
+"14
+
+d3 d6
+
+BIG_THREE_WINDS (m_pung Ws, m_pung Ww, m_pung Wn)
+ONE_VOIDED_SUIT
+SELF_DRAWN
+
+m_pung Ws
+m_pung Ww
+m_pung Wn
+c_chow d4
+c_pair b8"
+`;
+
 exports[`mahjong scoring four concealed pungs from discard 1`] = `
 "67
 
