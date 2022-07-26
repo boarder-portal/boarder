@@ -648,5 +648,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('pure triple chow', () => {
+      test('all fives', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('c4')],
+              hand: parseTiles('c3c3 c4c4 c5c5 d5d6d7 b5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('c8')],
+              hand: parseTiles('c7c7 c8c8 c9c9 DrDrDr Ww'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

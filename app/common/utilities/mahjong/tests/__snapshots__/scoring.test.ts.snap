@@ -661,6 +661,43 @@ c_chow d8
 c_pair d5"
 `;
 
+exports[`mahjong scoring pure triple chow all fives 1`] = `
+"44
+
+b5
+
+PURE_TRIPLE_CHOW (m_chow c4, c_chow c4, c_chow c4)
+ALL_FIVES
+ALL_CHOWS
+SINGLE_WAIT
+SELF_DRAWN
+
+m_chow c4
+c_chow c4
+c_chow c4
+c_chow d6
+c_pair b5"
+`;
+
+exports[`mahjong scoring pure triple chow half flush 1`] = `
+"38
+
+Ww
+
+PURE_TRIPLE_CHOW (m_chow c8, c_chow c8, c_chow c8)
+HALF_FLUSH
+OUTSIDE_HAND
+DRAGON_PUNG (c_pung Dr)
+SINGLE_WAIT
+SELF_DRAWN
+
+m_chow c8
+c_pung Dr
+c_chow c8
+c_chow c8
+c_pair Ww"
+`;
+
 exports[`mahjong scoring quadruple chow basic 1`] = `
 "57
 
