@@ -574,6 +574,25 @@ GREATER_HONORS_AND_KNITTED_TILES
 FULLY_CONCEALED_HAND"
 `;
 
+exports[`mahjong scoring lesser honors and knitted tiles bcd 1`] = `
+"16
+
+c5 Dr Dg
+
+LESSER_HONORS_AND_KNITTED_TILES
+FULLY_CONCEALED_HAND"
+`;
+
+exports[`mahjong scoring lesser honors and knitted tiles knitted straight 1`] = `
+"28
+
+d9 Dw Ww
+
+LESSER_HONORS_AND_KNITTED_TILES
+KNITTED_STRAIGHT (c_knit b5, c_knit c4, c_knit d6)
+FULLY_CONCEALED_HAND"
+`;
+
 exports[`mahjong scoring little four winds all honors 1`] = `
 "135
 

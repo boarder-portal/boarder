@@ -930,5 +930,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('lesser honors and knitted tiles', () => {
+      test('bcd', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b7b4b1 c8c2 d3d6d9 WeWwWsWn Dw'),
+              winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('knitted straight', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('DgDr WsWeWn c4c7c1 b8b5b2 d3d6'),
+              winningTile: parseTile('d9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
