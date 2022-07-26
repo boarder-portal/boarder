@@ -722,5 +722,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('middle tiles', () => {
+      test('pure shifted pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c4'), parsePung('c5')],
+              hand: parseTiles('c6c6c6 d5d6 d4d4'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('seven pairs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d4d6 d4d6 c4c5c4c5 b4b4 b5 b6b6'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

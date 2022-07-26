@@ -612,6 +612,41 @@ c_chow d4
 c_pair Dg"
 `;
 
+exports[`mahjong scoring middle tiles pure shifted pungs 1`] = `
+"50
+
+d4 d7
+
+PURE_SHIFTED_PUNGS (m_pung c4, m_pung c5, c_pung c6)
+MIDDLE_TILES
+ONE_VOIDED_SUIT
+SELF_DRAWN
+
+m_pung c4
+m_pung c5
+c_pung c6
+c_chow d5
+c_pair d4"
+`;
+
+exports[`mahjong scoring middle tiles seven pairs 1`] = `
+"52
+
+b5
+
+SEVEN_PAIRS
+MIDDLE_TILES
+FULLY_CONCEALED_HAND
+
+c_pair b4
+c_pair b5
+c_pair b6
+c_pair c4
+c_pair c5
+c_pair d4
+c_pair d6"
+`;
+
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 
