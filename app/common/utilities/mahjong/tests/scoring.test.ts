@@ -904,5 +904,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('three concealed pungs', () => {
+      test('all pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b4b4b4 b6b6b6 b8b8b8 d3d3 d7d7'),
+              winningTile: parseTile('d7'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all types', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b3b3b3 d9d9d9 DwDwDw WwWw c2c3'),
+              winningTile: parseTile('c4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

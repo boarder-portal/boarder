@@ -1020,6 +1020,42 @@ THIRTEEN_ORPHANS
 FULLY_CONCEALED_HAND"
 `;
 
+exports[`mahjong scoring three concealed pungs all pungs 1`] = `
+"27
+
+d3 d7
+
+THREE_CONCEALED_PUNGS (c_pung b4, c_pung b6, c_pung b8)
+ALL_PUNGS
+CONCEALED_HAND
+ALL_SIMPLES
+ONE_VOIDED_SUIT
+
+c_pung b4
+c_pung b6
+c_pung b8
+m_pung d7
+c_pair d3"
+`;
+
+exports[`mahjong scoring three concealed pungs all types 1`] = `
+"29
+
+c1 c4
+
+THREE_CONCEALED_PUNGS (c_pung b3, c_pung d9, c_pung Dw)
+ALL_TYPES
+FULLY_CONCEALED_HAND
+DRAGON_PUNG (c_pung Dw)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung d9)
+
+c_pung b3
+c_pung d9
+c_pung Dw
+c_chow c3
+c_pair Ww"
+`;
+
 exports[`mahjong scoring three kongs all types 1`] = `
 "50
 
