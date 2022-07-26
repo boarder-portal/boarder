@@ -673,5 +673,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('pure shifted pungs', () => {
+      test('reversible tiles', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dw')],
+              hand: parseTiles('b4b5b6 b4b5b6 b4b5b6 d3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('half flush', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c1'), parsePung('c2')],
+              hand: parseTiles('c3c3c3 c9c9 DgDg'),
+              winningTile: parseTile('c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
