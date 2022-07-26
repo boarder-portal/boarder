@@ -852,5 +852,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('all fives', () => {
+      test('mixed shifted chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('c6')],
+              hand: parseTiles('c3c4c5 b4b5b6 d5d5 d6d7'),
+              winningTile: parseTile('d5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('middle tiles', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d4d5d6 b4b5b6 c4c6 c5c5c5 b5b5'),
+              winningTile: parseTile('c5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

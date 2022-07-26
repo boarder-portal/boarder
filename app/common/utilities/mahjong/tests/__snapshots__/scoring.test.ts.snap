@@ -34,6 +34,42 @@ m_pung d6
 c_pair d8"
 `;
 
+exports[`mahjong scoring all fives middle tiles 1`] = `
+"54
+
+b5 c5
+
+MIDDLE_TILES
+ALL_FIVES
+MIXED_TRIPLE_CHOW (c_chow b5, c_chow c5, c_chow d5)
+FULLY_CONCEALED_HAND
+TILE_HOG (c5)
+
+c_pung c5
+c_chow b5
+c_chow c5
+c_chow d5
+c_pair b5"
+`;
+
+exports[`mahjong scoring all fives mixed shifted chows 1`] = `
+"26
+
+d5 d8
+
+ALL_FIVES
+MIXED_SHIFTED_CHOWS (c_chow b5, c_chow c4, c_chow d6)
+ALL_CHOWS
+MIXED_DOUBLE_CHOW (m_chow c6, c_chow d6)
+SELF_DRAWN
+
+c_chow b5
+c_chow c4
+m_chow c6
+c_chow d6
+c_pair d5"
+`;
+
 exports[`mahjong scoring all green pure shifted pungs 1`] = `
 "127
 
