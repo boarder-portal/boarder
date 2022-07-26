@@ -773,5 +773,33 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    // 16 points
+    describe('pure straight', () => {
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b1b2b3b4b5b6b7b8b9 d5d6 c6c6'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('dragon pung', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dg')],
+              hand: parseTiles('c1c2c3c4c5c6c7c8c9 d4'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

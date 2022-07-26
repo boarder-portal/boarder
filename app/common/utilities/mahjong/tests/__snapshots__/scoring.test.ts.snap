@@ -758,6 +758,41 @@ m_pung Dw
 c_pair d3"
 `;
 
+exports[`mahjong scoring pure straight all chows 1`] = `
+"23
+
+d4 d7
+
+PURE_STRAIGHT (c_chow b2, c_chow b5, c_chow b8)
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+MIXED_DOUBLE_CHOW (c_chow b5, c_chow d5)
+
+c_chow b2
+c_chow b5
+c_chow b8
+c_chow d5
+c_pair c6"
+`;
+
+exports[`mahjong scoring pure straight dragon pung 1`] = `
+"21
+
+d4
+
+PURE_STRAIGHT (c_chow c2, c_chow c5, c_chow c8)
+DRAGON_PUNG (m_pung Dg)
+ONE_VOIDED_SUIT
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung Dg
+c_chow c2
+c_chow c5
+c_chow c8
+c_pair d4"
+`;
+
 exports[`mahjong scoring pure terminal chows basic 1`] = `
 "66
 
