@@ -980,5 +980,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('upper four', () => {
+      test('mixed double chow', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c6c7c8 d6d7d8 b6b6b6 b7b8 d9d9'),
+              winningTile: parseTile('b9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('seven pairs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b6b6 b8b8 b9b9 c6c6 c7c7 d6d6 d8'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

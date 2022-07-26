@@ -1225,6 +1225,39 @@ m_chow d8
 c_pair c9"
 `;
 
+exports[`mahjong scoring upper four mixed double chow 1`] = `
+"17
+
+b6 b9 d9
+
+UPPER_FOUR
+FULLY_CONCEALED_HAND
+MIXED_DOUBLE_CHOW (c_chow c7, c_chow d7)
+
+c_pung b6
+c_chow b8
+c_chow c7
+c_chow d7
+c_pair d9"
+`;
+
+exports[`mahjong scoring upper four seven pairs 1`] = `
+"36
+
+d8
+
+SEVEN_PAIRS
+UPPER_FOUR
+
+c_pair b6
+c_pair b8
+c_pair b9
+c_pair c6
+c_pair c7
+c_pair d6
+m_pair d8"
+`;
+
 exports[`mahjong scoring upper tiles double pung 1`] = `
 "30
 
