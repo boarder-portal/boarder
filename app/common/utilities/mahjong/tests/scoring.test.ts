@@ -747,5 +747,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('lower tiles', () => {
+      test('mixed triple chow', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d2')],
+              hand: parseTiles('b1b2b3 c1c2c3 d1d2d3 c2'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('mixed shifted pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d1'), parsePung('c2'), parsePung('b3'), parsePung('c3')],
+              hand: parseTiles('d2'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
