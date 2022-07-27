@@ -1113,5 +1113,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('mixed triple chow', () => {
+      test('no honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c8')],
+              hand: parseTiles('c5c6c7 b5b6b7 d5d6d7 d9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('c6')],
+              hand: parseTiles('d2d3 c2c3c4 b2b3b4 c6c6'),
+              winningTile: parseTile('d4'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

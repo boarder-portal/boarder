@@ -881,6 +881,41 @@ c_chow d8
 c_pair d8"
 `;
 
+exports[`mahjong scoring mixed triple chow all chows 1`] = `
+"14
+
+d4
+
+MIXED_TRIPLE_CHOW (c_chow b3, c_chow c3, c_chow d3)
+ALL_CHOWS
+ALL_SIMPLES
+SHORT_STRAIGHT (c_chow c3, m_chow c6)
+SELF_DRAWN
+
+c_chow b3
+c_chow c3
+m_chow c6
+c_chow d3
+c_pair c6"
+`;
+
+exports[`mahjong scoring mixed triple chow no honors 1`] = `
+"11
+
+d9
+
+MIXED_TRIPLE_CHOW (c_chow b6, c_chow c6, c_chow d6)
+NO_HONORS
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung c8
+c_chow b6
+c_chow c6
+c_chow d6
+c_pair d9"
+`;
+
 exports[`mahjong scoring nine gates edge 1`] = `
 "110
 
