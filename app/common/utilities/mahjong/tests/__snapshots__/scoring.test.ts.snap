@@ -1114,6 +1114,47 @@ c_chow b2
 c_pair c9"
 `;
 
+exports[`mahjong scoring reversible tiles all fives 1`] = `
+"32
+
+d5
+
+ALL_FIVES
+REVERSIBLE_TILES
+ALL_CHOWS
+TILE_HOG (d5)
+PURE_DOUBLE_CHOW (c_chow b5, c_chow b5)
+PURE_DOUBLE_CHOW (m_chow d4, m_chow d4)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_chow b5
+c_chow b5
+m_chow d4
+m_chow d4
+c_pair d5"
+`;
+
+exports[`mahjong scoring reversible tiles all pungs 1`] = `
+"22
+
+b9 d9
+
+REVERSIBLE_TILES
+ALL_PUNGS
+DRAGON_PUNG (c_pung Dw)
+DOUBLE_PUNG (m_pung b8, m_pung d8)
+TWO_CONCEALED_PUNGS (c_pung b9, c_pung Dw)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung b9)
+SELF_DRAWN
+
+m_pung b8
+c_pung b9
+m_pung d8
+c_pung Dw
+c_pair d9"
+`;
+
 exports[`mahjong scoring seven pairs all types 1`] = `
 "30
 

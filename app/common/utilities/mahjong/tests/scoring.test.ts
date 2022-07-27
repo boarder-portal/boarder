@@ -1087,5 +1087,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('reversible tiles', () => {
+      test('all fives', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d4'), parseChow('d4')],
+              hand: parseTiles('b4b4 b5b5 b6b6 d5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b8'), parsePung('d8')],
+              hand: parseTiles('DwDwDw b9b9 d9d9'),
+              winningTile: parseTile('b9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
