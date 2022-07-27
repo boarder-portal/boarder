@@ -1644,5 +1644,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('melded kong', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseKong('d1', ESetConcealedType.MELDED)],
+              hand: parseTiles('c2c2c2 b3b3b3 c5c6 WwWw'),
+              winningTile: parseTile('c7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('one voided suit', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b9b8b7b6b5b4b3b2b1 DgDgDg c2'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
