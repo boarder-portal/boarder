@@ -1372,5 +1372,52 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('fully concealed hand', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3c4 d3d4d5 d6d7d8 b4b4 b7b8'),
+              winningTile: parseTile('b6'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('two melded kongs', () => {
+      test('two pure melded kongs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('Dr'),
+                parseKong('d4', ESetConcealedType.MELDED),
+                parseKong('c4', ESetConcealedType.MELDED),
+              ],
+              hand: parseTiles('c1c1c1c3'),
+              winningTile: parseTile('c3'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('melded + concealed kongs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseKong('c1', ESetConcealedType.MELDED)],
+              concealedSets: [parseKong('c2', ESetConcealedType.CONCEALED)],
+              hand: parseTiles('d2d3d4 DwDw WwWw'),
+              winningTile: parseTile('Ww'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
