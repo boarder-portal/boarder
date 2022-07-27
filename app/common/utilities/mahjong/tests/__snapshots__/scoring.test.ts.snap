@@ -481,6 +481,24 @@ m_chow d2
 c_pair Wn"
 `;
 
+exports[`mahjong scoring closed wait basic 1`] = `
+"21
+
+c8
+
+MIXED_STRAIGHT (c_chow b2, c_chow c8, c_chow d5)
+ALL_TYPES
+FULLY_CONCEALED_HAND
+DRAGON_PUNG (c_pung Dr)
+CLOSED_WAIT
+
+c_pung Dr
+c_chow b2
+c_chow c8
+c_chow d5
+c_pair We"
+`;
+
 exports[`mahjong scoring concealed hand basic 1`] = `
 "8
 
@@ -1816,6 +1834,24 @@ c_chow b3
 c_chow b6
 c_chow b7
 m_pair d5"
+`;
+
+exports[`mahjong scoring single wait basic 1`] = `
+"10
+
+Wn
+
+TWO_DRAGON_PUNGS (m_pung Dg, c_pung Dw)
+MIXED_DOUBLE_CHOW (c_chow c3, m_chow d3)
+ONE_VOIDED_SUIT
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung Dg
+c_pung Dw
+c_chow c3
+m_chow d3
+c_pair Wn"
 `;
 
 exports[`mahjong scoring thirteen orphans basic 1`] = `

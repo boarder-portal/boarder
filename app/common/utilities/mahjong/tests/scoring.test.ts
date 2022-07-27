@@ -1695,5 +1695,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('closed wait', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('DrDrDr WeWe b1b2b3 d4d5d6 c7c9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('single wait', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dg'), parseChow('d3')],
+              hand: parseTiles('DwDwDw c2c3c4 Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
