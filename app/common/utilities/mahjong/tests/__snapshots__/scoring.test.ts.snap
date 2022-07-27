@@ -846,6 +846,41 @@ c_pair d4
 c_pair d6"
 `;
 
+exports[`mahjong scoring mixed shifted pungs all pungs 1`] = `
+"24
+
+d2
+
+MIXED_SHIFTED_PUNGS (m_pung b3, m_pung c4, m_pung d5)
+ALL_PUNGS
+MELDED_HAND
+DOUBLE_PUNG (m_pung b5, m_pung d5)
+ALL_SIMPLES
+
+m_pung b3
+m_pung b5
+m_pung c4
+m_pung d5
+m_pair d2"
+`;
+
+exports[`mahjong scoring mixed shifted pungs no honors 1`] = `
+"11
+
+c3
+
+MIXED_SHIFTED_PUNGS (m_pung b8, m_pung c7, m_pung d6)
+NO_HONORS
+EDGE_WAIT
+SELF_DRAWN
+
+m_pung b8
+m_pung c7
+m_pung d6
+c_chow c2
+c_pair c5"
+`;
+
 exports[`mahjong scoring mixed straight all chows 1`] = `
 "13
 

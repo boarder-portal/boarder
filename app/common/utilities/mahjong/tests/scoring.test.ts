@@ -1139,5 +1139,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('mixed shifted pungs', () => {
+      test('no honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d6'), parsePung('c7'), parsePung('b8')],
+              hand: parseTiles('c1c2 c5c5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('all pungs', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b3'), parsePung('c4'), parsePung('d5'), parsePung('b5')],
+              hand: parseTiles('d2'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
