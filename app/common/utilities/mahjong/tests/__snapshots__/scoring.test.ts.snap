@@ -914,7 +914,7 @@ exports[`mahjong scoring last tile claim basic 1`] = `
 
 b3
 
-LAST_TILE_DRAW
+LAST_TILE_CLAIM
 TWO_CONCEALED_PUNGS (c_pung c3, c_pung d2)
 PUNG_OF_TERMINALS_OR_HONORS (m_pung d1)
 NO_HONORS
@@ -923,7 +923,7 @@ EDGE_WAIT
 c_pung c3
 m_pung d1
 c_pung d2
-c_chow b2
+m_chow b2
 c_pair c7"
 `;
 
@@ -1894,6 +1894,8 @@ c_chow c3
 m_chow d3
 c_pair Wn"
 `;
+
+exports[`mahjong scoring single wait shouldn't be included when for multiple sets 1`] = `"null"`;
 
 exports[`mahjong scoring thirteen orphans basic 1`] = `
 "92

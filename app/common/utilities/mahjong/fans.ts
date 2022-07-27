@@ -427,10 +427,9 @@ export function getSpecialSetsFans(sets: TSet[], winningTile: TTile, waits: TTil
   fans.push(...tileHogFans);
 
   if (waits.length === 1) {
-    const winningMeldedSet = sets.find(({ concealedType }) => concealedType === ESetConcealedType.WINNING_MELDED);
-    const winningSets = winningMeldedSet
-      ? [winningMeldedSet]
-      : sets.filter((set) => isConcealed(set) && tilesContainTile(set.tiles, winningTile));
+    const winningSets = sets.filter(
+      (set) => set.concealedType !== ESetConcealedType.MELDED && tilesContainTile(set.tiles, winningTile),
+    );
     const waitTypes: (EFan | undefined)[] = winningSets.map((set) => {
       if (isPair(set)) {
         return EFan.SINGLE_WAIT;

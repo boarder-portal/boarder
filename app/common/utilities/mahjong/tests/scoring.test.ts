@@ -1203,6 +1203,7 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parsePung('d1')],
               hand: parseTiles('d2d2d2 c3c3c3 b1b2 c7c7'),
+              isSelfDraw: false,
               isLastWallTile: true,
             }),
           ),
@@ -1715,6 +1716,20 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parsePung('Dg'), parseChow('d3')],
               hand: parseTiles('DwDwDw c2c3c4 Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('shouldn\'t be included when for multiple sets', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dg'), parsePung('Dr')],
+              hand: parseTiles('d2d3d4d5 c5c6c7'),
+              winningTile: parseTile('d5'),
+              isSelfDraw: false,
             }),
           ),
         ).toMatchSnapshot();
