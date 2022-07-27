@@ -164,6 +164,24 @@ m_pung Dg
 m_pair Dw"
 `;
 
+exports[`mahjong scoring all pungs basic 1`] = `
+"31
+
+Dw Ws
+
+TRIPLE_PUNG (m_pung b8, m_pung c8, m_pung d8)
+ALL_PUNGS
+ALL_TYPES
+DRAGON_PUNG (c_pung Dw)
+SELF_DRAWN
+
+m_pung b8
+m_pung c8
+m_pung d8
+c_pung Dw
+c_pair Ws"
+`;
+
 exports[`mahjong scoring all terminals and honors all types 1`] = `
 "60
 
@@ -620,6 +638,23 @@ b2 d7 Dw
 
 GREATER_HONORS_AND_KNITTED_TILES
 FULLY_CONCEALED_HAND"
+`;
+
+exports[`mahjong scoring half flush basic 1`] = `
+"27
+
+c3 c6
+
+PURE_SHIFTED_CHOWS (c_chow c4, c_chow c6, c_chow c8)
+HALF_FLUSH
+FULLY_CONCEALED_HAND
+SHORT_STRAIGHT (c_chow c3, c_chow c6)
+
+c_chow c3
+c_chow c4
+c_chow c6
+c_chow c8
+c_pair Wn"
 `;
 
 exports[`mahjong scoring knitted straight all chows 1`] = `

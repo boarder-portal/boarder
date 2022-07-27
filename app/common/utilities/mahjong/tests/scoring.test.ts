@@ -1259,5 +1259,34 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    // 6 points
+    describe('all pungs', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c8'), parsePung('b8'), parsePung('d8')],
+              hand: parseTiles('DwDw WsWs'),
+              winningTile: parseTile('Dw'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('half flush', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3c4 c4c5 c5c6c7 c7c8c9 WnWn'),
+              winningTile: parseTile('c3'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
