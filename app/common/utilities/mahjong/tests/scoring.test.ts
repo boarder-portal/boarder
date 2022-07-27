@@ -1591,5 +1591,33 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('mixed double chow', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c5c6c7 d5d6d7 DwDwDw WwWw b2b3'),
+              winningTile: parseTile('b1'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('short straight', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b2b3b4 b5b6b7 b8b8b8 b6b7b8 d5'),
+              winningTile: parseTile('d5'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
