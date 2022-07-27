@@ -1525,6 +1525,26 @@ m_chow d8
 c_pair c9"
 `;
 
+exports[`mahjong scoring two concealed kongs basic 1`] = `
+"18
+
+c7 c9
+
+TWO_CONCEALED_KONGS (c_kong b1, c_kong b2)
+LAST_TILE
+TILE_HOG (c7)
+PUNG_OF_TERMINALS_OR_HONORS (c_kong b1)
+ONE_VOIDED_SUIT
+NO_HONORS
+SELF_DRAWN
+
+c_kong b1
+c_kong b2
+m_pung c7
+c_chow c8
+c_pair c8"
+`;
+
 exports[`mahjong scoring upper four mixed double chow 1`] = `
 "17
 

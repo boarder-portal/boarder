@@ -1240,5 +1240,24 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('two concealed kongs', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c7')],
+              concealedSets: [
+                parseKong('b1', ESetConcealedType.CONCEALED),
+                parseKong('b2', ESetConcealedType.CONCEALED),
+              ],
+              hand: parseTiles('c8c8c8c9'),
+              winningTile: parseTile('c7'),
+              isLastTile: true,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
