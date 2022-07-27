@@ -1483,5 +1483,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('concealed hand', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3 c5c6c7 b6b6 d3d4d5 d6d7d8'),
+              winningTile: parseTile('c4'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('all chows', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d2d3d4 c3c4c5 b4b5b6 b7b9 d7d7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

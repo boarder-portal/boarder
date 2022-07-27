@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`mahjong scoring all chows basic 1`] = `
+"14
+
+b8
+
+MIXED_SHIFTED_CHOWS (c_chow b5, c_chow c4, c_chow d3)
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+SHORT_STRAIGHT (c_chow b5, c_chow b8)
+CLOSED_WAIT
+
+c_chow b5
+c_chow b8
+c_chow c4
+c_chow d3
+c_pair d7"
+`;
+
 exports[`mahjong scoring all even pungs double pung 1`] = `
 "29
 
@@ -445,6 +463,24 @@ m_pung c8
 m_chow b3
 m_chow d2
 c_pair Wn"
+`;
+
+exports[`mahjong scoring concealed hand basic 1`] = `
+"8
+
+c4
+
+CONCEALED_HAND
+ALL_CHOWS
+ALL_SIMPLES
+SHORT_STRAIGHT (m_chow c3, c_chow c6)
+SHORT_STRAIGHT (c_chow d4, c_chow d7)
+
+m_chow c3
+c_chow c6
+c_chow d4
+c_chow d7
+c_pair b6"
 `;
 
 exports[`mahjong scoring dragon pung basic 1`] = `
