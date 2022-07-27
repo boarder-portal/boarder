@@ -1209,5 +1209,36 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('out with replacement tile', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseKong('c7', ESetConcealedType.MELDED)],
+              hand: parseTiles('d7d8 c1c2c3 d1d2d3 DgDg'),
+              winningTile: parseTile('d9'),
+              isReplacementTile: true,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('robbing the kong', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d4')],
+              hand: parseTiles('c4c4c4 WnWn d4d5d6 c5c6'),
+              winningTile: parseTile('c7'),
+              isRobbingKong: true,
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
