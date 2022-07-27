@@ -483,6 +483,23 @@ c_chow d7
 c_pair b6"
 `;
 
+exports[`mahjong scoring concealed kong basic 1`] = `
+"12
+
+Dw
+
+MIXED_SHIFTED_PUNGS (c_kong c5, m_pung b7, m_pung d6)
+CONCEALED_KONG (c_kong c5)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_kong c5
+m_pung b7
+m_pung d6
+c_chow c2
+c_pair Dw"
+`;
+
 exports[`mahjong scoring double pung basic 1`] = `
 "13
 
@@ -1831,6 +1848,25 @@ c_kong b2
 m_pung c7
 c_chow c8
 c_pair c8"
+`;
+
+exports[`mahjong scoring two concealed pungs basic 1`] = `
+"8
+
+c5
+
+CONCEALED_HAND
+TWO_CONCEALED_PUNGS (c_pung b6, c_pung b8)
+TWO_TERMINAL_CHOWS (c_chow c2, c_chow c8)
+ONE_VOIDED_SUIT
+NO_HONORS
+SINGLE_WAIT
+
+c_pung b6
+c_pung b8
+c_chow c2
+c_chow c8
+m_pair c5"
 `;
 
 exports[`mahjong scoring two dragon pungs basic 1`] = `

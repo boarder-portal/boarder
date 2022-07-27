@@ -1536,5 +1536,33 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('two concealed pungs', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b6b6b6 b8b8b8 c1c2c3 c7c8c9 c5'),
+              winningTile: parseTile('c5'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('concealed kong', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d6'), parsePung('b7')],
+              concealedSets: [parseKong('c5', ESetConcealedType.CONCEALED)],
+              hand: parseTiles('c1c2c3 Dw'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
