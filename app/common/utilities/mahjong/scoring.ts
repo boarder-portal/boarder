@@ -9,6 +9,7 @@ import {
   ESet,
   ESetConcealedType,
   EWind,
+  IFlowerTile,
   IHandMahjong,
   IKongSet,
   TConcealedSet,
@@ -34,7 +35,7 @@ export interface IHandScoreOptions {
   hand: TTile[];
   concealedSets: TConcealedSet<IKongSet>[];
   meldedSets: TMeldedSet[];
-  flowers: TTile[];
+  flowers: IFlowerTile[];
   seatWind: EWind;
   roundWind: EWind;
   isSelfDraw: boolean;

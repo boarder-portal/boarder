@@ -589,6 +589,28 @@ c_chow d2
 c_pair Dw"
 `;
 
+exports[`mahjong scoring flower tiles basic 1`] = `
+"56
+
+d3
+
+PURE_SHIFTED_PUNGS (m_pung c1, c_pung c2, c_pung c3)
+LOWER_TILES
+TWO_CONCEALED_PUNGS (c_pung c2, c_pung c3)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung c1)
+ONE_VOIDED_SUIT
+EDGE_WAIT
+SELF_DRAWN
+FLOWER_TILES (f2)
+FLOWER_TILES (f7)
+
+m_pung c1
+c_pung c2
+c_pung c3
+c_chow d2
+c_pair d3"
+`;
+
 exports[`mahjong scoring four concealed pungs from discard 1`] = `
 "67
 
@@ -1758,6 +1780,25 @@ c_pung d4
 m_pung Ws
 c_chow d6
 c_pair We"
+`;
+
+exports[`mahjong scoring self-drawn basic 1`] = `
+"22
+
+Ww
+
+MIXED_TRIPLE_CHOW (c_chow b2, c_chow c2, c_chow d2)
+ALL_TYPES
+OUTSIDE_HAND
+DRAGON_PUNG (m_pung Dr)
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung Dr
+c_chow b2
+c_chow c2
+c_chow d2
+c_pair Ww"
 `;
 
 exports[`mahjong scoring seven pairs all types 1`] = `

@@ -1,4 +1,4 @@
-import { ESetConcealedType, EWind } from 'common/types/mahjong';
+import { ESetConcealedType, EWind, IFlowerTile } from 'common/types/mahjong';
 
 import { getHandMahjong, IHandScoreOptions } from 'common/utilities/mahjong/scoring';
 import { parseChow, parseKong, parsePung, parseTile, parseTiles } from 'common/utilities/mahjong/parse';
@@ -1715,6 +1715,34 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parsePung('Dg'), parseChow('d3')],
               hand: parseTiles('DwDwDw c2c3c4 Wn'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('self-drawn', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dr')],
+              hand: parseTiles('c1c2c3 d1d2d3 b1b2b3 Ww'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('flower tiles', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('c1')],
+              hand: parseTiles('c2c2c2 c3c3c3 d1d2d3 d3'),
+              flowers: [parseTile('f2') as IFlowerTile, parseTile('f7') as IFlowerTile],
+              winningTile: parseTile('d3'),
             }),
           ),
         ).toMatchSnapshot();
