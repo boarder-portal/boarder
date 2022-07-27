@@ -1419,5 +1419,37 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('last tile', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2'), parsePung('b8')],
+              hand: parseTiles('b3b4b5 c1c1 b6b7'),
+              winningTile: parseTile('b8'),
+              isSelfDraw: false,
+              isLastTile: true,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    // 2 points
+    describe('dragon pung', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dw')],
+              hand: parseTiles('c1c2c3 d4d5d6 b7b8b9 Ww'),
+              winningTile: parseTile('Ww'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

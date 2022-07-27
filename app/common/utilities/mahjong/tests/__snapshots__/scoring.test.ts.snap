@@ -447,6 +447,24 @@ m_chow d2
 c_pair Wn"
 `;
 
+exports[`mahjong scoring dragon pung basic 1`] = `
+"18
+
+Ww
+
+MIXED_STRAIGHT (c_chow b8, c_chow c2, c_chow d5)
+ALL_TYPES
+DRAGON_PUNG (m_pung Dw)
+SINGLE_WAIT
+SELF_DRAWN
+
+m_pung Dw
+c_chow b8
+c_chow c2
+c_chow d5
+c_pair Ww"
+`;
+
 exports[`mahjong scoring four concealed pungs from discard 1`] = `
 "67
 
@@ -725,6 +743,24 @@ c_knit c5
 c_knit b6
 m_pung Dr
 c_pair Ww"
+`;
+
+exports[`mahjong scoring last tile basic 1`] = `
+"9
+
+b5 b8
+
+LAST_TILE
+TILE_HOG (b8)
+SHORT_STRAIGHT (c_chow b4, m_chow b7)
+ONE_VOIDED_SUIT
+NO_HONORS
+
+m_pung b8
+m_chow b2
+c_chow b4
+m_chow b7
+c_pair c1"
 `;
 
 exports[`mahjong scoring last tile claim basic 1`] = `
