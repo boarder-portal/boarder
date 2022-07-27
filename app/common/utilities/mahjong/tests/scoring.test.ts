@@ -1564,5 +1564,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('all simples', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3c4 d3d4 b4b5b6 b3b3b3 d4d4'),
+              winningTile: parseTile('d5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    // 1 point
+    describe('pure double chow', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2c3 c1c2c3 c7c8c9 d7d8d9 Ww'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
