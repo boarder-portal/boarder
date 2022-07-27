@@ -911,6 +911,24 @@ c_chow d2
 c_pair c2"
 `;
 
+exports[`mahjong scoring melded hand basic 1`] = `
+"12
+
+c8
+
+MELDED_HAND
+TILE_HOG (c7)
+ALL_SIMPLES
+MELDED_KONG (m_kong c2)
+ONE_VOIDED_SUIT
+
+m_kong c2
+m_pung b8
+m_pung c7
+m_chow c6
+m_pair c8"
+`;
+
 exports[`mahjong scoring middle tiles pure shifted pungs 1`] = `
 "50
 
@@ -1613,6 +1631,25 @@ c_kong b2
 m_pung c7
 c_chow c8
 c_pair c8"
+`;
+
+exports[`mahjong scoring two dragon pungs basic 1`] = `
+"11
+
+b8
+
+TWO_DRAGON_PUNGS (m_kong Dg, m_pung Dr)
+TWO_TERMINAL_CHOWS (c_chow c2, c_chow c8)
+MELDED_KONG (m_kong Dg)
+ONE_VOIDED_SUIT
+SINGLE_WAIT
+SELF_DRAWN
+
+m_kong Dg
+m_pung Dr
+c_chow c2
+c_chow c8
+c_pair b8"
 `;
 
 exports[`mahjong scoring upper four mixed double chow 1`] = `

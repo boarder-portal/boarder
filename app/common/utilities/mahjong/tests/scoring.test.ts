@@ -1314,5 +1314,37 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('melded hand', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [
+                parsePung('b8'),
+                parseKong('c2', ESetConcealedType.MELDED),
+                parsePung('c7'),
+                parseChow('c6'),
+              ],
+              hand: parseTiles('c8'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('two dragon pungs', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Dr'), parseKong('Dg', ESetConcealedType.MELDED)],
+              hand: parseTiles('c1c2c3 c7c8c9 b8'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
