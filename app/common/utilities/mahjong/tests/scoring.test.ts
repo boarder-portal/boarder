@@ -1288,5 +1288,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('mixed shifted chows', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c2c3c4 d3d4d5 b4b5b6 b6b7b8 b5'),
+              winningTile: parseTile('b5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('all types', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d1d2d3 c4c5c6 b9b9 DrDrDr WeWe'),
+              winningTile: parseTile('b9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

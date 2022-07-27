@@ -258,6 +258,24 @@ m_pung d9
 m_pair b1"
 `;
 
+exports[`mahjong scoring all types basic 1`] = `
+"15
+
+b9 We
+
+ALL_TYPES
+FULLY_CONCEALED_HAND
+DRAGON_PUNG (c_pung Dr)
+TWO_CONCEALED_PUNGS (c_pung b9, c_pung Dr)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung b9)
+
+c_pung b9
+c_pung Dr
+c_chow c5
+c_chow d2
+c_pair We"
+`;
+
 exports[`mahjong scoring basic scoring basic mahjong 1`] = `
 "221
 
@@ -926,6 +944,23 @@ c_pair c4
 c_pair c5
 c_pair d4
 c_pair d6"
+`;
+
+exports[`mahjong scoring mixed shifted chows basic 1`] = `
+"14
+
+b5 b8
+
+MIXED_SHIFTED_CHOWS (c_chow b5, c_chow c3, c_chow d4)
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+ALL_SIMPLES
+
+c_chow b5
+c_chow b7
+c_chow c3
+c_chow d4
+c_pair b5"
 `;
 
 exports[`mahjong scoring mixed shifted pungs all pungs 1`] = `
