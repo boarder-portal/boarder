@@ -930,6 +930,8 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    // 12 points
     describe('lesser honors and knitted tiles', () => {
       test('bcd', () => {
         expect(
@@ -1054,6 +1056,32 @@ describe('mahjong', () => {
               meldedSets: [parsePung('Ww'), parsePung('Wn'), parsePung('Ws')],
               hand: parseTiles('b2b2 DgDg'),
               winningTile: parseTile('Dg'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+
+    // 8 points
+    describe('mixed straight', () => {
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2')],
+              hand: parseTiles('d4d6 c7c8c9 c7c8c9 b7b7'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('no honors', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2 b4b5b6 d3d7 d3d8 d3d9 d8d8'),
             }),
           ),
         ).toMatchSnapshot();
