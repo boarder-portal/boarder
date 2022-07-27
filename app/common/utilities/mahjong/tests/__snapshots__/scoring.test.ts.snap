@@ -1230,6 +1230,25 @@ c_chow c8
 c_pair Ww"
 `;
 
+exports[`mahjong scoring prevalent wind basic 1`] = `
+"14
+
+b3 d4
+
+ALL_PUNGS
+DRAGON_PUNG (m_pung Dr)
+PREVALENT_WIND (m_pung We)
+TWO_CONCEALED_PUNGS (c_pung d2, c_pung d4)
+ONE_VOIDED_SUIT
+SELF_DRAWN
+
+c_pung d2
+c_pung d4
+m_pung We
+m_pung Dr
+c_pair b3"
+`;
+
 exports[`mahjong scoring pure shifted chows shifted by 1 1`] = `
 "18
 
@@ -1486,6 +1505,23 @@ m_pung d4
 m_chow c6
 c_chow d5
 c_pair Wn"
+`;
+
+exports[`mahjong scoring seat wind basic 1`] = `
+"11
+
+d4 We
+
+HALF_FLUSH
+PREVALENT_WIND (m_pung Ws)
+SEAT_WIND (m_pung Ws)
+SELF_DRAWN
+
+m_pung d3
+c_pung d4
+m_pung Ws
+c_chow d6
+c_pair We"
 `;
 
 exports[`mahjong scoring seven pairs all types 1`] = `

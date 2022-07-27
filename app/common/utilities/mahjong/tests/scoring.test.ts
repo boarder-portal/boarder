@@ -1451,5 +1451,37 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('prevalent wind', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('We'), parsePung('Dr')],
+              hand: parseTiles('d4d4 d2d2d2 b3b3'),
+              winningTile: parseTile('d4'),
+              roundWind: EWind.EAST,
+              seatWind: EWind.WEST,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('seat wind', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('Ws'), parsePung('d3')],
+              hand: parseTiles('d4d4 d5d6d7 WeWe'),
+              winningTile: parseTile('d4'),
+              roundWind: EWind.SOUTH,
+              seatWind: EWind.SOUTH,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
