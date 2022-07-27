@@ -1353,6 +1353,28 @@ m_pung Dr
 c_pair b3"
 `;
 
+exports[`mahjong scoring pung of terminal or honors basic 1`] = `
+"31
+
+d5
+
+TRIPLE_PUNG (c_pung b1, m_pung c1, m_pung d1)
+ALL_PUNGS
+DRAGON_PUNG (c_pung Dw)
+TWO_CONCEALED_PUNGS (c_pung b1, c_pung Dw)
+PUNG_OF_TERMINALS_OR_HONORS (c_pung b1)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung c1)
+PUNG_OF_TERMINALS_OR_HONORS (m_pung d1)
+SINGLE_WAIT
+SELF_DRAWN
+
+c_pung b1
+m_pung c1
+m_pung d1
+c_pung Dw
+c_pair d5"
+`;
+
 exports[`mahjong scoring pure double chow basic 1`] = `
 "13
 
@@ -1995,6 +2017,26 @@ m_kong d4
 c_pung c1
 m_pung Dr
 m_pair c3"
+`;
+
+exports[`mahjong scoring two terminal chows basic 1`] = `
+"14
+
+c1
+
+OUTSIDE_HAND
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+MIXED_DOUBLE_CHOW (c_chow b2, c_chow d2)
+MIXED_DOUBLE_CHOW (c_chow b8, c_chow d8)
+TWO_TERMINAL_CHOWS (c_chow b2, c_chow b8)
+SINGLE_WAIT
+
+c_chow b2
+c_chow b8
+c_chow d2
+c_chow d8
+c_pair c1"
 `;
 
 exports[`mahjong scoring upper four mixed double chow 1`] = `

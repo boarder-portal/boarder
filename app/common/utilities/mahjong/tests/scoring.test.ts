@@ -1619,5 +1619,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('two terminal chows', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('b1b2b3 b7b8b9 d1d2d3 d7d8d9 c1'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('pung of terminal or honors', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d1'), parsePung('c1')],
+              hand: parseTiles('b1b1b1 DwDwDw d5'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
