@@ -1346,5 +1346,31 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+
+    // 4 points
+    describe('outside hand', () => {
+      test('all chows', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2c3 b1b2b3 b7b8b9 d7d8d9 d1'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+
+      test('mixed double chow', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('DwDw c1c2c3 c7c8c9 b7b8b9 WwWw'),
+              winningTile: parseTile('Dw'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });

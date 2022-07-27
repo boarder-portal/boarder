@@ -1137,6 +1137,45 @@ c_chow d8
 c_pair Dg"
 `;
 
+exports[`mahjong scoring outside hand all chows 1`] = `
+"14
+
+d1
+
+OUTSIDE_HAND
+FULLY_CONCEALED_HAND
+ALL_CHOWS
+MIXED_DOUBLE_CHOW (c_chow b2, c_chow c2)
+MIXED_DOUBLE_CHOW (c_chow b8, c_chow d8)
+TWO_TERMINAL_CHOWS (c_chow b2, c_chow b8)
+SINGLE_WAIT
+
+c_chow b2
+c_chow b8
+c_chow c2
+c_chow d8
+c_pair d1"
+`;
+
+exports[`mahjong scoring outside hand mixed double chow 1`] = `
+"13
+
+Dw Ww
+
+OUTSIDE_HAND
+FULLY_CONCEALED_HAND
+DRAGON_PUNG (c_pung Dw)
+MIXED_DOUBLE_CHOW (c_chow b8, c_chow c8)
+TWO_TERMINAL_CHOWS (c_chow c2, c_chow c8)
+ONE_VOIDED_SUIT
+
+c_pung Dw
+c_chow b8
+c_chow c2
+c_chow c8
+c_pair Ww"
+`;
+
 exports[`mahjong scoring pure shifted chows shifted by 1 1`] = `
 "18
 
