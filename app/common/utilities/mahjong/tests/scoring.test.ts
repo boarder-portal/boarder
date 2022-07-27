@@ -1180,5 +1180,34 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('last tile draw', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('b2')],
+              hand: parseTiles('c1c2c3 d2d3 c8c8c8 DwDw'),
+              winningTile: parseTile('d4'),
+              isLastWallTile: true,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('last tile claim', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('d1')],
+              hand: parseTiles('d2d2d2 c3c3c3 b1b2 c7c7'),
+              isLastWallTile: true,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
