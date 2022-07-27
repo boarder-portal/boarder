@@ -483,6 +483,24 @@ c_chow d7
 c_pair b6"
 `;
 
+exports[`mahjong scoring double pung basic 1`] = `
+"13
+
+d6 d8
+
+ALL_PUNGS
+DOUBLE_PUNG (m_pung b5, m_pung c5)
+TWO_CONCEALED_PUNGS (c_pung d4, c_pung d6)
+ALL_SIMPLES
+SELF_DRAWN
+
+m_pung b5
+m_pung c5
+c_pung d4
+c_pung d6
+c_pair d8"
+`;
+
 exports[`mahjong scoring dragon pung basic 1`] = `
 "18
 
@@ -1737,6 +1755,23 @@ c_chow b8
 c_chow c2
 c_chow c8
 c_pair d5"
+`;
+
+exports[`mahjong scoring tile hog basic 1`] = `
+"26
+
+b6 c8
+
+UPPER_FOUR
+MIXED_TRIPLE_CHOW (c_chow b8, c_chow c8, c_chow d8)
+FULLY_CONCEALED_HAND
+TILE_HOG (c8)
+
+c_pung c8
+c_chow b8
+c_chow c8
+c_chow d8
+c_pair b6"
 `;
 
 exports[`mahjong scoring triple pung all simples 1`] = `

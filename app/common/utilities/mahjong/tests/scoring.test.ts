@@ -1509,5 +1509,32 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('tile hog', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c7 c8c8c8 c9 d7d8d9 b7b8b9 b6b6'),
+              winningTile: parseTile('c8'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('double pung', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parsePung('b5'), parsePung('c5')],
+              hand: parseTiles('d4d4d4 d6d6 d8d8'),
+              winningTile: parseTile('d6'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
