@@ -1165,5 +1165,20 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('chicken hand', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              meldedSets: [parseChow('d2'), parsePung('b7'), parsePung('c8')],
+              hand: parseTiles('WnWn b3b4'),
+              winningTile: parseTile('b2'),
+              isSelfDraw: false,
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
