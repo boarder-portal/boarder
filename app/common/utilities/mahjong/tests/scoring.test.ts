@@ -1670,5 +1670,30 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
     });
+    describe('no honors', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('c1c2c3 b4b5b6 d7d8d9 d1d1 d2d2'),
+              winningTile: parseTile('d1'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
+    describe('edge wait', () => {
+      test('basic', () => {
+        expect(
+          stringifyMahjong(
+            getHandMahjong({
+              ...standardOptions,
+              hand: parseTiles('d1d2d3 c7c8c9 DwDw b1b2b3 b8b9'),
+            }),
+          ),
+        ).toMatchSnapshot();
+      });
+    });
   });
 });
