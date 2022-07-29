@@ -16,11 +16,11 @@ export default abstract class TurnEntity<Game extends EGame, Result = unknown> e
     this.activePlayerIndex = options?.activePlayerIndex ?? 0;
   }
 
-  getNextPlayerIndex(): number {
-    return (this.activePlayerIndex + 1) % this.playersCount;
+  getNextPlayerIndex(playerIndex = this.activePlayerIndex): number {
+    return (playerIndex + 1) % this.playersCount;
   }
 
   passTurn(): void {
-    this.activePlayerIndex = (this.activePlayerIndex + 1) % this.playersCount;
+    this.activePlayerIndex = this.getNextPlayerIndex();
   }
 }

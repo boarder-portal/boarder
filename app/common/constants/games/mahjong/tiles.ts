@@ -10,6 +10,7 @@ import {
   ETileType,
   EWind,
   ISuitedTile,
+  TPlayableTile,
   TSet,
   TTile,
 } from 'common/types/mahjong';
@@ -17,7 +18,7 @@ import {
 import { dragon, suited, wind } from 'common/utilities/mahjong/tiles';
 import { getPermutations } from 'common/utilities/permutations';
 
-export const STANDARD_TILES: TTile[] = [
+export const STANDARD_TILES: TPlayableTile[] = [
   ...ALL_SUITS.map((suit) =>
     ALL_VALUES.map((value) => {
       return {
@@ -27,31 +28,32 @@ export const STANDARD_TILES: TTile[] = [
       } as const;
     }),
   ).flat(),
-  ...ALL_DRAGONS.map((color) => {
-    return {
-      type: ETileType.DRAGON,
-      color,
-    } as const;
-  }).flat(),
   ...ALL_WINDS.map((side) => {
     return {
       type: ETileType.WIND,
       side,
     } as const;
   }).flat(),
-];
-
-export const DECK: TTile[] = [
-  ...STANDARD_TILES.map((tile) => times(4, () => tile)).flat(),
-  ...times(8, (index) => {
+  ...ALL_DRAGONS.map((color) => {
     return {
-      type: ETileType.FLOWER,
-      index,
+      type: ETileType.DRAGON,
+      color,
     } as const;
-  }),
+  }).flat(),
 ];
 
-export const GREEN_TILES: TTile[] = [
+export const ALL_FLOWERS = times(8, (index) => {
+  return {
+    type: ETileType.FLOWER,
+    index,
+  } as const;
+});
+
+export const ALL_TILES: TTile[] = [...STANDARD_TILES, ...ALL_FLOWERS];
+
+export const DECK: TTile[] = [...STANDARD_TILES.map((tile) => times(4, () => tile)).flat(), ...ALL_FLOWERS];
+
+export const GREEN_TILES: TPlayableTile[] = [
   suited(2, ESuit.BAMBOOS),
   suited(3, ESuit.BAMBOOS),
   suited(4, ESuit.BAMBOOS),
@@ -60,7 +62,7 @@ export const GREEN_TILES: TTile[] = [
   dragon(EDragon.GREEN),
 ];
 
-export const ORPHANS: TTile[] = [
+export const ORPHANS: TPlayableTile[] = [
   suited(1, ESuit.BAMBOOS),
   suited(9, ESuit.BAMBOOS),
   suited(1, ESuit.CHARACTERS),
@@ -76,7 +78,7 @@ export const ORPHANS: TTile[] = [
   wind(EWind.NORTH),
 ];
 
-export const REVERSIBLE_TILES: TTile[] = [
+export const REVERSIBLE_TILES: TPlayableTile[] = [
   suited(1, ESuit.DOTS),
   suited(2, ESuit.DOTS),
   suited(3, ESuit.DOTS),

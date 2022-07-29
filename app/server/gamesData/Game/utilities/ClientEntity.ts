@@ -5,6 +5,7 @@ import { PORT } from 'server/constants';
 import {
   EGame,
   IGameData,
+  TGameClientDatalessEvent,
   TGameClientEvent,
   TGameClientEventData,
   TGameInfo,
@@ -57,6 +58,8 @@ export default abstract class ClientEntity<Game extends EGame, Result = unknown>
     return `http://localhost:${PORT}${this.context.game.io.name}`;
   }
 
+  sendSocketEvent<Event extends TGameClientDatalessEvent<Game>>(event: Event, data?: undefined): void;
+  sendSocketEvent<Event extends TGameClientEvent<Game>>(event: Event, data: TGameClientEventData<Game, Event>): void;
   sendSocketEvent<Event extends TGameClientEvent<Game>>(event: Event, data: TGameClientEventData<Game, Event>): void {
     // @ts-ignore
     this.#getSocket().emit(event, data);

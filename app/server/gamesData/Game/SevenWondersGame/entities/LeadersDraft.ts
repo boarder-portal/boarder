@@ -12,7 +12,10 @@ import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICard[][]> {
   game: SevenWondersGame;
 
-  playersData: ILeadersDraftPlayerData[];
+  playersData: ILeadersDraftPlayerData[] = this.getPlayersData(() => ({
+    leadersPool: [],
+    pickedLeaders: [],
+  }));
 
   turn: Turn | null = null;
 
@@ -20,10 +23,6 @@ export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICar
     super(game);
 
     this.game = game;
-    this.playersData = this.getPlayersData(() => ({
-      leadersPool: [],
-      pickedLeaders: [],
-    }));
   }
 
   *lifecycle(): TGenerator<ICard[][]> {

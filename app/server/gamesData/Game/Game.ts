@@ -27,6 +27,7 @@ import { now } from 'server/utilities/time';
 
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
+import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
 
 import ioInstance from 'server/io';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
@@ -86,6 +87,7 @@ const GAME_ENTITIES_MAP: {
 export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {
   [EGame.SEVEN_WONDERS]: SevenWondersBot,
   [EGame.HEARTS]: HeartsBot,
+  [EGame.MAHJONG]: MahjongBot,
 };
 
 const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];

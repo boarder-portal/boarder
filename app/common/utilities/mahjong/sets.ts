@@ -11,8 +11,9 @@ import {
   IPairSet,
   IPungSet,
   ISuitedTile,
+  TConcealedSet,
+  TPlayableTile,
   TSet,
-  TTile,
 } from 'common/types/mahjong';
 
 import {
@@ -53,7 +54,7 @@ export function isKnittedChow(set: TSet): set is IKnittedChowSet {
   return set.type === ESet.KNITTED_CHOW;
 }
 
-export function isConcealed(set: TSet): boolean {
+export function isConcealed(set: TSet): set is TConcealedSet {
   return set.concealedType === ESetConcealedType.CONCEALED;
 }
 
@@ -110,7 +111,7 @@ export function getSetSortValue(set: TSet): number {
 }
 
 export interface ISetsVariationsOptions {
-  hand: TTile[];
+  hand: TPlayableTile[];
   knownSets: TSet[];
   isSelfDraw: boolean;
 }
@@ -160,7 +161,7 @@ export function getSetsCombinations(sets: TSet[]): TSet[][] {
 }
 
 interface ISplitSetsOptions {
-  hand: TTile[];
+  hand: TPlayableTile[];
   pairsFound: number;
   allPairsAllowed: boolean;
 }
@@ -293,8 +294,8 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
   return sets;
 }
 
-export function getTileHogs(sets: TSet[]): TTile[] {
-  const tileHogs: TTile[] = [];
+export function getTileHogs(sets: TSet[]): TPlayableTile[] {
+  const tileHogs: TPlayableTile[] = [];
 
   sets
     .flatMap(({ tiles }) => tiles)

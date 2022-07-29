@@ -457,6 +457,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return unsubscribe;
   }
 
+  // TODO: remove
   spawnEntity<E extends Entity<Game, any>>(entity: E): E {
     entity.spawned = true;
     entity.#parent = this;

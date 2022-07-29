@@ -185,7 +185,7 @@ m_pair Dw"
 exports[`mahjong scoring all pungs basic 1`] = `
 "31
 
-Dw Ws
+Ws Dw
 
 TRIPLE_PUNG (m_pung b8, m_pung c8, m_pung d8)
 ALL_PUNGS
@@ -348,7 +348,7 @@ c_pair c6"
 exports[`mahjong scoring big four winds honors 1`] = `
 "171
 
-Dr Wn
+Wn Dr
 
 BIG_FOUR_WINDS (c_kong We, m_pung Ws, c_pung Ww, c_pung Wn)
 ALL_HONORS
@@ -954,7 +954,7 @@ FULLY_CONCEALED_HAND"
 exports[`mahjong scoring lesser honors and knitted tiles knitted straight 1`] = `
 "28
 
-d9 Dw Ww
+d9 Ww Dw
 
 LESSER_HONORS_AND_KNITTED_TILES
 KNITTED_STRAIGHT (c_knit b5, c_knit c4, c_knit d6)
@@ -964,7 +964,7 @@ FULLY_CONCEALED_HAND"
 exports[`mahjong scoring little four winds all honors 1`] = `
 "135
 
-Dg Wn
+Wn Dg
 
 LITTLE_FOUR_WINDS (m_pung We, m_pung Ws, m_pung Ww, c_pair Wn)
 ALL_HONORS
@@ -1430,7 +1430,7 @@ c_pair d1"
 exports[`mahjong scoring outside hand mixed double chow 1`] = `
 "13
 
-Dw Ww
+Ww Dw
 
 OUTSIDE_HAND
 FULLY_CONCEALED_HAND
@@ -1900,7 +1900,7 @@ exports[`mahjong scoring single wait shouldn't be included when for multiple set
 exports[`mahjong scoring thirteen orphans basic 1`] = `
 "92
 
-b1 b9 c1 c9 d1 d9 Dr Dg Dw We Ws Ww Wn
+b1 b9 c1 c9 d1 d9 We Ws Ww Wn Dr Dg Dw
 
 THIRTEEN_ORPHANS
 FULLY_CONCEALED_HAND"
@@ -2136,7 +2136,7 @@ c_pair b8"
 exports[`mahjong scoring two melded kongs melded + concealed kongs 1`] = `
 "9
 
-Dw Ww
+Ww Dw
 
 TWO_MELDED_KONGS (m_kong c1, c_kong c2)
 CONCEALED_KONG (c_kong c2)

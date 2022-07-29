@@ -1,6 +1,6 @@
 import invert from 'lodash/invert';
 
-import { EDragon, ESuit, EWind, IGameOptions } from 'common/types/mahjong';
+import { EDragon, EHandsCount, ESuit, EWind, IGameOptions } from 'common/types/mahjong';
 
 export * from './common';
 export * from './impliedFans';
@@ -9,6 +9,7 @@ export * from './tiles';
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   minPlayersCount: 4,
   maxPlayersCount: 4,
+  handsCount: EHandsCount.FOUR,
 };
 
 export const FLOWERS_STRING_VALUES = '12345678';

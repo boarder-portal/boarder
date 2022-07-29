@@ -30,6 +30,10 @@ export type TGameResult<Game extends EGame> = IGamesParams[Game]['result'];
 
 export type TGameClientEvent<Game extends EGame> = keyof TGameClientEventMap<Game> & string;
 
+export type TGameClientDatalessEvent<Game extends EGame> = {
+  [Event in TGameClientEvent<Game>]: TGameClientEventData<Game, Event> extends undefined ? Event : never;
+}[TGameClientEvent<Game>];
+
 export type TGameServerEvent<Game extends EGame> = keyof TGameServerEventMap<Game> & string;
 
 export type TGameServerDatalessEvent<Game extends EGame> = {

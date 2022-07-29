@@ -1,7 +1,14 @@
 import { ESetConcealedType, EWind, IFlowerTile } from 'common/types/mahjong';
 
 import { getHandMahjong, IHandScoreOptions } from 'common/utilities/mahjong/scoring';
-import { parseChow, parseKong, parsePung, parseTile, parseTiles } from 'common/utilities/mahjong/parse';
+import {
+  parseChow,
+  parseKong,
+  parsePung,
+  parsePlayableTile,
+  parsePlayableTiles,
+  parseTiles,
+} from 'common/utilities/mahjong/parse';
 import { stringifyMahjong } from 'common/utilities/mahjong/stringify';
 
 const standardOptions: Omit<IHandScoreOptions, 'hand'> = {
@@ -25,7 +32,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('WeWeWe WsWsWs WwWwWw WnWnWn Dr'),
+              hand: parsePlayableTiles('WeWeWe WsWsWs WwWwWw WnWnWn Dr'),
             }),
           ),
         ).toMatchSnapshot();
@@ -40,8 +47,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('We'), parsePung('Ws')],
-              hand: parseTiles('WwWwWw WnWn c6c6'),
-              winningTile: parseTile('Wn'),
+              hand: parsePlayableTiles('WwWwWw WnWn c6c6'),
+              winningTile: parsePlayableTile('Wn'),
             }),
           ),
         ).toMatchSnapshot();
@@ -52,8 +59,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('WeWeWe WsWsWs WwWwWw WnWn b9b9'),
-              winningTile: parseTile('Wn'),
+              hand: parsePlayableTiles('WeWeWe WsWsWs WwWwWw WnWn b9b9'),
+              winningTile: parsePlayableTile('Wn'),
               isSelfDraw: false,
             }),
           ),
@@ -67,8 +74,8 @@ describe('mahjong', () => {
               ...standardOptions,
               concealedSets: [parseKong('We', ESetConcealedType.CONCEALED)],
               meldedSets: [parsePung('Ws')],
-              hand: parseTiles('WwWwWw WnWn DrDr'),
-              winningTile: parseTile('Wn'),
+              hand: parsePlayableTiles('WwWwWw WnWn DrDr'),
+              winningTile: parsePlayableTile('Wn'),
             }),
           ),
         ).toMatchSnapshot();
@@ -81,8 +88,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('Dw')],
-              hand: parseTiles('c5c5c6c7'),
-              winningTile: parseTile('c5'),
+              hand: parsePlayableTiles('c5c5c6c7'),
+              winningTile: parsePlayableTile('c5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -94,7 +101,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('Dw'), parsePung('d9')],
-              hand: parseTiles('b1'),
+              hand: parsePlayableTiles('b1'),
               isSelfDraw: false,
             }),
           ),
@@ -106,7 +113,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('DrDrDr DgDgDg DwDwDw WwWwWw Wn'),
+              hand: parsePlayableTiles('DrDrDr DgDgDg DwDwDw WwWwWw Wn'),
               isSelfDraw: false,
               roundWind: EWind.WEST,
               seatWind: EWind.WEST,
@@ -122,8 +129,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b2'), parsePung('b3'), parsePung('b4')],
-              hand: parseTiles('DgDg b6b6'),
-              winningTile: parseTile('Dg'),
+              hand: parsePlayableTiles('DgDg b6b6'),
+              winningTile: parsePlayableTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -135,7 +142,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b3'), parseChow('b3'), parseChow('b3'), parsePung('b8')],
-              hand: parseTiles('b6'),
+              hand: parsePlayableTiles('b6'),
               isSelfDraw: false,
             }),
           ),
@@ -147,7 +154,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b2b2 b3b3 b4b4 b6b6 b8b8 b8b8 Dg'),
+              hand: parsePlayableTiles('b2b2 b3b3 b4b4 b6b6 b8b8 b8b8 Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -159,8 +166,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c1 c1c2c3 c4c5c6 c7c8c9 c9c9'),
-              winningTile: parseTile('c9'),
+              hand: parsePlayableTiles('c1c1 c1c2c3 c4c5c6 c7c8c9 c9c9'),
+              winningTile: parsePlayableTile('c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -171,8 +178,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c1c1 c2c3c4 c5 c6c7c8 c9c9c9'),
-              winningTile: parseTile('c5'),
+              hand: parsePlayableTiles('c1c1c1 c2c3c4 c5 c6c7c8 c9c9c9'),
+              winningTile: parsePlayableTile('c5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -190,7 +197,7 @@ describe('mahjong', () => {
                 parseKong('d8', ESetConcealedType.MELDED),
                 parseKong('Dr', ESetConcealedType.MELDED),
               ],
-              hand: parseTiles('We'),
+              hand: parsePlayableTiles('We'),
             }),
           ),
         ).toMatchSnapshot();
@@ -207,7 +214,7 @@ describe('mahjong', () => {
                 parseKong('Dw', ESetConcealedType.MELDED),
                 parseKong('Wn', ESetConcealedType.MELDED),
               ],
-              hand: parseTiles('We'),
+              hand: parsePlayableTiles('We'),
               isSelfDraw: false,
             }),
           ),
@@ -220,8 +227,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b2b2 b3b3 b4b4 b5b5 b6b6 b7b7 b8'),
-              winningTile: parseTile('b8'),
+              hand: parsePlayableTiles('b2b2 b3b3 b4b4 b5b5 b6b6 b7b7 b8'),
+              winningTile: parsePlayableTile('b8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -233,8 +240,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c9b1b9d1d9DrDgDwWwWeWsWn'),
-              winningTile: parseTile('Wn'),
+              hand: parsePlayableTiles('c1c9b1b9d1d9DrDgDwWwWeWsWn'),
+              winningTile: parsePlayableTile('Wn'),
             }),
           ),
         ).toMatchSnapshot();
@@ -249,7 +256,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d1'), parsePung('b1')],
-              hand: parseTiles('b9b9b9 c9c9c9 c1'),
+              hand: parsePlayableTiles('b9b9b9 c9c9c9 c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -261,7 +268,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b9'), parsePung('d9'), parsePung('c9'), parsePung('d1')],
-              hand: parseTiles('b1'),
+              hand: parsePlayableTiles('b1'),
               isSelfDraw: false,
             }),
           ),
@@ -275,7 +282,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('We'), parsePung('Ws'), parsePung('Ww')],
-              hand: parseTiles('Wn d7d8d9'),
+              hand: parsePlayableTiles('Wn d7d8d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -287,8 +294,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('We'), parsePung('Ws'), parsePung('Ww')],
-              hand: parseTiles('WnWn DgDg'),
-              winningTile: parseTile('Dg'),
+              hand: parsePlayableTiles('WnWn DgDg'),
+              winningTile: parsePlayableTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -301,7 +308,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr'), parsePung('Dw')],
-              hand: parseTiles('DgDg d3d5 c1c1c1'),
+              hand: parsePlayableTiles('DgDg d3d5 c1c1c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -313,7 +320,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dw'), parsePung('Dg'), parsePung('b1'), parsePung('b9')],
-              hand: parseTiles('Dr'),
+              hand: parsePlayableTiles('Dr'),
               isSelfDraw: false,
             }),
           ),
@@ -327,8 +334,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Ww'), parsePung('We'), parsePung('Wn')],
-              hand: parseTiles('DwDw DgDg'),
-              winningTile: parseTile('Dw'),
+              hand: parsePlayableTiles('DwDw DgDg'),
+              winningTile: parsePlayableTile('Dw'),
             }),
           ),
         ).toMatchSnapshot();
@@ -340,7 +347,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr'), parsePung('Dg'), parsePung('We'), parsePung('Ww')],
-              hand: parseTiles('Dw'),
+              hand: parsePlayableTiles('Dw'),
               isSelfDraw: false,
             }),
           ),
@@ -353,7 +360,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d1d1d1 d7d7d7 c8c8c8 b5b5b5 b8'),
+              hand: parsePlayableTiles('d1d1d1 d7d7d7 c8c8c8 b5b5b5 b8'),
               isSelfDraw: false,
             }),
           ),
@@ -365,8 +372,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d3d3d3 d4d4d4 b7b7b7 WwWw c9c9'),
-              winningTile: parseTile('c9'),
+              hand: parsePlayableTiles('d3d3d3 d4d4d4 b7b7b7 WwWw c9c9'),
+              winningTile: parsePlayableTile('c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -379,7 +386,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d2')],
-              hand: parseTiles('d1d2d3 d5 d7d7d8d8d9d9'),
+              hand: parsePlayableTiles('d1d2d3 d5 d7d7d8d8d9d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -394,7 +401,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2')],
-              hand: parseTiles('b1b1b1 b2b2b2 b3b3b3 c9'),
+              hand: parsePlayableTiles('b1b1b1 b2b2b2 b3b3b3 c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -405,8 +412,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b1b1b1b1 b2b2b2b2 b3b3b3 c9c9'),
-              winningTile: parseTile('b3'),
+              hand: parsePlayableTiles('b1b1b1b1 b2b2b2b2 b3b3b3 c9c9'),
+              winningTile: parsePlayableTile('b3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -419,8 +426,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b1'), parsePung('b2'), parsePung('b3')],
-              hand: parseTiles('b4b4b4 c1'),
-              winningTile: parseTile('c1'),
+              hand: parsePlayableTiles('b4b4b4 c1'),
+              winningTile: parsePlayableTile('c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -432,8 +439,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c9')],
-              hand: parseTiles('c6c6 c7c7c7 c8c8c8 c5c5'),
-              winningTile: parseTile('c6'),
+              hand: parsePlayableTiles('c6c6 c7c7c7 c8c8c8 c5c5'),
+              winningTile: parsePlayableTile('c6'),
             }),
           ),
         ).toMatchSnapshot();
@@ -447,8 +454,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3c4 c3c4c5 c4c5c6 c5c6 c6c6'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c2c3c4 c3c4c5 c4c5c6 c5c6 c6c6'),
+              winningTile: parsePlayableTile('c7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -460,8 +467,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d2')],
-              hand: parseTiles('d3d4d5 d5d6d7 d7d8d9 b9'),
-              winningTile: parseTile('b9'),
+              hand: parsePlayableTiles('d3d4d5 d5d6d7 d7d8d9 b9'),
+              winningTile: parsePlayableTile('b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -478,7 +485,7 @@ describe('mahjong', () => {
                 parseKong('c7', ESetConcealedType.CONCEALED),
                 parseKong('b9', ESetConcealedType.CONCEALED),
               ],
-              hand: parseTiles('c9c9c9 d9'),
+              hand: parsePlayableTiles('c9c9c9 d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -494,8 +501,8 @@ describe('mahjong', () => {
                 parseKong('Dr', ESetConcealedType.CONCEALED),
                 parseKong('c9', ESetConcealedType.CONCEALED),
               ],
-              hand: parseTiles('d1d2d3 b1'),
-              winningTile: parseTile('b1'),
+              hand: parsePlayableTiles('d1d2d3 b1'),
+              winningTile: parsePlayableTile('b1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -508,8 +515,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr')],
-              hand: parseTiles('c1c1c1 d1d1d1 b9b9b9 Ws'),
-              winningTile: parseTile('Ws'),
+              hand: parsePlayableTiles('c1c1c1 d1d1d1 b9b9b9 Ws'),
+              winningTile: parsePlayableTile('Ws'),
             }),
           ),
         ).toMatchSnapshot();
@@ -520,8 +527,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c1 c1c1 d1d1 d1d1 DrDr DwDw Dg'),
-              winningTile: parseTile('Dg'),
+              hand: parsePlayableTiles('c1c1 c1c1 d1d1 d1d1 DrDr DwDw Dg'),
+              winningTile: parsePlayableTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -535,8 +542,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2c3c4 c1c2c4 c1c2c4 c1c2c4'),
-              winningTile: parseTile('c3'),
+              hand: parsePlayableTiles('c1c2c3c4 c1c2c4 c1c2c4 c1c2c4'),
+              winningTile: parsePlayableTile('c3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -547,8 +554,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('DrDr DgDg DwDw c1c1 d2d2 b3b3 We'),
-              winningTile: parseTile('We'),
+              hand: parsePlayableTiles('DrDr DgDg DwDw c1c1 d2d2 b3b3 We'),
+              winningTile: parsePlayableTile('We'),
               isSelfDraw: false,
             }),
           ),
@@ -561,8 +568,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d1d4 b5b8 c3c6c9 WeWsWwWn DrDg'),
-              winningTile: parseTile('Dw'),
+              hand: parsePlayableTiles('d1d4 b5b8 c3c6c9 WeWsWwWn DrDg'),
+              winningTile: parsePlayableTile('Dw'),
             }),
           ),
         ).toMatchSnapshot();
@@ -573,8 +580,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d3d6d9 b1b7b4 WeWsWwWn DrDgDw'),
-              winningTile: parseTile('c8'),
+              hand: parsePlayableTiles('d3d6d9 b1b7b4 WeWsWwWn DrDgDw'),
+              winningTile: parsePlayableTile('c8'),
               isSelfDraw: false,
             }),
           ),
@@ -588,8 +595,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b4'), parsePung('d6')],
-              hand: parseTiles('b8b8 d4d4d4 c8c8'),
-              winningTile: parseTile('b8'),
+              hand: parsePlayableTiles('b8b8 d4d4d4 c8c8'),
+              winningTile: parsePlayableTile('b8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -601,8 +608,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b6'), parsePung('d6'), parsePung('c6')],
-              hand: parseTiles('c8c8 d8d8'),
-              winningTile: parseTile('c8'),
+              hand: parsePlayableTiles('c8c8 d8d8'),
+              winningTile: parsePlayableTile('c8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -614,7 +621,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b1b1 b2b2 b4b4 b5b5 b6b6 b8b8 b9'),
+              hand: parsePlayableTiles('b1b1 b2b2 b4b4 b5b5 b6b6 b8b8 b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -626,8 +633,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d2')],
-              hand: parseTiles('d2d2 d5d5 d6d6 d7d7 d8d9'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('d2d2 d5d5 d6d6 d7d7 d8d9'),
+              winningTile: parsePlayableTile('d4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -639,8 +646,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c1')],
-              hand: parseTiles('c2 c3c3 c4c4 c5c5c5 c6 c8'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c2 c3c3 c4c4 c5c5c5 c6 c8'),
+              winningTile: parsePlayableTile('c7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -653,7 +660,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('c4')],
-              hand: parseTiles('c3c3 c4c4 c5c5 d5d6d7 b5'),
+              hand: parsePlayableTiles('c3c3 c4c4 c5c5 d5d6d7 b5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -665,7 +672,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('c8')],
-              hand: parseTiles('c7c7 c8c8 c9c9 DrDrDr Ww'),
+              hand: parsePlayableTiles('c7c7 c8c8 c9c9 DrDrDr Ww'),
             }),
           ),
         ).toMatchSnapshot();
@@ -678,7 +685,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dw')],
-              hand: parseTiles('b4b5b6 b4b5b6 b4b5b6 d3'),
+              hand: parsePlayableTiles('b4b5b6 b4b5b6 b4b5b6 d3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -690,8 +697,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c1'), parsePung('c2')],
-              hand: parseTiles('c3c3c3 c9c9 DgDg'),
-              winningTile: parseTile('c9'),
+              hand: parsePlayableTiles('c3c3c3 c9c9 DgDg'),
+              winningTile: parsePlayableTile('c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -703,7 +710,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c7c8c9 d7d8d9 b7b8b9 b7b8b9 c7'),
+              hand: parsePlayableTiles('c7c8c9 d7d8d9 b7b8b9 b7b8b9 c7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -715,8 +722,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b8')],
-              hand: parseTiles('c8c8 c7c8c9 d7d8d9 d8d8'),
-              winningTile: parseTile('c8'),
+              hand: parsePlayableTiles('c8c8 c7c8c9 d7d8d9 d8d8'),
+              winningTile: parsePlayableTile('c8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -729,8 +736,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c4'), parsePung('c5')],
-              hand: parseTiles('c6c6c6 d5d6 d4d4'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('c6c6c6 d5d6 d4d4'),
+              winningTile: parsePlayableTile('d4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -741,7 +748,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d4d6 d4d6 c4c5c4c5 b4b4 b5 b6b6'),
+              hand: parsePlayableTiles('d4d6 d4d6 c4c5c4c5 b4b4 b5 b6b6'),
             }),
           ),
         ).toMatchSnapshot();
@@ -754,7 +761,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d2')],
-              hand: parseTiles('b1b2b3 c1c2c3 d1d2d3 c2'),
+              hand: parsePlayableTiles('b1b2b3 c1c2c3 d1d2d3 c2'),
             }),
           ),
         ).toMatchSnapshot();
@@ -766,7 +773,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d1'), parsePung('c2'), parsePung('b3'), parsePung('c3')],
-              hand: parseTiles('d2'),
+              hand: parsePlayableTiles('d2'),
               isSelfDraw: false,
             }),
           ),
@@ -781,8 +788,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b1b2b3b4b5b6b7b8b9 d5d6 c6c6'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('b1b2b3b4b5b6b7b8b9 d5d6 c6c6'),
+              winningTile: parsePlayableTile('d4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -794,8 +801,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dg')],
-              hand: parseTiles('c1c2c3c4c5c6c7c8c9 d4'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('c1c2c3c4c5c6c7c8c9 d4'),
+              winningTile: parsePlayableTile('d4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -808,8 +815,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2'), parseChow('b8')],
-              hand: parseTiles('c5c5 d1d2 d7d8d9'),
-              winningTile: parseTile('d3'),
+              hand: parsePlayableTiles('c5c5 d1d2 d7d8d9'),
+              winningTile: parsePlayableTile('d3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -820,7 +827,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2c3 c7c8c9 b1b2b3 b7b8b9 d5'),
+              hand: parsePlayableTiles('c1c2c3 c7c8c9 b1b2b3 b7b8b9 d5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -833,8 +840,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b8')],
-              hand: parseTiles('c1c2 c2c3c4 c3c4c5 d8d8'),
-              winningTile: parseTile('c3'),
+              hand: parsePlayableTiles('c1c2 c2c3c4 c3c4c5 d8d8'),
+              winningTile: parsePlayableTile('c3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -845,8 +852,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b2b3b4 b4b5b6 b6b7 b8b8 d6d7d8'),
-              winningTile: parseTile('b8'),
+              hand: parsePlayableTiles('b2b3b4 b4b5b6 b6b7 b8b8 d6d7d8'),
+              winningTile: parsePlayableTile('b8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -859,8 +866,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('c6')],
-              hand: parseTiles('c3c4c5 b4b5b6 d5d5 d6d7'),
-              winningTile: parseTile('d5'),
+              hand: parsePlayableTiles('c3c4c5 b4b5b6 d5d5 d6d7'),
+              winningTile: parsePlayableTile('d5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -871,8 +878,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d4d5d6 b4b5b6 c4c6 c5c5c5 b5b5'),
-              winningTile: parseTile('c5'),
+              hand: parsePlayableTiles('d4d5d6 b4b5b6 c4c6 c5c5c5 b5b5'),
+              winningTile: parsePlayableTile('c5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -885,7 +892,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d8')],
-              hand: parseTiles('b1c1d1 b1c1d1 b1c1d1 c9'),
+              hand: parsePlayableTiles('b1c1d1 b1c1d1 b1c1d1 c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -897,8 +904,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b4'), parsePung('c4'), parsePung('d4')],
-              hand: parseTiles('c7c8 c7c8'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c7c8 c7c8'),
+              winningTile: parsePlayableTile('c7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -910,8 +917,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b4b4b4 b6b6b6 b8b8b8 d3d3 d7d7'),
-              winningTile: parseTile('d7'),
+              hand: parsePlayableTiles('b4b4b4 b6b6b6 b8b8b8 d3d3 d7d7'),
+              winningTile: parsePlayableTile('d7'),
               isSelfDraw: false,
             }),
           ),
@@ -923,8 +930,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b3b3b3 d9d9d9 DwDwDw WwWw c2c3'),
-              winningTile: parseTile('c4'),
+              hand: parsePlayableTiles('b3b3b3 d9d9d9 DwDwDw WwWw c2c3'),
+              winningTile: parsePlayableTile('c4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -938,8 +945,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b7b4b1 c8c2 d3d6d9 WeWwWsWn Dw'),
-              winningTile: parseTile('Dg'),
+              hand: parsePlayableTiles('b7b4b1 c8c2 d3d6d9 WeWwWsWn Dw'),
+              winningTile: parsePlayableTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -950,8 +957,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('DgDr WsWeWn c4c7c1 b8b5b2 d3d6'),
-              winningTile: parseTile('d9'),
+              hand: parsePlayableTiles('DgDr WsWeWn c4c7c1 b8b5b2 d3d6'),
+              winningTile: parsePlayableTile('d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -964,7 +971,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr')],
-              hand: parseTiles('d1d4d7 c2c5c8 b3b6b9 Ww'),
+              hand: parsePlayableTiles('d1d4d7 c2c5c8 b3b6b9 Ww'),
             }),
           ),
         ).toMatchSnapshot();
@@ -976,7 +983,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b3')],
-              hand: parseTiles('c1c4c7 b2b5b8 d3d6d9d9'),
+              hand: parsePlayableTiles('c1c4c7 b2b5b8 d3d6d9d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -988,8 +995,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c6c7c8 d6d7d8 b6b6b6 b7b8 d9d9'),
-              winningTile: parseTile('b9'),
+              hand: parsePlayableTiles('c6c7c8 d6d7d8 b6b6b6 b7b8 d9d9'),
+              winningTile: parsePlayableTile('b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1000,7 +1007,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b6b6 b8b8 b9b9 c6c6 c7c7 d6d6 d8'),
+              hand: parsePlayableTiles('b6b6 b8b8 b9b9 c6c6 c7c7 d6d6 d8'),
               isSelfDraw: false,
             }),
           ),
@@ -1014,8 +1021,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2')],
-              hand: parseTiles('d1d2d3 d2d3d4 c2c3c4c4'),
-              winningTile: parseTile('c4'),
+              hand: parsePlayableTiles('d1d2d3 d2d3d4 c2c3c4c4'),
+              winningTile: parsePlayableTile('c4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1027,8 +1034,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c3'), parsePung('b3')],
-              hand: parseTiles('b1b1b1 b4b4b4 d2'),
-              winningTile: parseTile('d2'),
+              hand: parsePlayableTiles('b1b1b1 b4b4b4 d2'),
+              winningTile: parsePlayableTile('d2'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1041,8 +1048,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Ww'), parsePung('Wn'), parsePung('Ws')],
-              hand: parseTiles('d4d5 b8b8'),
-              winningTile: parseTile('d3'),
+              hand: parsePlayableTiles('d4d5 b8b8'),
+              winningTile: parsePlayableTile('d3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1054,8 +1061,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Ww'), parsePung('Wn'), parsePung('Ws')],
-              hand: parseTiles('b2b2 DgDg'),
-              winningTile: parseTile('Dg'),
+              hand: parsePlayableTiles('b2b2 DgDg'),
+              winningTile: parsePlayableTile('Dg'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1070,7 +1077,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2')],
-              hand: parseTiles('d4d6 c7c8c9 c7c8c9 b7b7'),
+              hand: parsePlayableTiles('d4d6 c7c8c9 c7c8c9 b7b7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1081,7 +1088,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2 b4b5b6 d3d7 d3d8 d3d9 d8d8'),
+              hand: parsePlayableTiles('c1c2 b4b5b6 d3d7 d3d8 d3d9 d8d8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1094,7 +1101,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d4'), parseChow('d4')],
-              hand: parseTiles('b4b4 b5b5 b6b6 d5'),
+              hand: parsePlayableTiles('b4b4 b5b5 b6b6 d5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1106,8 +1113,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b8'), parsePung('d8')],
-              hand: parseTiles('DwDwDw b9b9 d9d9'),
-              winningTile: parseTile('b9'),
+              hand: parsePlayableTiles('DwDwDw b9b9 d9d9'),
+              winningTile: parsePlayableTile('b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1120,7 +1127,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c8')],
-              hand: parseTiles('c5c6c7 b5b6b7 d5d6d7 d9'),
+              hand: parsePlayableTiles('c5c6c7 b5b6b7 d5d6d7 d9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1132,8 +1139,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('c6')],
-              hand: parseTiles('d2d3 c2c3c4 b2b3b4 c6c6'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('d2d3 c2c3c4 b2b3b4 c6c6'),
+              winningTile: parsePlayableTile('d4'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1146,7 +1153,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d6'), parsePung('c7'), parsePung('b8')],
-              hand: parseTiles('c1c2 c5c5'),
+              hand: parsePlayableTiles('c1c2 c5c5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1158,7 +1165,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b3'), parsePung('c4'), parsePung('d5'), parsePung('b5')],
-              hand: parseTiles('d2'),
+              hand: parsePlayableTiles('d2'),
               isSelfDraw: false,
             }),
           ),
@@ -1172,8 +1179,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('d2'), parsePung('b7'), parsePung('c8')],
-              hand: parseTiles('WnWn b3b4'),
-              winningTile: parseTile('b2'),
+              hand: parsePlayableTiles('WnWn b3b4'),
+              winningTile: parsePlayableTile('b2'),
               isSelfDraw: false,
             }),
           ),
@@ -1187,8 +1194,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2')],
-              hand: parseTiles('c1c2c3 d2d3 c8c8c8 DwDw'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('c1c2c3 d2d3 c8c8c8 DwDw'),
+              winningTile: parsePlayableTile('d4'),
               isLastWallTile: true,
             }),
           ),
@@ -1202,7 +1209,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d1')],
-              hand: parseTiles('d2d2d2 c3c3c3 b1b2 c7c7'),
+              hand: parsePlayableTiles('d2d2d2 c3c3c3 b1b2 c7c7'),
               isSelfDraw: false,
               isLastWallTile: true,
             }),
@@ -1217,8 +1224,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseKong('c7', ESetConcealedType.MELDED)],
-              hand: parseTiles('d7d8 c1c2c3 d1d2d3 DgDg'),
-              winningTile: parseTile('d9'),
+              hand: parsePlayableTiles('d7d8 c1c2c3 d1d2d3 DgDg'),
+              winningTile: parsePlayableTile('d9'),
               isReplacementTile: true,
             }),
           ),
@@ -1232,8 +1239,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d4')],
-              hand: parseTiles('c4c4c4 WnWn d4d5d6 c5c6'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c4c4c4 WnWn d4d5d6 c5c6'),
+              winningTile: parsePlayableTile('c7'),
               isRobbingKong: true,
               isSelfDraw: false,
             }),
@@ -1252,8 +1259,8 @@ describe('mahjong', () => {
                 parseKong('b1', ESetConcealedType.CONCEALED),
                 parseKong('b2', ESetConcealedType.CONCEALED),
               ],
-              hand: parseTiles('c8c8c8c9'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c8c8c8c9'),
+              winningTile: parsePlayableTile('c7'),
               isLastTile: true,
             }),
           ),
@@ -1269,8 +1276,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c8'), parsePung('b8'), parsePung('d8')],
-              hand: parseTiles('DwDw WsWs'),
-              winningTile: parseTile('Dw'),
+              hand: parsePlayableTiles('DwDw WsWs'),
+              winningTile: parsePlayableTile('Dw'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1282,8 +1289,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3c4 c4c5 c5c6c7 c7c8c9 WnWn'),
-              winningTile: parseTile('c3'),
+              hand: parsePlayableTiles('c2c3c4 c4c5 c5c6c7 c7c8c9 WnWn'),
+              winningTile: parsePlayableTile('c3'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1295,8 +1302,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3c4 d3d4d5 b4b5b6 b6b7b8 b5'),
-              winningTile: parseTile('b5'),
+              hand: parsePlayableTiles('c2c3c4 d3d4d5 b4b5b6 b6b7b8 b5'),
+              winningTile: parsePlayableTile('b5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1308,8 +1315,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d1d2d3 c4c5c6 b9b9 DrDrDr WeWe'),
-              winningTile: parseTile('b9'),
+              hand: parsePlayableTiles('d1d2d3 c4c5c6 b9b9 DrDrDr WeWe'),
+              winningTile: parsePlayableTile('b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1327,7 +1334,7 @@ describe('mahjong', () => {
                 parsePung('c7'),
                 parseChow('c6'),
               ],
-              hand: parseTiles('c8'),
+              hand: parsePlayableTiles('c8'),
               isSelfDraw: false,
             }),
           ),
@@ -1341,7 +1348,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr'), parseKong('Dg', ESetConcealedType.MELDED)],
-              hand: parseTiles('c1c2c3 c7c8c9 b8'),
+              hand: parsePlayableTiles('c1c2c3 c7c8c9 b8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1355,7 +1362,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2c3 b1b2b3 b7b8b9 d7d8d9 d1'),
+              hand: parsePlayableTiles('c1c2c3 b1b2b3 b7b8b9 d7d8d9 d1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1366,8 +1373,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('DwDw c1c2c3 c7c8c9 b7b8b9 WwWw'),
-              winningTile: parseTile('Dw'),
+              hand: parsePlayableTiles('DwDw c1c2c3 c7c8c9 b7b8b9 WwWw'),
+              winningTile: parsePlayableTile('Dw'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1379,8 +1386,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3c4 d3d4d5 d6d7d8 b4b4 b7b8'),
-              winningTile: parseTile('b6'),
+              hand: parsePlayableTiles('c2c3c4 d3d4d5 d6d7d8 b4b4 b7b8'),
+              winningTile: parsePlayableTile('b6'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1397,8 +1404,8 @@ describe('mahjong', () => {
                 parseKong('d4', ESetConcealedType.MELDED),
                 parseKong('c4', ESetConcealedType.MELDED),
               ],
-              hand: parseTiles('c1c1c1c3'),
-              winningTile: parseTile('c3'),
+              hand: parsePlayableTiles('c1c1c1c3'),
+              winningTile: parsePlayableTile('c3'),
               isSelfDraw: false,
             }),
           ),
@@ -1412,8 +1419,8 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parseKong('c1', ESetConcealedType.MELDED)],
               concealedSets: [parseKong('c2', ESetConcealedType.CONCEALED)],
-              hand: parseTiles('d2d3d4 DwDw WwWw'),
-              winningTile: parseTile('Ww'),
+              hand: parsePlayableTiles('d2d3d4 DwDw WwWw'),
+              winningTile: parsePlayableTile('Ww'),
               isSelfDraw: false,
             }),
           ),
@@ -1427,8 +1434,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseChow('b2'), parsePung('b8')],
-              hand: parseTiles('b3b4b5 c1c1 b6b7'),
-              winningTile: parseTile('b8'),
+              hand: parsePlayableTiles('b3b4b5 c1c1 b6b7'),
+              winningTile: parsePlayableTile('b8'),
               isSelfDraw: false,
               isLastTile: true,
             }),
@@ -1445,8 +1452,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dw')],
-              hand: parseTiles('c1c2c3 d4d5d6 b7b8b9 Ww'),
-              winningTile: parseTile('Ww'),
+              hand: parsePlayableTiles('c1c2c3 d4d5d6 b7b8b9 Ww'),
+              winningTile: parsePlayableTile('Ww'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1459,8 +1466,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('We'), parsePung('Dr')],
-              hand: parseTiles('d4d4 d2d2d2 b3b3'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('d4d4 d2d2d2 b3b3'),
+              winningTile: parsePlayableTile('d4'),
               roundWind: EWind.EAST,
               seatWind: EWind.WEST,
             }),
@@ -1475,8 +1482,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Ws'), parsePung('d3')],
-              hand: parseTiles('d4d4 d5d6d7 WeWe'),
-              winningTile: parseTile('d4'),
+              hand: parsePlayableTiles('d4d4 d5d6d7 WeWe'),
+              winningTile: parsePlayableTile('d4'),
               roundWind: EWind.SOUTH,
               seatWind: EWind.SOUTH,
             }),
@@ -1490,8 +1497,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3 c5c6c7 b6b6 d3d4d5 d6d7d8'),
-              winningTile: parseTile('c4'),
+              hand: parsePlayableTiles('c2c3 c5c6c7 b6b6 d3d4d5 d6d7d8'),
+              winningTile: parsePlayableTile('c4'),
               isSelfDraw: false,
             }),
           ),
@@ -1504,7 +1511,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d2d3d4 c3c4c5 b4b5b6 b7b9 d7d7'),
+              hand: parsePlayableTiles('d2d3d4 c3c4c5 b4b5b6 b7b9 d7d7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1516,8 +1523,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c7 c8c8c8 c9 d7d8d9 b7b8b9 b6b6'),
-              winningTile: parseTile('c8'),
+              hand: parsePlayableTiles('c7 c8c8c8 c9 d7d8d9 b7b8b9 b6b6'),
+              winningTile: parsePlayableTile('c8'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1530,8 +1537,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('b5'), parsePung('c5')],
-              hand: parseTiles('d4d4d4 d6d6 d8d8'),
-              winningTile: parseTile('d6'),
+              hand: parsePlayableTiles('d4d4d4 d6d6 d8d8'),
+              winningTile: parsePlayableTile('d6'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1543,8 +1550,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b6b6b6 b8b8b8 c1c2c3 c7c8c9 c5'),
-              winningTile: parseTile('c5'),
+              hand: parsePlayableTiles('b6b6b6 b8b8b8 c1c2c3 c7c8c9 c5'),
+              winningTile: parsePlayableTile('c5'),
               isSelfDraw: false,
             }),
           ),
@@ -1559,7 +1566,7 @@ describe('mahjong', () => {
               ...standardOptions,
               meldedSets: [parsePung('d6'), parsePung('b7')],
               concealedSets: [parseKong('c5', ESetConcealedType.CONCEALED)],
-              hand: parseTiles('c1c2c3 Dw'),
+              hand: parsePlayableTiles('c1c2c3 Dw'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1571,8 +1578,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c2c3c4 d3d4 b4b5b6 b3b3b3 d4d4'),
-              winningTile: parseTile('d5'),
+              hand: parsePlayableTiles('c2c3c4 d3d4 b4b5b6 b3b3b3 d4d4'),
+              winningTile: parsePlayableTile('d5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1586,7 +1593,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2c3 c1c2c3 c7c8c9 d7d8d9 Ww'),
+              hand: parsePlayableTiles('c1c2c3 c1c2c3 c7c8c9 d7d8d9 Ww'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1598,8 +1605,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c5c6c7 d5d6d7 DwDwDw WwWw b2b3'),
-              winningTile: parseTile('b1'),
+              hand: parsePlayableTiles('c5c6c7 d5d6d7 DwDwDw WwWw b2b3'),
+              winningTile: parsePlayableTile('b1'),
               isSelfDraw: false,
             }),
           ),
@@ -1612,8 +1619,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b2b3b4 b5b6b7 b8b8b8 b6b7b8 d5'),
-              winningTile: parseTile('d5'),
+              hand: parsePlayableTiles('b2b3b4 b5b6b7 b8b8b8 b6b7b8 d5'),
+              winningTile: parsePlayableTile('d5'),
               isSelfDraw: false,
             }),
           ),
@@ -1626,7 +1633,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b1b2b3 b7b8b9 d1d2d3 d7d8d9 c1'),
+              hand: parsePlayableTiles('b1b2b3 b7b8b9 d1d2d3 d7d8d9 c1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1639,7 +1646,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('d1'), parsePung('c1')],
-              hand: parseTiles('b1b1b1 DwDwDw d5'),
+              hand: parsePlayableTiles('b1b1b1 DwDwDw d5'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1652,8 +1659,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parseKong('d1', ESetConcealedType.MELDED)],
-              hand: parseTiles('c2c2c2 b3b3b3 c5c6 WwWw'),
-              winningTile: parseTile('c7'),
+              hand: parsePlayableTiles('c2c2c2 b3b3b3 c5c6 WwWw'),
+              winningTile: parsePlayableTile('c7'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1665,7 +1672,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('b9b8b7b6b5b4b3b2b1 DgDgDg c2'),
+              hand: parsePlayableTiles('b9b8b7b6b5b4b3b2b1 DgDgDg c2'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1677,8 +1684,8 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('c1c2c3 b4b5b6 d7d8d9 d1d1 d2d2'),
-              winningTile: parseTile('d1'),
+              hand: parsePlayableTiles('c1c2c3 b4b5b6 d7d8d9 d1d1 d2d2'),
+              winningTile: parsePlayableTile('d1'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1690,7 +1697,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('d1d2d3 c7c8c9 DwDw b1b2b3 b8b9'),
+              hand: parsePlayableTiles('d1d2d3 c7c8c9 DwDw b1b2b3 b8b9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1702,7 +1709,7 @@ describe('mahjong', () => {
           stringifyMahjong(
             getHandMahjong({
               ...standardOptions,
-              hand: parseTiles('DrDrDr WeWe b1b2b3 d4d5d6 c7c9'),
+              hand: parsePlayableTiles('DrDrDr WeWe b1b2b3 d4d5d6 c7c9'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1715,7 +1722,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dg'), parseChow('d3')],
-              hand: parseTiles('DwDwDw c2c3c4 Wn'),
+              hand: parsePlayableTiles('DwDwDw c2c3c4 Wn'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1727,8 +1734,8 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dg'), parsePung('Dr')],
-              hand: parseTiles('d2d3d4d5 c5c6c7'),
-              winningTile: parseTile('d5'),
+              hand: parsePlayableTiles('d2d3d4d5 c5c6c7'),
+              winningTile: parsePlayableTile('d5'),
               isSelfDraw: false,
             }),
           ),
@@ -1742,7 +1749,7 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('Dr')],
-              hand: parseTiles('c1c2c3 d1d2d3 b1b2b3 Ww'),
+              hand: parsePlayableTiles('c1c2c3 d1d2d3 b1b2b3 Ww'),
             }),
           ),
         ).toMatchSnapshot();
@@ -1755,9 +1762,9 @@ describe('mahjong', () => {
             getHandMahjong({
               ...standardOptions,
               meldedSets: [parsePung('c1')],
-              hand: parseTiles('c2c2c2 c3c3c3 d1d2d3 d3'),
-              flowers: [parseTile('f2') as IFlowerTile, parseTile('f7') as IFlowerTile],
-              winningTile: parseTile('d3'),
+              hand: parsePlayableTiles('c2c2c2 c3c3c3 d1d2d3 d3'),
+              flowers: parseTiles('f2f7') as IFlowerTile[],
+              winningTile: parsePlayableTile('d3'),
             }),
           ),
         ).toMatchSnapshot();

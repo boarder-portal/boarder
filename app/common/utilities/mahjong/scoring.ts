@@ -15,8 +15,8 @@ import {
   TConcealedSet,
   TFan,
   TMeldedSet,
+  TPlayableTile,
   TSet,
-  TTile,
 } from 'common/types/mahjong';
 
 import { getSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
@@ -29,15 +29,15 @@ import {
   getWholeHandFans,
   getWholeHandSetsFans,
 } from 'common/utilities/mahjong/fans';
-import { isEqualTilesCallback, isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
+import { getSupposedHandTileCount, isEqualTilesCallback, isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
 
 export interface IHandScoreOptions {
-  hand: TTile[];
+  hand: TPlayableTile[];
   concealedSets: TConcealedSet<IKongSet>[];
   meldedSets: TMeldedSet[];
   flowers: IFlowerTile[];
   seatWind: EWind;
-  roundWind: EWind;
+  roundWind: EWind | null;
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
@@ -46,11 +46,11 @@ export interface IHandScoreOptions {
 }
 
 export interface IHandScoreFullOptions extends IHandScoreOptions {
-  winningTile?: TTile;
-  waits?: TTile[];
+  winningTile?: TPlayableTile;
+  waits?: TPlayableTile[];
 }
 
-export function getAllWaits(options: IHandScoreOptions): TTile[] {
+export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
   const { hand, concealedSets, meldedSets } = options;
   const wholeHand = [
     ...hand,
@@ -92,9 +92,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     return null;
   }
 
-  const knownSets = [...concealedSets, ...meldedSets];
-
-  if (knownSets.length * 3 + hand.length !== 13) {
+  if (hand.length !== getSupposedHandTileCount(concealedSets, meldedSets)) {
     return null;
   }
 
@@ -189,7 +187,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   return mahjong;
 }
 
-function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TTile[]): IHandMahjong | null {
+function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TPlayableTile[]): IHandMahjong | null {
   fans = sortBy(fans, ({ fan }) => FANS.indexOf(fan));
 
   let pickedFans = null as TFan[] | null;

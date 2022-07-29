@@ -9,6 +9,7 @@ import {
   IFlowerTile,
   ISuitedTile,
   IWindTile,
+  TPlayableTile,
   TTile,
 } from 'common/types/mahjong';
 
@@ -48,6 +49,10 @@ export function isWind(tile: TTile): tile is IWindTile {
 
 export function isFlower(tile: TTile): tile is IFlowerTile {
   return tile.type === ETileType.FLOWER;
+}
+
+export function isPlayable(tile: TTile): tile is TPlayableTile {
+  return !isFlower(tile);
 }
 
 export function isHonor(tile: TTile): boolean {
@@ -158,4 +163,8 @@ export function getTileSortValue(tile: TTile): number {
   }
 
   return 10 * ALL_SUITS.indexOf(tile.suit) + tile.value;
+}
+
+export function getSupposedHandTileCount(concealedSets: unknown[], meldedSets: unknown[]): number {
+  return 13 - 3 * (concealedSets.length + meldedSets.length);
 }

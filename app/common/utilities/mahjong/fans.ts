@@ -18,8 +18,8 @@ import {
   ISetsFan,
   ISpecialFan,
   TFan,
+  TPlayableTile,
   TSet,
-  TTile,
 } from 'common/types/mahjong';
 
 import {
@@ -77,7 +77,7 @@ export function getFansScore(fans: TFan[]): number {
   return fans.reduce((score, fan) => score + getFanScore(fan), 0);
 }
 
-export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TFan[] {
+export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind | null): TFan[] {
   const firstSet = sets.at(0);
 
   if (!firstSet) {
@@ -222,7 +222,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind): TF
     }
 
     if (areWinds && areAllPungs) {
-      if (isEqualTiles(firstSetTile, wind(roundWind))) {
+      if (roundWind && isEqualTiles(firstSetTile, wind(roundWind))) {
         fans.push(EFan.PREVALENT_WIND);
       }
 
@@ -325,7 +325,7 @@ export function getWholeHandSetsFans(sets: TSet[], isSelfDraw: boolean): TFan[] 
   }));
 }
 
-export function getWholeHandFans(hand: TTile[]): TFan[] {
+export function getWholeHandFans(hand: TPlayableTile[]): TFan[] {
   const noDeclaredSets = hand.length === 14;
   const handWithoutWinningTile = hand.slice(0, -1);
   const winningTile = hand.at(-1);
@@ -415,7 +415,7 @@ export function getWholeHandFans(hand: TTile[]): TFan[] {
   }));
 }
 
-export function getSpecialSetsFans(sets: TSet[], winningTile: TTile, waits: TTile[]): TFan[] {
+export function getSpecialSetsFans(sets: TSet[], winningTile: TPlayableTile, waits: TPlayableTile[]): TFan[] {
   const fans: TFan[] = [];
 
   const tileHogFans: TFan[] = getTileHogs(sets).map((tile) => ({

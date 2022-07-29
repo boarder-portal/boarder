@@ -6,13 +6,30 @@ import {
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
-export enum EGameClientEvent {}
+export enum EGameClientEvent {
+  DISCARD_TILE = 'DISCARD_TILE',
+  PASS = 'PASS',
+  CANCEL_DECLARE = 'CANCEL_DECLARE',
+  DECLARE = 'DECLARE',
+  UPGRADE_TO_KONG = 'UPGRADE_TO_KONG',
+  START_NEXT_HAND = 'START_NEXT_HAND',
+  CHANGE_TILE_INDEX = 'CHANGE_TILE_INDEX',
+  READY_FOR_NEW_HAND = 'READY_FOR_NEW_HAND',
+}
 
 export enum EGameServerEvent {}
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface IGameOptions extends ICommonGameOptions {
+  handsCount: EHandsCount;
+}
 
-export interface IPlayerData {}
+export interface IGamePlayerData {}
+
+export interface IPlayerData extends IGamePlayerData {
+  round: IRoundPlayerData | null;
+  hand: IHandPlayerData | null;
+  turn: ITurnPlayerData | null;
+}
 
 export interface IPlayer extends IGamePlayer {
   data: IPlayerData;
@@ -20,6 +37,59 @@ export interface IPlayer extends IGamePlayer {
 
 export interface IGame {
   players: IPlayer[];
+  scoresByRound: number[][];
+  round: IRound | null;
+}
+
+export interface IRound {
+  wind: EWind | null;
+  hand: IHand | null;
+}
+
+export interface IRoundPlayerData {
+  wind: EWind;
+}
+
+export interface IHand {
+  activePlayerIndex: number;
+  tilesLeft: number;
+  turn: ITurn | null;
+}
+
+export interface IPlayerMeldedSet {
+  set: TMeldedSet;
+  stolenFrom: number;
+}
+
+export interface IHandPlayerData {
+  hand: TPlayableTile[];
+  concealedSets: TConcealedSet<IKongSet>[];
+  meldedSets: IPlayerMeldedSet[];
+  flowers: IFlowerTile[];
+  discard: TPlayableTile[];
+  readyForNewHand: boolean;
+}
+
+export interface ITurn {
+  isReplacementTile: boolean;
+  declareInfo: IDeclareInfo | null;
+}
+
+export interface IDeclareInfo {
+  tile: TPlayableTile;
+  isRobbingKong: boolean;
+  isLastTile: boolean;
+  isLastWallTile: boolean;
+}
+
+export interface ITurnPlayerData {
+  declareDecision: TMeldedSet | 'mahjong' | 'pass' | null;
+}
+
+export enum EHandsCount {
+  ONE = 'ONE',
+  FOUR = 'FOUR',
+  SIXTEEN = 'SIXTEEN',
 }
 
 export enum ETileType {
@@ -70,6 +140,8 @@ export interface IFlowerTile {
 }
 
 export type TTile = ISuitedTile | IDragonTile | IWindTile | IFlowerTile;
+
+export type TPlayableTile = ISuitedTile | IDragonTile | IWindTile;
 
 export enum EFan {
   // 88 points
@@ -199,7 +271,7 @@ export enum ESetConcealedType {
 }
 
 export interface IBaseSet {
-  tiles: TTile[];
+  tiles: TPlayableTile[];
   concealedType: ESetConcealedType;
 }
 
@@ -257,11 +329,25 @@ export type TFan = IHandFan | ISetsFan | ISpecialFan;
 export interface IHandMahjong {
   fans: TFan[];
   sets: TSet[] | null;
-  waits: TTile[];
+  waits: TPlayableTile[];
   score: number;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {}
+export interface IChangeTileIndexEvent {
+  from: number;
+  to: number;
+}
+
+export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {
+  [EGameClientEvent.DISCARD_TILE]: number;
+  [EGameClientEvent.PASS]: undefined;
+  [EGameClientEvent.CANCEL_DECLARE]: undefined;
+  [EGameClientEvent.DECLARE]: TConcealedSet<IKongSet> | TMeldedSet | 'mahjong';
+  [EGameClientEvent.UPGRADE_TO_KONG]: number;
+  [EGameClientEvent.START_NEXT_HAND]: undefined;
+  [EGameClientEvent.CHANGE_TILE_INDEX]: IChangeTileIndexEvent;
+  [EGameClientEvent.READY_FOR_NEW_HAND]: boolean;
+}
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.MAHJONG> {}
 

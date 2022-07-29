@@ -26,7 +26,7 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
   [EGame.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
-  [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v1',
+  [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v0.1',
 } as const;
 
 export default class LocalStorageAtom<Key extends TLocalStorageKey> {
