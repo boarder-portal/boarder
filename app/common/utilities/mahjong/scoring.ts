@@ -92,7 +92,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     return null;
   }
 
-  if (hand.length !== getSupposedHandTileCount(concealedSets, meldedSets)) {
+  if (hand.length !== getSupposedHandTileCount(concealedSets.length + meldedSets.length)) {
     return null;
   }
 

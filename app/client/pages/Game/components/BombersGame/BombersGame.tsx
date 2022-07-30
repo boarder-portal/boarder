@@ -33,7 +33,7 @@ import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 import useImages from 'client/hooks/useImages';
 
 import styles from './BombersGame.pcss';
@@ -62,8 +62,6 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
 
-  const [user] = useAtom('user');
-
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -78,9 +76,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const explodedDirectionsRef = useRef(new Set<IExplodedDirection>());
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
-  const player = useMemo(() => {
-    return players.find(({ login }) => login === user?.login) ?? null;
-  }, [players, user]);
+  const player = usePlayer(players);
 
   const sharedDataManager = useMemo(() => {
     return new SharedDataManager({
@@ -116,7 +112,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     }
 
     const cellSize = getCellScreenSize(containerEl, viewSize, {
-      width: 252,
+      width: 276,
     });
 
     setCanvasSize({

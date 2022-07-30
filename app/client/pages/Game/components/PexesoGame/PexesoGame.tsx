@@ -22,7 +22,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './PexesoGame.pcss';
 
@@ -72,11 +72,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   const cardsLayoutContainerRef = useRef<HTMLDivElement | null>(null);
   const cardsLayoutRef = useRef<HTMLDivElement | null>(null);
 
-  const [user] = useAtom('user');
-
-  const player = useMemo(() => {
-    return players.find(({ login }) => login === user?.login);
-  }, [players, user]);
+  const player = usePlayer(players);
 
   useSocket(io, {
     [EGameServerEvent.OPEN_CARD]: (cardIndex) => {

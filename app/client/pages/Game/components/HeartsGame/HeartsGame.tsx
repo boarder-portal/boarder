@@ -15,7 +15,7 @@ import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './HeartsGame.pcss';
 
@@ -29,9 +29,8 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
   const [playedSuit, setPlayedSuit] = useState<ESuit | null>(null);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
   const [passDirection, setPassDirection] = useState<EPassDirection>(EPassDirection.NONE);
-  const [user] = useAtom('user');
 
-  const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
+  const player = usePlayer(players);
 
   const sortedPlayers = useMemo(() => {
     if (!player) {

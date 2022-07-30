@@ -165,6 +165,6 @@ export function getTileSortValue(tile: TTile): number {
   return 10 * ALL_SUITS.indexOf(tile.suit) + tile.value;
 }
 
-export function getSupposedHandTileCount(concealedSets: unknown[], meldedSets: unknown[]): number {
-  return 13 - 3 * (concealedSets.length + meldedSets.length);
+export function getSupposedHandTileCount(setsCount: number): number {
+  return 13 - 3 * setsCount;
 }

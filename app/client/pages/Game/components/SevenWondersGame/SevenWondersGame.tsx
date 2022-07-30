@@ -12,7 +12,7 @@ import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/
 import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './SevenWondersGame.pcss';
 
@@ -25,9 +25,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   const [gamePhase, setGamePhase] = useState<EGamePhase | null>(null);
   const [agePhase, setAgePhase] = useState<EAgePhase | null>(null);
 
-  const [user] = useAtom('user');
-
-  const player = useMemo(() => players.find(({ login }) => login === user?.login), [players, user]);
+  const player = usePlayer(players);
 
   const otherPlayers = useMemo(() => {
     if (!player) {

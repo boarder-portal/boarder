@@ -6,12 +6,16 @@ import {
   ESet,
   ESetConcealedType,
   IChowSet,
+  IDeclaredConcealedSet,
+  IDeclaredMeldedSet,
   IKnittedChowSet,
   IKongSet,
   IPairSet,
   IPungSet,
   ISuitedTile,
   TConcealedSet,
+  TDeclaredSet,
+  TMeldedSet,
   TPlayableTile,
   TSet,
 } from 'common/types/mahjong';
@@ -56,6 +60,18 @@ export function isKnittedChow(set: TSet): set is IKnittedChowSet {
 
 export function isConcealed(set: TSet): set is TConcealedSet {
   return set.concealedType === ESetConcealedType.CONCEALED;
+}
+
+export function isMelded(set: TSet): set is TMeldedSet {
+  return !isConcealed(set);
+}
+
+export function isDeclaredConcealedSet(set: TDeclaredSet): set is IDeclaredConcealedSet {
+  return isConcealed(set.set);
+}
+
+export function isDeclaredMeldedSet(set: TDeclaredSet): set is IDeclaredMeldedSet {
+  return isMelded(set.set);
 }
 
 export function arePungs(sets: TSet[]): sets is IPungSet[] {

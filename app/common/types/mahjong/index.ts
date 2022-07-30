@@ -56,15 +56,21 @@ export interface IHand {
   turn: ITurn | null;
 }
 
-export interface IPlayerMeldedSet {
+export interface IDeclaredMeldedSet {
   set: TMeldedSet;
   stolenFrom: number;
 }
 
+export interface IDeclaredConcealedSet {
+  set: TConcealedSet<IKongSet>;
+  stolenFrom: null;
+}
+
+export type TDeclaredSet = IDeclaredMeldedSet | IDeclaredConcealedSet;
+
 export interface IHandPlayerData {
   hand: TPlayableTile[];
-  concealedSets: TConcealedSet<IKongSet>[];
-  meldedSets: IPlayerMeldedSet[];
+  declaredSets: TDeclaredSet[];
   flowers: IFlowerTile[];
   discard: TPlayableTile[];
   readyForNewHand: boolean;

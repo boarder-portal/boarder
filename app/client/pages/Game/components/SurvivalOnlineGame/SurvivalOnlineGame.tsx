@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
@@ -13,7 +13,7 @@ import Flex from 'client/components/common/Flex/Flex';
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './SurvivalOnlineGame.pcss';
@@ -36,11 +36,7 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mapRef = useRef<TMap>(gameInfo.map);
 
-  const [user] = useAtom('user');
-
-  const player = useMemo(() => {
-    return players.find(({ login }) => user?.login === login) ?? null;
-  }, [players, user]);
+  const player = usePlayer(players);
 
   const render = useImmutableCallback(() => {
     const context = contextRef.current;

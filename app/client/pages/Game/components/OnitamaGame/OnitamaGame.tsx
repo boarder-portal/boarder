@@ -14,7 +14,7 @@ import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlaye
 import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './OnitamaGame.pcss';
 
@@ -52,9 +52,9 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [selectedFrom, setSelectedFrom] = useState<ICoords | null>(null);
   const [legalMoves, setLegalMoves] = useState<ICoords[]>([]);
-  const [player, setPlayer] = useState<IPlayer | null>(null);
 
-  const [user] = useAtom('user');
+  const player = usePlayer(players);
+
   const isFlipped = player?.data.color === EPlayerColor.RED;
 
   const handleCellClick = (cell: ICoords) => {
@@ -97,23 +97,16 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
   );
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-
     console.log(gameInfo);
-
-    const player = gameInfo.players.find(({ login }) => login === user.login) || null;
 
     setBoard(gameInfo.board);
     setPlayers(gameInfo.players);
     setActivePlayerIndex(gameInfo.activePlayerIndex);
     setFifthCard(gameInfo.fifthCard);
-    setPlayer(player);
     setSelectedCardIndex(-1);
     setSelectedFrom(null);
     setLegalMoves([]);
-  }, [gameInfo, user]);
+  }, [gameInfo]);
 
   if (gameResult !== null) {
     return <GameEnd></GameEnd>;

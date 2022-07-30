@@ -20,7 +20,7 @@ import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/compone
 
 import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
-import useAtom from 'client/hooks/useAtom';
+import usePlayer from 'client/hooks/usePlayer';
 import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MachiKoroGame.pcss';
@@ -38,7 +38,6 @@ interface ICardsToSwap {
 const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
-  const [user] = useAtom('user');
   const [board, setBoard] = useState(gameInfo.board);
   const [players, setPlayers] = useState(gameInfo.players);
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
@@ -47,12 +46,8 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const [withHarborEffect, setWithHarborEffect] = useState(gameInfo.turn?.withHarborEffect ?? false);
   const [cardsToSwap, setCardsToSwap] = useState<ICardsToSwap>({ from: null, toCardId: null });
 
-  const isActive = useMemo(
-    () => players[activePlayerIndex].login === user?.login,
-    [activePlayerIndex, players, user?.login],
-  );
-
-  const player = useMemo(() => players.find((p) => p.login === user?.login), [players, user?.login]);
+  const player = usePlayer(players);
+  const isActive = player?.index === activePlayerIndex;
 
   const otherPlayers = useMemo(() => {
     const playerIndex = players.findIndex(({ login }) => login === player?.login);

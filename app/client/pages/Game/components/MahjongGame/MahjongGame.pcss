@@ -1,3 +1,72 @@
 .root {
+  --tileHeight: 0;
+  --panelSize: 0;
+  --gap: 0;
 
+  width: 100%;
+  height: calc(100vh - 60px);
+  overflow: auto;
+  display: grid;
+  gap: var(--gap);
+  align-items: center;
+  align-content: center;
+  justify-items: center;
+  justify-content: center;
+  padding-bottom: 12px;
+
+  &.horizontal-right {
+    grid-template:
+      "left top    right panel" var(--tileHeight)
+      "left center right panel" 1fr
+      "left bottom right panel" var(--tileHeight)
+      / var(--tileHeight) 1fr var(--tileHeight) var(--panelSize);
+  }
+
+  &.horizontal-bottom {
+    grid-template:
+      "left  top    right" var(--tileHeight)
+      "left  center right" 1fr
+      "left  bottom right" var(--tileHeight)
+      "panel panel  panel" var(--panelSize)
+      / var(--tileHeight) 1fr var(--tileHeight);
+  }
+
+  &.vertical-right {
+    grid-template:
+      "top    top    top    panel" var(--tileHeight)
+      "left   center right  panel" 1fr
+      "bottom bottom bottom panel" var(--tileHeight)
+      / var(--tileHeight) 1fr var(--tileHeight) var(--panelSize);
+  }
+
+  &.vertical-bottom {
+    grid-template:
+      "top    top    top   " var(--tileHeight)
+      "left   center right " 1fr
+      "bottom bottom bottom" var(--tileHeight)
+      "panel  panel  panel " var(--panelSize)
+      / var(--tileHeight) 1fr var(--tileHeight);
+  }
+}
+
+.centerArea {
+  width: 100%;
+  height: 100%;
+  grid-area: center;
+  display: grid;
+  grid-template:
+    "top  top    right " 3fr
+    "left .      right " 1fr
+    "left bottom bottom" 3fr
+    / 3fr 1fr 3fr;
+}
+
+.controlPanel {
+  grid-area: panel;
+  align-self: stretch;
+  justify-self: stretch;
+}
+
+.handContainer {
+  overflow: hidden;
 }
