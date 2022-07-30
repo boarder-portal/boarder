@@ -3,10 +3,11 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import classNames from 'classnames';
 
 import { EGame } from 'common/types/game';
-import { EWind, IDeclareInfo, IPlayer } from 'common/types/mahjong';
+import { EGameClientEvent, EWind, IDeclareInfo, IPlayer } from 'common/types/mahjong';
 
 import { sortPlayersByWind } from 'client/pages/Game/components/MahjongGame/utilities/players';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
+import { moveElement } from 'common/utilities/array';
 
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
 import usePlayer from 'client/hooks/usePlayer';
@@ -71,6 +72,37 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     });
   });
 
+  const changeTileIndex = useImmutableCallback((from, to) => {
+    if (!player?.data.hand?.hand) {
+      return;
+    }
+
+    const hand = player.data.hand.hand;
+    const newHand = [...hand];
+
+    moveElement(newHand, from, to);
+
+    setPlayers([
+      ...players.slice(0, player.index),
+      {
+        ...player,
+        data: {
+          ...player.data,
+          hand: {
+            ...player.data.hand,
+            hand: newHand,
+          },
+        },
+      },
+      ...players.slice(player.index + 1),
+    ]);
+
+    io.emit(EGameClientEvent.CHANGE_TILE_INDEX, {
+      from,
+      to,
+    });
+  });
+
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useLayoutEffect(() => {
@@ -90,8 +122,6 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
-  console.log(sortedPlayers);
-
   return (
     <div
       ref={rootRef}
@@ -104,21 +134,25 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         } as CSSProperties),
       }}
     >
-      {sortedPlayers.map(
-        (p, index) =>
+      {sortedPlayers.map((p, index) => {
+        const isPlayer = p.index === player?.index;
+
+        return (
           p.data.hand && (
             <div key={p.index} className={styles.handContainer} style={{ gridArea: SIDES[index] }}>
               <Hand
                 handData={p.data.hand}
                 tileWidth={tileWidth}
-                open={p.index === player?.index}
+                open={isPlayer}
                 rotation={-index}
                 players={sortedPlayers}
                 playerIndex={index}
+                onChangeTileIndex={isPlayer ? changeTileIndex : undefined}
               />
             </div>
-          ),
-      )}
+          )
+        );
+      })}
 
       <div className={styles.centerArea}>
         {sortedPlayers.map(

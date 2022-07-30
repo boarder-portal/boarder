@@ -36,6 +36,7 @@ import {
   isPung,
 } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
+import { moveElement } from 'common/utilities/array';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 import Turn from 'server/gamesData/Game/MahjongGame/entities/Turn';
@@ -85,9 +86,10 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
 
     this.forEachPlayer((playerIndex) => {
       this.addTilesToPlayerHand(playerIndex, false);
-
-      this.playersData[playerIndex].hand = sortBy(this.playersData[playerIndex].hand, getTileSortValue);
+      this.sortPlayerTiles(playerIndex);
     });
+
+    this.spawnTask(this.listenForEvents());
 
     let scores = this.getPlayersData(() => 0);
 
@@ -215,6 +217,12 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     return addedTiles;
   }
 
+  changePlayerTileIndex(playerIndex: number, from: number, to: number): void {
+    moveElement(this.playersData[playerIndex].hand, from, to);
+
+    this.game.sendGameInfo();
+  }
+
   discardTile(playerIndex: number, tile: TPlayableTile): void {
     this.playersData[playerIndex].discard.push(tile);
   }
@@ -278,12 +286,29 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     );
   }
 
+  *listenForEvents(): TGenerator {
+    yield* this.all([
+      this.listenForEvent(EGameClientEvent.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
+        this.changePlayerTileIndex(playerIndex, from, to);
+      }),
+      this.listenForEvent(EGameClientEvent.SORT_TILES, ({ playerIndex }) => {
+        this.sortPlayerTiles(playerIndex);
+      }),
+    ]);
+  }
+
   removeTileFromDiscard(playerIndex: number): void {
     this.playersData[playerIndex].discard.pop();
   }
 
   removeTileFromHand(playerIndex: number, index: number): TPlayableTile | null {
     return this.playersData[playerIndex].hand.splice(index, 1).at(0) ?? null;
+  }
+
+  sortPlayerTiles(playerIndex: number): void {
+    this.playersData[playerIndex].hand = sortBy(this.playersData[playerIndex].hand, getTileSortValue);
+
+    this.game.sendGameInfo();
   }
 
   upgradeToKong(playerIndex: number, setIndex: number): TPlayableTile | null {

@@ -1,11 +1,12 @@
 import { FC, HTMLAttributes, memo, useLayoutEffect, useRef } from 'react';
 
 interface IRealSizeElementProps extends HTMLAttributes<HTMLDivElement> {
+  rootClassName?: string;
   rotation: number;
 }
 
 const RotatedElement: FC<IRealSizeElementProps> = (props) => {
-  const { rotation, ...rest } = props;
+  const { rootClassName, rotation, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const innerContainerRef = useRef<HTMLDivElement | null>(null);
@@ -34,9 +35,6 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
       root.style.transform = `${rotateTransform} translate(${-offset}px, ${offset}px)`;
       root.style.width = `${realHeight}px`;
       root.style.height = `${realWidth}px`;
-
-      innerContainer.style.width = `${realWidth}px`;
-      innerContainer.style.height = `${realHeight}px`;
     };
 
     setSize();
@@ -51,7 +49,7 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
   }, [rotation]);
 
   return (
-    <div ref={rootRef}>
+    <div ref={rootRef} className={rootClassName}>
       <div ref={innerContainerRef} {...rest} />
     </div>
   );

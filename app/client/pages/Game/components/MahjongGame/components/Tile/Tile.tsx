@@ -1,4 +1,5 @@
-import { FC, memo } from 'react';
+import { FC, HTMLAttributes, memo } from 'react';
+import classNames from 'classnames';
 
 import { ALL_TILES } from 'common/constants/games/mahjong';
 import { ORIGINAL_TILE_HEIGHT, ORIGINAL_TILE_WIDTH } from 'client/pages/Game/components/MahjongGame/constants';
@@ -12,20 +13,25 @@ import RotatedElement from 'client/components/common/RealSizeElement/RotatedElem
 
 import styles from './Tile.pcss';
 
-interface ITileProps {
-  className?: string;
+interface ITileProps extends HTMLAttributes<HTMLDivElement> {
+  rootClassName?: string;
   tile: TTile | null;
   width: number;
   rotation?: number;
 }
 
 const Tile: FC<ITileProps> = (props) => {
-  const { tile, width, rotation = 0 } = props;
+  const { className, rootClassName, tile, width, rotation = 0, ...rest } = props;
   const height = getTileHeight(width);
   const tileIndex = tile ? ALL_TILES.findIndex(isEqualTilesCallback(tile)) : -1;
 
   return (
-    <RotatedElement rotation={rotation} className={styles.root}>
+    <RotatedElement
+      rotation={rotation}
+      className={classNames(styles.root, className)}
+      rootClassName={rootClassName}
+      {...rest}
+    >
       <div
         style={{
           width,

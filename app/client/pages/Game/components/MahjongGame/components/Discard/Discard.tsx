@@ -18,7 +18,15 @@ const Discard: FC<IDiscardProps> = (props) => {
   const { tiles, tileWidth, area, rotation } = props;
 
   return (
-    <div style={{ gridArea: area }}>
+    <div
+      style={{
+        gridArea: area,
+        placeSelf: [
+          area === 'bottom' || area === 'right' ? 'start' : 'end',
+          area === 'bottom' || area === 'left' ? 'start' : 'end',
+        ].join(' '),
+      }}
+    >
       <RotatedElement className={styles.root} rotation={rotation}>
         {tiles.map((tile, index) => (
           <Tile key={index} tile={tile} width={tileWidth} />

@@ -14,6 +14,7 @@ export enum EGameClientEvent {
   UPGRADE_TO_KONG = 'UPGRADE_TO_KONG',
   START_NEXT_HAND = 'START_NEXT_HAND',
   CHANGE_TILE_INDEX = 'CHANGE_TILE_INDEX',
+  SORT_TILES = 'SORT_TILES',
   READY_FOR_NEW_HAND = 'READY_FOR_NEW_HAND',
 }
 
@@ -352,6 +353,7 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {
   [EGameClientEvent.UPGRADE_TO_KONG]: number;
   [EGameClientEvent.START_NEXT_HAND]: undefined;
   [EGameClientEvent.CHANGE_TILE_INDEX]: IChangeTileIndexEvent;
+  [EGameClientEvent.SORT_TILES]: undefined;
   [EGameClientEvent.READY_FOR_NEW_HAND]: boolean;
 }
 

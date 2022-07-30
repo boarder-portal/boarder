@@ -17,6 +17,7 @@ interface IHandProps {
   rotation: number;
   playerIndex: number;
   players: IPlayer[];
+  onChangeTileIndex?(from: number, to: number): void;
 }
 
 const Hand: FC<IHandProps> = (props) => {
@@ -27,6 +28,7 @@ const Hand: FC<IHandProps> = (props) => {
     rotation,
     players,
     playerIndex,
+    onChangeTileIndex,
   } = props;
 
   return (
@@ -50,7 +52,7 @@ const Hand: FC<IHandProps> = (props) => {
         );
       })}
 
-      <Tiles tiles={hand} open={open} tileWidth={tileWidth} />
+      <Tiles tiles={hand} open={open} tileWidth={tileWidth} onChangeTileIndex={onChangeTileIndex} />
     </RotatedElement>
   );
 };
