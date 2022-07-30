@@ -5,9 +5,9 @@ import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/seven
 
 import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
-
 import { useBoolean } from 'client/hooks/useBoolean';
+
+import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 
 interface IBuildWonderLevelActionProps {
   player: IPlayer;

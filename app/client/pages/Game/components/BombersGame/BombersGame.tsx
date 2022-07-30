@@ -24,17 +24,18 @@ import renderMap from 'client/pages/Game/components/BombersGame/utilities/render
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 import { now } from 'client/utilities/time';
 
-import Flex from 'client/components/common/Flex/Flex';
-import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
-import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
-
-import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
 import usePlayer from 'client/hooks/usePlayer';
 import useImages from 'client/hooks/useImages';
+
+import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
+import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
+import Flex from 'client/components/common/Flex/Flex';
+
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './BombersGame.pcss';
 

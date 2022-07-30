@@ -8,6 +8,10 @@ import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
 import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
 
+import useGameOptions from 'client/hooks/useGameOptions';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useSocket from 'client/hooks/useSocket';
+
 import LobbyGame from 'client/pages/Lobby/components/Game/Game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
@@ -18,9 +22,6 @@ import PexesoGameOptions from 'client/pages/games/pexeso/components/PexesoGameOp
 import BombersCreateGameOptions from 'client/pages/games/bombers/components/BombersCreateGameOptions/BombersCreateGameOptions';
 import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
 
-import useGameOptions from 'client/hooks/useGameOptions';
-import useImmutableCallback from 'client/hooks/useImmutableCallback';
-import useSocket from 'client/hooks/useSocket';
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Lobby.pcss';

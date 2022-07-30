@@ -10,12 +10,13 @@ import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities
 import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
 import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 
+import usePlayer from 'client/hooks/usePlayer';
+
 import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './HeartsGame.pcss';
 

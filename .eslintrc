@@ -30,6 +30,7 @@
           "/queries/",
           "/(/|^)types?(/|$)/",
           "/utilities\\//",
+          "/hooks\\//",
           "/components\\//",
           "/Bot$/",
           "/client\\//",

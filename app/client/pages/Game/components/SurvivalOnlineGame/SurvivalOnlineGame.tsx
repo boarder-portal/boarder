@@ -8,13 +8,14 @@ import { EGame } from 'common/types/game';
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 
-import Flex from 'client/components/common/Flex/Flex';
-
-import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import usePlayer from 'client/hooks/usePlayer';
 import useGlobalListener from 'client/hooks/useGlobalListener';
+
+import Flex from 'client/components/common/Flex/Flex';
+
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './SurvivalOnlineGame.pcss';
 

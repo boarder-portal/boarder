@@ -8,14 +8,15 @@ import { EWind, IDeclareInfo, IPlayer } from 'common/types/mahjong';
 import { sortPlayersByWind } from 'client/pages/Game/components/MahjongGame/utilities/players';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 
-import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
-import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
-
-import { IGameProps } from 'client/pages/Game/Game';
 import usePlayer from 'client/hooks/usePlayer';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useGlobalListener from 'client/hooks/useGlobalListener';
+
+import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
+import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
+
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './MahjongGame.pcss';
 

@@ -7,13 +7,13 @@ import { ECardId, ECardType, ELandmarkId, EPlayerWaitingAction, IPlayer } from '
 import getCard from 'common/utilities/machiKoro/getCard';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 
+import { usePrevious } from 'client/hooks/usePrevious';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
 import Image from 'client/components/common/Image/Image';
-
-import { usePrevious } from 'client/hooks/usePrevious';
 
 import styles from './Player.pcss';
 

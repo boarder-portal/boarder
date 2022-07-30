@@ -7,12 +7,13 @@ import { EGame } from 'common/types/game';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
+import usePlayer from 'client/hooks/usePlayer';
+
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './SevenWondersGame.pcss';
 

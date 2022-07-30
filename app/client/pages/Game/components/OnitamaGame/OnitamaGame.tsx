@@ -9,12 +9,13 @@ import { EGame } from 'common/types/game';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 
+import usePlayer from 'client/hooks/usePlayer';
+
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import OnitamaPlayer from 'client/pages/Game/components/OnitamaGame/OnitamaPlayer';
 import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './OnitamaGame.pcss';
 

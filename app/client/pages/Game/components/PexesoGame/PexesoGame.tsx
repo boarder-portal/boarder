@@ -16,13 +16,14 @@ import {
 import { ICoords } from 'common/types';
 import { EGame } from 'common/types/game';
 
+import useSocket from 'client/hooks/useSocket';
+import usePlayer from 'client/hooks/usePlayer';
+
 import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import useSocket from 'client/hooks/useSocket';
-import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './PexesoGame.pcss';
 

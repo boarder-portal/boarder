@@ -5,12 +5,13 @@ import { MAP_NAMES } from 'common/constants/games/bombers';
 import { EGame } from 'common/types/game';
 import { EMap } from 'common/types/bombers';
 
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
 import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
-import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 type TMapType = EMap | 'random';
 

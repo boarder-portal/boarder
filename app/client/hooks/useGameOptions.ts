@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { EGame, TGameOptions } from 'common/types/game';
 
 import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
-import { gameOptionsAtoms } from 'client/atoms/gameOptionsAtoms';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+
+import { gameOptionsAtoms } from 'client/atoms/gameOptionsAtoms';
 
 export interface IUseGameOptions<Game extends EGame> {
   options: TGameOptions<Game>;

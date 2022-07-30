@@ -15,6 +15,9 @@ import { TGameClientSocket } from 'common/types/socket';
 
 import { now } from 'client/utilities/time';
 
+import useSocket from 'client/hooks/useSocket';
+import useAtom from 'client/hooks/useAtom';
+
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
@@ -29,8 +32,6 @@ import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 import MachiKoroGame from 'client/pages/Game/components/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'client/pages/Game/components/MahjongGame/MahjongGame';
 
-import useSocket from 'client/hooks/useSocket';
-import useAtom from 'client/hooks/useAtom';
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Game.pcss';

@@ -13,14 +13,15 @@ import {
 
 import getCard from 'common/utilities/machiKoro/getCard';
 
+import useSocket from 'client/hooks/useSocket';
+import usePlayer from 'client/hooks/usePlayer';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Board from 'client/pages/Game/components/MachiKoroGame/components/Board/Board';
 import Player from 'client/pages/Game/components/MachiKoroGame/components/Player/Player';
 import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/components/StatusAndActions/StatusAndActions';
 
 import { IGameProps } from 'client/pages/Game/Game';
-import useSocket from 'client/hooks/useSocket';
-import usePlayer from 'client/hooks/usePlayer';
 import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MachiKoroGame.pcss';

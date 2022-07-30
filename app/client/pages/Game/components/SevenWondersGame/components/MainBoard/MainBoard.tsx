@@ -31,6 +31,8 @@ import getResourceTradePrices from 'client/pages/Game/components/SevenWondersGam
 import getObjectSpecificResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
 import getResourcePoolsWithAdditionalResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
 
+import { usePrevious } from 'client/hooks/usePrevious';
+
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
 import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
@@ -38,7 +40,6 @@ import Flex from 'client/components/common/Flex/Flex';
 import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
 
-import { usePrevious } from 'client/hooks/usePrevious';
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 
 import styles from './MainBoard.pcss';

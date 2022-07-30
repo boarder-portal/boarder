@@ -31,16 +31,17 @@ import {
 } from 'common/utilities/carcassonne';
 import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
 
+import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
+import useGlobalListener from 'client/hooks/useGlobalListener';
+import usePlayer from 'client/hooks/usePlayer';
+
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
-import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
-import useGlobalListener from 'client/hooks/useGlobalListener';
 import { playSound, POP_SOUND } from 'client/sounds';
 import { IGameProps } from 'client/pages/Game/Game';
-import usePlayer from 'client/hooks/usePlayer';
 
 import styles from './CarcassonneGame.pcss';
 

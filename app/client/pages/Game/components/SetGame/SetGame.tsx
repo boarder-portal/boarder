@@ -4,12 +4,13 @@ import chunk from 'lodash/chunk';
 import { EGameClientEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
 import { EGame } from 'common/types/game';
 
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
+
 import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 
-import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './SetGame.pcss';

@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
+import useAtom from 'client/hooks/useAtom';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
-
-import useAtom from 'client/hooks/useAtom';
 
 import styles from './Header.pcss';
 

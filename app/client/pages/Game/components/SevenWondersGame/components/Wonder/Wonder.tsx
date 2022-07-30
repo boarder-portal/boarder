@@ -6,8 +6,9 @@ import { ECardId } from 'common/types/sevenWonders/cards';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
-import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
+
+import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';

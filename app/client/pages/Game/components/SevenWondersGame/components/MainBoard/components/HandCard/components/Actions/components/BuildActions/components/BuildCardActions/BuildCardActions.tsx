@@ -11,10 +11,10 @@ import getResourcePoolsWithAdditionalResources from 'client/pages/Game/component
 
 import useCardBuildInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildInfo';
 import useCardBuildFreeWithEffectInfo from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/hooks/useCardBuildFreeWithEffectInfo';
+import { useBoolean } from 'client/hooks/useBoolean';
+
 import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 import Text from 'client/components/common/Text/Text';
-
-import { useBoolean } from 'client/hooks/useBoolean';
 
 import styles from './BuildCardActions.pcss';
 
