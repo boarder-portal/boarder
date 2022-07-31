@@ -52,6 +52,12 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
 
     return () => {
       resizeObserver.disconnect();
+
+      intermediate.style.transform = '';
+      intermediate.style.width = '';
+      intermediate.style.height = '';
+      root.style.width = '';
+      root.style.height = '';
     };
   }, [rotation]);
 

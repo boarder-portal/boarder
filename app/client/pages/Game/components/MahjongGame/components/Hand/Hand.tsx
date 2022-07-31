@@ -40,6 +40,7 @@ const Hand: FC<IHandProps> = (props) => {
     <RotatedElement className={styles.root} rotation={rotation}>
       <RotatedElement rotation={rotation === -2 ? 2 : 0}>
         {name}
+        {data.hand?.flowers && `, ${data.hand.flowers.length}🌼`}
         {data.round?.wind && `, ${getWindHumanShortName(data.round.wind)}`} ({score})
       </RotatedElement>
 

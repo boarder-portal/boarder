@@ -1,12 +1,19 @@
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 
 import { EGame } from 'common/types/game';
-import { EHandsCount, IGame, IGamePlayerData, IPlayer } from 'common/types/mahjong';
+import { EHandsCount, EWind, IGame, IGamePlayerData, IPlayer } from 'common/types/mahjong';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
+
+const ROTATED_WINDS = [
+  [EWind.EAST, EWind.SOUTH, EWind.WEST, EWind.NORTH],
+  [EWind.SOUTH, EWind.EAST, EWind.NORTH, EWind.WEST],
+  [EWind.NORTH, EWind.WEST, EWind.EAST, EWind.SOUTH],
+  [EWind.WEST, EWind.NORTH, EWind.SOUTH, EWind.EAST],
+];
 
 export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => ({}));
@@ -24,8 +31,7 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
           wind: roundsCount === 1 ? null : ALL_WINDS[round],
           handsCount: handsInRoundCount,
           isLastInGame: round === roundsCount - 1,
-          // TODO: rotate winds
-          playersWinds: ALL_WINDS,
+          playersWinds: ROTATED_WINDS[round],
         }),
       );
 

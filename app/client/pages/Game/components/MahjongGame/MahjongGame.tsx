@@ -174,7 +174,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
         return (
           p.data.hand && (
-            <Flex key={p.index} alignItems="center" justifyContent="center" style={{ gridArea: SIDES[index] }}>
+            <Flex key={index} alignItems="center" justifyContent="center" style={{ gridArea: SIDES[index] }}>
               <Hand
                 player={p}
                 score={scoresByHand?.reduce((score, scores) => score + scores[p.index], 0) ?? 0}
