@@ -1,6 +1,6 @@
 import times from 'lodash/times';
 
-import { ALL_DRAGONS, ALL_SUITS, ALL_VALUES, ALL_WINDS } from 'common/constants/games/mahjong/common';
+import { ALL_DRAGONS, ALL_SUITS, ALL_VALUES, ALL_WINDS } from 'common/constants/games/mahjong';
 
 import {
   EDragon,

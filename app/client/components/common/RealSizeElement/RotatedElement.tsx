@@ -9,13 +9,15 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
   const { rootClassName, rotation, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const intermediateRef = useRef<HTMLDivElement | null>(null);
   const innerContainerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
+    const intermediate = intermediateRef.current;
     const innerContainer = innerContainerRef.current;
 
-    if (!root || !innerContainer) {
+    if (!root || !intermediate || !innerContainer) {
       return;
     }
 
@@ -30,9 +32,14 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
     const setSize = (): void => {
       const realWidth = innerContainer.scrollWidth;
       const realHeight = innerContainer.scrollHeight;
-      const offset = Math.abs((realHeight - realWidth) / 2);
+      const rotationRemainder = ((rotation % 4) + 4) % 4;
+      const offset = (realWidth - realHeight) / 2;
 
-      root.style.transform = `${rotateTransform} translate(${-offset}px, ${offset}px)`;
+      intermediate.style.transform = `${rotateTransform} translate(${rotationRemainder === 1 ? offset : -offset}px, ${
+        rotationRemainder === 1 ? offset : -offset
+      }px)`;
+      intermediate.style.width = `${realWidth}px`;
+      intermediate.style.height = `${realHeight}px`;
       root.style.width = `${realHeight}px`;
       root.style.height = `${realWidth}px`;
     };
@@ -50,7 +57,9 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
 
   return (
     <div ref={rootRef} className={rootClassName}>
-      <div ref={innerContainerRef} {...rest} />
+      <div ref={intermediateRef}>
+        <div ref={innerContainerRef} {...rest} />
+      </div>
     </div>
   );
 };

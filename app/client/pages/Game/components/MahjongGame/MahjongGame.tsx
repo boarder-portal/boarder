@@ -3,11 +3,12 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import classNames from 'classnames';
 
 import { EGame } from 'common/types/game';
-import { EGameClientEvent, EWind, IDeclareInfo, IPlayer } from 'common/types/mahjong';
+import { EGameClientEvent, EWind, IDeclareInfo, IPlayer, TDeclareDecision, TPlayableTile } from 'common/types/mahjong';
 
-import { sortPlayersByWind } from 'client/pages/Game/components/MahjongGame/utilities/players';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
+import { isLastTileOfKind } from 'common/utilities/mahjong/hand';
+import { getWindHumanShortName } from 'common/utilities/mahjong/stringify';
 
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
 import usePlayer from 'client/hooks/usePlayer';
@@ -16,6 +17,8 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
 import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
+import ControlPanel from 'client/pages/Game/components/MahjongGame/components/ControlPanel/ControlPanel';
+import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
@@ -40,9 +43,15 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const [layoutType, setLayoutType] = useState<ELayoutType>(ELayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
   const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [scoresByRound, setScoresByRound] = useState<number[][]>();
+  const [scoresByHand, setScoresByHand] = useState<number[][]>();
   const [roundWind, setRoundWind] = useState<EWind | null>(null);
+  const [handInProcess, setHandInProcess] = useState(false);
+  const [isLastHandInGame, setIsLastHandInGame] = useState(false);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
+  const [wallTilesLeft, setWallTilesLeft] = useState<number | null>(null);
+  const [currentTile, setCurrentTile] = useState<TPlayableTile | null>(null);
   const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
+  const [isReplacementTile, setIsReplacementTile] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,6 +59,13 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const player = usePlayer(players);
 
   const tileHeight = getTileHeight(tileWidth);
+
+  const isLastTile = useImmutableCallback((tile: TPlayableTile) => {
+    return isLastTileOfKind(
+      players.map(({ data }) => data.hand),
+      tile,
+    );
+  });
 
   const calculateTileSizeAndLayout = useImmutableCallback(() => {
     const root = rootRef.current;
@@ -103,6 +119,18 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     });
   });
 
+  const declareDecision = useImmutableCallback((decision: TDeclareDecision | null) => {
+    io.emit(EGameClientEvent.DECLARE, decision);
+  });
+
+  const startNewHand = useImmutableCallback((ready: boolean) => {
+    io.emit(EGameClientEvent.READY_FOR_NEW_HAND, ready);
+  });
+
+  const discardTile = useImmutableCallback((tileIndex: number) => {
+    io.emit(EGameClientEvent.DISCARD_TILE, tileIndex);
+  });
+
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useLayoutEffect(() => {
@@ -113,10 +141,16 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     console.log(gameInfo);
 
     batchedUpdates(() => {
-      setPlayers(sortPlayersByWind(gameInfo.players));
-      setScoresByRound(gameInfo.scoresByRound);
+      setPlayers(gameInfo.players);
+      setScoresByHand(gameInfo.scoresByHand);
       setRoundWind(gameInfo.round?.wind ?? null);
+      setHandInProcess(Boolean(gameInfo.round?.hand));
+      setIsLastHandInGame(Boolean(gameInfo.round?.hand?.isLastInGame));
+      setActivePlayerIndex(gameInfo.round?.hand?.activePlayerIndex ?? -1);
+      setWallTilesLeft(gameInfo.round?.hand?.tilesLeft ?? null);
+      setCurrentTile(gameInfo.round?.hand?.turn?.currentTile ?? null);
       setDeclareInfo(gameInfo.round?.hand?.turn?.declareInfo ?? null);
+      setIsReplacementTile(gameInfo.round?.hand?.turn?.isReplacementTile ?? false);
     });
   }, [gameInfo]);
 
@@ -128,6 +162,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
       className={classNames(styles.root, styles[layoutType])}
       style={{
         ...({
+          '--tileWidth': `${tileWidth}px`,
           '--tileHeight': `${tileHeight}px`,
           '--gap': `${GRID_GAP}px`,
           '--panelSize': `${panelSize}px`,
@@ -139,29 +174,35 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
         return (
           p.data.hand && (
-            <div key={p.index} className={styles.handContainer} style={{ gridArea: SIDES[index] }}>
+            <Flex key={p.index} alignItems="center" justifyContent="center" style={{ gridArea: SIDES[index] }}>
               <Hand
-                handData={p.data.hand}
+                player={p}
+                score={scoresByHand?.reduce((score, scores) => score + scores[p.index], 0) ?? 0}
                 tileWidth={tileWidth}
-                open={isPlayer}
+                open={isPlayer || activePlayerIndex === -1}
                 rotation={-index}
                 players={sortedPlayers}
                 playerIndex={index}
                 onChangeTileIndex={isPlayer ? changeTileIndex : undefined}
+                onDiscardTile={discardTile}
               />
-            </div>
+            </Flex>
           )
         );
       })}
 
       <div className={styles.centerArea}>
+        <div className={styles.centerInfo}>
+          {roundWind ? `${getWindHumanShortName(roundWind)} (${wallTilesLeft})` : wallTilesLeft}
+        </div>
+
         {sortedPlayers.map(
           ({ data }, index) =>
             data.hand?.discard && (
               <Discard
                 key={index}
                 tiles={data.hand.discard}
-                tileWidth={tileWidth * 0.75}
+                tileWidth={tileWidth * 0.8}
                 area={SIDES[index]}
                 rotation={-index}
               />
@@ -169,7 +210,23 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         )}
       </div>
 
-      <div className={styles.controlPanel}></div>
+      <ControlPanel
+        className={styles.controlPanel}
+        roundWind={roundWind}
+        player={player}
+        currentTile={currentTile}
+        isLastWallTile={wallTilesLeft === 0}
+        declareInfo={declareInfo}
+        isReplacementTile={isReplacementTile}
+        handInProcess={handInProcess}
+        isLastHandInGame={isLastHandInGame}
+        activePlayerIndex={activePlayerIndex}
+        activePlayerName={activePlayerIndex === -1 ? null : players[activePlayerIndex].name}
+        players={sortedPlayers}
+        isLastTileOfKind={isLastTile}
+        onDeclareDecision={declareDecision}
+        startNewHand={startNewHand}
+      />
     </div>
   );
 };

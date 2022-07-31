@@ -22,12 +22,16 @@ const Discard: FC<IDiscardProps> = (props) => {
       style={{
         gridArea: area,
         placeSelf: [
-          area === 'bottom' || area === 'right' ? 'start' : 'end',
           area === 'bottom' || area === 'left' ? 'start' : 'end',
+          area === 'bottom' || area === 'right' ? 'start' : 'end',
         ].join(' '),
       }}
     >
-      <RotatedElement className={styles.root} rotation={rotation}>
+      <RotatedElement
+        className={styles.root}
+        rotation={rotation}
+        style={{ gridTemplateColumns: `repeat(6, ${tileWidth}px)` }}
+      >
         {tiles.map((tile, index) => (
           <Tile key={index} tile={tile} width={tileWidth} />
         ))}

@@ -1,6 +1,7 @@
 import sortBy from 'lodash/sortBy';
+import times from 'lodash/times';
 
-import { KNITTED_SEQUENCES } from 'common/constants/games/mahjong';
+import { KNITTED_SEQUENCES } from 'common/constants/games/mahjong/tiles';
 
 import {
   ESet,
@@ -24,11 +25,13 @@ import {
   getTileSortValue,
   isEqualTiles,
   isEqualTilesCallback,
+  isFlush,
+  isStraight,
   isSuited,
   isTileSubset,
   tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
-import { getAllCombinations } from 'common/utilities/combinations';
+import { getCombinations, getSetsCombinations } from 'common/utilities/combinations';
 
 const SET_SORT_VALUES: Record<ESet, number> = {
   [ESet.KNITTED_CHOW]: 0,
@@ -172,8 +175,8 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
     .map((sets) => sortBy(sets, getSetSortValue));
 }
 
-export function getSetsCombinations(sets: TSet[]): TSet[][] {
-  return getAllCombinations(sets.map((set) => [[set], []])).map((sets) => sets.flat());
+export function getAllSetsCombinations(sets: TSet[]): TSet[][] {
+  return getSetsCombinations(sets.map((set) => [[set], []])).map((sets) => sets.flat());
 }
 
 interface ISplitSetsOptions {
@@ -330,4 +333,78 @@ export function getTileHogs(sets: TSet[]): TPlayableTile[] {
     });
 
   return tileHogs;
+}
+
+export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TDeclaredSet[]): IKongSet[] {
+  const possibleSets: IKongSet[] = [];
+
+  hand.forEach((tile, index) => {
+    if (hand.slice(index + 1).filter(isEqualTilesCallback(tile)).length === 3) {
+      possibleSets.push({
+        type: ESet.KONG,
+        tiles: times(4, () => tile),
+        concealedType: ESetConcealedType.CONCEALED,
+      });
+    }
+  });
+
+  declaredSets.forEach(({ set }) => {
+    if (!isPung(set)) {
+      return;
+    }
+
+    const pungTile = getSetTile(set);
+
+    if (hand.some(isEqualTilesCallback(pungTile))) {
+      possibleSets.push({
+        type: ESet.KONG,
+        tiles: times(4, () => pungTile),
+        concealedType: ESetConcealedType.MELDED,
+      });
+    }
+  });
+
+  return possibleSets;
+}
+
+export function getPossibleMeldedSets(
+  hand: TPlayableTile[],
+  discardedTile: TPlayableTile,
+  isChowPossible: boolean,
+): TMeldedSet[] {
+  const possibleSets: TMeldedSet[] = [];
+  const allPossibleSets = getCombinations(sortBy([...hand, discardedTile], getTileSortValue), 3);
+  const isDiscardedTile = isEqualTilesCallback(discardedTile);
+
+  const addSet = (setToAdd: TMeldedSet) => {
+    if (possibleSets.every((set) => !isEqualSets(set, setToAdd))) {
+      possibleSets.push(setToAdd);
+    }
+  };
+
+  allPossibleSets.forEach((tiles) => {
+    if (tiles.every(isDiscardedTile)) {
+      addSet({
+        type: ESet.PUNG,
+        tiles,
+        concealedType: ESetConcealedType.MELDED,
+      });
+    } else if (isChowPossible && tiles.some(isDiscardedTile) && isFlush(tiles) && isStraight(tiles)) {
+      addSet({
+        type: ESet.CHOW,
+        tiles,
+        concealedType: ESetConcealedType.MELDED,
+      });
+    }
+  });
+
+  if (hand.filter(isDiscardedTile).length === 3) {
+    possibleSets.push({
+      type: ESet.KONG,
+      tiles: times(4, () => discardedTile),
+      concealedType: ESetConcealedType.MELDED,
+    });
+  }
+
+  return sortBy(possibleSets, getSetSortValue);
 }

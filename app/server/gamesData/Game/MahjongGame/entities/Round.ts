@@ -45,9 +45,11 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
         }),
       );
 
-      const result = yield* this.hand;
+      this.game.sendGameInfo();
 
-      this.game.addHandResult(result);
+      yield* this.hand;
+
+      this.game.sendGameInfo();
     }
   }
 

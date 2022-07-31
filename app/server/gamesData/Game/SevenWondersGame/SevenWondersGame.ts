@@ -34,7 +34,7 @@ import {
   isScientificSymbolsEffect,
   isShieldsEffect,
 } from 'common/utilities/sevenWonders/isEffect';
-import { getAllCombinations } from 'common/utilities/combinations';
+import { getSetsCombinations } from 'common/utilities/combinations';
 import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
 
@@ -82,7 +82,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         playerData.coins += this.calculateEffectGain(effect, playerIndex)?.coins ?? 0;
       });
 
-      // if (!playerData.isBot) {
+      // if (!this.getPlayers()[playerIndex].isBot) {
       //   playerData.city = ECity.ROMA;
       //   playerData.citySide = 1;
       //   playerData.leadersHand.push(...ALL_LEADERS.filter(({ id }) => id === ECardId.BILKIS));
@@ -274,7 +274,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
         })
         .flat();
     });
-    const effectsCombinations = getAllCombinations(effectsVariants);
+    const effectsCombinations = getSetsCombinations(effectsVariants);
 
     return effectsCombinations.reduce((maxPoints, effects) => {
       return Math.max(maxPoints, this.calculatePlayerPoints(playerIndex, effects.flat()));
@@ -293,7 +293,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     setsEffects: IScientificSetEffect[],
   ): number {
     const symbols = effects.map((effect) => effect.variants);
-    const symbolsCombinations = getAllCombinations(symbols);
+    const symbolsCombinations = getSetsCombinations(symbols);
     const setValue = setsEffects.reduce((setValue, setEffect) => {
       return setValue + (setEffect.gain.points ?? 0);
     }, 7);

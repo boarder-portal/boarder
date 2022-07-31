@@ -1,16 +1,18 @@
 import invert from 'lodash/invert';
+import times from 'lodash/times';
 
-import { EDragon, EHandsCount, ESuit, EWind, IGameOptions } from 'common/types/mahjong';
-
-export * from './common';
-export * from './impliedFans';
-export * from './tiles';
+import { EDragon, EHandsCount, ESet, ESuit, EWind, IGameOptions } from 'common/types/mahjong';
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   minPlayersCount: 4,
   maxPlayersCount: 4,
   handsCount: EHandsCount.FOUR,
 };
+
+export const ALL_SUITS = Object.values(ESuit);
+export const ALL_VALUES = times(9, (x) => x + 1);
+export const ALL_DRAGONS = Object.values(EDragon);
+export const ALL_WINDS = Object.values(EWind);
 
 export const FLOWERS_STRING_VALUES = '12345678';
 export const SUITED_STRING_VALUES = '123456789';
@@ -39,3 +41,18 @@ export const SUIT_TO_STRING_MAP: Record<ESuit, string> = {
 };
 
 export const STRING_TO_SUIT_MAP = invert(SUIT_TO_STRING_MAP) as Partial<Record<string, ESuit>>;
+
+export const SET_NAMES: Record<ESet, string> = {
+  [ESet.PAIR]: 'Пара',
+  [ESet.PUNG]: 'Панг',
+  [ESet.KONG]: 'Конг',
+  [ESet.CHOW]: 'Чоу',
+  [ESet.KNITTED_CHOW]: 'Переплетенное чоу',
+};
+
+export const WIND_SHORT_NAMES: Record<EWind, string> = {
+  [EWind.EAST]: 'E',
+  [EWind.SOUTH]: 'S',
+  [EWind.WEST]: 'W',
+  [EWind.NORTH]: 'N',
+};

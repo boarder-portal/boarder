@@ -12,14 +12,23 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Flex from 'client/components/common/Flex/Flex';
 
+import { HOVER_SOUND, playSound } from 'client/sounds';
+
 import styles from './Tiles.pcss';
+
+export enum EOpenType {
+  OPEN = 'OPEN',
+  CONCEALED = 'CONCEALED',
+  SEMI_CONCEALED = 'SEMI_CONCEALED',
+}
 
 interface ITilesProps {
   tiles: TTile[];
-  open: boolean;
+  openType: EOpenType;
   tileWidth: number;
   rotatedTileIndex?: number | null;
   onChangeTileIndex?(from: number, to: number): void;
+  onTileClick?(tileIndex: number): void;
 }
 
 interface ILocalTile {
@@ -35,7 +44,8 @@ const getLocalTiles = (tiles: TTile[]): ILocalTile[] => {
 };
 
 const Tiles: FC<ITilesProps> = (props) => {
-  const { tiles, open, rotatedTileIndex, tileWidth, onChangeTileIndex } = props;
+  const { tiles, openType, rotatedTileIndex = -1, tileWidth, onChangeTileIndex, onTileClick } = props;
+  const tileHeight = getTileHeight(tileWidth);
 
   const [localTiles, setLocalTiles] = useState<ILocalTile[]>(getLocalTiles(tiles));
   const [withTransition, setWithTransition] = useState(false);
@@ -96,9 +106,13 @@ const Tiles: FC<ITilesProps> = (props) => {
 
       toRef.current = to;
 
-      moveElement(localTiles, currentFrom, to);
+      if (to !== currentFrom) {
+        moveElement(localTiles, currentFrom, to);
 
-      setLocalTiles([...localTiles]);
+        playSound(HOVER_SOUND);
+
+        setLocalTiles([...localTiles]);
+      }
     },
     [localTiles, onChangeTileIndex, tileWidth, tiles.length],
   );
@@ -118,6 +132,10 @@ const Tiles: FC<ITilesProps> = (props) => {
 
   const tilesNodes = useMemo(() => {
     const nodesWithTiles = localTiles.map((tile, index) => {
+      const isRotated = index === rotatedTileIndex;
+      const open =
+        openType === EOpenType.OPEN || (openType === EOpenType.SEMI_CONCEALED && (index === 0 || index === 3));
+
       return {
         tile,
         node: (
@@ -126,6 +144,8 @@ const Tiles: FC<ITilesProps> = (props) => {
             className={classNames(styles.tile, { [styles.withTransition]: withTransition })}
             data-local-tile-index={index}
             style={{
+              width: isRotated ? tileHeight : tileWidth,
+              height: isRotated ? tileWidth : tileHeight,
               transform: `translateX(${tileWidth * (index - tile.index)}px)`,
             }}
           >
@@ -133,8 +153,9 @@ const Tiles: FC<ITilesProps> = (props) => {
               tile={open ? tile.tile : null}
               width={tileWidth}
               draggable={Boolean(onChangeTileIndex)}
-              rotation={index === rotatedTileIndex ? 1 : 0}
+              rotation={isRotated ? -1 : 0}
               onDragStart={(e) => handleDragStart(e, index)}
+              onClick={() => onTileClick?.(index)}
             />
           </div>
         ),
@@ -142,7 +163,17 @@ const Tiles: FC<ITilesProps> = (props) => {
     });
 
     return sortBy(nodesWithTiles, ({ tile }) => tile.index).map(({ node }) => node);
-  }, [handleDragStart, localTiles, onChangeTileIndex, open, rotatedTileIndex, tileWidth, withTransition]);
+  }, [
+    handleDragStart,
+    localTiles,
+    onChangeTileIndex,
+    onTileClick,
+    openType,
+    rotatedTileIndex,
+    tileHeight,
+    tileWidth,
+    withTransition,
+  ]);
 
   useGlobalListener('dragend', document, () => {
     const from = fromRef.current;
@@ -163,9 +194,10 @@ const Tiles: FC<ITilesProps> = (props) => {
   return (
     <Flex
       ref={rootRef}
+      alignItems="center"
       style={{
-        width: tileWidth * tiles.length,
-        height: getTileHeight(tileWidth),
+        width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
+        height: tileHeight,
       }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

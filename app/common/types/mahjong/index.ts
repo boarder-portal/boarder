@@ -8,11 +8,7 @@ import { EGame } from 'common/types/game';
 
 export enum EGameClientEvent {
   DISCARD_TILE = 'DISCARD_TILE',
-  PASS = 'PASS',
-  CANCEL_DECLARE = 'CANCEL_DECLARE',
   DECLARE = 'DECLARE',
-  UPGRADE_TO_KONG = 'UPGRADE_TO_KONG',
-  START_NEXT_HAND = 'START_NEXT_HAND',
   CHANGE_TILE_INDEX = 'CHANGE_TILE_INDEX',
   SORT_TILES = 'SORT_TILES',
   READY_FOR_NEW_HAND = 'READY_FOR_NEW_HAND',
@@ -38,7 +34,7 @@ export interface IPlayer extends IGamePlayer {
 
 export interface IGame {
   players: IPlayer[];
-  scoresByRound: number[][];
+  scoresByHand: number[][];
   round: IRound | null;
 }
 
@@ -54,6 +50,7 @@ export interface IRoundPlayerData {
 export interface IHand {
   activePlayerIndex: number;
   tilesLeft: number;
+  isLastInGame: boolean;
   turn: ITurn | null;
 }
 
@@ -78,6 +75,7 @@ export interface IHandPlayerData {
 }
 
 export interface ITurn {
+  currentTile: TPlayableTile | null;
   isReplacementTile: boolean;
   declareInfo: IDeclareInfo | null;
 }
@@ -85,12 +83,12 @@ export interface ITurn {
 export interface IDeclareInfo {
   tile: TPlayableTile;
   isRobbingKong: boolean;
-  isLastTile: boolean;
-  isLastWallTile: boolean;
 }
 
+export type TDeclareDecision = TConcealedSet<IKongSet> | TMeldedSet | 'mahjong' | 'pass' | null;
+
 export interface ITurnPlayerData {
-  declareDecision: TMeldedSet | 'mahjong' | 'pass' | null;
+  declareDecision: TDeclareDecision;
 }
 
 export enum EHandsCount {
@@ -347,11 +345,7 @@ export interface IChangeTileIndexEvent {
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {
   [EGameClientEvent.DISCARD_TILE]: number;
-  [EGameClientEvent.PASS]: undefined;
-  [EGameClientEvent.CANCEL_DECLARE]: undefined;
-  [EGameClientEvent.DECLARE]: TConcealedSet<IKongSet> | TMeldedSet | 'mahjong';
-  [EGameClientEvent.UPGRADE_TO_KONG]: number;
-  [EGameClientEvent.START_NEXT_HAND]: undefined;
+  [EGameClientEvent.DECLARE]: TDeclareDecision;
   [EGameClientEvent.CHANGE_TILE_INDEX]: IChangeTileIndexEvent;
   [EGameClientEvent.SORT_TILES]: undefined;
   [EGameClientEvent.READY_FOR_NEW_HAND]: boolean;

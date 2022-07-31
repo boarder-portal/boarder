@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy';
 
-import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong';
+import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong/tiles';
 import { FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
@@ -19,7 +19,7 @@ import {
   TSet,
 } from 'common/types/mahjong';
 
-import { getSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
+import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
 import {
   canAddFan,
   getFansScore,
@@ -36,12 +36,12 @@ export interface IHandScoreOptions {
   concealedSets: TConcealedSet<IKongSet>[];
   meldedSets: TMeldedSet[];
   flowers: IFlowerTile[];
-  seatWind: EWind;
+  seatWind: EWind | null;
   roundWind: EWind | null;
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
-  isLastTile: boolean;
+  isLastTileOfKind: boolean;
   isLastWallTile: boolean;
 }
 
@@ -126,7 +126,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
       const specialSetsFans = getSpecialSetsFans(sets, winningTile, waits);
       const setsFans: TFan[] = [];
 
-      getSetsCombinations(sets).forEach((sets) => {
+      getAllSetsCombinations(sets).forEach((sets) => {
         setsFans.push(...getSetsFans(sets, seatWind, roundWind));
       });
 

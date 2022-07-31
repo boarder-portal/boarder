@@ -1,12 +1,12 @@
+import { ALL_SUITS } from 'common/constants/games/mahjong';
 import {
-  ALL_SUITS,
   GREEN_TILES,
-  IMPLIED_FANS,
   KNITTED_SEQUENCES,
   ORPHANS,
   REVERSIBLE_TILES,
   TERMINAL_CHOWS_SETS,
-} from 'common/constants/games/mahjong';
+} from 'common/constants/games/mahjong/tiles';
+import { IMPLIED_FANS } from 'common/constants/games/mahjong/impliedFans';
 import { FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
 import {
@@ -77,7 +77,7 @@ export function getFansScore(fans: TFan[]): number {
   return fans.reduce((score, fan) => score + getFanScore(fan), 0);
 }
 
-export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind | null): TFan[] {
+export function getSetsFans(sets: TSet[], seatWind: EWind | null, roundWind: EWind | null): TFan[] {
   const firstSet = sets.at(0);
 
   if (!firstSet) {
@@ -226,7 +226,7 @@ export function getSetsFans(sets: TSet[], seatWind: EWind, roundWind: EWind | nu
         fans.push(EFan.PREVALENT_WIND);
       }
 
-      if (isEqualTiles(firstSetTile, wind(seatWind))) {
+      if (seatWind && isEqualTiles(firstSetTile, wind(seatWind))) {
         fans.push(EFan.SEAT_WIND);
       }
     }
@@ -491,7 +491,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     });
   }
 
-  if (options.isLastTile) {
+  if (options.isLastTileOfKind) {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.LAST_TILE,

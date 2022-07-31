@@ -4,9 +4,11 @@ import {
   SUIT_TO_STRING_MAP,
   SUITED_STRING_VALUES,
   WIND_TO_STRING_MAP,
+  SET_NAMES as HUMAN_SET_NAMES,
+  WIND_SHORT_NAMES,
 } from 'common/constants/games/mahjong';
 
-import { ESet, ESetConcealedType, ETileType, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
+import { ESet, ESetConcealedType, ETileType, EWind, IHandMahjong, TFan, TSet, TTile } from 'common/types/mahjong';
 
 import { isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import { getSetTile } from 'common/utilities/mahjong/sets';
@@ -63,4 +65,12 @@ export function stringifyMahjong(mahjong: IHandMahjong | null): string {
 ${mahjong.waits.map(stringifyTile).join(' ')}
 
 ${mahjong.fans.map(stringifyFan).join('\n')}${mahjong.sets ? `\n\n${mahjong.sets.map(stringifySet).join('\n')}` : ''}`;
+}
+
+export function getSetNumanName(set: TSet): string {
+  return HUMAN_SET_NAMES[set.type];
+}
+
+export function getWindHumanShortName(wind: EWind): string {
+  return WIND_SHORT_NAMES[wind];
 }

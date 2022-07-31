@@ -10,7 +10,7 @@ import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 
 export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => ({}));
-  scoresByRound: number[][] = [];
+  scoresByHand: number[][] = [];
 
   round: Round | null = null;
 
@@ -29,12 +29,14 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
         }),
       );
 
+      this.sendGameInfo();
+
       yield* this.round;
     }
   }
 
   addHandResult(result: number[]): void {
-    this.scoresByRound.push(result);
+    this.scoresByHand.push(result);
   }
 
   getGamePlayers(): IPlayer[] {
@@ -51,7 +53,7 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
   toJSON(): IGame {
     return {
       players: this.getGamePlayers(),
-      scoresByRound: [],
+      scoresByHand: this.scoresByHand,
       round: this.round?.toJSON() ?? null,
     };
   }

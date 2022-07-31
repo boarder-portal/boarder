@@ -4,7 +4,7 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
 import { IPrice } from 'common/types/sevenWonders';
 
 import getUniqCombinationsByN from 'common/utilities/getUniqCombinationsByN';
-import { getAllCombinations } from 'common/utilities/combinations';
+import { getSetsCombinations } from 'common/utilities/combinations';
 
 /**
  * price: {
@@ -111,7 +111,7 @@ export default function getPurchaseVariants(
      * ]
      *
      */
-    const allResourcePurchaseVariants = getAllCombinations(resourceVariants);
+    const allResourcePurchaseVariants = getSetsCombinations(resourceVariants);
 
     return allResourcePurchaseVariants.map((allResourcePurchaseVariant) => allResourcePurchaseVariant.flat());
   });

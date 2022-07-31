@@ -1,4 +1,5 @@
 .root {
+  --tileWidth: 0;
   --tileHeight: 0;
   --panelSize: 0;
   --gap: 0;
@@ -7,44 +8,42 @@
   height: calc(100vh - 60px);
   display: grid;
   gap: var(--gap);
-  align-items: center;
-  align-content: center;
-  justify-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-items: stretch;
   padding-bottom: 12px;
 
   &.horizontal-right {
     grid-template:
-      "left top    right panel" var(--tileHeight)
+      "left top    right panel" auto
       "left center right panel" 1fr
-      "left bottom right panel" var(--tileHeight)
-      / var(--tileHeight) 1fr var(--tileHeight) var(--panelSize);
+      "left bottom right panel" auto
+      / auto 1fr auto var(--panelSize);
   }
 
   &.horizontal-bottom {
     grid-template:
-      "left  top    right" var(--tileHeight)
+      "left  top    right" auto
       "left  center right" 1fr
-      "left  bottom right" var(--tileHeight)
+      "left  bottom right" auto
       "panel panel  panel" var(--panelSize)
-      / var(--tileHeight) 1fr var(--tileHeight);
+      / auto 1fr auto;
   }
 
   &.vertical-right {
     grid-template:
-      "top    top    top    panel" var(--tileHeight)
+      "top    top    top    panel" auto
       "left   center right  panel" 1fr
-      "bottom bottom bottom panel" var(--tileHeight)
-      / var(--tileHeight) 1fr var(--tileHeight) var(--panelSize);
+      "bottom bottom bottom panel" auto
+      / auto 1fr auto var(--panelSize);
   }
 
   &.vertical-bottom {
     grid-template:
-      "top    top    top   " var(--tileHeight)
+      "top    top    top   " auto
       "left   center right " 1fr
-      "bottom bottom bottom" var(--tileHeight)
+      "bottom bottom bottom" auto
       "panel  panel  panel " var(--panelSize)
-      / var(--tileHeight) 1fr var(--tileHeight);
+      / auto 1fr auto;
   }
 }
 
@@ -55,18 +54,22 @@
   display: grid;
   grid-template:
     "top  top    right " calc(100% * 3 / 7)
-    "left .      right " calc(100% * 1 / 7)
+    "left center right " calc(100% * 1 / 7)
     "left bottom bottom" calc(100% * 3 / 7)
     / calc(100% * 3 / 7) calc(100% * 1 / 7) calc(100% * 3 / 7);
-  gap: 4px;
+  gap: 8px;
+}
+
+.centerInfo {
+  grid-area: center;
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+  font-size: calc(var(--tileHeight) * 0.3);
 }
 
 .controlPanel {
   grid-area: panel;
   align-self: stretch;
   justify-self: stretch;
-}
-
-.handContainer {
-  overflow: hidden;
 }

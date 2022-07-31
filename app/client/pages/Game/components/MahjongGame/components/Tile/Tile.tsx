@@ -1,7 +1,7 @@
 import { FC, HTMLAttributes, memo } from 'react';
 import classNames from 'classnames';
 
-import { ALL_TILES } from 'common/constants/games/mahjong';
+import { ALL_TILES } from 'common/constants/games/mahjong/tiles';
 import { ORIGINAL_TILE_HEIGHT, ORIGINAL_TILE_WIDTH } from 'client/pages/Game/components/MahjongGame/constants';
 
 import { TTile } from 'common/types/mahjong';
