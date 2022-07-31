@@ -227,10 +227,10 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
 
         {handInProcess && activePlayerIndex === -1 && !isLastHandInGame && player && (
           <Flex
-            className={classNames(styles.decision, { [styles.selected]: player?.data.hand?.readyForNewHand })}
+            className={classNames(styles.decision, { [styles.selected]: player?.data.round?.readyForNewHand })}
             alignItems="center"
             justifyContent="center"
-            onClick={() => startNewHand(!player?.data.hand?.readyForNewHand)}
+            onClick={() => startNewHand(!player?.data.round?.readyForNewHand)}
           >
             Новая раздача
           </Flex>

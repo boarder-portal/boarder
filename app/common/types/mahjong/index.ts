@@ -45,6 +45,7 @@ export interface IRound {
 
 export interface IRoundPlayerData {
   wind: EWind;
+  readyForNewHand: boolean;
 }
 
 export interface IHand {
@@ -71,7 +72,6 @@ export interface IHandPlayerData {
   declaredSets: TDeclaredSet[];
   flowers: IFlowerTile[];
   discard: TPlayableTile[];
-  readyForNewHand: boolean;
 }
 
 export interface ITurn {

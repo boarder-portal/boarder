@@ -57,7 +57,7 @@ export interface IHandMahjongOptions {
   isRobbingKong: boolean;
 }
 
-export default class Hand extends TurnEntity<EGame.MAHJONG> {
+export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
   game: MahjongGame;
   round: Round;
 
@@ -85,7 +85,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.isLastInGame = options.isLastInGame;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): TGenerator<number[]> {
     this.wall = shuffle(DECK);
 
     this.forEachPlayer((playerIndex) => {
@@ -172,18 +172,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.activePlayerIndex = -1;
     this.turn = null;
 
-    this.game.addHandResult(scores);
-    this.game.sendGameInfo();
-
-    if (!this.isLastInGame) {
-      while (this.playersData.some(({ readyForNewHand }) => !readyForNewHand)) {
-        const { data, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.READY_FOR_NEW_HAND);
-
-        this.playersData[playerIndex].readyForNewHand = data;
-
-        this.game.sendGameInfo();
-      }
-    }
+    return scores;
   }
 
   addConcealedKong(playerIndex: number, set: TConcealedSet<IKongSet>): void {

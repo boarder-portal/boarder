@@ -31,9 +31,9 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
             break;
           }
 
-          const declareDecision = this.getPlayer().data.turn?.declareDecision;
+          const { data } = this.getPlayer();
 
-          if (declareDecision === null) {
+          if (data.turn?.declareDecision === null && !data.round?.readyForNewHand) {
             this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
           }
         }
