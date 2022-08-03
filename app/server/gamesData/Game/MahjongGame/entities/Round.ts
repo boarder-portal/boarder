@@ -18,6 +18,7 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
   game: MahjongGame;
 
   wind: EWind | null;
+  handIndex = -1;
   handsCount: number;
   isLastInGame: boolean;
   playersData: IRoundPlayerData[];
@@ -41,6 +42,7 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
     for (let hand = 0; hand < this.handsCount; hand++) {
       const isLastHand = this.isLastInGame && hand === this.handsCount - 1;
 
+      this.handIndex = hand;
       this.hand = this.spawnEntity(
         new Hand(this, {
           startPlayerIndex: this.playersData.findIndex(({ wind }) => wind === EWind.EAST),
@@ -70,6 +72,7 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
   toJSON(): IRound {
     return {
       wind: this.wind,
+      handIndex: this.handIndex,
       hand: this.hand?.toJSON() ?? null,
     };
   }

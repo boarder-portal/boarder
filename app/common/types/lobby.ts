@@ -19,7 +19,7 @@ export interface ILobbyServerEventMap<Game extends EGame> {
 export interface ILobbyGame<Game extends EGame> {
   id: string;
   name: string;
-  players: IGamePlayer[];
+  players: IGamePlayer<Game>[];
   hasStarted: boolean;
   options: TGameOptions<Game>;
 }

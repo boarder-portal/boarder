@@ -3,6 +3,7 @@ import {
   ICommonServerEventMap,
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
+  IPlayerSettings as ICommonPlayerSettings,
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -20,7 +21,7 @@ export interface IPlayerData {
   cell: ICellWithObject<IPlayerObject>;
 }
 
-export interface IPlayer extends IGamePlayer {
+export interface IPlayer extends IGamePlayer<EGame.SURVIVAL_ONLINE> {
   data: IPlayerData;
 }
 
@@ -111,6 +112,7 @@ declare module 'common/types/game' {
       options: IGameOptions;
       info: IGame;
       result: void;
+      playerSettings: ICommonPlayerSettings;
     };
   }
 }

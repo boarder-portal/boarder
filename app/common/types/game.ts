@@ -20,7 +20,7 @@ export interface IGameData<Game extends EGame> {
   options: TGameOptions<Game>;
   info: TGameInfo<Game> | null;
   result: TGameResult<Game> | null;
-  players: IGamePlayer[];
+  players: IGamePlayer<Game>[];
   timestamp: number;
 }
 
@@ -63,3 +63,5 @@ export type TGameServerEventListener<Game extends EGame, Event extends TGameServ
 ) => unknown;
 
 export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];
+
+export type TPlayerSettings<Game extends EGame> = IGamesParams[Game]['playerSettings'];

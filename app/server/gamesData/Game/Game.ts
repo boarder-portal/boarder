@@ -4,6 +4,8 @@ import shuffle from 'lodash/shuffle';
 import pick from 'lodash/pick';
 import times from 'lodash/times';
 
+import { PLAYER_SETTINGS } from 'common/constants/games/common';
+
 import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePlayer } from 'common/types';
 import {
   EGame,
@@ -41,7 +43,7 @@ import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 
-export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer {
+export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer<Game> {
   sockets: Set<TGameServerSocket<Game>>;
 }
 
@@ -123,6 +125,15 @@ class Game<Game extends EGame> {
     this.onUpdateGame = onUpdateGame;
 
     this.io.use(ioSessionMiddleware);
+    this.io.use((socket, next) => {
+      try {
+        socket.playerSettings = JSON.parse(String(socket.handshake.query.settings));
+      } catch (err) {
+        return next(new Error('Wrong player settings'));
+      }
+
+      next();
+    });
     this.io.on('connection', (socket) => {
       const user = socket.user;
       let player = this.getSocketPlayer(socket);
@@ -134,6 +145,7 @@ class Game<Game extends EGame> {
             name: user.login,
             status: EPlayerStatus.NOT_READY,
             isBot: false,
+            settings: socket.playerSettings as any,
           });
 
           this.sendUpdatePlayersEvent();
@@ -178,6 +190,7 @@ class Game<Game extends EGame> {
                 name: botNames[index],
                 status: EPlayerStatus.READY,
                 isBot: true,
+                settings: PLAYER_SETTINGS[this.game],
               });
             });
 
@@ -231,7 +244,7 @@ class Game<Game extends EGame> {
     this.setDeleteTimeout();
   }
 
-  addPlayer(playerData: Omit<IGamePlayer, 'index'>): IServerGamePlayer<Game> {
+  addPlayer(playerData: Omit<IGamePlayer<Game>, 'index'>): IServerGamePlayer<Game> {
     const player: IServerGamePlayer<Game> = {
       ...playerData,
       index: this.players.length,
@@ -271,8 +284,8 @@ class Game<Game extends EGame> {
     this.sendSocketEvent(ECommonGameServerEvent.END, result);
   }
 
-  getClientPlayers(): IGamePlayer[] {
-    return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot']));
+  getClientPlayers(): IGamePlayer<Game>[] {
+    return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']));
   }
 
   getSocketPlayer(socket: TGameServerSocket<Game>): IServerGamePlayer<Game> | undefined {
@@ -404,7 +417,7 @@ class Game<Game extends EGame> {
   }
 
   sendUpdatePlayersEvent(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers());
+    this.sendSocketEvent(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers() as any);
   }
 
   setDeleteTimeout(): void {

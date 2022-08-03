@@ -13,7 +13,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
       yield* this.waitForHand();
 
       while (!this.isHandOver()) {
-        if (this.getGameInfo().round?.hand?.activePlayerIndex === this.playerIndex) {
+        if (this.isOwnTurn()) {
           const hand = this.getPlayer().data.hand?.hand;
 
           if (hand) {
@@ -24,6 +24,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
         } else {
           const { type } = yield* this.race({
             declare: this.waitForDeclareAction(),
+            ownTurn: this.waitForOwnTurn(),
             handEnd: this.waitForHandEnd(),
           });
 
@@ -31,10 +32,16 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
             break;
           }
 
-          const { data } = this.getPlayer();
+          if (type === 'ownTurn') {
+            continue;
+          }
 
-          if (data.turn?.declareDecision === null && !data.round?.readyForNewHand) {
-            this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
+          if (type === 'declare') {
+            const { data } = this.getPlayer();
+
+            if (data.turn?.declareDecision === null) {
+              this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
+            }
           }
         }
 
@@ -55,9 +62,16 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
     return this.getGameInfo().round?.hand?.activePlayerIndex === -1;
   }
 
+  isOwnTurn(): boolean {
+    return (
+      this.getGameInfo().round?.hand?.activePlayerIndex === this.playerIndex &&
+      !this.getGameInfo().round?.hand?.turn?.declareInfo
+    );
+  }
+
   *waitForDeclareAction(): TGenerator {
     while (true) {
-      if (this.getGameInfo().round?.hand?.turn?.declareInfo) {
+      if (this.getGameInfo().round?.hand?.turn?.declareInfo && this.getPlayer().data.turn?.declareDecision === null) {
         return;
       }
 
@@ -77,7 +91,17 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
 
   *waitForHandEnd(): TGenerator {
     while (true) {
-      if (this.getGameInfo().round?.hand?.activePlayerIndex === -1) {
+      if (this.isHandOver()) {
+        return;
+      }
+
+      yield* this.refreshGameInfo();
+    }
+  }
+
+  *waitForOwnTurn(): TGenerator {
+    while (true) {
+      if (this.isOwnTurn()) {
         return;
       }
 

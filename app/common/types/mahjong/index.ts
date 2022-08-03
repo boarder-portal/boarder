@@ -3,6 +3,7 @@ import {
   ICommonServerEventMap,
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
+  IPlayerSettings as ICommonPlayerSettings,
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -28,8 +29,14 @@ export interface IPlayerData extends IGamePlayerData {
   turn: ITurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer {
+export interface IPlayer extends IGamePlayer<EGame.MAHJONG> {
   data: IPlayerData;
+}
+
+export interface IPlayerSettings extends ICommonPlayerSettings {
+  autoPass: boolean;
+  sortHand: boolean;
+  showLosingHand: boolean;
 }
 
 export interface IGame {
@@ -40,6 +47,7 @@ export interface IGame {
 
 export interface IRound {
   wind: EWind | null;
+  handIndex: number;
   hand: IHand | null;
 }
 
@@ -57,11 +65,13 @@ export interface IHand {
 
 export interface IDeclaredMeldedSet {
   set: TMeldedSet;
+  stolenTileIndex: number;
   stolenFrom: number;
 }
 
 export interface IDeclaredConcealedSet {
   set: TConcealedSet<IKongSet>;
+  stolenTileIndex: number;
   stolenFrom: null;
 }
 
@@ -361,6 +371,7 @@ declare module 'common/types/game' {
       options: IGameOptions;
       info: IGame;
       result: void;
+      playerSettings: IPlayerSettings;
     };
   }
 }

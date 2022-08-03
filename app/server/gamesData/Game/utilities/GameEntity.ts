@@ -1,5 +1,5 @@
-import { EGame, TGameInfo, TGameResult } from 'common/types/game';
-import { ECommonGameServerEvent } from 'common/types';
+import { EGame, TGameInfo, TGameResult, TPlayerSettings } from 'common/types/game';
+import { ECommonGameClientEvent, ECommonGameServerEvent } from 'common/types';
 
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -18,10 +18,17 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     yield* super.beforeLifecycle();
 
     this.spawnTask(this.spawnBots());
+    this.spawnTask(this.watchSettingChange());
   }
 
   getGameInfo(): TGameInfo<Game> {
     return this.toJSON();
+  }
+
+  *listenForSettingsChange(callback: (settings: TPlayerSettings<Game>) => unknown): TGenerator {
+    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ playerIndex }) => {
+      callback(this.getPlayers()[playerIndex].settings);
+    });
   }
 
   ping(): void {
@@ -62,5 +69,15 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
         .filter(({ isBot }) => isBot)
         .map(({ index }) => this.spawnBot(bot, index)),
     );
+  }
+
+  *watchSettingChange(): TGenerator {
+    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
+      const player = this.getPlayers()[playerIndex];
+
+      player.settings[data.key as keyof TPlayerSettings<Game>] = data.value as any;
+
+      this.context.game.sendUpdatePlayersEvent();
+    });
   }
 }

@@ -1,7 +1,9 @@
-import { EGame, TGameOptions } from 'common/types/game';
+import { EGame, TGameOptions, TPlayerSettings } from 'common/types/game';
 
 type TGameOptionsValues = {
   [Game in EGame as typeof GAME_OPTIONS_KEYS[Game]]: TGameOptions<Game>;
+} & {
+  [Game in EGame as typeof PLAYER_SETTINGS_KEYS[Game]]: TPlayerSettings<Game>;
 };
 
 interface ILocalStorageValues extends TGameOptionsValues {}
@@ -27,6 +29,19 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
   [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v0.1',
+} as const;
+
+export const PLAYER_SETTINGS_KEYS = {
+  [EGame.PEXESO]: 'game/pexeso/playerSettings/v1',
+  [EGame.SURVIVAL_ONLINE]: 'game/survivalOnline/playerSettings/v1',
+  [EGame.SET]: 'game/set/playerSettings/v1',
+  [EGame.ONITAMA]: 'game/onitama/playerSettings/v1',
+  [EGame.CARCASSONNE]: 'game/carcassonne/playerSettings/v1',
+  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/playerSettings/v1',
+  [EGame.HEARTS]: 'game/hearts/playerSettings/v1',
+  [EGame.BOMBERS]: 'game/bombers/playerSettings/v1',
+  [EGame.MACHI_KORO]: 'game/machiKoro/playerSettings/v1',
+  [EGame.MAHJONG]: 'game/mahjong/playerSettings/v0.1',
 } as const;
 
 export default class LocalStorageAtom<Key extends TLocalStorageKey> {

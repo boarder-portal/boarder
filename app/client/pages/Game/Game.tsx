@@ -2,7 +2,7 @@ import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame, TGameInfo, TGameOptions, TGameResult } from 'common/types/game';
+import { EGame, TGameInfo, TGameOptions, TGameResult, TPlayerSettings } from 'common/types/game';
 import {
   ECommonGameClientEvent,
   ECommonGameServerEvent,
@@ -17,6 +17,8 @@ import { now } from 'client/utilities/time';
 
 import useSocket from 'client/hooks/useSocket';
 import useAtom from 'client/hooks/useAtom';
+import usePlayerSettings from 'client/hooks/usePlayerSettings';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
@@ -36,12 +38,18 @@ import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Game.pcss';
 
+export type TChangeSettingCallback<Game extends EGame> = <Key extends keyof TPlayerSettings<Game>>(
+  key: Key,
+  value: TPlayerSettings<Game>[Key],
+) => void;
+
 export interface IGameProps<Game extends EGame> {
   io: TGameClientSocket<Game>;
   gameOptions: TGameOptions<Game>;
   gameInfo: TGameInfo<Game>;
   gameResult: TGameResult<Game> | null;
   timeDiff: number;
+  changeSetting: TChangeSettingCallback<Game>;
 }
 
 const GAMES_MAP: {
@@ -66,49 +74,60 @@ function Game<G extends EGame>() {
   const [gameOptions, setGameOptions] = useState<TGameOptions<G>>(DEFAULT_OPTIONS[game]);
   const [gameInfo, setGameInfo] = useState<TGameInfo<G> | null>(null);
   const [gameResult, setGameResult] = useState<TGameResult<G> | null>(null);
-  const [players, setPlayers] = useState<IGamePlayer[]>([]);
+  const [players, setPlayers] = useState<IGamePlayer<G>[]>([]);
   const [timeDiff, setTimeDiff] = useState(0);
 
   const history = useHistory();
   const [user] = useAtom('user');
+  const { settings: playerSettings, changeSetting: onChangeSetting } = usePlayerSettings(game);
 
-  const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(`/${game}/game/${gameId}`, {
-    [ECommonGameServerEvent.GET_DATA]: (data) => {
-      batchedUpdates(() => {
-        setGameOptions(data.options);
-        setGameInfo(data.info);
-        setGameResult(data.result);
-        setPlayers(data.players);
-        setGameName(data.name);
-        setTimeDiff(data.timestamp - now());
-      });
-    },
-    [ECommonGameServerEvent.GET_INFO]: (info) => {
-      setGameInfo(info);
-    },
-    [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
-      setPlayers(players);
-    },
-    [ECommonGameServerEvent.PING]: (serverTimestamp) => {
-      setTimeDiff(serverTimestamp - now());
-    },
-    [ECommonGameServerEvent.END]: (result) => {
-      console.log('GAME_END', result);
+  const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(
+    `/${game}/game/${gameId}?settings=${JSON.stringify(playerSettings)}`,
+    {
+      [ECommonGameServerEvent.GET_DATA]: (data) => {
+        batchedUpdates(() => {
+          setGameOptions(data.options);
+          setGameInfo(data.info);
+          setGameResult(data.result);
+          setPlayers(data.players);
+          setGameName(data.name);
+          setTimeDiff(data.timestamp - now());
+        });
+      },
+      [ECommonGameServerEvent.GET_INFO]: (info) => {
+        setGameInfo(info);
+      },
+      [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
+        setPlayers(players);
+      },
+      [ECommonGameServerEvent.PING]: (serverTimestamp) => {
+        setTimeDiff(serverTimestamp - now());
+      },
+      [ECommonGameServerEvent.END]: (result) => {
+        console.log('GAME_END', result);
 
-      setGameResult(result);
-    },
+        setGameResult(result);
+      },
 
-    // eslint-disable-next-line camelcase
-    connect_error: (err: Error) => {
-      if (err.message === 'Invalid namespace') {
-        history.push(`/${game}/lobby`);
-      }
+      // eslint-disable-next-line camelcase
+      connect_error: (err: Error) => {
+        if (err.message === 'Invalid namespace') {
+          history.push(`/${game}/lobby`);
+        }
+      },
     },
-  });
+  );
 
   const handleUserClick = useCallback(() => {
     socket?.emit(ECommonGameClientEvent.TOGGLE_READY);
   }, [socket]);
+
+  const changeSetting: TChangeSettingCallback<G> = useImmutableCallback((key, value) => {
+    onChangeSetting(key, value);
+
+    // @ts-ignore
+    socket?.emit(ECommonGameClientEvent.CHANGE_SETTING, { key, value });
+  });
 
   if (!socket || !gameName) {
     return null;
@@ -145,7 +164,16 @@ function Game<G extends EGame>() {
 
   const Game: ComponentType<IGameProps<G>> = GAMES_MAP[game];
 
-  return <Game io={socket} gameOptions={gameOptions} gameInfo={gameInfo} gameResult={gameResult} timeDiff={timeDiff} />;
+  return (
+    <Game
+      io={socket}
+      gameOptions={gameOptions}
+      gameInfo={gameInfo}
+      gameResult={gameResult}
+      timeDiff={timeDiff}
+      changeSetting={changeSetting}
+    />
+  );
 }
 
 export default React.memo(Game);

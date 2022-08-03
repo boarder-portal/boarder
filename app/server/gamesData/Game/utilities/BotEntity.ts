@@ -37,7 +37,7 @@ export default abstract class BotEntity<Game extends EGame> extends ClientEntity
   }
 
   getSocketAddress(): string {
-    return `${super.getSocketAddress()}?botIndex=${this.playerIndex}`;
+    return `${super.getSocketAddress()}?botIndex=${this.playerIndex}&settings={}`;
   }
 
   *refreshGameInfo(): TGenerator<TGameInfo<Game>> {

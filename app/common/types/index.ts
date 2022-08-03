@@ -1,4 +1,4 @@
-import { EGame, IGameData, TGameInfo, TGameResult } from 'common/types/game';
+import { EGame, IGameData, TGameInfo, TGameResult, TPlayerSettings } from 'common/types/game';
 
 export interface IUser {
   login: string;
@@ -15,11 +15,12 @@ export enum EPlayerStatus {
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface IGamePlayer extends IUser {
+export interface IGamePlayer<Game extends EGame> extends IUser {
   name: string;
   status: EPlayerStatus;
   index: number;
   isBot: boolean;
+  settings: TPlayerSettings<Game>;
 }
 
 export interface ICoords {
@@ -37,8 +38,11 @@ export interface IGameOptions {
   maxPlayersCount: number;
 }
 
+export interface IPlayerSettings {}
+
 export enum ECommonGameClientEvent {
   TOGGLE_READY = '$$TOGGLE_READY',
+  CHANGE_SETTING = '$$CHANGE_SETTING',
 }
 
 export enum ECommonGameServerEvent {
@@ -49,14 +53,22 @@ export enum ECommonGameServerEvent {
   END = '$$END',
 }
 
+export type TChangeSettingEvent<Game extends EGame> = {
+  [K in keyof TPlayerSettings<Game>]: {
+    key: K;
+    value: TPlayerSettings<Game>[K];
+  };
+}[keyof TPlayerSettings<Game>];
+
 export interface ICommonClientEventMap<Game extends EGame> {
   [ECommonGameClientEvent.TOGGLE_READY]: undefined;
+  [ECommonGameClientEvent.CHANGE_SETTING]: TChangeSettingEvent<Game>;
 }
 
 export interface ICommonServerEventMap<Game extends EGame> {
   [ECommonGameServerEvent.GET_DATA]: IGameData<Game>;
   [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
-  [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer[];
+  [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer<Game>[];
   [ECommonGameServerEvent.PING]: number;
   [ECommonGameServerEvent.END]: TGameResult<Game>;
 }

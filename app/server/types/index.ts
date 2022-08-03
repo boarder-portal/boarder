@@ -8,5 +8,6 @@ export interface ISession {
 declare module 'socket.io' {
   interface Socket {
     user: IUser | null;
+    playerSettings: unknown;
   }
 }

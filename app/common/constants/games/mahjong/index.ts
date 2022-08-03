@@ -1,12 +1,18 @@
 import invert from 'lodash/invert';
 import times from 'lodash/times';
 
-import { EDragon, EHandsCount, ESet, ESuit, EWind, IGameOptions } from 'common/types/mahjong';
+import { EDragon, EHandsCount, ESet, ESuit, EWind, IGameOptions, IPlayerSettings } from 'common/types/mahjong';
 
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   minPlayersCount: 4,
   maxPlayersCount: 4,
   handsCount: EHandsCount.FOUR,
+};
+
+export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
+  autoPass: true,
+  sortHand: false,
+  showLosingHand: true,
 };
 
 export const ALL_SUITS = Object.values(ESuit);

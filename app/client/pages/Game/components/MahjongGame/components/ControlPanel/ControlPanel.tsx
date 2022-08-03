@@ -12,6 +12,7 @@ import {
   TMeldedSet,
   TPlayableTile,
 } from 'common/types/mahjong';
+import { EGame } from 'common/types/game';
 
 import {
   getPossibleKongs,
@@ -27,6 +28,9 @@ import { getSetNumanName } from 'common/utilities/mahjong/stringify';
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
+
+import { TChangeSettingCallback } from 'client/pages/Game/Game';
 
 import styles from './ControlPanel.pcss';
 
@@ -45,6 +49,7 @@ interface IControlPanelProps {
   players: IPlayer[];
   isLastTileOfKind(tile: TPlayableTile): boolean;
   onDeclareDecision(decision: TDeclareDecision): void;
+  changeSetting: TChangeSettingCallback<EGame.MAHJONG>;
   startNewHand(ready: boolean): void;
 }
 
@@ -82,6 +87,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     players,
     isLastTileOfKind,
     onDeclareDecision,
+    changeSetting,
     startNewHand,
   } = props;
 
@@ -143,7 +149,6 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
         setDeclareDecisions(possibleDecisions);
       } else if (declareInfo) {
         const possibleDecisions: TDeclareDecisionButton[] = [
-          'pass',
           ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
             (set) => ({ type: 'set', set } as const),
           ),
@@ -160,6 +165,10 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           possibleDecisions.push({ type: 'mahjong', mahjong });
         }
 
+        if (possibleDecisions.length || !player.settings.autoPass || true) {
+          possibleDecisions.unshift('pass');
+        }
+
         setDeclareDecisions(possibleDecisions);
       } else {
         setDeclareDecisions([]);
@@ -167,7 +176,16 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     } else {
       setDeclareDecisions([]);
     }
-  }, [activePlayerIndex, currentTile, declareInfo, getMahjong, isChowPossible, player?.data.hand, player?.index]);
+  }, [
+    activePlayerIndex,
+    currentTile,
+    declareInfo,
+    getMahjong,
+    isChowPossible,
+    player?.data.hand,
+    player?.index,
+    player?.settings.autoPass,
+  ]);
 
   return (
     <Flex className={className} direction="column" between={2}>
@@ -186,7 +204,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
         </Flex>
       )}
 
-      <Flex direction="column" between={1}>
+      <Flex className={styles.decisions} direction="column" between={1}>
         {declareDecisions.map((decision, index) => {
           const declaredDecision = player?.data.turn?.declareDecision ?? null;
           const declareDecision: TDeclareDecision =
@@ -225,7 +243,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           );
         })}
 
-        {handInProcess && activePlayerIndex === -1 && !isLastHandInGame && player && (
+        {!handInProcess && !isLastHandInGame && player && (
           <Flex
             className={classNames(styles.decision, { [styles.selected]: player?.data.round?.readyForNewHand })}
             alignItems="center"
@@ -236,6 +254,28 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           </Flex>
         )}
       </Flex>
+
+      {player && (
+        <Flex direction="column" between={1}>
+          <Checkbox
+            checked={player.settings.autoPass}
+            label="Авто-пас"
+            onChange={(checked) => changeSetting('autoPass', checked)}
+          />
+
+          <Checkbox
+            checked={player.settings.sortHand}
+            label="Авто-сортировка руки"
+            onChange={(checked) => changeSetting('sortHand', checked)}
+          />
+
+          <Checkbox
+            checked={player.settings.showLosingHand}
+            label="Показывать проигрышную руку"
+            onChange={(checked) => changeSetting('showLosingHand', checked)}
+          />
+        </Flex>
+      )}
     </Flex>
   );
 };

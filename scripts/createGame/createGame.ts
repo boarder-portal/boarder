@@ -6,8 +6,10 @@ import upperFirst from 'lodash/upperFirst';
 
 import addGameEnumField from './utilities/addGameEnumField';
 import addLocalStorageOptionsKey from './utilities/addLocalStorageOptionsKey';
+import addLocalStorageSettingsKey from './utilities/addLocalStorageSettingsKey';
 import addGameName from './utilities/addGameName';
 import addDefaultOptions from './utilities/addDefaultOptions';
+import addPlayerSettings from './utilities/addPlayerSettings';
 import addGame from './utilities/addGame';
 import addGameEntity from './utilities/addGameEntity';
 import addConstants from './utilities/addConstants';
@@ -59,8 +61,10 @@ export interface IGenerateOptions {
   await Promise.all([
     addGameEnumField(options),
     addLocalStorageOptionsKey(options),
+    addLocalStorageSettingsKey(options),
     addGameName(options),
     addDefaultOptions(options),
+    addPlayerSettings(options),
     addGame(options),
     addGameEntity(options),
     addConstants(options),

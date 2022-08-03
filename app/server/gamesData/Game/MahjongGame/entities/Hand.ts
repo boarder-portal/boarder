@@ -9,7 +9,6 @@ import { EGame } from 'common/types/game';
 import {
   EGameClientEvent,
   ESet,
-  ESuit,
   IHand,
   IHandMahjong,
   IHandPlayerData,
@@ -28,7 +27,6 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
   isFlower,
-  suited,
 } from 'common/utilities/mahjong/tiles';
 import {
   getSetTile,
@@ -184,6 +182,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     declaredSets.push({
       set,
       stolenFrom: null,
+      stolenTileIndex: -1,
     });
   }
 
@@ -208,6 +207,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     declaredSets.push({
       set,
       stolenFrom,
+      stolenTileIndex: set.tiles.findIndex(isEqualTilesCallback(stolenTile)),
     });
   }
 
@@ -230,6 +230,10 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
         flowers.push(tile);
       } else {
         this.addTileToPlayerHand(playerIndex, tile);
+
+        if (this.getPlayerSettings(playerIndex)?.sortHand) {
+          this.sortPlayerTiles(playerIndex);
+        }
 
         addedTiles.push(tile);
       }
@@ -264,12 +268,13 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     }
 
     declaredSets[meldedKongIndex] = {
-      stolenFrom: meldedKong.stolenFrom,
       set: {
         type: ESet.PUNG,
         tiles: meldedKong.set.tiles.slice(0, -1),
         concealedType: meldedKong.set.concealedType,
       },
+      stolenFrom: meldedKong.stolenFrom,
+      stolenTileIndex: meldedKong.stolenTileIndex,
     };
   }
 
@@ -354,8 +359,9 @@ export default class Hand extends TurnEntity<EGame.MAHJONG, number[]> {
     hand.splice(handTileIndex, 1);
 
     declaredSets[meldedPungIndex] = {
-      stolenFrom: meldedSet.stolenFrom,
       set: kong,
+      stolenFrom: meldedSet.stolenFrom,
+      stolenTileIndex: meldedSet.stolenTileIndex,
     };
 
     return kongTile;

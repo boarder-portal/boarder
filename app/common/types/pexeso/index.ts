@@ -3,6 +3,7 @@ import {
   ICommonServerEventMap,
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
+  IPlayerSettings as ICommonPlayerSettings,
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -70,7 +71,7 @@ export interface IPlayerData {
   score: number;
 }
 
-export interface IPlayer extends IGamePlayer {
+export interface IPlayer extends IGamePlayer<EGame.PEXESO> {
   data: IPlayerData;
 }
 
@@ -130,6 +131,7 @@ declare module 'common/types/game' {
       options: IGameOptions;
       info: IGame;
       result: number[];
+      playerSettings: ICommonPlayerSettings;
     };
   }
 }

@@ -10,7 +10,7 @@ import {
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import { isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
+import { getPossibleMeldedSets, isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
 
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
@@ -168,6 +168,31 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
 
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].declareDecision = playerIndex === this.activePlayerIndex ? 'pass' : null;
+
+      if (playerIndex !== this.activePlayerIndex) {
+        const playerSettings = this.getPlayerSettings(playerIndex);
+
+        if (playerSettings?.autoPass) {
+          const possibleMeldedSets = getPossibleMeldedSets(
+            this.hand.playersData[playerIndex].hand,
+            tile,
+            playerIndex === this.hand.getNextPlayerIndex(),
+          );
+
+          if (possibleMeldedSets.length === 0) {
+            const mahjong = this.hand.getPlayerMahjong(playerIndex, {
+              isSelfDraw: false,
+              isReplacementTile: false,
+              isRobbingKong,
+              winningTile: tile,
+            });
+
+            if (!mahjong) {
+              this.playersData[playerIndex].declareDecision = 'pass';
+            }
+          }
+        }
+      }
     });
 
     this.game.sendGameInfo();

@@ -47,16 +47,24 @@ const Hand: FC<IHandProps> = (props) => {
       <Flex alignItems="center" between={2}>
         {data.hand?.declaredSets.map((set, index) => {
           let rotatedTileIndex = -1;
+          let tiles = set.set.tiles;
           const stolenFromPlayerIndex = players.findIndex(({ index }) => index === set.stolenFrom);
 
           if (stolenFromPlayerIndex !== -1) {
             rotatedTileIndex = (playerIndex + 3 - stolenFromPlayerIndex) % 4;
           }
 
+          if (set.stolenTileIndex !== -1 && rotatedTileIndex !== -1) {
+            const stolenTile = tiles[set.stolenTileIndex];
+            const ownTiles = [...tiles.slice(0, set.stolenTileIndex), ...tiles.slice(set.stolenTileIndex + 1)];
+
+            tiles = [...ownTiles.slice(0, rotatedTileIndex), stolenTile, ...ownTiles.slice(rotatedTileIndex)];
+          }
+
           return (
             <Tiles
               key={index}
-              tiles={set.set.tiles}
+              tiles={tiles}
               openType={
                 isDeclaredMeldedSet(set) ? EOpenType.OPEN : open ? EOpenType.SEMI_CONCEALED : EOpenType.CONCEALED
               }

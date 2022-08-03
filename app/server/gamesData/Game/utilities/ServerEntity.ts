@@ -7,6 +7,7 @@ import {
   TGameServerDatalessEvent,
   TGameServerEvent,
   TGameServerEventData,
+  TPlayerSettings,
 } from 'common/types/game';
 import { IGamePlayer } from 'common/types';
 
@@ -65,7 +66,15 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
-  getPlayers(): IGamePlayer[] {
+  getPlayer(playerIndex: number): IGamePlayer<Game> | null {
+    return this.context.game.players.at(playerIndex) ?? null;
+  }
+
+  getPlayerSettings(playerIndex: number): TPlayerSettings<Game> | null {
+    return this.getPlayer(playerIndex)?.settings ?? null;
+  }
+
+  getPlayers(): IGamePlayer<Game>[] {
     return this.context.game.players;
   }
 
@@ -73,9 +82,9 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     return this.getPlayers().map(({ index }) => callback(index));
   }
 
-  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer & { data: Data })[] {
+  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer<Game> & { data: Data })[] {
     return this.getPlayers().map((player) => ({
-      ...pick(player, ['login', 'name', 'status', 'index', 'isBot']),
+      ...pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']),
       data: callback(player.index),
     }));
   }

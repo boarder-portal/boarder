@@ -3,6 +3,7 @@ import {
   ICommonServerEventMap,
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
+  IPlayerSettings as ICommonPlayerSettings,
 } from 'common/types';
 import { ICard } from 'common/types/cards';
 import { EGame } from 'common/types/game';
@@ -22,7 +23,7 @@ export interface IPlayerData extends IGamePlayerData {
   turn: ITurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer {
+export interface IPlayer extends IGamePlayer<EGame.HEARTS> {
   data: IPlayerData;
 }
 
@@ -79,6 +80,7 @@ declare module 'common/types/game' {
       options: IGameOptions;
       info: IGame;
       result: void;
+      playerSettings: ICommonPlayerSettings;
     };
   }
 }

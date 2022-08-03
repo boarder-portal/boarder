@@ -3,6 +3,7 @@ import {
   ICommonServerEventMap,
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
+  IPlayerSettings as ICommonPlayerSettings,
 } from 'common/types';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
@@ -103,7 +104,7 @@ export interface IPlayerData extends IGamePlayerData {
   turn: ITurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer {
+export interface IPlayer extends IGamePlayer<EGame.SEVEN_WONDERS> {
   data: IPlayerData;
 }
 
@@ -252,6 +253,7 @@ declare module 'common/types/game' {
       options: IGameOptions;
       info: IGame;
       result: void;
+      playerSettings: ICommonPlayerSettings;
     };
   }
 }
