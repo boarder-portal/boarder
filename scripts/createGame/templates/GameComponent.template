@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 
 import { EGame } from 'common/types/game';
 
-import { IGameProps } from 'client/pages/Game/Game';
 import useSocket from 'client/hooks/useSocket';
+
+import { IGameProps } from 'client/pages/Game/Game';
 
 import styles from './{{pascalCased}}Game.pcss';
 
