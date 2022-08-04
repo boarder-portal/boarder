@@ -12,36 +12,30 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
     while (true) {
       yield* this.waitForHand();
 
-      while (!this.isHandOver()) {
-        if (this.isOwnTurn()) {
+      while (true) {
+        const { type } = yield* this.race({
+          ownTurn: this.waitForOwnTurn(),
+          declare: this.waitForDeclareAction(),
+          handEnd: this.waitForHandEnd(),
+        });
+
+        if (type === 'handEnd') {
+          break;
+        }
+
+        if (type === 'ownTurn') {
           const hand = this.getPlayer().data.hand?.hand;
 
           if (hand) {
-            yield* this.delay(random(200, 300));
+            yield* this.delay(random(200, 700));
 
             this.sendSocketEvent(EGameClientEvent.DISCARD_TILE, getRandomIndex(hand.length));
           }
         } else {
-          const { type } = yield* this.race({
-            declare: this.waitForDeclareAction(),
-            ownTurn: this.waitForOwnTurn(),
-            handEnd: this.waitForHandEnd(),
-          });
+          const { data } = this.getPlayer();
 
-          if (type === 'handEnd') {
-            break;
-          }
-
-          if (type === 'ownTurn') {
-            continue;
-          }
-
-          if (type === 'declare') {
-            const { data } = this.getPlayer();
-
-            if (data.turn?.declareDecision === null) {
-              this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
-            }
+          if (data.turn?.declareDecision === null) {
+            this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
           }
         }
 
@@ -56,17 +50,6 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
 
   getPlayer(): IPlayer {
     return this.getGameInfo().players[this.playerIndex];
-  }
-
-  isHandOver(): boolean {
-    return this.getGameInfo().round?.hand?.activePlayerIndex === -1;
-  }
-
-  isOwnTurn(): boolean {
-    return (
-      this.getGameInfo().round?.hand?.activePlayerIndex === this.playerIndex &&
-      !this.getGameInfo().round?.hand?.turn?.declareInfo
-    );
   }
 
   *waitForDeclareAction(): TGenerator {
@@ -91,7 +74,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
 
   *waitForHandEnd(): TGenerator {
     while (true) {
-      if (this.isHandOver()) {
+      if (this.getGameInfo().round?.hand?.activePlayerIndex === -1) {
         return;
       }
 
@@ -101,7 +84,10 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
 
   *waitForOwnTurn(): TGenerator {
     while (true) {
-      if (this.isOwnTurn()) {
+      if (
+        this.getGameInfo().round?.hand?.activePlayerIndex === this.playerIndex &&
+        !this.getGameInfo().round?.hand?.turn?.declareInfo
+      ) {
         return;
       }
 

@@ -28,9 +28,9 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
             this.sendSocketEvent(EGameClientEvent.CHOOSE_CARD, index);
           }
         }
-
-        yield* this.refreshGameInfo();
       }
+
+      yield* this.waitForPlayStage();
 
       while (this.getPlayer().data.hand?.hand.length) {
         yield* this.waitForTurn();
@@ -68,6 +68,16 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
   *waitForNewHand(): TGenerator {
     while (true) {
       if (this.getPlayer().data.hand?.hand.length) {
+        return;
+      }
+
+      yield* this.refreshGameInfo();
+    }
+  }
+
+  *waitForPlayStage(): TGenerator {
+    while (true) {
+      if (this.getGameInfo().hand?.stage === EHandStage.PLAY) {
         return;
       }
 
