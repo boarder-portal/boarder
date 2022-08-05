@@ -6,8 +6,7 @@ import {
   REVERSIBLE_TILES,
   TERMINAL_CHOWS_SETS,
 } from 'common/constants/games/mahjong/tiles';
-import { IMPLIED_FANS } from 'common/constants/games/mahjong/impliedFans';
-import { FAN_SCORES } from 'common/constants/games/mahjong/fans';
+import { FAN_SCORES, IMPLIED_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
   EFan,

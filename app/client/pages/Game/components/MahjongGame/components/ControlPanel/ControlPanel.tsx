@@ -148,11 +148,13 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
 
         setDeclareDecisions(possibleDecisions);
       } else if (declareInfo) {
-        const possibleDecisions: TDeclareDecisionButton[] = [
-          ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
-            (set) => ({ type: 'set', set } as const),
-          ),
-        ];
+        const possibleDecisions: TDeclareDecisionButton[] = declareInfo.isRobbingKong
+          ? []
+          : [
+              ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
+                (set) => ({ type: 'set', set } as const),
+              ),
+            ];
 
         const mahjong = getMahjong({
           hand: player.data.hand.hand,

@@ -18,7 +18,7 @@ import {
   TTile,
 } from 'common/types/mahjong';
 
-import { isPlayable, isSuited, suited } from 'common/utilities/mahjong/tiles';
+import { chow, isPlayable, isSuited, kong, pung } from 'common/utilities/mahjong/tiles';
 
 export function parseTiles(tilesString: string): TTile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
@@ -26,6 +26,10 @@ export function parseTiles(tilesString: string): TTile[] {
 
 export function parsePlayableTiles(tilesString: string): TPlayableTile[] {
   return parseTiles(tilesString).filter(isPlayable);
+}
+
+export function parsePlayableTileSets(tilesString: string): TPlayableTile[][] {
+  return tilesString.split(' ').map((tilesString) => parseTiles(tilesString).filter(isPlayable));
 }
 
 export function parseTile(tileString: string): TTile {
@@ -106,7 +110,7 @@ export function parsePlayableTile(tileString: string): TPlayableTile {
 export function parsePung(tileString: string): TMeldedSet<IPungSet> {
   return {
     type: ESet.PUNG,
-    tiles: parsePlayableTiles(tileString.repeat(3)),
+    tiles: pung(parsePlayableTile(tileString)),
     concealedType: ESetConcealedType.MELDED,
   };
 }
@@ -117,7 +121,7 @@ export function parseKong<ConcealedType extends ESetConcealedType>(
 ): IKongSet & { concealedType: ConcealedType } {
   return {
     type: ESet.KONG,
-    tiles: parsePlayableTiles(tileString.repeat(4)),
+    tiles: kong(parsePlayableTile(tileString)),
     concealedType,
   };
 }
@@ -131,7 +135,7 @@ export function parseChow(tileString: string): TMeldedSet<IChowSet> {
 
   return {
     type: ESet.CHOW,
-    tiles: [suited(chowTile.value - 1, chowTile.suit), chowTile, suited(chowTile.value + 1, chowTile.suit)],
+    tiles: chow(chowTile),
     concealedType: ESetConcealedType.MELDED,
   };
 }

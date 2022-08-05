@@ -173,11 +173,13 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
         const playerSettings = this.getPlayerSettings(playerIndex);
 
         if (playerSettings?.autoPass) {
-          const possibleMeldedSets = getPossibleMeldedSets(
-            this.hand.playersData[playerIndex].hand,
-            tile,
-            playerIndex === this.hand.getNextPlayerIndex(),
-          );
+          const possibleMeldedSets = isRobbingKong
+            ? []
+            : getPossibleMeldedSets(
+                this.hand.playersData[playerIndex].hand,
+                tile,
+                playerIndex === this.hand.getNextPlayerIndex(),
+              );
 
           if (possibleMeldedSets.length === 0) {
             const mahjong = this.hand.getPlayerMahjong(playerIndex, {

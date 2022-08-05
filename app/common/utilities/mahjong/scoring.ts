@@ -43,6 +43,7 @@ export interface IHandScoreOptions {
   isRobbingKong: boolean;
   isLastTileOfKind: boolean;
   isLastWallTile: boolean;
+  minScore?: number;
 }
 
 export interface IHandScoreFullOptions extends IHandScoreOptions {
@@ -84,7 +85,7 @@ export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
 }
 
 export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
-  const { hand, concealedSets, meldedSets, seatWind, roundWind, isSelfDraw } = options;
+  const { hand, concealedSets, meldedSets, seatWind, roundWind, isSelfDraw, minScore = 8 } = options;
   const waits = options.waits ?? getAllWaits(options);
   const winningTile = options.winningTile ?? waits.at(0);
 
@@ -139,7 +140,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
         });
       }
 
-      const fansMahjong = getBestFansMahjong(fans, sets, waits);
+      const fansMahjong = getBestFansMahjong(fans, sets, waits, minScore);
 
       if (!mahjong || (fansMahjong && fansMahjong.score > mahjong.score)) {
         mahjong = fansMahjong;
@@ -177,7 +178,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
       });
     }
 
-    mahjong = getBestFansMahjong(fans, null, waits);
+    mahjong = getBestFansMahjong(fans, null, waits, minScore);
   }
 
   if (!mahjong) {
@@ -187,7 +188,12 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   return mahjong;
 }
 
-function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TPlayableTile[]): IHandMahjong | null {
+function getBestFansMahjong(
+  fans: TFan[],
+  sets: TSet[] | null,
+  waits: TPlayableTile[],
+  minScore: number,
+): IHandMahjong | null {
   fans = sortBy(fans, ({ fan }) => FANS.indexOf(fan));
 
   let pickedFans = null as TFan[] | null;
@@ -228,7 +234,7 @@ function getBestFansMahjong(fans: TFan[], sets: TSet[] | null, waits: TPlayableT
 
   const pureFans = pickedFans.filter(({ fan }) => fan !== EFan.FLOWER_TILES);
 
-  if (getFansScore(pureFans) < 8) {
+  if (getFansScore(pureFans) < minScore) {
     return null;
   }
 

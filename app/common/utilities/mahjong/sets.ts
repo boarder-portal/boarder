@@ -1,5 +1,4 @@
 import sortBy from 'lodash/sortBy';
-import times from 'lodash/times';
 
 import { KNITTED_SEQUENCES } from 'common/constants/games/mahjong/tiles';
 
@@ -29,6 +28,7 @@ import {
   isStraight,
   isSuited,
   isTileSubset,
+  kong,
   tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
 import { getCombinations, getSetsCombinations } from 'common/utilities/combinations';
@@ -342,7 +342,7 @@ export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TDeclaredS
     if (hand.slice(index + 1).filter(isEqualTilesCallback(tile)).length === 3) {
       possibleSets.push({
         type: ESet.KONG,
-        tiles: times(4, () => tile),
+        tiles: kong(tile),
         concealedType: ESetConcealedType.CONCEALED,
       });
     }
@@ -358,7 +358,7 @@ export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TDeclaredS
     if (hand.some(isEqualTilesCallback(pungTile))) {
       possibleSets.push({
         type: ESet.KONG,
-        tiles: times(4, () => pungTile),
+        tiles: kong(pungTile),
         concealedType: ESetConcealedType.MELDED,
       });
     }
@@ -401,7 +401,7 @@ export function getPossibleMeldedSets(
   if (hand.filter(isDiscardedTile).length === 3) {
     possibleSets.push({
       type: ESet.KONG,
-      tiles: times(4, () => discardedTile),
+      tiles: kong(discardedTile),
       concealedType: ESetConcealedType.MELDED,
     });
   }

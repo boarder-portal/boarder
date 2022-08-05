@@ -35,6 +35,29 @@ export function wind(side: EWind): IWindTile {
   };
 }
 
+export function flower(index: number): IFlowerTile {
+  return {
+    type: ETileType.FLOWER,
+    index,
+  };
+}
+
+export function pair<Tile extends TTile>(tile: Tile): Tile[] {
+  return [tile, tile];
+}
+
+export function pung<Tile extends TTile>(tile: Tile): Tile[] {
+  return [tile, tile, tile];
+}
+
+export function kong<Tile extends TTile>(tile: Tile): Tile[] {
+  return [tile, tile, tile, tile];
+}
+
+export function chow(tile: ISuitedTile): ISuitedTile[] {
+  return [suited(tile.value - 1, tile.suit), tile, suited(tile.value + 1, tile.suit)];
+}
+
 export function isSuited(tile: TTile): tile is ISuitedTile {
   return tile.type === ETileType.SUIT;
 }
