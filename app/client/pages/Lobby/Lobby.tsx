@@ -21,6 +21,8 @@ import PexesoCreateGameOptions from 'client/pages/games/pexeso/components/Pexeso
 import PexesoGameOptions from 'client/pages/games/pexeso/components/PexesoGameOptions/PexesoGameOptions';
 import BombersCreateGameOptions from 'client/pages/games/bombers/components/BombersCreateGameOptions/BombersCreateGameOptions';
 import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
+import MahjongCreateGameOptions from 'client/pages/games/mahjong/components/MahjongCreateGameOptions/MahjongCreateGameOptions';
+import MahjongGameOptions from 'client/pages/games/mahjong/components/MahjongGameOptions/MahjongGameOptions';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
@@ -44,6 +46,7 @@ const CREATE_GAME_OPTIONS_MAP: Partial<{
 }> = {
   [EGame.PEXESO]: PexesoCreateGameOptions,
   [EGame.BOMBERS]: BombersCreateGameOptions,
+  [EGame.MAHJONG]: MahjongCreateGameOptions,
 };
 
 const GAME_OPTIONS_MAP: Partial<{
@@ -51,6 +54,7 @@ const GAME_OPTIONS_MAP: Partial<{
 }> = {
   [EGame.PEXESO]: PexesoGameOptions,
   [EGame.BOMBERS]: BombersGameOptions,
+  [EGame.MAHJONG]: MahjongGameOptions,
 };
 
 const Lobby = <Game extends EGame>() => {

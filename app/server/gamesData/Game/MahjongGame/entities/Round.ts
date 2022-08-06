@@ -1,5 +1,5 @@
 import { EGame } from 'common/types/game';
-import { EGameClientEvent, EWind, IRound, IRoundPlayerData } from 'common/types/mahjong';
+import { EWind, IRound, IRoundPlayerData } from 'common/types/mahjong';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
@@ -34,7 +34,6 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
     this.isLastInGame = options.isLastInGame;
     this.playersData = this.getPlayersData((playerIndex) => ({
       wind: options.playersWinds[playerIndex],
-      readyForNewHand: false,
     }));
   }
 
@@ -52,20 +51,9 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
 
       this.game.sendGameInfo();
 
-      const result = yield* this.hand;
+      yield* this.hand;
 
-      this.game.addHandResult(result);
       this.game.sendGameInfo();
-
-      if (!isLastHand) {
-        while (this.playersData.some(({ readyForNewHand }) => !readyForNewHand)) {
-          const { data, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.READY_FOR_NEW_HAND);
-
-          this.playersData[playerIndex].readyForNewHand = data;
-
-          this.game.sendGameInfo();
-        }
-      }
     }
   }
 
