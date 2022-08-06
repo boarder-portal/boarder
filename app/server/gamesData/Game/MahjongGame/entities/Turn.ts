@@ -216,8 +216,23 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     this.game.sendGameInfo();
 
     while (this.playersData.some(({ declareDecision }) => declareDecision === null)) {
-      const { data: declared, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.DECLARE);
-      const playerData = this.playersData[playerIndex];
+      const { type, value } = yield* this.race({
+        declare: this.waitForSocketEvent(EGameClientEvent.DECLARE),
+        settingChange: this.game.waitForSettingChange(),
+      });
+      const playerData = this.playersData[value.playerIndex];
+
+      if (type === 'settingChange') {
+        const { key, value: newValue } = value;
+
+        if (key === 'autoPass' && newValue && canAutoPass[value.playerIndex] && !playerData.declareDecision) {
+          playerData.declareDecision = 'pass';
+        }
+
+        continue;
+      }
+
+      const { data: declared } = value;
 
       if (declared === null || declared === 'pass' || declared === 'mahjong') {
         playerData.declareDecision = declared;

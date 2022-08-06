@@ -30,13 +30,17 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     return this.toJSON();
   }
 
+  getSettingChangeEvent(playerIndex: number, event: TChangeSettingEvent<Game>): TSettingsChangeEvent<Game> {
+    return {
+      playerIndex,
+      settings: this.getPlayers()[playerIndex].settings,
+      ...event,
+    };
+  }
+
   *listenForSettingsChange(callback: (event: TSettingsChangeEvent<Game>) => unknown): TGenerator {
     yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
-      callback({
-        playerIndex,
-        settings: this.getPlayers()[playerIndex].settings,
-        ...(data as any as TChangeSettingEvent<Game>),
-      });
+      callback(this.getSettingChangeEvent(playerIndex, data as any));
     });
   }
 
@@ -78,6 +82,12 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
         .filter(({ isBot }) => isBot)
         .map(({ index }) => this.spawnBot(bot, index)),
     );
+  }
+
+  *waitForSettingChange(): TGenerator<TSettingsChangeEvent<Game>> {
+    const { data, playerIndex } = yield* this.waitForSocketEvent(ECommonGameClientEvent.CHANGE_SETTING);
+
+    return this.getSettingChangeEvent(playerIndex, data as any);
   }
 
   *watchSettingChange(): TGenerator {
