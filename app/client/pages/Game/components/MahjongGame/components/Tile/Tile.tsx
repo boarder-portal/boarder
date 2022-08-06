@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, memo } from 'react';
+import { AllHTMLAttributes, FC, memo } from 'react';
 import classNames from 'classnames';
 
 import { TTile } from 'common/types/mahjong';
@@ -11,7 +11,7 @@ import Image from 'client/components/common/Image/Image';
 
 import styles from './Tile.pcss';
 
-interface ITileProps extends HTMLAttributes<HTMLDivElement> {
+interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
   rootClassName?: string;
   tile: TTile | null;
   width: number;

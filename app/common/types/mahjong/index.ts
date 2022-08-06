@@ -348,6 +348,10 @@ export interface ISpecialFan {
 export type TFan = IHandFan | ISetsFan | ISpecialFan;
 
 export interface IHandMahjong {
+  hand: TPlayableTile[];
+  concealedSets: TConcealedSet<IKongSet>[];
+  meldedSets: TMeldedSet[];
+  winningTile: TPlayableTile;
   fans: TFan[];
   sets: TSet[] | null;
   waits: TPlayableTile[];

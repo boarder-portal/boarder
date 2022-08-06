@@ -1,5 +1,7 @@
 import { FC, memo } from 'react';
 
+import { HAND_COUNTS } from 'common/constants/games/mahjong';
+
 import { EGame } from 'common/types/game';
 import { EHandsCount } from 'common/types/mahjong';
 
@@ -9,12 +11,6 @@ import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
 
 import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
-
-const HANDS_COUNT: Record<EHandsCount, number> = {
-  [EHandsCount.ONE]: 1,
-  [EHandsCount.FOUR]: 4,
-  [EHandsCount.SIXTEEN]: 16,
-};
 
 const MahjongCreateGameOptions: FC<ICreateGameOptionsProps<EGame.MAHJONG>> = (props) => {
   const { options, changeOptions } = props;
@@ -31,7 +27,7 @@ const MahjongCreateGameOptions: FC<ICreateGameOptionsProps<EGame.MAHJONG>> = (pr
         label="Количество раздач"
         value={options.handsCount}
         options={Object.values(EHandsCount).map((handsCount) => ({
-          text: HANDS_COUNT[handsCount],
+          text: HAND_COUNTS[handsCount],
           value: handsCount,
         }))}
         onChange={handleHandsCountChange}

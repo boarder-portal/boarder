@@ -1,5 +1,9 @@
 .root {
   display: flex;
+
+  &.inline {
+    display: inline-flex;
+  }
 }
 
 .direction_row {
@@ -70,12 +74,17 @@
   --space: 20px;
 }
 
+.between_6 > * {
+  --space: 20px;
+}
+
 .direction_row {
   &.between_1,
   &.between_2,
   &.between_3,
   &.between_4,
-  &.between_5 {
+  &.between_5,
+  &.between_6 {
     > :not(:first-child) {
       margin-left: var(--space);
     }
@@ -87,7 +96,8 @@
   &.between_2,
   &.between_3,
   &.between_4,
-  &.between_5 {
+  &.between_5,
+  &.between_6 {
     > :not(:last-child) {
       margin-left: var(--space);
     }
@@ -99,7 +109,8 @@
   &.between_2,
   &.between_3,
   &.between_4,
-  &.between_5 {
+  &.between_5,
+  &.between_6 {
     > :not(:first-child) {
       margin-top: var(--space);
     }
@@ -111,7 +122,8 @@
   &.between_2,
   &.between_3,
   &.between_4,
-  &.between_5 {
+  &.between_5,
+  &.between_6 {
     > :not(:last-child) {
       margin-top: var(--space);
     }

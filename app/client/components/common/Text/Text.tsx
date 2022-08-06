@@ -3,14 +3,14 @@ import classNames from 'classnames';
 
 import styles from './Text.pcss';
 
-interface IHeadingProps extends HTMLAttributes<HTMLDivElement> {
+interface ITextProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
   weight?: 'normal' | 'bold';
   children?: ReactNode;
 }
 
-const Text = forwardRef<HTMLDivElement | null, IHeadingProps>((props, ref) => {
+const Text = forwardRef<HTMLDivElement | null, ITextProps>((props, ref) => {
   const { className, size = 'm', weight = 'normal', children, ...restProps } = props;
 
   return (

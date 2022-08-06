@@ -26,9 +26,10 @@ import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getSetNumanName } from 'common/utilities/mahjong/stringify';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
+import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import Button from 'client/components/common/Button/Button';
 
 import { TChangeSettingCallback } from 'client/pages/Game/Game';
 
@@ -51,6 +52,8 @@ interface IControlPanelProps {
   onDeclareDecision(decision: TDeclareDecision): void;
   changeSetting: TChangeSettingCallback<EGame.MAHJONG>;
   startNewHand(ready: boolean): void;
+  openFansModal(): void;
+  openResultsModal(): void;
 }
 
 type TDeclareDecisionButton =
@@ -89,6 +92,8 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     onDeclareDecision,
     changeSetting,
     startNewHand,
+    openFansModal,
+    openResultsModal,
   } = props;
 
   const [declareDecisions, setDeclareDecisions] = useState<TDeclareDecisionButton[]>([]);
@@ -227,7 +232,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
               <Flex alignItems="center" between={3}>
                 <span>{getSetNumanName(decision.set)}</span>
 
-                <Tiles tiles={decision.set.tiles} openType={EOpenType.OPEN} tileWidth={30} />
+                <Tiles tiles={decision.set.tiles} tileWidth={30} />
               </Flex>
             );
           }
@@ -256,6 +261,20 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           </Flex>
         )}
       </Flex>
+
+      <div className={styles.buttons}>
+        <Button className={styles.button} size="s" onClick={openResultsModal}>
+          Результаты
+        </Button>
+
+        <Button className={styles.button} size="s" onClick={openFansModal}>
+          Фаны
+        </Button>
+
+        <Button className={styles.button} size="s">
+          Калькулятор
+        </Button>
+      </div>
 
       {player && (
         <Flex direction="column" between={1}>

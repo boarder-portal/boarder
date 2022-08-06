@@ -2,6 +2,8 @@ import { FC, useCallback, useMemo, MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames/bind';
 
+import useGlobalListener from 'client/hooks/useGlobalListener';
+
 import styles from './Modal.pcss';
 
 interface IModalProps {
@@ -16,6 +18,14 @@ const Modal: FC<IModalProps> = (props) => {
   const handleContainerClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
+
+  useGlobalListener('keyup', document, (e) => {
+    if (open && e.code === 'Escape') {
+      e.preventDefault();
+
+      onClose?.();
+    }
+  });
 
   const content = useMemo(
     () => (

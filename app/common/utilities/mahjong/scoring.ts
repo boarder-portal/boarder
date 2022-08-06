@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
 
 import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong/tiles';
-import { FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
+import { ALL_FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
   EFan,
@@ -112,7 +112,9 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     isSelfDraw,
   });
 
-  let mahjong: IHandMahjong | null = null;
+  let bestFans: TFan[] = [];
+  let chosenSets: TSet[] | null = null;
+  let maxScore = 0;
 
   if (
     setsVariations.length === 0 &&
@@ -140,10 +142,12 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
         });
       }
 
-      const fansMahjong = getBestFansMahjong(fans, sets, waits, minScore);
+      const bestFansInfo = getBestFans(fans, minScore);
 
-      if (!mahjong || (fansMahjong && fansMahjong.score > mahjong.score)) {
-        mahjong = fansMahjong;
+      if (bestFansInfo && bestFansInfo.score > maxScore) {
+        bestFans = bestFansInfo.fans;
+        chosenSets = sets;
+        maxScore = bestFansInfo.score;
       }
     });
   } else {
@@ -178,23 +182,32 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
       });
     }
 
-    mahjong = getBestFansMahjong(fans, null, waits, minScore);
+    const bestFansInfo = getBestFans(fans, minScore);
+
+    if (bestFansInfo) {
+      bestFans = bestFansInfo.fans;
+      maxScore = bestFansInfo.score;
+    }
   }
 
-  if (!mahjong) {
+  if (!bestFans.length) {
     return null;
   }
 
-  return mahjong;
+  return {
+    hand,
+    concealedSets,
+    meldedSets,
+    winningTile,
+    fans: bestFans,
+    score: maxScore,
+    sets: chosenSets,
+    waits,
+  };
 }
 
-function getBestFansMahjong(
-  fans: TFan[],
-  sets: TSet[] | null,
-  waits: TPlayableTile[],
-  minScore: number,
-): IHandMahjong | null {
-  fans = sortBy(fans, ({ fan }) => FANS.indexOf(fan));
+function getBestFans(fans: TFan[], minScore: number): { fans: TFan[]; score: number } | null {
+  fans = sortBy(fans, ({ fan }) => ALL_FANS.indexOf(fan));
 
   let pickedFans = null as TFan[] | null;
   let maxScore = 0;
@@ -238,5 +251,5 @@ function getBestFansMahjong(
     return null;
   }
 
-  return { fans: pickedFans, sets, waits, score: getFansScore(pickedFans) };
+  return { fans: pickedFans, score: getFansScore(pickedFans) };
 }

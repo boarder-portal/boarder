@@ -321,7 +321,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     return getHandMahjong({
       ...options,
-      hand: playerIndex === this.activePlayerIndex ? getHandWithoutTile(hand, options.winningTile) : hand,
+      hand: playerIndex === this.activePlayerIndex ? getHandWithoutTile(hand, options.winningTile) : [...hand],
       concealedSets: declaredSets.filter(isDeclaredConcealedSet).map(({ set }) => set),
       meldedSets: declaredSets.filter(isDeclaredMeldedSet).map(({ set }) => set),
       flowers,

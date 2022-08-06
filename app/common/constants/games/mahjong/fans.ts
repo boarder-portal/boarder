@@ -2,7 +2,7 @@ import { EFan, TTile } from 'common/types/mahjong';
 
 import { parsePlayableTileSets } from 'common/utilities/mahjong/parse';
 
-export const FANS = Object.values(EFan);
+export const ALL_FANS = Object.values(EFan);
 
 export const FAN_SCORES: Record<EFan, number> = {
   // 88 points
@@ -489,7 +489,7 @@ export const FAN_DESCRIPTIONS: Record<EFan, string> = {
 
   // 2 points
   [EFan.DRAGON_PUNG]: 'Панг или конг из костей драконов',
-  [EFan.PREVALENT_WIND]: 'Панг или конг из костей ветра, соответствующего текущему преимущественному ветру',
+  [EFan.PREVALENT_WIND]: 'Панг или конг из костей ветра, соответствующего текущему ветру раунда',
   [EFan.SEAT_WIND]:
     'Панг или конг из костей ветра, соответствующего месту игрока за\n' +
     'столом (разыгрывающий – Восток, и далее, против часовой\n' +

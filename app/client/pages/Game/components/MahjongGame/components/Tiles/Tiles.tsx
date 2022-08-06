@@ -1,6 +1,7 @@
 import { DragEvent, FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import classNames from 'classnames';
+import isEqual from 'lodash/isEqual';
 
 import { TTile } from 'common/types/mahjong';
 
@@ -9,6 +10,7 @@ import { moveElement } from 'common/utilities/array';
 import { stringifyTile } from 'common/utilities/mahjong/stringify';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
+import { usePrevious } from 'client/hooks/usePrevious';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Flex from 'client/components/common/Flex/Flex';
@@ -25,11 +27,12 @@ export enum EOpenType {
 
 interface ITilesProps {
   tiles: TTile[];
-  openType: EOpenType;
   tileWidth: number;
+  openType?: EOpenType;
   hoverable?: boolean;
   rotatedTileIndex?: number | null;
   selectedTileIndex?: number;
+  inline?: boolean;
   onChangeTileIndex?(from: number, to: number): void;
   onTileClick?(tileIndex: number): void;
 }
@@ -49,10 +52,11 @@ const getLocalTiles = (tiles: TTile[]): ILocalTile[] => {
 const Tiles: FC<ITilesProps> = (props) => {
   const {
     tiles,
-    openType,
+    openType = EOpenType.OPEN,
     tileWidth,
     rotatedTileIndex = -1,
     selectedTileIndex = -1,
+    inline,
     onChangeTileIndex,
     onTileClick,
   } = props;
@@ -64,6 +68,8 @@ const Tiles: FC<ITilesProps> = (props) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const fromRef = useRef(-1);
   const toRef = useRef(-1);
+
+  const previousTiles = usePrevious(tiles);
 
   const hoverable = Boolean(onTileClick || onChangeTileIndex);
 
@@ -198,12 +204,15 @@ const Tiles: FC<ITilesProps> = (props) => {
   });
 
   useEffect(() => {
-    setLocalTiles(getLocalTiles(tiles));
-  }, [tiles]);
+    if (!isEqual(tiles, previousTiles)) {
+      setLocalTiles(getLocalTiles(tiles));
+    }
+  }, [previousTiles, tiles]);
 
   return (
     <Flex
       ref={rootRef}
+      inline={inline}
       alignItems="center"
       style={{
         width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),

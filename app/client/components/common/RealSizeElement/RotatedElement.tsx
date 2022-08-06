@@ -1,6 +1,6 @@
-import { FC, HTMLAttributes, memo, useLayoutEffect, useRef } from 'react';
+import { AllHTMLAttributes, FC, memo, useLayoutEffect, useRef } from 'react';
 
-interface IRealSizeElementProps extends HTMLAttributes<HTMLDivElement> {
+interface IRealSizeElementProps extends AllHTMLAttributes<HTMLDivElement> {
   rootClassName?: string;
   rotation: number;
 }

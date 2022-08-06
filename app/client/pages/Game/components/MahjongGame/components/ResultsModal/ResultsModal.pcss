@@ -1,0 +1,46 @@
+.root {
+  --indexWidth: 60px;
+
+  &.results {
+    width: 800px;
+  }
+}
+
+.row {
+  background-color: transparent;
+  transition: background-color 0.1s ease-in-out;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
+  }
+}
+
+.indexCell, .resultCell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.indexCell {
+  width: var(--indexWidth);
+}
+
+.resultCell {
+  width: calc((100% - var(--indexWidth)) / 4);
+}
+
+.backButton {
+  cursor: pointer;
+}
+
+.backIcon {
+  width: 24px;
+}
+
+.mahjongContainer {
+  margin-top: 12px;
+}

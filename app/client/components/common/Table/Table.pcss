@@ -1,0 +1,27 @@
+.root {
+  border-collapse: collapse;
+
+  &.fullWidth {
+    width: 100%;
+  }
+
+  &.fixed {
+    table-layout: fixed;
+  }
+
+  &.auto {
+    table-layout: auto;
+  }
+
+  thead, tfoot {
+    td {
+      font-weight: bold;
+    }
+  }
+
+  &.bordered {
+    td {
+      border: 1px solid #000;
+    }
+  }
+}

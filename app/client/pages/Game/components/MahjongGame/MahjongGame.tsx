@@ -23,11 +23,14 @@ import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/use
 import usePlayer from 'client/hooks/usePlayer';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useGlobalListener from 'client/hooks/useGlobalListener';
+import { useBoolean } from 'client/hooks/useBoolean';
 
 import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
 import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
 import ControlPanel from 'client/pages/Game/components/MahjongGame/components/ControlPanel/ControlPanel';
 import Flex from 'client/components/common/Flex/Flex';
+import FansModal from 'client/pages/Game/components/MahjongGame/components/FansModal/FansModal';
+import ResultsModal from 'client/pages/Game/components/MahjongGame/components/ResultsModal/ResultsModal';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
@@ -47,12 +50,14 @@ const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
 const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
-  const { io, gameInfo, changeSetting } = props;
+  const { io, gameOptions, gameInfo, changeSetting } = props;
 
   const [layoutType, setLayoutType] = useState<ELayoutType>(ELayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
+  const { value: fansModalOpen, setTrue: openFansModal, setFalse: closeFansModal } = useBoolean(false);
+  const { value: resultsModalOpen, setTrue: openResultsModal, setFalse: closeResultsModal } = useBoolean(false);
   const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [resultsByHand, setResultsByHand] = useState<IHandResult[]>();
+  const [resultsByHand, setResultsByHand] = useState<IHandResult[]>([]);
   const [roundWind, setRoundWind] = useState<EWind | null>(null);
   const [roundHandIndex, setRoundHandIndex] = useState(-1);
   const [isLastHandInGame, setIsLastHandInGame] = useState(false);
@@ -193,7 +198,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
             <Flex key={index} alignItems="center" justifyContent="center" style={{ gridArea: SIDES[index] }}>
               <Hand
                 player={p}
-                score={resultsByHand?.reduce((score, { scores }) => score + scores[p.index], 0) ?? 0}
+                score={resultsByHand.reduce((score, { scores }) => score + scores[p.index], 0) ?? 0}
                 tileWidth={tileWidth}
                 open={isPlayer || (!handInProcess && p.settings.showLosingHand)}
                 rotation={-index}
@@ -247,6 +252,18 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         onDeclareDecision={declareDecision}
         changeSetting={changeSetting}
         startNewHand={startNewHand}
+        openFansModal={openFansModal}
+        openResultsModal={openResultsModal}
+      />
+
+      <FansModal open={fansModalOpen} onClose={closeFansModal} />
+
+      <ResultsModal
+        open={resultsModalOpen}
+        handsCount={gameOptions.handsCount}
+        players={players}
+        results={resultsByHand}
+        onClose={closeResultsModal}
       />
     </div>
   );

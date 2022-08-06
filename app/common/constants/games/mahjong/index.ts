@@ -63,3 +63,9 @@ export const WIND_SHORT_NAMES: Record<EWind, string> = {
   [EWind.WEST]: 'W',
   [EWind.NORTH]: 'N',
 };
+
+export const HAND_COUNTS: Record<EHandsCount, number> = {
+  [EHandsCount.ONE]: 1,
+  [EHandsCount.FOUR]: 4,
+  [EHandsCount.SIXTEEN]: 16,
+};
