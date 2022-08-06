@@ -18,6 +18,7 @@ interface IHandProps {
   open: boolean;
   rotation: number;
   playerIndex: number;
+  selectedTileIndex: number;
   players: IPlayer[];
   onChangeTileIndex?(from: number, to: number): void;
   onDiscardTile?(tileIndex: number): void;
@@ -32,6 +33,7 @@ const Hand: FC<IHandProps> = (props) => {
     rotation,
     players,
     playerIndex,
+    selectedTileIndex,
     onChangeTileIndex,
     onDiscardTile,
   } = props;
@@ -78,6 +80,8 @@ const Hand: FC<IHandProps> = (props) => {
           tiles={data.hand?.hand ?? []}
           openType={open ? EOpenType.OPEN : EOpenType.CONCEALED}
           tileWidth={tileWidth}
+          hoverable={Boolean(onDiscardTile || onChangeTileIndex)}
+          selectedTileIndex={selectedTileIndex}
           onChangeTileIndex={onChangeTileIndex}
           onTileClick={onDiscardTile}
         />

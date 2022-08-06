@@ -11,7 +11,6 @@ export enum EGameClientEvent {
   DISCARD_TILE = 'DISCARD_TILE',
   DECLARE = 'DECLARE',
   CHANGE_TILE_INDEX = 'CHANGE_TILE_INDEX',
-  SORT_TILES = 'SORT_TILES',
   READY_FOR_NEW_HAND = 'READY_FOR_NEW_HAND',
 }
 
@@ -37,12 +36,18 @@ export interface IPlayerSettings extends ICommonPlayerSettings {
   autoPass: boolean;
   sortHand: boolean;
   showLosingHand: boolean;
+  showCurrentTile: boolean;
 }
 
 export interface IGame {
   players: IPlayer[];
-  scoresByHand: number[][];
+  resultsByHand: IHandResult[];
   round: IRound | null;
+}
+
+export interface IHandResult {
+  mahjong: IHandMahjong | null;
+  scores: number[];
 }
 
 export interface IRound {
@@ -86,6 +91,7 @@ export interface IHandPlayerData {
 
 export interface ITurn {
   currentTile: TPlayableTile | null;
+  currentTileIndex: number;
   isReplacementTile: boolean;
   declareInfo: IDeclareInfo | null;
 }
@@ -357,7 +363,6 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {
   [EGameClientEvent.DISCARD_TILE]: number;
   [EGameClientEvent.DECLARE]: TDeclareDecision;
   [EGameClientEvent.CHANGE_TILE_INDEX]: IChangeTileIndexEvent;
-  [EGameClientEvent.SORT_TILES]: undefined;
   [EGameClientEvent.READY_FOR_NEW_HAND]: boolean;
 }
 

@@ -191,3 +191,15 @@ export function getTileSortValue(tile: TTile): number {
 export function getSupposedHandTileCount(setsCount: number): number {
   return 13 - 3 * setsCount;
 }
+
+export function getNewCurrentTileIndex(currentTileIndex: number, from: number, to: number): number {
+  if (currentTileIndex === from) {
+    return to;
+  }
+
+  if (currentTileIndex < from) {
+    return to <= currentTileIndex ? currentTileIndex + 1 : currentTileIndex;
+  }
+
+  return to >= currentTileIndex ? currentTileIndex - 1 : currentTileIndex;
+}

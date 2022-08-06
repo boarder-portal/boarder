@@ -3,12 +3,21 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import classNames from 'classnames';
 
 import { EGame } from 'common/types/game';
-import { EGameClientEvent, EWind, IDeclareInfo, IPlayer, TDeclareDecision, TPlayableTile } from 'common/types/mahjong';
+import {
+  EGameClientEvent,
+  EWind,
+  IDeclareInfo,
+  IHandResult,
+  IPlayer,
+  TDeclareDecision,
+  TPlayableTile,
+} from 'common/types/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
 import { isLastTileOfKind } from 'common/utilities/mahjong/hand';
 import { getWindHumanShortName } from 'common/utilities/mahjong/stringify';
+import { getNewCurrentTileIndex } from 'common/utilities/mahjong/tiles';
 
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
 import usePlayer from 'client/hooks/usePlayer';
@@ -43,13 +52,14 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const [layoutType, setLayoutType] = useState<ELayoutType>(ELayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
   const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [scoresByHand, setScoresByHand] = useState<number[][]>();
+  const [resultsByHand, setResultsByHand] = useState<IHandResult[]>();
   const [roundWind, setRoundWind] = useState<EWind | null>(null);
   const [roundHandIndex, setRoundHandIndex] = useState(-1);
   const [isLastHandInGame, setIsLastHandInGame] = useState(false);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [wallTilesLeft, setWallTilesLeft] = useState<number | null>(null);
   const [currentTile, setCurrentTile] = useState<TPlayableTile | null>(null);
+  const [currentTileIndex, setCurrentTileIndex] = useState(-1);
   const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
 
@@ -90,29 +100,32 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   });
 
   const changeTileIndex = useImmutableCallback((from, to) => {
-    if (!player?.data.hand?.hand) {
-      return;
-    }
+    batchedUpdates(() => {
+      if (!player?.data.hand?.hand) {
+        return;
+      }
 
-    const hand = player.data.hand.hand;
-    const newHand = [...hand];
+      const hand = player.data.hand.hand;
+      const newHand = [...hand];
 
-    moveElement(newHand, from, to);
+      moveElement(newHand, from, to);
 
-    setPlayers([
-      ...players.slice(0, player.index),
-      {
-        ...player,
-        data: {
-          ...player.data,
-          hand: {
-            ...player.data.hand,
-            hand: newHand,
+      setPlayers([
+        ...players.slice(0, player.index),
+        {
+          ...player,
+          data: {
+            ...player.data,
+            hand: {
+              ...player.data.hand,
+              hand: newHand,
+            },
           },
         },
-      },
-      ...players.slice(player.index + 1),
-    ]);
+        ...players.slice(player.index + 1),
+      ]);
+      setCurrentTileIndex(getNewCurrentTileIndex(currentTileIndex, from, to));
+    });
 
     io.emit(EGameClientEvent.CHANGE_TILE_INDEX, {
       from,
@@ -143,13 +156,14 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
     batchedUpdates(() => {
       setPlayers(gameInfo.players);
-      setScoresByHand(gameInfo.scoresByHand);
+      setResultsByHand(gameInfo.resultsByHand);
       setRoundWind(gameInfo.round?.wind ?? null);
       setRoundHandIndex(gameInfo.round?.handIndex ?? -1);
       setIsLastHandInGame(Boolean(gameInfo.round?.hand?.isLastInGame));
       setActivePlayerIndex(gameInfo.round?.hand?.activePlayerIndex ?? -1);
       setWallTilesLeft(gameInfo.round?.hand?.tilesLeft ?? null);
       setCurrentTile(gameInfo.round?.hand?.turn?.currentTile ?? null);
+      setCurrentTileIndex(gameInfo.round?.hand?.turn?.currentTileIndex ?? -1);
       setDeclareInfo(gameInfo.round?.hand?.turn?.declareInfo ?? null);
       setIsReplacementTile(gameInfo.round?.hand?.turn?.isReplacementTile ?? false);
     });
@@ -172,20 +186,22 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     >
       {sortedPlayers.map((p, index) => {
         const isPlayer = p.index === player?.index;
+        const isActive = activePlayerIndex === p.index;
 
         return (
           p.data.hand && (
             <Flex key={index} alignItems="center" justifyContent="center" style={{ gridArea: SIDES[index] }}>
               <Hand
                 player={p}
-                score={scoresByHand?.reduce((score, scores) => score + scores[p.index], 0) ?? 0}
+                score={resultsByHand?.reduce((score, { scores }) => score + scores[p.index], 0) ?? 0}
                 tileWidth={tileWidth}
                 open={isPlayer || (!handInProcess && p.settings.showLosingHand)}
                 rotation={-index}
                 players={sortedPlayers}
                 playerIndex={index}
-                onChangeTileIndex={isPlayer && handInProcess ? changeTileIndex : undefined}
-                onDiscardTile={discardTile}
+                selectedTileIndex={isPlayer && isActive && p.settings.showCurrentTile ? currentTileIndex : -1}
+                onChangeTileIndex={isPlayer && handInProcess && !p.settings.sortHand ? changeTileIndex : undefined}
+                onDiscardTile={isPlayer && handInProcess && isActive ? discardTile : undefined}
               />
             </Flex>
           )
@@ -198,14 +214,17 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         </Flex>
 
         {sortedPlayers.map(
-          ({ data }, index) =>
-            data.hand?.discard && (
+          (p, index) =>
+            p.data.hand?.discard && (
               <Discard
                 key={index}
-                tiles={data.hand.discard}
+                tiles={p.data.hand.discard}
                 tileWidth={tileWidth * 0.8}
                 area={SIDES[index]}
                 rotation={-index}
+                isLastTileSelected={
+                  p.index === activePlayerIndex && declareInfo ? player?.settings.showCurrentTile ?? true : false
+                }
               />
             ),
         )}

@@ -13,6 +13,7 @@ export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
   autoPass: true,
   sortHand: false,
   showLosingHand: true,
+  showCurrentTile: false,
 };
 
 export const ALL_SUITS = Object.values(ESuit);

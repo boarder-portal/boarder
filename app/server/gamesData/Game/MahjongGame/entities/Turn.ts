@@ -18,6 +18,7 @@ import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 export interface ITurnOptions {
   activePlayerIndex: number;
   currentTile: TPlayableTile | null;
+  currentTileIndex: number;
   isReplacementTile: boolean;
 }
 
@@ -32,7 +33,8 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
 
   activePlayerIndex: number;
   currentTile: TPlayableTile | null;
-  isReplacementTile;
+  currentTileIndex: number;
+  isReplacementTile: boolean;
   declareInfo: IDeclareInfo | null = null;
   playersData: ITurnPlayerData[] = this.getPlayersData(() => ({
     declareDecision: null,
@@ -45,6 +47,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     this.hand = hand;
     this.activePlayerIndex = options.activePlayerIndex;
     this.currentTile = options.currentTile;
+    this.currentTileIndex = options.currentTileIndex;
     this.isReplacementTile = options.isReplacementTile;
   }
 
@@ -152,9 +155,14 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     return null;
   }
 
+  changeCurrentTileIndex(newCurrentTileIndex: number): void {
+    this.currentTileIndex = newCurrentTileIndex;
+  }
+
   toJSON(): ITurn {
     return {
       currentTile: this.currentTile,
+      currentTileIndex: this.currentTileIndex,
       isReplacementTile: this.isReplacementTile,
       declareInfo: this.declareInfo,
     };
@@ -166,33 +174,41 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
       isRobbingKong,
     };
 
+    const canAutoPass = this.getPlayersData((playerIndex) => {
+      if (playerIndex === this.activePlayerIndex) {
+        return true;
+      }
+
+      const possibleMeldedSets = isRobbingKong
+        ? []
+        : getPossibleMeldedSets(
+            this.hand.playersData[playerIndex].hand,
+            tile,
+            playerIndex === this.hand.getNextPlayerIndex(),
+          );
+
+      if (possibleMeldedSets.length !== 0) {
+        return false;
+      }
+
+      const mahjong = this.hand.getPlayerMahjong(playerIndex, {
+        isSelfDraw: false,
+        isReplacementTile: false,
+        isRobbingKong,
+        winningTile: tile,
+      });
+
+      return !mahjong;
+    });
+
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].declareDecision = playerIndex === this.activePlayerIndex ? 'pass' : null;
 
       if (playerIndex !== this.activePlayerIndex) {
         const playerSettings = this.getPlayerSettings(playerIndex);
 
-        if (playerSettings?.autoPass) {
-          const possibleMeldedSets = isRobbingKong
-            ? []
-            : getPossibleMeldedSets(
-                this.hand.playersData[playerIndex].hand,
-                tile,
-                playerIndex === this.hand.getNextPlayerIndex(),
-              );
-
-          if (possibleMeldedSets.length === 0) {
-            const mahjong = this.hand.getPlayerMahjong(playerIndex, {
-              isSelfDraw: false,
-              isReplacementTile: false,
-              isRobbingKong,
-              winningTile: tile,
-            });
-
-            if (!mahjong) {
-              this.playersData[playerIndex].declareDecision = 'pass';
-            }
-          }
+        if (playerSettings?.autoPass && canAutoPass[playerIndex]) {
+          this.playersData[playerIndex].declareDecision = 'pass';
         }
       }
     });

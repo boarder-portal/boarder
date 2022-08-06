@@ -52,9 +52,9 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
 
       this.game.sendGameInfo();
 
-      const scores = yield* this.hand;
+      const result = yield* this.hand;
 
-      this.game.addHandResult(scores);
+      this.game.addHandResult(result);
       this.game.sendGameInfo();
 
       if (!isLastHand) {

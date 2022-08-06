@@ -276,6 +276,12 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
             label="Показывать проигрышную руку"
             onChange={(checked) => changeSetting('showLosingHand', checked)}
           />
+
+          <Checkbox
+            checked={player.settings.showCurrentTile}
+            label="Показывать текущую кость"
+            onChange={(checked) => changeSetting('showCurrentTile', checked)}
+          />
         </Flex>
       )}
     </Flex>

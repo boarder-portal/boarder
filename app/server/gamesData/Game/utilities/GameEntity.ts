@@ -1,5 +1,5 @@
 import { EGame, TGameInfo, TGameResult, TPlayerSettings } from 'common/types/game';
-import { ECommonGameClientEvent, ECommonGameServerEvent } from 'common/types';
+import { ECommonGameClientEvent, ECommonGameServerEvent, TChangeSettingEvent } from 'common/types';
 
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -8,6 +8,11 @@ import AbortError from 'server/gamesData/Game/utilities/AbortError';
 import { now } from 'server/utilities/time';
 
 import { BOTS } from 'server/gamesData/Game/Game';
+
+export type TSettingsChangeEvent<Game extends EGame> = {
+  playerIndex: number;
+  settings: TPlayerSettings<Game>;
+} & TChangeSettingEvent<Game>;
 
 export default abstract class GameEntity<Game extends EGame> extends ServerEntity<Game, TGameResult<Game>> {
   spawned = true;
@@ -25,9 +30,13 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     return this.toJSON();
   }
 
-  *listenForSettingsChange(callback: (settings: TPlayerSettings<Game>) => unknown): TGenerator {
-    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ playerIndex }) => {
-      callback(this.getPlayers()[playerIndex].settings);
+  *listenForSettingsChange(callback: (event: TSettingsChangeEvent<Game>) => unknown): TGenerator {
+    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
+      callback({
+        playerIndex,
+        settings: this.getPlayers()[playerIndex].settings,
+        ...(data as any as TChangeSettingEvent<Game>),
+      });
     });
   }
 

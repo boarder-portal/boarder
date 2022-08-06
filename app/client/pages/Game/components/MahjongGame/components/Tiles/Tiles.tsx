@@ -6,6 +6,7 @@ import { TTile } from 'common/types/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
+import { stringifyTile } from 'common/utilities/mahjong/stringify';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
@@ -26,7 +27,9 @@ interface ITilesProps {
   tiles: TTile[];
   openType: EOpenType;
   tileWidth: number;
+  hoverable?: boolean;
   rotatedTileIndex?: number | null;
+  selectedTileIndex?: number;
   onChangeTileIndex?(from: number, to: number): void;
   onTileClick?(tileIndex: number): void;
 }
@@ -44,7 +47,15 @@ const getLocalTiles = (tiles: TTile[]): ILocalTile[] => {
 };
 
 const Tiles: FC<ITilesProps> = (props) => {
-  const { tiles, openType, rotatedTileIndex = -1, tileWidth, onChangeTileIndex, onTileClick } = props;
+  const {
+    tiles,
+    openType,
+    tileWidth,
+    rotatedTileIndex = -1,
+    selectedTileIndex = -1,
+    onChangeTileIndex,
+    onTileClick,
+  } = props;
   const tileHeight = getTileHeight(tileWidth);
 
   const [localTiles, setLocalTiles] = useState<ILocalTile[]>(getLocalTiles(tiles));
@@ -53,6 +64,8 @@ const Tiles: FC<ITilesProps> = (props) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const fromRef = useRef(-1);
   const toRef = useRef(-1);
+
+  const hoverable = Boolean(onTileClick || onChangeTileIndex);
 
   const handleDragStart = useCallback(
     (e: DragEvent, from: number) => {
@@ -75,16 +88,6 @@ const Tiles: FC<ITilesProps> = (props) => {
       const root = rootRef.current;
 
       if (!root || fromRef.current === -1 || !onChangeTileIndex) {
-        return;
-      }
-
-      if (!(e.target instanceof HTMLElement)) {
-        return;
-      }
-
-      const closestTileElement = e.target.closest(`.${styles.tile}`);
-
-      if (!(closestTileElement instanceof HTMLElement)) {
         return;
       }
 
@@ -119,7 +122,7 @@ const Tiles: FC<ITilesProps> = (props) => {
 
   const handleDragLeave = useCallback(
     (e: DragEvent) => {
-      const hasExited = !(e.relatedTarget instanceof HTMLElement && rootRef.current?.contains(e.relatedTarget));
+      const hasExited = e.relatedTarget instanceof HTMLElement && !rootRef.current?.contains(e.relatedTarget);
 
       if (hasExited) {
         toRef.current = fromRef.current;
@@ -140,9 +143,8 @@ const Tiles: FC<ITilesProps> = (props) => {
         tile,
         node: (
           <div
-            key={tile.index}
+            key={`${stringifyTile(tile.tile)}${tile.index}`}
             className={classNames(styles.tile, { [styles.withTransition]: withTransition })}
-            data-local-tile-index={index}
             style={{
               width: isRotated ? tileHeight : tileWidth,
               height: isRotated ? tileWidth : tileHeight,
@@ -154,6 +156,9 @@ const Tiles: FC<ITilesProps> = (props) => {
               width={tileWidth}
               draggable={Boolean(onChangeTileIndex)}
               rotation={isRotated ? -1 : 0}
+              hoverable={hoverable}
+              clickable={Boolean(onTileClick)}
+              selected={tile.index === selectedTileIndex}
               onDragStart={(e) => handleDragStart(e, index)}
               onClick={() => onTileClick?.(index)}
             />
@@ -165,11 +170,13 @@ const Tiles: FC<ITilesProps> = (props) => {
     return sortBy(nodesWithTiles, ({ tile }) => tile.index).map(({ node }) => node);
   }, [
     handleDragStart,
+    hoverable,
     localTiles,
     onChangeTileIndex,
     onTileClick,
     openType,
     rotatedTileIndex,
+    selectedTileIndex,
     tileHeight,
     tileWidth,
     withTransition,
@@ -182,6 +189,9 @@ const Tiles: FC<ITilesProps> = (props) => {
     if (from === -1 || to === -1 || from === to) {
       return;
     }
+
+    fromRef.current = -1;
+    toRef.current = -1;
 
     setWithTransition(false);
     onChangeTileIndex?.(from, to);

@@ -12,10 +12,11 @@ interface IDiscardProps {
   tileWidth: number;
   area: string;
   rotation: number;
+  isLastTileSelected: boolean;
 }
 
 const Discard: FC<IDiscardProps> = (props) => {
-  const { tiles, tileWidth, area, rotation } = props;
+  const { tiles, tileWidth, area, rotation, isLastTileSelected } = props;
 
   return (
     <div
@@ -33,7 +34,7 @@ const Discard: FC<IDiscardProps> = (props) => {
         style={{ gridTemplateColumns: `repeat(6, ${tileWidth}px)` }}
       >
         {tiles.map((tile, index) => (
-          <Tile key={index} tile={tile} width={tileWidth} />
+          <Tile key={index} tile={tile} selected={isLastTileSelected && index === tiles.length - 1} width={tileWidth} />
         ))}
       </RotatedElement>
     </div>

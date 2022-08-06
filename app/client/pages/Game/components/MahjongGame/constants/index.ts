@@ -1,2 +1,2 @@
-export const ORIGINAL_TILE_WIDTH = 50;
-export const ORIGINAL_TILE_HEIGHT = 72;
+export const ORIGINAL_TILE_WIDTH = 110;
+export const ORIGINAL_TILE_HEIGHT = 150;

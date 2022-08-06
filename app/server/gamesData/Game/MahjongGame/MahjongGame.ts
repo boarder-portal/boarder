@@ -1,7 +1,7 @@
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 
 import { EGame } from 'common/types/game';
-import { EHandsCount, EWind, IGame, IGamePlayerData, IPlayer } from 'common/types/mahjong';
+import { EHandsCount, EWind, IGame, IGamePlayerData, IHandResult, IPlayer } from 'common/types/mahjong';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -17,7 +17,7 @@ const ROTATED_WINDS = [
 
 export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
   playersData: IGamePlayerData[] = this.getPlayersData(() => ({}));
-  scoresByHand: number[][] = [];
+  resultsByHand: IHandResult[] = [];
 
   round: Round | null = null;
 
@@ -41,8 +41,8 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
     }
   }
 
-  addHandResult(result: number[]): void {
-    this.scoresByHand.push(result);
+  addHandResult(result: IHandResult): void {
+    this.resultsByHand.push(result);
   }
 
   getGamePlayers(): IPlayer[] {
@@ -59,7 +59,7 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
   toJSON(): IGame {
     return {
       players: this.getGamePlayers(),
-      scoresByHand: this.scoresByHand,
+      resultsByHand: this.resultsByHand,
       round: this.round?.toJSON() ?? null,
     };
   }
