@@ -1,6 +1,7 @@
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 import times from 'lodash/times';
 import classNames from 'classnames';
+import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
@@ -24,11 +25,12 @@ interface IResultsModalProps {
   handsCount: EHandsCount;
   players: IPlayer[];
   results: IHandResult[];
+  openedMahjong: IHandMahjong | null;
   onClose(): void;
 }
 
 const ResultsModal: FC<IResultsModalProps> = (props) => {
-  const { open, handsCount, players, results, onClose } = props;
+  const { open, handsCount, players, results, openedMahjong, onClose } = props;
 
   const [viewMode, setViewMode] = useState(EViewMode.TABLE);
   const [chosenMahjong, setChosenMahjong] = useState<IHandMahjong | null>(null);
@@ -42,17 +44,24 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
     setViewMode(EViewMode.TABLE);
   }, []);
 
+  const onModalClose = useCallback(() => {
+    setViewMode(EViewMode.TABLE);
+
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
-    if (open) {
-      setViewMode(EViewMode.TABLE);
-    }
-  }, [open]);
+    batchedUpdates(() => {
+      setViewMode(openedMahjong ? EViewMode.MAHJONG : EViewMode.TABLE);
+      setChosenMahjong(openedMahjong);
+    });
+  }, [openedMahjong]);
 
   return (
     <Modal
       containerClassName={classNames(styles.root, { [styles.results]: viewMode === EViewMode.TABLE })}
       open={open}
-      onClose={onClose}
+      onClose={onModalClose}
     >
       {viewMode === EViewMode.TABLE ? (
         <Table

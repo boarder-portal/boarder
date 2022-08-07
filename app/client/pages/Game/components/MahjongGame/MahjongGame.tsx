@@ -7,6 +7,7 @@ import {
   EGameClientEvent,
   EWind,
   IDeclareInfo,
+  IHandMahjong,
   IHandResult,
   IPlayer,
   TDeclareDecision,
@@ -24,6 +25,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { useBoolean } from 'client/hooks/useBoolean';
+import { usePrevious } from 'client/hooks/usePrevious';
 
 import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
 import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
@@ -56,6 +58,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const [tileWidth, setTileWidth] = useState(0);
   const { value: fansModalOpen, setTrue: openFansModal, setFalse: closeFansModal } = useBoolean(false);
   const { value: resultsModalOpen, setTrue: openResultsModal, setFalse: closeResultsModal } = useBoolean(false);
+  const [openedMahjong, setOpenedMahjong] = useState<IHandMahjong | null>(null);
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [resultsByHand, setResultsByHand] = useState<IHandResult[]>([]);
   const [roundWind, setRoundWind] = useState<EWind | null>(null);
@@ -75,6 +78,8 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
   const tileHeight = getTileHeight(tileWidth);
   const handInProcess = activePlayerIndex !== -1;
+
+  const prevHandInProcess = usePrevious(handInProcess);
 
   const isLastTile = useImmutableCallback((tile: TPlayableTile) => {
     return isLastTileOfKind(
@@ -174,6 +179,19 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     });
   }, [gameInfo]);
 
+  useEffect(() => {
+    if (prevHandInProcess && !handInProcess) {
+      const lastMahjong = resultsByHand.at(-1)?.mahjong ?? null;
+
+      if (lastMahjong) {
+        batchedUpdates(() => {
+          openResultsModal();
+          setOpenedMahjong(lastMahjong);
+        });
+      }
+    }
+  }, [handInProcess, openResultsModal, prevHandInProcess, resultsByHand]);
+
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
   return (
@@ -263,6 +281,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         handsCount={gameOptions.handsCount}
         players={players}
         results={resultsByHand}
+        openedMahjong={openedMahjong}
         onClose={closeResultsModal}
       />
     </div>
