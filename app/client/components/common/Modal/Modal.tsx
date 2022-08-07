@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, MouseEvent } from 'react';
+import { FC, useCallback, useMemo, MouseEvent, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames/bind';
 
@@ -15,9 +15,18 @@ interface IModalProps {
 const Modal: FC<IModalProps> = (props) => {
   const { containerClassName, open, children, onClose } = props;
 
-  const handleContainerClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleOverlayClick = useCallback(
+    (e: MouseEvent) => {
+      const container = containerRef.current;
+
+      if (!(e.target instanceof Element) || !container || !container.contains(e.target)) {
+        onClose?.();
+      }
+    },
+    [onClose],
+  );
 
   useGlobalListener('keyup', document, (e) => {
     if (open && e.code === 'Escape') {
@@ -29,13 +38,13 @@ const Modal: FC<IModalProps> = (props) => {
 
   const content = useMemo(
     () => (
-      <div className={classNames(styles.overlay, { [styles.open]: open })} onClick={onClose}>
-        <div className={classNames(styles.container, containerClassName)} onClick={handleContainerClick}>
+      <div className={classNames(styles.overlay, { [styles.open]: open })} onClick={handleOverlayClick}>
+        <div ref={containerRef} className={classNames(styles.container, containerClassName)}>
           {children}
         </div>
       </div>
     ),
-    [children, containerClassName, handleContainerClick, onClose, open],
+    [children, containerClassName, handleOverlayClick, open],
   );
 
   return createPortal(content, document.querySelector('#root')!);

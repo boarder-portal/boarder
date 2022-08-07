@@ -10,6 +10,7 @@ import { EGame } from 'common/types/game';
 import {
   EGameClientEvent,
   ESet,
+  ESuit,
   IHand,
   IHandMahjong,
   IHandPlayerData,
@@ -31,14 +32,9 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
   isFlower,
+  suited,
 } from 'common/utilities/mahjong/tiles';
-import {
-  getSetTile,
-  isDeclaredConcealedSet,
-  isDeclaredMeldedSet,
-  isEqualSets,
-  isPung,
-} from 'common/utilities/mahjong/sets';
+import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
 import { moveElement } from 'common/utilities/array';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
@@ -323,8 +319,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     return getHandMahjong({
       ...options,
       hand: playerIndex === this.activePlayerIndex ? getHandWithoutTile(hand, options.winningTile) : [...hand],
-      concealedSets: declaredSets.filter(isDeclaredConcealedSet).map(({ set }) => set),
-      meldedSets: declaredSets.filter(isDeclaredMeldedSet).map(({ set }) => set),
+      declaredSets: declaredSets.map(({ set }) => set),
       flowers,
       seatWind: this.round.playersData[playerIndex].wind,
       roundWind: this.round.wind,

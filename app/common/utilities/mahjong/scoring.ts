@@ -2,6 +2,7 @@ import sortBy from 'lodash/sortBy';
 
 import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong/tiles';
 import { ALL_FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
+import { MIN_SCORE } from 'common/constants/games/mahjong';
 
 import {
   EFan,
@@ -11,10 +12,8 @@ import {
   EWind,
   IFlowerTile,
   IHandMahjong,
-  IKongSet,
-  TConcealedSet,
+  TDeclaredSet,
   TFan,
-  TMeldedSet,
   TPlayableTile,
   TSet,
 } from 'common/types/mahjong';
@@ -33,8 +32,7 @@ import { getSupposedHandTileCount, isEqualTilesCallback, isHonor, isTileSubset }
 
 export interface IHandScoreOptions {
   hand: TPlayableTile[];
-  concealedSets: TConcealedSet<IKongSet>[];
-  meldedSets: TMeldedSet[];
+  declaredSets: TDeclaredSet[];
   flowers: IFlowerTile[];
   seatWind: EWind | null;
   roundWind: EWind | null;
@@ -52,12 +50,8 @@ export interface IHandScoreFullOptions extends IHandScoreOptions {
 }
 
 export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
-  const { hand, concealedSets, meldedSets } = options;
-  const wholeHand = [
-    ...hand,
-    ...concealedSets.flatMap(({ tiles }) => tiles),
-    ...meldedSets.flatMap(({ tiles }) => tiles),
-  ];
+  const { hand, declaredSets } = options;
+  const wholeHand = [...hand, ...declaredSets.flatMap(({ tiles }) => tiles)];
   const possibleTiles = STANDARD_TILES.filter((tile) => {
     return wholeHand.filter(isEqualTilesCallback(tile)).length < 4;
   });
@@ -85,7 +79,7 @@ export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
 }
 
 export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
-  const { hand, concealedSets, meldedSets, seatWind, roundWind, isSelfDraw, minScore = 8 } = options;
+  const { hand, declaredSets, seatWind, roundWind, isSelfDraw, minScore = MIN_SCORE } = options;
   const waits = options.waits ?? getAllWaits(options);
   const winningTile = options.winningTile ?? waits.at(0);
 
@@ -93,22 +87,17 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     return null;
   }
 
-  if (hand.length !== getSupposedHandTileCount(concealedSets.length + meldedSets.length)) {
+  if (hand.length !== getSupposedHandTileCount(declaredSets.length)) {
     return null;
   }
 
-  const wholeHand = [
-    ...hand,
-    ...concealedSets.flatMap(({ tiles }) => tiles),
-    ...meldedSets.flatMap(({ tiles }) => tiles),
-    winningTile,
-  ];
+  const wholeHand = [...hand, ...declaredSets.flatMap(({ tiles }) => tiles), winningTile];
   const wholeHandFans = getWholeHandFans(wholeHand);
   const specialFans = getSpecialFans(options, winningTile, wholeHand);
 
   const setsVariations = getSetsVariations({
     hand: [...hand, winningTile],
-    knownSets: [...concealedSets, ...meldedSets],
+    declaredSets,
     isSelfDraw,
   });
 
@@ -196,14 +185,17 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 
   return {
     hand,
-    concealedSets,
-    meldedSets,
+    declaredSets,
     winningTile,
     fans: bestFans,
     score: maxScore,
     sets: chosenSets,
     waits,
   };
+}
+
+export function getPureFansScore(fans: TFan[]): number {
+  return getFansScore(fans.filter(({ fan }) => fan !== EFan.FLOWER_TILES));
 }
 
 function getBestFans(fans: TFan[], minScore: number): { fans: TFan[]; score: number } | null {
@@ -245,9 +237,7 @@ function getBestFans(fans: TFan[], minScore: number): { fans: TFan[]; score: num
     return null;
   }
 
-  const pureFans = pickedFans.filter(({ fan }) => fan !== EFan.FLOWER_TILES);
-
-  if (getFansScore(pureFans) < minScore) {
+  if (getPureFansScore(pickedFans) < minScore) {
     return null;
   }
 

@@ -222,7 +222,11 @@ export function getLastTileCandidates(playersData: (IHandPlayerData | null)[]): 
     }),
   ];
 
+  return getLastTileCandidatesFromTiles(allTiles);
+}
+
+export function getLastTileCandidatesFromTiles(tiles: TPlayableTile[]): TPlayableTile[] {
   return STANDARD_TILES.filter((tile) => {
-    return allTiles.filter(isEqualTilesCallback(tile)).length === 3;
+    return tiles.filter(isEqualTilesCallback(tile)).length >= 3;
   });
 }

@@ -35,7 +35,7 @@ const Tile: FC<ITileProps> = (props) => {
       <div
         className={classNames(styles.tile, {
           [styles.hoverable]: hoverable,
-          [styles.clickable]: clickable,
+          [styles.clickable]: clickable || rest.onClick,
           [styles.selected]: selected,
         })}
         style={{

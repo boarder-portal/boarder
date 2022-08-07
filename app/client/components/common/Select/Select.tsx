@@ -1,5 +1,7 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
+
+import { useBoolean } from 'client/hooks/useBoolean';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
@@ -15,14 +17,25 @@ interface ISelectProps<Value> {
     value: Value;
     disabled?: boolean;
   }[];
+  disabled?: boolean;
   label?: string;
   onChange(newValue: Value): void;
 }
 
 const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.Element => {
-  const { className, value, options, label, onChange } = props;
+  const { className, value, options, disabled, label, onChange } = props;
+
+  const { value: dropdownOpen, setFalse: closeDropdown, setValue } = useBoolean(false);
 
   const selectedText = useMemo(() => options.find((option) => option.value === value)?.text, [options, value]);
+
+  const handleSelectOption = useCallback(
+    (value: Value) => {
+      onChange(value);
+      closeDropdown();
+    },
+    [closeDropdown, onChange],
+  );
 
   const popup = useMemo(
     () => (
@@ -34,26 +47,33 @@ const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.
               [styles.disabled]: option.disabled,
               [styles.selected]: option.value === value,
             })}
-            onClick={() => onChange(option.value)}
+            onClick={() => handleSelectOption(option.value)}
           >
             {option.text}
           </div>
         ))}
       </>
     ),
-    [onChange, options, value],
+    [handleSelectOption, options, value],
   );
 
   return (
     <Dropdown
       className={classNames(styles.root, className)}
+      open={dropdownOpen}
+      disabled={disabled}
       popupClassName={styles.options}
       popup={popup}
       popupPosition="bottomLeft"
+      onChangeVisibility={setValue}
     >
       {label && <div className={styles.label}>{label}</div>}
 
-      <Flex className={styles.trigger} justifyContent="spaceBetween" alignItems="center">
+      <Flex
+        className={classNames(styles.trigger, { [styles.disabled]: disabled })}
+        justifyContent="spaceBetween"
+        alignItems="center"
+      >
         <div>{selectedText}</div>
 
         <ArrowDropDownIcon className={styles.icon} />

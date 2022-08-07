@@ -16,6 +16,8 @@ export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
   showCurrentTile: false,
 };
 
+export const MIN_SCORE = 8;
+
 export const ALL_SUITS = Object.values(ESuit);
 export const ALL_VALUES = times(9, (x) => x + 1);
 export const ALL_DRAGONS = Object.values(EDragon);
@@ -57,11 +59,18 @@ export const SET_NAMES: Record<ESet, string> = {
   [ESet.KNITTED_CHOW]: 'Переплетенное чоу',
 };
 
+export const WIND_NAMES: Record<EWind, string> = {
+  [EWind.EAST]: 'Восточный',
+  [EWind.SOUTH]: 'Южный',
+  [EWind.WEST]: 'Западный',
+  [EWind.NORTH]: 'Северный',
+};
+
 export const WIND_SHORT_NAMES: Record<EWind, string> = {
-  [EWind.EAST]: 'E',
-  [EWind.SOUTH]: 'S',
-  [EWind.WEST]: 'W',
-  [EWind.NORTH]: 'N',
+  [EWind.EAST]: 'В',
+  [EWind.SOUTH]: 'Ю',
+  [EWind.WEST]: 'З',
+  [EWind.NORTH]: 'С',
 };
 
 export const HAND_COUNTS: Record<EHandsCount, number> = {

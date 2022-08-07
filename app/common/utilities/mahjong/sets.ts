@@ -6,15 +6,15 @@ import {
   ESet,
   ESetConcealedType,
   IChowSet,
-  IDeclaredConcealedSet,
-  IDeclaredMeldedSet,
+  IGameDeclaredConcealedSet,
+  IGameDeclaredMeldedSet,
   IKnittedChowSet,
   IKongSet,
   IPairSet,
   IPungSet,
   ISuitedTile,
   TConcealedSet,
-  TDeclaredSet,
+  TGameDeclaredSet,
   TMeldedSet,
   TPlayableTile,
   TSet,
@@ -69,11 +69,11 @@ export function isMelded(set: TSet): set is TMeldedSet {
   return !isConcealed(set);
 }
 
-export function isDeclaredConcealedSet(set: TDeclaredSet): set is IDeclaredConcealedSet {
+export function isDeclaredConcealedSet(set: TGameDeclaredSet): set is IGameDeclaredConcealedSet {
   return isConcealed(set.set);
 }
 
-export function isDeclaredMeldedSet(set: TDeclaredSet): set is IDeclaredMeldedSet {
+export function isDeclaredMeldedSet(set: TGameDeclaredSet): set is IGameDeclaredMeldedSet {
   return isMelded(set.set);
 }
 
@@ -131,7 +131,7 @@ export function getSetSortValue(set: TSet): number {
 
 export interface ISetsVariationsOptions {
   hand: TPlayableTile[];
-  knownSets: TSet[];
+  declaredSets: TSet[];
   isSelfDraw: boolean;
 }
 
@@ -152,7 +152,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
   return setsVariations
     .flatMap((sets) => {
       if (options.isSelfDraw) {
-        return [[...options.knownSets, ...sets]];
+        return [[...options.declaredSets, ...sets]];
       }
 
       const variations: TSet[][] = [];
@@ -170,7 +170,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
         }
       });
 
-      return variations.map((sets) => [...options.knownSets, ...sets]);
+      return variations.map((sets) => [...options.declaredSets, ...sets]);
     })
     .map((sets) => sortBy(sets, getSetSortValue));
 }
@@ -335,7 +335,7 @@ export function getTileHogs(sets: TSet[]): TPlayableTile[] {
   return tileHogs;
 }
 
-export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TDeclaredSet[]): IKongSet[] {
+export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TGameDeclaredSet[]): IKongSet[] {
   const possibleSets: IKongSet[] = [];
 
   hand.forEach((tile, index) => {

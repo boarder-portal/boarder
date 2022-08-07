@@ -5,13 +5,15 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './RadioGroup.pcss';
 
+export interface ISelectOption<Value> {
+  text: React.ReactNode;
+  value: Value;
+  disabled?: boolean;
+}
+
 interface IRadioGroupProps<Value> {
   value: Value;
-  options: {
-    text: React.ReactNode;
-    value: Value;
-    disabled?: boolean;
-  }[];
+  options: ISelectOption<Value>[];
   onChange(newValue: Value): void;
 }
 

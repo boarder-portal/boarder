@@ -5,22 +5,14 @@ import {
   EWind,
   IDeclareInfo,
   IHandMahjong,
-  IKongSet,
   IPlayer,
-  TConcealedSet,
   TDeclareDecision,
-  TMeldedSet,
+  TDeclaredSet,
   TPlayableTile,
 } from 'common/types/mahjong';
 import { EGame } from 'common/types/game';
 
-import {
-  getPossibleKongs,
-  getPossibleMeldedSets,
-  isDeclaredConcealedSet,
-  isDeclaredMeldedSet,
-  isEqualSets,
-} from 'common/utilities/mahjong/sets';
+import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getSetNumanName } from 'common/utilities/mahjong/stringify';
@@ -54,6 +46,7 @@ interface IControlPanelProps {
   startNewHand(ready: boolean): void;
   openFansModal(): void;
   openResultsModal(): void;
+  openCalculatorModal(): void;
 }
 
 type TDeclareDecisionButton =
@@ -64,7 +57,7 @@ type TDeclareDecisionButton =
     }
   | {
       type: 'set';
-      set: TConcealedSet<IKongSet> | TMeldedSet;
+      set: TDeclaredSet;
     };
 
 interface IGetMahjongOptions {
@@ -93,6 +86,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     startNewHand,
     openFansModal,
     openResultsModal,
+    openCalculatorModal,
   } = props;
 
   const [declareDecisions, setDeclareDecisions] = useState<TDeclareDecisionButton[]>([]);
@@ -114,8 +108,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
 
       return getHandMahjong({
         ...options,
-        concealedSets: declaredSets.filter(isDeclaredConcealedSet).map(({ set }) => set),
-        meldedSets: declaredSets.filter(isDeclaredMeldedSet).map(({ set }) => set),
+        declaredSets: declaredSets.map(({ set }) => set),
         flowers,
         seatWind: player.data.round?.wind ?? null,
         roundWind,
@@ -270,7 +263,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           Фаны
         </Button>
 
-        <Button className={styles.button} size="s">
+        <Button className={styles.button} size="s" onClick={openCalculatorModal}>
           Калькулятор
         </Button>
       </div>

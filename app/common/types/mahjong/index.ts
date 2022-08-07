@@ -67,23 +67,23 @@ export interface IHand {
   turn: ITurn | null;
 }
 
-export interface IDeclaredMeldedSet {
+export interface IGameDeclaredMeldedSet {
   set: TMeldedSet;
   stolenTileIndex: number;
   stolenFrom: number;
 }
 
-export interface IDeclaredConcealedSet {
+export interface IGameDeclaredConcealedSet {
   set: TConcealedSet<IKongSet>;
   stolenTileIndex: number;
   stolenFrom: null;
 }
 
-export type TDeclaredSet = IDeclaredMeldedSet | IDeclaredConcealedSet;
+export type TGameDeclaredSet = IGameDeclaredMeldedSet | IGameDeclaredConcealedSet;
 
 export interface IHandPlayerData {
   hand: TPlayableTile[];
-  declaredSets: TDeclaredSet[];
+  declaredSets: TGameDeclaredSet[];
   flowers: IFlowerTile[];
   discard: TPlayableTile[];
   readyForNewHand: boolean;
@@ -101,7 +101,7 @@ export interface IDeclareInfo {
   isRobbingKong: boolean;
 }
 
-export type TDeclareDecision = TConcealedSet<IKongSet> | TMeldedSet | 'mahjong' | 'pass' | null;
+export type TDeclareDecision = TDeclaredSet | 'mahjong' | 'pass' | null;
 
 export interface ITurnPlayerData {
   declareDecision: TDeclareDecision;
@@ -328,6 +328,8 @@ export type TMeldedSet<Set extends TSet = TSet> = Set & {
   concealedType: ESetConcealedType.MELDED | ESetConcealedType.WINNING_MELDED;
 };
 
+export type TDeclaredSet = TConcealedSet<IKongSet> | TMeldedSet;
+
 export interface IHandFan {
   type: EFanType.HAND;
   fan: EFan;
@@ -349,8 +351,7 @@ export type TFan = IHandFan | ISetsFan | ISpecialFan;
 
 export interface IHandMahjong {
   hand: TPlayableTile[];
-  concealedSets: TConcealedSet<IKongSet>[];
-  meldedSets: TMeldedSet[];
+  declaredSets: TDeclaredSet[];
   winningTile: TPlayableTile;
   fans: TFan[];
   sets: TSet[] | null;

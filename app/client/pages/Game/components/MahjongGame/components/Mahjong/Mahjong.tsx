@@ -1,13 +1,16 @@
 import { FC, memo } from 'react';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
+import classNames from 'classnames';
 
 import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
+import { MIN_SCORE } from 'common/constants/games/mahjong';
 
-import { EFan, IHandMahjong } from 'common/types/mahjong';
+import { EFan, ESetConcealedType, IHandMahjong, TPlayableTile } from 'common/types/mahjong';
 
 import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import isDefined from 'common/utilities/isDefined';
+import { getPureFansScore } from 'common/utilities/mahjong/scoring';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
@@ -21,10 +24,13 @@ import styles from './Mahjong.pcss';
 interface IMahjongProps {
   mahjong: IHandMahjong;
   tileWidth: number;
+  showHand?: boolean;
+  showScoreEval?: boolean;
+  onWaitClick?(tile: TPlayableTile): void;
 }
 
 const Mahjong: FC<IMahjongProps> = (props) => {
-  const { mahjong, tileWidth } = props;
+  const { mahjong, tileWidth, showHand = true, showScoreEval, onWaitClick } = props;
 
   const groupedFans = groupBy(mahjong.fans, (fan) => fan.fan);
 
@@ -34,24 +40,31 @@ const Mahjong: FC<IMahjongProps> = (props) => {
         <Flex alignItems="center" between={6}>
           <div className={styles.tilesCaption}>Ожидания</div>
 
-          <Tiles tiles={mahjong.waits} tileWidth={tileWidth} />
+          <Tiles
+            tiles={mahjong.waits}
+            tileWidth={tileWidth}
+            onTileClick={(tileIndex) => onWaitClick?.(mahjong.waits[tileIndex])}
+          />
         </Flex>
 
-        <Flex alignItems="center" between={6}>
-          <div className={styles.tilesCaption}>Рука</div>
+        {showHand && (
+          <Flex alignItems="center" between={6}>
+            <div className={styles.tilesCaption}>Рука</div>
 
-          {mahjong.concealedSets.map((set, index) => (
-            <Tiles key={index} tiles={set.tiles} tileWidth={tileWidth} openType={EOpenType.SEMI_CONCEALED} />
-          ))}
+            {mahjong.declaredSets.map((set, index) => (
+              <Tiles
+                key={index}
+                tiles={set.tiles}
+                tileWidth={tileWidth}
+                openType={set.concealedType === ESetConcealedType.CONCEALED ? EOpenType.SEMI_CONCEALED : EOpenType.OPEN}
+              />
+            ))}
 
-          {mahjong.meldedSets.map((set, index) => (
-            <Tiles key={index} tiles={set.tiles} tileWidth={tileWidth} />
-          ))}
+            <Tiles tiles={mahjong.hand} tileWidth={tileWidth} />
 
-          <Tiles tiles={mahjong.hand} tileWidth={tileWidth} />
-
-          <Tile tile={mahjong.winningTile} width={tileWidth} />
-        </Flex>
+            <Tile tile={mahjong.winningTile} width={tileWidth} />
+          </Flex>
+        )}
 
         {mahjong.sets && (
           <Flex alignItems="center" between={6}>
@@ -79,7 +92,14 @@ const Mahjong: FC<IMahjongProps> = (props) => {
           <>
             <TableCell className={styles.tableCell} />
             <TableCell className={styles.tableCell} />
-            <TableCell className={styles.tableCell}>{mahjong.score}</TableCell>
+            <TableCell
+              className={classNames(
+                styles.tableCell,
+                showScoreEval && (getPureFansScore(mahjong.fans) < MIN_SCORE ? styles.negative : styles.positive),
+              )}
+            >
+              {mahjong.score}
+            </TableCell>
           </>
         }
       >
@@ -90,7 +110,7 @@ const Mahjong: FC<IMahjongProps> = (props) => {
             <TableRow key={fan}>
               <TableCell className={styles.tableCell}>{FAN_NAMES[fan]}</TableCell>
               <TableCell className={styles.tableCell}>
-                {fan === EFan.FLOWER_TILES ? (
+                {fan === EFan.FLOWER_TILES || fan === EFan.TILE_HOG ? (
                   <Tiles
                     inline
                     tiles={fans

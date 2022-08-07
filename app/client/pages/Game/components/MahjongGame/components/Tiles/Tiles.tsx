@@ -52,8 +52,9 @@ const getLocalTiles = (tiles: TTile[]): ILocalTile[] => {
 const Tiles: FC<ITilesProps> = (props) => {
   const {
     tiles,
-    openType = EOpenType.OPEN,
     tileWidth,
+    openType = EOpenType.OPEN,
+    hoverable,
     rotatedTileIndex = -1,
     selectedTileIndex = -1,
     inline,
@@ -70,8 +71,6 @@ const Tiles: FC<ITilesProps> = (props) => {
   const toRef = useRef(-1);
 
   const previousTiles = usePrevious(tiles);
-
-  const hoverable = Boolean(onTileClick || onChangeTileIndex);
 
   const handleDragStart = useCallback(
     (e: DragEvent, from: number) => {
@@ -128,7 +127,7 @@ const Tiles: FC<ITilesProps> = (props) => {
 
   const handleDragLeave = useCallback(
     (e: DragEvent) => {
-      const hasExited = e.relatedTarget instanceof HTMLElement && !rootRef.current?.contains(e.relatedTarget);
+      const hasExited = e.relatedTarget instanceof Element && !rootRef.current?.contains(e.relatedTarget);
 
       if (hasExited) {
         toRef.current = fromRef.current;
@@ -163,10 +162,9 @@ const Tiles: FC<ITilesProps> = (props) => {
               draggable={Boolean(onChangeTileIndex)}
               rotation={isRotated ? -1 : 0}
               hoverable={hoverable}
-              clickable={Boolean(onTileClick)}
               selected={tile.index === selectedTileIndex}
               onDragStart={(e) => handleDragStart(e, index)}
-              onClick={() => onTileClick?.(index)}
+              onClick={onTileClick && (() => onTileClick(index))}
             />
           </div>
         ),

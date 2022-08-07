@@ -1,5 +1,11 @@
 .trigger {
-  cursor: pointer;
+  &:not(.disabled) {
+    cursor: pointer;
+  }
+
+  &.disabled {
+    pointer-events: none;
+  }
 }
 
 .popup {
@@ -13,6 +19,7 @@
               0 1px 8px 0 rgb(0 0 0 / 12%);
   z-index: 100;
   margin-top: 4px;
+  background-color: #fff;
 
   &.visible {
     display: block;
