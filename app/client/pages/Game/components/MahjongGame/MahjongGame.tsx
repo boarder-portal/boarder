@@ -16,7 +16,6 @@ import {
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
-import { isLastTileOfKind } from 'common/utilities/mahjong/hand';
 import { getWindHumanShortName } from 'common/utilities/mahjong/stringify';
 import { getNewCurrentTileIndex } from 'common/utilities/mahjong/tiles';
 
@@ -80,13 +79,6 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const handInProcess = activePlayerIndex !== -1;
 
   const prevHandInProcess = usePrevious(handInProcess);
-
-  const isLastTile = useImmutableCallback((tile: TPlayableTile) => {
-    return isLastTileOfKind(
-      players.map(({ data }) => data.hand),
-      tile,
-    );
-  });
 
   const calculateTileSizeAndLayout = useImmutableCallback(() => {
     const root = rootRef.current;
@@ -266,7 +258,6 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         activePlayerIndex={activePlayerIndex}
         activePlayerName={activePlayerIndex === -1 ? null : players[activePlayerIndex].name}
         players={sortedPlayers}
-        isLastTileOfKind={isLastTile}
         onDeclareDecision={declareDecision}
         changeSetting={changeSetting}
         startNewHand={startNewHand}

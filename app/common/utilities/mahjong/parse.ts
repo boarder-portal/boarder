@@ -18,7 +18,7 @@ import {
   TTile,
 } from 'common/types/mahjong';
 
-import { chow, isPlayable, isSuited, kong, pung } from 'common/utilities/mahjong/tiles';
+import { chow, dragon, flower, isPlayable, isSuited, kong, pung, suited, wind } from 'common/utilities/mahjong/tiles';
 
 export function parseTiles(tilesString: string): TTile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
@@ -46,36 +46,27 @@ export function parseTile(tileString: string): TTile {
       throw new Error(`Wrong flower value, expected 1-8, got ${second}`);
     }
 
-    return {
-      type: ETileType.FLOWER,
-      index: value,
-    };
+    return flower(value);
   }
 
   if (first === 'D') {
-    const dragon = STRING_TO_DRAGON_MAP[second];
+    const color = STRING_TO_DRAGON_MAP[second];
 
-    if (!dragon) {
+    if (!color) {
       throw new Error(`Unexpected dragon value, expected one of "r", "g", "w", got "${second}"`);
     }
 
-    return {
-      type: ETileType.DRAGON,
-      color: dragon,
-    };
+    return dragon(color);
   }
 
   if (first === 'W') {
-    const wind = STRING_TO_WIND_MAP[second];
+    const side = STRING_TO_WIND_MAP[second];
 
-    if (!wind) {
+    if (!side) {
       throw new Error(`Unexpected wind value, expected one of "e", "s", "w", "n", got "${second}"`);
     }
 
-    return {
-      type: ETileType.WIND,
-      side: wind,
-    };
+    return wind(side);
   }
 
   const suit = STRING_TO_SUIT_MAP[first];
@@ -90,11 +81,7 @@ export function parseTile(tileString: string): TTile {
     throw new Error(`Wrong tile value, expected 1-9, got ${second}`);
   }
 
-  return {
-    type: ETileType.SUIT,
-    suit,
-    value,
-  };
+  return suited(value, suit);
 }
 
 export function parsePlayableTile(tileString: string): TPlayableTile {

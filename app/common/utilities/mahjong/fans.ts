@@ -463,7 +463,13 @@ export function getSpecialSetsFans(sets: TSet[], winningTile: TPlayableTile, wai
   return fans;
 }
 
-export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
+export function getSpecialFans(
+  options: IHandScoreFullOptions,
+  winningTile: TPlayableTile,
+  wholeHand: TPlayableTile[],
+): TFan[] {
+  const isWinningTile = isEqualTilesCallback(winningTile);
+
   const fans: TFan[] = [];
 
   if (options.isLastWallTile) {
@@ -482,7 +488,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     });
   }
 
-  if (options.isRobbingKong) {
+  if (options.isRobbingKong && wholeHand.filter(isWinningTile).length === 1) {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.ROBBING_THE_KONG,
@@ -490,7 +496,7 @@ export function getSpecialFans(options: IHandScoreFullOptions): TFan[] {
     });
   }
 
-  if (options.isLastTileOfKind) {
+  if (options.lastTileCandidates.some(isWinningTile)) {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.LAST_TILE,

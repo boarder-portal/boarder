@@ -41,8 +41,8 @@ export interface IHandScoreOptions {
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
-  isLastTileOfKind: boolean;
   isLastWallTile: boolean;
+  lastTileCandidates: TPlayableTile[];
   minScore?: number;
 }
 
@@ -104,7 +104,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     winningTile,
   ];
   const wholeHandFans = getWholeHandFans(wholeHand);
-  const specialFans = getSpecialFans(options);
+  const specialFans = getSpecialFans(options, winningTile, wholeHand);
 
   const setsVariations = getSetsVariations({
     hand: [...hand, winningTile],

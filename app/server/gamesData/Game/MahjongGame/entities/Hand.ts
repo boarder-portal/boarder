@@ -24,6 +24,7 @@ import {
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 import {
+  getLastTileCandidates,
   getNewCurrentTileIndex,
   getSupposedHandTileCount,
   getTileSortValue,
@@ -40,7 +41,7 @@ import {
 } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
 import { moveElement } from 'common/utilities/array';
-import { getHandWithoutTile, isLastTileOfKind } from 'common/utilities/mahjong/hand';
+import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 import Turn from 'server/gamesData/Game/MahjongGame/entities/Turn';
@@ -327,13 +328,9 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       flowers,
       seatWind: this.round.playersData[playerIndex].wind,
       roundWind: this.round.wind,
-      isLastTileOfKind: this.isLastTileOfKind(options.winningTile),
       isLastWallTile: this.wall.length === 0,
+      lastTileCandidates: getLastTileCandidates(this.playersData),
     });
-  }
-
-  isLastTileOfKind(tile: TPlayableTile): boolean {
-    return isLastTileOfKind(this.playersData, tile);
   }
 
   *listenForEvents(): TGenerator {

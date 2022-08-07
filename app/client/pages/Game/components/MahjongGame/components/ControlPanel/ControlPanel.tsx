@@ -24,6 +24,7 @@ import {
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getSetNumanName } from 'common/utilities/mahjong/stringify';
+import { getLastTileCandidates } from 'common/utilities/mahjong/tiles';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
@@ -48,7 +49,6 @@ interface IControlPanelProps {
   activePlayerIndex: number;
   activePlayerName: string | null;
   players: IPlayer[];
-  isLastTileOfKind(tile: TPlayableTile): boolean;
   onDeclareDecision(decision: TDeclareDecision): void;
   changeSetting: TChangeSettingCallback<EGame.MAHJONG>;
   startNewHand(ready: boolean): void;
@@ -88,7 +88,6 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     activePlayerIndex,
     activePlayerName,
     players,
-    isLastTileOfKind,
     onDeclareDecision,
     changeSetting,
     startNewHand,
@@ -120,12 +119,12 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
         flowers,
         seatWind: player.data.round?.wind ?? null,
         roundWind,
-        isLastTileOfKind: isLastTileOfKind(options.winningTile),
         isLastWallTile,
         isReplacementTile,
+        lastTileCandidates: getLastTileCandidates(players.map(({ data }) => data.hand)),
       });
     },
-    [isLastTileOfKind, isLastWallTile, isReplacementTile, player?.data, roundWind],
+    [isLastWallTile, isReplacementTile, player?.data.hand, player?.data.round?.wind, players, roundWind],
   );
 
   useEffect(() => {

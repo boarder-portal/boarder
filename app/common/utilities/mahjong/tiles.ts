@@ -1,4 +1,5 @@
 import { ALL_DRAGONS, ALL_SUITS, ALL_WINDS } from 'common/constants/games/mahjong';
+import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 
 import {
   EDragon,
@@ -7,11 +8,14 @@ import {
   EWind,
   IDragonTile,
   IFlowerTile,
+  IHandPlayerData,
   ISuitedTile,
   IWindTile,
   TPlayableTile,
   TTile,
 } from 'common/types/mahjong';
+
+import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
 
 export function suited(value: number, suit: ESuit): ISuitedTile {
   return {
@@ -202,4 +206,23 @@ export function getNewCurrentTileIndex(currentTileIndex: number, from: number, t
   }
 
   return to >= currentTileIndex ? currentTileIndex - 1 : currentTileIndex;
+}
+
+export function getLastTileCandidates(playersData: (IHandPlayerData | null)[]): TPlayableTile[] {
+  const allTiles = [
+    ...playersData.flatMap((playerData) => {
+      if (!playerData) {
+        return [];
+      }
+
+      return [
+        ...playerData.discard,
+        ...playerData.declaredSets.filter(isDeclaredMeldedSet).flatMap(({ set }) => set.tiles),
+      ];
+    }),
+  ];
+
+  return STANDARD_TILES.filter((tile) => {
+    return allTiles.filter(isEqualTilesCallback(tile)).length === 3;
+  });
 }

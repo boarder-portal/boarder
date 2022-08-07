@@ -18,10 +18,10 @@ const standardOptions: Omit<IHandScoreOptions, 'hand'> = {
   meldedSets: [],
   concealedSets: [],
   flowers: [],
-  isLastTileOfKind: false,
   isRobbingKong: false,
   isReplacementTile: false,
   isLastWallTile: false,
+  lastTileCandidates: [],
 };
 
 describe('mahjong', () => {
@@ -1261,7 +1261,7 @@ describe('mahjong', () => {
               ],
               hand: parsePlayableTiles('c8c8c8c9'),
               winningTile: parsePlayableTile('c7'),
-              isLastTileOfKind: true,
+              lastTileCandidates: [parsePlayableTile('c7')],
             }),
           ),
         ).toMatchSnapshot();
@@ -1437,7 +1437,7 @@ describe('mahjong', () => {
               hand: parsePlayableTiles('b3b4b5 c1c1 b6b7'),
               winningTile: parsePlayableTile('b8'),
               isSelfDraw: false,
-              isLastTileOfKind: true,
+              lastTileCandidates: [parsePlayableTile('b8')],
             }),
           ),
         ).toMatchSnapshot();

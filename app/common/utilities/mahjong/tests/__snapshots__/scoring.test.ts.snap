@@ -1751,7 +1751,7 @@ c_pair d9"
 exports[`mahjong scoring robbing the kong basic 1`] = `
 "13
 
-c4 c7 Wn
+c4 c7
 
 ROBBING_THE_KONG
 TILE_HOG (d4)
