@@ -43,7 +43,7 @@ const Mahjong: FC<IMahjongProps> = (props) => {
           <Tiles
             tiles={mahjong.waits}
             tileWidth={tileWidth}
-            onTileClick={(tileIndex) => onWaitClick?.(mahjong.waits[tileIndex])}
+            onTileClick={onWaitClick && ((tileIndex) => onWaitClick(mahjong.waits[tileIndex]))}
           />
         </Flex>
 

@@ -13,7 +13,7 @@ import {
 import { EGame } from 'common/types/game';
 
 import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
-import { getHandMahjong } from 'common/utilities/mahjong/scoring';
+import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getSetNumanName } from 'common/utilities/mahjong/stringify';
 import { getLastTileCandidates } from 'common/utilities/mahjong/tiles';
@@ -164,7 +164,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           possibleDecisions.push({ type: 'mahjong', mahjong });
         }
 
-        if (possibleDecisions.length || !player.settings.autoPass || true) {
+        if (possibleDecisions.length || !player.settings.autoPass) {
           possibleDecisions.unshift('pass');
         }
 
@@ -218,7 +218,9 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           if (decision === 'pass') {
             content = 'Пас';
           } else if (decision.type === 'mahjong') {
-            content = `Маджонг (${decision.mahjong.score} очков)`;
+            const pureScore = getPureFansScore(decision.mahjong.fans);
+
+            content = `Маджонг (${pureScore} + ${decision.mahjong.score - pureScore}🌼)`;
           } else {
             content = (
               <Flex alignItems="center" between={3}>

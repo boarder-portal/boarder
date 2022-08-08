@@ -234,6 +234,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                 rotation={-index}
                 players={sortedPlayers}
                 playerIndex={index}
+                isActive={p.index === activePlayerIndex}
                 selectedTileIndex={isPlayer && isActive && p.settings.showCurrentTile ? currentTileIndex : -1}
                 onChangeTileIndex={isPlayer && handInProcess && !p.settings.sortHand ? changeTileIndex : undefined}
                 onDiscardTile={isPlayer && handInProcess && isActive ? discardTile : undefined}

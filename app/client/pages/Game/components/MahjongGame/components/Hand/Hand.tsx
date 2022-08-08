@@ -1,4 +1,5 @@
 import { FC, memo } from 'react';
+import classNames from 'classnames';
 
 import { IPlayer } from 'common/types/mahjong';
 
@@ -19,6 +20,7 @@ interface IHandProps {
   rotation: number;
   playerIndex: number;
   selectedTileIndex: number;
+  isActive: boolean;
   players: IPlayer[];
   onChangeTileIndex?(from: number, to: number): void;
   onDiscardTile?(tileIndex: number): void;
@@ -34,6 +36,7 @@ const Hand: FC<IHandProps> = (props) => {
     players,
     playerIndex,
     selectedTileIndex,
+    isActive,
     onChangeTileIndex,
     onDiscardTile,
   } = props;
@@ -41,7 +44,7 @@ const Hand: FC<IHandProps> = (props) => {
   return (
     <RotatedElement className={styles.root} rotation={rotation}>
       <RotatedElement rotation={rotation === -2 ? 2 : 0}>
-        {name}
+        <span className={classNames(styles.name, { [styles.active]: isActive })}>{name}</span>
         {data.hand?.flowers && `, ${data.hand.flowers.length}🌼`}
         {data.round?.wind && `, ${getWindHumanShortName(data.round.wind)}`} ({score})
       </RotatedElement>
