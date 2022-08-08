@@ -36,6 +36,7 @@ export interface ISize {
 export interface IGameOptions {
   minPlayersCount: number;
   maxPlayersCount: number;
+  useBots?: boolean;
 }
 
 export interface IPlayerSettings {}

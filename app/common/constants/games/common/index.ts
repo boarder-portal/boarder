@@ -29,3 +29,5 @@ export const PLAYER_SETTINGS: {
   [EGame.MACHI_KORO]: {},
   [EGame.MAHJONG]: MAHJONG_PLAYER_SETTINGS,
 };
+
+export const BOTS_SUPPORTED_GAMES = [EGame.SEVEN_WONDERS, EGame.HEARTS, EGame.MAHJONG] as const;

@@ -8,6 +8,8 @@ import typedReactMemo from 'client/types/typedReactMemo';
 import { EGame, TGameOptions } from 'common/types/game';
 import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap, ILobbyUpdateEvent } from 'common/types/lobby';
 
+import { areBotsAvailable } from 'common/utilities/bots';
+
 import useGameOptions from 'client/hooks/useGameOptions';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useSocket from 'client/hooks/useSocket';
@@ -23,6 +25,7 @@ import BombersCreateGameOptions from 'client/pages/games/bombers/components/Bomb
 import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
 import MahjongCreateGameOptions from 'client/pages/games/mahjong/components/MahjongCreateGameOptions/MahjongCreateGameOptions';
 import MahjongGameOptions from 'client/pages/games/mahjong/components/MahjongGameOptions/MahjongGameOptions';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
@@ -111,6 +114,15 @@ const Lobby = <Game extends EGame>() => {
     [changeOptions],
   );
 
+  const handleUseBotsChange = useCallback(
+    (useBots: boolean) => {
+      changeOptions({
+        useBots,
+      });
+    },
+    [changeOptions],
+  );
+
   if (!lobby) {
     return null;
   }
@@ -121,6 +133,7 @@ const Lobby = <Game extends EGame>() => {
   const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<IGameOptionsProps<Game>>;
 
   const showPlayerCounts = minPlayersCount !== maxPlayersCount;
+  const showBotsSettings = areBotsAvailable(game);
 
   return (
     <div>
@@ -150,7 +163,7 @@ const Lobby = <Game extends EGame>() => {
         </Flex>
 
         <Flex className={styles.options} direction="column" between={3}>
-          {(showPlayerCounts || CreateGameOptions) && <Text size="xxl">Настройки игры</Text>}
+          {(showPlayerCounts || showBotsSettings || CreateGameOptions) && <Text size="xxl">Настройки игры</Text>}
 
           {showPlayerCounts && (
             <>
@@ -184,6 +197,10 @@ const Lobby = <Game extends EGame>() => {
                 onChange={handleMaxPlayersCountChange}
               />
             </>
+          )}
+
+          {showBotsSettings && (
+            <Checkbox checked={options.useBots ?? false} label="Добавить ботов" onChange={handleUseBotsChange} />
           )}
 
           {CreateGameOptions && <CreateGameOptions options={options} changeOptions={changeOptions} />}

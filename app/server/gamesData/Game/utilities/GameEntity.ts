@@ -6,6 +6,7 @@ import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 import { now } from 'server/utilities/time';
+import { areBotsAvailable } from 'common/utilities/bots';
 
 import { BOTS } from 'server/gamesData/Game/Game';
 
@@ -71,7 +72,9 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
   }
 
   *spawnBots(): TGenerator {
-    const bot = BOTS[this.context.game.game];
+    const bot = areBotsAvailable(this.context.game.game)
+      ? (BOTS[this.context.game.game] as IBotConstructor<Game>)
+      : null;
 
     if (!bot) {
       return;

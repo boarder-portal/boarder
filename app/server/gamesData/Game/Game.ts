@@ -4,7 +4,7 @@ import shuffle from 'lodash/shuffle';
 import pick from 'lodash/pick';
 import times from 'lodash/times';
 
-import { PLAYER_SETTINGS } from 'common/constants/games/common';
+import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/games/common';
 
 import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePlayer } from 'common/types';
 import {
@@ -26,6 +26,7 @@ import removeNamespace from 'server/utilities/removeNamespace';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import { now } from 'server/utilities/time';
+import { areBotsAvailable } from 'common/utilities/bots';
 
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
@@ -86,7 +87,7 @@ const GAME_ENTITIES_MAP: {
   [EGame.MAHJONG]: MahjongGame,
 };
 
-export const BOTS: { [Game in EGame]?: IBotConstructor<Game> } = {
+export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: IBotConstructor<Game> } = {
   [EGame.SEVEN_WONDERS]: SevenWondersBot,
   [EGame.HEARTS]: HeartsBot,
   [EGame.MAHJONG]: MahjongBot,
@@ -257,7 +258,7 @@ class Game<Game extends EGame> {
   }
 
   areBotsAvailable(): boolean {
-    return Boolean(process.env.NODE_ENV !== 'production' && BOTS[this.game]);
+    return Boolean(this.options.useBots && areBotsAvailable(this.game));
   }
 
   clearDeleteTimeout(): void {
