@@ -34,6 +34,7 @@ export interface IPlayer extends IGamePlayer<EGame.MAHJONG> {
 
 export interface IPlayerSettings extends ICommonPlayerSettings {
   autoPass: boolean;
+  autoReplaceFlowers: boolean;
   sortHand: boolean;
   showLosingHand: boolean;
   showCurrentTile: boolean;
@@ -64,7 +65,13 @@ export interface IHand {
   activePlayerIndex: number;
   tilesLeft: number;
   isLastInGame: boolean;
+  phase: EHandPhase;
   turn: ITurn | null;
+}
+
+export enum EHandPhase {
+  REPLACE_FLOWERS = 'REPLACE_FLOWERS',
+  PLAY = 'PLAY',
 }
 
 export interface IGameDeclaredMeldedSet {
@@ -82,15 +89,15 @@ export interface IGameDeclaredConcealedSet {
 export type TGameDeclaredSet = IGameDeclaredMeldedSet | IGameDeclaredConcealedSet;
 
 export interface IHandPlayerData {
-  hand: TPlayableTile[];
+  hand: TTile[];
   declaredSets: TGameDeclaredSet[];
   flowers: IFlowerTile[];
-  discard: TPlayableTile[];
+  discard: TTile[];
   readyForNewHand: boolean;
 }
 
 export interface ITurn {
-  currentTile: TPlayableTile | null;
+  currentTile: TTile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
   declareInfo: IDeclareInfo | null;
@@ -101,7 +108,18 @@ export interface IDeclareInfo {
   isRobbingKong: boolean;
 }
 
-export type TDeclareDecision = TDeclaredSet | 'mahjong' | 'pass' | null;
+export type TDeclareDecision =
+  | {
+      type: 'set';
+      set: TDeclaredSet;
+    }
+  | {
+      type: 'flower';
+      flower: IFlowerTile;
+    }
+  | 'mahjong'
+  | 'pass'
+  | null;
 
 export interface ITurnPlayerData {
   declareDecision: TDeclareDecision;

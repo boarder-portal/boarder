@@ -1,3 +1,5 @@
+import findLastIndex from 'lodash/findLastIndex';
+
 import { EGame } from 'common/types/game';
 import {
   EGameClientEvent,
@@ -6,18 +8,20 @@ import {
   ITurn,
   ITurnPlayerData,
   TPlayableTile,
+  TTile,
 } from 'common/types/mahjong';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getPossibleMeldedSets, isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
+import { isEqualTilesCallback, isPlayable } from 'common/utilities/mahjong/tiles';
 
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 
 export interface ITurnOptions {
   activePlayerIndex: number;
-  currentTile: TPlayableTile | null;
+  currentTile: TTile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
 }
@@ -32,7 +36,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
   hand: Hand;
 
   activePlayerIndex: number;
-  currentTile: TPlayableTile | null;
+  currentTile: TTile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
   declareInfo: IDeclareInfo | null = null;
@@ -53,10 +57,38 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
 
   *lifecycle(): TGenerator<TTurnResult> {
     while (true) {
-      const { event, data } = yield* this.waitForPlayerSocketEvents(
-        [EGameClientEvent.DISCARD_TILE, EGameClientEvent.DECLARE],
-        { playerIndex: this.activePlayerIndex },
-      );
+      const { type, value } = yield* this.race({
+        declare: this.waitForPlayerSocketEvents([EGameClientEvent.DISCARD_TILE, EGameClientEvent.DECLARE], {
+          playerIndex: this.activePlayerIndex,
+        }),
+        settingChange: this.game.waitForPlayerSettingChange(this.activePlayerIndex),
+      });
+
+      if (type === 'settingChange') {
+        if (value.key === 'autoReplaceFlowers' && value.value) {
+          const { replaced, tile } = this.hand.replaceFlowers(this.activePlayerIndex);
+
+          this.isReplacementTile &&= !replaced;
+
+          if (replaced) {
+            this.currentTile = tile;
+
+            this.adjustCurrentTileIndex();
+
+            this.game.sendGameInfo();
+
+            if (!tile) {
+              break;
+            }
+          }
+
+          this.game.sendGameInfo();
+        }
+
+        continue;
+      }
+
+      const { event, data } = value;
 
       if (event === EGameClientEvent.DECLARE) {
         const declared = data;
@@ -89,14 +121,31 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
           };
         }
 
-        if (!isKong(declared)) {
+        if (declared.type === 'flower') {
+          this.isReplacementTile = false;
+          this.currentTile = this.hand.replaceFlower(this.activePlayerIndex, declared.flower);
+
+          this.adjustCurrentTileIndex();
+
+          this.game.sendGameInfo();
+
+          if (!this.currentTile) {
+            break;
+          }
+
           continue;
         }
 
-        if (isConcealed(declared)) {
-          this.hand.addConcealedKong(this.activePlayerIndex, declared);
+        const declaredSet = declared.set;
+
+        if (!isKong(declaredSet)) {
+          continue;
+        }
+
+        if (isConcealed(declaredSet)) {
+          this.hand.addConcealedKong(this.activePlayerIndex, declaredSet);
         } else {
-          const kongTile = this.hand.upgradeToKong(this.activePlayerIndex, declared);
+          const kongTile = this.hand.upgradeToKong(this.activePlayerIndex, declaredSet);
 
           if (!kongTile) {
             continue;
@@ -107,7 +156,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
           const otherDeclared = yield* this.waitForDeclare(kongTile, true);
 
           if (otherDeclared !== null) {
-            this.hand.downgradeToPung(this.activePlayerIndex, declared);
+            this.hand.downgradeToPung(this.activePlayerIndex, declaredSet);
 
             this.game.sendGameInfo();
 
@@ -115,14 +164,16 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
           }
         }
 
-        const addedTile = this.hand.addTilesToPlayerHand(this.activePlayerIndex).at(0);
+        const { replacedFlowers, lastAddedTile } = this.hand.addTilesToPlayerHand(this.activePlayerIndex);
 
-        this.isReplacementTile = true;
-        this.currentTile = addedTile ?? null;
+        this.isReplacementTile = !replacedFlowers;
+        this.currentTile = lastAddedTile;
+
+        this.adjustCurrentTileIndex();
 
         this.game.sendGameInfo();
 
-        if (!addedTile) {
+        if (!lastAddedTile) {
           break;
         }
 
@@ -132,12 +183,16 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
       const tile = this.hand.removeTileFromHand(this.activePlayerIndex, data);
 
       if (!tile) {
-        continue;
+        break;
       }
 
       this.hand.discardTile(this.activePlayerIndex, tile);
 
       this.isReplacementTile = false;
+
+      if (!isPlayable(tile)) {
+        break;
+      }
 
       const declared = yield* this.waitForDeclare(tile, false);
 
@@ -155,8 +210,18 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     return null;
   }
 
+  adjustCurrentTileIndex(): void {
+    if (this.currentTile) {
+      this.changeCurrentTileIndex(
+        findLastIndex(this.hand.playersData[this.activePlayerIndex].hand, isEqualTilesCallback(this.currentTile)),
+      );
+    }
+  }
+
   changeCurrentTileIndex(newCurrentTileIndex: number): void {
     this.currentTileIndex = newCurrentTileIndex;
+
+    this.game.sendGameInfo();
   }
 
   toJSON(): ITurn {
@@ -207,7 +272,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
       if (playerIndex !== this.activePlayerIndex) {
         const playerSettings = this.getPlayerSettings(playerIndex);
 
-        if (playerSettings?.autoPass && canAutoPass[playerIndex]) {
+        if (playerSettings.autoPass && canAutoPass[playerIndex]) {
           this.playersData[playerIndex].declareDecision = 'pass';
         }
       }
@@ -237,7 +302,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
       if (declared === null || declared === 'pass' || declared === 'mahjong') {
         playerData.declareDecision = declared;
       } else {
-        if (isConcealed(declared)) {
+        if (declared.type === 'flower' || isConcealed(declared.set)) {
           continue;
         }
 
@@ -270,13 +335,13 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
         } as const;
       }
 
-      if (!isMelded(declareDecision)) {
+      if (declareDecision.type === 'flower' || !isMelded(declareDecision.set)) {
         return null;
       }
 
       return {
         type: 'set',
-        set: declareDecision,
+        set: declareDecision.set,
       } as const;
     });
 

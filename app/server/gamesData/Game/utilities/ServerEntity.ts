@@ -66,12 +66,12 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
-  getPlayer(playerIndex: number): IGamePlayer<Game> | null {
-    return this.context.game.players.at(playerIndex) ?? null;
+  getPlayer(playerIndex: number): IGamePlayer<Game> {
+    return this.context.game.players[playerIndex];
   }
 
-  getPlayerSettings(playerIndex: number): TPlayerSettings<Game> | null {
-    return this.getPlayer(playerIndex)?.settings ?? null;
+  getPlayerSettings(playerIndex: number): TPlayerSettings<Game> {
+    return this.getPlayer(playerIndex)?.settings;
   }
 
   getPlayers(): IGamePlayer<Game>[] {

@@ -11,6 +11,7 @@ export const DEFAULT_GAME_OPTIONS: IGameOptions = {
 
 export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
   autoPass: true,
+  autoReplaceFlowers: true,
   sortHand: false,
   showLosingHand: true,
   showCurrentTile: false,

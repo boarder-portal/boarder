@@ -1,22 +1,24 @@
-import { FC, memo, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, ReactNode, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
 
 import {
+  EHandPhase,
   EWind,
   IDeclareInfo,
+  IFlowerTile,
   IHandMahjong,
   IPlayer,
   TDeclareDecision,
   TDeclaredSet,
-  TPlayableTile,
+  TTile,
 } from 'common/types/mahjong';
 import { EGame } from 'common/types/game';
 
 import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
 import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getSetNumanName } from 'common/utilities/mahjong/stringify';
-import { getLastTileCandidates } from 'common/utilities/mahjong/tiles';
+import { getLastTileCandidates, isEqualTiles, isFlower } from 'common/utilities/mahjong/tiles';
+import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
@@ -30,9 +32,10 @@ import styles from './ControlPanel.pcss';
 
 interface IControlPanelProps {
   className?: string;
+  handPhase: EHandPhase | null;
   roundWind: EWind | null;
   player: IPlayer | null;
-  currentTile: TPlayableTile | null;
+  currentTile: TTile | null;
   isLastWallTile: boolean;
   declareInfo: IDeclareInfo | null;
   isReplacementTile: boolean;
@@ -58,18 +61,25 @@ type TDeclareDecisionButton =
   | {
       type: 'set';
       set: TDeclaredSet;
+    }
+  | {
+      type: 'flower';
+      flower: IFlowerTile;
     };
 
 interface IGetMahjongOptions {
-  hand: TPlayableTile[];
-  winningTile: TPlayableTile;
+  hand: TTile[];
+  winningTile: TTile;
   isRobbingKong: boolean;
   isSelfDraw: boolean;
 }
 
+const TILE_WIDTH = 30;
+
 const ControlPanel: FC<IControlPanelProps> = (props) => {
   const {
     className,
+    handPhase,
     roundWind,
     player,
     currentTile,
@@ -88,8 +98,6 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     openResultsModal,
     openCalculatorModal,
   } = props;
-
-  const [declareDecisions, setDeclareDecisions] = useState<TDeclareDecisionButton[]>([]);
 
   const isChowPossible = useMemo(() => {
     const activePlayerRealIndex = players.findIndex(({ index }) => index === activePlayerIndex);
@@ -120,15 +128,29 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     [isLastWallTile, isReplacementTile, player?.data.hand, player?.data.round?.wind, players, roundWind],
   );
 
-  useEffect(() => {
-    if (player?.data.hand) {
-      const { hand, declaredSets } = player.data.hand;
+  const declareDecisions = useMemo<TDeclareDecisionButton[]>(() => {
+    if (!player?.data.hand || !handPhase) {
+      return [];
+    }
 
-      if (player.index === activePlayerIndex) {
-        const possibleDecisions: TDeclareDecisionButton[] = getPossibleKongs(hand, declaredSets).map((set) => ({
-          type: 'set',
-          set,
-        }));
+    const isActive = player.index === activePlayerIndex;
+    const { hand, declaredSets } = player.data.hand;
+
+    if (isActive) {
+      const possibleDecisions: TDeclareDecisionButton[] = [];
+
+      if (handPhase === EHandPhase.REPLACE_FLOWERS) {
+        possibleDecisions.push('pass');
+      } else {
+        possibleDecisions.push(
+          ...getPossibleKongs(hand, declaredSets).map(
+            (set) =>
+              ({
+                type: 'set',
+                set,
+              } as const),
+          ),
+        );
 
         if (currentTile) {
           const mahjong = getMahjong({
@@ -142,44 +164,55 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
             possibleDecisions.push({ type: 'mahjong', mahjong });
           }
         }
-
-        setDeclareDecisions(possibleDecisions);
-      } else if (declareInfo) {
-        const possibleDecisions: TDeclareDecisionButton[] = declareInfo.isRobbingKong
-          ? []
-          : [
-              ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
-                (set) => ({ type: 'set', set } as const),
-              ),
-            ];
-
-        const mahjong = getMahjong({
-          hand: player.data.hand.hand,
-          winningTile: declareInfo.tile,
-          isRobbingKong: declareInfo.isRobbingKong,
-          isSelfDraw: false,
-        });
-
-        if (mahjong) {
-          possibleDecisions.push({ type: 'mahjong', mahjong });
-        }
-
-        if (possibleDecisions.length || !player.settings.autoPass) {
-          possibleDecisions.unshift('pass');
-        }
-
-        setDeclareDecisions(possibleDecisions);
-      } else {
-        setDeclareDecisions([]);
       }
-    } else {
-      setDeclareDecisions([]);
+
+      possibleDecisions.push(
+        ...hand.filter(isFlower).map(
+          (flower) =>
+            ({
+              type: 'flower',
+              flower,
+            } as const),
+        ),
+      );
+
+      return possibleDecisions;
     }
+
+    if (handPhase === EHandPhase.REPLACE_FLOWERS || !declareInfo) {
+      return [];
+    }
+
+    const possibleDecisions: TDeclareDecisionButton[] = declareInfo.isRobbingKong
+      ? []
+      : [
+          ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
+            (set) => ({ type: 'set', set } as const),
+          ),
+        ];
+
+    const mahjong = getMahjong({
+      hand: player.data.hand.hand,
+      winningTile: declareInfo.tile,
+      isRobbingKong: declareInfo.isRobbingKong,
+      isSelfDraw: false,
+    });
+
+    if (mahjong) {
+      possibleDecisions.push({ type: 'mahjong', mahjong });
+    }
+
+    if (possibleDecisions.length || !player.settings.autoPass) {
+      possibleDecisions.unshift('pass');
+    }
+
+    return possibleDecisions;
   }, [
     activePlayerIndex,
     currentTile,
     declareInfo,
     getMahjong,
+    handPhase,
     isChowPossible,
     player?.data.hand,
     player?.index,
@@ -195,10 +228,10 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
               <span>
                 {activePlayerName} {declareInfo.isRobbingKong ? 'использовал' : 'сбросил'}(а) кость
               </span>
-              <Tile tile={declareInfo.tile} width={30} />
+              <Tile tile={declareInfo.tile} width={TILE_WIDTH} />
             </>
           ) : (
-            `Ход ${activePlayerName}`
+            `${handPhase === EHandPhase.REPLACE_FLOWERS ? 'Замена цветов. ' : ''}Ход ${activePlayerName}`
           )}
         </Flex>
       )}
@@ -206,27 +239,42 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
       <Flex className={styles.decisions} direction="column" between={1}>
         {declareDecisions.map((decision, index) => {
           const declaredDecision = player?.data.turn?.declareDecision ?? null;
-          const declareDecision: TDeclareDecision =
-            decision === 'pass' ? 'pass' : decision.type === 'mahjong' ? 'mahjong' : decision.set;
+          const declareDecision = decision === 'pass' ? 'pass' : decision.type === 'mahjong' ? 'mahjong' : decision;
           const isSelected =
             declaredDecision &&
-            (typeof declareDecision === 'string'
-              ? declareDecision === declaredDecision
-              : typeof declaredDecision !== 'string' && isEqualSets(declareDecision, declaredDecision));
+            (declareDecision === declaredDecision ||
+              (typeof declareDecision !== 'string' &&
+                declareDecision.type === 'flower' &&
+                typeof declaredDecision !== 'string' &&
+                declaredDecision.type === 'flower' &&
+                isEqualTiles(declareDecision.flower, declaredDecision.flower)) ||
+              (typeof declareDecision !== 'string' &&
+                declareDecision.type === 'set' &&
+                typeof declaredDecision !== 'string' &&
+                declaredDecision.type === 'set' &&
+                isEqualSets(declareDecision.set, declaredDecision.set)));
           let content: ReactNode;
 
           if (decision === 'pass') {
-            content = 'Пас';
+            content = handPhase === EHandPhase.REPLACE_FLOWERS ? 'Пропустить' : 'Пас';
           } else if (decision.type === 'mahjong') {
             const pureScore = getPureFansScore(decision.mahjong.fans);
 
             content = `Маджонг (${pureScore} + ${decision.mahjong.score - pureScore}🌼)`;
+          } else if (decision.type === 'flower') {
+            content = (
+              <Flex alignItems="center" between={3}>
+                <span>Цветок</span>
+
+                <Tile tile={decision.flower} width={TILE_WIDTH} />
+              </Flex>
+            );
           } else {
             content = (
               <Flex alignItems="center" between={3}>
                 <span>{getSetNumanName(decision.set)}</span>
 
-                <Tiles tiles={decision.set.tiles} tileWidth={30} />
+                <Tiles tiles={decision.set.tiles} tileWidth={TILE_WIDTH} />
               </Flex>
             );
           }
@@ -276,6 +324,12 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
             checked={player.settings.autoPass}
             label="Авто-пас"
             onChange={(checked) => changeSetting('autoPass', checked)}
+          />
+
+          <Checkbox
+            checked={player.settings.autoReplaceFlowers}
+            label="Авто-замена цветов"
+            onChange={(checked) => changeSetting('autoReplaceFlowers', checked)}
           />
 
           <Checkbox

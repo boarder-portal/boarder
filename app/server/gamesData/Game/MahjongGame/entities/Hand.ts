@@ -9,8 +9,9 @@ import { DECK } from 'common/constants/games/mahjong/tiles';
 import { EGame } from 'common/types/game';
 import {
   EGameClientEvent,
+  EHandPhase,
   ESet,
-  ESuit,
+  IFlowerTile,
   IHand,
   IHandMahjong,
   IHandPlayerData,
@@ -32,7 +33,6 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
   isFlower,
-  suited,
 } from 'common/utilities/mahjong/tiles';
 import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
@@ -49,7 +49,7 @@ export interface IHandOptions {
 }
 
 export interface IHandMahjongOptions {
-  winningTile: TPlayableTile;
+  winningTile: TTile;
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
@@ -60,6 +60,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
   round: Round;
 
   isLastInGame: boolean;
+  phase = EHandPhase.REPLACE_FLOWERS;
   playersData: IHandPlayerData[] = this.getPlayersData(() => ({
     hand: [],
     declaredSets: [],
@@ -111,22 +112,69 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     this.spawnTask(this.listenForEvents());
 
+    for (let i = 0; i < this.playersCount; i++) {
+      const playerSettings = this.getPlayerSettings(this.activePlayerIndex);
+      const { hand } = this.playersData[this.activePlayerIndex];
+
+      if (!playerSettings.autoReplaceFlowers) {
+        while (hand.some(isFlower)) {
+          const { type, value } = yield* this.race({
+            declare: this.waitForPlayerSocketEvent(EGameClientEvent.DECLARE, {
+              playerIndex: this.activePlayerIndex,
+            }),
+            settingsChange: this.game.waitForPlayerSettingChange(this.activePlayerIndex),
+          });
+
+          if (type === 'settingsChange') {
+            if (value.key === 'autoReplaceFlowers' && value.value) {
+              this.replaceFlowers(this.activePlayerIndex);
+
+              this.game.sendGameInfo();
+
+              break;
+            }
+
+            continue;
+          }
+
+          const declared = value;
+
+          if (declared === 'pass') {
+            break;
+          }
+
+          if (!declared || declared === 'mahjong' || declared.type !== 'flower') {
+            continue;
+          }
+
+          this.replaceFlower(this.activePlayerIndex, declared.flower);
+
+          this.game.sendGameInfo();
+        }
+      }
+
+      this.passTurn();
+    }
+
+    this.phase = EHandPhase.PLAY;
+
     const handResult: IHandResult = {
       mahjong: null,
       scores: this.getPlayersData(() => 0),
     };
 
     while (true) {
-      let addedTile: TPlayableTile | null = null;
+      let addedTile: TTile | null = null;
       let addedTileIndex = -1;
 
       if (this.needToDrawTile) {
-        addedTile = this.addTilesToPlayerHand(this.activePlayerIndex).at(0) ?? null;
+        const { lastAddedTile } = this.addTilesToPlayerHand(this.activePlayerIndex);
 
-        if (!addedTile) {
+        if (!lastAddedTile) {
           break;
         }
 
+        addedTile = lastAddedTile;
         addedTileIndex = findLastIndex(this.playersData[this.activePlayerIndex].hand, isEqualTilesCallback(addedTile));
       }
 
@@ -230,13 +278,22 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     });
   }
 
-  addTileToPlayerHand(playerIndex: number, tile: TPlayableTile): void {
+  addTileToPlayerHand(playerIndex: number, tile: TTile): void {
     this.playersData[playerIndex].hand.push(tile);
+
+    if (this.getPlayerSettings(playerIndex).sortHand) {
+      this.sortPlayerTiles(playerIndex);
+    }
   }
 
-  addTilesToPlayerHand(playerIndex: number, withAdditional = true): TPlayableTile[] {
+  addTilesToPlayerHand(
+    playerIndex: number,
+    withAdditional = true,
+  ): { replacedFlowers: boolean; lastAddedTile: TTile | null } {
+    const playerSettings = this.getPlayerSettings(playerIndex);
     const { declaredSets, flowers } = this.playersData[playerIndex];
-    const addedTiles: TPlayableTile[] = [];
+    const addedTiles: TTile[] = [];
+    let replacedFlowers = false;
 
     while (
       this.playersData[playerIndex].hand.length <
@@ -245,23 +302,21 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       const tile = this.getNewTile();
 
       if (!tile) {
-        return addedTiles;
+        break;
       }
 
-      if (isFlower(tile)) {
+      addedTiles.push(tile);
+
+      if (isFlower(tile) && playerSettings.autoReplaceFlowers) {
         flowers.push(tile);
+
+        replacedFlowers = true;
       } else {
         this.addTileToPlayerHand(playerIndex, tile);
-
-        if (this.getPlayerSettings(playerIndex)?.sortHand) {
-          this.sortPlayerTiles(playerIndex);
-        }
-
-        addedTiles.push(tile);
       }
     }
 
-    return addedTiles;
+    return { replacedFlowers, lastAddedTile: addedTiles.at(-1) ?? null };
   }
 
   changePlayerTileIndex(playerIndex: number, from: number, to: number): void {
@@ -272,7 +327,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.game.sendGameInfo();
   }
 
-  discardTile(playerIndex: number, tile: TPlayableTile): void {
+  discardTile(playerIndex: number, tile: TTile): void {
     this.playersData[playerIndex].discard.push(tile);
   }
 
@@ -337,11 +392,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
         if (key === 'sortHand' && value) {
           this.sortPlayerTiles(playerIndex);
 
-          if (this.turn?.currentTile) {
-            this.turn.changeCurrentTileIndex(
-              findLastIndex(this.playersData[this.activePlayerIndex].hand, isEqualTilesCallback(this.turn.currentTile)),
-            );
-          }
+          this.turn?.adjustCurrentTileIndex();
         }
       }),
     ]);
@@ -351,8 +402,67 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.playersData[playerIndex].discard.pop();
   }
 
-  removeTileFromHand(playerIndex: number, index: number): TPlayableTile | null {
+  removeTileFromHand(playerIndex: number, index: number): TTile | null {
     return this.playersData[playerIndex].hand.splice(index, 1).at(0) ?? null;
+  }
+
+  replaceFlower(playerIndex: number, flower: IFlowerTile): TTile | null {
+    const playerSettings = this.getPlayerSettings(playerIndex);
+    const { hand, flowers } = this.playersData[playerIndex];
+    let tile: TTile | null = null;
+    let currentFlower = flower;
+
+    while (true) {
+      const tileIndex = hand.findIndex(isEqualTilesCallback(currentFlower));
+
+      if (tileIndex === -1) {
+        return null;
+      }
+
+      this.removeTileFromHand(playerIndex, tileIndex);
+
+      flowers.push(currentFlower);
+
+      tile = this.getNewTile();
+
+      if (!tile) {
+        break;
+      }
+
+      this.addTileToPlayerHand(playerIndex, tile);
+
+      if (!isFlower(tile) || !playerSettings.autoReplaceFlowers) {
+        break;
+      }
+
+      currentFlower = tile;
+    }
+
+    return tile;
+  }
+
+  replaceFlowers(playerIndex: number): { replaced: boolean; tile: TTile | null } {
+    const flowers = this.playersData[playerIndex].hand.filter(isFlower);
+
+    if (!flowers.length) {
+      return {
+        replaced: false,
+        tile: null,
+      };
+    }
+
+    let tile: TTile | null = null;
+    let replaced = false;
+
+    for (const flower of flowers) {
+      tile = this.replaceFlower(playerIndex, flower);
+      replaced = replaced || Boolean(tile);
+    }
+
+    return {
+      replaced,
+      tile,
+    };
   }
 
   sortPlayerTiles(playerIndex: number): void {
@@ -399,6 +509,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       activePlayerIndex: this.activePlayerIndex,
       tilesLeft: this.wall.length,
       isLastInGame: this.isLastInGame,
+      phase: this.phase,
       turn: this.turn?.toJSON() ?? null,
     };
   }

@@ -5,13 +5,14 @@ import classNames from 'classnames';
 import { EGame } from 'common/types/game';
 import {
   EGameClientEvent,
+  EHandPhase,
   EWind,
   IDeclareInfo,
   IHandMahjong,
   IHandResult,
   IPlayer,
   TDeclareDecision,
-  TPlayableTile,
+  TTile,
 } from 'common/types/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
@@ -66,13 +67,14 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   } = useBoolean(false);
   const [openedMahjong, setOpenedMahjong] = useState<IHandMahjong | null>(null);
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [handPhase, setHandPhase] = useState<EHandPhase | null>(null);
   const [resultsByHand, setResultsByHand] = useState<IHandResult[]>([]);
   const [roundWind, setRoundWind] = useState<EWind | null>(null);
   const [roundHandIndex, setRoundHandIndex] = useState(-1);
   const [isLastHandInGame, setIsLastHandInGame] = useState(false);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [wallTilesLeft, setWallTilesLeft] = useState<number | null>(null);
-  const [currentTile, setCurrentTile] = useState<TPlayableTile | null>(null);
+  const [currentTile, setCurrentTile] = useState<TTile | null>(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(-1);
   const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
@@ -87,7 +89,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const isActive = player?.index === activePlayerIndex;
   const isLastWallTile = wallTilesLeft === 0 && handInProcess;
 
-  const purePlayerHand = useMemo<TPlayableTile[]>(() => {
+  const purePlayerHand = useMemo<TTile[]>(() => {
     if (!player?.data.hand) {
       return [];
     }
@@ -179,6 +181,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
     batchedUpdates(() => {
       setPlayers(gameInfo.players);
+      setHandPhase(gameInfo.round?.hand?.phase ?? null);
       setResultsByHand(gameInfo.resultsByHand);
       setRoundWind(gameInfo.round?.wind ?? null);
       setRoundHandIndex(gameInfo.round?.handIndex ?? -1);
@@ -268,6 +271,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
       <ControlPanel
         className={styles.controlPanel}
+        handPhase={handPhase}
         roundWind={roundWind}
         player={player}
         currentTile={currentTile}

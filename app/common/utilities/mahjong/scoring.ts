@@ -16,6 +16,7 @@ import {
   TFan,
   TPlayableTile,
   TSet,
+  TTile,
 } from 'common/types/mahjong';
 
 import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
@@ -28,10 +29,16 @@ import {
   getWholeHandFans,
   getWholeHandSetsFans,
 } from 'common/utilities/mahjong/fans';
-import { getSupposedHandTileCount, isEqualTilesCallback, isHonor, isTileSubset } from 'common/utilities/mahjong/tiles';
+import {
+  getSupposedHandTileCount,
+  isEqualTilesCallback,
+  isHonor,
+  isPlayable,
+  isTileSubset,
+} from 'common/utilities/mahjong/tiles';
 
 export interface IHandScoreOptions {
-  hand: TPlayableTile[];
+  hand: TTile[];
   declaredSets: TDeclaredSet[];
   flowers: IFlowerTile[];
   seatWind: EWind | null;
@@ -40,12 +47,12 @@ export interface IHandScoreOptions {
   isReplacementTile: boolean;
   isRobbingKong: boolean;
   isLastWallTile: boolean;
-  lastTileCandidates: TPlayableTile[];
+  lastTileCandidates: TTile[];
   minScore?: number;
 }
 
 export interface IHandScoreFullOptions extends IHandScoreOptions {
-  winningTile?: TPlayableTile;
+  winningTile?: TTile;
   waits?: TPlayableTile[];
 }
 
@@ -83,11 +90,11 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   const waits = options.waits ?? getAllWaits(options);
   const winningTile = options.winningTile ?? waits.at(0);
 
-  if (!winningTile) {
+  if (!winningTile || !isPlayable(winningTile)) {
     return null;
   }
 
-  if (hand.length !== getSupposedHandTileCount(declaredSets.length)) {
+  if (hand.length !== getSupposedHandTileCount(declaredSets.length) || !hand.every(isPlayable)) {
     return null;
   }
 

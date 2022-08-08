@@ -84,6 +84,14 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     );
   }
 
+  *waitForPlayerSettingChange(playerIndex: number): TGenerator<TSettingsChangeEvent<Game>> {
+    const data = yield* this.waitForPlayerSocketEvent(ECommonGameClientEvent.CHANGE_SETTING, {
+      playerIndex,
+    });
+
+    return this.getSettingChangeEvent(playerIndex, data as any);
+  }
+
   *waitForSettingChange(): TGenerator<TSettingsChangeEvent<Game>> {
     const { data, playerIndex } = yield* this.waitForSocketEvent(ECommonGameClientEvent.CHANGE_SETTING);
 

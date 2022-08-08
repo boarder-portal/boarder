@@ -13,6 +13,7 @@ import {
   IPlayer,
   TDeclaredSet,
   TPlayableTile,
+  TTile,
 } from 'common/types/mahjong';
 
 import {
@@ -56,8 +57,8 @@ enum ESelectMode {
 interface ICalculatorModalProps {
   open: boolean;
   declaredSets: TDeclaredSet[];
-  hand: TPlayableTile[];
-  winningTile: TPlayableTile | null;
+  hand: TTile[];
+  winningTile: TTile | null;
   roundWind: EWind | null;
   isRobbingKong: boolean;
   isReplacementTile: boolean;
@@ -90,8 +91,8 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
 
   const [selectMode, setSelectMode] = useState(ESelectMode.WINNING_TILE);
   const [declaredSets, setDeclaredSets] = useState<TDeclaredSet[]>([]);
-  const [hand, setHand] = useState<TPlayableTile[]>([]);
-  const [winningTile, setWinningTile] = useState<TPlayableTile | null>(null);
+  const [hand, setHand] = useState<TTile[]>([]);
+  const [winningTile, setWinningTile] = useState<TTile | null>(null);
   const [roundWind, setRoundWind] = useState<EWind | null>(EWind.EAST);
   const [seatWind, setSeatWind] = useState<EWind | null>(EWind.EAST);
   const [isSelfDraw, setIsSelfDraw] = useState(false);
@@ -119,8 +120,8 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     ];
   }, [canAddSets, canAddToHand]);
 
-  const allMeldedTiles = useMemo<TPlayableTile[]>(() => {
-    const meldedTiles = declaredSets.filter(isMelded).flatMap(({ tiles }) => tiles);
+  const allMeldedTiles = useMemo<TTile[]>(() => {
+    const meldedTiles: TTile[] = declaredSets.filter(isMelded).flatMap(({ tiles }) => tiles);
 
     if (gameTakenIntoAccount) {
       players.forEach((p) => {
@@ -137,11 +138,11 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     return meldedTiles;
   }, [declaredSets, gameTakenIntoAccount, player?.index, players]);
 
-  const lastTileCandidates = useMemo<TPlayableTile[]>(() => {
+  const lastTileCandidates = useMemo<TTile[]>(() => {
     return getLastTileCandidatesFromTiles(allMeldedTiles);
   }, [allMeldedTiles]);
 
-  const allKnownTiles = useMemo<TPlayableTile[]>(() => {
+  const allKnownTiles = useMemo<TTile[]>(() => {
     const allKnowsTiles = [
       ...(winningTile ? [winningTile] : []),
       ...hand,

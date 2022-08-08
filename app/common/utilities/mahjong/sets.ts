@@ -18,6 +18,7 @@ import {
   TMeldedSet,
   TPlayableTile,
   TSet,
+  TTile,
 } from 'common/types/mahjong';
 
 import {
@@ -25,6 +26,7 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
   isFlush,
+  isPlayable,
   isStraight,
   isSuited,
   isTileSubset,
@@ -335,11 +337,11 @@ export function getTileHogs(sets: TSet[]): TPlayableTile[] {
   return tileHogs;
 }
 
-export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TGameDeclaredSet[]): IKongSet[] {
+export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]): IKongSet[] {
   const possibleSets: IKongSet[] = [];
 
   hand.forEach((tile, index) => {
-    if (hand.slice(index + 1).filter(isEqualTilesCallback(tile)).length === 3) {
+    if (hand.slice(index + 1).filter(isEqualTilesCallback(tile)).length === 3 && isPlayable(tile)) {
       possibleSets.push({
         type: ESet.KONG,
         tiles: kong(tile),
@@ -368,7 +370,7 @@ export function getPossibleKongs(hand: TPlayableTile[], declaredSets: TGameDecla
 }
 
 export function getPossibleMeldedSets(
-  hand: TPlayableTile[],
+  hand: TTile[],
   discardedTile: TPlayableTile,
   isChowPossible: boolean,
 ): TMeldedSet[] {
@@ -383,7 +385,7 @@ export function getPossibleMeldedSets(
   };
 
   allPossibleSets.forEach((tiles) => {
-    if (tiles.every(isDiscardedTile)) {
+    if (tiles.every(isDiscardedTile) && tiles.every(isPlayable)) {
       addSet({
         type: ESet.PUNG,
         tiles,
