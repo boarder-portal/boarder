@@ -52,7 +52,8 @@ export default function useSocket<ClientEvents = Record<never, never>, ServerEve
   eventMapRef.current = eventMap;
 
   useEffect(() => {
-    const socket = (socketRef.current = typeof socketOrUrl === 'string' ? io(socketOrUrl) : socketOrUrl);
+    const socket = (socketRef.current =
+      typeof socketOrUrl === 'string' ? io(socketOrUrl, { forceNew: true }) : socketOrUrl);
 
     const listeners = mapValues(eventMapRef.current, (_, event) => {
       return (...args: unknown[]) => (eventMapRef.current as any)[event]?.(...args);
