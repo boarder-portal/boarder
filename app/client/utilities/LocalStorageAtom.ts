@@ -28,7 +28,7 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
   [EGame.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
-  [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v0.1',
+  [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v1',
 } as const;
 
 export const PLAYER_SETTINGS_KEYS = {
@@ -41,7 +41,7 @@ export const PLAYER_SETTINGS_KEYS = {
   [EGame.HEARTS]: 'game/hearts/playerSettings/v1',
   [EGame.BOMBERS]: 'game/bombers/playerSettings/v1',
   [EGame.MACHI_KORO]: 'game/machiKoro/playerSettings/v1',
-  [EGame.MAHJONG]: 'game/mahjong/playerSettings/v0.3',
+  [EGame.MAHJONG]: 'game/mahjong/playerSettings/v1',
 } as const;
 
 export default class LocalStorageAtom<Key extends TLocalStorageKey> {
