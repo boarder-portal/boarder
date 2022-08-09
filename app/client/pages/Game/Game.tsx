@@ -1,4 +1,4 @@
-import React, { ComponentType, useCallback, useState } from 'react';
+import React, { ComponentType, useCallback, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
@@ -89,60 +89,59 @@ function Game<G extends EGame>() {
   const [user] = useAtom('user');
   const { settings: playerSettings, changeSetting: onChangeSetting } = usePlayerSettings(game);
 
-  const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(
-    `/${game}/game/${gameId}?settings=${JSON.stringify(playerSettings)}`,
-    {
-      [ECommonGameServerEvent.GET_DATA]: (data) => {
-        batchedUpdates(() => {
-          const timeDiff = data.timestamp - now();
+  const socketPathRef = useRef(`/${game}/game/${gameId}?settings=${JSON.stringify(playerSettings)}`);
 
-          setGameOptions(data.options);
-          setGameInfo(data.info);
-          setGameResult(data.result);
-          setPlayers(data.players);
-          setGameName(data.name);
-          setTimeDiff(timeDiff);
-          setGameState({
-            type: data.state.type,
-            changeTimestamp: data.state.changeTimestamp - timeDiff,
-          });
-        });
-      },
-      [ECommonGameServerEvent.GET_INFO]: (info) => {
-        setGameInfo(info);
-      },
-      [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
-        setPlayers(players);
-      },
-      [ECommonGameServerEvent.PING]: (serverTimestamp) => {
-        setTimeDiff(serverTimestamp - now());
-      },
-      [ECommonGameServerEvent.PAUSE]: (pausedAt) => {
+  const socket = useSocket<ICommonClientEventMap<G>, ICommonServerEventMap<G>>(socketPathRef.current, {
+    [ECommonGameServerEvent.GET_DATA]: (data) => {
+      batchedUpdates(() => {
+        const timeDiff = data.timestamp - now();
+
+        setGameOptions(data.options);
+        setGameInfo(data.info);
+        setGameResult(data.result);
+        setPlayers(data.players);
+        setGameName(data.name);
+        setTimeDiff(timeDiff);
         setGameState({
-          type: 'paused',
-          changeTimestamp: pausedAt - timeDiff,
+          type: data.state.type,
+          changeTimestamp: data.state.changeTimestamp - timeDiff,
         });
-      },
-      [ECommonGameServerEvent.UNPAUSE]: (pausedAt) => {
-        setGameState({
-          type: 'active',
-          changeTimestamp: pausedAt - timeDiff,
-        });
-      },
-      [ECommonGameServerEvent.END]: (result) => {
-        console.log('GAME_END', result);
-
-        setGameResult(result);
-      },
-
-      // eslint-disable-next-line camelcase
-      connect_error: (err: Error) => {
-        if (err.message === 'Invalid namespace') {
-          history.push(`/${game}/lobby`);
-        }
-      },
+      });
     },
-  );
+    [ECommonGameServerEvent.GET_INFO]: (info) => {
+      setGameInfo(info);
+    },
+    [ECommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
+      setPlayers(players);
+    },
+    [ECommonGameServerEvent.PING]: (serverTimestamp) => {
+      setTimeDiff(serverTimestamp - now());
+    },
+    [ECommonGameServerEvent.PAUSE]: (pausedAt) => {
+      setGameState({
+        type: 'paused',
+        changeTimestamp: pausedAt - timeDiff,
+      });
+    },
+    [ECommonGameServerEvent.UNPAUSE]: (pausedAt) => {
+      setGameState({
+        type: 'active',
+        changeTimestamp: pausedAt - timeDiff,
+      });
+    },
+    [ECommonGameServerEvent.END]: (result) => {
+      console.log('GAME_END', result);
+
+      setGameResult(result);
+    },
+
+    // eslint-disable-next-line camelcase
+    connect_error: (err: Error) => {
+      if (err.message === 'Invalid namespace') {
+        history.push(`/${game}/lobby`);
+      }
+    },
+  });
 
   const handleUserClick = useCallback(() => {
     socket?.emit(ECommonGameClientEvent.TOGGLE_READY);

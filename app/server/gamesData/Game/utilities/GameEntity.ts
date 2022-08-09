@@ -111,7 +111,7 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
 
       player.settings[data.key as keyof TPlayerSettings<Game>] = data.value as any;
 
-      this.context.game.sendUpdatePlayersEvent();
+      this.sendGameInfo();
     });
   }
 }
