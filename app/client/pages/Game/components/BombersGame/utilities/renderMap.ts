@@ -3,18 +3,18 @@ import { TIME_TO_START } from 'common/constants/games/bombers';
 
 import { IExplodedDirection, IPlayer, IPlayerData, TMap } from 'common/types/bombers';
 import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
+import { ITimestamp } from 'common/types';
 
 import renderPlayer from 'client/pages/Game/components/BombersGame/utilities/renderPlayer';
 import renderCell from 'client/pages/Game/components/BombersGame/utilities/renderCell';
 import renderExplodedDirection from 'client/pages/Game/components/BombersGame/utilities/renderExplodedDirection';
-import { now } from 'client/utilities/time';
 
 export interface IRenderMapOptions {
   ctx: CanvasRenderingContext2D;
   map: TMap;
   playersData: IPlayerData[];
   explodedDirections: Set<IExplodedDirection>;
-  startsAt: number;
+  startsAt: ITimestamp;
   player: IPlayer | null;
   images: TBombersImages;
 }
@@ -38,7 +38,7 @@ export default function renderMap(options: IRenderMapOptions): void {
     renderExplodedDirection({ ctx, explodedDirection });
   });
 
-  const timeLeftToStart = startsAt - now();
+  const timeLeftToStart = startsAt.timeLeft;
 
   if (timeLeftToStart > 0 && player) {
     const playerCenterX = player.data.coords.x * CELL_SIZE;

@@ -142,6 +142,10 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     return cell;
   }
 
+  isPauseSupported(): boolean {
+    return true;
+  }
+
   moveEntityInDirection<Entity extends TMovingEntity>(
     entity: Entity,
     direction: EDirection,

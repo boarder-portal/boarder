@@ -22,7 +22,6 @@ import { TBomberImage } from 'client/pages/Game/components/BombersGame/types';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
-import { now } from 'client/utilities/time';
 
 import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
@@ -30,6 +29,8 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useRaf from 'client/hooks/useRaf';
 import usePlayer from 'client/hooks/usePlayer';
 import useImages from 'client/hooks/useImages';
+import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
+import useBoundTimestamps from 'client/pages/Game/hooks/useBoundTimetamps';
 
 import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
 import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
@@ -58,7 +59,9 @@ const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
 };
 
 const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
-  const { io, gameInfo, gameOptions, timeDiff } = props;
+  const { io, gameInfo, gameOptions } = props;
+
+  const createTimestamp = useCreateTimestamp();
 
   const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
@@ -71,13 +74,20 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   const playersDataRef = useRef<IPlayerData[]>(
     players.map((player) => ({
       ...player.data,
-      startMovingTimestamp: player.data.startMovingTimestamp && player.data.startMovingTimestamp - timeDiff,
+      startMovingTimestamp: player.data.startMovingTimestamp && createTimestamp(player.data.startMovingTimestamp),
+      buffs: player.data.buffs.map((buff) => ({
+        ...buff,
+        endsAt: createTimestamp(buff.endsAt),
+      })),
     })),
   );
   const explodedDirectionsRef = useRef(new Set<IExplodedDirection>());
   const pressedDirectionsRef = useRef<EDirection[]>([]);
 
   const player = usePlayer(players);
+  const startsAtTimestamp = useMemo(() => {
+    return createTimestamp(gameInfo.startsAt);
+  }, [createTimestamp, gameInfo.startsAt]);
 
   const sharedDataManager = useMemo(() => {
     return new SharedDataManager({
@@ -132,15 +142,15 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
-    [EGameServerEvent.CAN_CONTROL]: () => {
-      canControlRef.current = true;
+    [EGameServerEvent.CAN_CONTROL]: (canControl) => {
+      canControlRef.current = canControl;
     },
     [EGameServerEvent.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
 
       playerData.coords = coords;
       playerData.direction = direction;
-      playerData.startMovingTimestamp = startMovingTimestamp && startMovingTimestamp - timeDiff;
+      playerData.startMovingTimestamp = startMovingTimestamp && createTimestamp(startMovingTimestamp);
     },
     [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].objects.push(bomb);
@@ -231,7 +241,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       }
     },
     [EGameServerEvent.BUFF_ACTIVATED]: ({ playerIndex, buff }) => {
-      sharedDataManager.activatePlayerBuff(playerIndex, buff.type, buff.endsAt - timeDiff);
+      sharedDataManager.activatePlayerBuff(playerIndex, buff.type, createTimestamp(buff.endsAt));
 
       if (playerIndex === player?.index) {
         refreshPlayersData();
@@ -275,6 +285,27 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useGlobalListener('keyup', document, (e) => {
+    const direction = DIRECTIONS_MAP[e.code];
+    const pressedDirections = pressedDirectionsRef.current;
+
+    if (direction) {
+      const directionIndex = pressedDirections.indexOf(direction);
+
+      if (directionIndex !== -1) {
+        if (directionIndex === 0 && canControlRef.current) {
+          if (pressedDirections.length > 1) {
+            io.emit(EGameClientEvent.START_MOVING, pressedDirections[1]);
+          } else {
+            io.emit(EGameClientEvent.STOP_MOVING);
+          }
+        }
+
+        pressedDirections.splice(directionIndex, 1);
+      }
+
+      return;
+    }
+
     if (!canControlRef.current) {
       return;
     }
@@ -292,28 +323,17 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
       return;
     }
-
-    const direction = DIRECTIONS_MAP[e.code];
-    const pressedDirections = pressedDirectionsRef.current;
-
-    if (direction) {
-      const directionIndex = pressedDirections.indexOf(direction);
-
-      if (directionIndex !== -1) {
-        if (directionIndex === 0) {
-          if (pressedDirections.length > 1) {
-            io.emit(EGameClientEvent.START_MOVING, pressedDirections[1]);
-          } else {
-            io.emit(EGameClientEvent.STOP_MOVING);
-          }
-        }
-
-        pressedDirections.splice(directionIndex, 1);
-      }
-    }
   });
 
   useGlobalListener('resize', window, changeCellSize);
+
+  useBoundTimestamps(() => [
+    startsAtTimestamp,
+    ...playersDataRef.current.flatMap(({ buffs, startMovingTimestamp }) => [
+      startMovingTimestamp,
+      ...buffs.map(({ endsAt }) => endsAt),
+    ]),
+  ]);
 
   useRaf(() => {
     const ctx = contextRef.current;
@@ -323,14 +343,17 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     }
 
     playersDataRef.current.forEach((playerData, playerIndex) => {
-      if (!playerData.startMovingTimestamp || playerData.hp === 0) {
+      if (
+        !playerData.startMovingTimestamp ||
+        playerData.hp === 0 ||
+        playerData.startMovingTimestamp.pausedAt !== null
+      ) {
         return;
       }
 
-      const newMoveTimestamp = now();
-      const timePassed = newMoveTimestamp - playerData.startMovingTimestamp;
+      const newMoveTimestamp = createTimestamp();
 
-      sharedDataManager.movePlayer(playerIndex, timePassed);
+      sharedDataManager.movePlayer(playerIndex, playerData.startMovingTimestamp.timePassed);
 
       playerData.startMovingTimestamp = newMoveTimestamp;
     });
@@ -340,7 +363,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       map: mapRef.current,
       playersData: playersDataRef.current,
       explodedDirections: explodedDirectionsRef.current,
-      startsAt: gameInfo.startsAt - timeDiff,
+      startsAt: startsAtTimestamp,
       player,
       images,
     });

@@ -10,6 +10,7 @@ import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePla
 import {
   EGame,
   IGameData,
+  IGameState,
   TGameClientEvent,
   TGameClientEventData,
   TGameClientEventListener,
@@ -104,6 +105,10 @@ class Game<Game extends EGame> {
   options: TGameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
   result: TGameResult<Game> | null = null;
+  state: IGameState = {
+    type: 'active',
+    changeTimestamp: 0,
+  };
   deleted = false;
   batchedActions: IBatchedAction<Game, TGameServerEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
@@ -168,6 +173,27 @@ class Game<Game extends EGame> {
         listeners?.forEach((listener) => {
           socket.on(event as any, listener as any);
         });
+      });
+
+      (socket as TGameServerSocket<EGame>).on(ECommonGameClientEvent.TOGGLE_PAUSE, () => {
+        if (!player || !this.hasStarted() || !this.gameEntity?.isPauseSupported()) {
+          return;
+        }
+
+        const timestamp = now();
+
+        this.state = {
+          type: this.state.type === 'active' ? 'paused' : 'active',
+          changeTimestamp: timestamp,
+        };
+
+        if (this.state.type === 'paused') {
+          this.gameEntity?.pause(timestamp);
+          this.sendSocketEvent(ECommonGameServerEvent.PAUSE, timestamp);
+        } else {
+          this.gameEntity?.unpause(timestamp);
+          this.sendSocketEvent(ECommonGameServerEvent.UNPAUSE, timestamp);
+        }
       });
 
       (socket as TGameServerSocket<EGame>).on(ECommonGameClientEvent.TOGGLE_READY, () => {
@@ -368,6 +394,7 @@ class Game<Game extends EGame> {
       result: this.result,
       players: this.getClientPlayers(),
       timestamp: now(),
+      state: this.state,
     };
 
     this.sendSocketEvent(ECommonGameServerEvent.GET_DATA, gameData as any, {

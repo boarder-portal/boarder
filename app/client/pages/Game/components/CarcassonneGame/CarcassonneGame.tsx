@@ -30,10 +30,13 @@ import {
   isSideObject,
 } from 'common/utilities/carcassonne';
 import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
+import Timestamp from 'common/utilities/Timestamp';
 
 import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import usePlayer from 'client/hooks/usePlayer';
+import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
+import useBoundTimestamps from 'client/pages/Game/hooks/useBoundTimetamps';
 
 import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
@@ -46,14 +49,16 @@ import { IGameProps } from 'client/pages/Game/Game';
 import styles from './CarcassonneGame.pcss';
 
 const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
-  const { io, gameInfo, timeDiff } = props;
+  const { io, gameInfo } = props;
+
+  const createTimestamp = useCreateTimestamp();
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [board, setBoard] = useState<TBoard>({});
   const [objects, setObjects] = useState<TObjects>({});
   const [cardsLeft, setCardsLeft] = useState<number>(0);
-  const [turnEndsAt, setTurnEndsAt] = useState<number | null>(null);
+  const [serverTurnEndsAt, setServerTurnEndsAt] = useState<Timestamp | null>(null);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [placedCardCoords, setPlacedCardCoords] = useState<ICoords | null>(null);
   const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
@@ -343,6 +348,8 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
     [attachCard],
   );
 
+  useBoundTimestamps(() => [serverTurnEndsAt]);
+
   useGlobalListener('mousemove', document, (e) => {
     if (selectedCard && !placedCardCoords) {
       transformDraggingCard(e, boardZoomRef.current);
@@ -357,7 +364,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
     setBoard(gameInfo.board);
     setObjects(gameInfo.objects);
     setCardsLeft(gameInfo.cardsLeft);
-    setTurnEndsAt(gameInfo.turn?.endsAt ?? null);
+    setServerTurnEndsAt(gameInfo.turn?.endsAt ? createTimestamp(gameInfo.turn.endsAt) : null);
 
     const boardCardsCount =
       gameInfo.cardsLeft +
@@ -368,7 +375,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
     }
 
     boardCardsCountRef.current = boardCardsCount;
-  }, [gameInfo]);
+  }, [createTimestamp, gameInfo]);
 
   return (
     <div className={styles.root}>
@@ -549,8 +556,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         className={styles.players}
         players={players}
         activePlayerIndex={activePlayerIndex}
-        timeDiff={timeDiff}
-        turnEndsAt={turnEndsAt}
+        turnEndsAt={serverTurnEndsAt}
       />
 
       <div className={styles.cardsLeft}>{cardsLeft}</div>

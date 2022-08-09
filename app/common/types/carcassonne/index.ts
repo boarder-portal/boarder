@@ -5,6 +5,7 @@ import {
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
   IPlayerSettings as ICommonPlayerSettings,
+  ITimestamp,
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -173,7 +174,7 @@ export interface IGame {
 }
 
 export interface ITurn {
-  endsAt: number;
+  endsAt: ITimestamp;
 }
 
 export interface IAttachCardEvent {

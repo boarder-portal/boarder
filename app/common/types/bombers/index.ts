@@ -5,6 +5,7 @@ import {
   IGameOptions as ICommonGameOptions,
   IGamePlayer,
   IPlayerSettings as ICommonPlayerSettings,
+  ITimestamp,
 } from 'common/types';
 import { EGame } from 'common/types/game';
 
@@ -58,7 +59,7 @@ export interface IPlayerData {
   color: EPlayerColor;
   coords: ICoords;
   direction: EDirection;
-  startMovingTimestamp: number | null;
+  startMovingTimestamp: ITimestamp | null;
   speed: number;
   speedReserve: number;
   maxBombCount: number;
@@ -102,7 +103,7 @@ export enum EBuff {
 
 export interface IBuff {
   type: EBuff;
-  endsAt: number;
+  endsAt: ITimestamp;
 }
 
 export interface IBox {
@@ -121,7 +122,7 @@ export interface IBomb {
   range: number;
   isSuperBomb: boolean;
   isSuperRange: boolean;
-  explodesAt: number;
+  explodesAt: ITimestamp;
 }
 
 export interface IBonus {
@@ -162,14 +163,14 @@ export interface IGame {
   players: IPlayer[];
   map: TMap;
   mapType: EMap;
-  startsAt: number;
+  startsAt: ITimestamp;
   canControl: boolean;
 }
 
 export interface ISyncCoordsEvent {
   playerIndex: number;
   direction: EDirection;
-  startMovingTimestamp: number | null;
+  startMovingTimestamp: ITimestamp | null;
   coords: ICoords;
 }
 
@@ -245,7 +246,7 @@ export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
 }
 
 export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
-  [EGameServerEvent.CAN_CONTROL]: undefined;
+  [EGameServerEvent.CAN_CONTROL]: boolean;
   [EGameServerEvent.SYNC_COORDS]: ISyncCoordsEvent;
   [EGameServerEvent.PLACE_BOMB]: IPlaceBombEvent;
   [EGameServerEvent.BOMBS_EXPLODED]: IBombsExplodedEvent;

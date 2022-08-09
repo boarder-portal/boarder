@@ -3,8 +3,6 @@ import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games
 
 import { EBuff, EDirection, IPlayerData } from 'common/types/bombers';
 
-import { now } from 'client/utilities/time';
-
 export interface IRenderPlayerOptions {
   ctx: CanvasRenderingContext2D;
   playerData: IPlayerData;
@@ -34,8 +32,6 @@ const BUFF_COLORS: Record<EBuff, string> = {
 
 export default function renderPlayer(options: IRenderPlayerOptions): void {
   const { ctx, playerData } = options;
-
-  const nowTimestamp = now();
 
   const startX = (playerData.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
   const startY = (playerData.coords.y - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
@@ -80,7 +76,7 @@ export default function renderPlayer(options: IRenderPlayerOptions): void {
   const buffsWidth = playerData.buffs.length * BUFF_SIZE + (playerData.buffs.length - 1) * BUFF_BETWEEN_MARGIN;
 
   playerData.buffs.forEach(({ type, endsAt }, index) => {
-    const timeLeftProportion = Math.max(0, (endsAt - nowTimestamp) / BUFF_DURATIONS[type]);
+    const timeLeftProportion = Math.max(0, endsAt.timeLeft / BUFF_DURATIONS[type]);
     const centerX = startX + BOMBER_SIZE / 2 - buffsWidth / 2 + BUFF_RADIUS + index * (BUFF_SIZE + BUFF_BETWEEN_MARGIN);
     const centerY = startY - BUFF_TOP_MARGIN - BUFF_RADIUS;
 

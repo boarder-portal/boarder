@@ -4,10 +4,12 @@ import { SUPER_BOMB_DAMAGE, SUPER_BOMB_MAX_PIERCED_OBJECTS_COUNT } from 'common/
 
 import { EGame } from 'common/types/game';
 import { EDirection, ELine, EObject, IBomb, IHitPlayer, TExplodedDirections } from 'common/types/bombers';
+import { ITimestamp } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
+import Timestamp from 'common/utilities/Timestamp';
 
 import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
@@ -17,7 +19,7 @@ export interface IBombOptions {
   id: number;
   cell: IServerCell;
   range: number;
-  explodesAt: number;
+  explodesAt: Timestamp;
   isSuperBomb: boolean;
   isSuperRange: boolean;
 }
@@ -37,7 +39,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
   id: number;
   cell: IServerCell;
   range: number;
-  explodesAt: number;
+  explodesAt: Timestamp;
   isSuperBomb: boolean;
   isSuperRange: boolean;
 
@@ -145,6 +147,10 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
         end: this.game.getCellCoords(end),
       })),
     };
+  }
+
+  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+    return [this.explodesAt];
   }
 
   toJSON(): IBomb {

@@ -1,9 +1,10 @@
 import { EGame } from 'common/types/game';
 import { EGameClientEvent, ITurn } from 'common/types/carcassonne';
+import { ITimestamp } from 'common/types';
 
 import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import { now } from 'server/utilities/time';
+import Timestamp from 'common/utilities/Timestamp';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
@@ -16,7 +17,7 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
   game: CarcassonneGame;
 
   activePlayerIndex: number;
-  endsAt: number;
+  endsAt: Timestamp;
   placedAnyCards = false;
 
   constructor(game: CarcassonneGame, options: ITurnOptions) {
@@ -24,16 +25,21 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
 
     this.game = game;
     this.activePlayerIndex = options.activePlayerIndex;
-    this.endsAt = now() + options.duration;
+    this.endsAt = this.createTimestamp(options.duration);
   }
 
   *lifecycle(): TGenerator<boolean> {
     yield* this.race([
-      // this.delay(this.endsAt - now()),
+      // TODO: when uncomment add isPauseSupported(): true in CarcassonneGame
+      // this.waitForTimestamp(this.endsAt),
       this.makeMoves(),
     ]);
 
     return this.placedAnyCards;
+  }
+
+  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+    return [this.endsAt];
   }
 
   *makeMoves(): TGenerator {

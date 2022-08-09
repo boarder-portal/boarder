@@ -39,6 +39,10 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     };
   }
 
+  isPauseSupported(): boolean {
+    return false;
+  }
+
   *listenForSettingsChange(callback: (event: TSettingsChangeEvent<Game>) => unknown): TGenerator {
     yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
       callback(this.getSettingChangeEvent(playerIndex, data as any));

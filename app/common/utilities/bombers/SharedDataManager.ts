@@ -14,7 +14,7 @@ import {
   SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
-import { ICoords } from 'common/types';
+import { ICoords, ITimestamp } from 'common/types';
 import { EBonus, EBuff, EDirection, ELine, IBuff } from 'common/types/bombers';
 
 import { isFloatZero } from 'common/utilities/float';
@@ -37,7 +37,7 @@ export type TSharedMap<MapObject extends IMapObjectWithId> = ISharedCell<MapObje
 export interface ISharedPlayer {
   coords: ICoords;
   direction: EDirection;
-  startMovingTimestamp: number | null;
+  startMovingTimestamp: ITimestamp | null;
   speed: number;
   speedReserve: number;
   maxBombCount: number;
@@ -85,7 +85,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     this.isPassableObject = options.isPassableObject;
   }
 
-  activatePlayerBuff(playerIndex: number, type: EBuff, endsAt: number): IBuff {
+  activatePlayerBuff(playerIndex: number, type: EBuff, endsAt: ITimestamp): IBuff {
     const player = this.players[playerIndex];
 
     if (type === EBuff.SUPER_SPEED) {

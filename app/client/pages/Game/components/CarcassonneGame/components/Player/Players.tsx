@@ -5,8 +5,7 @@ import sumBy from 'lodash/sumBy';
 import classNames from 'classnames';
 
 import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
-
-import { now } from 'client/utilities/time';
+import { ITimestamp } from 'common/types';
 
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import Flex from 'client/components/common/Flex/Flex';
@@ -17,30 +16,29 @@ interface IPlayersProps {
   className?: string;
   players: IPlayer[];
   activePlayerIndex: number;
-  timeDiff: number;
-  turnEndsAt: number | null;
+  turnEndsAt: ITimestamp | null;
 }
 
 const Players: React.FC<IPlayersProps> = (props) => {
-  const { className, players, activePlayerIndex, timeDiff, turnEndsAt } = props;
+  const { className, players, activePlayerIndex, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
 
   useEffect(() => {
     const setSecondsLeft = () => {
-      const secondsLeft = turnEndsAt ? Math.floor((turnEndsAt - timeDiff - now()) / 1000) : 0;
+      const secondsLeft = turnEndsAt ? Math.floor(turnEndsAt.timeLeft / 1000) : 0;
 
       setTurnSecondsLeft(secondsLeft);
     };
 
-    const interval = setInterval(setSecondsLeft, 1000);
+    const interval = setInterval(setSecondsLeft, 100);
 
     setSecondsLeft();
 
     return () => {
       clearInterval(interval);
     };
-  }, [timeDiff, turnEndsAt]);
+  }, [turnEndsAt]);
 
   return (
     <Flex className={classNames(styles.root, className)} direction="column">

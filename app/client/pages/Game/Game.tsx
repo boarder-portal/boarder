@@ -2,7 +2,7 @@ import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame, TGameInfo, TGameOptions, TGameResult, TPlayerSettings } from 'common/types/game';
+import { EGame, IGameState, TGameInfo, TGameOptions, TGameResult, TPlayerSettings } from 'common/types/game';
 import {
   ECommonGameClientEvent,
   ECommonGameServerEvent,
@@ -19,6 +19,7 @@ import useSocket from 'client/hooks/useSocket';
 import useAtom from 'client/hooks/useAtom';
 import usePlayerSettings from 'client/hooks/usePlayerSettings';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
@@ -33,7 +34,9 @@ import HeartsGame from 'client/pages/Game/components/HeartsGame/HeartsGame';
 import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 import MachiKoroGame from 'client/pages/Game/components/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'client/pages/Game/components/MahjongGame/MahjongGame';
+import Modal from 'client/components/common/Modal/Modal';
 
+import { GameStateContext, TimeDiffContext } from 'client/pages/Game/contexts';
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Game.pcss';
@@ -48,7 +51,8 @@ export interface IGameProps<Game extends EGame> {
   gameOptions: TGameOptions<Game>;
   gameInfo: TGameInfo<Game>;
   gameResult: TGameResult<Game> | null;
-  timeDiff: number;
+  gameState: IGameState;
+  getTimeDiff(): number;
   changeSetting: TChangeSettingCallback<Game>;
 }
 
@@ -76,6 +80,10 @@ function Game<G extends EGame>() {
   const [gameResult, setGameResult] = useState<TGameResult<G> | null>(null);
   const [players, setPlayers] = useState<IGamePlayer<G>[]>([]);
   const [timeDiff, setTimeDiff] = useState(0);
+  const [gameState, setGameState] = useState<IGameState>({
+    type: 'active',
+    changeTimestamp: 0,
+  });
 
   const history = useHistory();
   const [user] = useAtom('user');
@@ -86,12 +94,18 @@ function Game<G extends EGame>() {
     {
       [ECommonGameServerEvent.GET_DATA]: (data) => {
         batchedUpdates(() => {
+          const timeDiff = data.timestamp - now();
+
           setGameOptions(data.options);
           setGameInfo(data.info);
           setGameResult(data.result);
           setPlayers(data.players);
           setGameName(data.name);
-          setTimeDiff(data.timestamp - now());
+          setTimeDiff(timeDiff);
+          setGameState({
+            type: data.state.type,
+            changeTimestamp: data.state.changeTimestamp - timeDiff,
+          });
         });
       },
       [ECommonGameServerEvent.GET_INFO]: (info) => {
@@ -102,6 +116,18 @@ function Game<G extends EGame>() {
       },
       [ECommonGameServerEvent.PING]: (serverTimestamp) => {
         setTimeDiff(serverTimestamp - now());
+      },
+      [ECommonGameServerEvent.PAUSE]: (pausedAt) => {
+        setGameState({
+          type: 'paused',
+          changeTimestamp: pausedAt - timeDiff,
+        });
+      },
+      [ECommonGameServerEvent.UNPAUSE]: (pausedAt) => {
+        setGameState({
+          type: 'active',
+          changeTimestamp: pausedAt - timeDiff,
+        });
       },
       [ECommonGameServerEvent.END]: (result) => {
         console.log('GAME_END', result);
@@ -127,6 +153,16 @@ function Game<G extends EGame>() {
 
     // @ts-ignore
     socket?.emit(ECommonGameClientEvent.CHANGE_SETTING, { key, value });
+  });
+
+  const getTimeDiff = useImmutableCallback(() => {
+    return timeDiff;
+  });
+
+  useGlobalListener('keyup', typeof document === 'undefined' ? null : document, (e) => {
+    if (e.code === 'KeyP') {
+      socket?.emit(ECommonGameClientEvent.TOGGLE_PAUSE);
+    }
   });
 
   if (!socket || !gameName) {
@@ -165,14 +201,23 @@ function Game<G extends EGame>() {
   const Game: ComponentType<IGameProps<G>> = GAMES_MAP[game];
 
   return (
-    <Game
-      io={socket}
-      gameOptions={gameOptions}
-      gameInfo={gameInfo}
-      gameResult={gameResult}
-      timeDiff={timeDiff}
-      changeSetting={changeSetting}
-    />
+    <TimeDiffContext.Provider value={getTimeDiff}>
+      <GameStateContext.Provider value={gameState}>
+        <Game
+          io={socket}
+          gameOptions={gameOptions}
+          gameInfo={gameInfo}
+          gameResult={gameResult}
+          gameState={gameState}
+          getTimeDiff={getTimeDiff}
+          changeSetting={changeSetting}
+        />
+
+        <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>
+          Пауза
+        </Modal>
+      </GameStateContext.Provider>
+    </TimeDiffContext.Provider>
   );
 }
 

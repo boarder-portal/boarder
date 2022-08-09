@@ -15,6 +15,11 @@ export enum EGame {
 
 export interface IGamesParams {}
 
+export interface IGameState {
+  type: 'paused' | 'active';
+  changeTimestamp: number;
+}
+
 export interface IGameData<Game extends EGame> {
   name: string;
   options: TGameOptions<Game>;
@@ -22,6 +27,7 @@ export interface IGameData<Game extends EGame> {
   result: TGameResult<Game> | null;
   players: IGamePlayer<Game>[];
   timestamp: number;
+  state: IGameState;
 }
 
 export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];

@@ -100,6 +100,10 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
   ): TEffectGenerator<Result> {
     return yield (resolve, reject) => {
       return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
+        if (this.paused) {
+          return;
+        }
+
         try {
           if (ServerEntity.#validate(data, options?.validate)) {
             const result = callback({
@@ -127,6 +131,10 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
       return this.context.game.listenSocketEvent(
         event,
         (data) => {
+          if (this.paused) {
+            return;
+          }
+
           try {
             if (ServerEntity.#validate(data, options?.validate)) {
               const result = callback(data);
@@ -170,6 +178,10 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
       return this.context.game.listenSocketEvent(
         event,
         (data) => {
+          if (this.paused) {
+            return;
+          }
+
           if (ServerEntity.#validate(data, options?.validate)) {
             resolve(data);
           }
@@ -206,6 +218,10 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
   ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
       return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
+        if (this.paused) {
+          return;
+        }
+
         if (ServerEntity.#validate(data, options?.validate)) {
           resolve({
             data,

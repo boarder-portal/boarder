@@ -1,8 +1,11 @@
 import map from 'lodash/map';
 
 import { EGame, TGameOptions } from 'common/types/game';
+import { ITimestamp } from 'common/types';
 
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
+import Timestamp from 'common/utilities/Timestamp';
+import { now } from 'server/utilities/time';
 
 import Game from 'server/gamesData/Game/Game';
 
@@ -84,10 +87,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
   #abortCallbacks = new Set<TAbortCallback>();
   #successCallbacks = new Set<TResolve<Result>>();
   #errorCallbacks = new Set<TReject>();
+  #timestamps = new Set<Timestamp>();
   #started = false;
   #destroyed = false;
   #result: TEffectResult<Result> | undefined;
   spawned = false;
+  paused = false;
   context: IEntityContext<Game>;
   options: TGameOptions<Game>;
 
@@ -106,6 +111,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return () => {
       this.#abortCallbacks.delete(abortCallback);
     };
+  }
+
+  #getAllTimestamps(): (ITimestamp | null | undefined)[] {
+    return [...this.#timestamps, ...(this.getCurrentTimestamps?.() ?? [])];
   }
 
   #getGeneratorResult<Result>(generatorOrIterable: TIterableOrGenerator<Result>): IGeneratorResult<Result> {
@@ -239,6 +248,14 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
+  afterPause(): void {
+    // empty
+  }
+
+  afterUnpause(): void {
+    // empty
+  }
+
   *all<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
@@ -276,6 +293,13 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
+  createTimestamp(addMs = 0): Timestamp {
+    return new Timestamp({
+      addMs,
+      now,
+    });
+  }
+
   createTrigger<Value = void>(): ITrigger<Value> {
     const callbacks = new Set<(value: Value) => unknown>();
     const trigger = ((value) => {
@@ -303,10 +327,15 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   *delay(ms: number): TEffectGenerator<void> {
     yield (resolve) => {
-      const timeout = setTimeout(resolve, ms);
+      const timestamp = this.createTimestamp(ms);
+      const unsubscribe = timestamp.subscribe(resolve);
+
+      this.#timestamps.add(timestamp);
 
       return () => {
-        clearTimeout(timeout);
+        this.#timestamps.delete(timestamp);
+
+        unsubscribe();
       };
     };
   }
@@ -327,6 +356,26 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     for (const unsubscriber of this.#abortCallbacks) {
       unsubscriber();
     }
+  }
+
+  getCurrentTimestamps?(): (ITimestamp | null | undefined)[];
+
+  pause(pausedAt: number): void {
+    if (this.paused) {
+      return;
+    }
+
+    this.paused = true;
+
+    this.#getAllTimestamps().forEach((timestamp) => {
+      timestamp?.pause?.(pausedAt);
+    });
+
+    for (const child of this.#children) {
+      child.pause(pausedAt);
+    }
+
+    this.afterPause();
   }
 
   race<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[keyof T]>>;
@@ -357,38 +406,21 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *repeatTask<Result = void>(ms: number, task: (this: this) => TGenerator<Result | void>): TEffectGenerator<Result> {
-    return yield (resolve, reject) => {
-      let promiseChain = Promise.resolve();
-      let cancelTask: TCancelTask;
+  *repeatTask<Result = void>(ms: number, task: (this: this) => TGenerator<Result | void>): TGenerator<Result> {
+    let msToNextTask = ms;
 
-      const interval = setInterval(() => {
-        promiseChain = promiseChain.then(async () => {
-          try {
-            const { run, cancel } = this.#getGeneratorResult(task.call(this));
+    while (true) {
+      yield* this.delay(msToNextTask);
 
-            cancelTask = cancel;
+      const timestamp = this.createTimestamp();
+      const result = yield* task.call(this);
 
-            const result = await new Promise(run);
+      if (result !== undefined) {
+        return result;
+      }
 
-            cancelTask = undefined;
-
-            if (result !== undefined) {
-              clearInterval(interval);
-
-              resolve(result);
-            }
-          } catch (err) {
-            reject(err);
-          }
-        });
-      }, ms);
-
-      return () => {
-        clearInterval(interval);
-        cancelTask?.();
-      };
-    };
+      msToNextTask = ms - timestamp.timePassed;
+    }
   }
 
   run(resolve: TResolve<Result>, reject: TReject): () => void {
@@ -532,5 +564,29 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
   toJSON(): unknown {
     return null;
+  }
+
+  unpause(unpausedAt: number): void {
+    if (!this.paused) {
+      return;
+    }
+
+    this.paused = false;
+
+    this.#getAllTimestamps().forEach((timestamp) => {
+      timestamp?.unpause?.(unpausedAt);
+    });
+
+    for (const child of this.#children) {
+      child.unpause(unpausedAt);
+    }
+
+    this.afterUnpause();
+  }
+
+  *waitForTimestamp(timestamp: Timestamp): TEffectGenerator<void> {
+    return yield (resolve) => {
+      return timestamp.subscribe(resolve);
+    };
   }
 }

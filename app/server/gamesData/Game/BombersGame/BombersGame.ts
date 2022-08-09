@@ -28,11 +28,10 @@ import {
   IPlayer,
   TMap,
 } from 'common/types/bombers';
-import { ICoords } from 'common/types';
+import { ICoords, ITimestamp } from 'common/types';
 
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TGenerator, TParentOrContext } from 'server/gamesData/Game/utilities/Entity';
-import { now } from 'server/utilities/time';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 import { getRandomElement } from 'common/utilities/random';
@@ -80,7 +79,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   objectId = 0;
   players: Player[] = [];
   map: TServerMap = [];
-  startsAt = now() + TIME_TO_START;
+  started = false;
+  startsAt = this.createTimestamp(TIME_TO_START);
   canControl = false;
   isDamagingBombs = true;
   sharedDataManager: SharedDataManager<TServerMapObject>;
@@ -91,7 +91,7 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
   bombsToExplode: Bomb[][] = times(EXPLOSION_TICKS_COUNT, () => []);
   boxes = new Set<Box>();
   alivePlayers = new Set<Player>();
-  lastExplosionTickTimestamp = 0;
+  lastExplosionTickTimestamp = this.createTimestamp();
   artificialWalls: Wall[] = [];
   artificialWallsPath: IServerCell[] = [];
   artificialWallsSpawned = 0;
@@ -153,17 +153,17 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
       );
     });
 
-    yield* this.delay(this.startsAt - now());
+    yield* this.waitForTimestamp(this.startsAt);
 
     this.players.forEach((player) => {
       player.grantControls();
     });
 
-    this.canControl = true;
+    this.started = true;
 
-    this.sendSocketEvent(EGameServerEvent.CAN_CONTROL);
+    this.setCanControl(true);
 
-    this.lastExplosionTickTimestamp = now();
+    this.lastExplosionTickTimestamp = this.createTimestamp();
 
     this.spawnTask(this.repeatTask(EXPLOSION_TICK_DURATION, this.explodeBombs));
 
@@ -183,6 +183,14 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     };
   }
 
+  afterPause(): void {
+    this.setCanControl(false);
+  }
+
+  afterUnpause(): void {
+    this.setCanControl(true);
+  }
+
   createWall(coords: ICoords, isArtificial: boolean): void {
     this.spawnTask(this.spawnWall(coords, isArtificial));
   }
@@ -191,6 +199,8 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     const bombsToExplode = this.bombsToExplode.shift();
 
     this.bombsToExplode.push([]);
+
+    this.lastExplosionTickTimestamp = this.createTimestamp();
 
     if (!bombsToExplode?.length) {
       return;
@@ -328,6 +338,10 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     });
   }
 
+  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+    return [this.startsAt, this.lastExplosionTickTimestamp];
+  }
+
   getGamePlayers(): IPlayer[] {
     return this.getPlayersWithData((playerIndex) => this.players[playerIndex].toJSON());
   }
@@ -359,12 +373,16 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
     return ++this.objectId;
   }
 
+  isExplosionPassableObject(object: TServerMapObject): boolean {
+    return object === null || BombersGame.isBonus(object) || BombersGame.isBomb(object);
+  }
+
   isPassableObject(object: TServerMapObject): boolean {
     return BombersGame.isBonus(object);
   }
 
-  isExplosionPassableObject(object: TServerMapObject): boolean {
-    return object === null || BombersGame.isBonus(object) || BombersGame.isBomb(object);
+  isPauseSupported(): boolean {
+    return true;
   }
 
   *movePlayers(): TGenerator {
@@ -383,7 +401,9 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
         cell,
         id: this.getNewObjectId(),
         range: hasSuperRange ? SUPER_RANGE : player.bombRange,
-        explodesAt: this.lastExplosionTickTimestamp + EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION,
+        explodesAt: this.createTimestamp(
+          EXPLOSION_TICKS_COUNT * EXPLOSION_TICK_DURATION - this.lastExplosionTickTimestamp.timePassed,
+        ),
         isSuperBomb: player.buffs.some(isSuperBomb),
         isSuperRange: hasSuperRange,
       }),
@@ -396,6 +416,12 @@ export default class BombersGame extends GameEntity<EGame.BOMBERS> {
 
   removeMapObject(cell: IServerCell, object: TServerMapObject): void {
     this.sharedDataManager.removeMapObject(object.id, cell);
+  }
+
+  setCanControl(canControl: boolean): void {
+    this.canControl = this.started && canControl;
+
+    this.sendSocketEvent(EGameServerEvent.CAN_CONTROL, this.canControl);
   }
 
   *spawnArtificialWall(): TGenerator<boolean> {

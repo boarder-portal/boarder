@@ -41,9 +41,19 @@ export interface IGameOptions {
 
 export interface IPlayerSettings {}
 
+export interface ITimestamp {
+  value: number;
+  pausedAt: number | null;
+  timeLeft: number;
+  timePassed: number;
+  pause?(pausedAt: number): void;
+  unpause?(unpausedAt: number): void;
+}
+
 export enum ECommonGameClientEvent {
   TOGGLE_READY = '$$TOGGLE_READY',
   CHANGE_SETTING = '$$CHANGE_SETTING',
+  TOGGLE_PAUSE = '$$TOGGLE_PAUSE',
 }
 
 export enum ECommonGameServerEvent {
@@ -51,6 +61,8 @@ export enum ECommonGameServerEvent {
   GET_DATA = '$$GET_DATA',
   GET_INFO = '$$GET_INFO',
   PING = '$$PING',
+  PAUSE = '$$PAUSE',
+  UNPAUSE = '$$UNPAUSE',
   END = '$$END',
 }
 
@@ -62,11 +74,14 @@ export type TChangeSettingEvent<Game extends EGame> = {
 }[keyof TPlayerSettings<Game>];
 
 export interface ICommonClientEventMap<Game extends EGame> {
+  [ECommonGameClientEvent.TOGGLE_PAUSE]: undefined;
   [ECommonGameClientEvent.TOGGLE_READY]: undefined;
   [ECommonGameClientEvent.CHANGE_SETTING]: TChangeSettingEvent<Game>;
 }
 
 export interface ICommonServerEventMap<Game extends EGame> {
+  [ECommonGameServerEvent.PAUSE]: number;
+  [ECommonGameServerEvent.UNPAUSE]: number;
   [ECommonGameServerEvent.GET_DATA]: IGameData<Game>;
   [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
   [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer<Game>[];
