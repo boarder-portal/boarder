@@ -39,6 +39,7 @@ export interface IPlayerSettings extends ICommonPlayerSettings {
   showLosingHand: boolean;
   showCurrentTile: boolean;
   showTileHints: boolean;
+  highlightSameTile: boolean;
 }
 
 export interface IGame {

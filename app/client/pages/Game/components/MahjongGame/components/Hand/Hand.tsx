@@ -1,12 +1,12 @@
 import { FC, memo } from 'react';
 import classNames from 'classnames';
 
-import { IPlayer } from 'common/types/mahjong';
+import { IPlayer, TTile } from 'common/types/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 
-import RotatedElement from 'client/components/common/RealSizeElement/RotatedElement';
+import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 import Flex from 'client/components/common/Flex/Flex';
 
@@ -20,10 +20,13 @@ interface IHandProps {
   rotation: number;
   playerIndex: number;
   selectedTileIndex: number;
+  highlightedTile: TTile | null;
   isActive: boolean;
   players: IPlayer[];
   onChangeTileIndex?(from: number, to: number): void;
   onDiscardTile?(tileIndex: number): void;
+  onTileHover?(tile: TTile): void;
+  onTileHoverExit?(tile: TTile): void;
 }
 
 const Hand: FC<IHandProps> = (props) => {
@@ -36,9 +39,12 @@ const Hand: FC<IHandProps> = (props) => {
     players,
     playerIndex,
     selectedTileIndex,
+    highlightedTile,
     isActive,
     onChangeTileIndex,
     onDiscardTile,
+    onTileHover,
+    onTileHoverExit,
   } = props;
 
   return (
@@ -75,6 +81,9 @@ const Hand: FC<IHandProps> = (props) => {
               }
               tileWidth={tileWidth * 0.75}
               rotatedTileIndex={rotatedTileIndex}
+              highlightedTile={highlightedTile}
+              onTileHover={onTileHover}
+              onTileHoverExit={onTileHoverExit}
             />
           );
         })}
@@ -85,8 +94,11 @@ const Hand: FC<IHandProps> = (props) => {
           tileWidth={tileWidth}
           hoverable={Boolean(onDiscardTile || onChangeTileIndex)}
           selectedTileIndex={selectedTileIndex}
+          highlightedTile={highlightedTile}
           onChangeTileIndex={onChangeTileIndex}
           onTileClick={onDiscardTile}
+          onTileHover={onTileHover}
+          onTileHoverExit={onTileHoverExit}
         />
       </Flex>
     </RotatedElement>

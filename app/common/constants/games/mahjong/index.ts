@@ -16,6 +16,7 @@ export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
   showLosingHand: true,
   showCurrentTile: false,
   showTileHints: false,
+  highlightSameTile: false,
 };
 
 export const MIN_SCORE = 8;

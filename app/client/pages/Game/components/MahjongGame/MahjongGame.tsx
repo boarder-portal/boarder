@@ -18,7 +18,7 @@ import {
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';
-import { getNewCurrentTileIndex } from 'common/utilities/mahjong/tiles';
+import { getNewCurrentTileIndex, isEqualTiles } from 'common/utilities/mahjong/tiles';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
@@ -78,6 +78,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const [currentTileIndex, setCurrentTileIndex] = useState(-1);
   const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
+  const [highlightedTile, setHighlightedTile] = useState<TTile | null>(null);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,6 +90,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const isActive = player?.index === activePlayerIndex;
   const isLastWallTile = wallTilesLeft === 0 && handInProcess;
   const currentHandResult = handInProcess ? null : resultsByHand.at(-1) ?? null;
+  const highlightSameTile = player?.settings.highlightSameTile;
 
   const purePlayerHand = useMemo<TTile[]>(() => {
     if (!player?.data.hand) {
@@ -178,6 +180,14 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     });
   });
 
+  const handleTileHover = useImmutableCallback((tile: TTile) => {
+    setHighlightedTile((highlightedTile) => (isEqualTiles(tile, highlightedTile) ? highlightedTile : tile));
+  });
+
+  const handleTileHoverExit = useImmutableCallback(() => {
+    setHighlightedTile(null);
+  });
+
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useLayoutEffect(() => {
@@ -251,8 +261,11 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                 playerIndex={index}
                 isActive={p.index === activePlayerIndex}
                 selectedTileIndex={isPlayer && isActive && p.settings.showCurrentTile ? currentTileIndex : -1}
+                highlightedTile={highlightedTile}
                 onChangeTileIndex={isPlayer && handInProcess && !p.settings.sortHand ? changeTileIndex : undefined}
                 onDiscardTile={isPlayer && handInProcess && isActive ? discardTile : undefined}
+                onTileHover={highlightSameTile ? handleTileHover : undefined}
+                onTileHoverExit={highlightSameTile ? handleTileHoverExit : undefined}
               />
             </Flex>
           )
@@ -276,6 +289,9 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                 isLastTileSelected={
                   p.index === activePlayerIndex && declareInfo ? player?.settings.showCurrentTile ?? true : false
                 }
+                highlightedTile={highlightedTile}
+                onTileHover={highlightSameTile ? handleTileHover : undefined}
+                onTileHoverExit={highlightSameTile ? handleTileHoverExit : undefined}
               />
             ),
         )}

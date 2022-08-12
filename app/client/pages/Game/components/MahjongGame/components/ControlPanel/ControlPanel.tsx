@@ -355,6 +355,12 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
             label="Показывать значения костей"
             onChange={(checked) => changeSetting('showTileHints', checked)}
           />
+
+          <Checkbox
+            checked={player.settings.highlightSameTile}
+            label="Подсвечивать идентичные кости"
+            onChange={(checked) => changeSetting('highlightSameTile', checked)}
+          />
         </Flex>
       )}
     </Flex>

@@ -8,12 +8,14 @@ import { TTile } from 'common/types/mahjong';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
 import { stringifyTile } from 'common/utilities/mahjong/stringify';
+import { getTileSortValue, isEqualTiles } from 'common/utilities/mahjong/tiles';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { usePrevious } from 'client/hooks/usePrevious';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Flex from 'client/components/common/Flex/Flex';
+import HoverElement from 'client/components/common/HoverElement/HoverElement';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -30,11 +32,14 @@ interface ITilesProps {
   tileWidth: number;
   openType?: EOpenType;
   hoverable?: boolean;
-  rotatedTileIndex?: number | null;
+  rotatedTileIndex?: number;
   selectedTileIndex?: number;
+  highlightedTile?: TTile | null;
   inline?: boolean;
   onChangeTileIndex?(from: number, to: number): void;
   onTileClick?(tileIndex: number): void;
+  onTileHover?(tile: TTile): void;
+  onTileHoverExit?(tile: TTile): void;
 }
 
 interface ILocalTile {
@@ -57,11 +62,15 @@ const Tiles: FC<ITilesProps> = (props) => {
     hoverable,
     rotatedTileIndex = -1,
     selectedTileIndex = -1,
+    highlightedTile,
     inline,
     onChangeTileIndex,
     onTileClick,
+    onTileHover,
+    onTileHoverExit,
   } = props;
   const tileHeight = getTileHeight(tileWidth);
+  const isKnown = openType !== EOpenType.CONCEALED;
 
   const [localTiles, setLocalTiles] = useState<ILocalTile[]>(getLocalTiles(tiles));
   const [withTransition, setWithTransition] = useState(false);
@@ -125,22 +134,29 @@ const Tiles: FC<ITilesProps> = (props) => {
     [localTiles, onChangeTileIndex, tileWidth, tiles.length],
   );
 
-  const handleDragLeave = useCallback(
-    (e: DragEvent) => {
-      const hasExited = e.relatedTarget instanceof Element && !rootRef.current?.contains(e.relatedTarget);
+  const handleDragLeave = useCallback(() => {
+    toRef.current = fromRef.current;
 
-      if (hasExited) {
-        toRef.current = fromRef.current;
+    setLocalTiles(getLocalTiles(tiles));
+  }, [tiles]);
 
-        setLocalTiles(getLocalTiles(tiles));
-      }
+  const handleMouseEnter = useCallback(
+    (tileIndex: number) => {
+      onTileHover?.(tiles[tileIndex]);
     },
-    [tiles],
+    [onTileHover, tiles],
+  );
+
+  const handleMouseLeave = useCallback(
+    (tileIndex: number) => {
+      onTileHoverExit?.(tiles[tileIndex]);
+    },
+    [onTileHoverExit, tiles],
   );
 
   const tilesNodes = useMemo(() => {
     const nodesWithTiles = localTiles.map((tile, index) => {
-      const isRotated = index === rotatedTileIndex;
+      const isRotated = tile.index === rotatedTileIndex;
       const open =
         openType === EOpenType.OPEN || (openType === EOpenType.SEMI_CONCEALED && (index === 0 || index === 3));
 
@@ -148,12 +164,15 @@ const Tiles: FC<ITilesProps> = (props) => {
         tile,
         node: (
           <div
-            key={`${stringifyTile(tile.tile)}${tile.index}`}
+            key={stringifyTile(tile.tile)}
             className={classNames(styles.tile, { [styles.withTransition]: withTransition })}
             style={{
               width: isRotated ? tileHeight : tileWidth,
               height: isRotated ? tileWidth : tileHeight,
-              transform: `translateX(${tileWidth * (index - tile.index)}px)`,
+              transform: `translateX(${
+                tileWidth * (index - 1) +
+                (rotatedTileIndex > -1 && tile.index > rotatedTileIndex ? tileHeight : tileWidth)
+              }px)`,
             }}
           >
             <Tile
@@ -161,23 +180,32 @@ const Tiles: FC<ITilesProps> = (props) => {
               width={tileWidth}
               draggable={Boolean(onChangeTileIndex)}
               rotation={isRotated ? -1 : 0}
-              hoverable={hoverable}
+              hoverable={isKnown && hoverable}
               selected={tile.index === selectedTileIndex}
+              highlighted={isKnown ? isEqualTiles(tile.tile, highlightedTile) : false}
               onDragStart={(e) => handleDragStart(e, index)}
-              onClick={onTileClick && (() => onTileClick(index))}
+              onClick={onTileClick && (() => onTileClick(tile.index))}
+              onMouseEnter={isKnown && onTileHover ? () => handleMouseEnter(tile.index) : undefined}
+              onMouseLeave={isKnown && onTileHoverExit ? () => handleMouseLeave(tile.index) : undefined}
             />
           </div>
         ),
       };
     });
 
-    return sortBy(nodesWithTiles, ({ tile }) => tile.index).map(({ node }) => node);
+    return sortBy(nodesWithTiles, ({ tile }) => getTileSortValue(tile.tile)).map(({ node }) => node);
   }, [
     handleDragStart,
+    handleMouseEnter,
+    handleMouseLeave,
+    highlightedTile,
     hoverable,
+    isKnown,
     localTiles,
     onChangeTileIndex,
     onTileClick,
+    onTileHover,
+    onTileHoverExit,
     openType,
     rotatedTileIndex,
     selectedTileIndex,
@@ -208,19 +236,20 @@ const Tiles: FC<ITilesProps> = (props) => {
   }, [previousTiles, tiles]);
 
   return (
-    <Flex
-      ref={rootRef}
-      inline={inline}
-      alignItems="center"
-      style={{
-        width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
-        height: tileHeight,
-      }}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-    >
-      {tilesNodes}
-    </Flex>
+    <HoverElement onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+      <Flex
+        ref={rootRef}
+        className={styles.tiles}
+        inline={inline}
+        alignItems="center"
+        style={{
+          width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
+          height: tileHeight,
+        }}
+      >
+        {tilesNodes}
+      </Flex>
+    </HoverElement>
   );
 };
 

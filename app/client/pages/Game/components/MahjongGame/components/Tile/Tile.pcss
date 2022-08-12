@@ -10,11 +10,18 @@
   border: solid #000;
   overflow: hidden;
   filter: brightness(100%);
-  transition: all 0.1s ease-in-out;
+  background-color: transparent;
+  will-change: filter, background-color;
+  transition: filter 0.1s ease-in-out;
+
+  &.highlighted {
+    background-color: #08fa;
+    background-image: none !important;
+  }
 
   &.selected {
-    border-color: lime;
-    filter: brightness(97%);
+    background-color: #7f7a;
+    background-image: none !important;
     z-index: 1;
   }
 
@@ -24,8 +31,7 @@
 
   &.hoverable {
     &:hover {
-      border-color: #f00;
-      filter: brightness(95%);
+      filter: brightness(80%);
     }
   }
 }
