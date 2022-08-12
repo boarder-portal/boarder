@@ -9,6 +9,8 @@ import TableRow from 'client/components/common/TableRow/TableRow';
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
+import styles from './FansModal.pcss';
+
 interface IFansModalProps {
   open: boolean;
   onClose(): void;
@@ -18,8 +20,9 @@ const FansModal: FC<IFansModalProps> = (props) => {
   const { open, onClose } = props;
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal containerClassName={styles.root} open={open} onClose={onClose}>
       <Table
+        className={styles.table}
         bordered
         header={
           <>

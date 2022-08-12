@@ -11,6 +11,7 @@ import {
   EGameClientEvent,
   EHandPhase,
   ESet,
+  ESuit,
   IFlowerTile,
   IHand,
   IHandMahjong,
@@ -33,6 +34,7 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
   isFlower,
+  suited,
 } from 'common/utilities/mahjong/tiles';
 import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
 import { getHandMahjong } from 'common/utilities/mahjong/scoring';
@@ -73,6 +75,8 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
   isReplacementTile = false;
 
   turn: Turn | null = null;
+
+  finish = this.createTrigger();
 
   constructor(round: Round, options: IHandOptions) {
     super(round, {
@@ -225,6 +229,8 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     this.activePlayerIndex = -1;
     this.turn = null;
+
+    this.finish();
 
     this.game.addHandResult(handResult);
     this.game.sendGameInfo();
@@ -384,17 +390,20 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
   }
 
   *listenForEvents(): TGenerator {
-    yield* this.all([
-      this.listenForEvent(EGameClientEvent.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
-        this.changePlayerTileIndex(playerIndex, from, to);
-      }),
-      this.game.listenForSettingsChange(({ playerIndex, key, value }) => {
-        if (key === 'sortHand' && value) {
-          this.sortPlayerTiles(playerIndex);
+    yield* this.race([
+      this.finish,
+      this.all([
+        this.listenForEvent(EGameClientEvent.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
+          this.changePlayerTileIndex(playerIndex, from, to);
+        }),
+        this.game.listenForSettingsChange(({ playerIndex, key, value }) => {
+          if (key === 'sortHand' && value) {
+            this.sortPlayerTiles(playerIndex);
 
-          this.turn?.adjustCurrentTileIndex();
-        }
-      }),
+            this.turn?.adjustCurrentTileIndex();
+          }
+        }),
+      ]),
     ]);
   }
 
@@ -471,6 +480,16 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.game.sendGameInfo();
   }
 
+  toJSON(): IHand {
+    return {
+      activePlayerIndex: this.activePlayerIndex,
+      tilesLeft: this.wall.length,
+      isLastInGame: this.isLastInGame,
+      phase: this.phase,
+      turn: this.turn?.toJSON() ?? null,
+    };
+  }
+
   upgradeToKong(playerIndex: number, kong: TMeldedSet<IKongSet>): TPlayableTile | null {
     const { hand, declaredSets } = this.playersData[playerIndex];
     const kongTile = getSetTile(kong);
@@ -502,15 +521,5 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     };
 
     return kongTile;
-  }
-
-  toJSON(): IHand {
-    return {
-      activePlayerIndex: this.activePlayerIndex,
-      tilesLeft: this.wall.length,
-      isLastInGame: this.isLastInGame,
-      phase: this.phase,
-      turn: this.turn?.toJSON() ?? null,
-    };
   }
 }

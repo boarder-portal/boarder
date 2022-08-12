@@ -68,10 +68,10 @@ export const WIND_NAMES: Record<EWind, string> = {
 };
 
 export const WIND_SHORT_NAMES: Record<EWind, string> = {
-  [EWind.EAST]: 'В',
-  [EWind.SOUTH]: 'Ю',
-  [EWind.WEST]: 'З',
-  [EWind.NORTH]: 'С',
+  [EWind.EAST]: 'Восток',
+  [EWind.SOUTH]: 'Юг',
+  [EWind.WEST]: 'Запад',
+  [EWind.NORTH]: 'Север',
 };
 
 export const HAND_COUNTS: Record<EHandsCount, number> = {

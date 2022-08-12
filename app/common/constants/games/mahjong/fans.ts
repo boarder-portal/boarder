@@ -550,7 +550,7 @@ export const FAN_EXAMPLES: Record<EFan, TTile[][][]> = {
   // 64 points
   [EFan.ALL_TERMINALS]: [parsePlayableTileSets('b1b1b1 b9b9b9b9 c1c1c1 d9d9d9 c9c9')],
   [EFan.LITTLE_FOUR_WINDS]: [parsePlayableTileSets('WeWeWe WwWwWw WnWnWn WsWs')],
-  [EFan.LITTLE_THREE_DRAGONS]: [parsePlayableTileSets('DgDgDg DwDwDw DgDg')],
+  [EFan.LITTLE_THREE_DRAGONS]: [parsePlayableTileSets('DgDgDg DwDwDw DrDr')],
   [EFan.ALL_HONORS]: [parsePlayableTileSets('WeWeWe WwWwWw WnWnWn DrDrDr DwDw')],
   [EFan.FOUR_CONCEALED_PUNGS]: [],
   [EFan.PURE_TERMINAL_CHOWS]: [parsePlayableTileSets('b1b2b3 b1b2b3 b7b8b9 b7b8b9 b5b5')],

@@ -252,7 +252,7 @@ class Game<Game extends EGame> {
 
           shouldDeleteGame = this.players.every(({ status, isBot }) => status === EPlayerStatus.DISCONNECTED || isBot);
         } else {
-          this.players.splice(player.index);
+          this.players.splice(player.index, 1);
 
           this.sendUpdatePlayersEvent();
           this.onUpdateGame(this.id);

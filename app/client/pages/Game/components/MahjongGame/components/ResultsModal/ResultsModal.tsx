@@ -44,24 +44,20 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
     setViewMode(EViewMode.TABLE);
   }, []);
 
-  const onModalClose = useCallback(() => {
-    setViewMode(EViewMode.TABLE);
-
-    onClose();
-  }, [onClose]);
-
   useEffect(() => {
     batchedUpdates(() => {
-      setViewMode(openedMahjong ? EViewMode.MAHJONG : EViewMode.TABLE);
-      setChosenMahjong(openedMahjong);
+      if (open) {
+        setViewMode(openedMahjong ? EViewMode.MAHJONG : EViewMode.TABLE);
+        setChosenMahjong(openedMahjong);
+      }
     });
-  }, [openedMahjong]);
+  }, [open, openedMahjong]);
 
   return (
     <Modal
       containerClassName={classNames(styles.root, { [styles.results]: viewMode === EViewMode.TABLE })}
       open={open}
-      onClose={onModalClose}
+      onClose={onClose}
     >
       {viewMode === EViewMode.TABLE ? (
         <Table

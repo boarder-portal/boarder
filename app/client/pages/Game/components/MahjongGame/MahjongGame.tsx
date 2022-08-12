@@ -170,6 +170,13 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     io.emit(EGameClientEvent.DISCARD_TILE, tileIndex);
   });
 
+  const handleCloseResultsModal = useImmutableCallback(() => {
+    batchedUpdates(() => {
+      closeResultsModal();
+      setOpenedMahjong(null);
+    });
+  });
+
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useLayoutEffect(() => {
@@ -249,7 +256,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
       <div className={styles.centerArea}>
         <Flex className={styles.centerInfo} alignItems="center" justifyContent="center">
-          {roundWind ? `${getWindHumanShortName(roundWind)}${roundHandIndex + 1} (${wallTilesLeft})` : wallTilesLeft}
+          {roundWind ? `${getWindHumanShortName(roundWind)} ${roundHandIndex + 1} (${wallTilesLeft})` : wallTilesLeft}
         </Flex>
 
         {sortedPlayers.map(
@@ -299,7 +306,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         players={players}
         results={resultsByHand}
         openedMahjong={openedMahjong}
-        onClose={closeResultsModal}
+        onClose={handleCloseResultsModal}
       />
 
       <CalculatorModal
