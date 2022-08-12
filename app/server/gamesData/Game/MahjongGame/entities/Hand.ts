@@ -164,6 +164,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     const handResult: IHandResult = {
       mahjong: null,
+      winnerIndex: -1,
       scores: this.getPlayersData(() => 0),
     };
 
@@ -214,6 +215,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       const { mahjong, playerIndex: winnerIndex, stolenFrom } = result;
 
       handResult.mahjong = mahjong;
+      handResult.winnerIndex = winnerIndex;
       handResult.scores = this.getPlayersData((playerIndex) => {
         if (playerIndex === winnerIndex) {
           return 0;

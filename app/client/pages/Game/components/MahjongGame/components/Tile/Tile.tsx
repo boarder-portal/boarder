@@ -2,9 +2,13 @@ import { AllHTMLAttributes, FC, memo } from 'react';
 import classNames from 'classnames';
 
 import { TTile } from 'common/types/mahjong';
+import { EGame } from 'common/types/game';
 
-import { stringifyTile } from 'common/utilities/mahjong/stringify';
+import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/stringify';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
+import { isSuited, isWind } from 'common/utilities/mahjong/tiles';
+
+import usePlayerSettings from 'client/hooks/usePlayerSettings';
 
 import RotatedElement from 'client/components/common/RealSizeElement/RotatedElement';
 import Image from 'client/components/common/Image/Image';
@@ -24,6 +28,10 @@ interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
 const Tile: FC<ITileProps> = (props) => {
   const { className, rootClassName, tile, width, rotation = 0, hoverable, clickable, selected, ...rest } = props;
   const height = getTileHeight(width);
+
+  const { settings } = usePlayerSettings(EGame.MAHJONG);
+
+  const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 
   return (
     <RotatedElement
@@ -47,6 +55,12 @@ const Tile: FC<ITileProps> = (props) => {
         }}
       >
         {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
+
+        {settings.showTileHints && (
+          <div className={styles.hint} style={{ fontSize: height / 6 }}>
+            {hint}
+          </div>
+        )}
       </div>
     </RotatedElement>
   );

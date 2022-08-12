@@ -349,6 +349,12 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
             label="Показывать текущую кость"
             onChange={(checked) => changeSetting('showCurrentTile', checked)}
           />
+
+          <Checkbox
+            checked={player.settings.showTileHints}
+            label="Показывать значения костей"
+            onChange={(checked) => changeSetting('showTileHints', checked)}
+          />
         </Flex>
       )}
     </Flex>

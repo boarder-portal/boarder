@@ -626,7 +626,7 @@ export const FAN_EXAMPLES: Record<EFan, TTile[][][]> = {
   [EFan.TWO_DRAGON_PUNGS]: [parsePlayableTileSets('DrDrDr DgDgDg')],
 
   // 4 points
-  [EFan.OUTSIDE_HAND]: [parsePlayableTileSets('c1c2c3 c1c1c1 b1b1b1 d7d8d9 d9d9')],
+  [EFan.OUTSIDE_HAND]: [parsePlayableTileSets('c1c2c3 c1c1c1 b1b1b1 d7d8d9 DrDr')],
   [EFan.FULLY_CONCEALED_HAND]: [],
   [EFan.TWO_MELDED_KONGS]: [],
   [EFan.LAST_TILE]: [],

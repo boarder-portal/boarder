@@ -38,6 +38,7 @@ export interface IPlayerSettings extends ICommonPlayerSettings {
   sortHand: boolean;
   showLosingHand: boolean;
   showCurrentTile: boolean;
+  showTileHints: boolean;
 }
 
 export interface IGame {
@@ -48,6 +49,7 @@ export interface IGame {
 
 export interface IHandResult {
   mahjong: IHandMahjong | null;
+  winnerIndex: number;
   scores: number[];
 }
 

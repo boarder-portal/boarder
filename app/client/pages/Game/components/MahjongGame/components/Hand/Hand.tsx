@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { IPlayer } from 'common/types/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
-import { getWindHumanShortName } from 'common/utilities/mahjong/stringify';
+import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 
 import RotatedElement from 'client/components/common/RealSizeElement/RotatedElement';
 import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
@@ -46,7 +46,7 @@ const Hand: FC<IHandProps> = (props) => {
       <RotatedElement rotation={rotation === -2 ? 2 : 0}>
         <span className={classNames(styles.name, { [styles.active]: isActive })}>{name}</span>
         {data.hand?.flowers && `, ${data.hand.flowers.length}🌼`}
-        {data.round?.wind && `, ${getWindHumanShortName(data.round.wind)}`} ({score})
+        {data.round?.wind && `, ${getWindHumanName(data.round.wind)}`} ({score})
       </RotatedElement>
 
       <Flex alignItems="center" between={2}>

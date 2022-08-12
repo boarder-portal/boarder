@@ -15,6 +15,7 @@ export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
   sortHand: false,
   showLosingHand: true,
   showCurrentTile: false,
+  showTileHints: false,
 };
 
 export const MIN_SCORE = 8;
@@ -61,17 +62,17 @@ export const SET_NAMES: Record<ESet, string> = {
 };
 
 export const WIND_NAMES: Record<EWind, string> = {
-  [EWind.EAST]: 'Восточный',
-  [EWind.SOUTH]: 'Южный',
-  [EWind.WEST]: 'Западный',
-  [EWind.NORTH]: 'Северный',
-};
-
-export const WIND_SHORT_NAMES: Record<EWind, string> = {
   [EWind.EAST]: 'Восток',
   [EWind.SOUTH]: 'Юг',
   [EWind.WEST]: 'Запад',
   [EWind.NORTH]: 'Север',
+};
+
+export const WIND_SHORT_NAMES: Record<EWind, string> = {
+  [EWind.EAST]: 'В',
+  [EWind.SOUTH]: 'Ю',
+  [EWind.WEST]: 'З',
+  [EWind.NORTH]: 'С',
 };
 
 export const HAND_COUNTS: Record<EHandsCount, number> = {

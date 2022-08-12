@@ -17,7 +17,7 @@ import {
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
-import { getWindHumanShortName } from 'common/utilities/mahjong/stringify';
+import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 import { getNewCurrentTileIndex } from 'common/utilities/mahjong/tiles';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 
@@ -88,6 +88,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const handInProcess = activePlayerIndex !== -1;
   const isActive = player?.index === activePlayerIndex;
   const isLastWallTile = wallTilesLeft === 0 && handInProcess;
+  const currentHandResult = handInProcess ? null : resultsByHand.at(-1) ?? null;
 
   const purePlayerHand = useMemo<TTile[]>(() => {
     if (!player?.data.hand) {
@@ -204,7 +205,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
   useEffect(() => {
     if (wasHandInProcess && !handInProcess) {
-      const lastMahjong = resultsByHand.at(-1)?.mahjong ?? null;
+      const lastMahjong = currentHandResult?.mahjong;
 
       if (lastMahjong) {
         batchedUpdates(() => {
@@ -213,7 +214,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         });
       }
     }
-  }, [handInProcess, openResultsModal, resultsByHand, wasHandInProcess]);
+  }, [currentHandResult?.mahjong, handInProcess, openResultsModal, wasHandInProcess]);
 
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
@@ -240,7 +241,11 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                 player={p}
                 score={resultsByHand.reduce((score, { scores }) => score + scores[p.index], 0) ?? 0}
                 tileWidth={tileWidth}
-                open={isPlayer || (!handInProcess && p.settings.showLosingHand)}
+                open={
+                  isPlayer ||
+                  p.index === currentHandResult?.winnerIndex ||
+                  (!handInProcess && p.settings.showLosingHand)
+                }
                 rotation={-index}
                 players={sortedPlayers}
                 playerIndex={index}
@@ -256,7 +261,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
       <div className={styles.centerArea}>
         <Flex className={styles.centerInfo} alignItems="center" justifyContent="center">
-          {roundWind ? `${getWindHumanShortName(roundWind)} ${roundHandIndex + 1} (${wallTilesLeft})` : wallTilesLeft}
+          {roundWind ? `${getWindHumanName(roundWind)} ${roundHandIndex + 1} (${wallTilesLeft})` : wallTilesLeft}
         </Flex>
 
         {sortedPlayers.map(
