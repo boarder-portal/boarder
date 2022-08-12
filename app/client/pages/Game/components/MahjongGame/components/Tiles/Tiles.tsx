@@ -1,4 +1,4 @@
-import { DragEvent, FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DragEvent, FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
@@ -12,6 +12,7 @@ import { getTileSortValue, isEqualTiles } from 'common/utilities/mahjong/tiles';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { usePrevious } from 'client/hooks/usePrevious';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Flex from 'client/components/common/Flex/Flex';
@@ -81,78 +82,66 @@ const Tiles: FC<ITilesProps> = (props) => {
 
   const previousTiles = usePrevious(tiles);
 
-  const handleDragStart = useCallback(
-    (e: DragEvent, from: number) => {
-      if (!onChangeTileIndex) {
-        return;
-      }
+  const handleDragStart = useImmutableCallback((e: React.DragEvent, from: number) => {
+    if (!onChangeTileIndex) {
+      return;
+    }
 
-      fromRef.current = from;
-      toRef.current = from;
+    fromRef.current = from;
+    toRef.current = from;
 
-      e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = 'move';
 
-      setWithTransition(true);
-    },
-    [onChangeTileIndex],
-  );
+    setWithTransition(true);
+  });
 
-  const handleDragOver = useCallback(
-    (e: DragEvent) => {
-      const root = rootRef.current;
+  const handleDragOver = useImmutableCallback((e: DragEvent) => {
+    const root = rootRef.current;
 
-      if (!root || fromRef.current === -1 || !onChangeTileIndex) {
-        return;
-      }
+    if (!root || fromRef.current === -1 || !onChangeTileIndex) {
+      return;
+    }
 
-      const to = Math.floor((e.clientX - root.getBoundingClientRect().left) / tileWidth);
+    const to = Math.floor((e.clientX - root.getBoundingClientRect().left) / tileWidth);
 
-      if (to >= tiles.length) {
-        return;
-      }
+    if (to >= tiles.length) {
+      return;
+    }
 
-      const currentFrom = localTiles.findIndex(({ index }) => index === fromRef.current);
+    const currentFrom = localTiles.findIndex(({ index }) => index === fromRef.current);
 
-      if (currentFrom === -1) {
-        return;
-      }
+    if (currentFrom === -1) {
+      return;
+    }
 
-      e.preventDefault();
+    e.preventDefault();
 
-      e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = 'move';
 
-      toRef.current = to;
+    toRef.current = to;
 
-      if (to !== currentFrom) {
-        moveElement(localTiles, currentFrom, to);
+    if (to !== currentFrom) {
+      moveElement(localTiles, currentFrom, to);
 
-        playSound(HOVER_SOUND);
+      playSound(HOVER_SOUND);
 
-        setLocalTiles([...localTiles]);
-      }
-    },
-    [localTiles, onChangeTileIndex, tileWidth, tiles.length],
-  );
+      setLocalTiles([...localTiles]);
+    }
+  });
 
-  const handleDragLeave = useCallback(() => {
+  const handleDragLeave = useImmutableCallback(() => {
     toRef.current = fromRef.current;
 
     setLocalTiles(getLocalTiles(tiles));
-  }, [tiles]);
+  });
 
-  const handleMouseEnter = useCallback(
-    (tileIndex: number) => {
-      onTileHover?.(tiles[tileIndex]);
-    },
-    [onTileHover, tiles],
-  );
+  const handleMouseEnter = useImmutableCallback((tileIndex: number) => {
+    onTileHover?.(tiles[tileIndex]);
+  });
 
-  const handleMouseLeave = useCallback(
-    (tileIndex: number) => {
-      onTileHoverExit?.(tiles[tileIndex]);
-    },
-    [onTileHoverExit, tiles],
-  );
+  const handleMouseLeave = useImmutableCallback((tileIndex: number) => {
+    onTileHoverExit?.(tiles[tileIndex]);
+  });
 
   const tilesNodes = useMemo(() => {
     const nodesWithTiles = localTiles.map((tile, index) => {
@@ -164,7 +153,9 @@ const Tiles: FC<ITilesProps> = (props) => {
         tile,
         node: (
           <div
-            key={stringifyTile(tile.tile)}
+            key={`${stringifyTile(tile.tile)}-${
+              localTiles.slice(0, index).filter((localTile) => isEqualTiles(tile.tile, localTile.tile)).length
+            }`}
             className={classNames(styles.tile, { [styles.withTransition]: withTransition })}
             style={{
               width: isRotated ? tileHeight : tileWidth,
