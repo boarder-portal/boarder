@@ -16,7 +16,7 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Flex from 'client/components/common/Flex/Flex';
-import HoverElement from 'client/components/common/HoverElement/HoverElement';
+import DragArea from 'client/components/common/DragArea/DragArea';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -227,7 +227,7 @@ const Tiles: FC<ITilesProps> = (props) => {
   }, [previousTiles, tiles]);
 
   return (
-    <HoverElement onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
+    <DragArea onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
       <Flex
         ref={rootRef}
         className={styles.tiles}
@@ -240,7 +240,7 @@ const Tiles: FC<ITilesProps> = (props) => {
       >
         {tilesNodes}
       </Flex>
-    </HoverElement>
+    </DragArea>
   );
 };
 

@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { AllHTMLAttributes, FC, memo } from 'react';
 import classNames from 'classnames';
 
 import { TTile } from 'common/types/mahjong';
@@ -12,11 +12,10 @@ import usePlayerSettings from 'client/hooks/usePlayerSettings';
 
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 import Image from 'client/components/common/Image/Image';
-import HoverElement, { IHoverElementProps } from 'client/components/common/HoverElement/HoverElement';
 
 import styles from './Tile.pcss';
 
-interface ITileProps extends IHoverElementProps {
+interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
   tile: TTile | null;
   width: number;
   rotation?: number;
@@ -35,33 +34,31 @@ const Tile: FC<ITileProps> = (props) => {
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 
   return (
-    <HoverElement className={classNames(styles.root, className)} {...rest}>
-      <RotatedElement rotation={rotation}>
-        <div
-          className={classNames(styles.tile, {
-            [styles.hoverable]: hoverable || rest.onMouseEnter,
-            [styles.clickable]: clickable || rest.onClick,
-            [styles.selected]: selected,
-            [styles.highlighted]: highlighted,
-          })}
-          style={{
-            width,
-            height,
-            borderRadius: width / 10,
-            borderWidth: width / 40,
-            backgroundImage: 'url(/mahjong/tileBack.jpg)',
-          }}
-        >
-          {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
+    <RotatedElement className={classNames(styles.root, className)} {...rest} rotation={rotation}>
+      <div
+        className={classNames(styles.tile, {
+          [styles.hoverable]: hoverable || rest.onMouseEnter,
+          [styles.clickable]: clickable || rest.onClick,
+          [styles.selected]: selected,
+          [styles.highlighted]: highlighted,
+        })}
+        style={{
+          width,
+          height,
+          borderRadius: width / 10,
+          borderWidth: width / 40,
+          backgroundImage: 'url(/mahjong/tileBack.jpg)',
+        }}
+      >
+        {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
 
-          {settings.showTileHints && (
-            <div className={styles.hint} style={{ fontSize: height / 6 }}>
-              {hint}
-            </div>
-          )}
-        </div>
-      </RotatedElement>
-    </HoverElement>
+        {settings.showTileHints && (
+          <div className={styles.hint} style={{ fontSize: height / 6 }}>
+            {hint}
+          </div>
+        )}
+      </div>
+    </RotatedElement>
   );
 };
 
