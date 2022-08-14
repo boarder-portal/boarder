@@ -97,11 +97,11 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
       return [];
     }
 
-    if (!isActive) {
+    if (!isActive || !currentTile) {
       return player.data.hand.hand;
     }
 
-    return currentTile ? getHandWithoutTile(player.data.hand?.hand ?? [], currentTile) : [];
+    return getHandWithoutTile(player.data.hand?.hand ?? [], currentTile);
   }, [currentTile, isActive, player?.data.hand]);
 
   const wasHandInProcess = usePrevious(handInProcess);

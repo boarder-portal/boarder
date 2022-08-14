@@ -34,30 +34,34 @@ const Tile: FC<ITileProps> = (props) => {
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 
   return (
-    <RotatedElement className={classNames(styles.root, className)} {...rest} rotation={rotation}>
-      <div
-        className={classNames(styles.tile, {
+    <RotatedElement
+      className={classNames(
+        styles.root,
+        {
           [styles.hoverable]: hoverable || rest.onMouseEnter,
           [styles.clickable]: clickable || rest.onClick,
           [styles.selected]: selected,
           [styles.highlighted]: highlighted,
-        })}
-        style={{
-          width,
-          height,
-          borderRadius: width / 10,
-          borderWidth: width / 40,
-          backgroundImage: 'url(/mahjong/tileBack.jpg)',
-        }}
-      >
-        {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
+        },
+        className,
+      )}
+      style={{
+        width,
+        height,
+        padding: `${width * 0.05}px ${width * 0.04}px ${width * 0.05}px ${width * 0.06}px`,
+        borderRadius: width / 10,
+        borderWidth: width / 40,
+      }}
+      rotation={rotation}
+      {...rest}
+    >
+      {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
 
-        {settings.showTileHints && (
-          <div className={styles.hint} style={{ fontSize: height / 6 }}>
-            {hint}
-          </div>
-        )}
-      </div>
+      {settings.showTileHints && (
+        <div className={styles.hint} style={{ fontSize: height / 6 }}>
+          {hint}
+        </div>
+      )}
     </RotatedElement>
   );
 };

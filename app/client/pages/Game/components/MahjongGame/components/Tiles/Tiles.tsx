@@ -15,7 +15,6 @@ import { usePrevious } from 'client/hooks/usePrevious';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
-import Flex from 'client/components/common/Flex/Flex';
 import DragArea from 'client/components/common/DragArea/DragArea';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
@@ -36,7 +35,6 @@ interface ITilesProps {
   rotatedTileIndex?: number;
   selectedTileIndex?: number;
   highlightedTile?: TTile | null;
-  inline?: boolean;
   onChangeTileIndex?(from: number, to: number): void;
   onTileClick?(tileIndex: number): void;
   onTileHover?(tile: TTile): void;
@@ -64,7 +62,6 @@ const Tiles: FC<ITilesProps> = (props) => {
     rotatedTileIndex = -1,
     selectedTileIndex = -1,
     highlightedTile,
-    inline,
     onChangeTileIndex,
     onTileClick,
     onTileHover,
@@ -82,7 +79,7 @@ const Tiles: FC<ITilesProps> = (props) => {
 
   const previousTiles = usePrevious(tiles);
 
-  const handleDragStart = useImmutableCallback((e: React.DragEvent, from: number) => {
+  const handleDragStart = useImmutableCallback((e: DragEvent, from: number) => {
     if (!onChangeTileIndex) {
       return;
     }
@@ -160,10 +157,10 @@ const Tiles: FC<ITilesProps> = (props) => {
             style={{
               width: isRotated ? tileHeight : tileWidth,
               height: isRotated ? tileWidth : tileHeight,
-              transform: `translateX(${
+              transform: `translate(${
                 tileWidth * (index - 1) +
                 (rotatedTileIndex > -1 && tile.index > rotatedTileIndex ? tileHeight : tileWidth)
-              }px)`,
+              }px${isRotated ? `, ${(tileHeight - tileWidth) / 2}px` : ''})`,
             }}
           >
             <Tile
@@ -209,6 +206,8 @@ const Tiles: FC<ITilesProps> = (props) => {
     const from = fromRef.current;
     const to = toRef.current;
 
+    setWithTransition(false);
+
     if (from === -1 || to === -1 || from === to) {
       return;
     }
@@ -216,7 +215,6 @@ const Tiles: FC<ITilesProps> = (props) => {
     fromRef.current = -1;
     toRef.current = -1;
 
-    setWithTransition(false);
     onChangeTileIndex?.(from, to);
   });
 
@@ -227,19 +225,17 @@ const Tiles: FC<ITilesProps> = (props) => {
   }, [previousTiles, tiles]);
 
   return (
-    <DragArea onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
-      <Flex
-        ref={rootRef}
-        className={styles.tiles}
-        inline={inline}
-        alignItems="center"
-        style={{
-          width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
-          height: tileHeight,
-        }}
-      >
-        {tilesNodes}
-      </Flex>
+    <DragArea
+      ref={rootRef}
+      className={styles.tiles}
+      style={{
+        width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
+        height: tileHeight,
+      }}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+    >
+      {tilesNodes}
     </DragArea>
   );
 };

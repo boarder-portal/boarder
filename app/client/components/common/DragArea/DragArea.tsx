@@ -1,4 +1,4 @@
-import { AllHTMLAttributes, DragEvent, FC, memo, MouseEvent, useEffect, useRef } from 'react';
+import { AllHTMLAttributes, DragEvent, forwardRef, memo, MouseEvent, useEffect, useRef } from 'react';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
@@ -7,10 +7,20 @@ export interface IDragAreaProps extends AllHTMLAttributes<HTMLDivElement> {
   onDragLeave?(): void;
 }
 
-const DragArea: FC<IDragAreaProps> = (props) => {
+const DragArea = forwardRef<HTMLDivElement, IDragAreaProps>((props, ref) => {
   const { onDragEnter, onDragLeave, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const rootCallbackRef = useImmutableCallback((root: HTMLDivElement | null) => {
+    rootRef.current = root;
+
+    if (typeof ref === 'function') {
+      ref(root);
+    } else if (ref) {
+      ref.current = root;
+    }
+  });
 
   const isFromOutside = useImmutableCallback((e: DragEvent | MouseEvent) => {
     return e.relatedTarget instanceof Element && !rootRef.current?.contains(e.relatedTarget);
@@ -34,7 +44,9 @@ const DragArea: FC<IDragAreaProps> = (props) => {
     };
   }, [handleDragLeave]);
 
-  return <div ref={rootRef} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} {...rest} />;
-};
+  return <div ref={rootCallbackRef} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} {...rest} />;
+});
+
+DragArea.displayName = 'DragArea';
 
 export default memo(DragArea);

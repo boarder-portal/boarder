@@ -112,7 +112,6 @@ const Mahjong: FC<IMahjongProps> = (props) => {
               <TableCell className={styles.tableCell}>
                 {fan === EFan.FLOWER_TILES || fan === EFan.TILE_HOG ? (
                   <Tiles
-                    inline
                     tiles={fans
                       .filter(isSpecialFan)
                       .map(({ tile }) => tile)

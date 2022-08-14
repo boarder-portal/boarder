@@ -1,71 +1,65 @@
 import { AllHTMLAttributes, FC, memo, useLayoutEffect, useRef } from 'react';
 
 interface IRealSizeElementProps extends AllHTMLAttributes<HTMLDivElement> {
-  rootClassName?: string;
   rotation: number;
 }
 
 const RotatedElement: FC<IRealSizeElementProps> = (props) => {
-  const { rootClassName, rotation, ...rest } = props;
+  const { rotation, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const intermediateRef = useRef<HTMLDivElement | null>(null);
-  const innerContainerRef = useRef<HTMLDivElement | null>(null);
+  const innerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-    const intermediate = intermediateRef.current;
-    const innerContainer = innerContainerRef.current;
+    const inner = innerRef.current;
 
-    if (!root || !intermediate || !innerContainer) {
+    if (!root || !inner) {
       return;
     }
 
     const rotateTransform = `rotate(${rotation / 4}turn)`;
 
-    if (rotation % 2 === 0) {
-      root.style.transform = rotateTransform;
-
-      return;
-    }
-
-    const setSize = (): void => {
-      const realWidth = innerContainer.scrollWidth;
-      const realHeight = innerContainer.scrollHeight;
+    const setSize = (initial: boolean): void => {
+      const rect = inner.getBoundingClientRect();
+      const realWidth = initial ? rect.width : rect.height;
+      const realHeight = initial ? rect.height : rect.width;
       const rotationRemainder = ((rotation % 4) + 4) % 4;
       const offset = (realWidth - realHeight) / 2;
 
-      intermediate.style.transform = `${rotateTransform} translate(${rotationRemainder === 1 ? offset : -offset}px, ${
+      inner.style.transform = `${rotateTransform} translate(${rotationRemainder === 1 ? offset : -offset}px, ${
         rotationRemainder === 1 ? offset : -offset
       }px)`;
-      intermediate.style.width = `${realWidth}px`;
-      intermediate.style.height = `${realHeight}px`;
+      inner.style.width = `${realWidth}px`;
+      inner.style.height = `${realHeight}px`;
       root.style.width = `${realHeight}px`;
       root.style.height = `${realWidth}px`;
     };
 
-    setSize();
+    setSize(true);
 
-    const resizeObserver = new ResizeObserver(setSize);
+    const resizeObserver = new ResizeObserver(() => setSize(false));
 
-    resizeObserver.observe(innerContainer);
+    resizeObserver.observe(inner);
 
     return () => {
       resizeObserver.disconnect();
 
-      intermediate.style.transform = '';
-      intermediate.style.width = '';
-      intermediate.style.height = '';
+      inner.style.transform = '';
+      inner.style.width = '';
+      inner.style.height = '';
       root.style.width = '';
       root.style.height = '';
     };
   }, [rotation]);
 
+  if (rotation % 2 === 0) {
+    return <div {...rest} />;
+  }
+
   return (
-    <div ref={rootRef} className={rootClassName}>
-      <div ref={intermediateRef}>
-        <div ref={innerContainerRef} {...rest} />
-      </div>
+    <div ref={rootRef}>
+      <div ref={innerRef} {...rest} />
     </div>
   );
 };

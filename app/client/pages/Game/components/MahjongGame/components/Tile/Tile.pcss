@@ -1,27 +1,20 @@
 .root {
   display: inline-block;
   flex-shrink: 0;
-  user-select: none;
-}
-
-.tile {
   position: relative;
-  padding: 5% 4% 5% 6%;
   border: solid #000;
   overflow: hidden;
-  filter: brightness(100%);
-  background-color: transparent;
-  will-change: filter, background-color;
-  transition: filter 0.1s ease-in-out;
+  user-select: none;
+  background-color: #f5f5dc;
+  will-change: background-color;
+  transition: background-color 0.1s ease-in-out;
 
   &.highlighted {
     background-color: #08fa;
-    background-image: none !important;
   }
 
   &.selected {
     background-color: #7f7a;
-    background-image: none !important;
     z-index: 1;
   }
 
@@ -31,7 +24,7 @@
 
   &.hoverable {
     &:hover {
-      filter: brightness(80%);
+      background-color: #afac86;
     }
   }
 }
