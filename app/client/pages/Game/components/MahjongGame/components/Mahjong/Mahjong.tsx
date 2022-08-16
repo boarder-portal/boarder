@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 import { MIN_SCORE } from 'common/constants/games/mahjong';
 
-import { EFan, ESetConcealedType, IHandMahjong, TPlayableTile } from 'common/types/mahjong';
+import { EFan, ESetConcealedType, IHandMahjong } from 'common/types/mahjong';
 
 import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import isDefined from 'common/utilities/isDefined';
@@ -25,27 +25,25 @@ interface IMahjongProps {
   mahjong: IHandMahjong;
   tileWidth: number;
   showHand?: boolean;
+  showWaits?: boolean;
   showScoreEval?: boolean;
-  onWaitClick?(tile: TPlayableTile): void;
 }
 
 const Mahjong: FC<IMahjongProps> = (props) => {
-  const { mahjong, tileWidth, showHand = true, showScoreEval, onWaitClick } = props;
+  const { mahjong, tileWidth, showHand = true, showWaits = true, showScoreEval } = props;
 
   const groupedFans = groupBy(mahjong.fans, (fan) => fan.fan);
 
   return (
     <>
       <Flex direction="column" between={4}>
-        <Flex alignItems="center" between={6}>
-          <div className={styles.tilesCaption}>Ожидания</div>
+        {showWaits && (
+          <Flex alignItems="center" between={6}>
+            <div className={styles.tilesCaption}>Ожидания</div>
 
-          <Tiles
-            tiles={mahjong.waits}
-            tileWidth={tileWidth}
-            onTileClick={onWaitClick && ((tileIndex) => onWaitClick(mahjong.waits[tileIndex]))}
-          />
-        </Flex>
+            <Tiles tiles={mahjong.waits} tileWidth={tileWidth} />
+          </Flex>
+        )}
 
         {showHand && (
           <Flex alignItems="center" between={6}>

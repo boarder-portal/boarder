@@ -22,6 +22,7 @@ import {
 } from 'common/types/mahjong';
 
 import {
+  getTileCount,
   getTileSortValue,
   isEqualTiles,
   isEqualTilesCallback,
@@ -329,7 +330,7 @@ export function getTileHogs(sets: TSet[]): TPlayableTile[] {
         return;
       }
 
-      if (tiles.filter(isEqualTilesCallback(tile)).length === 4) {
+      if (getTileCount(tiles, tile) === 4) {
         tileHogs.push(tile);
       }
     });
@@ -341,7 +342,7 @@ export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]
   const possibleSets: IKongSet[] = [];
 
   hand.forEach((tile, index) => {
-    if (hand.slice(index + 1).filter(isEqualTilesCallback(tile)).length === 3 && isPlayable(tile)) {
+    if (getTileCount(hand.slice(index + 1), tile) === 3 && isPlayable(tile)) {
       possibleSets.push({
         type: ESet.KONG,
         tiles: kong(tile),
@@ -357,7 +358,7 @@ export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]
 
     const pungTile = getSetTile(set);
 
-    if (hand.some(isEqualTilesCallback(pungTile))) {
+    if (tilesContainTile(hand, pungTile)) {
       possibleSets.push({
         type: ESet.KONG,
         tiles: kong(pungTile),
@@ -376,7 +377,6 @@ export function getPossibleMeldedSets(
 ): TMeldedSet[] {
   const possibleSets: TMeldedSet[] = [];
   const allPossibleSets = getCombinations(sortBy([...hand, discardedTile], getTileSortValue), 3);
-  const isDiscardedTile = isEqualTilesCallback(discardedTile);
 
   const addSet = (setToAdd: TMeldedSet) => {
     if (possibleSets.every((set) => !isEqualSets(set, setToAdd))) {
@@ -385,13 +385,13 @@ export function getPossibleMeldedSets(
   };
 
   allPossibleSets.forEach((tiles) => {
-    if (tiles.every(isDiscardedTile) && tiles.every(isPlayable)) {
+    if (tiles.every(isEqualTilesCallback(discardedTile)) && tiles.every(isPlayable)) {
       addSet({
         type: ESet.PUNG,
         tiles,
         concealedType: ESetConcealedType.MELDED,
       });
-    } else if (isChowPossible && tiles.some(isDiscardedTile) && isFlush(tiles) && isStraight(tiles)) {
+    } else if (isChowPossible && tilesContainTile(tiles, discardedTile) && isFlush(tiles) && isStraight(tiles)) {
       addSet({
         type: ESet.CHOW,
         tiles,
@@ -400,7 +400,7 @@ export function getPossibleMeldedSets(
     }
   });
 
-  if (hand.filter(isDiscardedTile).length === 3) {
+  if (getTileCount(hand, discardedTile) === 3) {
     possibleSets.push({
       type: ESet.KONG,
       tiles: kong(discardedTile),

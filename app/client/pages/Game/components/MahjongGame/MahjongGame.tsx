@@ -8,7 +8,6 @@ import {
   EHandPhase,
   EWind,
   IDeclareInfo,
-  IHandMahjong,
   IHandResult,
   IPlayer,
   TDeclareDecision,
@@ -65,7 +64,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     setTrue: openCalculatorModal,
     setFalse: closeCalculatorModal,
   } = useBoolean(false);
-  const [openedMahjong, setOpenedMahjong] = useState<IHandMahjong | null>(null);
+  const [openedResult, setOpenedResult] = useState<IHandResult | null>(null);
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [handPhase, setHandPhase] = useState<EHandPhase | null>(null);
   const [resultsByHand, setResultsByHand] = useState<IHandResult[]>([]);
@@ -203,7 +202,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const handleCloseResultsModal = useImmutableCallback(() => {
     batchedUpdates(() => {
       closeResultsModal();
-      setOpenedMahjong(null);
+      setOpenedResult(null);
     });
   });
 
@@ -245,17 +244,13 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   }, [gameInfo]);
 
   useEffect(() => {
-    if (wasHandInProcess && !handInProcess) {
-      const lastMahjong = currentHandResult?.mahjong;
-
-      if (lastMahjong) {
-        batchedUpdates(() => {
-          openResultsModal();
-          setOpenedMahjong(lastMahjong);
-        });
-      }
+    if (wasHandInProcess && !handInProcess && currentHandResult?.mahjong) {
+      batchedUpdates(() => {
+        openResultsModal();
+        setOpenedResult(currentHandResult);
+      });
     }
-  }, [currentHandResult?.mahjong, handInProcess, openResultsModal, wasHandInProcess]);
+  }, [currentHandResult, handInProcess, openResultsModal, wasHandInProcess]);
 
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
@@ -361,7 +356,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         handsCount={gameOptions.handsCount}
         players={players}
         results={resultsByHand}
-        openedMahjong={openedMahjong}
+        openedResult={openedResult}
         onClose={handleCloseResultsModal}
       />
 

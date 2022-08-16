@@ -13,8 +13,15 @@
     cursor: pointer;
   }
 
-  &.disabled {
+  &.impossible, &.disabled {
     opacity: 0.5;
+  }
+
+  &.disabled {
     pointer-events: none;
   }
+}
+
+.waitsCaption {
+  width: 100px;
 }

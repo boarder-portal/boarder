@@ -31,7 +31,7 @@ import {
 } from 'common/utilities/mahjong/fans';
 import {
   getSupposedHandTileCount,
-  isEqualTilesCallback,
+  getTileCount,
   isHonor,
   isPlayable,
   isTileSubset,
@@ -60,7 +60,7 @@ export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
   const { hand, declaredSets } = options;
   const wholeHand = [...hand, ...declaredSets.flatMap(({ tiles }) => tiles)];
   const possibleTiles = STANDARD_TILES.filter((tile) => {
-    return wholeHand.filter(isEqualTilesCallback(tile)).length < 4;
+    return getTileCount(wholeHand, tile) < 4;
   });
 
   const waitsWithSingleWait = possibleTiles.filter((tile) =>

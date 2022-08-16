@@ -20,15 +20,17 @@ import {
   chow,
   getLastTileCandidatesFromTiles,
   getSupposedHandTileCount,
+  getTileCount,
   isEqualTiles,
-  isEqualTilesCallback,
   isSuited,
   kong,
   pung,
+  tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
 import { isDeclaredMeldedSet, isKong, isMelded } from 'common/utilities/mahjong/sets';
-import { getHandMahjong } from 'common/utilities/mahjong/scoring';
+import { getAllWaits, getHandMahjong, IHandScoreOptions } from 'common/utilities/mahjong/scoring';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';
+import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 
 import { usePrevious } from 'client/hooks/usePrevious';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
@@ -70,6 +72,7 @@ interface ICalculatorModalProps {
 }
 
 const TILE_WIDTH = 50;
+const HAND_TILE_WIDTH = TILE_WIDTH * 0.75;
 
 const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   const {
@@ -168,10 +171,10 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
 
   const disabledTiles = useMemo<TPlayableTile[]>(() => {
     return STANDARD_TILES.filter((tile) => {
-      const tileCount = allKnownTiles.filter(isEqualTilesCallback(tile)).length;
+      const tileCount = getTileCount(allKnownTiles, tile);
 
       if (selectMode === ESelectMode.WINNING_TILE) {
-        return tileCount >= 4 || isEqualTiles(tile, winningTile);
+        return tileCount >= 4 && !isEqualTiles(tile, winningTile);
       }
 
       if (selectMode === ESelectMode.HAND) {
@@ -192,7 +195,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
 
       const chowTiles = chow(tile);
 
-      return chowTiles.some((tile) => allKnownTiles.filter(isEqualTilesCallback(tile)).length >= 4);
+      return chowTiles.some((tile) => getTileCount(allKnownTiles, tile) >= 4);
     });
   }, [allKnownTiles, selectMode, winningTile]);
 
@@ -205,7 +208,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
       return realIsRobbingKong;
     }
 
-    return allKnownTiles.filter(isEqualTilesCallback(winningTile)).length === 1;
+    return getTileCount(allKnownTiles, winningTile) === 1;
   }, [allKnownTiles, gameTakenIntoAccount, realIsRobbingKong, winningTile]);
 
   const isReplacementTileAllowed = useMemo(() => {
@@ -217,7 +220,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
       return false;
     }
 
-    return !hand.some(isEqualTilesCallback(winningTile));
+    return !tilesContainTile(hand, winningTile);
   }, [hand, winningTile]);
 
   const isNotLastOfKindAllowed = useMemo(() => {
@@ -225,10 +228,41 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
       return true;
     }
 
-    return !lastTileCandidates.some(isEqualTilesCallback(winningTile));
+    return !tilesContainTile(lastTileCandidates, winningTile);
   }, [lastTileCandidates, winningTile]);
 
-  const getMahjong = useImmutableCallback((customWinningTile?: TPlayableTile) => {
+  const getHandScoreOptions = useCallback(
+    (customWinningTile?: TTile | null, minScore?: number): IHandScoreOptions => {
+      return {
+        hand,
+        declaredSets,
+        flowers: [],
+        roundWind,
+        seatWind,
+        minScore,
+        lastTileCandidates:
+          isLastOfKind && customWinningTile ? [customWinningTile, ...lastTileCandidates] : lastTileCandidates,
+        isReplacementTile,
+        isSelfDraw,
+        isRobbingKong,
+        isLastWallTile,
+      };
+    },
+    [
+      declaredSets,
+      hand,
+      isLastOfKind,
+      isLastWallTile,
+      isReplacementTile,
+      isRobbingKong,
+      isSelfDraw,
+      lastTileCandidates,
+      roundWind,
+      seatWind,
+    ],
+  );
+
+  const getMahjong = useImmutableCallback((customWinningTile?: TTile) => {
     const mahjongWinningTile = customWinningTile ?? winningTile;
 
     if (!mahjongWinningTile) {
@@ -236,20 +270,18 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     }
 
     return getHandMahjong({
-      hand,
-      declaredSets,
-      flowers: [],
+      ...getHandScoreOptions(mahjongWinningTile),
       winningTile: mahjongWinningTile,
-      roundWind,
-      seatWind,
-      minScore: 0,
-      lastTileCandidates: isLastOfKind ? [mahjongWinningTile, ...lastTileCandidates] : lastTileCandidates,
-      isReplacementTile,
-      isSelfDraw,
-      isRobbingKong,
-      isLastWallTile,
     });
   });
+
+  const allWaits = useMemo<TTile[]>(() => {
+    return getAllWaits(getHandScoreOptions(null, 0));
+  }, [getHandScoreOptions]);
+
+  const legalWaits = useMemo(() => {
+    return getAllWaits(getHandScoreOptions());
+  }, [getHandScoreOptions]);
 
   const reset = useCallback(
     (gameTakenIntoAccount: boolean) => {
@@ -272,7 +304,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
           setIsRobbingKong(realIsRobbingKong);
           setIsReplacementTile(realIsReplacementTile);
           setIsLastWallTile(realIsLastWallTile);
-          setIsLastOfKind(realWinningTile ? lastTileCandidates.some(isEqualTilesCallback(realWinningTile)) : false);
+          setIsLastOfKind(realWinningTile ? tilesContainTile(lastTileCandidates, realWinningTile) : false);
         } else {
           setDeclaredSets([]);
           setHand([]);
@@ -368,10 +400,10 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   }, [gameTakenIntoAccount, reset]);
 
   const onWaitClick = useCallback(
-    (tile: TPlayableTile) => {
+    (wait: TTile) => {
       batchedUpdates(() => {
-        setWinningTile(tile);
-        setShownMahjong(getMahjong(tile));
+        setWinningTile(wait);
+        setShownMahjong(getMahjong(wait));
       });
     },
     [getMahjong],
@@ -437,17 +469,22 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>
-            {STANDARD_TILES.map((tile, index) => (
-              <Tile
-                key={index}
-                className={classNames(styles.tile, {
-                  [styles.disabled]: disabledTiles.some(isEqualTilesCallback(tile)),
-                })}
-                tile={tile}
-                width={TILE_WIDTH}
-                onClick={() => onTileClick(tile)}
-              />
-            ))}
+            {STANDARD_TILES.map((tile, index) => {
+              const isDisabled = tilesContainTile(disabledTiles, tile);
+
+              return (
+                <Tile
+                  key={index}
+                  className={classNames(styles.tile, {
+                    [styles.disabled]: isDisabled,
+                  })}
+                  tile={tile}
+                  width={TILE_WIDTH}
+                  hoverable={!isDisabled}
+                  onClick={() => onTileClick(tile)}
+                />
+              );
+            })}
           </div>
 
           <Flex direction="column" between={6}>
@@ -536,25 +573,48 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
               <Tiles
                 key={index}
                 tiles={set.tiles}
-                tileWidth={TILE_WIDTH * 0.75}
+                tileWidth={HAND_TILE_WIDTH}
                 openType={set.concealedType === ESetConcealedType.CONCEALED ? EOpenType.SEMI_CONCEALED : EOpenType.OPEN}
                 onTileClick={isAllowedToRemoveSet ? () => removeSet(index) : undefined}
               />
             );
           })}
 
-          <Tiles tiles={hand} tileWidth={TILE_WIDTH * 0.75} onTileClick={removeTileFromHand} />
+          <Tiles tiles={hand} tileWidth={HAND_TILE_WIDTH} onTileClick={removeTileFromHand} />
 
-          {winningTile && <Tile tile={winningTile} width={TILE_WIDTH * 0.75} onClick={removeWinningTile} />}
+          {winningTile && <Tile tile={winningTile} width={HAND_TILE_WIDTH} onClick={removeWinningTile} />}
+        </Flex>
+
+        <Flex alignItems="center" between={6}>
+          <div className={styles.waitsCaption}>Ожидания</div>
+
+          <Flex style={{ height: getTileHeight(HAND_TILE_WIDTH) }}>
+            {allWaits.map((wait, index) => {
+              const isImpossible =
+                !tilesContainTile(legalWaits, wait) ||
+                getTileCount(allKnownTiles, wait) >= (isEqualTiles(wait, winningTile) ? 3 : 4);
+
+              return (
+                <Tile
+                  key={index}
+                  className={classNames(isImpossible && styles.impossible)}
+                  tile={wait}
+                  width={HAND_TILE_WIDTH}
+                  hoverable={!isImpossible}
+                  onClick={() => onWaitClick(wait)}
+                />
+              );
+            })}
+          </Flex>
         </Flex>
 
         {shownMahjong && (
           <Mahjong
             mahjong={shownMahjong}
-            tileWidth={TILE_WIDTH * 0.75}
+            tileWidth={HAND_TILE_WIDTH}
             showHand={false}
+            showWaits={false}
             showScoreEval
-            onWaitClick={onWaitClick}
           />
         )}
       </Flex>

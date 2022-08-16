@@ -26,6 +26,7 @@ import {
   areSuited,
   getSortedValuesString,
   getSuitsCount,
+  getTileCount,
   isDragon,
   isEqualTiles,
   isEqualTilesCallback,
@@ -468,8 +469,6 @@ export function getSpecialFans(
   winningTile: TPlayableTile,
   wholeHand: TPlayableTile[],
 ): TFan[] {
-  const isWinningTile = isEqualTilesCallback(winningTile);
-
   const fans: TFan[] = [];
 
   if (options.isLastWallTile) {
@@ -488,7 +487,7 @@ export function getSpecialFans(
     });
   }
 
-  if (options.isRobbingKong && wholeHand.filter(isWinningTile).length === 1) {
+  if (options.isRobbingKong && getTileCount(wholeHand, winningTile) === 1) {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.ROBBING_THE_KONG,
@@ -496,7 +495,7 @@ export function getSpecialFans(
     });
   }
 
-  if (options.lastTileCandidates.some(isWinningTile)) {
+  if (tilesContainTile(options.lastTileCandidates, winningTile)) {
     fans.push({
       type: EFanType.SPECIAL,
       fan: EFan.LAST_TILE,

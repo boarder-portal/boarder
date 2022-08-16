@@ -5,13 +5,14 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
-import { EHandsCount, IHandMahjong, IHandResult, IPlayer } from 'common/types/mahjong';
+import { EHandsCount, IHandResult, IPlayer } from 'common/types/mahjong';
 
 import Modal from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
 import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './ResultsModal.pcss';
 
@@ -25,19 +26,22 @@ interface IResultsModalProps {
   handsCount: EHandsCount;
   players: IPlayer[];
   results: IHandResult[];
-  openedMahjong: IHandMahjong | null;
+  openedResult: IHandResult | null;
   onClose(): void;
 }
 
 const ResultsModal: FC<IResultsModalProps> = (props) => {
-  const { open, handsCount, players, results, openedMahjong, onClose } = props;
+  const { open, handsCount, players, results, openedResult, onClose } = props;
 
   const [viewMode, setViewMode] = useState(EViewMode.TABLE);
-  const [chosenMahjong, setChosenMahjong] = useState<IHandMahjong | null>(null);
+  const [chosenResult, setChosenResult] = useState<IHandResult | null>(null);
 
-  const chooseMahjong = useCallback((mahjong: IHandMahjong) => {
+  const chosenResultWinner =
+    !chosenResult || chosenResult.winnerIndex === -1 ? null : players.at(chosenResult.winnerIndex) ?? null;
+
+  const chooseResult = useCallback((result: IHandResult) => {
     setViewMode(EViewMode.MAHJONG);
-    setChosenMahjong(mahjong);
+    setChosenResult(result);
   }, []);
 
   const backToTable = useCallback(() => {
@@ -47,11 +51,11 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
   useEffect(() => {
     batchedUpdates(() => {
       if (open) {
-        setViewMode(openedMahjong ? EViewMode.MAHJONG : EViewMode.TABLE);
-        setChosenMahjong(openedMahjong);
+        setViewMode(openedResult ? EViewMode.MAHJONG : EViewMode.TABLE);
+        setChosenResult(openedResult);
       }
     });
-  }, [open, openedMahjong]);
+  }, [open, openedResult]);
 
   return (
     <Modal
@@ -96,7 +100,7 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
               <TableRow
                 key={index}
                 className={classNames(styles.row, { [styles.clickable]: mahjong })}
-                onClick={() => mahjong && chooseMahjong(mahjong)}
+                onClick={() => mahjong && chooseResult(result)}
               >
                 <TableCell className={styles.indexCell}>{index + 1}</TableCell>
 
@@ -110,15 +114,23 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
           })}
         </Table>
       ) : (
-        <div>
+        <Flex direction="column" between={6}>
           <div className={styles.backButton} onClick={backToTable}>
             🠔 Назад
           </div>
 
-          <div className={styles.mahjongContainer}>
-            {chosenMahjong && <Mahjong mahjong={chosenMahjong} tileWidth={50} />}
-          </div>
-        </div>
+          {chosenResultWinner && (
+            <div className={styles.winnerHeader}>
+              Победил(а) <span className={styles.winner}>{chosenResult?.winnerIndex}</span>!
+            </div>
+          )}
+
+          {chosenResult?.mahjong && (
+            <div>
+              <Mahjong mahjong={chosenResult.mahjong} tileWidth={50} />
+            </div>
+          )}
+        </Flex>
       )}
     </Modal>
   );

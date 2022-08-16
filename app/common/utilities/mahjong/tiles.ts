@@ -126,6 +126,10 @@ export function tilesContainTile(tiles: TTile[], tile: TTile): boolean {
   return tiles.some(isEqualTilesCallback(tile));
 }
 
+export function getTileCount(tiles: TTile[], tile: TTile): number {
+  return tiles.filter(isEqualTilesCallback(tile)).length;
+}
+
 export function isTileSubset(tiles: TTile[], tilesSet: TTile[]): boolean {
   return tiles.every((tile) => tilesContainTile(tilesSet, tile));
 }
@@ -227,6 +231,6 @@ export function getLastTileCandidates(playersData: (IHandPlayerData | null)[]): 
 
 export function getLastTileCandidatesFromTiles(tiles: TTile[]): TTile[] {
   return STANDARD_TILES.filter((tile) => {
-    return tiles.filter(isEqualTilesCallback(tile)).length >= 3;
+    return getTileCount(tiles, tile) >= 3;
   });
 }
