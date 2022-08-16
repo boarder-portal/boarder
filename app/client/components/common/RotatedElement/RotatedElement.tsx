@@ -20,6 +20,12 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
 
     const rotateTransform = `rotate(${rotation / 4}turn)`;
 
+    if (rotation % 2 === 0) {
+      root.style.transform = rotateTransform;
+
+      return;
+    }
+
     const setSize = (initial: boolean): void => {
       const rect = inner.getBoundingClientRect();
       const realWidth = initial ? rect.width : rect.height;
@@ -52,10 +58,6 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
       root.style.height = '';
     };
   }, [rotation]);
-
-  if (rotation % 2 === 0) {
-    return <div {...rest} />;
-  }
 
   return (
     <div ref={rootRef}>
