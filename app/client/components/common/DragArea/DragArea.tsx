@@ -1,6 +1,7 @@
 import { AllHTMLAttributes, DragEvent, forwardRef, memo, MouseEvent, useEffect, useRef } from 'react';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 
 export interface IDragAreaProps extends AllHTMLAttributes<HTMLDivElement> {
   onDragEnter?(): void;
@@ -36,6 +37,10 @@ const DragArea = forwardRef<HTMLDivElement, IDragAreaProps>((props, ref) => {
     if (!e || isFromOutside(e)) {
       onDragLeave?.();
     }
+  });
+
+  useLeaveOnUnmount({
+    onDragLeave,
   });
 
   useEffect(() => {

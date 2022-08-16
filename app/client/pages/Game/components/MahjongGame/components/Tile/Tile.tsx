@@ -1,4 +1,4 @@
-import { AllHTMLAttributes, CSSProperties, FC, memo } from 'react';
+import { AllHTMLAttributes, CSSProperties, FC, memo, MouseEvent } from 'react';
 import classNames from 'classnames';
 
 import { TTile } from 'common/types/mahjong';
@@ -9,6 +9,7 @@ import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilitie
 import { isSuited, isWind } from 'common/utilities/mahjong/tiles';
 
 import usePlayerSettings from 'client/hooks/usePlayerSettings';
+import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 import Image from 'client/components/common/Image/Image';
@@ -24,6 +25,7 @@ interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
   clickable?: boolean;
   selected?: boolean;
   highlighted?: boolean;
+  onMouseLeave?(e?: MouseEvent): void;
 }
 
 const Tile: FC<ITileProps> = (props) => {
@@ -45,6 +47,10 @@ const Tile: FC<ITileProps> = (props) => {
   const { settings } = usePlayerSettings(EGame.MAHJONG);
 
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
+
+  useLeaveOnUnmount({
+    onMouseLeave: rest.onMouseLeave,
+  });
 
   return (
     <RotatedElement
