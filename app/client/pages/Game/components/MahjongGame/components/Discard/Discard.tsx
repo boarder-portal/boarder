@@ -33,7 +33,7 @@ const Discard: FC<IDiscardProps> = (props) => {
       <RotatedElement
         className={styles.grid}
         rotation={rotation}
-        style={{ gridTemplateColumns: `repeat(6, ${tileWidth}px)` }}
+        style={{ gridTemplateColumns: `repeat(7, ${tileWidth}px)` }}
       >
         {tiles.map((tile, index) => (
           <Tile

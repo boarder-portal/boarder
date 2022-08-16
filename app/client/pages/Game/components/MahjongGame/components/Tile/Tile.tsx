@@ -51,7 +51,7 @@ const Tile: FC<ITileProps> = (props) => {
       className={classNames(
         styles.root,
         {
-          [styles.hoverable]: hoverable || rest.onMouseEnter,
+          [styles.hoverable]: hoverable,
           [styles.clickable]: clickable || rest.onClick,
           [styles.selected]: selected,
           [styles.highlighted]: highlighted,

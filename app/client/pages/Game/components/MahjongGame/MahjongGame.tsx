@@ -283,7 +283,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
               <Discard
                 key={index}
                 tiles={p.data.hand.discard}
-                tileWidth={tileWidth * 0.8}
+                tileWidth={tileWidth * 0.75}
                 area={SIDES[index]}
                 rotation={-index}
                 isLastTileSelected={
