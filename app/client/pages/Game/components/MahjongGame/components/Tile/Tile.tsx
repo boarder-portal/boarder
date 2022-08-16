@@ -1,4 +1,4 @@
-import { AllHTMLAttributes, FC, memo } from 'react';
+import { AllHTMLAttributes, CSSProperties, FC, memo } from 'react';
 import classNames from 'classnames';
 
 import { TTile } from 'common/types/mahjong';
@@ -16,6 +16,7 @@ import Image from 'client/components/common/Image/Image';
 import styles from './Tile.pcss';
 
 interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
+  rootStyle?: CSSProperties;
   tile: TTile | null;
   width: number;
   rotation?: number;
@@ -26,7 +27,19 @@ interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
 }
 
 const Tile: FC<ITileProps> = (props) => {
-  const { className, tile, width, rotation = 0, hoverable, clickable, selected, highlighted, ...rest } = props;
+  const {
+    className,
+    style,
+    rootStyle,
+    tile,
+    width,
+    rotation = 0,
+    hoverable,
+    clickable,
+    selected,
+    highlighted,
+    ...rest
+  } = props;
   const height = getTileHeight(width);
 
   const { settings } = usePlayerSettings(EGame.MAHJONG);
@@ -46,12 +59,14 @@ const Tile: FC<ITileProps> = (props) => {
         className,
       )}
       style={{
+        ...style,
         width,
         height,
         padding: `${width * 0.05}px ${width * 0.04}px ${width * 0.05}px ${width * 0.06}px`,
         borderRadius: width / 10,
         borderWidth: width / 40,
       }}
+      rootStyle={rootStyle}
       rotation={rotation}
       {...rest}
     >

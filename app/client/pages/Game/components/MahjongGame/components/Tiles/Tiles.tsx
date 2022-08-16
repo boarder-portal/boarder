@@ -8,7 +8,7 @@ import { TTile } from 'common/types/mahjong';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
 import { stringifyTile } from 'common/utilities/mahjong/stringify';
-import { getTileSortValue, isEqualTiles } from 'common/utilities/mahjong/tiles';
+import { isEqualTiles } from 'common/utilities/mahjong/tiles';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import { usePrevious } from 'client/hooks/usePrevious';
@@ -145,43 +145,39 @@ const Tiles: FC<ITilesProps> = (props) => {
       const isRotated = tile.index === rotatedTileIndex;
       const open =
         openType === EOpenType.OPEN || (openType === EOpenType.SEMI_CONCEALED && (index === 0 || index === 3));
+      const key = `${stringifyTile(tile.tile)}-${
+        localTiles.filter((localTile) => isEqualTiles(tile.tile, localTile.tile) && localTile.index < tile.index).length
+      }`;
 
       return {
-        tile,
+        sortKey: key,
         node: (
-          <div
-            key={`${stringifyTile(tile.tile)}-${
-              localTiles.slice(0, index).filter((localTile) => isEqualTiles(tile.tile, localTile.tile)).length
-            }`}
+          <Tile
+            key={key}
             className={classNames(styles.tile, { [styles.withTransition]: withTransition })}
-            style={{
-              width: isRotated ? tileHeight : tileWidth,
-              height: isRotated ? tileWidth : tileHeight,
+            rootStyle={{
               transform: `translate(${
                 tileWidth * (index - 1) +
                 (rotatedTileIndex > -1 && tile.index > rotatedTileIndex ? tileHeight : tileWidth)
               }px${isRotated ? `, ${(tileHeight - tileWidth) / 2}px` : ''})`,
             }}
-          >
-            <Tile
-              tile={open ? tile.tile : null}
-              width={tileWidth}
-              draggable={Boolean(onChangeTileIndex)}
-              rotation={isRotated ? -1 : 0}
-              hoverable={isKnown && hoverable}
-              selected={tile.index === selectedTileIndex}
-              highlighted={isKnown ? isEqualTiles(tile.tile, highlightedTile) : false}
-              onDragStart={(e) => handleDragStart(e, index)}
-              onClick={onTileClick && (() => onTileClick(tile.index))}
-              onMouseEnter={isKnown && onTileHover ? () => handleMouseEnter(tile.index) : undefined}
-              onMouseLeave={isKnown && onTileHoverExit ? () => handleMouseLeave(tile.index) : undefined}
-            />
-          </div>
+            tile={open ? tile.tile : null}
+            width={tileWidth}
+            draggable={Boolean(onChangeTileIndex)}
+            rotation={isRotated ? -1 : 0}
+            hoverable={isKnown && hoverable}
+            selected={tile.index === selectedTileIndex}
+            highlighted={isKnown ? isEqualTiles(tile.tile, highlightedTile) : false}
+            onDragStart={(e) => handleDragStart(e, index)}
+            onClick={onTileClick && (() => onTileClick(tile.index))}
+            onMouseEnter={isKnown && onTileHover ? () => handleMouseEnter(tile.index) : undefined}
+            onMouseLeave={isKnown && onTileHoverExit ? () => handleMouseLeave(tile.index) : undefined}
+          />
         ),
       };
     });
 
-    return sortBy(nodesWithTiles, ({ tile }) => getTileSortValue(tile.tile)).map(({ node }) => node);
+    return sortBy(nodesWithTiles, ({ sortKey }) => sortKey).map(({ node }) => node);
   }, [
     handleDragStart,
     handleMouseEnter,

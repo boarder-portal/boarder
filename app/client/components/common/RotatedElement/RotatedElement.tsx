@@ -1,11 +1,12 @@
-import { AllHTMLAttributes, FC, memo, useLayoutEffect, useRef } from 'react';
+import { AllHTMLAttributes, CSSProperties, FC, memo, useLayoutEffect, useRef } from 'react';
 
 interface IRealSizeElementProps extends AllHTMLAttributes<HTMLDivElement> {
+  rootStyle?: CSSProperties;
   rotation: number;
 }
 
 const RotatedElement: FC<IRealSizeElementProps> = (props) => {
-  const { rotation, ...rest } = props;
+  const { rotation, rootStyle, style, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const innerRef = useRef<HTMLDivElement | null>(null);
@@ -21,15 +22,14 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
     const rotateTransform = `rotate(${rotation / 4}turn)`;
 
     if (rotation % 2 === 0) {
-      root.style.transform = rotateTransform;
+      inner.style.transform = rotateTransform;
 
       return;
     }
 
-    const setSize = (initial: boolean): void => {
-      const rect = inner.getBoundingClientRect();
-      const realWidth = initial ? rect.width : rect.height;
-      const realHeight = initial ? rect.height : rect.width;
+    const setSize = (): void => {
+      const realWidth = inner.offsetWidth;
+      const realHeight = inner.offsetHeight;
       const rotationRemainder = ((rotation % 4) + 4) % 4;
       const offset = (realWidth - realHeight) / 2;
 
@@ -42,9 +42,9 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
       root.style.height = `${realWidth}px`;
     };
 
-    setSize(true);
+    setSize();
 
-    const resizeObserver = new ResizeObserver(() => setSize(false));
+    const resizeObserver = new ResizeObserver(setSize);
 
     resizeObserver.observe(inner);
 
@@ -59,9 +59,13 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
     };
   }, [rotation]);
 
+  if (rotation % 4 === 0) {
+    return <div style={{ ...rootStyle, ...style }} {...rest} />;
+  }
+
   return (
-    <div ref={rootRef}>
-      <div ref={innerRef} {...rest} />
+    <div ref={rootRef} style={rootStyle}>
+      <div ref={innerRef} style={style} {...rest} />
     </div>
   );
 };

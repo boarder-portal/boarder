@@ -6,6 +6,7 @@ import { isEqualTiles } from 'common/utilities/mahjong/tiles';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
+import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Discard.pcss';
 
@@ -24,17 +25,13 @@ const Discard: FC<IDiscardProps> = (props) => {
   const { tiles, tileWidth, area, rotation, isLastTileSelected, highlightedTile, onTileHover, onTileHoverExit } = props;
 
   return (
-    <div
-      style={{
-        gridArea: area,
-        placeSelf: [
-          area === 'bottom' || area === 'left' ? 'start' : 'end',
-          area === 'bottom' || area === 'right' ? 'start' : 'end',
-        ].join(' '),
-      }}
+    <Flex
+      alignItems={area === 'bottom' || area === 'left' ? 'flexStart' : 'flexEnd'}
+      justifyContent={area === 'bottom' || area === 'right' ? 'flexStart' : 'flexEnd'}
+      style={{ gridArea: area }}
     >
       <RotatedElement
-        className={styles.root}
+        className={styles.grid}
         rotation={rotation}
         style={{ gridTemplateColumns: `repeat(6, ${tileWidth}px)` }}
       >
@@ -50,7 +47,7 @@ const Discard: FC<IDiscardProps> = (props) => {
           />
         ))}
       </RotatedElement>
-    </div>
+    </Flex>
   );
 };
 
