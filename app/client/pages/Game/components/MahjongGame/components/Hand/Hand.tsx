@@ -25,6 +25,7 @@ interface IHandProps {
   players: IPlayer[];
   onChangeTileIndex?(from: number, to: number): void;
   onDiscardTile?(tileIndex: number): void;
+  onTileDragStart?(tileIndex: number): void;
   onTileHover?(tile: TTile): void;
   onTileHoverExit?(tile: TTile): void;
 }
@@ -43,6 +44,7 @@ const Hand: FC<IHandProps> = (props) => {
     isActive,
     onChangeTileIndex,
     onDiscardTile,
+    onTileDragStart,
     onTileHover,
     onTileHoverExit,
   } = props;
@@ -96,6 +98,7 @@ const Hand: FC<IHandProps> = (props) => {
           selectedTileIndex={selectedTileIndex}
           highlightedTile={highlightedTile}
           onChangeTileIndex={onChangeTileIndex}
+          onTileDragStart={onTileDragStart}
           onTileClick={onDiscardTile}
           onTileHover={onTileHover}
           onTileHoverExit={onTileHoverExit}

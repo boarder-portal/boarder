@@ -33,6 +33,7 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
       const rotationRemainder = ((rotation % 4) + 4) % 4;
       const offset = (realWidth - realHeight) / 2;
 
+      inner.style.willChange = 'transform';
       inner.style.transform = `${rotateTransform} translate(${rotationRemainder === 1 ? offset : -offset}px, ${
         rotationRemainder === 1 ? offset : -offset
       }px)`;
@@ -51,6 +52,7 @@ const RotatedElement: FC<IRealSizeElementProps> = (props) => {
     return () => {
       resizeObserver.disconnect();
 
+      inner.style.willChange = '';
       inner.style.transform = '';
       inner.style.width = '';
       inner.style.height = '';

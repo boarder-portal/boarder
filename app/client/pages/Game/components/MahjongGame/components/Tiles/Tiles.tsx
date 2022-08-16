@@ -36,6 +36,7 @@ interface ITilesProps {
   selectedTileIndex?: number;
   highlightedTile?: TTile | null;
   onChangeTileIndex?(from: number, to: number): void;
+  onTileDragStart?(tileIndex: number): void;
   onTileClick?(tileIndex: number): void;
   onTileHover?(tile: TTile): void;
   onTileHoverExit?(tile: TTile): void;
@@ -63,6 +64,7 @@ const Tiles: FC<ITilesProps> = (props) => {
     selectedTileIndex = -1,
     highlightedTile,
     onChangeTileIndex,
+    onTileDragStart,
     onTileClick,
     onTileHover,
     onTileHoverExit,
@@ -80,14 +82,20 @@ const Tiles: FC<ITilesProps> = (props) => {
   const previousTiles = usePrevious(tiles);
 
   const handleDragStart = useImmutableCallback((e: DragEvent, from: number) => {
+    if (!onTileDragStart && !onChangeTileIndex) {
+      return;
+    }
+
+    e.dataTransfer.dropEffect = 'move';
+
+    onTileDragStart?.(from);
+
     if (!onChangeTileIndex) {
       return;
     }
 
     fromRef.current = from;
     toRef.current = from;
-
-    e.dataTransfer.dropEffect = 'move';
 
     setWithTransition(true);
   });
@@ -163,7 +171,7 @@ const Tiles: FC<ITilesProps> = (props) => {
             }}
             tile={open ? tile.tile : null}
             width={tileWidth}
-            draggable={Boolean(onChangeTileIndex)}
+            draggable={Boolean(onTileDragStart || onChangeTileIndex)}
             rotation={isRotated ? -1 : 0}
             hoverable={isKnown && hoverable}
             selected={tile.index === selectedTileIndex}
@@ -188,6 +196,7 @@ const Tiles: FC<ITilesProps> = (props) => {
     localTiles,
     onChangeTileIndex,
     onTileClick,
+    onTileDragStart,
     onTileHover,
     onTileHoverExit,
     openType,

@@ -79,6 +79,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
   const [highlightedTile, setHighlightedTile] = useState<TTile | null>(null);
+  const [draggingTileIndex, setDraggingTileIndex] = useState(-1);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -88,7 +89,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const tileHeight = getTileHeight(tileWidth);
   const handInProcess = activePlayerIndex !== -1;
   const isActive = player?.index === activePlayerIndex;
-  const isLastWallTile = wallTilesLeft === 0 && handInProcess;
+  const isLastWallTile = wallTilesLeft === 0;
   const currentHandResult = handInProcess ? null : resultsByHand.at(-1) ?? null;
   const highlightSameTile = player?.settings.highlightSameTile;
 
@@ -129,11 +130,11 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
   const changeTileIndex = useImmutableCallback((from, to) => {
     batchedUpdates(() => {
-      if (!player?.data.hand?.hand) {
+      if (!player?.data.hand) {
         return;
       }
 
-      const hand = player.data.hand.hand;
+      const { hand } = player.data.hand;
       const newHand = [...hand];
 
       moveElement(newHand, from, to);
@@ -170,6 +171,32 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   });
 
   const discardTile = useImmutableCallback((tileIndex: number) => {
+    if (!player?.data.hand) {
+      return;
+    }
+
+    const { discard, hand } = player.data.hand;
+    const newDiscard = [...discard];
+    const newHand = [...hand];
+
+    newDiscard.push(...newHand.splice(tileIndex, 1));
+
+    setPlayers([
+      ...players.slice(0, player.index),
+      {
+        ...player,
+        data: {
+          ...player.data,
+          hand: {
+            ...player.data.hand,
+            discard: newDiscard,
+            hand: newHand,
+          },
+        },
+      },
+      ...players.slice(player.index + 1),
+    ]);
+
     io.emit(EGameClientEvent.DISCARD_TILE, tileIndex);
   });
 
@@ -189,6 +216,10 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   });
 
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
+
+  useGlobalListener('dragend', document, () => {
+    setDraggingTileIndex(-1);
+  });
 
   useLayoutEffect(() => {
     calculateTileSizeAndLayout();
@@ -264,6 +295,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                 highlightedTile={highlightedTile}
                 onChangeTileIndex={isPlayer && handInProcess && !p.settings.sortHand ? changeTileIndex : undefined}
                 onDiscardTile={isPlayer && handInProcess && isActive ? discardTile : undefined}
+                onTileDragStart={isPlayer && handInProcess && isActive ? setDraggingTileIndex : undefined}
                 onTileHover={highlightSameTile ? handleTileHover : undefined}
                 onTileHoverExit={highlightSameTile ? handleTileHoverExit : undefined}
               />
@@ -290,6 +322,9 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
                   p.index === activePlayerIndex && declareInfo ? player?.settings.showCurrentTile ?? true : false
                 }
                 highlightedTile={highlightedTile}
+                draggingTile={draggingTileIndex === -1 ? null : player?.data.hand?.hand.at(draggingTileIndex) ?? null}
+                draggingTileIndex={draggingTileIndex}
+                onTileDrop={p.index === player?.index && handInProcess && isActive ? discardTile : undefined}
                 onTileHover={highlightSameTile ? handleTileHover : undefined}
                 onTileHoverExit={highlightSameTile ? handleTileHoverExit : undefined}
               />
