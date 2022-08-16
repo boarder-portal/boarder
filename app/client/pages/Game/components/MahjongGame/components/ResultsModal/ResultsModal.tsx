@@ -121,7 +121,7 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
 
           {chosenResultWinner && (
             <div className={styles.winnerHeader}>
-              Победил(а) <span className={styles.winner}>{chosenResult?.winnerIndex}</span>!
+              Победил(а) <span className={styles.winner}>{chosenResultWinner.name}</span>!
             </div>
           )}
 
