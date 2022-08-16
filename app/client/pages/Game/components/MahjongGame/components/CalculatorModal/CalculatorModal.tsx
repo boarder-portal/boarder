@@ -270,7 +270,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     }
 
     return getHandMahjong({
-      ...getHandScoreOptions(mahjongWinningTile),
+      ...getHandScoreOptions(mahjongWinningTile, 0),
       winningTile: mahjongWinningTile,
     });
   });
@@ -597,7 +597,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
               return (
                 <Tile
                   key={index}
-                  className={classNames(isImpossible && styles.impossible)}
+                  className={classNames(styles.tile, { [styles.impossible]: isImpossible })}
                   tile={wait}
                   width={HAND_TILE_WIDTH}
                   hoverable={!isImpossible}

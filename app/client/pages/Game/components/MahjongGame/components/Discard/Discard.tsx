@@ -10,6 +10,7 @@ import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilitie
 
 import { usePrevious } from 'client/hooks/usePrevious';
 import { useBoolean } from 'client/hooks/useBoolean';
+import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
@@ -77,14 +78,14 @@ const Discard: FC<IDiscardProps> = (props) => {
     });
   }, [dragLeave, tiles]);
 
-  const handleDrop = useCallback(() => {
-    if (!onTileDrop) {
+  useGlobalListener('dragend', document, () => {
+    if (!isDraggedOver || !onTileDrop) {
       return;
     }
 
     dragLeave();
     onTileDrop(draggingTileIndex);
-  }, [dragLeave, draggingTileIndex, onTileDrop]);
+  });
 
   useEffect(() => {
     if (!isEqual(tiles, previousTiles)) {
@@ -98,11 +99,7 @@ const Discard: FC<IDiscardProps> = (props) => {
       justifyContent={area === 'bottom' || area === 'right' ? 'flexStart' : 'flexEnd'}
       style={{ gridArea: area }}
     >
-      <DragArea
-        onDragOver={onTileDrop && handleDragOver}
-        onDragLeave={onTileDrop && handleDragLeave}
-        onDrop={onTileDrop && handleDrop}
-      >
+      <DragArea onDragOver={onTileDrop && handleDragOver} onDragLeave={onTileDrop && handleDragLeave}>
         <RotatedElement
           className={classNames(styles.grid, {
             [styles.highlighted]: draggingTileIndex !== -1 && onTileDrop,

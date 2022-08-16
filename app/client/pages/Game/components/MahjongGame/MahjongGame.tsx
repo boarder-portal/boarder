@@ -217,7 +217,9 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useGlobalListener('dragend', document, () => {
-    setDraggingTileIndex(-1);
+    setTimeout(() => {
+      setDraggingTileIndex(-1);
+    }, 0);
   });
 
   useLayoutEffect(() => {
@@ -351,15 +353,6 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
 
       <FansModal open={fansModalOpen} onClose={closeFansModal} />
 
-      <ResultsModal
-        open={resultsModalOpen}
-        handsCount={gameOptions.handsCount}
-        players={players}
-        results={resultsByHand}
-        openedResult={openedResult}
-        onClose={handleCloseResultsModal}
-      />
-
       <CalculatorModal
         open={calculatorModalOpen}
         declaredSets={player?.data.hand?.declaredSets.map(({ set }) => set) ?? []}
@@ -373,6 +366,15 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
         player={player}
         players={players}
         onClose={closeCalculatorModal}
+      />
+
+      <ResultsModal
+        open={resultsModalOpen}
+        handsCount={gameOptions.handsCount}
+        players={players}
+        results={resultsByHand}
+        openedResult={openedResult}
+        onClose={handleCloseResultsModal}
       />
     </div>
   );
