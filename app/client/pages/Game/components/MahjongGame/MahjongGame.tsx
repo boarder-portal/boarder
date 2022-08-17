@@ -36,6 +36,7 @@ import ResultsModal from 'client/pages/Game/components/MahjongGame/components/Re
 import CalculatorModal from 'client/pages/Game/components/MahjongGame/components/CalculatorModal/CalculatorModal';
 
 import { IGameProps } from 'client/pages/Game/Game';
+import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MahjongGame.pcss';
 
@@ -91,6 +92,9 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const isLastWallTile = wallTilesLeft === 0;
   const currentHandResult = handInProcess ? null : resultsByHand.at(-1) ?? null;
   const highlightSameTile = player?.settings.highlightSameTile;
+  const requiresDecision = Boolean(declareInfo && player?.data.turn?.declareDecision === null);
+  const isAnyModalOpen = fansModalOpen || resultsModalOpen || calculatorModalOpen;
+  const isAway = document.hidden || isAnyModalOpen;
 
   const purePlayerHand = useMemo<TTile[]>(() => {
     if (!player?.data.hand) {
@@ -105,6 +109,11 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   }, [currentTile, isActive, player?.data.hand]);
 
   const wasHandInProcess = usePrevious(handInProcess);
+  const wasActive = usePrevious(isActive);
+  const requiredDecision = usePrevious(requiresDecision);
+
+  const becameNewTurn = isActive && !wasActive;
+  const becameRequiresDecision = requiresDecision && !requiredDecision;
 
   const calculateTileSizeAndLayout = useImmutableCallback(() => {
     const root = rootRef.current;
@@ -253,6 +262,12 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
       });
     }
   }, [currentHandResult, handInProcess, openResultsModal, wasHandInProcess]);
+
+  useEffect(() => {
+    if ((becameNewTurn || becameRequiresDecision) && isAway) {
+      playSound(NEW_TURN);
+    }
+  }, [becameNewTurn, becameRequiresDecision, isAway]);
 
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
