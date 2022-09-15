@@ -144,6 +144,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   useSocket(io, {
     [EGameServerEvent.CAN_CONTROL]: (canControl) => {
       canControlRef.current = canControl;
+
+      console.time('time');
     },
     [EGameServerEvent.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
@@ -189,6 +191,20 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
           explodedDirectionsRef.current.delete(explodedDirections[ELine.VERTICAL]);
         });
       }, 250);
+
+      let anyBoxLeft = false;
+
+      mapRef.current.forEach((row) => {
+        row.forEach((cell) => {
+          if (cell.objects.some((o) => o.type === EObject.BOX)) {
+            anyBoxLeft = true;
+          }
+        });
+      });
+
+      if (!anyBoxLeft) {
+        console.timeEnd('time');
+      }
     },
     [EGameServerEvent.WALL_CREATED]: ({ coords, wall, deadPlayers }) => {
       const cell = mapRef.current[coords.y][coords.x];
