@@ -171,4 +171,5 @@ export interface ICard {
   effects: TEffect[];
   price?: ICardPrice;
   minPlayersCounts: number[];
+  fromLeadersExtension?: boolean;
 }

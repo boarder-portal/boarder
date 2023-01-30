@@ -1907,6 +1907,7 @@ const CARDS_BY_AGE: ICard[][] = [
         ],
       },
       minPlayersCounts: [],
+      fromLeadersExtension: true,
     },
     {
       id: ECardId.COURTESANS_GUILD,
@@ -1939,6 +1940,7 @@ const CARDS_BY_AGE: ICard[][] = [
         ],
       },
       minPlayersCounts: [],
+      fromLeadersExtension: true,
     },
     {
       id: ECardId.DIPLOMATS_GUILD,
@@ -1974,6 +1976,7 @@ const CARDS_BY_AGE: ICard[][] = [
         ],
       },
       minPlayersCounts: [],
+      fromLeadersExtension: true,
     },
     {
       id: ECardId.ARCHITECTS_GUILD,
@@ -2009,6 +2012,7 @@ const CARDS_BY_AGE: ICard[][] = [
         ],
       },
       minPlayersCounts: [],
+      fromLeadersExtension: true,
     },
   ],
 ];

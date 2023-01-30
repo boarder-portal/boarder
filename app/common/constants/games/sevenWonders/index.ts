@@ -7,6 +7,7 @@ export { default as ALL_LEADERS } from './leaders';
 export const DEFAULT_GAME_OPTIONS: IGameOptions = {
   minPlayersCount: 3,
   maxPlayersCount: 7,
+  includeLeaders: true,
 };
 
 export const DEFAULT_CARD_ACTIONS = Object.values(ECardActionType);

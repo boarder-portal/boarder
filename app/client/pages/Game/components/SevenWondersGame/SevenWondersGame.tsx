@@ -18,7 +18,7 @@ import { IGameProps } from 'client/pages/Game/Game';
 import styles from './SevenWondersGame.pcss';
 
 const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameOptions, gameInfo } = props;
 
   const [players, setPlayers] = useState<IPlayer[]>([]);
   const [discard, setDiscard] = useState<ICard[]>([]);
@@ -86,6 +86,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
       <MainBoard
         className={styles.mainBoard}
         io={io}
+        gameOptions={gameOptions}
         player={player}
         discard={discard}
         age={age}

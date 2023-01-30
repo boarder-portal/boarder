@@ -68,17 +68,19 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
         .filter((effect) => effect.period !== EFreeCardPeriod.NOW);
     });
 
-    this.turn = this.spawnEntity(
-      new Turn(this.game, {
-        startingWaitingAction: EWaitingActionType.RECRUIT_LEADER,
-        executeActions: this.executePlayersActions,
-        getWaitingActions: this.getWaitingActions,
-      }),
-    );
+    if (this.options.includeLeaders) {
+      this.turn = this.spawnEntity(
+        new Turn(this.game, {
+          startingWaitingAction: EWaitingActionType.RECRUIT_LEADER,
+          executeActions: this.executePlayersActions,
+          getWaitingActions: this.getWaitingActions,
+        }),
+      );
 
-    this.game.sendGameInfo();
+      this.game.sendGameInfo();
 
-    this.withdrawPlayersCoins(yield* this.turn);
+      this.withdrawPlayersCoins(yield* this.turn);
+    }
 
     this.game.sendGameInfo();
 
@@ -90,7 +92,12 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
       );
     });
 
-    const ageCards = CARDS_BY_AGE[this.age];
+    let ageCards = CARDS_BY_AGE[this.age];
+
+    if (!this.options.includeLeaders) {
+      ageCards = ageCards.filter(({ fromLeadersExtension }) => !fromLeadersExtension);
+    }
+
     const addedGuildCards = shuffle(ageCards.filter(({ type }) => type === ECardType.GUILD)).slice(
       0,
       this.playersCount + 2,

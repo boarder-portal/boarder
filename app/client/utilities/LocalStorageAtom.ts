@@ -24,7 +24,7 @@ export const GAME_OPTIONS_KEYS = {
   [EGame.SET]: 'game/set/defaultOptions/v1',
   [EGame.ONITAMA]: 'game/onitama/defaultOptions/v1',
   [EGame.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
-  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v1',
+  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v2',
   [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
   [EGame.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',

@@ -60,7 +60,7 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
     city: ECity.RHODOS,
     citySide: Number(Math.random() > 0.5),
     builtStages: [],
-    coins: 6,
+    coins: this.options.includeLeaders ? 6 : 3,
     victoryPoints: [],
     defeatPoints: [],
     leadersHand: [],
@@ -71,7 +71,13 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
   leadersDeck: ICard[] = [];
 
   *lifecycle(): TGenerator {
-    const shuffledCities = shuffle(ALL_CITIES);
+    let cities = ALL_CITIES;
+
+    if (!this.options.includeLeaders) {
+      cities = cities.filter((city) => city !== ECity.ROMA);
+    }
+
+    const shuffledCities = shuffle(cities);
 
     this.leadersDeck = shuffle(ALL_LEADERS);
 
@@ -106,18 +112,20 @@ export default class SevenWondersGame extends GameEntity<EGame.SEVEN_WONDERS> {
       // }
     });
 
-    this.phase = {
-      type: EGamePhase.DRAFT_LEADERS,
-      leadersDraft: this.spawnEntity(new LeadersDraft(this)),
-    };
+    if (this.options.includeLeaders) {
+      this.phase = {
+        type: EGamePhase.DRAFT_LEADERS,
+        leadersDraft: this.spawnEntity(new LeadersDraft(this)),
+      };
 
-    this.sendGameInfo();
+      this.sendGameInfo();
 
-    const pickedLeaders = yield* this.phase.leadersDraft;
+      const pickedLeaders = yield* this.phase.leadersDraft;
 
-    this.playersData.forEach((playerData, index) => {
-      playerData.leadersHand.push(...pickedLeaders[index]);
-    });
+      this.playersData.forEach((playerData, index) => {
+        playerData.leadersHand.push(...pickedLeaders[index]);
+      });
+    }
 
     for (let age = 0; age < 3; age++) {
       this.phase = {

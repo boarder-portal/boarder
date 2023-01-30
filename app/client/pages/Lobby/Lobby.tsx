@@ -19,13 +19,15 @@ import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 import Select from 'client/components/common/Select/Select';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import PexesoCreateGameOptions from 'client/pages/games/pexeso/components/PexesoCreateGameOptions/PexesoCreateGameOptions';
 import PexesoGameOptions from 'client/pages/games/pexeso/components/PexesoGameOptions/PexesoGameOptions';
 import BombersCreateGameOptions from 'client/pages/games/bombers/components/BombersCreateGameOptions/BombersCreateGameOptions';
 import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
 import MahjongCreateGameOptions from 'client/pages/games/mahjong/components/MahjongCreateGameOptions/MahjongCreateGameOptions';
 import MahjongGameOptions from 'client/pages/games/mahjong/components/MahjongGameOptions/MahjongGameOptions';
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import SevenWondersCreateGameOptions from 'client/pages/games/sevenWonders/components/SevenWondersCreateGameOptions/SevenWondersCreateGameOptions';
+import SevenWondersGameOptions from 'client/pages/games/sevenWonders/components/SevenWondersGameOptions/SevenWondersGameOptions';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
@@ -48,6 +50,7 @@ const CREATE_GAME_OPTIONS_MAP: Partial<{
   [Game in EGame]: ComponentType<ICreateGameOptionsProps<Game>>;
 }> = {
   [EGame.PEXESO]: PexesoCreateGameOptions,
+  [EGame.SEVEN_WONDERS]: SevenWondersCreateGameOptions,
   [EGame.BOMBERS]: BombersCreateGameOptions,
   [EGame.MAHJONG]: MahjongCreateGameOptions,
 };
@@ -56,6 +59,7 @@ const GAME_OPTIONS_MAP: Partial<{
   [Game in EGame]: ComponentType<IGameOptionsProps<Game>>;
 }> = {
   [EGame.PEXESO]: PexesoGameOptions,
+  [EGame.SEVEN_WONDERS]: SevenWondersGameOptions,
   [EGame.BOMBERS]: BombersGameOptions,
   [EGame.MAHJONG]: MahjongGameOptions,
 };

@@ -21,7 +21,9 @@ export enum EScientificSymbol {
   TABLET = 'TABLET',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface IGameOptions extends ICommonGameOptions {
+  includeLeaders: boolean;
+}
 
 export enum ECity {
   RHODOS = 'RHODOS',

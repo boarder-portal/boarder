@@ -8,6 +8,7 @@ import {
   EGamePhase,
   ENeighborSide,
   IExecuteActionEvent,
+  IGameOptions,
   IPlayer,
   TAction,
   TPayments,
@@ -47,6 +48,7 @@ import styles from './MainBoard.pcss';
 interface IMainBoardProps {
   className?: string;
   io: TGameClientSocket<EGame.SEVEN_WONDERS>;
+  gameOptions: IGameOptions;
   player: IPlayer;
   discard: ICard[];
   age: number | null;
@@ -57,7 +59,7 @@ interface IMainBoardProps {
 }
 
 const MainBoard: React.FC<IMainBoardProps> = (props) => {
-  const { className, io, player, discard, age, gamePhase, agePhase, leftNeighbor, rightNeighbor } = props;
+  const { className, io, gameOptions, player, discard, age, gamePhase, agePhase, leftNeighbor, rightNeighbor } = props;
 
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
   const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
@@ -193,13 +195,14 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       <div className={styles.wonderWrapper}>
         <Wonder player={player} />
 
-        {(gamePhase === EGamePhase.DRAFT_LEADERS || agePhase === EAgePhase.BUILD_STRUCTURES) && (
-          <BackCard
-            className={styles.switchHand}
-            type={isViewingLeaders && agePhase === EAgePhase.BUILD_STRUCTURES ? age ?? 0 : 'leader'}
-            onClick={handleClickHandSwitcher}
-          />
-        )}
+        {(gamePhase === EGamePhase.DRAFT_LEADERS || agePhase === EAgePhase.BUILD_STRUCTURES) &&
+          gameOptions.includeLeaders && (
+            <BackCard
+              className={styles.switchHand}
+              type={isViewingLeaders && agePhase === EAgePhase.BUILD_STRUCTURES ? age ?? 0 : 'leader'}
+              onClick={handleClickHandSwitcher}
+            />
+          )}
       </div>
 
       <div className={styles.handWrapper}>
