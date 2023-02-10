@@ -13,7 +13,7 @@ const BombersGameOptions: FC<IGameOptionsProps<EGame.BOMBERS>> = (props) => {
   const { options } = props;
 
   return (
-    <Flex direction="column" between={3}>
+    <Flex>
       {options.mapType === null ? 'Случайная карта' : `Карта "${MAP_NAMES[options.mapType]}"`}
 
       <DotSeparator />

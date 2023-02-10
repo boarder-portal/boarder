@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
+import classNames from 'classnames';
 
-import { EAgePhase, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
+import { EAgePhase, EGameClientEvent, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
 import { ICard } from 'common/types/sevenWonders/cards';
 import { EGame } from 'common/types/game';
 
@@ -12,6 +13,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
@@ -47,6 +49,13 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
     [player, players],
   );
 
+  const pickCitySide = useCallback(
+    (citySide: number | null) => {
+      io.emit(EGameClientEvent.PICK_CITY_SIDE, citySide);
+    },
+    [io],
+  );
+
   useEffect(() => {
     console.log(gameInfo);
 
@@ -67,6 +76,29 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
 
   if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {
     return null;
+  }
+
+  if (gamePhase === EGamePhase.PICK_CITY_SIDE) {
+    return (
+      <Flex className={styles.root} justifyContent="center" direction="column">
+        <Flex justifyContent="center" between={4}>
+          {[0, 1].map((citySide) => {
+            const isPicked = citySide === player?.data.pickCitySide?.pickedSide;
+
+            return (
+              <Image
+                key={citySide}
+                className={classNames(styles.pickCitySide, {
+                  [styles.picked]: isPicked,
+                })}
+                src={`/sevenWonders/cities/${player.data.pickCitySide?.city ?? player.data.city}/${citySide}.png`}
+                onClick={() => pickCitySide(isPicked ? null : citySide)}
+              />
+            );
+          })}
+        </Flex>
+      </Flex>
+    );
   }
 
   return (

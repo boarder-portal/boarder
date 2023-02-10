@@ -11,6 +11,8 @@ import { getRandomIndex } from 'common/utilities/random';
 
 export default class SevenWondersBot extends BotEntity<EGame.SEVEN_WONDERS> {
   *lifecycle(): TGenerator {
+    this.sendSocketEvent(EGameClientEvent.PICK_CITY_SIDE, random(0, 1));
+
     while (true) {
       yield* this.waitForWaitingAction();
 

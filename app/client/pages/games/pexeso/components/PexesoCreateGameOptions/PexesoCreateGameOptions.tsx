@@ -164,7 +164,7 @@ const PexesoCreateGameOptions: React.FC<ICreateGameOptionsProps<EGame.PEXESO>> =
   );
 
   return (
-    <Flex className={styles.root} direction="column" between={3}>
+    <Flex direction="column" between={3}>
       <Select
         label="Сет"
         value={options.set}

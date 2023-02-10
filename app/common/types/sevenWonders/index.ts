@@ -11,6 +11,7 @@ import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/compon
 import { EGame } from 'common/types/game';
 
 export enum EGameClientEvent {
+  PICK_CITY_SIDE = 'PICK_CITY_SIDE',
   EXECUTE_ACTION = 'EXECUTE_ACTION',
   CANCEL_ACTION = 'CANCEL_ACTION',
 }
@@ -101,6 +102,7 @@ export interface IGamePlayerData {
 }
 
 export interface IPlayerData extends IGamePlayerData {
+  pickCitySide: IPickCitySidePlayerData | null;
   leadersDraft: ILeadersDraftPlayerData | null;
   age: IAgePlayerData | null;
   turn: ITurnPlayerData | null;
@@ -108,6 +110,10 @@ export interface IPlayerData extends IGamePlayerData {
 
 export interface IPlayer extends IGamePlayer<EGame.SEVEN_WONDERS> {
   data: IPlayerData;
+}
+
+export interface IPickCitySidePhase {
+  type: EGamePhase.PICK_CITY_SIDE;
 }
 
 export interface ILeadersDraftPhase {
@@ -118,12 +124,17 @@ export interface IAgePhase extends IAge {
   type: EGamePhase.AGE;
 }
 
-export type TGamePhase = ILeadersDraftPhase | IAgePhase;
+export type TGamePhase = IPickCitySidePhase | ILeadersDraftPhase | IAgePhase;
 
 export interface IGame {
   players: IPlayer[];
   discard: ICard[];
   phase: TGamePhase | null;
+}
+
+export interface IPickCitySidePlayerData {
+  city: ECity;
+  pickedSide: number | null;
 }
 
 export interface ILeadersDraftPlayerData {
@@ -231,6 +242,7 @@ export interface IPrice {
 export type TResourceOwner = ENeighborSide | 'own' | 'bank';
 
 export enum EGamePhase {
+  PICK_CITY_SIDE = 'PICK_CITY_SIDE',
   DRAFT_LEADERS = 'DRAFT_LEADERS',
   AGE = 'AGE',
 }
@@ -241,6 +253,7 @@ export enum EAgePhase {
 }
 
 export interface IClientEventMap extends ICommonClientEventMap<EGame.SEVEN_WONDERS> {
+  [EGameClientEvent.PICK_CITY_SIDE]: number | null;
   [EGameClientEvent.EXECUTE_ACTION]: IExecuteActionEvent;
   [EGameClientEvent.CANCEL_ACTION]: undefined;
 }
