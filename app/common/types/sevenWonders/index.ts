@@ -41,6 +41,7 @@ export enum ECity {
 export interface IWonder {
   price: IPrice;
   effects: TEffect[];
+  position?: number;
 }
 
 export interface ICitySide {

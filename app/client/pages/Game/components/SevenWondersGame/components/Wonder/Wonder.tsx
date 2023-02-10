@@ -1,4 +1,7 @@
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
+
+import CITIES from 'common/constants/games/sevenWonders/cities';
 
 import { EWaitingActionType, IPlayer } from 'common/types/sevenWonders';
 import { EFreeCardSource } from 'common/types/sevenWonders/effects';
@@ -68,7 +71,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
   );
 
   return (
-    <div className={className}>
+    <div className={classNames(styles.root, className, { [styles.isOtherPlayer]: isOtherPlayer })}>
       <Flex className={styles.cardGroups} justifyContent="spaceBetween">
         {cardGroups.map((group, index) => {
           const cardVerticalSpace = Math.min(GROUP_HEIGHT / group.length, CARD_DEFAULT_GROUP_VERTICAL_SPACE);
@@ -100,14 +103,19 @@ const Wonder: React.FC<IWonderProps> = (props) => {
           src={`/sevenWonders/cities/${player.data.city}/${player.data.citySide}.png`}
         />
 
-        {player.data.builtStages.map((builtStage, index) => (
-          <BackCard
-            key={index}
-            className={styles.builtStage}
-            type={builtStage.cardType}
-            style={{ left: `${9 + 30 * index}%` }}
-          />
-        ))}
+        {player.data.builtStages.map(({ index, cardType }) => {
+          const position =
+            CITIES[player.data.city].sides[player.data.citySide].wonders[index].position ?? 0.088 + 0.3 * index;
+
+          return (
+            <BackCard
+              key={index}
+              className={styles.builtStage}
+              type={cardType}
+              style={{ left: `${position * 100}%` }}
+            />
+          );
+        })}
       </div>
 
       <Flex className={styles.info} between={2}>

@@ -115,6 +115,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.385,
           },
           {
             price: {
@@ -138,6 +139,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.682,
           },
         ],
       },
@@ -1066,6 +1068,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0,
           },
           {
             price: {
@@ -1084,6 +1087,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.257,
           },
           {
             price: {
@@ -1102,6 +1106,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.527,
           },
           {
             price: {
@@ -1124,6 +1129,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.78,
           },
         ],
       },
@@ -1168,6 +1174,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.207,
           },
           {
             price: {
@@ -1194,6 +1201,7 @@ const CITIES: Record<ECity, ICity> = {
                 },
               },
             ],
+            position: 0.568,
           },
         ],
       },

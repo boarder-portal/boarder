@@ -24,8 +24,17 @@
 .builtStage {
   position: absolute;
   bottom: -10px;
+  width: 110px;
 }
 
 .info {
   margin-top: 16px;
+}
+
+.root {
+  &.isOtherPlayer {
+    .builtStage {
+      width: 88px;
+    }
+  }
 }
