@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import classNames from 'classnames';
 
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
@@ -71,7 +70,7 @@ const Wonder: React.FC<IWonderProps> = (props) => {
   );
 
   return (
-    <div className={classNames(styles.root, className, { [styles.isOtherPlayer]: isOtherPlayer })}>
+    <div className={className}>
       <Flex className={styles.cardGroups} justifyContent="spaceBetween">
         {cardGroups.map((group, index) => {
           const cardVerticalSpace = Math.min(GROUP_HEIGHT / group.length, CARD_DEFAULT_GROUP_VERTICAL_SPACE);
