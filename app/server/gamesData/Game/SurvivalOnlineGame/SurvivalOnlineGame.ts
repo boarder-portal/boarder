@@ -6,6 +6,7 @@ import {
   Cell,
   Direction,
   Game,
+  GameResult,
   GameServerEventType,
   Player as PlayerModel,
 } from 'common/types/games/survivalOnline';
@@ -68,7 +69,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
   base: Base | null = null;
   zombies = new Set<Zombie>();
 
-  *lifecycle(): EntityGenerator {
+  *lifecycle(): EntityGenerator<GameResult> {
     this.generateWorld();
 
     yield* this.all([

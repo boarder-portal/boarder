@@ -5,7 +5,16 @@ import times from 'lodash/times';
 import { ALL_CARDS } from 'common/constants/games/machiKoro';
 
 import { GameType } from 'common/types/game';
-import { Card, CardId, Game, GameServerEventType, LandmarkId, Player, PlayerData } from 'common/types/games/machiKoro';
+import {
+  Card,
+  CardId,
+  Game,
+  GameResult,
+  GameServerEventType,
+  LandmarkId,
+  Player,
+  PlayerData,
+} from 'common/types/games/machiKoro';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
@@ -23,7 +32,7 @@ export default class MachiKoroGame extends TurnGameEntity<GameType.MACHI_KORO> {
 
   turn: Turn | null = null;
 
-  *lifecycle(): EntityGenerator<number> {
+  *lifecycle(): EntityGenerator<GameResult> {
     this.fillBoard();
 
     yield* this.delay(500);

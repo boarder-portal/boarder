@@ -16,6 +16,7 @@ import {
   Game,
   GameCard,
   GameObject,
+  GameResult,
   MeepleType,
   Objects,
   PlacedMeeple,
@@ -90,7 +91,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
 
   turn: Turn | null = null;
 
-  *lifecycle(): EntityGenerator {
+  *lifecycle(): EntityGenerator<GameResult> {
     this.spawnTask(this.pingIndefinitely(15 * 1000));
 
     this.attachCard({

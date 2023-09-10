@@ -1,7 +1,7 @@
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 
 import { GameType } from 'common/types/game';
-import { Game, GamePlayerData, HandResult, HandsCount, Player, WindSide } from 'common/types/games/mahjong';
+import { Game, GamePlayerData, GameResult, HandResult, HandsCount, Player, WindSide } from 'common/types/games/mahjong';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
@@ -21,7 +21,7 @@ export default class MahjongGame extends GameEntity<GameType.MAHJONG> {
 
   round: Round | null = null;
 
-  *lifecycle(): EntityGenerator {
+  *lifecycle(): EntityGenerator<GameResult> {
     const roundsCount = this.options.handsCount === HandsCount.ONE ? 1 : 4;
     const handsInRoundCount = this.options.handsCount === HandsCount.SIXTEEN ? 4 : 1;
 

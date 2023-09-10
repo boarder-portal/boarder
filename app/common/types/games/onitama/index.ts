@@ -61,6 +61,10 @@ export interface Game {
   activePlayerIndex: number;
 }
 
+export type GameResult = number;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface MovePieceEvent {
   from: Coords;
   to: Coords;
@@ -73,17 +77,15 @@ export interface ClientEventMap extends CommonClientEventMap<GameType.ONITAMA> {
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.ONITAMA> {}
 
-type OnitamaGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.ONITAMA]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: OnitamaGameOptions;
+      options: GameOptions;
       info: Game;
-      result: number;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

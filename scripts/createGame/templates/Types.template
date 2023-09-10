@@ -23,21 +23,23 @@ export interface Game {
   players: Player[];
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.{{constCased}}> {}
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.{{constCased}}> {}
 
-type {{pascalCased}}GameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.{{constCased}}]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: {{pascalCased}}GameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

@@ -7,6 +7,7 @@ import {
   CardType,
   Game,
   GameClientEventType,
+  GameResult,
   Player,
   PlayerColor,
   PlayerData,
@@ -32,7 +33,7 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
   ];
   fifthCard = CardType.TIGER;
 
-  *lifecycle(): EntityGenerator<number> {
+  *lifecycle(): EntityGenerator<GameResult> {
     let index = 0;
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];

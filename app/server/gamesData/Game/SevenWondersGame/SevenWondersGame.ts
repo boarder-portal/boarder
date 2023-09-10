@@ -9,6 +9,7 @@ import {
   Game,
   GamePhaseType,
   GamePlayerData,
+  GameResult,
   NeighborSide,
   Player,
   PlayerDirection,
@@ -74,7 +75,7 @@ export default class SevenWondersGame extends GameEntity<GameType.SEVEN_WONDERS>
   discard: Card[] = [];
   leadersDeck: Card[] = [];
 
-  *lifecycle(): EntityGenerator {
+  *lifecycle(): EntityGenerator<GameResult> {
     if (this.options.includeLeaders) {
       this.leadersDeck = shuffle(ALL_LEADERS);
     }

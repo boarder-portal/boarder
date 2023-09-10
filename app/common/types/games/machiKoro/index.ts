@@ -143,6 +143,10 @@ export interface Game {
   turn: Turn | null;
 }
 
+export type GameResult = number;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.MACHI_KORO> {
   [GameClientEventType.DICES_COUNT]: number;
   [GameClientEventType.NEED_TO_REROLL]: boolean;
@@ -182,17 +186,15 @@ export interface ServerEventMap extends CommonServerEventMap<GameType.MACHI_KORO
   [GameServerEventType.HARBOR_EFFECT]: boolean;
 }
 
-type MachiKoroGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.MACHI_KORO]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: MachiKoroGameOptions;
+      options: GameOptions;
       info: Game;
-      result: number;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

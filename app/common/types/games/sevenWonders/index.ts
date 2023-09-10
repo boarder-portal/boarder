@@ -253,6 +253,10 @@ export enum AgePhaseType {
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.SEVEN_WONDERS> {
   [GameClientEventType.PICK_CITY_SIDE]: number | null;
   [GameClientEventType.EXECUTE_ACTION]: ExecuteActionEvent;
@@ -261,17 +265,15 @@ export interface ClientEventMap extends CommonClientEventMap<GameType.SEVEN_WOND
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.SEVEN_WONDERS> {}
 
-type SevenWondersGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.SEVEN_WONDERS]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: SevenWondersGameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

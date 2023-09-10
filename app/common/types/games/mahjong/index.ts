@@ -32,16 +32,6 @@ export interface Player extends GamePlayer<GameType.MAHJONG> {
   data: PlayerData;
 }
 
-export interface PlayerSettings extends BasePlayerSettings {
-  autoPass: boolean;
-  autoReplaceFlowers: boolean;
-  sortHand: boolean;
-  showLosingHand: boolean;
-  showCurrentTile: boolean;
-  showTileHints: boolean;
-  highlightSameTile: boolean;
-}
-
 export interface Game {
   players: Player[];
   resultsByHand: HandResult[];
@@ -380,6 +370,18 @@ export interface HandMahjong {
   score: number;
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {
+  autoPass: boolean;
+  autoReplaceFlowers: boolean;
+  sortHand: boolean;
+  showLosingHand: boolean;
+  showCurrentTile: boolean;
+  showTileHints: boolean;
+  highlightSameTile: boolean;
+}
+
 export interface ChangeTileIndexEvent {
   from: number;
   to: number;
@@ -394,18 +396,15 @@ export interface ClientEventMap extends CommonClientEventMap<GameType.MAHJONG> {
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.MAHJONG> {}
 
-type MahjongGameOptions = GameOptions;
-type MahjongPlayerSettings = PlayerSettings;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.MAHJONG]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: MahjongGameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: MahjongPlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

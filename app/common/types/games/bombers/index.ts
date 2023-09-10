@@ -75,10 +75,6 @@ export interface Player extends GamePlayer<GameType.BOMBERS> {
   data: PlayerData;
 }
 
-export interface GameResult {
-  winner: number | null;
-}
-
 export enum ObjectType {
   BOX = 'BOX',
   WALL = 'WALL',
@@ -166,6 +162,12 @@ export interface Game {
   startsAt: Timestamp;
   canControl: boolean;
 }
+
+export interface GameResult {
+  winner: number | null;
+}
+
+export interface PlayerSettings extends BasePlayerSettings {}
 
 export interface SyncCoordsEvent {
   playerIndex: number;
@@ -259,18 +261,15 @@ export interface ServerEventMap extends CommonServerEventMap<GameType.BOMBERS> {
   [GameServerEventType.WALLS_DESTROYED]: DestroyedWall[];
 }
 
-type BombersGameOptions = GameOptions;
-type BombersGameResult = GameResult;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.BOMBERS]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: BombersGameOptions;
+      options: GameOptions;
       info: Game;
-      result: BombersGameResult;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

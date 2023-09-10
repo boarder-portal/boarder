@@ -86,6 +86,10 @@ export interface Game {
   players: Player[];
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface UpdateGameEvent {
   players: Player[] | null;
   cells: Cell[];
@@ -99,17 +103,15 @@ export interface ServerEventMap extends CommonServerEventMap<GameType.SURVIVAL_O
   [GameServerEventType.UPDATE_GAME]: UpdateGameEvent;
 }
 
-type SurvivalOnlineGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.SURVIVAL_ONLINE]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: SurvivalOnlineGameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

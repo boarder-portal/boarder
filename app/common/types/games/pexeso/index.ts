@@ -97,6 +97,10 @@ export interface ShuffleCardsIndexes {
   permutation: number[];
 }
 
+export type GameResult = number[];
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface UpdatePlayersEvent {
   players: Player[];
   activePlayerIndex: number;
@@ -123,17 +127,15 @@ export interface ServerEventMap extends CommonServerEventMap<GameType.PEXESO> {
   [GameServerEventType.REMOVE_CARDS]: RemoveCardsEvent;
 }
 
-type PexesoGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.PEXESO]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: PexesoGameOptions;
+      options: GameOptions;
       info: Game;
-      result: number[];
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

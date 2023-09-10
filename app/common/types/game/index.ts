@@ -1,4 +1,5 @@
 import { GamePlayer } from 'common/types';
+import { GamesParams } from 'common/types/game/params';
 
 export enum GameType {
   PEXESO = 'pexeso',
@@ -12,8 +13,6 @@ export enum GameType {
   MACHI_KORO = 'machiKoro',
   MAHJONG = 'mahjong',
 }
-
-export interface GamesParams {}
 
 export interface GameState {
   type: 'paused' | 'active';

@@ -173,6 +173,10 @@ export interface Game {
   turn: Turn | null;
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface Turn {
   endsAt: Timestamp;
 }
@@ -190,17 +194,15 @@ export interface ClientEventMap extends CommonClientEventMap<GameType.CARCASSONN
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.CARCASSONNE> {}
 
-type CarcassonneGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.CARCASSONNE]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: CarcassonneGameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

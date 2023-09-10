@@ -19,6 +19,7 @@ import {
   CardShape,
   Game,
   GameClientEventType,
+  GameResult,
   Player,
   PlayerData,
   SendSetEvent,
@@ -39,7 +40,7 @@ export default class SetGame extends GameEntity<GameType.SET> {
   cardsStack: Card[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
-  *lifecycle(): EntityGenerator<number[]> {
+  *lifecycle(): EntityGenerator<GameResult> {
     const notShuffledCardsStack: Card[] = [];
 
     Object.values(CardColor).forEach((color) => {

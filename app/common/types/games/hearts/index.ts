@@ -66,23 +66,25 @@ export enum PassDirection {
   NONE = 'NONE',
 }
 
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.HEARTS> {
   [GameClientEventType.CHOOSE_CARD]: number;
 }
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.HEARTS> {}
 
-type HeartsGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.HEARTS]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: HeartsGameOptions;
+      options: GameOptions;
       info: Game;
-      result: void;
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

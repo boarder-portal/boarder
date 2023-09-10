@@ -9,6 +9,7 @@ import { GameType } from 'common/types/game';
 import {
   Card,
   Game,
+  GameResult,
   GameServerEventType,
   Player,
   PlayerData,
@@ -34,7 +35,7 @@ export default class PexesoGame extends TurnGameEntity<GameType.PEXESO> {
 
   turn: Turn | null = null;
 
-  *lifecycle(): EntityGenerator<number[]> {
+  *lifecycle(): EntityGenerator<GameResult> {
     const { imagesCount: setImagesCount, imageVariantsCount } = SETS[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (this.options.pickRandomImages ? shuffle(allIds) : allIds).slice(0, this.options.differentCardsCount);

@@ -53,6 +53,10 @@ export interface Game {
   cards: Card[];
 }
 
+export type GameResult = number[];
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
 export interface SendSetEvent {
   cardsIds: number[];
 }
@@ -64,17 +68,15 @@ export interface ClientEventMap extends CommonClientEventMap<GameType.SET> {
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.SET> {}
 
-type SetGameOptions = GameOptions;
-
-declare module 'common/types/game' {
+declare module 'common/types/game/params' {
   interface GamesParams {
     [GameType.SET]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
-      options: SetGameOptions;
+      options: GameOptions;
       info: Game;
-      result: number[];
-      playerSettings: BasePlayerSettings;
+      result: GameResult;
+      playerSettings: PlayerSettings;
     };
   }
 }

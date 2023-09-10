@@ -1,5 +1,5 @@
 import { GameType } from 'common/types/game';
-import { Game, Player, PlayerData } from '{{typesFilename}}';
+import { Game, GameResult, Player, PlayerData } from '{{typesFilename}}';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
@@ -7,7 +7,7 @@ import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 export default class {{pascalCased}}Game extends GameEntity<GameType.{{constCased}}> {
   playersData: PlayerData[] = this.getPlayersData(() => ({}));
 
-  *lifecycle(): EntityGenerator {}
+  *lifecycle(): EntityGenerator<GameResult> {}
 
   getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
