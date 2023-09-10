@@ -13,7 +13,7 @@ import {
   Tile,
   TileType,
   WindSide,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { dragon, suited, wind } from 'common/utilities/mahjong/tilesBase';
 import { getPermutations } from 'common/utilities/permutations';

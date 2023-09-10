@@ -9,7 +9,7 @@ import {
   WIND_TO_STRING_MAP,
 } from 'common/constants/games/mahjong';
 
-import { Fan, HandMahjong, Set, SetConcealedType, SetType, Tile, TileType, WindSide } from 'common/types/mahjong';
+import { Fan, HandMahjong, Set, SetConcealedType, SetType, Tile, TileType, WindSide } from 'common/types/games/mahjong';
 
 import { isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import { getSetTile } from 'common/utilities/mahjong/sets';

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { Action, CardActionType, Payments, Player } from 'common/types/sevenWonders';
+import { Action, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
 
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 

@@ -2,8 +2,8 @@ import { FC, memo } from 'react';
 
 import { MAP_NAMES } from 'common/constants/games/bombers';
 
-import { MapType } from 'common/types/bombers';
 import { GameType } from 'common/types/game';
+import { MapType } from 'common/types/games/bombers';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 

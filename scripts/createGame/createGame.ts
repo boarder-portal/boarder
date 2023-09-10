@@ -49,7 +49,7 @@ export interface GenerateOptions {
     pascalCased,
     startCased,
 
-    typesFilename: path.resolve(`./app/common/types/${camelCased}/index.ts`),
+    typesFilename: path.resolve(`./app/common/types/games/${camelCased}/index.ts`),
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
     lobbyFilename: path.resolve(`./app/client/pages/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`),
     gameComponentFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.tsx`),

@@ -2,7 +2,7 @@ import chunk from 'lodash/chunk';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GameType } from 'common/types/game';
-import { Card as CardModel, GameClientEventType, Player, SendSetEvent } from 'common/types/set';
+import { Card as CardModel, GameClientEventType, Player, SendSetEvent } from 'common/types/games/set';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 

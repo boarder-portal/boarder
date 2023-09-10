@@ -22,7 +22,7 @@ import {
   Player,
   PlayerData,
   SendSetEvent,
-} from 'common/types/set';
+} from 'common/types/games/set';
 
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';

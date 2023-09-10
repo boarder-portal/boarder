@@ -12,7 +12,7 @@ import {
   Player,
   Tile as TileModel,
   WindSide,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';

@@ -1,5 +1,5 @@
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { NeighborSide, Player } from 'common/types/sevenWonders';
+import { NeighborSide, Player } from 'common/types/games/sevenWonders';
 
 import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
 import getBankResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getBankResources';

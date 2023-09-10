@@ -7,6 +7,7 @@ import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/Carcas
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
   AttachCardEvent,
   Board,
@@ -16,8 +17,7 @@ import {
   Objects,
   PlacedMeeple,
   Player,
-} from 'common/types/carcassonne';
-import { GameType } from 'common/types/game';
+} from 'common/types/games/carcassonne';
 
 import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
 import Timestamp from 'common/utilities/Timestamp';

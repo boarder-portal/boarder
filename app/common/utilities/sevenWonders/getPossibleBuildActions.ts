@@ -1,6 +1,6 @@
 import { DEFAULT_CARD_ACTIONS } from 'common/constants/games/sevenWonders';
 
-import { CardActionType, Player } from 'common/types/sevenWonders';
+import { CardActionType, Player } from 'common/types/games/sevenWonders';
 
 import { getPlayerWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 

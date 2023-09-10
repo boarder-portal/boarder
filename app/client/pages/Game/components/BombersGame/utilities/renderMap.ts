@@ -3,7 +3,7 @@ import { TIME_TO_START } from 'common/constants/games/bombers';
 
 import { BombersImages } from 'client/pages/Game/components/BombersGame/types';
 import { Timestamp } from 'common/types';
-import { ExplodedDirection, Map, Player, PlayerData } from 'common/types/bombers';
+import { ExplodedDirection, Map, Player, PlayerData } from 'common/types/games/bombers';
 
 import renderCell from 'client/pages/Game/components/BombersGame/utilities/renderCell';
 import renderExplodedDirection from 'client/pages/Game/components/BombersGame/utilities/renderExplodedDirection';

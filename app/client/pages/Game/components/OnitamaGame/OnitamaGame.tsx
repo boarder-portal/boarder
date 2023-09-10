@@ -5,7 +5,7 @@ import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
-import { Board, CardType, GameClientEventType, MovePieceEvent, Player, PlayerColor } from 'common/types/onitama';
+import { Board, CardType, GameClientEventType, MovePieceEvent, Player, PlayerColor } from 'common/types/games/onitama';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 

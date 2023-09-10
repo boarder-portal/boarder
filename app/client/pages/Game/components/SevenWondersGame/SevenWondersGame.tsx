@@ -3,8 +3,14 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
-import { AgePhaseType, GameClientEventType, GamePhaseType, NeighborSide, Player } from 'common/types/sevenWonders';
-import { Card } from 'common/types/sevenWonders/cards';
+import {
+  AgePhaseType,
+  GameClientEventType,
+  GamePhaseType,
+  NeighborSide,
+  Player,
+} from 'common/types/games/sevenWonders';
+import { Card } from 'common/types/games/sevenWonders/cards';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 

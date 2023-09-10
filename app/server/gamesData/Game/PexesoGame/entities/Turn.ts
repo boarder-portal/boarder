@@ -1,5 +1,5 @@
 import { GameType } from 'common/types/game';
-import { GameClientEventType, GameServerEventType, Turn as TurnModel } from 'common/types/pexeso';
+import { GameClientEventType, GameServerEventType, Turn as TurnModel } from 'common/types/games/pexeso';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

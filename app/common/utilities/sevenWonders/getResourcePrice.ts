@@ -1,5 +1,5 @@
-import { ResourceType } from 'common/types/sevenWonders';
-import { CardType } from 'common/types/sevenWonders/cards';
+import { ResourceType } from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
 
 export default function getResourceType(resource: ResourceType): CardType.RAW_MATERIAL | CardType.MANUFACTURED_GOODS {
   switch (resource) {

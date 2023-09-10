@@ -1,4 +1,4 @@
-import { Card, CardColor, CardId, CardType, GameOptions, LandmarkCard, LandmarkId } from 'common/types/machiKoro';
+import { Card, CardColor, CardId, CardType, GameOptions, LandmarkCard, LandmarkId } from 'common/types/games/machiKoro';
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 1,

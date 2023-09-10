@@ -1,6 +1,6 @@
-import { Card } from 'common/types/cards';
 import { GameType } from 'common/types/game';
-import { GameClientEventType, Turn as TurnModel, TurnPlayerData } from 'common/types/hearts';
+import { Card } from 'common/types/game/cards';
+import { GameClientEventType, Turn as TurnModel, TurnPlayerData } from 'common/types/games/hearts';
 
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';

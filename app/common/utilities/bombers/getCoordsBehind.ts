@@ -1,5 +1,5 @@
 import { Coords } from 'common/types';
-import { Direction } from 'common/types/bombers';
+import { Direction } from 'common/types/games/bombers';
 
 export default function getCoordsBehind(coords: Coords, direction: Direction): Coords {
   if (direction === Direction.UP) {

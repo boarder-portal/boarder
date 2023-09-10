@@ -2,8 +2,15 @@ import mapValues from 'lodash/mapValues';
 
 import { SUPER_BOMB_DAMAGE, SUPER_BOMB_MAX_PIERCED_OBJECTS_COUNT } from 'common/constants/games/bombers';
 
-import { Bomb as BombModel, Direction, ExplodedDirections, HitPlayer, Line, ObjectType } from 'common/types/bombers';
 import { GameType } from 'common/types/game';
+import {
+  Bomb as BombModel,
+  Direction,
+  ExplodedDirections,
+  HitPlayer,
+  Line,
+  ObjectType,
+} from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
 import getDirectionLine from 'common/utilities/bombers/getDirectionLine';

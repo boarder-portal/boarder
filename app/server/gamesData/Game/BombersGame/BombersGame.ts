@@ -13,6 +13,7 @@ import {
 } from 'common/constants/games/bombers';
 
 import { Coords } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
   BonusType,
   DestroyedWall,
@@ -27,8 +28,7 @@ import {
   ObjectType,
   PlayerColor,
   Player as PlayerModel,
-} from 'common/types/bombers';
-import { GameType } from 'common/types/game';
+} from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';

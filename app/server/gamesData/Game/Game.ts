@@ -4,7 +4,7 @@ import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 import uuid from 'uuid/v4';
 
-import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/games/common';
+import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/game';
 
 import { CommonGameClientEvent, CommonGameServerEvent, GamePlayer, PlayerStatus } from 'common/types';
 import {

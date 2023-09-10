@@ -6,7 +6,7 @@ import { FC, memo } from 'react';
 import { MIN_SCORE } from 'common/constants/games/mahjong';
 import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
-import { FanKind, HandMahjong, SetConcealedType } from 'common/types/mahjong';
+import { FanKind, HandMahjong, SetConcealedType } from 'common/types/games/mahjong';
 
 import isDefined from 'common/utilities/isDefined';
 import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';

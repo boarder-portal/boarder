@@ -1,5 +1,5 @@
-import { Player, Resource } from 'common/types/sevenWonders';
-import { CardType } from 'common/types/sevenWonders/cards';
+import { Player, Resource } from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
 
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';

@@ -1,7 +1,7 @@
 import { ALL_DRAGONS, ALL_SUITS, ALL_WINDS } from 'common/constants/games/mahjong';
 import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 
-import { HandPlayerData, PlayableTile, Suit, SuitedTile, Tile, TileType } from 'common/types/mahjong';
+import { HandPlayerData, PlayableTile, Suit, SuitedTile, Tile, TileType } from 'common/types/games/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
 import { isDragon, isFlower, isSuited, isWind } from 'common/utilities/mahjong/tilesBase';

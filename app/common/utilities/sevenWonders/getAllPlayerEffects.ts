@@ -1,5 +1,5 @@
-import { GamePlayerData } from 'common/types/sevenWonders';
-import { Effect } from 'common/types/sevenWonders/effects';
+import { GamePlayerData } from 'common/types/games/sevenWonders';
+import { Effect } from 'common/types/games/sevenWonders/effects';
 
 import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
 

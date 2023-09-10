@@ -1,5 +1,5 @@
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Price } from 'common/types/sevenWonders';
+import { Price } from 'common/types/games/sevenWonders';
 
 import getPurchaseVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getPurchaseVariants';
 import getTradeVariantsByPurchaseVariants, {

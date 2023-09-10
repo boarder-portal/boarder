@@ -2,7 +2,15 @@ import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
 import { GameType } from 'common/types/game';
-import { Board, CardType, Game, GameClientEventType, Player, PlayerColor, PlayerData } from 'common/types/onitama';
+import {
+  Board,
+  CardType,
+  Game,
+  GameClientEventType,
+  Player,
+  PlayerColor,
+  PlayerData,
+} from 'common/types/games/onitama';
 
 import { equalsCoords } from 'common/utilities/coords';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';

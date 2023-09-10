@@ -1,5 +1,11 @@
 import { GameType } from 'common/types/game';
-import { Direction, GameClientEventType, ObjectType, PlayerData, PlayerObject } from 'common/types/survivalOnline';
+import {
+  Direction,
+  GameClientEventType,
+  ObjectType,
+  PlayerData,
+  PlayerObject,
+} from 'common/types/games/survivalOnline';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { PlayerOptions as CommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';

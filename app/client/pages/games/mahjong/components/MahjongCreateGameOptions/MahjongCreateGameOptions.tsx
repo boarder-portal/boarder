@@ -3,7 +3,7 @@ import { FC, memo } from 'react';
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
 import { GameType } from 'common/types/game';
-import { HandsCount } from 'common/types/mahjong';
+import { HandsCount } from 'common/types/games/mahjong';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 

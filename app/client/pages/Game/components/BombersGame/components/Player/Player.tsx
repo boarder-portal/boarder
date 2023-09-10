@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { FC, memo } from 'react';
 
-import { Player as PlayerModel } from 'common/types/bombers';
+import { Player as PlayerModel } from 'common/types/games/bombers';
 
 import Flex from 'client/components/common/Flex/Flex';
 

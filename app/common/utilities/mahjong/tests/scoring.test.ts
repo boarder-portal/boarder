@@ -1,4 +1,4 @@
-import { FlowerTile, SetConcealedType, WindSide } from 'common/types/mahjong';
+import { FlowerTile, SetConcealedType, WindSide } from 'common/types/games/mahjong';
 
 import {
   parseChow,

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { GAME_NAMES } from 'common/constants/games/common';
+import { GAME_NAMES } from 'common/constants/game';
 
 import { GameType } from 'common/types/game';
 

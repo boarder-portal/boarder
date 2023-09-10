@@ -13,7 +13,7 @@ import {
   ScientificSymbolsEffect,
   ShieldsEffect,
   TradeEffect,
-} from 'common/types/sevenWonders/effects';
+} from 'common/types/games/sevenWonders/effects';
 
 export function isResourceEffect(effect: Effect): effect is ResourcesEffect {
   return effect.type === EffectType.RESOURCES;

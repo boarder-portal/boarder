@@ -1,7 +1,7 @@
 import groupBy from 'lodash/groupBy';
 
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Price } from 'common/types/sevenWonders';
+import { Price } from 'common/types/games/sevenWonders';
 
 import { getSetsCombinations } from 'common/utilities/combinations';
 import getUniqCombinationsByN from 'common/utilities/getUniqCombinationsByN';

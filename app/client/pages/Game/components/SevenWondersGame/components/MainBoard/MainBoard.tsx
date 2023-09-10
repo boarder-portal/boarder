@@ -15,8 +15,8 @@ import {
   NeighborSide,
   Payments,
   Player,
-} from 'common/types/sevenWonders';
-import { Card } from 'common/types/sevenWonders/cards';
+} from 'common/types/games/sevenWonders';
+import { Card } from 'common/types/games/sevenWonders/cards';
 import { GameClientSocket } from 'common/types/socket';
 
 import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';

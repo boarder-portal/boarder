@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import { MeepleType, PlayerColor } from 'common/types/carcassonne';
+import { MeepleType, PlayerColor } from 'common/types/games/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 

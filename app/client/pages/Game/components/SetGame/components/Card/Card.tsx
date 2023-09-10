@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import times from 'lodash/times';
 import React, { useCallback } from 'react';
 
-import { Card as CardModel } from 'common/types/set';
+import { Card as CardModel } from 'common/types/games/set';
 
 import Flex from 'client/components/common/Flex/Flex';
 import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';

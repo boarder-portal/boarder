@@ -16,7 +16,7 @@ import {
   SetType,
   Tile,
   TileType,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { isPlayable } from 'common/utilities/mahjong/tiles';
 import { chow, dragon, flower, isSuited, kong, pung, suited, wind } from 'common/utilities/mahjong/tilesBase';

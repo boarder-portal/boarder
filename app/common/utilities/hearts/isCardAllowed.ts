@@ -1,4 +1,4 @@
-import { Card, Suit } from 'common/types/cards';
+import { Card, Suit } from 'common/types/game/cards';
 
 import { isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
 

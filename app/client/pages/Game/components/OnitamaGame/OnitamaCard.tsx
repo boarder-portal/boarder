@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import { CardType } from 'common/types/onitama';
+import { CardType } from 'common/types/games/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
 

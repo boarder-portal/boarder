@@ -2,7 +2,7 @@ import { FC, memo, useMemo } from 'react';
 
 import { ALL_LANDMARK_CARDS } from 'common/constants/games/machiKoro';
 
-import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/machiKoro';
+import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/games/machiKoro';
 
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import getCard from 'common/utilities/machiKoro/getCard';

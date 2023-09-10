@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy';
 import uniqBy from 'lodash/uniqBy';
 
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { NeighborSide, Payments } from 'common/types/sevenWonders';
+import { NeighborSide, Payments } from 'common/types/games/sevenWonders';
 
 import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getResourceType from 'common/utilities/sevenWonders/getResourcePrice';

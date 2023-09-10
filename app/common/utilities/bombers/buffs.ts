@@ -1,4 +1,4 @@
-import { Buff, BuffType } from 'common/types/bombers';
+import { Buff, BuffType } from 'common/types/games/bombers';
 
 export function isSuperSpeed(buff: Buff): boolean {
   return buff.type === BuffType.SUPER_SPEED;

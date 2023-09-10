@@ -9,7 +9,7 @@ import {
   Tile,
   Turn as TurnModel,
   TurnPlayerData,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { getPossibleMeldedSets, isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
 import { isEqualTilesCallback, isPlayable } from 'common/utilities/mahjong/tiles';

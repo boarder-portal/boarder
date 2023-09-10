@@ -1,5 +1,5 @@
-import { Player, WaitingAction, WaitingActionType } from 'common/types/sevenWonders';
-import { BuildCardEffect } from 'common/types/sevenWonders/effects';
+import { Player, WaitingAction, WaitingActionType } from 'common/types/games/sevenWonders';
+import { BuildCardEffect } from 'common/types/games/sevenWonders/effects';
 
 export function getWaitingBuildEffect(
   waitingForAction: WaitingAction | null | undefined,

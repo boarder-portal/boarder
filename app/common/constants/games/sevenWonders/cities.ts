@@ -6,9 +6,9 @@ import {
   PlayerDirection,
   ResourceType,
   ScientificSymbolType,
-} from 'common/types/sevenWonders';
-import { CardType } from 'common/types/sevenWonders/cards';
-import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/sevenWonders/effects';
+} from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
+import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
 const CITIES: Record<CityName, City> = {
   [CityName.RHODOS]: {

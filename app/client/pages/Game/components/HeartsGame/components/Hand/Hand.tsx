@@ -3,8 +3,8 @@ import React from 'react';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
-import { Card as CardModel, Suit } from 'common/types/cards';
-import { HandStage } from 'common/types/hearts';
+import { Card as CardModel, Suit } from 'common/types/game/cards';
+import { HandStage } from 'common/types/games/hearts';
 
 import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
 

@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
-import { Player, WaitingActionType } from 'common/types/sevenWonders';
-import { CardId } from 'common/types/sevenWonders/cards';
-import { FreeCardSourceType } from 'common/types/sevenWonders/effects';
+import { Player, WaitingActionType } from 'common/types/games/sevenWonders';
+import { CardId } from 'common/types/games/sevenWonders/cards';
+import { FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 

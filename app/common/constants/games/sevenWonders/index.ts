@@ -1,4 +1,4 @@
-import { CardActionType, GameOptions } from 'common/types/sevenWonders';
+import { CardActionType, GameOptions } from 'common/types/games/sevenWonders';
 
 export { default as CARDS_BY_AGE } from './cards';
 export { default as ALL_CITIES } from './cities';

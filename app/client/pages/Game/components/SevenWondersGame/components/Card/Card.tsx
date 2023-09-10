@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { CSSProperties } from 'react';
 
-import { Card as CardModel } from 'common/types/sevenWonders/cards';
+import { Card as CardModel } from 'common/types/games/sevenWonders/cards';
 
 import Image from 'client/components/common/Image/Image';
 

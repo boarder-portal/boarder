@@ -15,9 +15,9 @@ import {
   TurnPlayerData,
   WaitingAction,
   WaitingActionType,
-} from 'common/types/sevenWonders';
-import { Card, CardType } from 'common/types/sevenWonders/cards';
-import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/sevenWonders/effects';
+} from 'common/types/games/sevenWonders';
+import { Card, CardType } from 'common/types/games/sevenWonders/cards';
+import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
 import rotateObjects from 'common/utilities/rotateObjects';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';

@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
 
 import { BombersImages } from 'client/pages/Game/components/BombersGame/types';
-import { Cell, ObjectType } from 'common/types/bombers';
+import { Cell, ObjectType } from 'common/types/games/bombers';
 
 import renderBomb from 'client/pages/Game/components/BombersGame/utilities/renderBomb';
 import renderBonus from 'client/pages/Game/components/BombersGame/utilities/renderBonus';

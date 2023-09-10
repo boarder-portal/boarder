@@ -1,6 +1,6 @@
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
-import { FieldLayoutType, GameOptions } from 'common/types/pexeso';
+import { FieldLayoutType, GameOptions } from 'common/types/games/pexeso';
 
 export function arePexesoOptionsValid(options: GameOptions): boolean {
   const setOptions = SETS[options.set];

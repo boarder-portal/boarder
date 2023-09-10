@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { Suit } from 'common/types/cards';
 import { GameType } from 'common/types/game';
-import { GameClientEventType, HandStage, PassDirection, Player as PlayerModel } from 'common/types/hearts';
+import { Suit } from 'common/types/game/cards';
+import { GameClientEventType, HandStage, PassDirection, Player as PlayerModel } from 'common/types/games/hearts';
 
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';

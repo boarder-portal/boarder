@@ -6,8 +6,8 @@ import {
   CourtesansBuildInfo,
   OwnerResource,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Action, GamePhaseType, Payments, Player } from 'common/types/sevenWonders';
-import { Card as CardModel } from 'common/types/sevenWonders/cards';
+import { Action, GamePhaseType, Payments, Player } from 'common/types/games/sevenWonders';
+import { Card as CardModel } from 'common/types/games/sevenWonders/cards';
 
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';

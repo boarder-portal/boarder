@@ -1,6 +1,6 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
-import { ExplodedDirection } from 'common/types/bombers';
+import { ExplodedDirection } from 'common/types/games/bombers';
 
 export interface RenderExplodedDirectionOptions {
   ctx: CanvasRenderingContext2D;

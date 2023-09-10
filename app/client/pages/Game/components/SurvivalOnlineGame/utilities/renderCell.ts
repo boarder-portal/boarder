@@ -1,6 +1,6 @@
 import { OBJECT_PIXELS } from 'client/pages/Game/components/SurvivalOnlineGame/constants/objectPixels';
 
-import { BiomeType, Cell, ObjectType } from 'common/types/survivalOnline';
+import { BiomeType, Cell, ObjectType } from 'common/types/games/survivalOnline';
 
 import renderEyes from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderEyes';
 import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';

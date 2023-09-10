@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { CSSProperties, useCallback } from 'react';
 
 import typedReactMemo from 'client/types/typedReactMemo';
-import { CardId, LandmarkId } from 'common/types/machiKoro';
+import { CardId, LandmarkId } from 'common/types/games/machiKoro';
 
 import Image from 'client/components/common/Image/Image';
 

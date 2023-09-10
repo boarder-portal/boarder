@@ -2,7 +2,7 @@ import random from 'lodash/random';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { GameType } from 'common/types/game';
-import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/sevenWonders';
+import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/games/sevenWonders';
 
 import { getRandomIndex } from 'common/utilities/random';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';

@@ -15,7 +15,7 @@ import {
   PlayerData,
   PlayerWaitingActionType,
   Turn as TurnModel,
-} from 'common/types/machiKoro';
+} from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
 import getLandmark from 'common/utilities/machiKoro/getLandmark';

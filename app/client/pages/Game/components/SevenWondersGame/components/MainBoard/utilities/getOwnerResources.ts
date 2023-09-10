@@ -1,5 +1,5 @@
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Resource, ResourceOwner } from 'common/types/sevenWonders';
+import { Resource, ResourceOwner } from 'common/types/games/sevenWonders';
 
 /**
  * resources: [

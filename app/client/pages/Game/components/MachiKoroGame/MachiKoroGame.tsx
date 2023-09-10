@@ -9,7 +9,7 @@ import {
   GameServerEventType,
   LandmarkId,
   PlayerWaitingActionType,
-} from 'common/types/machiKoro';
+} from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
 

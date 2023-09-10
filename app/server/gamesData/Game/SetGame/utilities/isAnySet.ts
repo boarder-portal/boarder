@@ -1,4 +1,4 @@
-import { Card } from 'common/types/set';
+import { Card } from 'common/types/games/set';
 
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 

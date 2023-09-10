@@ -5,8 +5,8 @@ import {
   BuildKind,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Action, BuildType, CardActionType, Payments, Player, PlayerDirection } from 'common/types/sevenWonders';
-import { Card, CardId } from 'common/types/sevenWonders/cards';
+import { Action, BuildType, CardActionType, Payments, Player, PlayerDirection } from 'common/types/games/sevenWonders';
+import { Card, CardId } from 'common/types/games/sevenWonders/cards';
 
 import getCardBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
 import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';

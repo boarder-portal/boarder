@@ -1,7 +1,7 @@
 import first from 'lodash/first';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { Player, Price } from 'common/types/sevenWonders';
+import { Player, Price } from 'common/types/games/sevenWonders';
 
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 

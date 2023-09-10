@@ -1,5 +1,5 @@
 import { GameType } from 'common/types/game';
-import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap } from 'common/types/lobby';
+import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap } from 'common/types/game/lobby';
 import { Namespace, ServerSocket } from 'common/types/socket';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';

@@ -1,7 +1,7 @@
 import mapKeys from 'lodash/mapKeys';
 import mapValues from 'lodash/mapValues';
 
-import { PLAYER_SETTINGS } from 'common/constants/games/common';
+import { PLAYER_SETTINGS } from 'common/constants/game';
 
 import { GameType } from 'common/types/game';
 

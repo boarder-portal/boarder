@@ -1,6 +1,6 @@
 import { BombersImages } from 'client/pages/Game/components/BombersGame/types';
 import { Coords } from 'common/types';
-import { Wall } from 'common/types/bombers';
+import { Wall } from 'common/types/games/bombers';
 
 import renderCellImage from 'client/pages/Game/components/BombersGame/utilities/renderCellImage';
 

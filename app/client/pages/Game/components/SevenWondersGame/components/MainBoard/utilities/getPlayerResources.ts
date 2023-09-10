@@ -1,4 +1,4 @@
-import { Player, Resource } from 'common/types/sevenWonders';
+import { Player, Resource } from 'common/types/games/sevenWonders';
 
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTradeResources';

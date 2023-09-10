@@ -15,7 +15,7 @@ import {
 } from 'common/constants/games/bombers';
 
 import { Coords, Timestamp } from 'common/types';
-import { BonusType, Buff, BuffType, Direction, Line } from 'common/types/bombers';
+import { BonusType, Buff, BuffType, Direction, Line } from 'common/types/games/bombers';
 
 import { isSuperSpeed } from 'common/utilities/bombers/buffs';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';

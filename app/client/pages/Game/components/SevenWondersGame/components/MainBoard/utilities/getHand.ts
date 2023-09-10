@@ -1,5 +1,5 @@
-import { GamePhaseType, Player } from 'common/types/sevenWonders';
-import { Card, CardType } from 'common/types/sevenWonders/cards';
+import { GamePhaseType, Player } from 'common/types/games/sevenWonders';
+import { Card, CardType } from 'common/types/games/sevenWonders/cards';
 
 import getPlayerHandCards, { GetPlayerHandCardsOptions } from 'common/utilities/sevenWonders/getPlayerHandCards';
 

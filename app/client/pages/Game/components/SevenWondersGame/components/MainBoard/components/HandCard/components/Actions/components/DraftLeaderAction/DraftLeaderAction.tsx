@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { Action, CardActionType, Payments } from 'common/types/sevenWonders';
+import { Action, CardActionType, Payments } from 'common/types/games/sevenWonders';
 
 interface DraftLeaderActionProps {
   className?: string;

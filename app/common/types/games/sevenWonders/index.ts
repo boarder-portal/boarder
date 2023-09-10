@@ -7,8 +7,8 @@ import {
   GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
-import { Card } from 'common/types/sevenWonders/cards';
-import { BuildCardEffect, Effect } from 'common/types/sevenWonders/effects';
+import { Card } from 'common/types/games/sevenWonders/cards';
+import { BuildCardEffect, Effect } from 'common/types/games/sevenWonders/effects';
 
 export enum GameClientEventType {
   PICK_CITY_SIDE = 'PICK_CITY_SIDE',

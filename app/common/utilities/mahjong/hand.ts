@@ -1,4 +1,4 @@
-import { Tile } from 'common/types/mahjong';
+import { Tile } from 'common/types/games/mahjong';
 
 import { isEqualTilesCallback } from 'common/utilities/mahjong/tiles';
 

@@ -1,5 +1,5 @@
 import { GamePlayer } from 'common/types';
-import { GameOptions, GameType } from 'common/types/game';
+import { GameOptions, GameType } from 'common/types/game/index';
 
 export enum LobbyEventType {
   UPDATE = 'UPDATE',

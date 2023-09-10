@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { FC, memo, useMemo } from 'react';
 
-import { CardType, Player, PlayerWaitingActionType } from 'common/types/machiKoro';
+import { CardType, Player, PlayerWaitingActionType } from 'common/types/games/machiKoro';
 
 import Dice, { DiceType } from 'client/components/Dice/Dice';
 import Button from 'client/components/common/Button/Button';

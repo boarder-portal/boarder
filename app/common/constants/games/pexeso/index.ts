@@ -1,4 +1,4 @@
-import { FieldLayoutType, GameOptions, SetType } from 'common/types/pexeso';
+import { FieldLayoutType, GameOptions, SetType } from 'common/types/games/pexeso';
 
 interface SetConfig {
   imagesCount: number;

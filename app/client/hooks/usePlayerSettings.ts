@@ -1,4 +1,4 @@
-import { PLAYER_SETTINGS } from 'common/constants/games/common';
+import { PLAYER_SETTINGS } from 'common/constants/game';
 
 import { GameType, PlayerSettings } from 'common/types/game';
 

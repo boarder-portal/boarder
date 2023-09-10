@@ -1,6 +1,6 @@
-import { NeighborSide, PlayerDirection, ResourceType, ScientificSymbolType } from 'common/types/sevenWonders';
-import { Card, CardId, CardType } from 'common/types/sevenWonders/cards';
-import { EffectType } from 'common/types/sevenWonders/effects';
+import { NeighborSide, PlayerDirection, ResourceType, ScientificSymbolType } from 'common/types/games/sevenWonders';
+import { Card, CardId, CardType } from 'common/types/games/sevenWonders/cards';
+import { EffectType } from 'common/types/games/sevenWonders/effects';
 
 const CARDS_BY_AGE: Card[][] = [
   // age 1

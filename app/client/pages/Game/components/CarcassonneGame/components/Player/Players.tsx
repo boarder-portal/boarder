@@ -5,7 +5,7 @@ import times from 'lodash/times';
 import React, { useEffect, useState } from 'react';
 
 import { Timestamp } from 'common/types';
-import { CityGoodsType, MeepleType, Player } from 'common/types/carcassonne';
+import { CityGoodsType, MeepleType, Player } from 'common/types/games/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';

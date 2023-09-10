@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { NeighborSide, Payments } from 'common/types/sevenWonders';
+import { NeighborSide, Payments } from 'common/types/games/sevenWonders';
 
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 

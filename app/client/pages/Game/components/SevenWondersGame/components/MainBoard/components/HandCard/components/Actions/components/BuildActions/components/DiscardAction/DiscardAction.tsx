@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 
-import { Action, CardActionType, Payments, Player } from 'common/types/sevenWonders';
+import { Action, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
 
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 

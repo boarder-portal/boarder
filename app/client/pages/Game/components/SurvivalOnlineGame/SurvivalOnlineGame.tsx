@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import { GameType } from 'common/types/game';
-import { Direction, GameClientEventType, GameServerEventType, Map, Player } from 'common/types/survivalOnline';
+import { Direction, GameClientEventType, GameServerEventType, Map, Player } from 'common/types/games/survivalOnline';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';

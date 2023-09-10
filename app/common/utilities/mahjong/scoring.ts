@@ -17,7 +17,7 @@ import {
   SetType,
   Tile,
   WindSide,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import {
   canAddFan,

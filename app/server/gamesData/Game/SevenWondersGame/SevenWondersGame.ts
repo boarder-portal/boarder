@@ -14,15 +14,15 @@ import {
   PlayerDirection,
   ScientificSymbolType,
   WonderBuiltStage,
-} from 'common/types/sevenWonders';
-import { Card, CardId, CardType } from 'common/types/sevenWonders/cards';
+} from 'common/types/games/sevenWonders';
+import { Card, CardId, CardType } from 'common/types/games/sevenWonders/cards';
 import {
   Effect,
   EffectType,
   Gain,
   ScientificSetEffect,
   ScientificSymbolsEffect,
-} from 'common/types/sevenWonders/effects';
+} from 'common/types/games/sevenWonders/effects';
 
 import { getSetsCombinations } from 'common/utilities/combinations';
 import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';

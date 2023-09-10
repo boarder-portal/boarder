@@ -1,4 +1,4 @@
-import { BonusType, BuffType, GameOptions, MapType } from 'common/types/bombers';
+import { BonusType, BuffType, GameOptions, MapType } from 'common/types/games/bombers';
 
 export { default as MAPS } from './maps';
 

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { FC, memo } from 'react';
 
-import { Player, Tile } from 'common/types/mahjong';
+import { Player, Tile } from 'common/types/games/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';

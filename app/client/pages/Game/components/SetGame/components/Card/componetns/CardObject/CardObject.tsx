@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import { Card } from 'common/types/set';
+import { Card } from 'common/types/games/set';
 
 import styles from './CardObject.module.scss';
 

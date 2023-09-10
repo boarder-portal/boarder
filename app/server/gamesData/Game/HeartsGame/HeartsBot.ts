@@ -2,7 +2,7 @@ import random from 'lodash/random';
 import shuffle from 'lodash/shuffle';
 
 import { GameType } from 'common/types/game';
-import { GameClientEventType, HandStage, Player } from 'common/types/hearts';
+import { GameClientEventType, HandStage, Player } from 'common/types/games/hearts';
 
 import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 import isCardAllowed from 'common/utilities/hearts/isCardAllowed';

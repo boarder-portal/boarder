@@ -11,6 +11,7 @@ import {
 } from 'common/constants/games/bombers';
 
 import { Coords, Timestamp as TimestampModel } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
   Buff,
   BuffType,
@@ -19,8 +20,7 @@ import {
   GameServerEventType,
   PlayerColor,
   PlayerData,
-} from 'common/types/bombers';
-import { GameType } from 'common/types/game';
+} from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';

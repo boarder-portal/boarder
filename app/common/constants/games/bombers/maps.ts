@@ -1,4 +1,4 @@
-import { MapType } from 'common/types/bombers';
+import { MapType } from 'common/types/games/bombers';
 
 const MAPS: Record<MapType, string> = {
   [MapType.CHESS]: `

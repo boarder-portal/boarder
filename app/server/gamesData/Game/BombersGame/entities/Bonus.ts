@@ -1,5 +1,5 @@
-import { Bonus as BonusModel, BonusType, ObjectType } from 'common/types/bombers';
 import { GameType } from 'common/types/game';
+import { Bonus as BonusModel, BonusType, ObjectType } from 'common/types/games/bombers';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

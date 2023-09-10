@@ -1,4 +1,4 @@
-import { Card, Suit, Value } from 'common/types/cards';
+import { Card, Suit, Value } from 'common/types/game/cards';
 
 export const CARDS_SORT = '23456789TJQKA';
 

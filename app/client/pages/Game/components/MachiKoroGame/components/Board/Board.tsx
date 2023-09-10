@@ -1,6 +1,6 @@
 import { FC, memo, useMemo } from 'react';
 
-import { CardId } from 'common/types/machiKoro';
+import { CardId } from 'common/types/games/machiKoro';
 
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import getCard from 'common/utilities/machiKoro/getCard';

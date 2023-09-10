@@ -8,7 +8,7 @@ import {
   Game,
   GameServerEventType,
   Player as PlayerModel,
-} from 'common/types/survivalOnline';
+} from 'common/types/games/survivalOnline';
 
 import { getRandomElement } from 'common/utilities/random';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';

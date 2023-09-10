@@ -2,13 +2,19 @@ import chunk from 'lodash/chunk';
 import shuffle from 'lodash/shuffle';
 import sortBy from 'lodash/sortBy';
 
-import { CARDS_SORT } from 'common/constants/games/common/cards';
+import { CARDS_SORT } from 'common/constants/game/cards';
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { DECKS } from 'server/gamesData/Game/HeartsGame/constants';
 
-import { Card, Suit } from 'common/types/cards';
 import { GameType } from 'common/types/game';
-import { GameClientEventType, Hand as HandModel, HandPlayerData, HandStage, PassDirection } from 'common/types/hearts';
+import { Card, Suit } from 'common/types/game/cards';
+import {
+  GameClientEventType,
+  Hand as HandModel,
+  HandPlayerData,
+  HandStage,
+  PassDirection,
+} from 'common/types/games/hearts';
 
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';

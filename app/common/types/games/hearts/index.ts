@@ -5,8 +5,8 @@ import {
   CommonServerEventMap,
   GamePlayer,
 } from 'common/types';
-import { Card } from 'common/types/cards';
 import { GameType } from 'common/types/game';
+import { Card } from 'common/types/game/cards';
 
 export enum GameClientEventType {
   CHOOSE_CARD = 'CHOOSE_CARD',

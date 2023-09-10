@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { Action, BuildType, CardActionType, Payments, Player } from 'common/types/sevenWonders';
-import { Card, CardId } from 'common/types/sevenWonders/cards';
-import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/sevenWonders/effects';
+import { Action, BuildType, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
+import { Card, CardId } from 'common/types/games/sevenWonders/cards';
+import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
 import { getPlayerWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 

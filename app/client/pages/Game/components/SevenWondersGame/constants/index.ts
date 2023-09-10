@@ -1,4 +1,4 @@
-import { Resource, ResourceType } from 'common/types/sevenWonders';
+import { Resource, ResourceType } from 'common/types/games/sevenWonders';
 
 export const ANY_RAW_RESOURCE_VARIANT: Resource[] = [
   {

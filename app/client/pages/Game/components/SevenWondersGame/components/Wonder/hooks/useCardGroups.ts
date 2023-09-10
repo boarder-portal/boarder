@@ -2,8 +2,8 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import { useMemo } from 'react';
 
-import { Player } from 'common/types/sevenWonders';
-import { Card, CardType } from 'common/types/sevenWonders/cards';
+import { Player } from 'common/types/games/sevenWonders';
+import { Card, CardType } from 'common/types/games/sevenWonders/cards';
 
 const GROUPS_COUNT = 4;
 

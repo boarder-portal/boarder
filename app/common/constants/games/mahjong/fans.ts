@@ -1,4 +1,4 @@
-import { FanKind, Tile } from 'common/types/mahjong';
+import { FanKind, Tile } from 'common/types/games/mahjong';
 
 import { parsePlayableTileSets } from 'common/utilities/mahjong/parse';
 

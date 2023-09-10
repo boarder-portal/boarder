@@ -1,4 +1,4 @@
-import { Game } from 'common/types/hearts';
+import { Game } from 'common/types/games/hearts';
 
 import { isDeuceOfClubs } from 'common/utilities/hearts/common';
 

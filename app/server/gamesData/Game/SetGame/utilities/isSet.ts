@@ -1,4 +1,4 @@
-import { Card } from 'common/types/set';
+import { Card } from 'common/types/games/set';
 
 export default function isSet(cards: Card[]): boolean {
   const colorsSet = new Set(cards.map(({ color }) => color));

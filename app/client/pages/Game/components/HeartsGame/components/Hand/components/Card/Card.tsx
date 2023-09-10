@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
-import { Card as CardModel, Suit } from 'common/types/cards';
+import { Card as CardModel, Suit } from 'common/types/game/cards';
 
 import Flex from 'client/components/common/Flex/Flex';
 

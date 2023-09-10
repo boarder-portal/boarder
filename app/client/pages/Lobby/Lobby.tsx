@@ -2,11 +2,11 @@ import times from 'lodash/times';
 import React, { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { GAME_NAMES } from 'common/constants/games/common';
+import { GAME_NAMES } from 'common/constants/game';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameOptions, GameType } from 'common/types/game';
-import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap, LobbyUpdateEvent } from 'common/types/lobby';
+import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap, LobbyUpdateEvent } from 'common/types/game/lobby';
 
 import { areBotsAvailable } from 'common/utilities/bots';
 

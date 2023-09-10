@@ -9,7 +9,7 @@ import {
 } from 'common/constants/games/pexeso';
 
 import { GameType } from 'common/types/game';
-import { FieldLayoutType, GameOptions, SetType, ShuffleOptions, ShuffleType } from 'common/types/pexeso';
+import { FieldLayoutType, GameOptions, SetType, ShuffleOptions, ShuffleType } from 'common/types/games/pexeso';
 
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 

@@ -1,4 +1,4 @@
-import { Card, CardObjectType, CityGoodsType } from 'common/types/carcassonne';
+import { Card, CardObjectType, CityGoodsType } from 'common/types/games/carcassonne';
 
 const ALL_CARDS: Card[] = [
   // base cards

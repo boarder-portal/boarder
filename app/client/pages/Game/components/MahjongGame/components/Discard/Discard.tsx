@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual';
 import { DragEvent, FC, memo, useCallback, useEffect, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { Tile as TileModel } from 'common/types/mahjong';
+import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { isEqualTiles } from 'common/utilities/mahjong/tiles';

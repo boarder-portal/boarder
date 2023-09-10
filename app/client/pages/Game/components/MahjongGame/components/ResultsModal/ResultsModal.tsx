@@ -5,7 +5,7 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
-import { HandResult, HandsCount, Player } from 'common/types/mahjong';
+import { HandResult, HandsCount, Player } from 'common/types/games/mahjong';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';

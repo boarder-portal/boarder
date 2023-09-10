@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual';
 import sortBy from 'lodash/sortBy';
 import { DragEvent, FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Tile as TileModel } from 'common/types/mahjong';
+import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';

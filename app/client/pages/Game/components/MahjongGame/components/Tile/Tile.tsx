@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { AllHTMLAttributes, CSSProperties, FC, MouseEvent, memo } from 'react';
 
 import { GameType } from 'common/types/game';
-import { Tile as TileModel } from 'common/types/mahjong';
+import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/stringify';

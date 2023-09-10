@@ -2,7 +2,7 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import { FC, memo, useMemo } from 'react';
 
-import { CardId } from 'common/types/machiKoro';
+import { CardId } from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
 

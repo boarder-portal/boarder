@@ -2,7 +2,7 @@ import sortBy from 'lodash/sortBy';
 
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 
-import { Player } from 'common/types/mahjong';
+import { Player } from 'common/types/games/mahjong';
 
 import useAtom from 'client/hooks/useAtom';
 

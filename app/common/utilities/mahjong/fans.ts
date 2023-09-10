@@ -19,7 +19,7 @@ import {
   SetsFan,
   SpecialFan,
   WindSide,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import isDefined from 'common/utilities/isDefined';
 import { HandScoreFullOptions } from 'common/utilities/mahjong/scoring';

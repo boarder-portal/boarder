@@ -19,7 +19,7 @@ import {
   SetType,
   SuitedTile,
   Tile,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { getCombinations, getSetsCombinations } from 'common/utilities/combinations';
 import {

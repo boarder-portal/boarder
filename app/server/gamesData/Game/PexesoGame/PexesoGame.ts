@@ -14,7 +14,7 @@ import {
   PlayerData,
   ShuffleCardsIndexes,
   ShuffleType,
-} from 'common/types/pexeso';
+} from 'common/types/games/pexeso';
 
 import { getRandomElement } from 'common/utilities/random';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';

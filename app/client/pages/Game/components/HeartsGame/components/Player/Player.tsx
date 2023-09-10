@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 
-import { Suit } from 'common/types/cards';
-import { HandStage, Player as PlayerModel } from 'common/types/hearts';
+import { Suit } from 'common/types/game/cards';
+import { HandStage, Player as PlayerModel } from 'common/types/games/hearts';
 
 import { PlayerPosition } from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 

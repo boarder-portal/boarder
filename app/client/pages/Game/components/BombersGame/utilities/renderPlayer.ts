@@ -1,7 +1,7 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games/bombers';
 
-import { BuffType, Direction, PlayerData } from 'common/types/bombers';
+import { BuffType, Direction, PlayerData } from 'common/types/games/bombers';
 
 export interface RenderPlayerOptions {
   ctx: CanvasRenderingContext2D;

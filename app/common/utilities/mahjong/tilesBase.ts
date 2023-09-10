@@ -8,7 +8,7 @@ import {
   TileType,
   WindSide,
   WindTile,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 export function suited(value: number, suit: Suit): SuitedTile {
   return {

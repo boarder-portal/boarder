@@ -4,8 +4,8 @@ import {
 } from 'client/pages/Game/components/SevenWondersGame/constants';
 
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { Player, Resource } from 'common/types/sevenWonders';
-import { CardType } from 'common/types/sevenWonders/cards';
+import { Player, Resource } from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
 
 import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
 import isNotUndefined from 'common/utilities/isNotUndefined';

@@ -1,7 +1,7 @@
-import { DECK } from 'common/constants/games/common/cards';
+import { DECK } from 'common/constants/game/cards';
 
-import { Card, Suit, Value } from 'common/types/cards';
-import { PassDirection } from 'common/types/hearts';
+import { Card, Suit, Value } from 'common/types/game/cards';
+import { PassDirection } from 'common/types/games/hearts';
 
 import card from 'common/utilities/cards/card';
 import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';

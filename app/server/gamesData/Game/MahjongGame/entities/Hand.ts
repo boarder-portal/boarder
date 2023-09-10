@@ -22,7 +22,7 @@ import {
   SetType,
   Suit,
   Tile,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { moveElement } from 'common/utilities/array';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';

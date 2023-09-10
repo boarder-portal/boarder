@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CardType, Player } from 'common/types/onitama';
+import { CardType, Player } from 'common/types/games/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
 import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';

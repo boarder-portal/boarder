@@ -1,4 +1,4 @@
-import { BuildType, Payments } from 'common/types/sevenWonders';
+import { BuildType, Payments } from 'common/types/games/sevenWonders';
 
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 

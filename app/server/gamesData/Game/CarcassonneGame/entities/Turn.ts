@@ -1,5 +1,5 @@
-import { GameClientEventType, Turn as TurnModel } from 'common/types/carcassonne';
 import { GameType } from 'common/types/game';
+import { GameClientEventType, Turn as TurnModel } from 'common/types/games/carcassonne';
 
 import Timestamp from 'common/utilities/Timestamp';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';

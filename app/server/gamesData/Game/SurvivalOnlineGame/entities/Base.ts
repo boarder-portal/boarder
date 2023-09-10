@@ -1,5 +1,5 @@
 import { GameType } from 'common/types/game';
-import { BaseObject, ObjectType } from 'common/types/survivalOnline';
+import { BaseObject, ObjectType } from 'common/types/games/survivalOnline';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

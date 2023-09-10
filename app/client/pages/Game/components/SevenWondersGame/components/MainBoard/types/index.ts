@@ -1,4 +1,4 @@
-import { Action, Payments, Resource, ResourceOwner } from 'common/types/sevenWonders';
+import { Action, Payments, Resource, ResourceOwner } from 'common/types/games/sevenWonders';
 
 export interface OwnerResource extends Resource {
   owner: ResourceOwner;

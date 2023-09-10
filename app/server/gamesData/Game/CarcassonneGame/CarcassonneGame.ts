@@ -6,6 +6,7 @@ import times from 'lodash/times';
 import { ALL_CARDS, BASE_TIME, CARDS_IN_HAND, TURN_INCREMENT } from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
   Board,
   Card,
@@ -22,8 +23,7 @@ import {
   PlayerColor,
   PlayerData,
   Score,
-} from 'common/types/carcassonne';
-import { GameType } from 'common/types/game';
+} from 'common/types/games/carcassonne';
 
 import {
   getAttachedObjectId,

@@ -1,6 +1,6 @@
-import { CARDS_SORT } from 'common/constants/games/common/cards';
+import { CARDS_SORT } from 'common/constants/game/cards';
 
-import { Card } from 'common/types/cards';
+import { Card } from 'common/types/game/cards';
 
 export function isHigherCard(card1: Card, card2: Card, withSuit = true): boolean {
   return CARDS_SORT.indexOf(card1.value) > CARDS_SORT.indexOf(card2.value) && (!withSuit || card1.suit === card2.suit);

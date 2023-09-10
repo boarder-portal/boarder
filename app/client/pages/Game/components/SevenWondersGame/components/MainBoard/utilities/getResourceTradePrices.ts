@@ -1,6 +1,6 @@
-import { NeighborSide } from 'common/types/sevenWonders';
-import { CardType } from 'common/types/sevenWonders/cards';
-import { TradeEffect } from 'common/types/sevenWonders/effects';
+import { NeighborSide } from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
+import { TradeEffect } from 'common/types/games/sevenWonders/effects';
 
 const BASE_RESOURCE_PRICE = 2;
 

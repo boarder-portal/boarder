@@ -5,7 +5,7 @@ import times from 'lodash/times';
 import { ALL_CARDS } from 'common/constants/games/machiKoro';
 
 import { GameType } from 'common/types/game';
-import { Card, CardId, Game, GameServerEventType, LandmarkId, Player, PlayerData } from 'common/types/machiKoro';
+import { Card, CardId, Game, GameServerEventType, LandmarkId, Player, PlayerData } from 'common/types/games/machiKoro';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';

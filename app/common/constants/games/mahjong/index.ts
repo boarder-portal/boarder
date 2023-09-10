@@ -1,7 +1,15 @@
 import invert from 'lodash/invert';
 import times from 'lodash/times';
 
-import { DragonColor, GameOptions, HandsCount, PlayerSettings, SetType, Suit, WindSide } from 'common/types/mahjong';
+import {
+  DragonColor,
+  GameOptions,
+  HandsCount,
+  PlayerSettings,
+  SetType,
+  Suit,
+  WindSide,
+} from 'common/types/games/mahjong';
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 4,

@@ -5,6 +5,7 @@ import { MAP_NAMES, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'co
 
 import { BomberImage } from 'client/pages/Game/components/BombersGame/types';
 import { Size } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
   BuffType,
   Direction,
@@ -16,8 +17,7 @@ import {
   ObjectType,
   PlayerData,
   Player as PlayerModel,
-} from 'common/types/bombers';
-import { GameType } from 'common/types/game';
+} from 'common/types/games/bombers';
 
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';

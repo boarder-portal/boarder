@@ -1,6 +1,6 @@
 import { CELL_SIZE } from 'common/constants/games/survivalOnline';
 
-import { Direction } from 'common/types/survivalOnline';
+import { Direction } from 'common/types/games/survivalOnline';
 
 import renderObject, {
   SurvivalOnlineRectInfo,

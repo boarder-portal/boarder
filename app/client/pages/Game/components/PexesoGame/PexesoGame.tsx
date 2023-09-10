@@ -14,7 +14,7 @@ import {
   GameServerEventType,
   Player,
   ShuffleCardsIndexes,
-} from 'common/types/pexeso';
+} from 'common/types/games/pexeso';
 
 import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';

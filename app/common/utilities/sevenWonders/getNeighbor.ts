@@ -1,4 +1,4 @@
-import { NeighborSide } from 'common/types/sevenWonders';
+import { NeighborSide } from 'common/types/games/sevenWonders';
 
 export default function getNeighbor(playerIndex: number, playersCount: number, neighborSide: NeighborSide): number {
   return neighborSide === NeighborSide.LEFT

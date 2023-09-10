@@ -1,6 +1,6 @@
-import { AgePhaseType, GamePhaseType, WaitingAction } from 'common/types/sevenWonders';
-import { Card } from 'common/types/sevenWonders/cards';
-import { BuildCardEffect, FreeCardSourceType } from 'common/types/sevenWonders/effects';
+import { AgePhaseType, GamePhaseType, WaitingAction } from 'common/types/games/sevenWonders';
+import { Card } from 'common/types/games/sevenWonders/cards';
+import { BuildCardEffect, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 

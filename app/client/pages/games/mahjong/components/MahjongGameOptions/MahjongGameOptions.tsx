@@ -1,7 +1,7 @@
 import { FC, memo } from 'react';
 
 import { GameType } from 'common/types/game';
-import { HandsCount } from 'common/types/mahjong';
+import { HandsCount } from 'common/types/games/mahjong';
 
 import Flex from 'client/components/common/Flex/Flex';
 

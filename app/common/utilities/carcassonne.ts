@@ -16,7 +16,7 @@ import {
   GameObject,
   GameRoad,
   PlayerMeeple,
-} from 'common/types/carcassonne';
+} from 'common/types/games/carcassonne';
 
 export function isCardCity(object: CardObject): object is CardCity {
   return object.type === CardObjectType.CITY;

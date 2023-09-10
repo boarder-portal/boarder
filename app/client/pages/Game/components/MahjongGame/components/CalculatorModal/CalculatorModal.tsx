@@ -14,7 +14,7 @@ import {
   SetType,
   Tile as TileModel,
   WindSide,
-} from 'common/types/mahjong';
+} from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { HandScoreOptions, getAllWaits, getHandMahjong } from 'common/utilities/mahjong/scoring';

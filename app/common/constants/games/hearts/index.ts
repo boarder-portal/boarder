@@ -1,4 +1,4 @@
-import { GameOptions } from 'common/types/hearts';
+import { GameOptions } from 'common/types/games/hearts';
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 2,

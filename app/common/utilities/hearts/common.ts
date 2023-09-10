@@ -1,4 +1,4 @@
-import { Card, Suit, Value } from 'common/types/cards';
+import { Card, Suit, Value } from 'common/types/game/cards';
 
 import card from 'common/utilities/cards/card';
 import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';

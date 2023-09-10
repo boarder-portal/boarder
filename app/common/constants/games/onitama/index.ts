@@ -1,4 +1,4 @@
-import { CardType, GameOptions } from 'common/types/onitama';
+import { CardType, GameOptions } from 'common/types/games/onitama';
 
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 2,

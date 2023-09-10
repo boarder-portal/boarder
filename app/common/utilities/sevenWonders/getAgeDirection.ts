@@ -1,4 +1,4 @@
-import { GamePhaseType, NeighborSide } from 'common/types/sevenWonders';
+import { GamePhaseType, NeighborSide } from 'common/types/games/sevenWonders';
 
 export default function getAgeDirection(phase: GamePhaseType | null, age: number | null): NeighborSide {
   if (phase === GamePhaseType.AGE && age !== null) {

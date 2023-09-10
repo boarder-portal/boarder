@@ -2,7 +2,7 @@ import { END_GAME_SCORE } from 'common/constants/games/hearts';
 import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 
 import { GameType } from 'common/types/game';
-import { Game, GamePlayerData, HandStage, PassDirection, Player } from 'common/types/hearts';
+import { Game, GamePlayerData, HandStage, PassDirection, Player } from 'common/types/games/hearts';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';

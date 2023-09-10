@@ -2,7 +2,7 @@ import times from 'lodash/times';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import { Map, Player } from 'common/types/survivalOnline';
+import { Map, Player } from 'common/types/games/survivalOnline';
 
 import renderCell from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderCell';
 import renderInventory from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderInventory';

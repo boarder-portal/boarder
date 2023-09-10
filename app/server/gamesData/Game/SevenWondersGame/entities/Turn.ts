@@ -1,5 +1,5 @@
 import { GameType } from 'common/types/game';
-import { GameClientEventType, TurnPlayerData, WaitingAction, WaitingActionType } from 'common/types/sevenWonders';
+import { GameClientEventType, TurnPlayerData, WaitingAction, WaitingActionType } from 'common/types/games/sevenWonders';
 
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

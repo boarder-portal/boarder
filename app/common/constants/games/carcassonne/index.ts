@@ -1,4 +1,4 @@
-import { GameOptions } from 'common/types/carcassonne';
+import { GameOptions } from 'common/types/games/carcassonne';
 
 export { default as ALL_CARDS } from 'common/constants/games/carcassonne/cards';
 
