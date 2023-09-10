@@ -5,7 +5,7 @@ import { identifier, memberExpression, objectExpression, objectProperty, stringL
 import { GenerateOptions } from '../createGame';
 import modifyFile from './modifyFile';
 
-const FILE_PATH = path.resolve('./app/common/constants/games/common/index.ts');
+const FILE_PATH = path.resolve('./app/common/constants/game/index.ts');
 
 export default async function addGameNameAndPlayerSettings(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {

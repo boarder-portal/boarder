@@ -14,8 +14,8 @@ import addGameEntityClass from './utilities/addGameEntityClass';
 import addGameEnumField from './utilities/addGameEnumField';
 import addGameNameAndPlayerSettings from './utilities/addGameNameAndPlayerSettings';
 import addGameStyles from './utilities/addGameStyles';
+import addGameTypes from './utilities/addGameTypes';
 import addLocalStorageOptionsAndSettingsKeys from './utilities/addLocalStorageOptionsAndSettingsKeys';
-import addTypes from './utilities/addTypes';
 
 const [gameName] = process.argv.slice(2);
 
@@ -53,7 +53,9 @@ export interface GenerateOptions {
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
     lobbyFilename: path.resolve(`./app/client/pages/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`),
     gameComponentFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.tsx`),
-    gameStylesFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.scss`),
+    gameStylesFilename: path.resolve(
+      `./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.module.scss`,
+    ),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
   };
 
@@ -68,7 +70,7 @@ export interface GenerateOptions {
     addGameComponent(options),
     addGameEntityClass(options),
     addGameStyles(options),
-    addTypes(options),
+    addGameTypes(options),
   ]);
 })().catch((err) => {
   console.log(err);
