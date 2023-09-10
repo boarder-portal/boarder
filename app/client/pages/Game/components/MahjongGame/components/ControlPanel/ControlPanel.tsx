@@ -99,6 +99,8 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     openCalculatorModal,
   } = props;
 
+  const isActive = player?.index === activePlayerIndex;
+
   const isChowPossible = useMemo(() => {
     const activePlayerRealIndex = players.findIndex(({ index }) => index === activePlayerIndex);
     const playerIndex = players.findIndex(({ index }) => index === player?.index);
@@ -122,10 +124,13 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
         roundWind,
         isLastWallTile,
         isReplacementTile,
-        lastTileCandidates: getLastTileCandidates(players.map(({ data }) => data.hand)),
+        lastTileCandidates: getLastTileCandidates(
+          players.map(({ data }) => data.hand),
+          isActive,
+        ),
       });
     },
-    [isLastWallTile, isReplacementTile, player?.data.hand, player?.data.round?.wind, players, roundWind],
+    [isActive, isLastWallTile, isReplacementTile, player?.data.hand, player?.data.round?.wind, players, roundWind],
   );
 
   const declareDecisions = useMemo<TDeclareDecisionButton[]>(() => {
@@ -133,7 +138,6 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
       return [];
     }
 
-    const isActive = player.index === activePlayerIndex;
     const { hand, declaredSets } = player.data.hand;
 
     if (isActive) {
@@ -208,14 +212,13 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
 
     return possibleDecisions;
   }, [
-    activePlayerIndex,
     currentTile,
     declareInfo,
     getMahjong,
     handPhase,
+    isActive,
     isChowPossible,
     player?.data.hand,
-    player?.index,
     player?.settings.autoPass,
   ]);
 

@@ -142,8 +142,8 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   }, [declaredSets, gameTakenIntoAccount, player?.index, players]);
 
   const lastTileCandidates = useMemo<TTile[]>(() => {
-    return getLastTileCandidatesFromTiles(allMeldedTiles);
-  }, [allMeldedTiles]);
+    return getLastTileCandidatesFromTiles(allMeldedTiles, !gameTakenIntoAccount || isSelfDraw);
+  }, [allMeldedTiles, gameTakenIntoAccount, isSelfDraw]);
 
   const allKnownTiles = useMemo<TTile[]>(() => {
     const allKnowsTiles = [

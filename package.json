@@ -70,7 +70,7 @@
     "webpack": "^5.72.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
+    "@babel/core": "^7.22.17",
     "@babel/generator": "^7.18.2",
     "@babel/parser": "^7.18.3",
     "@babel/preset-env": "^7.12.1",

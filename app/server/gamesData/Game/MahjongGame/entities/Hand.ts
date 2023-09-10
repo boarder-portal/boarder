@@ -387,7 +387,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       seatWind: this.round.playersData[playerIndex].wind,
       roundWind: this.round.wind,
       isLastWallTile: this.wall.length === 0,
-      lastTileCandidates: getLastTileCandidates(this.playersData),
+      lastTileCandidates: getLastTileCandidates(this.playersData, options.isSelfDraw),
     });
   }
 

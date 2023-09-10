@@ -212,7 +212,7 @@ export function getNewCurrentTileIndex(currentTileIndex: number, from: number, t
   return to >= currentTileIndex ? currentTileIndex - 1 : currentTileIndex;
 }
 
-export function getLastTileCandidates(playersData: (IHandPlayerData | null)[]): TTile[] {
+export function getLastTileCandidates(playersData: (IHandPlayerData | null)[], isSelfDraw: boolean): TTile[] {
   const allTiles = [
     ...playersData.flatMap((playerData) => {
       if (!playerData) {
@@ -226,11 +226,13 @@ export function getLastTileCandidates(playersData: (IHandPlayerData | null)[]): 
     }),
   ];
 
-  return getLastTileCandidatesFromTiles(allTiles);
+  return getLastTileCandidatesFromTiles(allTiles, isSelfDraw);
 }
 
-export function getLastTileCandidatesFromTiles(tiles: TTile[]): TTile[] {
+export function getLastTileCandidatesFromTiles(tiles: TTile[], isSelfDraw: boolean): TTile[] {
+  const threshold = isSelfDraw ? 3 : 4;
+
   return STANDARD_TILES.filter((tile) => {
-    return getTileCount(tiles, tile) >= 3;
+    return getTileCount(tiles, tile) >= threshold;
   });
 }

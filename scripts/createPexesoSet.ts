@@ -6,6 +6,6 @@ const setDir = path.resolve(`./public/pexeso/sets/${name}`);
 
 fs.mkdirsSync(setDir);
 
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 60; i++) {
   fs.mkdirsSync(`${setDir}/${i}`);
 }
