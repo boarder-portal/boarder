@@ -1,14 +1,15 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import { WithClassName } from 'client/types/react';
+
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 
 import styles from './Game.module.scss';
 
-interface GameProps {
-  className?: string;
+interface GameProps extends WithClassName {
   title: string;
   options: React.ReactNode;
   players: number;

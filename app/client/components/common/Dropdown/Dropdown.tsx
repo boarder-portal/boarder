@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
 
+import { WithClassName } from 'client/types/react';
+
 import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './Dropdown.module.scss';
 
-interface DropdownProps {
-  className?: string;
+interface DropdownProps extends WithClassName {
   popupClassName?: string;
   open?: boolean;
   disabled?: boolean;

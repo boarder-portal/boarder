@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { ReactNode, useCallback, useMemo } from 'react';
 
+import { WithClassName } from 'client/types/react';
+
 import useBoolean from 'client/hooks/useBoolean';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
@@ -9,8 +11,7 @@ import ArrowDropDownIcon from 'client/components/icons/ArrowDropDownIcon/ArrowDr
 
 import styles from './Select.module.scss';
 
-interface SelectProps<Value> {
-  className?: string;
+interface SelectProps<Value> extends WithClassName {
   value: Value;
   options: {
     text: ReactNode;

@@ -3,6 +3,7 @@ import React from 'react';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
+import { WithClassName } from 'client/types/react';
 import { Card as CardModel, Suit } from 'common/types/game/cards';
 import { HandStage } from 'common/types/games/hearts';
 
@@ -19,8 +20,7 @@ enum CardStateType {
   DISABLED = 'disabled',
 }
 
-interface HandProps {
-  className?: string;
+interface HandProps extends WithClassName {
   isActive: boolean;
   hand: CardModel[];
   chosenCardsIndexes: number[];

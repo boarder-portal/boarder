@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { CSSProperties, useCallback } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import typedReactMemo from 'client/types/typedReactMemo';
 import { CardId, LandmarkId } from 'common/types/games/machiKoro';
 
@@ -10,8 +11,7 @@ import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './Card.module.scss';
 
-interface CardProps<ID> {
-  className?: string;
+interface CardProps<ID> extends WithClassName {
   style?: CSSProperties;
   id: ID;
   inactive?: boolean;

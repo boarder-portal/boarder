@@ -5,6 +5,7 @@ import {
   CourtesansBuildInfo,
   OwnerResource,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { WithClassName } from 'client/types/react';
 import { Action, GamePhaseType, Payments, Player } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
@@ -16,8 +17,7 @@ import CancelAction from 'client/pages/Game/components/SevenWondersGame/componen
 import CourtesanAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CourtesanAction/CourtesanAction';
 import DraftLeaderActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
 
-interface ActionsProps {
-  className?: string;
+interface ActionsProps extends WithClassName {
   cardIndex: number;
   card: Card;
   player: Player;

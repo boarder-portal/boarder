@@ -1,7 +1,8 @@
 import React from 'react';
 
-interface CancelActionProps {
-  className?: string;
+import { WithClassName } from 'client/types/react';
+
+interface CancelActionProps extends WithClassName {
   onCancelCard(): void;
 }
 

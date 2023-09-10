@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Card as CardModel, Suit } from 'common/types/game/cards';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Card.module.scss';
 
-interface CardProps {
-  className?: string;
+interface CardProps extends WithClassName {
   card: CardModel;
   isVisible: boolean;
   onClick?(): void;

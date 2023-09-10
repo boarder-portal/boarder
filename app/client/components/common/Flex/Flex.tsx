@@ -4,7 +4,6 @@ import { AllHTMLAttributes, forwardRef } from 'react';
 import styles from './Flex.module.scss';
 
 export interface FlexProps extends AllHTMLAttributes<HTMLDivElement> {
-  className?: string;
   inline?: boolean;
   direction?: 'row' | 'rowReverse' | 'column' | 'columnReverse';
   justifyContent?: 'center' | 'flexStart' | 'flexEnd' | 'spaceBetween';

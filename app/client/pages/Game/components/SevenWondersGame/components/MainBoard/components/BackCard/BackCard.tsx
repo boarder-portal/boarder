@@ -1,12 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import { WithClassName } from 'client/types/react';
+
 import Image from 'client/components/common/Image/Image';
 
 import styles from './BackCard.module.scss';
 
-interface BackCardProps {
-  className?: string;
+interface BackCardProps extends WithClassName {
   style?: React.CSSProperties;
   type: number | 'leader';
   onClick?(): void;

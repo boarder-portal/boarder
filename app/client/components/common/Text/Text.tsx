@@ -4,7 +4,6 @@ import { HTMLAttributes, ReactNode, forwardRef } from 'react';
 import styles from './Text.module.scss';
 
 interface TextProps extends HTMLAttributes<HTMLDivElement> {
-  className?: string;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
   weight?: 'normal' | 'bold';
   children?: ReactNode;

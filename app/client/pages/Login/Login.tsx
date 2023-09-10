@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       <form className={styles.form} onSubmit={handleSubmit}>
         <Input label="Логин" value={userLogin} onChange={setUserLogin} />
 
-        <Input className={styles.password} label="Пароль" value={password} type="password" onChange={setPassword} />
+        <Input label="Пароль" value={password} type="password" onChange={setPassword} />
 
         <Button className={styles.submit} type="submit">
           Вход

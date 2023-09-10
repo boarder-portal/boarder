@@ -2,6 +2,7 @@ import { FC, memo, useMemo } from 'react';
 
 import { ALL_LANDMARK_CARDS } from 'common/constants/games/machiKoro';
 
+import { WithClassName } from 'client/types/react';
 import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/games/machiKoro';
 
 import isNotUndefined from 'common/utilities/isNotUndefined';
@@ -17,8 +18,7 @@ import CardLine from 'client/pages/Game/components/MachiKoroGame/components/Card
 
 import styles from './Player.module.scss';
 
-interface PlayerProps {
-  className?: string;
+interface PlayerProps extends WithClassName {
   player: PlayerModel;
   main?: boolean;
   active: boolean;

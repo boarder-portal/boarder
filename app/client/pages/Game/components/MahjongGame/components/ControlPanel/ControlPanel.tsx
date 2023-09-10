@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { FC, ReactNode, memo, useCallback, useMemo } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { GameType } from 'common/types/game';
 import {
   DeclareDecision,
@@ -31,8 +32,7 @@ import { ChangeSettingCallback } from 'client/pages/Game/Game';
 
 import styles from './ControlPanel.module.scss';
 
-interface ControlPanelProps {
-  className?: string;
+interface ControlPanelProps extends WithClassName {
   handPhase: HandPhase | null;
   roundWind: WindSide | null;
   player: Player | null;

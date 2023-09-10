@@ -2,6 +2,7 @@ import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import { FC, memo, useMemo } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { CardId } from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
@@ -9,8 +10,7 @@ import getCard from 'common/utilities/machiKoro/getCard';
 import Flex from 'client/components/common/Flex/Flex';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
 
-interface CardLineProps {
-  className?: string;
+interface CardLineProps extends WithClassName {
   cardClassName?: string;
   cardsIds: CardId[];
   disabledIds: CardId[];

@@ -6,7 +6,6 @@ import TableRow from 'client/components/common/TableRow/TableRow';
 import styles from './Table.module.scss';
 
 interface TableProps extends AllHTMLAttributes<HTMLTableElement> {
-  className?: string;
   bordered?: boolean;
   fullWidth?: boolean;
   layout?: 'fixed' | 'auto';

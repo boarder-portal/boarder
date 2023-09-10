@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Action, CardActionType, Payments } from 'common/types/games/sevenWonders';
 
-interface DraftLeaderActionProps {
-  className?: string;
+interface DraftLeaderActionProps extends WithClassName {
   onCardAction(action: Action, payments?: Payments): void;
 }
 

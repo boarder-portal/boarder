@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
-interface CheckIconProps {
-  className?: string;
-}
+import { WithClassName } from 'client/types/react';
+
+interface CheckIconProps extends WithClassName {}
 
 const CheckIcon: FC<CheckIconProps> = (props) => {
   const { className } = props;

@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import React, { CSSProperties } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Card as CardModel } from 'common/types/games/sevenWonders/cards';
 
 import Image from 'client/components/common/Image/Image';
 
 import styles from './Card.module.scss';
 
-interface CardProps {
-  className?: string;
+interface CardProps extends WithClassName {
   style?: CSSProperties;
   card: CardModel;
   flip?: boolean;

@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Suit } from 'common/types/game/cards';
 import { HandStage, Player as PlayerModel } from 'common/types/games/hearts';
 
@@ -13,8 +14,7 @@ import Card from 'client/pages/Game/components/HeartsGame/components/Hand/compon
 
 import styles from './Player.module.scss';
 
-interface PlayerProps {
-  className?: string;
+interface PlayerProps extends WithClassName {
   player: PlayerModel;
   position: PlayerPosition;
   isActive: boolean;

@@ -5,7 +5,6 @@ import Flex from 'client/components/common/Flex/Flex';
 import styles from './Input.module.scss';
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
-  className?: string;
   label: string;
   value: string;
   onChange(newValue: string): void;

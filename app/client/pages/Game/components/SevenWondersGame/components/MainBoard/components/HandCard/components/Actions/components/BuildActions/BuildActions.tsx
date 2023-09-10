@@ -2,6 +2,7 @@ import React from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { WithClassName } from 'client/types/react';
 import { Action, Payments, Player } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
@@ -12,8 +13,7 @@ import BuildCardActions from 'client/pages/Game/components/SevenWondersGame/comp
 import BuildWonderLevelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
 import DiscardAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
 
-interface BuildActionsProps {
-  className?: string;
+interface BuildActionsProps extends WithClassName {
   cardIndex: number;
   card: Card;
   player: Player;

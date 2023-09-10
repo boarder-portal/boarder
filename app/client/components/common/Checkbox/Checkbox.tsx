@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import { FC } from 'react';
 
+import { WithClassName } from 'client/types/react';
+
 import Flex from 'client/components/common/Flex/Flex';
 import CheckIcon from 'client/components/icons/CheckIcon/CheckIcon';
 
 import styles from './Checkbox.module.scss';
 
-interface CheckboxProps {
-  className?: string;
+interface CheckboxProps extends WithClassName {
   checked: boolean;
   disabled?: boolean;
   label: string;
@@ -15,11 +16,11 @@ interface CheckboxProps {
 }
 
 const Checkbox: FC<CheckboxProps> = (props) => {
-  const { checked, disabled, label, onChange } = props;
+  const { className, checked, disabled, label, onChange } = props;
 
   return (
     <Flex
-      className={classNames(styles.root, { [styles.disabled]: disabled })}
+      className={classNames(styles.root, { [styles.disabled]: disabled }, className)}
       alignItems="center"
       between={2}
       onClick={() => onChange(!checked)}

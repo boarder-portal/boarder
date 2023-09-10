@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
+import { WithClassName } from 'client/types/react';
 import { Player, WaitingActionType } from 'common/types/games/sevenWonders';
 import { CardId } from 'common/types/games/sevenWonders/cards';
 import { FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
@@ -17,8 +18,7 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 
 import styles from './Wonder.module.scss';
 
-interface WonderProps {
-  className?: string;
+interface WonderProps extends WithClassName {
   player: Player;
   copiedLeaderId?: CardId;
   isOtherPlayer?: boolean;

@@ -4,6 +4,7 @@ import sumBy from 'lodash/sumBy';
 import times from 'lodash/times';
 import React, { useEffect, useState } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Timestamp } from 'common/types';
 import { CityGoodsType, MeepleType, Player } from 'common/types/games/carcassonne';
 
@@ -12,8 +13,7 @@ import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meep
 
 import styles from './Player.module.scss';
 
-interface PlayersProps {
-  className?: string;
+interface PlayersProps extends WithClassName {
   players: Player[];
   activePlayerIndex: number;
   turnEndsAt: Timestamp | null;

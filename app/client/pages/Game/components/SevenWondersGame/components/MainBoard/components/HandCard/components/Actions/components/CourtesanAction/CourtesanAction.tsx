@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 
 import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { WithClassName } from 'client/types/react';
 import { Action, Payments } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
-interface CourtesanActionProps {
-  className?: string;
+interface CourtesanActionProps extends WithClassName {
   card: Card;
   courtesansBuildInfo: CourtesansBuildInfo;
   onCardAction(cardIndex: number, action: Action, payments?: Payments): void;

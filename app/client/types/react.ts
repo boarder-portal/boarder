@@ -5,3 +5,7 @@ declare module 'react' {
     [variable: `--${string}`]: string | number | undefined;
   }
 }
+
+export interface WithClassName {
+  className?: string;
+}

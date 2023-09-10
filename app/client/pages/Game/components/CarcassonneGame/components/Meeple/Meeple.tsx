@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { MeepleType, PlayerColor } from 'common/types/games/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Meeple.module.scss';
 
-interface MeepleProps {
-  className?: string;
+interface MeepleProps extends WithClassName {
   style?: React.CSSProperties;
   type: MeepleType;
   color: PlayerColor;

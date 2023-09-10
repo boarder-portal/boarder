@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { FC, memo, useMemo } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { CardType, Player, PlayerWaitingActionType } from 'common/types/games/machiKoro';
 
 import Dice, { DiceType } from 'client/components/Dice/Dice';
@@ -10,8 +11,7 @@ import Text from 'client/components/common/Text/Text';
 
 import styles from './StatusAndAction.module.scss';
 
-interface StatusAndActionsProps {
-  className?: string;
+interface StatusAndActionsProps extends WithClassName {
   activePlayer: Player;
   isPlayerActive: boolean;
   dices: number[];

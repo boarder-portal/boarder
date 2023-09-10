@@ -46,15 +46,9 @@ const Registration: React.FC = () => {
       <form className={styles.form} onSubmit={handleSubmit}>
         <Input label="Логин" value={login} onChange={setLogin} />
 
-        <Input className={styles.password} label="Пароль" value={password} type="password" onChange={setPassword} />
+        <Input label="Пароль" value={password} type="password" onChange={setPassword} />
 
-        <Input
-          className={styles.password}
-          label="Повторный пароль"
-          value={passwordForCheck}
-          type="password"
-          onChange={setPasswordForCheck}
-        />
+        <Input label="Повторный пароль" value={passwordForCheck} type="password" onChange={setPasswordForCheck} />
 
         <Button className={styles.submit} type="submit">
           Регистрация

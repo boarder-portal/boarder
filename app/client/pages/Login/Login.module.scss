@@ -2,14 +2,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.password {
-  margin-top: 8px;
+  gap: 8px;
 }
 
 .submit {
-  margin-top: 20px !important;
+  margin-top: 12px;
   width: 100%;
 }
 

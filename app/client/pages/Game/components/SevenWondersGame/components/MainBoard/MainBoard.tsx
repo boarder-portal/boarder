@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { WithClassName } from 'client/types/react';
 import { GameType } from 'common/types/game';
 import {
   Action,
@@ -45,8 +46,7 @@ import { NEW_TURN, SELECT_SOUND, playSound } from 'client/sounds';
 
 import styles from './MainBoard.module.scss';
 
-interface MainBoardProps {
-  className?: string;
+interface MainBoardProps extends WithClassName {
   io: GameClientSocket<GameType.SEVEN_WONDERS>;
   gameOptions: GameOptions;
   player: Player;

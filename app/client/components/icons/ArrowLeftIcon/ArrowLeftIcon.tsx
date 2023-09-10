@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
-interface ArrowLeftIconProps {
-  className?: string;
-}
+import { WithClassName } from 'client/types/react';
+
+interface ArrowLeftIconProps extends WithClassName {}
 
 const ArrowLeftIcon: FC<ArrowLeftIconProps> = (props) => {
   const { className } = props;
