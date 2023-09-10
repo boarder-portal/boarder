@@ -1,8 +1,9 @@
+import path from 'node:path';
+
 import camelCase from 'lodash/camelCase';
 import snakeCase from 'lodash/snakeCase';
 import startCase from 'lodash/startCase';
 import upperFirst from 'lodash/upperFirst';
-import path from 'node:path';
 
 import addConstants from './utilities/addConstants';
 import addDefaultOptions from './utilities/addDefaultOptions';
