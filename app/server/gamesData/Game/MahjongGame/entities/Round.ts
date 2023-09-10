@@ -1,31 +1,31 @@
-import { EGame } from 'common/types/game';
-import { EWind, IRound, IRoundPlayerData } from 'common/types/mahjong';
+import { GameType } from 'common/types/game';
+import { Round as RoundModel, RoundPlayerData, WindSide } from 'common/types/mahjong';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
-export interface IRoundOptions {
-  wind: EWind | null;
+export interface RoundOptions {
+  wind: WindSide | null;
   handsCount: number;
-  playersWinds: EWind[];
+  playersWinds: WindSide[];
   isLastInGame: boolean;
 }
 
-export default class Round extends ServerEntity<EGame.MAHJONG> {
+export default class Round extends ServerEntity<GameType.MAHJONG> {
   game: MahjongGame;
 
-  wind: EWind | null;
+  wind: WindSide | null;
   handIndex = -1;
   handsCount: number;
   isLastInGame: boolean;
-  playersData: IRoundPlayerData[];
+  playersData: RoundPlayerData[];
 
   hand: Hand | null = null;
 
-  constructor(game: MahjongGame, options: IRoundOptions) {
+  constructor(game: MahjongGame, options: RoundOptions) {
     super(game);
 
     this.game = game;
@@ -37,14 +37,14 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
     }));
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     for (let hand = 0; hand < this.handsCount; hand++) {
       const isLastHand = this.isLastInGame && hand === this.handsCount - 1;
 
       this.handIndex = hand;
       this.hand = this.spawnEntity(
         new Hand(this, {
-          startPlayerIndex: this.playersData.findIndex(({ wind }) => wind === EWind.EAST),
+          startPlayerIndex: this.playersData.findIndex(({ wind }) => wind === WindSide.EAST),
           isLastInGame: isLastHand,
         }),
       );
@@ -57,7 +57,7 @@ export default class Round extends ServerEntity<EGame.MAHJONG> {
     }
   }
 
-  toJSON(): IRound {
+  toJSON(): RoundModel {
     return {
       wind: this.wind,
       handIndex: this.handIndex,

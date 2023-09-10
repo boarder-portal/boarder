@@ -1,16 +1,16 @@
-import { ESuit, ICard } from 'common/types/cards';
+import { Card, Suit } from 'common/types/cards';
 
 import { isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
 
-export interface IAllowedCardOptions {
-  card: ICard;
-  suit: ESuit | null;
-  hand: ICard[];
+export interface AllowedCardOptions {
+  card: Card;
+  suit: Suit | null;
+  hand: Card[];
   heartsEnteredPlay: boolean;
   isFirstTurn: boolean;
 }
 
-export default function isCardAllowed(options: IAllowedCardOptions): boolean {
+export default function isCardAllowed(options: AllowedCardOptions): boolean {
   const { card, suit, hand, heartsEnteredPlay, isFirstTurn } = options;
 
   if (hand.some((card) => card.suit === suit)) {

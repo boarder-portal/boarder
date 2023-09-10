@@ -7,32 +7,33 @@ import {
 } from 'common/constants/games/mahjong';
 
 import {
-  ESet,
-  ESetConcealedType,
-  ETileType,
-  IChowSet,
-  IKongSet,
-  IPungSet,
-  TMeldedSet,
-  TPlayableTile,
-  TTile,
+  ChowSet,
+  KongSet,
+  MeldedSet,
+  PlayableTile,
+  PungSet,
+  SetConcealedType,
+  SetType,
+  Tile,
+  TileType,
 } from 'common/types/mahjong';
 
-import { chow, dragon, flower, isPlayable, isSuited, kong, pung, suited, wind } from 'common/utilities/mahjong/tiles';
+import { isPlayable } from 'common/utilities/mahjong/tiles';
+import { chow, dragon, flower, isSuited, kong, pung, suited, wind } from 'common/utilities/mahjong/tilesBase';
 
-export function parseTiles(tilesString: string): TTile[] {
+export function parseTiles(tilesString: string): Tile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];
 }
 
-export function parsePlayableTiles(tilesString: string): TPlayableTile[] {
+export function parsePlayableTiles(tilesString: string): PlayableTile[] {
   return parseTiles(tilesString).filter(isPlayable);
 }
 
-export function parsePlayableTileSets(tilesString: string): TPlayableTile[][] {
+export function parsePlayableTileSets(tilesString: string): PlayableTile[][] {
   return tilesString.split(' ').map((tilesString) => parseTiles(tilesString).filter(isPlayable));
 }
 
-export function parseTile(tileString: string): TTile {
+export function parseTile(tileString: string): Tile {
   if (tileString.length !== 2) {
     throw new Error(`Wrong length, expected 2, got ${tileString.length}`);
   }
@@ -84,7 +85,7 @@ export function parseTile(tileString: string): TTile {
   return suited(value, suit);
 }
 
-export function parsePlayableTile(tileString: string): TPlayableTile {
+export function parsePlayableTile(tileString: string): PlayableTile {
   const tile = parseTile(tileString);
 
   if (!isPlayable(tile)) {
@@ -94,26 +95,26 @@ export function parsePlayableTile(tileString: string): TPlayableTile {
   return tile;
 }
 
-export function parsePung(tileString: string): TMeldedSet<IPungSet> {
+export function parsePung(tileString: string): MeldedSet<PungSet> {
   return {
-    type: ESet.PUNG,
+    type: SetType.PUNG,
     tiles: pung(parsePlayableTile(tileString)),
-    concealedType: ESetConcealedType.MELDED,
+    concealedType: SetConcealedType.MELDED,
   };
 }
 
-export function parseKong<ConcealedType extends ESetConcealedType>(
+export function parseKong<ConcealedType extends SetConcealedType>(
   tileString: string,
   concealedType: ConcealedType,
-): IKongSet & { concealedType: ConcealedType } {
+): KongSet & { concealedType: ConcealedType } {
   return {
-    type: ESet.KONG,
+    type: SetType.KONG,
     tiles: kong(parsePlayableTile(tileString)),
     concealedType,
   };
 }
 
-export function parseChow(tileString: string): TMeldedSet<IChowSet> {
+export function parseChow(tileString: string): MeldedSet<ChowSet> {
   const chowTile = parsePlayableTile(tileString);
 
   if (!isSuited(chowTile) || chowTile.value === 1 || chowTile.value === 9) {
@@ -121,8 +122,8 @@ export function parseChow(tileString: string): TMeldedSet<IChowSet> {
   }
 
   return {
-    type: ESet.CHOW,
+    type: SetType.CHOW,
     tiles: chow(chowTile),
-    concealedType: ESetConcealedType.MELDED,
+    concealedType: SetConcealedType.MELDED,
   };
 }

@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
 import useSocket from 'client/hooks/useSocket';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
-import styles from './{{pascalCased}}Game.pcss';
+import styles from './{{pascalCased}}Game.scss';
 
-const {{pascalCased}}Game: React.FC<IGameProps<EGame.{{constCased}}>> = (props) => {
+const {{pascalCased}}Game: React.FC<GameProps<GameType.{{constCased}}>> = (props) => {
   const { io, gameInfo } = props;
 
   useSocket(io, {});

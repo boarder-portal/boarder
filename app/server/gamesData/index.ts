@@ -1,7 +1,7 @@
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
 import Lobby from 'server/gamesData/Lobby/Lobby';
 
-Object.values(EGame).forEach((game) => {
+Object.values(GameType).forEach((game) => {
   new Lobby({ game });
 });

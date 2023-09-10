@@ -1,16 +1,16 @@
-export interface ICard {
-  suit: ESuit;
-  value: EValue;
+export interface Card {
+  suit: Suit;
+  value: Value;
 }
 
-export enum ESuit {
+export enum Suit {
   HEARTS = 'HEARTS',
   SPADES = 'SPADES',
   CLUBS = 'CLUBS',
   DIAMONDS = 'DIAMONDS',
 }
 
-export enum EValue {
+export enum Value {
   DEUCE = '2',
   THREE = '3',
   FOUR = '4',

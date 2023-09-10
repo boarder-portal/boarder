@@ -1,29 +1,29 @@
-import shuffle from 'lodash/shuffle';
 import cloneDeep from 'lodash/cloneDeep';
+import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
 import { ALL_CARDS } from 'common/constants/games/machiKoro';
 
-import { EGame } from 'common/types/game';
-import { ECardId, EGameServerEvent, ELandmarkId, ICard, IGame, IPlayer, IPlayerData } from 'common/types/machiKoro';
+import { GameType } from 'common/types/game';
+import { Card, CardId, Game, GameServerEventType, LandmarkId, Player, PlayerData } from 'common/types/machiKoro';
 
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Turn from 'server/gamesData/Game/MachiKoroGame/entities/Turn';
 
-export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
-  playersData: IPlayerData[] = this.getPlayersData(() => ({
+export default class MachiKoroGame extends TurnGameEntity<GameType.MACHI_KORO> {
+  playersData: PlayerData[] = this.getPlayersData(() => ({
     coins: 3,
-    cardsIds: [ECardId.WHEAT_FIELD, ECardId.BAKERY],
-    landmarksIds: [ELandmarkId.CITY_HALL],
+    cardsIds: [CardId.WHEAT_FIELD, CardId.BAKERY],
+    landmarksIds: [LandmarkId.CITY_HALL],
   }));
-  deck: ICard[] = shuffle(cloneDeep(ALL_CARDS).flatMap((card) => times(card.count, () => card)));
-  board: ECardId[] = [];
+  deck: Card[] = shuffle(cloneDeep(ALL_CARDS).flatMap((card) => times(card.count, () => card)));
+  board: CardId[] = [];
 
   turn: Turn | null = null;
 
-  *lifecycle(): TGenerator<number> {
+  *lifecycle(): EntityGenerator<number> {
     this.fillBoard();
 
     yield* this.delay(500);
@@ -37,7 +37,7 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
 
       this.passTurn();
 
-      this.sendSocketEvent(EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
+      this.sendSocketEvent(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
 
       winnerIndex = this.getWinnerIndex();
     }
@@ -46,7 +46,7 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
   }
 
   fillBoard(): void {
-    const uniqCards = new Set<ECardId>(this.board);
+    const uniqCards = new Set<CardId>(this.board);
 
     while (uniqCards.size !== 10) {
       const card = this.deck.pop();
@@ -60,7 +60,7 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
     }
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
@@ -68,13 +68,13 @@ export default class MachiKoroGame extends TurnGameEntity<EGame.MACHI_KORO> {
     return this.playersData.findIndex(({ landmarksIds }) => landmarksIds.length === 7);
   }
 
-  pickCardAndFillBoard(cardId: ECardId): void {
+  pickCardAndFillBoard(cardId: CardId): void {
     this.board.splice(this.board.indexOf(cardId), 1);
 
     this.fillBoard();
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       activePlayerIndex: this.activePlayerIndex,
       players: this.getGamePlayers(),

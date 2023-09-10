@@ -1,118 +1,115 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   MOVE_PLAYER = 'MOVE_PLAYER',
 }
 
-export enum EGameServerEvent {
+export enum GameServerEventType {
   UPDATE_GAME = 'UPDATE_GAME',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IPlayerData {
-  cell: ICellWithObject<IPlayerObject>;
+export interface PlayerData {
+  cell: CellWithObject<PlayerObject>;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.SURVIVAL_ONLINE> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.SURVIVAL_ONLINE> {
+  data: PlayerData;
 }
 
-export enum EBiome {
+export enum BiomeType {
   GRASS = 'GRASS',
 }
 
-export enum EObject {
+export enum ObjectType {
   BASE = 'BASE',
   PLAYER = 'PLAYER',
   ZOMBIE = 'ZOMBIE',
   TREE = 'TREE',
 }
 
-export enum EDirection {
+export enum Direction {
   UP = 'UP',
   DOWN = 'DOWN',
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
 
-export interface IObject {
-  type: EObject;
+export interface BaseMapObject {
+  type: ObjectType;
 }
 
-export interface IBaseObject extends IObject {
-  type: EObject.BASE;
+export interface BaseObject extends BaseMapObject {
+  type: ObjectType.BASE;
 }
 
-export interface IPlayerObject extends IObject {
-  type: EObject.PLAYER;
+export interface PlayerObject extends BaseMapObject {
+  type: ObjectType.PLAYER;
   index: number;
-  direction: EDirection;
+  direction: Direction;
 }
 
-export interface IZombieObject extends IObject {
-  type: EObject.ZOMBIE;
-  direction: EDirection;
+export interface ZombieObject extends BaseMapObject {
+  type: ObjectType.ZOMBIE;
+  direction: Direction;
 }
 
-export interface ITreeObject extends IObject {
-  type: EObject.TREE;
+export interface TreeObject extends BaseMapObject {
+  type: ObjectType.TREE;
 }
 
-export type TObject = IBaseObject | IPlayerObject | IZombieObject | ITreeObject;
+export type MapObject = BaseObject | PlayerObject | ZombieObject | TreeObject;
 
-export interface ICell<Obj extends TObject = TObject> {
+export interface Cell<Obj extends MapObject = MapObject> {
   x: number;
   y: number;
-  biome: EBiome;
+  biome: BiomeType;
   object: Obj | null;
 }
 
-export interface ICellWithObject<Obj extends TObject = TObject> extends ICell<Obj> {
+export interface CellWithObject<Obj extends MapObject = MapObject> extends Cell<Obj> {
   object: Obj;
 }
 
-export type TMap = ICell[][];
+export type Map = Cell[][];
 
-export interface IGameInfoEvent {
-  map: TMap;
-  players: IPlayer[];
+export interface Game {
+  map: Map;
+  players: Player[];
 }
 
-export interface IGame {
-  map: TMap;
-  players: IPlayer[];
+export interface UpdateGameEvent {
+  players: Player[] | null;
+  cells: Cell[];
 }
 
-export interface IUpdateGameEvent {
-  players: IPlayer[] | null;
-  cells: ICell[];
+export interface ClientEventMap extends CommonClientEventMap<GameType.SURVIVAL_ONLINE> {
+  [GameClientEventType.MOVE_PLAYER]: Direction;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.SURVIVAL_ONLINE> {
-  [EGameClientEvent.MOVE_PLAYER]: EDirection;
+export interface ServerEventMap extends CommonServerEventMap<GameType.SURVIVAL_ONLINE> {
+  [GameServerEventType.UPDATE_GAME]: UpdateGameEvent;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.SURVIVAL_ONLINE> {
-  [EGameServerEvent.UPDATE_GAME]: IUpdateGameEvent;
-}
+type SurvivalOnlineGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.SURVIVAL_ONLINE]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.SURVIVAL_ONLINE]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: SurvivalOnlineGameOptions;
+      info: Game;
       result: void;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

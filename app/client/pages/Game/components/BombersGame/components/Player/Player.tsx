@@ -1,17 +1,17 @@
-import React, { FC, memo } from 'react';
 import classNames from 'classnames';
+import React, { FC, memo } from 'react';
 
-import { IPlayer } from 'common/types/bombers';
+import { Player as PlayerModel } from 'common/types/bombers';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Player.module.scss';
 
-interface IPlayerProps {
-  player: IPlayer;
+interface PlayerProps {
+  player: PlayerModel;
 }
 
-const Player: FC<IPlayerProps> = (props) => {
+const Player: FC<PlayerProps> = (props) => {
   const { player } = props;
 
   return (

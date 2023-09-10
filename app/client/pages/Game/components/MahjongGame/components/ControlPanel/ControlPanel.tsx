@@ -1,82 +1,83 @@
-import { FC, memo, ReactNode, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
+import { FC, ReactNode, memo, useCallback, useMemo } from 'react';
 
+import { GameType } from 'common/types/game';
 import {
-  EHandPhase,
-  EWind,
-  IDeclareInfo,
-  IFlowerTile,
-  IHandMahjong,
-  IPlayer,
-  TDeclareDecision,
-  TDeclaredSet,
-  TTile,
+  DeclareDecision,
+  DeclareInfo,
+  DeclaredSet,
+  FlowerTile,
+  HandMahjong,
+  HandPhase,
+  Player,
+  Tile as TileModel,
+  WindSide,
 } from 'common/types/mahjong';
-import { EGame } from 'common/types/game';
 
-import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
-import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';
-import { getSetNumanName } from 'common/utilities/mahjong/stringify';
-import { getLastTileCandidates, isEqualTiles, isFlower } from 'common/utilities/mahjong/tiles';
 import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
+import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';
+import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
+import { getSetNumanName } from 'common/utilities/mahjong/stringify';
+import { getLastTileCandidates, isEqualTiles } from 'common/utilities/mahjong/tiles';
+import { isFlower } from 'common/utilities/mahjong/tilesBase';
 
-import Flex from 'client/components/common/Flex/Flex';
-import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
-import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Button from 'client/components/common/Button/Button';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import Flex from 'client/components/common/Flex/Flex';
+import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
+import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
-import { TChangeSettingCallback } from 'client/pages/Game/Game';
+import { ChangeSettingCallback } from 'client/pages/Game/Game';
 
 import styles from './ControlPanel.module.scss';
 
-interface IControlPanelProps {
+interface ControlPanelProps {
   className?: string;
-  handPhase: EHandPhase | null;
-  roundWind: EWind | null;
-  player: IPlayer | null;
-  currentTile: TTile | null;
+  handPhase: HandPhase | null;
+  roundWind: WindSide | null;
+  player: Player | null;
+  currentTile: TileModel | null;
   isLastWallTile: boolean;
-  declareInfo: IDeclareInfo | null;
+  declareInfo: DeclareInfo | null;
   isReplacementTile: boolean;
   handInProcess: boolean;
   isLastHandInGame: boolean;
   activePlayerIndex: number;
   activePlayerName: string | null;
-  players: IPlayer[];
-  onDeclareDecision(decision: TDeclareDecision): void;
-  changeSetting: TChangeSettingCallback<EGame.MAHJONG>;
+  players: Player[];
+  onDeclareDecision(decision: DeclareDecision): void;
+  changeSetting: ChangeSettingCallback<GameType.MAHJONG>;
   startNewHand(ready: boolean): void;
   openFansModal(): void;
   openResultsModal(): void;
   openCalculatorModal(): void;
 }
 
-type TDeclareDecisionButton =
+type DeclareDecisionButton =
   | 'pass'
   | {
       type: 'mahjong';
-      mahjong: IHandMahjong;
+      mahjong: HandMahjong;
     }
   | {
       type: 'set';
-      set: TDeclaredSet;
+      set: DeclaredSet;
     }
   | {
       type: 'flower';
-      flower: IFlowerTile;
+      flower: FlowerTile;
     };
 
-interface IGetMahjongOptions {
-  hand: TTile[];
-  winningTile: TTile;
+interface GetMahjongOptions {
+  hand: TileModel[];
+  winningTile: TileModel;
   isRobbingKong: boolean;
   isSelfDraw: boolean;
 }
 
 const TILE_WIDTH = 30;
 
-const ControlPanel: FC<IControlPanelProps> = (props) => {
+const ControlPanel: FC<ControlPanelProps> = (props) => {
   const {
     className,
     handPhase,
@@ -109,7 +110,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
   }, [activePlayerIndex, player?.index, players]);
 
   const getMahjong = useCallback(
-    (options: IGetMahjongOptions): IHandMahjong | null => {
+    (options: GetMahjongOptions): HandMahjong | null => {
       if (!player?.data.hand) {
         return null;
       }
@@ -133,7 +134,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     [isActive, isLastWallTile, isReplacementTile, player?.data.hand, player?.data.round?.wind, players, roundWind],
   );
 
-  const declareDecisions = useMemo<TDeclareDecisionButton[]>(() => {
+  const declareDecisions = useMemo<DeclareDecisionButton[]>(() => {
     if (!player?.data.hand || !handPhase) {
       return [];
     }
@@ -141,9 +142,9 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
     const { hand, declaredSets } = player.data.hand;
 
     if (isActive) {
-      const possibleDecisions: TDeclareDecisionButton[] = [];
+      const possibleDecisions: DeclareDecisionButton[] = [];
 
-      if (handPhase === EHandPhase.REPLACE_FLOWERS) {
+      if (handPhase === HandPhase.REPLACE_FLOWERS) {
         possibleDecisions.push('pass');
       } else {
         possibleDecisions.push(
@@ -183,11 +184,11 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
       return possibleDecisions;
     }
 
-    if (handPhase === EHandPhase.REPLACE_FLOWERS || !declareInfo) {
+    if (handPhase === HandPhase.REPLACE_FLOWERS || !declareInfo) {
       return [];
     }
 
-    const possibleDecisions: TDeclareDecisionButton[] = declareInfo.isRobbingKong
+    const possibleDecisions: DeclareDecisionButton[] = declareInfo.isRobbingKong
       ? []
       : [
           ...getPossibleMeldedSets(hand, declareInfo.tile, isChowPossible).map(
@@ -234,7 +235,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
               <Tile tile={declareInfo.tile} width={TILE_WIDTH} />
             </>
           ) : (
-            `${handPhase === EHandPhase.REPLACE_FLOWERS ? 'Замена цветов. ' : ''}Ход ${activePlayerName}`
+            `${handPhase === HandPhase.REPLACE_FLOWERS ? 'Замена цветов. ' : ''}Ход ${activePlayerName}`
           )}
         </Flex>
       )}
@@ -259,7 +260,7 @@ const ControlPanel: FC<IControlPanelProps> = (props) => {
           let content: ReactNode;
 
           if (decision === 'pass') {
-            content = handPhase === EHandPhase.REPLACE_FLOWERS ? 'Пропустить' : 'Пас';
+            content = handPhase === HandPhase.REPLACE_FLOWERS ? 'Пропустить' : 'Пас';
           } else if (decision.type === 'mahjong') {
             const pureScore = getPureFansScore(decision.mahjong.fans);
 

@@ -1,16 +1,16 @@
-import { memo, FC } from 'react';
-import times from 'lodash/times';
 import classNames from 'classnames';
+import times from 'lodash/times';
+import { FC, memo } from 'react';
 
 import styles from './Dice.module.scss';
 
-export type TDice = 1 | 2 | 3 | 4 | 5 | 6;
+export type DiceType = 1 | 2 | 3 | 4 | 5 | 6;
 
-interface IDiceProps {
-  number: TDice;
+interface DiceProps {
+  number: DiceType;
 }
 
-const Dice: FC<IDiceProps> = (props) => {
+const Dice: FC<DiceProps> = (props) => {
   const { number } = props;
 
   return (

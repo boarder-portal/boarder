@@ -1,29 +1,29 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  ICoords,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  Coords,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   MOVE_PIECE = 'MOVE_PIECE',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IPlayerData {
-  cards: ECardType[];
-  color: EPlayerColor;
+export interface PlayerData {
+  cards: CardType[];
+  color: PlayerColor;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.ONITAMA> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.ONITAMA> {
+  data: PlayerData;
 }
 
-export enum ECardType {
+export enum CardType {
   TIGER = 'TIGER',
   DRAGON = 'DRAGON',
   FROG = 'FROG',
@@ -42,46 +42,48 @@ export enum ECardType {
   COBRA = 'COBRA',
 }
 
-export enum EPlayerColor {
+export enum PlayerColor {
   BLUE = 'BLUE',
   RED = 'RED',
 }
 
-export interface IPiece {
-  color: EPlayerColor;
+export interface Piece {
+  color: PlayerColor;
   isMaster: boolean;
 }
 
-export type TBoard = (IPiece | null)[][];
+export type Board = (Piece | null)[][];
 
-export interface IGame {
-  board: TBoard;
-  players: IPlayer[];
-  fifthCard: ECardType;
+export interface Game {
+  board: Board;
+  players: Player[];
+  fifthCard: CardType;
   activePlayerIndex: number;
 }
 
-export interface IMovePieceEvent {
-  from: ICoords;
-  to: ICoords;
+export interface MovePieceEvent {
+  from: Coords;
+  to: Coords;
   cardIndex: number;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.ONITAMA> {
-  [EGameClientEvent.MOVE_PIECE]: IMovePieceEvent;
+export interface ClientEventMap extends CommonClientEventMap<GameType.ONITAMA> {
+  [GameClientEventType.MOVE_PIECE]: MovePieceEvent;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.ONITAMA> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.ONITAMA> {}
+
+type OnitamaGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.ONITAMA]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.ONITAMA]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: OnitamaGameOptions;
+      info: Game;
       result: number;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

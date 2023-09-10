@@ -1,23 +1,23 @@
-import { memo, FC, useMemo } from 'react';
-import sortBy from 'lodash/sortBy';
 import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
+import { FC, memo, useMemo } from 'react';
 
-import { ECardId } from 'common/types/machiKoro';
+import { CardId } from 'common/types/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
 
-interface ICardLineProps {
+interface CardLineProps {
   className?: string;
   cardClassName?: string;
-  cardsIds: ECardId[];
-  disabledIds: ECardId[];
-  onClick?(id: ECardId): void;
+  cardsIds: CardId[];
+  disabledIds: CardId[];
+  onClick?(id: CardId): void;
 }
 
-const CardLine: FC<ICardLineProps> = (props) => {
+const CardLine: FC<CardLineProps> = (props) => {
   const { className, cardClassName, cardsIds, disabledIds, onClick } = props;
 
   const groupedCards = useMemo(

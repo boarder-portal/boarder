@@ -1,8 +1,8 @@
-import { TTile } from 'common/types/mahjong';
+import { Tile } from 'common/types/mahjong';
 
 import { isEqualTilesCallback } from 'common/utilities/mahjong/tiles';
 
-export function getHandWithoutTile(hand: TTile[], tile: TTile): TTile[] {
+export function getHandWithoutTile(hand: Tile[], tile: Tile): Tile[] {
   const winningTileIndex = hand.findIndex(isEqualTilesCallback(tile));
 
   if (winningTileIndex === -1) {

@@ -1,31 +1,31 @@
-import { FC, memo, useMemo } from 'react';
 import classNames from 'classnames';
+import { FC, memo, useMemo } from 'react';
 
-import { ECardType, EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
+import { CardType, Player, PlayerWaitingActionType } from 'common/types/machiKoro';
 
+import Dice, { DiceType } from 'client/components/Dice/Dice';
+import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
-import Button from 'client/components/common/Button/Button';
-import Dice, { TDice } from 'client/components/Dice/Dice';
 
 import styles from './StatusAndAction.module.scss';
 
-interface IActionsProps {
+interface StatusAndActionsProps {
   className?: string;
-  activePlayer: IPlayer;
+  activePlayer: Player;
   isPlayerActive: boolean;
   dices: number[];
   withHarborEffect: boolean;
-  waitingAction: EPlayerWaitingAction | null;
+  waitingAction: PlayerWaitingActionType | null;
   winner: string | null;
   onEndTurn(): void;
   onSelectDicesCount(count: number): void;
   onSelectNeedToReroll(needToReroll: boolean): void;
   onSelectNeedToUseHarbor(needToUse: boolean): void;
-  onSelectPublisherTarget(publisherTarget: ECardType.SHOP | ECardType.RESTAURANT): void;
+  onSelectPublisherTarget(publisherTarget: CardType.SHOP | CardType.RESTAURANT): void;
 }
 
-const StatusAndActions: FC<IActionsProps> = (props) => {
+const StatusAndActions: FC<StatusAndActionsProps> = (props) => {
   const {
     className,
     activePlayer,
@@ -42,27 +42,27 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
   } = props;
 
   const status = useMemo(() => {
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_DICES_COUNT) {
       return 'Выбирает количество кубиков';
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_NEED_TO_REROLL) {
       return 'Выбирает перекинуть ли кубики';
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_NEED_TO_USE_HARBOR) {
       return 'Выбирает добавить ли к кубикам 2';
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_CARDS_TO_SWAP) {
       return 'Выбирает карты для обмена';
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_PLAYER) {
       return 'Выбирает игрока';
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_PUBLISHER_TARGET) {
       return 'Выбирает тип зданий для Издательства';
     }
 
@@ -80,7 +80,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
         {dices.length > 0 && (
           <Flex between={2} alignItems="center">
             {dices.map((dice, index) => (
-              <Dice key={index} number={dice as TDice} />
+              <Dice key={index} number={dice as DiceType} />
             ))}
 
             {withHarborEffect && <div>+2</div>}
@@ -96,7 +96,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       return null;
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_DICES_COUNT) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_DICES_COUNT) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Сколько кубиков кинуть?</Text>
@@ -113,7 +113,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_REROLL) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_NEED_TO_REROLL) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Перекинуть кубики?</Text>
@@ -131,7 +131,7 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_NEED_TO_USE_HARBOR) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_NEED_TO_USE_HARBOR) {
       return (
         <Flex between={2} alignItems="center">
           <Text>Прибавить к кубикам 2?</Text>
@@ -149,17 +149,17 @@ const StatusAndActions: FC<IActionsProps> = (props) => {
       );
     }
 
-    if (waitingAction === EPlayerWaitingAction.CHOOSE_PUBLISHER_TARGET) {
+    if (waitingAction === PlayerWaitingActionType.CHOOSE_PUBLISHER_TARGET) {
       return (
         <Flex between={2} alignItems="center">
           <Text>За что взять монеты?</Text>
 
           <Flex between={2} alignItems="center">
-            <Button size="s" onClick={() => onSelectPublisherTarget(ECardType.SHOP)}>
+            <Button size="s" onClick={() => onSelectPublisherTarget(CardType.SHOP)}>
               Магазины
             </Button>
 
-            <Button size="s" onClick={() => onSelectPublisherTarget(ECardType.RESTAURANT)}>
+            <Button size="s" onClick={() => onSelectPublisherTarget(CardType.RESTAURANT)}>
               Рестораны
             </Button>
           </Flex>

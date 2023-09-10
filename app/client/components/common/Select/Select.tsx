@@ -1,7 +1,7 @@
-import { ReactNode, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
+import { ReactNode, useCallback, useMemo } from 'react';
 
-import { useBoolean } from 'client/hooks/useBoolean';
+import useBoolean from 'client/hooks/useBoolean';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
@@ -9,7 +9,7 @@ import ArrowDropDownIcon from 'client/components/icons/ArrowDropDownIcon/ArrowDr
 
 import styles from './Select.module.scss';
 
-interface ISelectProps<Value> {
+interface SelectProps<Value> {
   className?: string;
   value: Value;
   options: {
@@ -22,7 +22,7 @@ interface ISelectProps<Value> {
   onChange(newValue: Value): void;
 }
 
-const Select = <Value extends string | number>(props: ISelectProps<Value>): JSX.Element => {
+const Select = <Value extends string | number>(props: SelectProps<Value>): JSX.Element => {
   const { className, value, options, disabled, label, onChange } = props;
 
   const { value: dropdownOpen, setFalse: closeDropdown, setValue } = useBoolean(false);

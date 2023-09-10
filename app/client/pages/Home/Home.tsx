@@ -3,20 +3,20 @@ import { useHistory } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/games/common';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
+import Text from 'client/components/common/Text/Text';
 
 import styles from './Home.module.scss';
 
-const GAMES_IN_DEVELOPMENT: EGame[] = [];
+const GAMES_IN_DEVELOPMENT: GameType[] = [];
 
 const Home: React.FC = () => {
   const history = useHistory();
 
   const handleGameClick = useCallback(
-    (game: EGame) => {
+    (game: GameType) => {
       history.push(`/${game}/lobby`);
     },
     [history],
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
       </Text>
 
       <div className={styles.games}>
-        {Object.values(EGame)
+        {Object.values(GameType)
           .filter((game) => process.env.NODE_ENV !== 'production' || !GAMES_IN_DEVELOPMENT.includes(game))
           .map((game) => (
             <Flex

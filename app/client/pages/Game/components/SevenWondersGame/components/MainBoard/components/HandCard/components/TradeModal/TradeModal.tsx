@@ -1,30 +1,30 @@
 import React, { useCallback } from 'react';
 
-import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
+import { NeighborSide, Payments } from 'common/types/sevenWonders';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import ResourcesAndPrice from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
+import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';
 import Text from 'client/components/common/Text/Text';
-import Flex from 'client/components/common/Flex/Flex';
+import ResourcesAndPrice from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/components/ResourcesAndPrice/ResourcesAndPrice';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './TradeModal.module.scss';
 
-interface ITradeModalProps {
+interface TradeModalProps {
   isVisible: boolean;
-  tradeVariants: ITradeVariant[];
-  onBuild(payments?: TPayments): void;
+  tradeVariants: TradeVariant[];
+  onBuild(payments?: Payments): void;
   onClose(): void;
 }
 
-const TradeModal: React.FC<ITradeModalProps> = (props) => {
+const TradeModal: React.FC<TradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
 
   const handleSelectTradeVariant = useCallback(
-    (payments: TPayments) => {
+    (payments: Payments) => {
       onBuild(payments);
       onClose();
     },
@@ -63,7 +63,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
           >
             <ResourcesAndPrice
               price={tradeVariant.payments.LEFT}
-              resources={tradeVariant.resources.filter((resource) => resource.owner === ENeighborSide.LEFT)}
+              resources={tradeVariant.resources.filter((resource) => resource.owner === NeighborSide.LEFT)}
             />
 
             <ResourcesAndPrice
@@ -73,7 +73,7 @@ const TradeModal: React.FC<ITradeModalProps> = (props) => {
 
             <ResourcesAndPrice
               price={tradeVariant.payments.RIGHT}
-              resources={tradeVariant.resources.filter((resource) => resource.owner === ENeighborSide.RIGHT)}
+              resources={tradeVariant.resources.filter((resource) => resource.owner === NeighborSide.RIGHT)}
               reverse
             />
           </Flex>

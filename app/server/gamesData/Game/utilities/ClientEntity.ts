@@ -2,26 +2,26 @@ import io from 'socket.io-client';
 
 import { PORT } from 'server/constants';
 
+import { CommonGameServerEvent } from 'common/types';
 import {
-  EGame,
-  IGameData,
-  TGameClientDatalessEvent,
-  TGameClientEvent,
-  TGameClientEventData,
-  TGameInfo,
-  TGameServerEvent,
-  TGameServerEventData,
-  TGameServerEventListener,
+  GameClientDatalessEvent,
+  GameClientEvent,
+  GameClientEventData,
+  GameData,
+  GameInfo,
+  GameServerEvent,
+  GameServerEventData,
+  GameServerEventListener,
+  GameType,
 } from 'common/types/game';
-import { TGameClientSocket } from 'common/types/socket';
-import { ECommonGameServerEvent } from 'common/types';
+import { GameClientSocket } from 'common/types/socket';
 
-import Entity, { TEffectGenerator, TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import Entity, { EffectGenerator, EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-export default abstract class ClientEntity<Game extends EGame, Result = unknown> extends Entity<Game, Result> {
-  #socket: TGameClientSocket<Game> | null = null;
+export default abstract class ClientEntity<Game extends GameType, Result = unknown> extends Entity<Game, Result> {
+  #socket: GameClientSocket<Game> | null = null;
 
-  #getSocket(): TGameClientSocket<Game> {
+  #getSocket(): GameClientSocket<Game> {
     if (!this.#socket) {
       throw new Error('No connected socket');
     }
@@ -29,9 +29,9 @@ export default abstract class ClientEntity<Game extends EGame, Result = unknown>
     return this.#socket;
   }
 
-  #listenSocketEvent<Event extends TGameServerEvent<Game>>(
+  #listenSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
-    listener: TGameServerEventListener<Game, Event>,
+    listener: GameServerEventListener<Game, Event>,
   ): () => void {
     const socket = this.#getSocket();
 
@@ -42,11 +42,11 @@ export default abstract class ClientEntity<Game extends EGame, Result = unknown>
     };
   }
 
-  *afterLifecycle(): TGenerator {
+  *afterLifecycle(): EntityGenerator {
     this.#socket?.disconnect();
   }
 
-  *beforeLifecycle(): TGenerator {
+  *beforeLifecycle(): EntityGenerator {
     yield* super.beforeLifecycle();
 
     this.#socket = io(this.getSocketAddress(), {
@@ -58,24 +58,24 @@ export default abstract class ClientEntity<Game extends EGame, Result = unknown>
     return `http://localhost:${PORT}${this.context.game.io.name}`;
   }
 
-  sendSocketEvent<Event extends TGameClientDatalessEvent<Game>>(event: Event, data?: undefined): void;
-  sendSocketEvent<Event extends TGameClientEvent<Game>>(event: Event, data: TGameClientEventData<Game, Event>): void;
-  sendSocketEvent<Event extends TGameClientEvent<Game>>(event: Event, data: TGameClientEventData<Game, Event>): void {
+  sendSocketEvent<Event extends GameClientDatalessEvent<Game>>(event: Event, data?: undefined): void;
+  sendSocketEvent<Event extends GameClientEvent<Game>>(event: Event, data: GameClientEventData<Game, Event>): void;
+  sendSocketEvent<Event extends GameClientEvent<Game>>(event: Event, data: GameClientEventData<Game, Event>): void {
     // @ts-ignore
     this.#getSocket().emit(event, data);
   }
 
-  *waitForGameData(): TGenerator<IGameData<Game>> {
-    return (yield* this.waitForSocketEvent(ECommonGameServerEvent.GET_DATA)) as IGameData<Game>;
+  *waitForGameData(): EntityGenerator<GameData<Game>> {
+    return (yield* this.waitForSocketEvent(CommonGameServerEvent.GET_DATA)) as GameData<Game>;
   }
 
-  *waitForGameInfo(): TGenerator<TGameInfo<Game>> {
-    return yield* this.waitForSocketEvent(ECommonGameServerEvent.GET_INFO);
+  *waitForGameInfo(): EntityGenerator<GameInfo<Game>> {
+    return yield* this.waitForSocketEvent(CommonGameServerEvent.GET_INFO);
   }
 
-  *waitForSocketEvent<Event extends TGameServerEvent<Game>>(
+  *waitForSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
-  ): TEffectGenerator<TGameServerEventData<Game, Event>> {
+  ): EffectGenerator<GameServerEventData<Game, Event>> {
     return yield (resolve) => {
       return this.#listenSocketEvent(event, resolve);
     };

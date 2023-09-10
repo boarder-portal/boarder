@@ -2,14 +2,14 @@ import React, { FC, memo } from 'react';
 
 import { MAP_NAMES } from 'common/constants/games/bombers';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import Flex from 'client/components/common/Flex/Flex';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
+import Flex from 'client/components/common/Flex/Flex';
 
-import { IGameOptionsProps } from 'client/pages/Lobby/Lobby';
+import { GameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-const BombersGameOptions: FC<IGameOptionsProps<EGame.BOMBERS>> = (props) => {
+const BombersGameOptions: FC<GameOptionsProps<GameType.BOMBERS>> = (props) => {
   const { options } = props;
 
   return (

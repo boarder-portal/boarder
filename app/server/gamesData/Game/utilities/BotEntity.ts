@@ -1,34 +1,34 @@
-import { EGame, TGameInfo } from 'common/types/game';
+import { GameInfo, GameType } from 'common/types/game';
 
 import ClientEntity from 'server/gamesData/Game/utilities/ClientEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-export interface IBotOptions {
+export interface BotOptions {
   playerIndex: number;
 }
 
-export interface IBotConstructor<Game extends EGame> {
-  new (game: GameEntity<Game>, options: IBotOptions): BotEntity<Game>;
+export interface BotConstructor<Game extends GameType> {
+  new (game: GameEntity<Game>, options: BotOptions): BotEntity<Game>;
 }
 
-export default abstract class BotEntity<Game extends EGame> extends ClientEntity<Game> {
+export default abstract class BotEntity<Game extends GameType> extends ClientEntity<Game> {
   playerIndex: number;
-  gameInfo: TGameInfo<Game> | null = null;
+  gameInfo: GameInfo<Game> | null = null;
 
-  constructor(game: GameEntity<Game>, options: IBotOptions) {
+  constructor(game: GameEntity<Game>, options: BotOptions) {
     super(game);
 
     this.playerIndex = options.playerIndex;
   }
 
-  *beforeLifecycle(): TGenerator {
+  *beforeLifecycle(): EntityGenerator {
     yield* super.beforeLifecycle();
 
     ({ info: this.gameInfo } = yield* this.waitForGameData());
   }
 
-  getGameInfo(): TGameInfo<Game> {
+  getGameInfo(): GameInfo<Game> {
     if (!this.gameInfo) {
       throw new Error('No game info');
     }
@@ -40,7 +40,7 @@ export default abstract class BotEntity<Game extends EGame> extends ClientEntity
     return `${super.getSocketAddress()}?botIndex=${this.playerIndex}&settings={}`;
   }
 
-  *refreshGameInfo(): TGenerator<TGameInfo<Game>> {
+  *refreshGameInfo(): EntityGenerator<GameInfo<Game>> {
     return (this.gameInfo = yield* this.waitForGameInfo());
   }
 }

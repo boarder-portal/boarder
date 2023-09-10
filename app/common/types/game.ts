@@ -1,6 +1,6 @@
-import { IGamePlayer } from 'common/types';
+import { GamePlayer } from 'common/types';
 
-export enum EGame {
+export enum GameType {
   PEXESO = 'pexeso',
   SURVIVAL_ONLINE = 'survivalOnline',
   SET = 'set',
@@ -13,61 +13,61 @@ export enum EGame {
   MAHJONG = 'mahjong',
 }
 
-export interface IGamesParams {}
+export interface GamesParams {}
 
-export interface IGameState {
+export interface GameState {
   type: 'paused' | 'active';
   changeTimestamp: number;
 }
 
-export interface IGameData<Game extends EGame> {
+export interface GameData<Game extends GameType> {
   name: string;
-  options: TGameOptions<Game>;
-  info: TGameInfo<Game> | null;
-  result: TGameResult<Game> | null;
-  players: IGamePlayer<Game>[];
+  options: GameOptions<Game>;
+  info: GameInfo<Game> | null;
+  result: GameResult<Game> | null;
+  players: GamePlayer<Game>[];
   timestamp: number;
-  state: IGameState;
+  state: GameState;
 }
 
-export type TGameInfo<Game extends EGame> = IGamesParams[Game]['info'];
+export type GameInfo<Game extends GameType> = GamesParams[Game]['info'];
 
-export type TGameResult<Game extends EGame> = IGamesParams[Game]['result'];
+export type GameResult<Game extends GameType> = GamesParams[Game]['result'];
 
-export type TGameClientEvent<Game extends EGame> = keyof TGameClientEventMap<Game> & string;
+export type GameClientEvent<Game extends GameType> = keyof GameClientEventMap<Game> & string;
 
-export type TGameClientDatalessEvent<Game extends EGame> = {
-  [Event in TGameClientEvent<Game>]: TGameClientEventData<Game, Event> extends undefined ? Event : never;
-}[TGameClientEvent<Game>];
+export type GameClientDatalessEvent<Game extends GameType> = {
+  [Event in GameClientEvent<Game>]: GameClientEventData<Game, Event> extends undefined ? Event : never;
+}[GameClientEvent<Game>];
 
-export type TGameServerEvent<Game extends EGame> = keyof TGameServerEventMap<Game> & string;
+export type GameServerEvent<Game extends GameType> = keyof GameServerEventMap<Game> & string;
 
-export type TGameServerDatalessEvent<Game extends EGame> = {
-  [Event in TGameServerEvent<Game>]: TGameServerEventData<Game, Event> extends undefined ? Event : never;
-}[TGameServerEvent<Game>];
+export type GameServerDatalessEvent<Game extends GameType> = {
+  [Event in GameServerEvent<Game>]: GameServerEventData<Game, Event> extends undefined ? Event : never;
+}[GameServerEvent<Game>];
 
-export type TGameClientEventMap<Game extends EGame> = IGamesParams[Game]['clientEventMap'];
+export type GameClientEventMap<Game extends GameType> = GamesParams[Game]['clientEventMap'];
 
-export type TGameServerEventMap<Game extends EGame> = IGamesParams[Game]['serverEventMap'];
+export type GameServerEventMap<Game extends GameType> = GamesParams[Game]['serverEventMap'];
 
-export type TGameClientEventData<
-  Game extends EGame,
-  Event extends TGameClientEvent<Game>,
-> = TGameClientEventMap<Game>[Event];
+export type GameClientEventData<
+  Game extends GameType,
+  Event extends GameClientEvent<Game>,
+> = GameClientEventMap<Game>[Event];
 
-export type TGameServerEventData<
-  Game extends EGame,
-  Event extends TGameServerEvent<Game>,
-> = TGameServerEventMap<Game>[Event];
+export type GameServerEventData<
+  Game extends GameType,
+  Event extends GameServerEvent<Game>,
+> = GameServerEventMap<Game>[Event];
 
-export type TGameClientEventListener<Game extends EGame, Event extends TGameClientEvent<Game>> = (
-  data: TGameClientEventData<Game, Event>,
+export type GameClientEventListener<Game extends GameType, Event extends GameClientEvent<Game>> = (
+  data: GameClientEventData<Game, Event>,
 ) => unknown;
 
-export type TGameServerEventListener<Game extends EGame, Event extends TGameServerEvent<Game>> = (
-  data: TGameServerEventData<Game, Event>,
+export type GameServerEventListener<Game extends GameType, Event extends GameServerEvent<Game>> = (
+  data: GameServerEventData<Game, Event>,
 ) => unknown;
 
-export type TGameOptions<Game extends EGame> = IGamesParams[Game]['options'];
+export type GameOptions<Game extends GameType> = GamesParams[Game]['options'];
 
-export type TPlayerSettings<Game extends EGame> = IGamesParams[Game]['playerSettings'];
+export type PlayerSettings<Game extends GameType> = GamesParams[Game]['playerSettings'];

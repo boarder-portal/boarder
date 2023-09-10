@@ -1,16 +1,16 @@
-import React, { useCallback } from 'react';
 import classNames from 'classnames';
+import React, { useCallback } from 'react';
 
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EGamePhase, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import {
-  IOwnerResource,
-  ISevenWondersCourtesansBuildInfo,
+  CourtesansBuildInfo,
+  OwnerResource,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { Action, GamePhaseType, Payments, Player } from 'common/types/sevenWonders';
+import { Card as CardModel } from 'common/types/sevenWonders/cards';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import Actions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/Actions';
@@ -19,27 +19,27 @@ import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './HandCard.module.scss';
 
-interface IHandCardProps {
-  card: ICard;
+interface HandCardProps {
+  card: CardModel;
   cardIndex: number;
-  player: IPlayer;
-  gamePhase: EGamePhase | null;
-  leftNeighbor: IPlayer;
-  rightNeighbor: IPlayer;
-  courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
+  player: Player;
+  gamePhase: GamePhaseType | null;
+  leftNeighbor: Player;
+  rightNeighbor: Player;
+  courtesansBuildInfo: CourtesansBuildInfo | null;
   isChosen: boolean;
   isDisabled: boolean;
   isViewingLeaders: boolean;
-  resourceTradePrices: TResourceTradePrices;
-  resourcePools: IOwnerResource[][];
-  wonderLevelBuildType: EBuildType;
-  wonderLevelTradeVariants: ITradeVariant[];
-  onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
+  resourceTradePrices: ResourceTradePrices;
+  resourcePools: OwnerResource[][];
+  wonderLevelBuildType: BuildKind;
+  wonderLevelTradeVariants: TradeVariant[];
+  onCardAction(cardIndex: number, action: Action, payments?: Payments): void;
   onCancelCard(): void;
-  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
+  onStartCopyingLeader(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const HandCard: React.FC<IHandCardProps> = (props) => {
+const HandCard: React.FC<HandCardProps> = (props) => {
   const {
     card,
     cardIndex,

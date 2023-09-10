@@ -1,12 +1,12 @@
-import { ICoords } from 'common/types';
+import { Coords } from 'common/types';
 
 class Vector {
-  from: ICoords;
-  to: ICoords;
+  from: Coords;
+  to: Coords;
 
   // if called with 1 point, it will be "to" and "from" will be (0, 0)
   // if called with 2 points, it will be "to" and "from" will be (0, 0)
-  constructor(point1: ICoords, point2?: ICoords) {
+  constructor(point1: Coords, point2?: Coords) {
     if (point2) {
       this.from = { ...point1 };
       this.to = { ...point2 };

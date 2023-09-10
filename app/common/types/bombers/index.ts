@@ -1,15 +1,15 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  ICoords,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
-  ITimestamp,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  Coords,
+  GamePlayer,
+  Timestamp,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   START_MOVING = 'START_MOVING',
   STOP_MOVING = 'STOP_MOVING',
   PLACE_BOMB = 'PLACE_BOMB',
@@ -17,7 +17,7 @@ export enum EGameClientEvent {
   ACTIVATE_BUFF = 'ACTIVATE_BUFF',
 }
 
-export enum EGameServerEvent {
+export enum GameServerEventType {
   CAN_CONTROL = 'CAN_CONTROL',
   SYNC_COORDS = 'SYNC_COORDS',
   PLACE_BOMB = 'PLACE_BOMB',
@@ -31,35 +31,35 @@ export enum EGameServerEvent {
   WALLS_DESTROYED = 'WALLS_DESTROYED',
 }
 
-export interface IGameOptions extends ICommonGameOptions {
-  mapType: EMap | null;
+export interface GameOptions extends BaseGameOptions {
+  mapType: MapType | null;
   withAbilities: boolean;
 }
 
-export enum EDirection {
+export enum Direction {
   UP = 'UP',
   DOWN = 'DOWN',
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
 
-export enum ELine {
+export enum Line {
   HORIZONTAL = 'HORIZONTAL',
   VERTICAL = 'VERTICAL',
 }
 
-export enum EPlayerColor {
+export enum PlayerColor {
   DODGERBLUE = 'DODGERBLUE',
   ORANGE = 'ORANGE',
   RED = 'RED',
   MAGENTA = 'MAGENTA',
 }
 
-export interface IPlayerData {
-  color: EPlayerColor;
-  coords: ICoords;
-  direction: EDirection;
-  startMovingTimestamp: ITimestamp | null;
+export interface PlayerData {
+  color: PlayerColor;
+  coords: Coords;
+  direction: Direction;
+  startMovingTimestamp: Timestamp | null;
   speed: number;
   speedReserve: number;
   maxBombCount: number;
@@ -68,32 +68,32 @@ export interface IPlayerData {
   bombRangeReserve: number;
   hp: number;
   hpReserve: number;
-  buffs: IBuff[];
+  buffs: Buff[];
 }
 
-export interface IPlayer extends IGamePlayer<EGame.BOMBERS> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.BOMBERS> {
+  data: PlayerData;
 }
 
-export interface IGameResult {
+export interface GameResult {
   winner: number | null;
 }
 
-export enum EObject {
+export enum ObjectType {
   BOX = 'BOX',
   WALL = 'WALL',
   BOMB = 'BOMB',
   BONUS = 'BONUS',
 }
 
-export enum EBonus {
+export enum BonusType {
   SPEED = 'SPEED',
   BOMB_COUNT = 'BOMB_COUNT',
   BOMB_RANGE = 'BOMB_RANGE',
   HP = 'HP',
 }
 
-export enum EBuff {
+export enum BuffType {
   SUPER_SPEED = 'SUPER_SPEED',
   SUPER_BOMB = 'SUPER_BOMB',
   SUPER_RANGE = 'SUPER_RANGE',
@@ -101,47 +101,47 @@ export enum EBuff {
   BOMB_INVINCIBILITY = 'BOMB_INVINCIBILITY',
 }
 
-export interface IBuff {
-  type: EBuff;
-  endsAt: ITimestamp;
+export interface Buff {
+  type: BuffType;
+  endsAt: Timestamp;
 }
 
-export interface IBox {
-  type: EObject.BOX;
+export interface Box {
+  type: ObjectType.BOX;
   id: number;
 }
 
-export interface IWall {
-  type: EObject.WALL;
+export interface Wall {
+  type: ObjectType.WALL;
   id: number;
 }
 
-export interface IBomb {
-  type: EObject.BOMB;
+export interface Bomb {
+  type: ObjectType.BOMB;
   id: number;
   range: number;
   isSuperBomb: boolean;
   isSuperRange: boolean;
-  explodesAt: ITimestamp;
+  explodesAt: Timestamp;
 }
 
-export interface IBonus {
-  type: EObject.BONUS;
+export interface Bonus {
+  type: ObjectType.BONUS;
   id: number;
-  bonusType: EBonus;
+  bonusType: BonusType;
 }
 
-export type TMapObject = IBox | IWall | IBomb | IBonus;
+export type MapObject = Box | Wall | Bomb | Bonus;
 
-export interface ICell {
+export interface Cell {
   x: number;
   y: number;
-  objects: TMapObject[];
+  objects: MapObject[];
 }
 
-export type TMap = ICell[][];
+export type Map = Cell[][];
 
-export enum EMap {
+export enum MapType {
   CHESS = 'CHESS',
   HALL = 'HALL',
   BUG = 'BUG',
@@ -159,115 +159,118 @@ export enum EMap {
   CRAB = 'CRAB',
 }
 
-export interface IGame {
-  players: IPlayer[];
-  map: TMap;
-  mapType: EMap;
-  startsAt: ITimestamp;
+export interface Game {
+  players: Player[];
+  map: Map;
+  mapType: MapType;
+  startsAt: Timestamp;
   canControl: boolean;
 }
 
-export interface ISyncCoordsEvent {
+export interface SyncCoordsEvent {
   playerIndex: number;
-  direction: EDirection;
-  startMovingTimestamp: ITimestamp | null;
-  coords: ICoords;
+  direction: Direction;
+  startMovingTimestamp: Timestamp | null;
+  coords: Coords;
 }
 
-export interface IPlaceBombEvent {
-  coords: ICoords;
-  bomb: IBomb;
+export interface PlaceBombEvent {
+  coords: Coords;
+  bomb: Bomb;
 }
 
-export interface IExplodedBox {
+export interface ExplodedBox {
   id: number;
-  coords: ICoords;
-  bonuses: IBonus[];
+  coords: Coords;
+  bonuses: Bonus[];
 }
 
-export interface IDestroyedWall {
+export interface DestroyedWall {
   id: number;
-  coords: ICoords;
+  coords: Coords;
 }
 
-export interface IExplodedBomb {
+export interface ExplodedBomb {
   id: number;
-  coords: ICoords;
-  explodedDirections: TExplodedDirections;
+  coords: Coords;
+  explodedDirections: ExplodedDirections;
 }
 
-export interface IExplodedDirection {
-  start: ICoords;
-  end: ICoords;
+export interface ExplodedDirection {
+  start: Coords;
+  end: Coords;
 }
 
-export type TExplodedDirections = Record<ELine, IExplodedDirection>;
+export type ExplodedDirections = Record<Line, ExplodedDirection>;
 
-export interface IHitPlayer {
+export interface HitPlayer {
   index: number;
   damage: number;
 }
 
-export interface IBombsExplodedEvent {
-  bombs: IExplodedBomb[];
-  hitPlayers: IHitPlayer[];
-  explodedBoxes: IExplodedBox[];
-  destroyedWalls: IDestroyedWall[];
+export interface BombsExplodedEvent {
+  bombs: ExplodedBomb[];
+  hitPlayers: HitPlayer[];
+  explodedBoxes: ExplodedBox[];
+  destroyedWalls: DestroyedWall[];
 }
 
-export interface IWallCreatedEvent {
-  coords: ICoords;
-  wall: IWall;
+export interface WallCreatedEvent {
+  coords: Coords;
+  wall: Wall;
   deadPlayers: number[];
 }
 
-export interface IBonusConsumedEvent {
+export interface BonusConsumedEvent {
   id: number;
-  coords: ICoords;
+  coords: Coords;
   playerIndex: number;
 }
 
-export interface IBuffActivatedEvent {
+export interface BuffActivatedEvent {
   playerIndex: number;
-  buff: IBuff;
+  buff: Buff;
 }
 
-export interface IBuffDeactivatedEvent {
+export interface BuffDeactivatedEvent {
   playerIndex: number;
-  type: EBuff;
+  type: BuffType;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.BOMBERS> {
-  [EGameClientEvent.START_MOVING]: EDirection;
-  [EGameClientEvent.STOP_MOVING]: undefined;
-  [EGameClientEvent.PLACE_BOMB]: undefined;
-  [EGameClientEvent.HEAL]: undefined;
-  [EGameClientEvent.ACTIVATE_BUFF]: EBuff;
+export interface ClientEventMap extends CommonClientEventMap<GameType.BOMBERS> {
+  [GameClientEventType.START_MOVING]: Direction;
+  [GameClientEventType.STOP_MOVING]: undefined;
+  [GameClientEventType.PLACE_BOMB]: undefined;
+  [GameClientEventType.HEAL]: undefined;
+  [GameClientEventType.ACTIVATE_BUFF]: BuffType;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.BOMBERS> {
-  [EGameServerEvent.CAN_CONTROL]: boolean;
-  [EGameServerEvent.SYNC_COORDS]: ISyncCoordsEvent;
-  [EGameServerEvent.PLACE_BOMB]: IPlaceBombEvent;
-  [EGameServerEvent.BOMBS_EXPLODED]: IBombsExplodedEvent;
-  [EGameServerEvent.WALL_CREATED]: IWallCreatedEvent;
-  [EGameServerEvent.BONUS_CONSUMED]: IBonusConsumedEvent;
-  [EGameServerEvent.PLAYER_HEALED]: number;
-  [EGameServerEvent.PLAYER_DIED]: number;
-  [EGameServerEvent.BUFF_ACTIVATED]: IBuffActivatedEvent;
-  [EGameServerEvent.BUFF_DEACTIVATED]: IBuffDeactivatedEvent;
-  [EGameServerEvent.WALLS_DESTROYED]: IDestroyedWall[];
+export interface ServerEventMap extends CommonServerEventMap<GameType.BOMBERS> {
+  [GameServerEventType.CAN_CONTROL]: boolean;
+  [GameServerEventType.SYNC_COORDS]: SyncCoordsEvent;
+  [GameServerEventType.PLACE_BOMB]: PlaceBombEvent;
+  [GameServerEventType.BOMBS_EXPLODED]: BombsExplodedEvent;
+  [GameServerEventType.WALL_CREATED]: WallCreatedEvent;
+  [GameServerEventType.BONUS_CONSUMED]: BonusConsumedEvent;
+  [GameServerEventType.PLAYER_HEALED]: number;
+  [GameServerEventType.PLAYER_DIED]: number;
+  [GameServerEventType.BUFF_ACTIVATED]: BuffActivatedEvent;
+  [GameServerEventType.BUFF_DEACTIVATED]: BuffDeactivatedEvent;
+  [GameServerEventType.WALLS_DESTROYED]: DestroyedWall[];
 }
+
+type BombersGameOptions = GameOptions;
+type BombersGameResult = GameResult;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.BOMBERS]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
-      result: IGameResult;
-      playerSettings: ICommonPlayerSettings;
+  interface GamesParams {
+    [GameType.BOMBERS]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: BombersGameOptions;
+      info: Game;
+      result: BombersGameResult;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

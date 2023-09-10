@@ -1,42 +1,42 @@
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  ECardId,
-  ECardType,
-  EGameClientEvent,
-  EGameServerEvent,
-  ELandmarkId,
-  EPlayerWaitingAction,
+  CardId,
+  CardType,
+  GameClientEventType,
+  GameServerEventType,
+  LandmarkId,
+  PlayerWaitingActionType,
 } from 'common/types/machiKoro';
 
 import getCard from 'common/utilities/machiKoro/getCard';
 
-import useSocket from 'client/hooks/useSocket';
 import usePlayer from 'client/hooks/usePlayer';
+import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Board from 'client/pages/Game/components/MachiKoroGame/components/Board/Board';
 import Player from 'client/pages/Game/components/MachiKoroGame/components/Player/Player';
 import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/components/StatusAndActions/StatusAndActions';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MachiKoroGame.module.scss';
 
-const FORBIDDEN_TO_SWAP_CARD_TYPES: ECardType[] = [ECardType.MAJOR];
+const FORBIDDEN_TO_SWAP_CARD_TYPES: CardType[] = [CardType.MAJOR];
 
-interface ICardsToSwap {
+interface CardsToSwap {
   from: {
-    cardId: ECardId;
+    cardId: CardId;
     playerIndex: number;
   } | null;
-  toCardId: ECardId | null;
+  toCardId: CardId | null;
 }
 
-const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
+const MachiKoroGame: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [board, setBoard] = useState(gameInfo.board);
@@ -45,7 +45,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const [waitingAction, setWaitingAction] = useState(gameInfo.turn?.waitingAction ?? null);
   const [dices, setDices] = useState(gameInfo.turn?.dices ?? []);
   const [withHarborEffect, setWithHarborEffect] = useState(gameInfo.turn?.withHarborEffect ?? false);
-  const [cardsToSwap, setCardsToSwap] = useState<ICardsToSwap>({ from: null, toCardId: null });
+  const [cardsToSwap, setCardsToSwap] = useState<CardsToSwap>({ from: null, toCardId: null });
 
   const player = usePlayer(players);
   const isActive = player?.index === activePlayerIndex;
@@ -59,27 +59,27 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   const isWaitingForAction = Boolean(waitingAction);
 
   const buildCard = useCallback(
-    (cardId: ECardId) => {
-      io.emit(EGameClientEvent.BUILD_CARD, cardId);
+    (cardId: CardId) => {
+      io.emit(GameClientEventType.BUILD_CARD, cardId);
     },
     [io],
   );
 
   const buildLandmark = useCallback(
-    (cardId: ELandmarkId) => {
-      io.emit(EGameClientEvent.BUILD_LANDMARK, cardId);
+    (cardId: LandmarkId) => {
+      io.emit(GameClientEventType.BUILD_LANDMARK, cardId);
     },
     [io],
   );
 
   const endTurn = useCallback(() => {
-    io.emit(EGameClientEvent.END_TURN);
+    io.emit(GameClientEventType.END_TURN);
   }, [io]);
 
   const choosePlayer = useCallback(
     (playerIndex: number) => {
-      if (waitingAction === EPlayerWaitingAction.CHOOSE_PLAYER) {
-        io.emit(EGameClientEvent.CHOOSE_PLAYER, playerIndex);
+      if (waitingAction === PlayerWaitingActionType.CHOOSE_PLAYER) {
+        io.emit(GameClientEventType.CHOOSE_PLAYER, playerIndex);
       }
     },
     [io, waitingAction],
@@ -87,38 +87,38 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
 
   const chooseDicesCount = useCallback(
     (count: number) => {
-      io.emit(EGameClientEvent.DICES_COUNT, count);
+      io.emit(GameClientEventType.DICES_COUNT, count);
     },
     [io],
   );
 
   const chooseNeedToReroll = useCallback(
     (needToReroll: boolean) => {
-      io.emit(EGameClientEvent.NEED_TO_REROLL, needToReroll);
+      io.emit(GameClientEventType.NEED_TO_REROLL, needToReroll);
     },
     [io],
   );
 
   const chooseNeedToUseHarbor = useCallback(
     (needToUse: boolean) => {
-      io.emit(EGameClientEvent.NEED_TO_USE_HARBOR, needToUse);
+      io.emit(GameClientEventType.NEED_TO_USE_HARBOR, needToUse);
     },
     [io],
   );
 
   const choosePublisherTarget = useCallback(
-    (publisherTarget: ECardType.SHOP | ECardType.RESTAURANT) => {
-      io.emit(EGameClientEvent.PUBLISHER_TARGET, publisherTarget);
+    (publisherTarget: CardType.SHOP | CardType.RESTAURANT) => {
+      io.emit(GameClientEventType.PUBLISHER_TARGET, publisherTarget);
     },
     [io],
   );
 
   const getCardClickHandler = useCallback(
     (playerIndex: number) => {
-      if (waitingAction === EPlayerWaitingAction.CHOOSE_CARDS_TO_SWAP) {
+      if (waitingAction === PlayerWaitingActionType.CHOOSE_CARDS_TO_SWAP) {
         if (!cardsToSwap.from) {
           if (playerIndex !== activePlayerIndex) {
-            return (playerIndex: number, cardId: ECardId) => {
+            return (playerIndex: number, cardId: CardId) => {
               setCardsToSwap({
                 from: {
                   playerIndex,
@@ -129,12 +129,12 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
             };
           }
         } else if (!cardsToSwap.toCardId && playerIndex === activePlayerIndex) {
-          return (playerIndex: number, cardId: ECardId) => {
+          return (playerIndex: number, cardId: CardId) => {
             if (!cardsToSwap.from) {
               return;
             }
 
-            io.emit(EGameClientEvent.CARDS_TO_SWAP, {
+            io.emit(GameClientEventType.CARDS_TO_SWAP, {
               from: cardsToSwap.from,
               toCardId: cardId,
             });
@@ -157,51 +157,51 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
   }, [isActive]);
 
   useSocket(io, {
-    [EGameServerEvent.UPDATE_PLAYERS]: (data) => {
-      console.log(EGameServerEvent.UPDATE_PLAYERS, data);
+    [GameServerEventType.UPDATE_PLAYERS]: (data) => {
+      console.log(GameServerEventType.UPDATE_PLAYERS, data);
       setPlayers(data);
     },
 
-    [EGameServerEvent.DICES_ROLL]: (data) => {
-      console.log(EGameServerEvent.DICES_ROLL, data);
+    [GameServerEventType.DICES_ROLL]: (data) => {
+      console.log(GameServerEventType.DICES_ROLL, data);
 
       batchedUpdates(() => {
         setDices(data);
         setWithHarborEffect(false);
       });
     },
-    [EGameServerEvent.CARDS_EFFECTS_RESULTS]: (data) => {
-      console.log(EGameServerEvent.CARDS_EFFECTS_RESULTS, data);
+    [GameServerEventType.CARDS_EFFECTS_RESULTS]: (data) => {
+      console.log(GameServerEventType.CARDS_EFFECTS_RESULTS, data);
       setPlayers(data.players);
     },
-    [EGameServerEvent.BUILD_CARD]: (data) => {
-      console.log(EGameServerEvent.BUILD_CARD, data);
+    [GameServerEventType.BUILD_CARD]: (data) => {
+      console.log(GameServerEventType.BUILD_CARD, data);
 
       batchedUpdates(() => {
         setPlayers(data.players);
         setBoard(data.board);
       });
     },
-    [EGameServerEvent.BUILD_LANDMARK]: (data) => {
-      console.log(EGameServerEvent.BUILD_LANDMARK, data);
+    [GameServerEventType.BUILD_LANDMARK]: (data) => {
+      console.log(GameServerEventType.BUILD_LANDMARK, data);
 
       setPlayers(data.players);
     },
-    [EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX]: (data) => {
-      console.log(EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX, data);
+    [GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX]: (data) => {
+      console.log(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, data);
 
       batchedUpdates(() => {
         setActivePlayerIndex(data.index);
         setDices([]);
       });
     },
-    [EGameServerEvent.WAIT_ACTION]: (waitingAction) => {
-      console.log(EGameServerEvent.WAIT_ACTION, waitingAction);
+    [GameServerEventType.WAIT_ACTION]: (waitingAction) => {
+      console.log(GameServerEventType.WAIT_ACTION, waitingAction);
 
       setWaitingAction(waitingAction);
     },
-    [EGameServerEvent.HARBOR_EFFECT]: (withHarborEffect) => {
-      console.log(EGameServerEvent.HARBOR_EFFECT, withHarborEffect);
+    [GameServerEventType.HARBOR_EFFECT]: (withHarborEffect) => {
+      console.log(GameServerEventType.HARBOR_EFFECT, withHarborEffect);
 
       setWithHarborEffect(withHarborEffect);
     },
@@ -251,7 +251,7 @@ const MachiKoroGame: FC<IGameProps<EGame.MACHI_KORO>> = (props) => {
           board={board}
           withActions={isActive && !isWaitingForAction}
           availableCoins={player?.data.coins || 0}
-          builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === ECardType.MAJOR) || []}
+          builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === CardType.MAJOR) || []}
           onSelect={buildCard}
         />
       </Flex>

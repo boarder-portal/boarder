@@ -1,15 +1,15 @@
 import invert from 'lodash/invert';
 import times from 'lodash/times';
 
-import { EDragon, EHandsCount, ESet, ESuit, EWind, IGameOptions, IPlayerSettings } from 'common/types/mahjong';
+import { DragonColor, GameOptions, HandsCount, PlayerSettings, SetType, Suit, WindSide } from 'common/types/mahjong';
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 4,
   maxPlayersCount: 4,
-  handsCount: EHandsCount.FOUR,
+  handsCount: HandsCount.FOUR,
 };
 
-export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
+export const DEFAULT_PLAYER_SETTINGS: PlayerSettings = {
   autoPass: true,
   autoReplaceFlowers: true,
   sortHand: false,
@@ -21,63 +21,63 @@ export const DEFAULT_PLAYER_SETTINGS: IPlayerSettings = {
 
 export const MIN_SCORE = 8;
 
-export const ALL_SUITS = Object.values(ESuit);
+export const ALL_SUITS = Object.values(Suit);
 export const ALL_VALUES = times(9, (x) => x + 1);
-export const ALL_DRAGONS = Object.values(EDragon);
-export const ALL_WINDS = Object.values(EWind);
+export const ALL_DRAGONS = Object.values(DragonColor);
+export const ALL_WINDS = Object.values(WindSide);
 
 export const FLOWERS_STRING_VALUES = '12345678';
 export const SUITED_STRING_VALUES = '123456789';
 
-export const DRAGON_TO_STRING_MAP: Record<EDragon, string> = {
-  [EDragon.RED]: 'r',
-  [EDragon.GREEN]: 'g',
-  [EDragon.WHITE]: 'w',
+export const DRAGON_TO_STRING_MAP: Record<DragonColor, string> = {
+  [DragonColor.RED]: 'r',
+  [DragonColor.GREEN]: 'g',
+  [DragonColor.WHITE]: 'w',
 };
 
-export const STRING_TO_DRAGON_MAP = invert(DRAGON_TO_STRING_MAP) as Partial<Record<string, EDragon>>;
+export const STRING_TO_DRAGON_MAP = invert(DRAGON_TO_STRING_MAP) as Partial<Record<string, DragonColor>>;
 
-export const WIND_TO_STRING_MAP: Record<EWind, string> = {
-  [EWind.EAST]: 'e',
-  [EWind.SOUTH]: 's',
-  [EWind.WEST]: 'w',
-  [EWind.NORTH]: 'n',
+export const WIND_TO_STRING_MAP: Record<WindSide, string> = {
+  [WindSide.EAST]: 'e',
+  [WindSide.SOUTH]: 's',
+  [WindSide.WEST]: 'w',
+  [WindSide.NORTH]: 'n',
 };
 
-export const STRING_TO_WIND_MAP = invert(WIND_TO_STRING_MAP) as Partial<Record<string, EWind>>;
+export const STRING_TO_WIND_MAP = invert(WIND_TO_STRING_MAP) as Partial<Record<string, WindSide>>;
 
-export const SUIT_TO_STRING_MAP: Record<ESuit, string> = {
-  [ESuit.BAMBOOS]: 'b',
-  [ESuit.CHARACTERS]: 'c',
-  [ESuit.DOTS]: 'd',
+export const SUIT_TO_STRING_MAP: Record<Suit, string> = {
+  [Suit.BAMBOOS]: 'b',
+  [Suit.CHARACTERS]: 'c',
+  [Suit.DOTS]: 'd',
 };
 
-export const STRING_TO_SUIT_MAP = invert(SUIT_TO_STRING_MAP) as Partial<Record<string, ESuit>>;
+export const STRING_TO_SUIT_MAP = invert(SUIT_TO_STRING_MAP) as Partial<Record<string, Suit>>;
 
-export const SET_NAMES: Record<ESet, string> = {
-  [ESet.PAIR]: 'Пара',
-  [ESet.PUNG]: 'Панг',
-  [ESet.KONG]: 'Конг',
-  [ESet.CHOW]: 'Чоу',
-  [ESet.KNITTED_CHOW]: 'Переплетенное чоу',
+export const SET_NAMES: Record<SetType, string> = {
+  [SetType.PAIR]: 'Пара',
+  [SetType.PUNG]: 'Панг',
+  [SetType.KONG]: 'Конг',
+  [SetType.CHOW]: 'Чоу',
+  [SetType.KNITTED_CHOW]: 'Переплетенное чоу',
 };
 
-export const WIND_NAMES: Record<EWind, string> = {
-  [EWind.EAST]: 'Восток',
-  [EWind.SOUTH]: 'Юг',
-  [EWind.WEST]: 'Запад',
-  [EWind.NORTH]: 'Север',
+export const WIND_NAMES: Record<WindSide, string> = {
+  [WindSide.EAST]: 'Восток',
+  [WindSide.SOUTH]: 'Юг',
+  [WindSide.WEST]: 'Запад',
+  [WindSide.NORTH]: 'Север',
 };
 
-export const WIND_SHORT_NAMES: Record<EWind, string> = {
-  [EWind.EAST]: 'В',
-  [EWind.SOUTH]: 'Ю',
-  [EWind.WEST]: 'З',
-  [EWind.NORTH]: 'С',
+export const WIND_SHORT_NAMES: Record<WindSide, string> = {
+  [WindSide.EAST]: 'В',
+  [WindSide.SOUTH]: 'Ю',
+  [WindSide.WEST]: 'З',
+  [WindSide.NORTH]: 'С',
 };
 
-export const HAND_COUNTS: Record<EHandsCount, number> = {
-  [EHandsCount.ONE]: 1,
-  [EHandsCount.FOUR]: 4,
-  [EHandsCount.SIXTEEN]: 16,
+export const HAND_COUNTS: Record<HandsCount, number> = {
+  [HandsCount.ONE]: 1,
+  [HandsCount.FOUR]: 4,
+  [HandsCount.SIXTEEN]: 16,
 };

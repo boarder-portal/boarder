@@ -1,45 +1,45 @@
-import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
+import shuffle from 'lodash/shuffle';
 import sortBy from 'lodash/sortBy';
 
 import { CARDS_SORT } from 'common/constants/games/common/cards';
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { DECKS } from 'server/gamesData/Game/HeartsGame/constants';
 
-import { EGame } from 'common/types/game';
-import { EGameClientEvent, EHandStage, EPassDirection, IHand, IHandPlayerData } from 'common/types/hearts';
-import { ESuit, ICard } from 'common/types/cards';
+import { Card, Suit } from 'common/types/cards';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, Hand as HandModel, HandPlayerData, HandStage, PassDirection } from 'common/types/hearts';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Turn from 'server/gamesData/Game/HeartsGame/entities/Turn';
 
 const ALL_SCORE = 26;
-const SUIT_VALUES: Record<ESuit, number> = {
-  [ESuit.CLUBS]: 1,
-  [ESuit.DIAMONDS]: 1e2,
-  [ESuit.SPADES]: 1e4,
-  [ESuit.HEARTS]: 1e6,
+const SUIT_VALUES: Record<Suit, number> = {
+  [Suit.CLUBS]: 1,
+  [Suit.DIAMONDS]: 1e2,
+  [Suit.SPADES]: 1e4,
+  [Suit.HEARTS]: 1e6,
 };
 const SHOW_CARDS_TIMEOUT = 2 * 1000;
 
-export interface IHandOptions {
-  startStage: EHandStage;
+export interface HandOptions {
+  startStage: HandStage;
 }
 
-export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
+export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
   game: HeartsGame;
 
-  stage: EHandStage;
-  playersData: IHandPlayerData[];
+  stage: HandStage;
+  playersData: HandPlayerData[];
   heartsEnteredPlay = false;
 
   turn: Turn | null = null;
 
-  constructor(game: HeartsGame, options: IHandOptions) {
+  constructor(game: HeartsGame, options: HandOptions) {
     super(game);
 
     this.game = game;
@@ -51,7 +51,7 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
     }));
   }
 
-  *lifecycle(): TGenerator<number[]> {
+  *lifecycle(): EntityGenerator<number[]> {
     const deck = shuffle(DECKS[this.playersCount]);
     const shuffledDeck = chunk(deck, deck.length / this.playersCount);
 
@@ -61,7 +61,7 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
 
     this.sortHands();
 
-    if (this.stage === EHandStage.PASS) {
+    if (this.stage === HandStage.PASS) {
       yield* this.passPhase();
     }
 
@@ -105,24 +105,24 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
   getTargetPlayerIndex(playerIndex: number): number {
     const { passDirection } = this.game;
 
-    if (passDirection === EPassDirection.NONE) {
+    if (passDirection === PassDirection.NONE) {
       return playerIndex;
     }
 
-    if (passDirection === EPassDirection.LEFT) {
+    if (passDirection === PassDirection.LEFT) {
       return (playerIndex + 1) % this.playersCount;
     }
 
-    if (passDirection === EPassDirection.RIGHT) {
+    if (passDirection === PassDirection.RIGHT) {
       return (playerIndex - 1 + this.playersCount) % this.playersCount;
     }
 
     return (playerIndex + 2) % this.playersCount;
   }
 
-  *passPhase(): TGenerator {
+  *passPhase(): EntityGenerator {
     while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
-      const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.CHOOSE_CARD);
+      const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(GameClientEventType.CHOOSE_CARD);
 
       const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
 
@@ -151,7 +151,7 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
 
     this.sortHands();
 
-    this.stage = EHandStage.PLAY;
+    this.stage = HandStage.PLAY;
   }
 
   sortHands(): void {
@@ -162,11 +162,11 @@ export default class Hand extends ServerEntity<EGame.HEARTS, number[]> {
     });
   }
 
-  takePlayerCard(playerIndex: number, cardIndex: number): ICard | null {
+  takePlayerCard(playerIndex: number, cardIndex: number): Card | null {
     return this.playersData[playerIndex]?.hand.splice(cardIndex, 1)[0] ?? null;
   }
 
-  toJSON(): IHand {
+  toJSON(): HandModel {
     return {
       stage: this.stage,
       heartsEnteredPlay: this.heartsEnteredPlay,

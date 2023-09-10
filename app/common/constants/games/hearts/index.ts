@@ -1,6 +1,6 @@
-import { IGameOptions } from 'common/types/hearts';
+import { GameOptions } from 'common/types/hearts';
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 2,
   maxPlayersCount: 4,
 };

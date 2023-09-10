@@ -1,78 +1,80 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   SEND_SET = 'SEND_SET',
   SEND_NO_SET = 'SEND_NO_SET',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IPlayerData {
+export interface PlayerData {
   score: number;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.SET> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.SET> {
+  data: PlayerData;
 }
 
-export enum ECardColor {
+export enum CardColor {
   RED = 'red',
   BLUE = 'blue',
   GREEN = 'green',
 }
 
-export enum ECardFill {
+export enum CardFill {
   EMPTY = 'empty',
   STRIPED = 'striped',
   FILLED = 'filled',
 }
 
-export enum ECardShape {
+export enum CardShape {
   WAVE = 'wave',
   OVAL = 'oval',
   RHOMBUS = 'rhombus',
 }
 
-export interface ICard {
+export interface Card {
   id: number;
   count: number;
-  color: ECardColor;
-  fill: ECardFill;
-  shape: ECardShape;
+  color: CardColor;
+  fill: CardFill;
+  shape: CardShape;
 }
 
-export interface IGame {
-  players: IPlayer[];
-  cards: ICard[];
+export interface Game {
+  players: Player[];
+  cards: Card[];
 }
 
-export interface ISendSetEvent {
+export interface SendSetEvent {
   cardsIds: number[];
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.SET> {
-  [EGameClientEvent.SEND_SET]: ISendSetEvent;
-  [EGameClientEvent.SEND_NO_SET]: undefined;
+export interface ClientEventMap extends CommonClientEventMap<GameType.SET> {
+  [GameClientEventType.SEND_SET]: SendSetEvent;
+  [GameClientEventType.SEND_NO_SET]: undefined;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.SET> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.SET> {}
+
+type SetGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.SET]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.SET]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: SetGameOptions;
+      info: Game;
       result: number[];
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

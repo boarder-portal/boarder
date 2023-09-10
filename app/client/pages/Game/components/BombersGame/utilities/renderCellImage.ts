@@ -1,6 +1,6 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
-import { ICoords } from 'common/types';
+import { Coords } from 'common/types';
 
 import { drawImage } from 'client/utilities/canvas';
 
@@ -9,7 +9,7 @@ const MARGIN = 0.02;
 export default function renderCellImage(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
-  coords: ICoords,
+  coords: Coords,
   margin: number = MARGIN,
 ): void {
   drawImage({

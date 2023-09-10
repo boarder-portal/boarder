@@ -1,13 +1,13 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   DICES_COUNT = 'DICES_COUNT',
   NEED_TO_REROLL = 'NEED_TO_REROLL',
   BUILD_CARD = 'BUILD_CARD',
@@ -19,7 +19,7 @@ export enum EGameClientEvent {
   NEED_TO_USE_HARBOR = 'NEED_TO_USE_HARBOR',
 }
 
-export enum EGameServerEvent {
+export enum GameServerEventType {
   UPDATE_PLAYERS = 'UPDATE_PLAYERS',
 
   DICES_ROLL = 'DICES_ROLL',
@@ -31,9 +31,9 @@ export enum EGameServerEvent {
   HARBOR_EFFECT = 'HARBOR_EFFECT',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export enum EPlayerWaitingAction {
+export enum PlayerWaitingActionType {
   CHOOSE_DICES_COUNT = 'CHOOSE_DICES_COUNT',
   CHOOSE_NEED_TO_REROLL = 'CHOOSE_NEED_TO_REROLL',
   CHOOSE_PLAYER = 'CHOOSE_PLAYER',
@@ -42,7 +42,7 @@ export enum EPlayerWaitingAction {
   CHOOSE_NEED_TO_USE_HARBOR = 'CHOOSE_NEED_TO_USE_HARBOR',
 }
 
-export enum ECardId {
+export enum CardId {
   // red
   CAFE = 'CAFE',
   RESTAURANT = 'RESTAURANT',
@@ -77,7 +77,7 @@ export enum ECardId {
   TAX_OFFICE = 'TAX_OFFICE',
 }
 
-export enum ELandmarkId {
+export enum LandmarkId {
   CITY_HALL = 'CITY_HALL',
   HARBOR = 'HARBOR',
   TRAIN_STATION = 'TRAIN_STATION',
@@ -87,14 +87,14 @@ export enum ELandmarkId {
   AIRPORT = 'AIRPORT',
 }
 
-export enum ECardColor {
+export enum CardColor {
   RED = 'RED',
   GREEN = 'GREEN',
   BLUE = 'BLUE',
   PURPLE = 'PURPLE',
 }
 
-export enum ECardType {
+export enum CardType {
   RESTAURANT = 'RESTAURANT',
   SHOP = 'SHOP',
   FACTORY = 'FACTORY',
@@ -106,91 +106,93 @@ export enum ECardType {
   MAJOR = 'MAJOR',
 }
 
-export interface ICard {
-  id: ECardId;
-  color: ECardColor;
-  type: ECardType;
+export interface Card {
+  id: CardId;
+  color: CardColor;
+  type: CardType;
   cost: number;
   dice: number[];
   count: number;
 }
 
-export interface ILandmarkCard {
-  id: ELandmarkId;
+export interface LandmarkCard {
+  id: LandmarkId;
   cost: number;
 }
 
-export interface IPlayerData {
+export interface PlayerData {
   coins: number;
-  cardsIds: ECardId[];
-  landmarksIds: ELandmarkId[];
+  cardsIds: CardId[];
+  landmarksIds: LandmarkId[];
 }
 
-export interface IPlayer extends IGamePlayer<EGame.MACHI_KORO> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.MACHI_KORO> {
+  data: PlayerData;
 }
 
-export interface ITurn {
+export interface Turn {
   dices: number[];
   withHarborEffect: boolean;
-  waitingAction: EPlayerWaitingAction | null;
+  waitingAction: PlayerWaitingActionType | null;
 }
 
-export interface IGame {
+export interface Game {
   activePlayerIndex: number;
-  players: IPlayer[];
-  board: ECardId[];
-  turn: ITurn | null;
+  players: Player[];
+  board: CardId[];
+  turn: Turn | null;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.MACHI_KORO> {
-  [EGameClientEvent.DICES_COUNT]: number;
-  [EGameClientEvent.NEED_TO_REROLL]: boolean;
-  [EGameClientEvent.BUILD_CARD]: ECardId;
-  [EGameClientEvent.BUILD_LANDMARK]: ELandmarkId;
-  [EGameClientEvent.END_TURN]: undefined;
-  [EGameClientEvent.CHOOSE_PLAYER]: number;
-  [EGameClientEvent.CARDS_TO_SWAP]: {
+export interface ClientEventMap extends CommonClientEventMap<GameType.MACHI_KORO> {
+  [GameClientEventType.DICES_COUNT]: number;
+  [GameClientEventType.NEED_TO_REROLL]: boolean;
+  [GameClientEventType.BUILD_CARD]: CardId;
+  [GameClientEventType.BUILD_LANDMARK]: LandmarkId;
+  [GameClientEventType.END_TURN]: undefined;
+  [GameClientEventType.CHOOSE_PLAYER]: number;
+  [GameClientEventType.CARDS_TO_SWAP]: {
     from: {
-      cardId: ECardId;
+      cardId: CardId;
       playerIndex: number;
     };
-    toCardId: ECardId;
+    toCardId: CardId;
   };
-  [EGameClientEvent.PUBLISHER_TARGET]: ECardType.RESTAURANT | ECardType.SHOP;
-  [EGameClientEvent.NEED_TO_USE_HARBOR]: boolean;
+  [GameClientEventType.PUBLISHER_TARGET]: CardType.RESTAURANT | CardType.SHOP;
+  [GameClientEventType.NEED_TO_USE_HARBOR]: boolean;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.MACHI_KORO> {
-  [EGameServerEvent.UPDATE_PLAYERS]: IPlayer[];
+export interface ServerEventMap extends CommonServerEventMap<GameType.MACHI_KORO> {
+  [GameServerEventType.UPDATE_PLAYERS]: Player[];
 
-  [EGameServerEvent.DICES_ROLL]: number[];
-  [EGameServerEvent.CARDS_EFFECTS_RESULTS]: {
-    players: IPlayer[];
+  [GameServerEventType.DICES_ROLL]: number[];
+  [GameServerEventType.CARDS_EFFECTS_RESULTS]: {
+    players: Player[];
   };
-  [EGameServerEvent.BUILD_CARD]: {
-    players: IPlayer[];
-    board: ECardId[];
+  [GameServerEventType.BUILD_CARD]: {
+    players: Player[];
+    board: CardId[];
   };
-  [EGameServerEvent.BUILD_LANDMARK]: {
-    players: IPlayer[];
+  [GameServerEventType.BUILD_LANDMARK]: {
+    players: Player[];
   };
-  [EGameServerEvent.CHANGE_ACTIVE_PLAYER_INDEX]: {
+  [GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX]: {
     index: number;
   };
-  [EGameServerEvent.WAIT_ACTION]: EPlayerWaitingAction | null;
-  [EGameServerEvent.HARBOR_EFFECT]: boolean;
+  [GameServerEventType.WAIT_ACTION]: PlayerWaitingActionType | null;
+  [GameServerEventType.HARBOR_EFFECT]: boolean;
 }
 
+type MachiKoroGameOptions = GameOptions;
+
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.MACHI_KORO]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.MACHI_KORO]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: MachiKoroGameOptions;
+      info: Game;
       result: number;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

@@ -1,9 +1,9 @@
-import { AllHTMLAttributes, forwardRef } from 'react';
 import classNames from 'classnames';
+import { AllHTMLAttributes, forwardRef } from 'react';
 
 import styles from './Flex.module.scss';
 
-export interface IFlexProps extends AllHTMLAttributes<HTMLDivElement> {
+export interface FlexProps extends AllHTMLAttributes<HTMLDivElement> {
   className?: string;
   inline?: boolean;
   direction?: 'row' | 'rowReverse' | 'column' | 'columnReverse';
@@ -12,7 +12,7 @@ export interface IFlexProps extends AllHTMLAttributes<HTMLDivElement> {
   between?: number;
 }
 
-const Flex = forwardRef<HTMLDivElement | null, IFlexProps>((props, ref) => {
+const Flex = forwardRef<HTMLDivElement | null, FlexProps>((props, ref) => {
   const {
     className,
     children,

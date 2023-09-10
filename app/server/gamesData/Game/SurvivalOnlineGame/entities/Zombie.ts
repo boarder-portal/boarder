@@ -1,37 +1,37 @@
-import { EGame } from 'common/types/game';
-import { EDirection, EObject, IZombieObject } from 'common/types/survivalOnline';
+import { GameType } from 'common/types/game';
+import { Direction, ObjectType, ZombieObject } from 'common/types/survivalOnline';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getRandomElement } from 'common/utilities/random';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {
-  IServerCell,
-  IServerCellWithEntity,
+  ServerCell,
+  ServerCellWithEntity,
 } from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
-export interface IZombieOptions {
-  cell: IServerCell;
+export interface ZombieOptions {
+  cell: ServerCell;
 }
 
-export default class Zombie extends ServerEntity<EGame.SURVIVAL_ONLINE> {
+export default class Zombie extends ServerEntity<GameType.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
-  cell: IServerCellWithEntity<Zombie>;
-  direction = EDirection.DOWN;
+  cell: ServerCellWithEntity<Zombie>;
+  direction = Direction.DOWN;
 
-  constructor(game: SurvivalOnlineGame, options: IZombieOptions) {
+  constructor(game: SurvivalOnlineGame, options: ZombieOptions) {
     super(game);
 
     this.game = game;
-    this.cell = options.cell as IServerCellWithEntity<Zombie>;
+    this.cell = options.cell as ServerCellWithEntity<Zombie>;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     yield* this.eternity();
   }
 
-  move(): IServerCell[] {
+  move(): ServerCell[] {
     let closestPlayer = this.game.players[0];
     let closestPlayerDistance = Infinity;
 
@@ -44,14 +44,14 @@ export default class Zombie extends ServerEntity<EGame.SURVIVAL_ONLINE> {
       }
     });
 
-    const possibleDirections: EDirection[] = [];
+    const possibleDirections: Direction[] = [];
 
     if (this.cell.x !== closestPlayer.cell.x) {
-      possibleDirections.push(this.cell.x < closestPlayer.cell.x ? EDirection.RIGHT : EDirection.LEFT);
+      possibleDirections.push(this.cell.x < closestPlayer.cell.x ? Direction.RIGHT : Direction.LEFT);
     }
 
     if (this.cell.y !== closestPlayer.cell.y) {
-      possibleDirections.push(this.cell.y < closestPlayer.cell.y ? EDirection.DOWN : EDirection.UP);
+      possibleDirections.push(this.cell.y < closestPlayer.cell.y ? Direction.DOWN : Direction.UP);
     }
 
     const changedCells = this.game.moveEntityInDirection(this, getRandomElement(possibleDirections));
@@ -61,9 +61,9 @@ export default class Zombie extends ServerEntity<EGame.SURVIVAL_ONLINE> {
     return changedCells;
   }
 
-  toJSON(): IZombieObject {
+  toJSON(): ZombieObject {
     return {
-      type: EObject.ZOMBIE,
+      type: ObjectType.ZOMBIE,
       direction: this.direction,
     };
   }

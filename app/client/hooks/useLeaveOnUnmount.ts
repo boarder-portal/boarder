@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
-export interface IUseLeaveOnUnmountOptions {
+export interface UseLeaveOnUnmountOptions {
   onDragLeave?(): void;
   onMouseLeave?(): void;
 }
 
-export default function useLeaveOnUnmount(options: IUseLeaveOnUnmountOptions = {}): void {
+export default function useLeaveOnUnmount(options: UseLeaveOnUnmountOptions = {}): void {
   const { onDragLeave, onMouseLeave } = options;
 
   const immutableDragLeave = useImmutableCallback(() => {

@@ -1,32 +1,32 @@
-import { EAgePhase, EGamePhase, TWaitingAction } from 'common/types/sevenWonders';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EFreeCardSource, IBuildCardEffect } from 'common/types/sevenWonders/effects';
+import { AgePhaseType, GamePhaseType, WaitingAction } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
+import { BuildCardEffect, FreeCardSourceType } from 'common/types/sevenWonders/effects';
 
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 
-export interface IGetPlayerHandCardsOptions {
-  waitingForAction: TWaitingAction | null | undefined;
-  buildCardEffects: IBuildCardEffect[] | undefined;
-  gamePhase: EGamePhase | null;
-  agePhase: EAgePhase | null;
-  discard: ICard[];
-  leadersHand: ICard[];
-  leadersPool: ICard[];
-  hand: ICard[];
+export interface GetPlayerHandCardsOptions {
+  waitingForAction: WaitingAction | null | undefined;
+  buildCardEffects: BuildCardEffect[] | undefined;
+  gamePhase: GamePhaseType | null;
+  agePhase: AgePhaseType | null;
+  discard: Card[];
+  leadersHand: Card[];
+  leadersPool: Card[];
+  hand: Card[];
 }
 
-export default function getPlayerHandCards(options: IGetPlayerHandCardsOptions): ICard[] {
+export default function getPlayerHandCards(options: GetPlayerHandCardsOptions): Card[] {
   const buildEffect = getWaitingBuildEffect(options.waitingForAction, options.buildCardEffects);
 
-  if (buildEffect?.source === EFreeCardSource.DISCARD) {
+  if (buildEffect?.source === FreeCardSourceType.DISCARD) {
     return options.discard;
   }
 
-  if (buildEffect?.source === EFreeCardSource.LEADERS || options.agePhase === EAgePhase.RECRUIT_LEADERS) {
+  if (buildEffect?.source === FreeCardSourceType.LEADERS || options.agePhase === AgePhaseType.RECRUIT_LEADERS) {
     return options.leadersHand;
   }
 
-  if (options.gamePhase === EGamePhase.DRAFT_LEADERS) {
+  if (options.gamePhase === GamePhaseType.DRAFT_LEADERS) {
     return options.leadersPool;
   }
 

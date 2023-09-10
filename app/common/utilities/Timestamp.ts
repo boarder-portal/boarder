@@ -1,21 +1,21 @@
-import { ITimestamp } from 'common/types';
+import { Timestamp as TimestampModel } from 'common/types';
 
-export type TSubscriber = () => unknown;
+export type Subscriber = () => unknown;
 
-export interface ITimestampOptions {
+export interface TimestampOptions {
   addMs: number | null;
   pausedAt?: number | null;
   now: () => number;
 }
 
-export default class Timestamp implements ITimestamp {
+export default class Timestamp implements TimestampModel {
   #value: number;
   #pausedAt: number | null;
   #now: () => number;
   #runTimer: NodeJS.Timeout | undefined;
-  #subscribers = new Set<TSubscriber>();
+  #subscribers = new Set<Subscriber>();
 
-  constructor(options: ITimestampOptions) {
+  constructor(options: TimestampOptions) {
     this.#value = options.now() + (options.addMs ?? 0);
     this.#pausedAt = options.pausedAt ?? null;
     this.#now = options.now;
@@ -59,7 +59,7 @@ export default class Timestamp implements ITimestamp {
     }
   }
 
-  subscribe(callback: TSubscriber): () => void {
+  subscribe(callback: Subscriber): () => void {
     this.#subscribers.add(callback);
 
     return () => {
@@ -67,7 +67,7 @@ export default class Timestamp implements ITimestamp {
     };
   }
 
-  toJSON(): ITimestamp {
+  toJSON(): TimestampModel {
     return {
       value: this.value,
       pausedAt: this.pausedAt,

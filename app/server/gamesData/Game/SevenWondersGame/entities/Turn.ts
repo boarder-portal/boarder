@@ -1,25 +1,25 @@
-import { EGame } from 'common/types/game';
-import { EGameClientEvent, EWaitingActionType, ITurnPlayerData, TWaitingAction } from 'common/types/sevenWonders';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, TurnPlayerData, WaitingAction, WaitingActionType } from 'common/types/sevenWonders';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
-export interface ITurnOptions {
-  startingWaitingAction: Exclude<EWaitingActionType, EWaitingActionType.EFFECT_BUILD_CARD>;
-  executeActions(playersData: ITurnPlayerData[]): number[] | void;
-  getWaitingActions?(): (TWaitingAction | null)[];
+export interface TurnOptions {
+  startingWaitingAction: Exclude<WaitingActionType, WaitingActionType.EFFECT_BUILD_CARD>;
+  executeActions(playersData: TurnPlayerData[]): number[] | void;
+  getWaitingActions?(): (WaitingAction | null)[];
 }
 
-export default class Turn extends ServerEntity<EGame.SEVEN_WONDERS, number[]> {
+export default class Turn extends ServerEntity<GameType.SEVEN_WONDERS, number[]> {
   game: SevenWondersGame;
 
-  playersData: ITurnPlayerData[];
-  getWaitingActions: ITurnOptions['getWaitingActions'];
-  executeActions: ITurnOptions['executeActions'];
+  playersData: TurnPlayerData[];
+  getWaitingActions: TurnOptions['getWaitingActions'];
+  executeActions: TurnOptions['executeActions'];
 
-  constructor(game: SevenWondersGame, options: ITurnOptions) {
+  constructor(game: SevenWondersGame, options: TurnOptions) {
     super(game);
 
     this.game = game;
@@ -34,12 +34,12 @@ export default class Turn extends ServerEntity<EGame.SEVEN_WONDERS, number[]> {
     this.executeActions = options.executeActions;
   }
 
-  *lifecycle(): TGenerator<number[]> {
+  *lifecycle(): EntityGenerator<number[]> {
     while (this.isWaitingForActions()) {
       while (this.isWaitingForActions()) {
         const { data: event, playerIndex } = yield* this.waitForSocketEvents([
-          EGameClientEvent.EXECUTE_ACTION,
-          EGameClientEvent.CANCEL_ACTION,
+          GameClientEventType.EXECUTE_ACTION,
+          GameClientEventType.CANCEL_ACTION,
         ]);
 
         this.playersData[playerIndex].chosenActionEvent = event ?? null;
@@ -62,7 +62,7 @@ export default class Turn extends ServerEntity<EGame.SEVEN_WONDERS, number[]> {
     return this.playersData.map(({ receivedCoins }) => receivedCoins);
   }
 
-  isWaitingForAction = (playerData: ITurnPlayerData): boolean => {
+  isWaitingForAction = (playerData: TurnPlayerData): boolean => {
     return Boolean(playerData.waitingForAction && !playerData.chosenActionEvent);
   };
 

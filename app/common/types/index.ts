@@ -1,47 +1,47 @@
-import { EGame, IGameData, TGameInfo, TGameResult, TPlayerSettings } from 'common/types/game';
+import { GameData, GameInfo, GameResult, GameType, PlayerSettings } from 'common/types/game';
 
-export interface IUser {
+export interface User {
   login: string;
 }
 
-export interface IDBUser extends IUser {
+export interface DBUser extends User {
   password: string;
 }
 
-export enum EPlayerStatus {
+export enum PlayerStatus {
   READY = 'READY',
   NOT_READY = 'NOT_READY',
   PLAYING = 'PLAYING',
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface IGamePlayer<Game extends EGame> extends IUser {
+export interface GamePlayer<Game extends GameType> extends User {
   name: string;
-  status: EPlayerStatus;
+  status: PlayerStatus;
   index: number;
   isBot: boolean;
-  settings: TPlayerSettings<Game>;
+  settings: PlayerSettings<Game>;
 }
 
-export interface ICoords {
+export interface Coords {
   x: number;
   y: number;
 }
 
-export interface ISize {
+export interface Size {
   width: number;
   height: number;
 }
 
-export interface IGameOptions {
+export interface BaseGameOptions {
   minPlayersCount: number;
   maxPlayersCount: number;
   useBots?: boolean;
 }
 
-export interface IPlayerSettings {}
+export interface BasePlayerSettings {}
 
-export interface ITimestamp {
+export interface Timestamp {
   value: number;
   pausedAt: number | null;
   timeLeft: number;
@@ -50,13 +50,13 @@ export interface ITimestamp {
   unpause?(unpausedAt: number): void;
 }
 
-export enum ECommonGameClientEvent {
+export enum CommonGameClientEvent {
   TOGGLE_READY = '$$TOGGLE_READY',
   CHANGE_SETTING = '$$CHANGE_SETTING',
   TOGGLE_PAUSE = '$$TOGGLE_PAUSE',
 }
 
-export enum ECommonGameServerEvent {
+export enum CommonGameServerEvent {
   UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
   GET_DATA = '$$GET_DATA',
   GET_INFO = '$$GET_INFO',
@@ -66,25 +66,25 @@ export enum ECommonGameServerEvent {
   END = '$$END',
 }
 
-export type TChangeSettingEvent<Game extends EGame> = {
-  [K in keyof TPlayerSettings<Game>]: {
+export type ChangeSettingEvent<Game extends GameType> = {
+  [K in keyof PlayerSettings<Game>]: {
     key: K;
-    value: TPlayerSettings<Game>[K];
+    value: PlayerSettings<Game>[K];
   };
-}[keyof TPlayerSettings<Game>];
+}[keyof PlayerSettings<Game>];
 
-export interface ICommonClientEventMap<Game extends EGame> {
-  [ECommonGameClientEvent.TOGGLE_PAUSE]: undefined;
-  [ECommonGameClientEvent.TOGGLE_READY]: undefined;
-  [ECommonGameClientEvent.CHANGE_SETTING]: TChangeSettingEvent<Game>;
+export interface CommonClientEventMap<Game extends GameType> {
+  [CommonGameClientEvent.TOGGLE_PAUSE]: undefined;
+  [CommonGameClientEvent.TOGGLE_READY]: undefined;
+  [CommonGameClientEvent.CHANGE_SETTING]: ChangeSettingEvent<Game>;
 }
 
-export interface ICommonServerEventMap<Game extends EGame> {
-  [ECommonGameServerEvent.PAUSE]: number;
-  [ECommonGameServerEvent.UNPAUSE]: number;
-  [ECommonGameServerEvent.GET_DATA]: IGameData<Game>;
-  [ECommonGameServerEvent.GET_INFO]: TGameInfo<Game>;
-  [ECommonGameServerEvent.UPDATE_PLAYERS]: IGamePlayer<Game>[];
-  [ECommonGameServerEvent.PING]: number;
-  [ECommonGameServerEvent.END]: TGameResult<Game>;
+export interface CommonServerEventMap<Game extends GameType> {
+  [CommonGameServerEvent.PAUSE]: number;
+  [CommonGameServerEvent.UNPAUSE]: number;
+  [CommonGameServerEvent.GET_DATA]: GameData<Game>;
+  [CommonGameServerEvent.GET_INFO]: GameInfo<Game>;
+  [CommonGameServerEvent.UPDATE_PLAYERS]: GamePlayer<Game>[];
+  [CommonGameServerEvent.PING]: number;
+  [CommonGameServerEvent.END]: GameResult<Game>;
 }

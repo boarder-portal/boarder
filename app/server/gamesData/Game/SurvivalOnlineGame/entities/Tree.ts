@@ -1,37 +1,37 @@
-import { EGame } from 'common/types/game';
-import { EObject, ITreeObject } from 'common/types/survivalOnline';
+import { GameType } from 'common/types/game';
+import { ObjectType, TreeObject } from 'common/types/survivalOnline';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {
-  IServerCell,
-  IServerCellWithEntity,
+  ServerCell,
+  ServerCellWithEntity,
 } from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
-export interface ITreeOptions {
-  cell: IServerCell;
+export interface TreeOptions {
+  cell: ServerCell;
 }
 
-export default class Tree extends ServerEntity<EGame.SURVIVAL_ONLINE> {
+export default class Tree extends ServerEntity<GameType.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
-  cell: IServerCellWithEntity<Tree>;
+  cell: ServerCellWithEntity<Tree>;
 
-  constructor(game: SurvivalOnlineGame, options: ITreeOptions) {
+  constructor(game: SurvivalOnlineGame, options: TreeOptions) {
     super(game);
 
     this.game = game;
-    this.cell = options.cell as IServerCellWithEntity<Tree>;
+    this.cell = options.cell as ServerCellWithEntity<Tree>;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     yield* this.eternity();
   }
 
-  toJSON(): ITreeObject {
+  toJSON(): TreeObject {
     return {
-      type: EObject.TREE,
+      type: ObjectType.TREE,
     };
   }
 }

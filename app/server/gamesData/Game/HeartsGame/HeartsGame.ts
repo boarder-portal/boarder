@@ -1,29 +1,29 @@
-import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 import { END_GAME_SCORE } from 'common/constants/games/hearts';
+import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 
-import { EGame } from 'common/types/game';
-import { EHandStage, EPassDirection, IGame, IGamePlayerData, IPlayer } from 'common/types/hearts';
+import { GameType } from 'common/types/game';
+import { Game, GamePlayerData, HandStage, PassDirection, Player } from 'common/types/hearts';
 
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
-export default class HeartsGame extends GameEntity<EGame.HEARTS> {
-  playersData: IGamePlayerData[] = this.getPlayersData(() => ({ score: 0 }));
+export default class HeartsGame extends GameEntity<GameType.HEARTS> {
+  playersData: GamePlayerData[] = this.getPlayersData(() => ({ score: 0 }));
   handIndex = -1;
-  passDirection: EPassDirection = EPassDirection.NONE;
+  passDirection: PassDirection = PassDirection.NONE;
 
   hand: Hand | null = null;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     while (this.playersData.every(({ score }) => score < END_GAME_SCORE)) {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.playersCount][this.handIndex % this.playersCount];
 
       this.hand = this.spawnEntity(
         new Hand(this, {
-          startStage: this.passDirection === EPassDirection.NONE ? EHandStage.PLAY : EHandStage.PASS,
+          startStage: this.passDirection === PassDirection.NONE ? HandStage.PLAY : HandStage.PASS,
         }),
       );
 
@@ -41,7 +41,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
     this.hand = null;
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => ({
       ...this.playersData[playerIndex],
       hand: this.hand?.playersData[playerIndex] ?? null,
@@ -49,7 +49,7 @@ export default class HeartsGame extends GameEntity<EGame.HEARTS> {
     }));
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       players: this.getGamePlayers(),
       passDirection: this.passDirection,

@@ -1,10 +1,10 @@
 import React, { ImgHTMLAttributes } from 'react';
 
-interface IImgProps extends ImgHTMLAttributes<HTMLImageElement> {
+interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   src: string;
 }
 
-const Image: React.FC<IImgProps> = (props) => {
+const Image: React.FC<ImageProps> = (props) => {
   return <img {...props} />;
 };
 

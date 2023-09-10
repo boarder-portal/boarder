@@ -1,19 +1,19 @@
 import { PLAYER_SETTINGS } from 'common/constants/games/common';
 
-import { EGame, TPlayerSettings } from 'common/types/game';
+import { GameType, PlayerSettings } from 'common/types/game';
 
-import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
 
 import { playerSettingsAtoms } from 'client/atoms/playerSettingsAtoms';
 
-export interface IUsePlayerSettings<Game extends EGame> {
-  settings: TPlayerSettings<Game>;
-  changeSetting<Key extends keyof TPlayerSettings<Game>>(key: Key, value: TPlayerSettings<Game>[Key]): void;
+export interface UsePlayerSettings<Game extends GameType> {
+  settings: PlayerSettings<Game>;
+  changeSetting<Key extends keyof PlayerSettings<Game>>(key: Key, value: PlayerSettings<Game>[Key]): void;
   reset(): void;
 }
 
-export default function usePlayerSettings<Game extends EGame>(game: Game): IUsePlayerSettings<Game> {
+export default function usePlayerSettings<Game extends GameType>(game: Game): UsePlayerSettings<Game> {
   const [settings, changeSettings] = useLocalStorageAtom(playerSettingsAtoms[game]);
 
   return {

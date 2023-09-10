@@ -1,18 +1,18 @@
-import { EGame } from 'common/types/game';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EWaitingActionType, ILeadersDraftPlayerData } from 'common/types/sevenWonders';
+import { GameType } from 'common/types/game';
+import { LeadersDraftPlayerData, WaitingActionType } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import rotateObjects from 'common/utilities/rotateObjects';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
-export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICard[][]> {
+export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, Card[][]> {
   game: SevenWondersGame;
 
-  playersData: ILeadersDraftPlayerData[] = this.getPlayersData(() => ({
+  playersData: LeadersDraftPlayerData[] = this.getPlayersData(() => ({
     leadersPool: [],
     pickedLeaders: [],
   }));
@@ -25,7 +25,7 @@ export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICar
     this.game = game;
   }
 
-  *lifecycle(): TGenerator<ICard[][]> {
+  *lifecycle(): EntityGenerator<Card[][]> {
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].leadersPool = this.game.extractFromLeadersDeck(4);
     });
@@ -33,7 +33,7 @@ export default class LeadersDraft extends ServerEntity<EGame.SEVEN_WONDERS, ICar
     while (this.playersData.every(({ leadersPool }) => leadersPool.length !== 1)) {
       this.turn = this.spawnEntity(
         new Turn(this.game, {
-          startingWaitingAction: EWaitingActionType.PICK_LEADER,
+          startingWaitingAction: WaitingActionType.PICK_LEADER,
           executeActions: (actions) => {
             actions.forEach(({ chosenActionEvent }, playerIndex) => {
               if (chosenActionEvent) {

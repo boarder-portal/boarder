@@ -1,36 +1,36 @@
-import { EGame } from 'common/types/game';
-import { EBonus, EObject, IBonus } from 'common/types/bombers';
+import { Bonus as BonusModel, BonusType, ObjectType } from 'common/types/bombers';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 
-export interface IBonusOptions {
+export interface BonusOptions {
   id: number;
-  type: EBonus;
+  type: BonusType;
 }
 
-export default class Bonus extends ServerEntity<EGame.BOMBERS> {
+export default class Bonus extends ServerEntity<GameType.BOMBERS> {
   id: number;
-  type: EBonus;
+  type: BonusType;
 
   consume = this.createTrigger();
 
-  constructor(game: BombersGame, options: IBonusOptions) {
+  constructor(game: BombersGame, options: BonusOptions) {
     super(game);
 
     this.id = options.id;
     this.type = options.type;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     yield* this.consume;
   }
 
-  toJSON(): IBonus {
+  toJSON(): BonusModel {
     return {
-      type: EObject.BONUS,
+      type: ObjectType.BONUS,
       id: this.id,
       bonusType: this.type,
     };

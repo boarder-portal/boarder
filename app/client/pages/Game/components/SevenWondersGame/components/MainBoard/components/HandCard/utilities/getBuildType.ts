@@ -1,31 +1,31 @@
 import first from 'lodash/first';
 
-import { IPlayer, IPrice } from 'common/types/sevenWonders';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { Player, Price } from 'common/types/sevenWonders';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
 export default function getBuildType(
-  price: IPrice,
-  player: IPlayer,
-  tradeVariants: ITradeVariant[],
+  price: Price,
+  player: Player,
+  tradeVariants: TradeVariant[],
   discount: number,
-): EBuildType {
+): BuildKind {
   const cardCoinsPrice = price.coins ? price.coins - discount : 0;
   const enoughCoins = player.data.coins >= cardCoinsPrice;
 
   if (!enoughCoins) {
-    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
+    return BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
   if (!price.resources) {
-    return EBuildType.OWN_RESOURCES_AND_COINS;
+    return BuildKind.OWN_RESOURCES_AND_COINS;
   }
 
   const cheapestTradeVariant = first(tradeVariants);
 
   if (!cheapestTradeVariant) {
-    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
+    return BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
   const tradeVariantPrice =
@@ -33,15 +33,15 @@ export default function getBuildType(
 
   if (!tradeVariantPrice) {
     if (!cardCoinsPrice) {
-      return EBuildType.FREE_BY_OWN_RESOURCES;
+      return BuildKind.FREE_BY_OWN_RESOURCES;
     }
 
-    return EBuildType.OWN_RESOURCES_AND_COINS;
+    return BuildKind.OWN_RESOURCES_AND_COINS;
   }
 
   if (tradeVariantPrice > player.data.coins) {
-    return EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS;
+    return BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS;
   }
 
-  return EBuildType.WITH_TRADE;
+  return BuildKind.WITH_TRADE;
 }

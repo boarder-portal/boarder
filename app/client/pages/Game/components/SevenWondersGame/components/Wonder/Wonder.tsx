@@ -2,32 +2,32 @@ import React, { useMemo } from 'react';
 
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
-import { EWaitingActionType, IPlayer } from 'common/types/sevenWonders';
-import { EFreeCardSource } from 'common/types/sevenWonders/effects';
-import { ECardId } from 'common/types/sevenWonders/cards';
+import { Player, WaitingActionType } from 'common/types/sevenWonders';
+import { CardId } from 'common/types/sevenWonders/cards';
+import { FreeCardSourceType } from 'common/types/sevenWonders/effects';
 
 import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
 
+import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
 import Card from 'client/pages/Game/components/SevenWondersGame/components/Card/Card';
 import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
-import Image from 'client/components/common/Image/Image';
-import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Wonder.module.scss';
 
-interface IWonderProps {
+interface WonderProps {
   className?: string;
-  player: IPlayer;
-  copiedLeaderId?: ECardId;
+  player: Player;
+  copiedLeaderId?: CardId;
   isOtherPlayer?: boolean;
 }
 
 const GROUP_HEIGHT = 125;
 const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
 
-const Wonder: React.FC<IWonderProps> = (props) => {
+const Wonder: React.FC<WonderProps> = (props) => {
   const { className, player, copiedLeaderId, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
@@ -37,29 +37,29 @@ const Wonder: React.FC<IWonderProps> = (props) => {
       return 'Ожидает';
     }
 
-    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.EFFECT_BUILD_CARD) {
+    if (player.data.turn?.waitingForAction?.type === WaitingActionType.EFFECT_BUILD_CARD) {
       const buildEffect = player.data.age?.buildEffects[player.data.turn.waitingForAction.buildEffectIndex];
 
-      if (buildEffect?.source === EFreeCardSource.DISCARD) {
+      if (buildEffect?.source === FreeCardSourceType.DISCARD) {
         return 'Выбор из сброса';
       }
 
-      if (buildEffect?.source === EFreeCardSource.LEADERS) {
+      if (buildEffect?.source === FreeCardSourceType.LEADERS) {
         return 'Найм лидера';
       }
 
       return 'Строительство последней карты';
     }
 
-    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.PICK_LEADER) {
+    if (player.data.turn?.waitingForAction?.type === WaitingActionType.PICK_LEADER) {
       return 'Выбирает лидера';
     }
 
-    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.RECRUIT_LEADER) {
+    if (player.data.turn?.waitingForAction?.type === WaitingActionType.RECRUIT_LEADER) {
       return 'Нанимает лидера';
     }
 
-    if (player.data.turn?.waitingForAction?.type === EWaitingActionType.BUILD_CARD) {
+    if (player.data.turn?.waitingForAction?.type === WaitingActionType.BUILD_CARD) {
       return 'Выбирает карту';
     }
   }, [player.data.age, player.data.turn]);

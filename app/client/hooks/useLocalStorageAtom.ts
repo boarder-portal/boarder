@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 
 import LocalStorageAtom, {
-  ISetValueOptions,
-  TLocalStorageKey,
-  TLocalStorageValue,
+  LocalStorageKey,
+  LocalStorageValue,
+  SetValueOptions,
 } from 'client/utilities/LocalStorageAtom';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
-export default function useLocalStorageAtom<Key extends TLocalStorageKey>(
+export default function useLocalStorageAtom<Key extends LocalStorageKey>(
   atom: LocalStorageAtom<Key>,
-): [TLocalStorageValue<Key>, (value: TLocalStorageValue<Key> | null, options?: ISetValueOptions) => void] {
-  const [value, setValue] = useState<TLocalStorageValue<Key>>(atom.value);
+): [LocalStorageValue<Key>, (value: LocalStorageValue<Key> | null, options?: SetValueOptions) => void] {
+  const [value, setValue] = useState<LocalStorageValue<Key>>(atom.value);
 
   useEffect(() => {
     return atom.subscribe(setValue);

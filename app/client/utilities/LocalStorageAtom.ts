@@ -1,62 +1,62 @@
-import { EGame, TGameOptions, TPlayerSettings } from 'common/types/game';
+import { GameOptions, GameType, PlayerSettings } from 'common/types/game';
 
-type TGameOptionsValues = {
-  [Game in EGame as typeof GAME_OPTIONS_KEYS[Game]]: TGameOptions<Game>;
+type GameOptionsValues = {
+  [Game in GameType as typeof GAME_OPTIONS_KEYS[Game]]: GameOptions<Game>;
 } & {
-  [Game in EGame as typeof PLAYER_SETTINGS_KEYS[Game]]: TPlayerSettings<Game>;
+  [Game in GameType as typeof PLAYER_SETTINGS_KEYS[Game]]: PlayerSettings<Game>;
 };
 
-interface ILocalStorageValues extends TGameOptionsValues {}
+interface LocalStorageValues extends GameOptionsValues {}
 
-export type TLocalStorageKey = keyof ILocalStorageValues;
+export type LocalStorageKey = keyof LocalStorageValues;
 
-export type TLocalStorageValue<Key extends TLocalStorageKey> = ILocalStorageValues[Key];
+export type LocalStorageValue<Key extends LocalStorageKey> = LocalStorageValues[Key];
 
-export type TLocalStorageSubscriber<Key extends TLocalStorageKey> = (value: TLocalStorageValue<Key>) => unknown;
+export type LocalStorageSubscriber<Key extends LocalStorageKey> = (value: LocalStorageValue<Key>) => unknown;
 
-export interface ISetValueOptions {
+export interface SetValueOptions {
   refreshDefault?: boolean;
 }
 
 export const GAME_OPTIONS_KEYS = {
-  [EGame.PEXESO]: 'game/pexeso/defaultOptions/v1',
-  [EGame.SURVIVAL_ONLINE]: 'game/survivalOnline/defaultOptions/v1',
-  [EGame.SET]: 'game/set/defaultOptions/v1',
-  [EGame.ONITAMA]: 'game/onitama/defaultOptions/v1',
-  [EGame.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
-  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v2',
-  [EGame.HEARTS]: 'game/hearts/defaultOptions/v1',
-  [EGame.BOMBERS]: 'game/bombers/defaultOptions/v2',
-  [EGame.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
-  [EGame.MAHJONG]: 'game/mahjong/defaultOptions/v1',
+  [GameType.PEXESO]: 'game/pexeso/defaultOptions/v1',
+  [GameType.SURVIVAL_ONLINE]: 'game/survivalOnline/defaultOptions/v1',
+  [GameType.SET]: 'game/set/defaultOptions/v1',
+  [GameType.ONITAMA]: 'game/onitama/defaultOptions/v1',
+  [GameType.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
+  [GameType.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v2',
+  [GameType.HEARTS]: 'game/hearts/defaultOptions/v1',
+  [GameType.BOMBERS]: 'game/bombers/defaultOptions/v2',
+  [GameType.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
+  [GameType.MAHJONG]: 'game/mahjong/defaultOptions/v1',
 } as const;
 
 export const PLAYER_SETTINGS_KEYS = {
-  [EGame.PEXESO]: 'game/pexeso/playerSettings/v1',
-  [EGame.SURVIVAL_ONLINE]: 'game/survivalOnline/playerSettings/v1',
-  [EGame.SET]: 'game/set/playerSettings/v1',
-  [EGame.ONITAMA]: 'game/onitama/playerSettings/v1',
-  [EGame.CARCASSONNE]: 'game/carcassonne/playerSettings/v1',
-  [EGame.SEVEN_WONDERS]: 'game/sevenWonders/playerSettings/v1',
-  [EGame.HEARTS]: 'game/hearts/playerSettings/v1',
-  [EGame.BOMBERS]: 'game/bombers/playerSettings/v1',
-  [EGame.MACHI_KORO]: 'game/machiKoro/playerSettings/v1',
-  [EGame.MAHJONG]: 'game/mahjong/playerSettings/v1.3',
+  [GameType.PEXESO]: 'game/pexeso/playerSettings/v1',
+  [GameType.SURVIVAL_ONLINE]: 'game/survivalOnline/playerSettings/v1',
+  [GameType.SET]: 'game/set/playerSettings/v1',
+  [GameType.ONITAMA]: 'game/onitama/playerSettings/v1',
+  [GameType.CARCASSONNE]: 'game/carcassonne/playerSettings/v1',
+  [GameType.SEVEN_WONDERS]: 'game/sevenWonders/playerSettings/v1',
+  [GameType.HEARTS]: 'game/hearts/playerSettings/v1',
+  [GameType.BOMBERS]: 'game/bombers/playerSettings/v1',
+  [GameType.MACHI_KORO]: 'game/machiKoro/playerSettings/v1',
+  [GameType.MAHJONG]: 'game/mahjong/playerSettings/v1.3',
 } as const;
 
-export default class LocalStorageAtom<Key extends TLocalStorageKey> {
+export default class LocalStorageAtom<Key extends LocalStorageKey> {
   key: Key;
-  defaultValue: TLocalStorageValue<Key>;
-  value: TLocalStorageValue<Key>;
-  subscribers = new Set<TLocalStorageSubscriber<Key>>();
+  defaultValue: LocalStorageValue<Key>;
+  value: LocalStorageValue<Key>;
+  subscribers = new Set<LocalStorageSubscriber<Key>>();
 
-  constructor(key: Key, defaultValue: TLocalStorageValue<Key>) {
+  constructor(key: Key, defaultValue: LocalStorageValue<Key>) {
     this.key = key;
     this.defaultValue = defaultValue;
     this.value = this.getInitialValue() ?? this.defaultValue;
   }
 
-  getInitialValue(): TLocalStorageValue<Key> | null {
+  getInitialValue(): LocalStorageValue<Key> | null {
     if (typeof localStorage === 'undefined') {
       return null;
     }
@@ -66,7 +66,7 @@ export default class LocalStorageAtom<Key extends TLocalStorageKey> {
     return rawValue && JSON.parse(rawValue);
   }
 
-  setValue(value: TLocalStorageValue<Key> | null, options?: ISetValueOptions): void {
+  setValue(value: LocalStorageValue<Key> | null, options?: SetValueOptions): void {
     if (options?.refreshDefault) {
       this.defaultValue = this.value;
     }
@@ -86,7 +86,7 @@ export default class LocalStorageAtom<Key extends TLocalStorageKey> {
     }
   }
 
-  subscribe(subscriber: TLocalStorageSubscriber<Key>): () => void {
+  subscribe(subscriber: LocalStorageSubscriber<Key>): () => void {
     this.subscribers.add(subscriber);
 
     return () => {

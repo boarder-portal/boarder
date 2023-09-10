@@ -1,19 +1,19 @@
-import uniqBy from 'lodash/uniqBy';
 import sortBy from 'lodash/sortBy';
+import uniqBy from 'lodash/uniqBy';
 
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ENeighborSide, TPayments } from 'common/types/sevenWonders';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { NeighborSide, Payments } from 'common/types/sevenWonders';
 
-import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getResourceType from 'common/utilities/sevenWonders/getResourcePrice';
 
-export interface ITradeVariant {
-  resources: IOwnerResource[];
-  payments: TPayments;
+export interface TradeVariant {
+  resources: OwnerResource[];
+  payments: Payments;
 }
 
-function getActualTradeVariants(variants: ITradeVariant[]): ITradeVariant[] {
-  const actualTradeVariants: ITradeVariant[] = [];
+function getActualTradeVariants(variants: TradeVariant[]): TradeVariant[] {
+  const actualTradeVariants: TradeVariant[] = [];
 
   variants.forEach((variant) => {
     if (
@@ -34,22 +34,18 @@ function getActualTradeVariants(variants: ITradeVariant[]): ITradeVariant[] {
 }
 
 export default function getTradeVariantsByPurchaseVariants(
-  purchaseVariants: IOwnerResource[][],
-  resourceTradePrices: TResourceTradePrices,
-): ITradeVariant[] {
+  purchaseVariants: OwnerResource[][],
+  resourceTradePrices: ResourceTradePrices,
+): TradeVariant[] {
   const tradeVariants = purchaseVariants.map((purchaseVariant) => {
-    const payments: TPayments = {
-      [ENeighborSide.LEFT]: 0,
-      [ENeighborSide.RIGHT]: 0,
+    const payments: Payments = {
+      [NeighborSide.LEFT]: 0,
+      [NeighborSide.RIGHT]: 0,
       bank: 0,
     };
 
     purchaseVariant.forEach((resource) => {
-      if (
-        resource.owner === ENeighborSide.LEFT ||
-        resource.owner === ENeighborSide.RIGHT ||
-        resource.owner === 'bank'
-      ) {
+      if (resource.owner === NeighborSide.LEFT || resource.owner === NeighborSide.RIGHT || resource.owner === 'bank') {
         payments[resource.owner] +=
           resource.owner === 'bank' ? 1 : resourceTradePrices[resource.owner][getResourceType(resource.type)];
       }

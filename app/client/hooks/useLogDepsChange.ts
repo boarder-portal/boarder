@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import isEmpty from 'lodash/isEmpty';
+import { useEffect, useRef } from 'react';
 
 export default function useLogDepsChange(deps: unknown[]): void {
   const prevDeps = useRef<unknown[]>(deps);

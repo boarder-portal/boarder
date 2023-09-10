@@ -1,33 +1,33 @@
 import React from 'react';
 
-import { IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { Action, Payments, Player } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
-import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
-import DiscardAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
-import BuildWonderLevelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
 import BuildCardActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildCardActions/BuildCardActions';
+import BuildWonderLevelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/BuildWonderLevelAction/BuildWonderLevelAction';
+import DiscardAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/components/DiscardAction/DiscardAction';
 
-interface IBuildActionsProps {
+interface BuildActionsProps {
   className?: string;
   cardIndex: number;
-  card: ICard;
-  player: IPlayer;
-  leftNeighbor: IPlayer;
-  rightNeighbor: IPlayer;
-  resourceTradePrices: TResourceTradePrices;
-  resourcePools: IOwnerResource[][];
-  wonderLevelBuildType: EBuildType;
-  wonderLevelTradeVariants: ITradeVariant[];
-  onCardAction(action: TAction, payments?: TPayments): void;
-  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
+  card: Card;
+  player: Player;
+  leftNeighbor: Player;
+  rightNeighbor: Player;
+  resourceTradePrices: ResourceTradePrices;
+  resourcePools: OwnerResource[][];
+  wonderLevelBuildType: BuildKind;
+  wonderLevelTradeVariants: TradeVariant[];
+  onCardAction(action: Action, payments?: Payments): void;
+  onStartCopyingLeader(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const BuildActions: React.FC<IBuildActionsProps> = (props) => {
+const BuildActions: React.FC<BuildActionsProps> = (props) => {
   const {
     className,
     cardIndex,

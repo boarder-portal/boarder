@@ -1,7 +1,7 @@
-import { TEffect } from 'common/types/sevenWonders/effects';
-import { IPrice } from 'common/types/sevenWonders';
+import { Price } from 'common/types/sevenWonders';
+import { Effect } from 'common/types/sevenWonders/effects';
 
-export enum ECardId {
+export enum CardId {
   // leaders
   AMYTIS = 'AMYTIS',
   MIDAS = 'MIDAS',
@@ -150,7 +150,7 @@ export enum ECardId {
   ARCHITECTS_GUILD = 'ARCHITECTS_GUILD',
 }
 
-export enum ECardType {
+export enum CardType {
   LEADER = 'LEADER',
   RAW_MATERIAL = 'RAW_MATERIAL',
   MANUFACTURED_GOODS = 'MANUFACTURED_GOODS',
@@ -161,15 +161,15 @@ export enum ECardType {
   GUILD = 'GUILD',
 }
 
-export interface ICardPrice extends IPrice {
-  buildings?: ECardId[];
+export interface CardPrice extends Price {
+  buildings?: CardId[];
 }
 
-export interface ICard {
-  id: ECardId;
-  type: ECardType;
-  effects: TEffect[];
-  price?: ICardPrice;
+export interface Card {
+  id: CardId;
+  type: CardType;
+  effects: Effect[];
+  price?: CardPrice;
   minPlayersCounts: number[];
   fromLeadersExtension?: boolean;
 }

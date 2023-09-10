@@ -1,6 +1,6 @@
-import times from 'lodash/times';
-import shuffle from 'lodash/shuffle';
 import isNumber from 'lodash/isNumber';
+import shuffle from 'lodash/shuffle';
+import times from 'lodash/times';
 
 import {
   NEW_CARDS_COUNT,
@@ -11,40 +11,40 @@ import {
   WRONG_SET_POINTS,
 } from 'common/constants/games/set';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  ECardColor,
-  ECardFill,
-  ECardShape,
-  EGameClientEvent,
-  ICard,
-  IGame,
-  IPlayer,
-  IPlayerData,
-  ISendSetEvent,
+  Card,
+  CardColor,
+  CardFill,
+  CardShape,
+  Game,
+  GameClientEventType,
+  Player,
+  PlayerData,
+  SendSetEvent,
 } from 'common/types/set';
 
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
-import isNotUndefined from 'common/utilities/isNotUndefined';
-import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 import isArray from 'common/utilities/isArray';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import isNotUndefined from 'common/utilities/isNotUndefined';
+import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
+import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
-export default class SetGame extends GameEntity<EGame.SET> {
-  playersData: IPlayerData[] = this.getPlayersData(() => ({
+export default class SetGame extends GameEntity<GameType.SET> {
+  playersData: PlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));
-  cardsStack: ICard[] = [];
+  cardsStack: Card[] = [];
   maxCardsToShow = START_CARDS_COUNT;
 
-  *lifecycle(): TGenerator<number[]> {
-    const notShuffledCardsStack: ICard[] = [];
+  *lifecycle(): EntityGenerator<number[]> {
+    const notShuffledCardsStack: Card[] = [];
 
-    Object.values(ECardColor).forEach((color) => {
-      Object.values(ECardShape).forEach((shape) => {
-        Object.values(ECardFill).forEach((fill) => {
+    Object.values(CardColor).forEach((color) => {
+      Object.values(CardShape).forEach((shape) => {
+        Object.values(CardFill).forEach((fill) => {
           times(3).forEach((countIndex) => {
             notShuffledCardsStack.push({
               id: notShuffledCardsStack.length,
@@ -62,10 +62,10 @@ export default class SetGame extends GameEntity<EGame.SET> {
 
     while (true) {
       const { event, data, playerIndex } = yield* this.waitForSocketEvents(
-        [EGameClientEvent.SEND_SET, EGameClientEvent.SEND_NO_SET],
+        [GameClientEventType.SEND_SET, GameClientEventType.SEND_NO_SET],
         {
           validate: (event, data) => {
-            if (event === EGameClientEvent.SEND_SET) {
+            if (event === GameClientEventType.SEND_SET) {
               this.validateSendSetEvent(data);
             }
           },
@@ -74,7 +74,7 @@ export default class SetGame extends GameEntity<EGame.SET> {
 
       const playerData = this.playersData[playerIndex];
 
-      if (event === EGameClientEvent.SEND_SET) {
+      if (event === GameClientEventType.SEND_SET) {
         const { cardsIds } = data;
 
         const cards = cardsIds
@@ -132,18 +132,18 @@ export default class SetGame extends GameEntity<EGame.SET> {
     return this.playersData.map(({ score }) => score);
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       players: this.getGamePlayers(),
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
   }
 
-  validateSendSetEvent(event: unknown): asserts event is ISendSetEvent {
+  validateSendSetEvent(event: unknown): asserts event is SendSetEvent {
     if (!event || typeof event !== 'object') {
       throw new Error('Wrong event object');
     }

@@ -5,10 +5,10 @@ import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import useAtom from 'client/hooks/useAtom';
 
-import Text from 'client/components/common/Text/Text';
-import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
+import Flex from 'client/components/common/Flex/Flex';
 import Input from 'client/components/common/Input/Input';
+import Text from 'client/components/common/Text/Text';
 
 import styles from './Registration.module.scss';
 

@@ -1,10 +1,10 @@
 import { FC } from 'react';
 
-interface IArrowRightIconProps {
+interface ArrowRightIconProps {
   className?: string;
 }
 
-const ArrowRightIcon: FC<IArrowRightIconProps> = (props) => {
+const ArrowRightIcon: FC<ArrowRightIconProps> = (props) => {
   const { className } = props;
 
   return (

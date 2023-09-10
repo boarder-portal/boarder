@@ -1,86 +1,88 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { ICard } from 'common/types/cards';
-import { EGame } from 'common/types/game';
+import { Card } from 'common/types/cards';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   CHOOSE_CARD = 'CHOOSE_CARD',
 }
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IGamePlayerData {
+export interface GamePlayerData {
   score: number;
 }
 
-export interface IPlayerData extends IGamePlayerData {
-  hand: IHandPlayerData | null;
-  turn: ITurnPlayerData | null;
+export interface PlayerData extends GamePlayerData {
+  hand: HandPlayerData | null;
+  turn: TurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.HEARTS> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.HEARTS> {
+  data: PlayerData;
 }
 
-export interface IGame {
-  players: IPlayer[];
-  passDirection: EPassDirection;
-  hand: IHand | null;
+export interface Game {
+  players: Player[];
+  passDirection: PassDirection;
+  hand: Hand | null;
 }
 
-export interface IHandPlayerData {
-  hand: ICard[];
+export interface HandPlayerData {
+  hand: Card[];
   chosenCardsIndexes: number[];
-  takenCards: ICard[];
+  takenCards: Card[];
 }
 
-export interface IHand {
-  stage: EHandStage;
+export interface Hand {
+  stage: HandStage;
   heartsEnteredPlay: boolean;
-  turn: ITurn | null;
+  turn: Turn | null;
 }
 
-export interface ITurnPlayerData {
-  playedCard: ICard | null;
+export interface TurnPlayerData {
+  playedCard: Card | null;
 }
 
-export interface ITurn {
+export interface Turn {
   startPlayerIndex: number;
   activePlayerIndex: number;
 }
 
-export enum EHandStage {
+export enum HandStage {
   PASS = 'PASS',
   PLAY = 'PLAY',
 }
 
-export enum EPassDirection {
+export enum PassDirection {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
   ACROSS = 'ACROSS',
   NONE = 'NONE',
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.HEARTS> {
-  [EGameClientEvent.CHOOSE_CARD]: number;
+export interface ClientEventMap extends CommonClientEventMap<GameType.HEARTS> {
+  [GameClientEventType.CHOOSE_CARD]: number;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.HEARTS> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.HEARTS> {}
+
+type HeartsGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.HEARTS]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.HEARTS]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: HeartsGameOptions;
+      info: Game;
       result: void;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

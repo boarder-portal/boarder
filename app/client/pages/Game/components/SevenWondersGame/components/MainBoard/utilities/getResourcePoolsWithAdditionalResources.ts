@@ -1,4 +1,4 @@
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import { getSetsCombinations } from 'common/utilities/combinations';
 
@@ -63,9 +63,9 @@ import { getSetsCombinations } from 'common/utilities/combinations';
  * ]
  */
 export default function getResourcePoolsWithAdditionalResources(
-  resourcePools: IOwnerResource[][],
-  additionalResources: IOwnerResource[][],
-): IOwnerResource[][] {
+  resourcePools: OwnerResource[][],
+  additionalResources: OwnerResource[][],
+): OwnerResource[][] {
   const additionalResourceVariants = getSetsCombinations(additionalResources);
 
   return resourcePools.flatMap((resourcePool) => {

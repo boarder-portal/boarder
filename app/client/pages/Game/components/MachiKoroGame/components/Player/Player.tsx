@@ -2,36 +2,36 @@ import { FC, memo, useMemo } from 'react';
 
 import { ALL_LANDMARK_CARDS } from 'common/constants/games/machiKoro';
 
-import { ECardId, ECardType, ELandmarkId, EPlayerWaitingAction, IPlayer } from 'common/types/machiKoro';
+import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/machiKoro';
 
-import getCard from 'common/utilities/machiKoro/getCard';
 import isNotUndefined from 'common/utilities/isNotUndefined';
+import getCard from 'common/utilities/machiKoro/getCard';
 
-import { usePrevious } from 'client/hooks/usePrevious';
+import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
 import Text from 'client/components/common/Text/Text';
 import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Card';
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
-import Image from 'client/components/common/Image/Image';
 
 import styles from './Player.module.scss';
 
-interface IPlayerProps {
+interface PlayerProps {
   className?: string;
-  player: IPlayer;
+  player: PlayerModel;
   main?: boolean;
   active: boolean;
   dices: number[];
   withActions?: boolean;
-  forbiddenToClickCardTypes: ECardType[];
+  forbiddenToClickCardTypes: CardType[];
   onEndTurn(): void;
-  onCardClick?(playerIndex: number, cardId: ECardId): void;
-  onLandmarkBuild(id: ELandmarkId): void;
+  onCardClick?(playerIndex: number, cardId: CardId): void;
+  onLandmarkBuild(id: LandmarkId): void;
   onClick?(): void;
 }
 
-const Player: FC<IPlayerProps> = (props) => {
+const Player: FC<PlayerProps> = (props) => {
   const { className, player, withActions, forbiddenToClickCardTypes, onClick, onLandmarkBuild, onCardClick } = props;
 
   const {

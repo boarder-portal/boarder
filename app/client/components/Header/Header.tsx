@@ -5,15 +5,15 @@ import httpClient from 'client/utilities/HttpClient/HttpClient';
 
 import useAtom from 'client/hooks/useAtom';
 
+import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
-import Dropdown from 'client/components/common/Dropdown/Dropdown';
 
 import styles from './Header.module.scss';
 
-interface IHeaderProps {}
+interface HeaderProps {}
 
-const Header: React.FC<IHeaderProps> = () => {
+const Header: React.FC<HeaderProps> = () => {
   const [user, setUser] = useAtom('user');
 
   const logout = useCallback(async () => {

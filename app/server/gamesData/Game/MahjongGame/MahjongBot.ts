@@ -1,14 +1,14 @@
 import random from 'lodash/random';
 
-import { EGame } from 'common/types/game';
-import { EGameClientEvent, IPlayer } from 'common/types/mahjong';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, Player } from 'common/types/mahjong';
 
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 import { getRandomIndex } from 'common/utilities/random';
+import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
-  *lifecycle(): TGenerator {
+export default class MahjongBot extends BotEntity<GameType.MAHJONG> {
+  *lifecycle(): EntityGenerator {
     while (true) {
       yield* this.waitForHand();
 
@@ -29,30 +29,30 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
           if (hand) {
             yield* this.delay(random(200, 700));
 
-            this.sendSocketEvent(EGameClientEvent.DISCARD_TILE, getRandomIndex(hand.length));
+            this.sendSocketEvent(GameClientEventType.DISCARD_TILE, getRandomIndex(hand.length));
           }
         } else {
           const { data } = this.getPlayer();
 
           if (data.turn?.declareDecision === null) {
-            this.sendSocketEvent(EGameClientEvent.DECLARE, 'pass');
+            this.sendSocketEvent(GameClientEventType.DECLARE, 'pass');
           }
         }
 
         yield* this.refreshGameInfo();
       }
 
-      this.sendSocketEvent(EGameClientEvent.READY_FOR_NEW_HAND, true);
+      this.sendSocketEvent(GameClientEventType.READY_FOR_NEW_HAND, true);
 
       yield* this.refreshGameInfo();
     }
   }
 
-  getPlayer(): IPlayer {
+  getPlayer(): Player {
     return this.getGameInfo().players[this.playerIndex];
   }
 
-  *waitForDeclareAction(): TGenerator {
+  *waitForDeclareAction(): EntityGenerator {
     while (true) {
       if (this.getGameInfo().round?.hand?.turn?.declareInfo && this.getPlayer().data.turn?.declareDecision === null) {
         return;
@@ -62,7 +62,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
     }
   }
 
-  *waitForHand(): TGenerator {
+  *waitForHand(): EntityGenerator {
     while (true) {
       if (Number(this.getGameInfo().round?.hand?.activePlayerIndex) > -1) {
         return;
@@ -72,7 +72,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
     }
   }
 
-  *waitForHandEnd(): TGenerator {
+  *waitForHandEnd(): EntityGenerator {
     while (true) {
       if (this.getGameInfo().round?.hand?.activePlayerIndex === -1) {
         return;
@@ -82,7 +82,7 @@ export default class MahjongBot extends BotEntity<EGame.MAHJONG> {
     }
   }
 
-  *waitForOwnTurn(): TGenerator {
+  *waitForOwnTurn(): EntityGenerator {
     while (true) {
       if (
         this.getGameInfo().round?.hand?.activePlayerIndex === this.playerIndex &&

@@ -1,12 +1,12 @@
-import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
 import classNames from 'classnames';
+import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
 
-import { useBoolean } from 'client/hooks/useBoolean';
+import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './Dropdown.module.scss';
 
-interface IDropdownProps {
+interface DropdownProps {
   className?: string;
   popupClassName?: string;
   open?: boolean;
@@ -16,7 +16,7 @@ interface IDropdownProps {
   onChangeVisibility?(visible: boolean): void;
 }
 
-const Dropdown: FC<IDropdownProps> = (props) => {
+const Dropdown: FC<DropdownProps> = (props) => {
   const {
     className,
     popupClassName,

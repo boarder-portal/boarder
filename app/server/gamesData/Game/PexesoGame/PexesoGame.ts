@@ -1,40 +1,40 @@
-import times from 'lodash/times';
-import shuffle from 'lodash/shuffle';
 import flatten from 'lodash/flatten';
+import shuffle from 'lodash/shuffle';
+import times from 'lodash/times';
 
-import { SHUFFLE_PERMUTATIONS } from 'server/gamesData/Game/PexesoGame/constants';
 import { SETS } from 'common/constants/games/pexeso';
+import { SHUFFLE_PERMUTATIONS } from 'server/gamesData/Game/PexesoGame/constants';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  EGameServerEvent,
-  EShuffleType,
-  ICard,
-  IGame,
-  IPlayer,
-  IPlayerData,
-  IShuffleCardsIndexes,
+  Card,
+  Game,
+  GameServerEventType,
+  Player,
+  PlayerData,
+  ShuffleCardsIndexes,
+  ShuffleType,
 } from 'common/types/pexeso';
 
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 import { getRandomElement } from 'common/utilities/random';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 
 import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
 
 const OPEN_CLOSE_ANIMATION_DURATION = 300;
 const OPEN_DURATION = 1600;
 
-export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
-  cards: ICard[] = [];
-  playersData: IPlayerData[] = this.getPlayersData(() => ({
+export default class PexesoGame extends TurnGameEntity<GameType.PEXESO> {
+  cards: Card[] = [];
+  playersData: PlayerData[] = this.getPlayersData(() => ({
     score: 0,
   }));
   movesCount = -1;
 
   turn: Turn | null = null;
 
-  *lifecycle(): TGenerator<number[]> {
+  *lifecycle(): EntityGenerator<number[]> {
     const { imagesCount: setImagesCount, imageVariantsCount } = SETS[this.options.set];
     const allIds = times(setImagesCount);
     const ids = (this.options.pickRandomImages ? shuffle(allIds) : allIds).slice(0, this.options.differentCardsCount);
@@ -84,23 +84,23 @@ export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
 
         isGameEnd = this.cards.every((card) => !card.isInGame);
 
-        this.sendSocketEvent(EGameServerEvent.REMOVE_CARDS, {
+        this.sendSocketEvent(GameServerEventType.REMOVE_CARDS, {
           indexes: openedCardsIndexes,
           shuffleIndexes:
-            isGameEnd || this.options.shuffleOptions?.type === EShuffleType.TURNED
+            isGameEnd || this.options.shuffleOptions?.type === ShuffleType.TURNED
               ? null
               : this.shuffleCards(openedCardsIndexes),
         });
       } else {
         this.passTurn();
 
-        this.sendSocketEvent(EGameServerEvent.HIDE_CARDS, {
+        this.sendSocketEvent(GameServerEventType.HIDE_CARDS, {
           indexes: openedCardsIndexes,
           shuffleIndexes: this.shuffleCards(openedCardsIndexes),
         });
       }
 
-      this.sendSocketEvent(EGameServerEvent.UPDATE_PLAYERS, {
+      this.sendSocketEvent(GameServerEventType.UPDATE_PLAYERS, {
         players: this.getGamePlayers(),
         activePlayerIndex: this.activePlayerIndex,
       });
@@ -115,7 +115,7 @@ export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
     return this.playersData.map(({ score }) => score);
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
@@ -123,14 +123,14 @@ export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
     return this.cards[cardIndex].isInGame;
   }
 
-  shuffleCards(openedCardsIndexes: number[]): IShuffleCardsIndexes | null {
+  shuffleCards(openedCardsIndexes: number[]): ShuffleCardsIndexes | null {
     if (!this.options.shuffleOptions || this.movesCount % this.options.shuffleOptions.afterMovesCount !== 0) {
       return null;
     }
 
     let indexesToShuffle: number[];
 
-    if (this.options.shuffleOptions.type === EShuffleType.RANDOM) {
+    if (this.options.shuffleOptions.type === ShuffleType.RANDOM) {
       const allIndexesInPlay = times(this.options.differentCardsCount * this.options.matchingCardsCount).filter(
         (index) => this.cards[index].isInGame,
       );
@@ -154,7 +154,7 @@ export default class PexesoGame extends TurnGameEntity<EGame.PEXESO> {
     };
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       players: this.getGamePlayers(),
       activePlayerIndex: this.activePlayerIndex,

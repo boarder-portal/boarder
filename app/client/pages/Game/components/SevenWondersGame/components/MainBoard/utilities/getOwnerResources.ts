@@ -1,5 +1,5 @@
-import { IResource, TResourceOwner } from 'common/types/sevenWonders';
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { Resource, ResourceOwner } from 'common/types/sevenWonders';
 
 /**
  * resources: [
@@ -16,7 +16,7 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
  *    [{ type: 'GLASS', count: 1, owner }],
  * ]
  */
-export default function getOwnerResources(resources: IResource[][], owner: TResourceOwner): IOwnerResource[][] {
+export default function getOwnerResources(resources: Resource[][], owner: ResourceOwner): OwnerResource[][] {
   return resources.map((resource) =>
     resource.map((resourceVariant) => ({
       ...resourceVariant,

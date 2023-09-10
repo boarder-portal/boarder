@@ -1,57 +1,57 @@
-import { FC, memo, useCallback, useEffect, useState } from 'react';
-import times from 'lodash/times';
 import classNames from 'classnames';
+import times from 'lodash/times';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
-import { EHandsCount, IHandResult, IPlayer } from 'common/types/mahjong';
+import { HandResult, HandsCount, Player } from 'common/types/mahjong';
 
+import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
 import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
-import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './ResultsModal.module.scss';
 
-enum EViewMode {
+enum ViewMode {
   TABLE = 'TABLE',
   MAHJONG = 'MAHJONG',
 }
 
-interface IResultsModalProps {
+interface ResultsModalProps {
   open: boolean;
-  handsCount: EHandsCount;
-  players: IPlayer[];
-  results: IHandResult[];
-  openedResult: IHandResult | null;
+  handsCount: HandsCount;
+  players: Player[];
+  results: HandResult[];
+  openedResult: HandResult | null;
   onClose(): void;
 }
 
-const ResultsModal: FC<IResultsModalProps> = (props) => {
+const ResultsModal: FC<ResultsModalProps> = (props) => {
   const { open, handsCount, players, results, openedResult, onClose } = props;
 
-  const [viewMode, setViewMode] = useState(EViewMode.TABLE);
-  const [chosenResult, setChosenResult] = useState<IHandResult | null>(null);
+  const [viewMode, setViewMode] = useState(ViewMode.TABLE);
+  const [chosenResult, setChosenResult] = useState<HandResult | null>(null);
 
   const chosenResultWinner =
     !chosenResult || chosenResult.winnerIndex === -1 ? null : players.at(chosenResult.winnerIndex) ?? null;
 
-  const chooseResult = useCallback((result: IHandResult) => {
-    setViewMode(EViewMode.MAHJONG);
+  const chooseResult = useCallback((result: HandResult) => {
+    setViewMode(ViewMode.MAHJONG);
     setChosenResult(result);
   }, []);
 
   const backToTable = useCallback(() => {
-    setViewMode(EViewMode.TABLE);
+    setViewMode(ViewMode.TABLE);
   }, []);
 
   useEffect(() => {
     batchedUpdates(() => {
       if (open) {
-        setViewMode(openedResult ? EViewMode.MAHJONG : EViewMode.TABLE);
+        setViewMode(openedResult ? ViewMode.MAHJONG : ViewMode.TABLE);
         setChosenResult(openedResult);
       }
     });
@@ -59,11 +59,11 @@ const ResultsModal: FC<IResultsModalProps> = (props) => {
 
   return (
     <Modal
-      containerClassName={classNames(styles.root, { [styles.results]: viewMode === EViewMode.TABLE })}
+      containerClassName={classNames(styles.root, { [styles.results]: viewMode === ViewMode.TABLE })}
       open={open}
       onClose={onClose}
     >
-      {viewMode === EViewMode.TABLE ? (
+      {viewMode === ViewMode.TABLE ? (
         <Table
           bordered
           fullWidth

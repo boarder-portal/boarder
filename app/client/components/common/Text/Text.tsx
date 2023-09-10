@@ -1,16 +1,16 @@
-import { forwardRef, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
+import { HTMLAttributes, ReactNode, forwardRef } from 'react';
 
 import styles from './Text.module.scss';
 
-interface ITextProps extends HTMLAttributes<HTMLDivElement> {
+interface TextProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
   size?: 's' | 'm' | 'l' | 'xl' | 'xxl';
   weight?: 'normal' | 'bold';
   children?: ReactNode;
 }
 
-const Text = forwardRef<HTMLDivElement | null, ITextProps>((props, ref) => {
+const Text = forwardRef<HTMLDivElement | null, TextProps>((props, ref) => {
   const { className, size = 'm', weight = 'normal', children, ...restProps } = props;
 
   return (

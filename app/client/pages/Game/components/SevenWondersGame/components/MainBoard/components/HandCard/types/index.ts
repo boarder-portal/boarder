@@ -1,8 +1,8 @@
-import { TBuildType, TPayments } from 'common/types/sevenWonders';
+import { BuildType, Payments } from 'common/types/sevenWonders';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-export enum EBuildType {
+export enum BuildKind {
   FREE = 'FREE',
   FREE_WITH_EFFECT = 'FREE_WITH_EFFECT',
   FREE_BY_BUILDING = 'FREE_BY_BUILDING',
@@ -14,9 +14,9 @@ export enum EBuildType {
   NOT_ALLOWED = 'NOT_ALLOWED',
 }
 
-export interface IBuildInfo {
-  type: EBuildType;
+export interface BuildInfo {
+  type: BuildKind;
   title: string;
-  tradeVariants: ITradeVariant[];
-  onBuild(freeBuildType: TBuildType | null, payments?: TPayments): void;
+  tradeVariants: TradeVariant[];
+  onBuild(freeBuildType: BuildType | null, payments?: Payments): void;
 }

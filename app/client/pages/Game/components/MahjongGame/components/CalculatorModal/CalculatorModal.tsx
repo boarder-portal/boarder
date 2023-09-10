@@ -1,53 +1,50 @@
-import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 import { ALL_WINDS } from 'common/constants/games/mahjong';
+import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 
 import {
-  ESet,
-  ESetConcealedType,
-  EWind,
-  IHandMahjong,
-  IPlayer,
-  TDeclaredSet,
-  TPlayableTile,
-  TTile,
+  DeclaredSet,
+  HandMahjong,
+  PlayableTile,
+  Player,
+  SetConcealedType,
+  SetType,
+  Tile as TileModel,
+  WindSide,
 } from 'common/types/mahjong';
 
+import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
+import { HandScoreOptions, getAllWaits, getHandMahjong } from 'common/utilities/mahjong/scoring';
+import { isDeclaredMeldedSet, isKong, isMelded } from 'common/utilities/mahjong/sets';
+import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 import {
-  chow,
   getLastTileCandidatesFromTiles,
   getSupposedHandTileCount,
   getTileCount,
   isEqualTiles,
-  isSuited,
-  kong,
-  pung,
   tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
-import { isDeclaredMeldedSet, isKong, isMelded } from 'common/utilities/mahjong/sets';
-import { getAllWaits, getHandMahjong, IHandScoreOptions } from 'common/utilities/mahjong/scoring';
-import { getWindHumanName } from 'common/utilities/mahjong/stringify';
-import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
+import { chow, isSuited, kong, pung } from 'common/utilities/mahjong/tilesBase';
 
-import { usePrevious } from 'client/hooks/usePrevious';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import usePrevious from 'client/hooks/usePrevious';
 
-import Modal from 'client/components/common/Modal/Modal';
-import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
-import Flex from 'client/components/common/Flex/Flex';
-import RadioGroup, { ISelectOption } from 'client/components/common/RadioGroup/RadioGroup';
-import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Button from 'client/components/common/Button/Button';
-import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
+import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import Flex from 'client/components/common/Flex/Flex';
+import Modal from 'client/components/common/Modal/Modal';
+import RadioGroup, { SelectOption } from 'client/components/common/RadioGroup/RadioGroup';
 import Select from 'client/components/common/Select/Select';
+import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
+import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
+import Tiles, { OpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
 import styles from './CalculatorModal.module.scss';
 
-enum ESelectMode {
+enum SelectMode {
   CHOW = 'CHOW',
   PUNG = 'PUNG',
   MELDED_KONG = 'MELDED_KONG',
@@ -56,25 +53,25 @@ enum ESelectMode {
   WINNING_TILE = 'WINNING_TILE',
 }
 
-interface ICalculatorModalProps {
+interface CalculatorModalProps {
   open: boolean;
-  declaredSets: TDeclaredSet[];
-  hand: TTile[];
-  winningTile: TTile | null;
-  roundWind: EWind | null;
+  declaredSets: DeclaredSet[];
+  hand: TileModel[];
+  winningTile: TileModel | null;
+  roundWind: WindSide | null;
   isRobbingKong: boolean;
   isReplacementTile: boolean;
   isLastWallTile: boolean;
   activePlayerIndex: number;
-  player: IPlayer | null;
-  players: IPlayer[];
+  player: Player | null;
+  players: Player[];
   onClose(): void;
 }
 
 const TILE_WIDTH = 50;
 const HAND_TILE_WIDTH = TILE_WIDTH * 0.75;
 
-const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
+const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   const {
     open,
     declaredSets: realDeclaredSets,
@@ -92,19 +89,19 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
 
   const realSeatWind = player?.data.round?.wind ?? null;
 
-  const [selectMode, setSelectMode] = useState(ESelectMode.WINNING_TILE);
-  const [declaredSets, setDeclaredSets] = useState<TDeclaredSet[]>([]);
-  const [hand, setHand] = useState<TTile[]>([]);
-  const [winningTile, setWinningTile] = useState<TTile | null>(null);
-  const [roundWind, setRoundWind] = useState<EWind | null>(EWind.EAST);
-  const [seatWind, setSeatWind] = useState<EWind | null>(EWind.EAST);
+  const [selectMode, setSelectMode] = useState(SelectMode.WINNING_TILE);
+  const [declaredSets, setDeclaredSets] = useState<DeclaredSet[]>([]);
+  const [hand, setHand] = useState<TileModel[]>([]);
+  const [winningTile, setWinningTile] = useState<TileModel | null>(null);
+  const [roundWind, setRoundWind] = useState<WindSide | null>(WindSide.EAST);
+  const [seatWind, setSeatWind] = useState<WindSide | null>(WindSide.EAST);
   const [isSelfDraw, setIsSelfDraw] = useState(false);
   const [isRobbingKong, setIsRobbingKong] = useState(false);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
   const [isLastWallTile, setIsLastWallTile] = useState(false);
   const [isLastOfKind, setIsLastOfKind] = useState(false);
   const [gameTakenIntoAccount, setGameTakenIntoAccount] = useState(true);
-  const [shownMahjong, setShownMahjong] = useState<IHandMahjong | null>(null);
+  const [shownMahjong, setShownMahjong] = useState<HandMahjong | null>(null);
 
   const wasGameTakenIntoAccount = usePrevious(gameTakenIntoAccount);
 
@@ -112,19 +109,19 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   const canAddSets = getSupposedHandTileCount(knowsSetsCount) - hand.length >= 3;
   const canAddToHand = hand.length < getSupposedHandTileCount(knowsSetsCount);
 
-  const selectOptions = useMemo<ISelectOption<ESelectMode>[]>(() => {
+  const selectOptions = useMemo<SelectOption<SelectMode>[]>(() => {
     return [
-      { value: ESelectMode.CHOW, text: 'Чоу', disabled: !canAddSets },
-      { value: ESelectMode.PUNG, text: 'Панг', disabled: !canAddSets },
-      { value: ESelectMode.MELDED_KONG, text: 'Открытый конг', disabled: !canAddSets },
-      { value: ESelectMode.CONCEALED_KONG, text: 'Закрытый конг', disabled: !canAddSets },
-      { value: ESelectMode.HAND, text: 'В руку', disabled: !canAddToHand },
-      { value: ESelectMode.WINNING_TILE, text: 'Выигрышную кость', disabled: canAddToHand },
+      { value: SelectMode.CHOW, text: 'Чоу', disabled: !canAddSets },
+      { value: SelectMode.PUNG, text: 'Панг', disabled: !canAddSets },
+      { value: SelectMode.MELDED_KONG, text: 'Открытый конг', disabled: !canAddSets },
+      { value: SelectMode.CONCEALED_KONG, text: 'Закрытый конг', disabled: !canAddSets },
+      { value: SelectMode.HAND, text: 'В руку', disabled: !canAddToHand },
+      { value: SelectMode.WINNING_TILE, text: 'Выигрышную кость', disabled: canAddToHand },
     ];
   }, [canAddSets, canAddToHand]);
 
-  const allMeldedTiles = useMemo<TTile[]>(() => {
-    const meldedTiles: TTile[] = declaredSets.filter(isMelded).flatMap(({ tiles }) => tiles);
+  const allMeldedTiles = useMemo<TileModel[]>(() => {
+    const meldedTiles: TileModel[] = declaredSets.filter(isMelded).flatMap(({ tiles }) => tiles);
 
     if (gameTakenIntoAccount) {
       players.forEach((p) => {
@@ -141,11 +138,11 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     return meldedTiles;
   }, [declaredSets, gameTakenIntoAccount, player?.index, players]);
 
-  const lastTileCandidates = useMemo<TTile[]>(() => {
+  const lastTileCandidates = useMemo<TileModel[]>(() => {
     return getLastTileCandidatesFromTiles(allMeldedTiles, !gameTakenIntoAccount || isSelfDraw);
   }, [allMeldedTiles, gameTakenIntoAccount, isSelfDraw]);
 
-  const allKnownTiles = useMemo<TTile[]>(() => {
+  const allKnownTiles = useMemo<TileModel[]>(() => {
     const allKnowsTiles = [
       ...(winningTile ? [winningTile] : []),
       ...hand,
@@ -169,23 +166,23 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     return allKnowsTiles;
   }, [declaredSets, gameTakenIntoAccount, hand, player?.index, players, winningTile]);
 
-  const disabledTiles = useMemo<TPlayableTile[]>(() => {
+  const disabledTiles = useMemo<PlayableTile[]>(() => {
     return STANDARD_TILES.filter((tile) => {
       const tileCount = getTileCount(allKnownTiles, tile);
 
-      if (selectMode === ESelectMode.WINNING_TILE) {
+      if (selectMode === SelectMode.WINNING_TILE) {
         return tileCount >= 4 && !isEqualTiles(tile, winningTile);
       }
 
-      if (selectMode === ESelectMode.HAND) {
+      if (selectMode === SelectMode.HAND) {
         return tileCount >= 4;
       }
 
-      if (selectMode === ESelectMode.PUNG) {
+      if (selectMode === SelectMode.PUNG) {
         return tileCount > 1;
       }
 
-      if (selectMode === ESelectMode.MELDED_KONG || selectMode === ESelectMode.CONCEALED_KONG) {
+      if (selectMode === SelectMode.MELDED_KONG || selectMode === SelectMode.CONCEALED_KONG) {
         return tileCount > 0;
       }
 
@@ -232,7 +229,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   }, [lastTileCandidates, winningTile]);
 
   const getHandScoreOptions = useCallback(
-    (customWinningTile?: TTile | null, minScore?: number): IHandScoreOptions => {
+    (customWinningTile?: TileModel | null, minScore?: number): HandScoreOptions => {
       return {
         hand,
         declaredSets,
@@ -262,7 +259,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     ],
   );
 
-  const getMahjong = useImmutableCallback((customWinningTile?: TTile) => {
+  const getMahjong = useImmutableCallback((customWinningTile?: TileModel) => {
     const mahjongWinningTile = customWinningTile ?? winningTile;
 
     if (!mahjongWinningTile) {
@@ -275,7 +272,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     });
   });
 
-  const allWaits = useMemo<TTile[]>(() => {
+  const allWaits = useMemo<TileModel[]>(() => {
     return getAllWaits(getHandScoreOptions(null, 0));
   }, [getHandScoreOptions]);
 
@@ -309,8 +306,8 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
           setDeclaredSets([]);
           setHand([]);
           setWinningTile(null);
-          setRoundWind(EWind.EAST);
-          setSeatWind(EWind.EAST);
+          setRoundWind(WindSide.EAST);
+          setSeatWind(WindSide.EAST);
           setIsSelfDraw(false);
           setIsRobbingKong(false);
           setIsReplacementTile(false);
@@ -335,29 +332,28 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   );
 
   const onTileClick = useCallback(
-    (tile: TPlayableTile) => {
-      if (selectMode === ESelectMode.WINNING_TILE) {
+    (tile: PlayableTile) => {
+      if (selectMode === SelectMode.WINNING_TILE) {
         return setWinningTile(tile);
       }
 
-      if (selectMode === ESelectMode.HAND) {
+      if (selectMode === SelectMode.HAND) {
         return setHand((hand) => [...hand, tile]);
       }
 
-      let addedSet: TDeclaredSet;
+      let addedSet: DeclaredSet;
 
-      if (selectMode === ESelectMode.PUNG) {
+      if (selectMode === SelectMode.PUNG) {
         addedSet = {
-          type: ESet.PUNG,
+          type: SetType.PUNG,
           tiles: pung(tile),
-          concealedType: ESetConcealedType.MELDED,
+          concealedType: SetConcealedType.MELDED,
         };
-      } else if (selectMode === ESelectMode.MELDED_KONG || selectMode === ESelectMode.CONCEALED_KONG) {
+      } else if (selectMode === SelectMode.MELDED_KONG || selectMode === SelectMode.CONCEALED_KONG) {
         addedSet = {
-          type: ESet.KONG,
+          type: SetType.KONG,
           tiles: kong(tile),
-          concealedType:
-            selectMode === ESelectMode.MELDED_KONG ? ESetConcealedType.MELDED : ESetConcealedType.CONCEALED,
+          concealedType: selectMode === SelectMode.MELDED_KONG ? SetConcealedType.MELDED : SetConcealedType.CONCEALED,
         };
       } else {
         if (!isSuited(tile)) {
@@ -365,9 +361,9 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
         }
 
         addedSet = {
-          type: ESet.CHOW,
+          type: SetType.CHOW,
           tiles: chow(tile),
-          concealedType: ESetConcealedType.MELDED,
+          concealedType: SetConcealedType.MELDED,
         };
       }
 
@@ -400,7 +396,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
   }, [gameTakenIntoAccount, reset]);
 
   const onWaitClick = useCallback(
-    (wait: TTile) => {
+    (wait: TileModel) => {
       batchedUpdates(() => {
         setWinningTile(wait);
         setShownMahjong(getMahjong(wait));
@@ -409,11 +405,11 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     [getMahjong],
   );
 
-  const handleRoundWindChange = useCallback((wind: EWind | '-') => {
+  const handleRoundWindChange = useCallback((wind: WindSide | '-') => {
     setRoundWind(wind === '-' ? null : wind);
   }, []);
 
-  const handleSetWindChange = useCallback((wind: EWind | '-') => {
+  const handleSetWindChange = useCallback((wind: WindSide | '-') => {
     setSeatWind(wind === '-' ? null : wind);
   }, []);
 
@@ -434,9 +430,9 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
     const selectedOption = selectOptions.find(({ value }) => value === selectMode);
 
     if (selectedOption?.disabled) {
-      const isHandDisabled = selectOptions.find(({ value }) => value === ESelectMode.HAND)?.disabled;
+      const isHandDisabled = selectOptions.find(({ value }) => value === SelectMode.HAND)?.disabled;
 
-      setSelectMode(isHandDisabled ? ESelectMode.WINNING_TILE : ESelectMode.HAND);
+      setSelectMode(isHandDisabled ? SelectMode.WINNING_TILE : SelectMode.HAND);
     }
   }, [selectMode, selectOptions]);
 
@@ -574,7 +570,7 @@ const CalculatorModal: FC<ICalculatorModalProps> = (props) => {
                 key={index}
                 tiles={set.tiles}
                 tileWidth={HAND_TILE_WIDTH}
-                openType={set.concealedType === ESetConcealedType.CONCEALED ? EOpenType.SEMI_CONCEALED : EOpenType.OPEN}
+                openType={set.concealedType === SetConcealedType.CONCEALED ? OpenType.SEMI_CONCEALED : OpenType.OPEN}
                 onTileClick={isAllowedToRemoveSet ? () => removeSet(index) : undefined}
               />
             );

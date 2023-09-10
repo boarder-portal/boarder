@@ -1,8 +1,8 @@
+import bodyParser from 'body-parser';
 import { Request } from 'express';
 import PromiseRouter from 'express-promise-router';
-import bodyParser from 'body-parser';
 
-import { ILoginParams, IRegisterParams } from 'common/types/requestParams';
+import { LoginParams, RegisterParams } from 'common/types/requestParams';
 
 import getDB from 'server/db/getDB';
 import writeDB from 'server/db/writeDB';
@@ -14,7 +14,7 @@ apiRouter
   .get('/user', async (req, res) => {
     res.status(200).json(req.session.user || null);
   })
-  .post('/register', async (req: Request<unknown, unknown, IRegisterParams, unknown>, res) => {
+  .post('/register', async (req: Request<unknown, unknown, RegisterParams, unknown>, res) => {
     const { user } = req.body;
 
     const db = await getDB();
@@ -29,7 +29,7 @@ apiRouter
 
     res.status(200).json(req.session.user);
   })
-  .post('/login', async (req: Request<unknown, unknown, ILoginParams, unknown>, res) => {
+  .post('/login', async (req: Request<unknown, unknown, LoginParams, unknown>, res) => {
     const { user } = req.body;
 
     const db = await getDB();

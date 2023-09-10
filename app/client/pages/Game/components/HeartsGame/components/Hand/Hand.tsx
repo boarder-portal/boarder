@@ -1,31 +1,31 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
-import { EHandStage } from 'common/types/hearts';
-import { ESuit, ICard } from 'common/types/cards';
+import { Card as CardModel, Suit } from 'common/types/cards';
+import { HandStage } from 'common/types/hearts';
 
 import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
 
-import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
 import Flex from 'client/components/common/Flex/Flex';
+import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
 
 import styles from './Hand.module.scss';
 
-enum ECardState {
+enum CardStateType {
   DEFAULT = 'default',
   SELECTED = 'selected',
   DISABLED = 'disabled',
 }
 
-interface IHandProps {
+interface HandProps {
   className?: string;
   isActive: boolean;
-  hand: ICard[];
+  hand: CardModel[];
   chosenCardsIndexes: number[];
-  stage: EHandStage;
-  playedSuit: ESuit | null;
+  stage: HandStage;
+  playedSuit: Suit | null;
   heartsEnteredPlay: boolean;
   isOwnHand: boolean;
   isFirstTurn: boolean;
@@ -33,36 +33,36 @@ interface IHandProps {
 }
 
 function getCardState(
-  card: ICard,
+  card: CardModel,
   cardIndex: number,
   isActive: boolean,
-  hand: ICard[],
+  hand: CardModel[],
   chosenCardsIndexes: number[],
-  stage: EHandStage,
-  playedSuit: ESuit | null,
+  stage: HandStage,
+  playedSuit: Suit | null,
   heartsEnteredPlay: boolean,
   isFirstTurn: boolean,
-): ECardState {
-  if (stage === EHandStage.PASS) {
+): CardStateType {
+  if (stage === HandStage.PASS) {
     const isSelected = chosenCardsIndexes.includes(cardIndex);
 
     if (isSelected) {
-      return ECardState.SELECTED;
+      return CardStateType.SELECTED;
     }
 
-    return chosenCardsIndexes.length === PASS_CARDS_COUNT ? ECardState.DISABLED : ECardState.DEFAULT;
+    return chosenCardsIndexes.length === PASS_CARDS_COUNT ? CardStateType.DISABLED : CardStateType.DEFAULT;
   }
 
   if (!isActive) {
-    return ECardState.DISABLED;
+    return CardStateType.DISABLED;
   }
 
   return isCardAllowed({ card, suit: playedSuit, hand, heartsEnteredPlay, isFirstTurn })
-    ? ECardState.DEFAULT
-    : ECardState.DISABLED;
+    ? CardStateType.DEFAULT
+    : CardStateType.DISABLED;
 }
 
-const Hand: React.FC<IHandProps> = (props) => {
+const Hand: React.FC<HandProps> = (props) => {
   const {
     className,
     isActive,

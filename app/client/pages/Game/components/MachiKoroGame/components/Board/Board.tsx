@@ -1,23 +1,23 @@
-import { memo, FC, useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 
-import { ECardId } from 'common/types/machiKoro';
+import { CardId } from 'common/types/machiKoro';
 
-import getCard from 'common/utilities/machiKoro/getCard';
 import isNotUndefined from 'common/utilities/isNotUndefined';
+import getCard from 'common/utilities/machiKoro/getCard';
 
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
 
 import styles from './Board.module.scss';
 
-interface IBoardProps {
-  board: ECardId[];
+interface BoardProps {
+  board: CardId[];
   withActions: boolean;
   availableCoins: number;
-  builtMajors: ECardId[];
-  onSelect(cardId: ECardId): void;
+  builtMajors: CardId[];
+  onSelect(cardId: CardId): void;
 }
 
-const Board: FC<IBoardProps> = (props) => {
+const Board: FC<BoardProps> = (props) => {
   const { board, withActions, availableCoins, builtMajors, onSelect } = props;
 
   const disabledIds = useMemo(() => {

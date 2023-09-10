@@ -1,11 +1,11 @@
-import { AllHTMLAttributes, FC, memo, ReactNode } from 'react';
 import classNames from 'classnames';
+import { AllHTMLAttributes, FC, ReactNode, memo } from 'react';
 
 import TableRow from 'client/components/common/TableRow/TableRow';
 
 import styles from './Table.module.scss';
 
-interface ITableProps extends AllHTMLAttributes<HTMLTableElement> {
+interface TableProps extends AllHTMLAttributes<HTMLTableElement> {
   className?: string;
   bordered?: boolean;
   fullWidth?: boolean;
@@ -14,7 +14,7 @@ interface ITableProps extends AllHTMLAttributes<HTMLTableElement> {
   footer?: ReactNode;
 }
 
-const Table: FC<ITableProps> = (props) => {
+const Table: FC<TableProps> = (props) => {
   const { className, children, bordered, fullWidth, layout = 'auto', header, footer, ...rest } = props;
 
   return (

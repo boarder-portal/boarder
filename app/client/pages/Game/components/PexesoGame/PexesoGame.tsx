@@ -1,33 +1,33 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import times from 'lodash/times';
-import sortBy from 'lodash/sortBy';
 import classNames from 'classnames';
+import sortBy from 'lodash/sortBy';
+import times from 'lodash/times';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
+import { Coords } from 'common/types';
+import { GameType } from 'common/types/game';
 import {
-  EFieldLayout,
-  EGameClientEvent,
-  EGameServerEvent,
-  ICard,
-  IPlayer,
-  IShuffleCardsIndexes,
+  Card,
+  FieldLayoutType,
+  GameClientEventType,
+  GameServerEventType,
+  Player,
+  ShuffleCardsIndexes,
 } from 'common/types/pexeso';
-import { ICoords } from 'common/types';
-import { EGame } from 'common/types/game';
 
-import useSocket from 'client/hooks/useSocket';
 import usePlayer from 'client/hooks/usePlayer';
+import useSocket from 'client/hooks/useSocket';
 
-import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
-import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
+import GameEnd from 'client/pages/Game/components/GameEnd/GameEnd';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './PexesoGame.module.scss';
 
-interface IPexesoClientCard extends ICard {
+interface PexesoClientCard extends Card {
   id: number;
   isOpen: boolean;
   opened: boolean;
@@ -38,7 +38,7 @@ interface IPexesoClientCard extends ICard {
 const CARD_SIZE = 80;
 const CARDS_MARGIN = 8;
 
-const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsIndexes | null) => {
+const shuffleCards = (cards: PexesoClientCard[], shuffleIndexes: ShuffleCardsIndexes | null) => {
   if (!shuffleIndexes) {
     return;
   }
@@ -52,10 +52,10 @@ const shuffleCards = (cards: IPexesoClientCard[], shuffleIndexes: IShuffleCardsI
 
 const getOrthogonalFieldCardCoord = (coord: number): number => (CARD_SIZE + CARDS_MARGIN) * coord;
 
-const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
+const PexesoGame: React.FC<GameProps<GameType.PEXESO>> = (props) => {
   const { io, gameOptions, gameInfo, gameResult } = props;
 
-  const [cards, setCards] = useState<IPexesoClientCard[]>(
+  const [cards, setCards] = useState<PexesoClientCard[]>(
     gameInfo.cards.map((card, index) => ({
       ...card,
       id: index,
@@ -66,7 +66,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     })),
   );
   const [highlightedCardsIndexes, setHighlightedCardsIndexes] = useState<number[]>([]);
-  const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
+  const [players, setPlayers] = useState<Player[]>(gameInfo.players);
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
 
   const imagesRef = useRef<HTMLImageElement[]>([]);
@@ -76,7 +76,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   const player = usePlayer(players);
 
   useSocket(io, {
-    [EGameServerEvent.OPEN_CARD]: (cardIndex) => {
+    [GameServerEventType.OPEN_CARD]: (cardIndex) => {
       setCards((cards) => {
         cards[cardIndex].closed = false;
         cards[cardIndex].opened = true;
@@ -85,7 +85,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
         return [...cards];
       });
     },
-    [EGameServerEvent.HIDE_CARDS]: ({ indexes, shuffleIndexes }) => {
+    [GameServerEventType.HIDE_CARDS]: ({ indexes, shuffleIndexes }) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isOpen = false;
@@ -98,7 +98,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       });
       setHighlightedCardsIndexes([]);
     },
-    [EGameServerEvent.REMOVE_CARDS]: ({ indexes, shuffleIndexes }) => {
+    [GameServerEventType.REMOVE_CARDS]: ({ indexes, shuffleIndexes }) => {
       setCards((cards) => {
         indexes.forEach((cardIndex) => {
           cards[cardIndex].isInGame = false;
@@ -110,7 +110,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
       });
       setHighlightedCardsIndexes([]);
     },
-    [EGameServerEvent.UPDATE_PLAYERS]: ({ players, activePlayerIndex }) => {
+    [GameServerEventType.UPDATE_PLAYERS]: ({ players, activePlayerIndex }) => {
       setPlayers(players);
       setActivePlayerIndex(activePlayerIndex);
     },
@@ -124,7 +124,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
 
       setHighlightedCardsIndexes([]);
 
-      io.emit(EGameClientEvent.OPEN_CARD, cardIndex);
+      io.emit(GameClientEventType.OPEN_CARD, cardIndex);
     },
     [activePlayerIndex, io, player],
   );
@@ -220,9 +220,9 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
   }
 
   const { set, differentCardsCount, matchingCardsCount, layout } = gameOptions;
-  const cardsOptions: (ICoords & { angle?: number })[] = [];
+  const cardsOptions: (Coords & { angle?: number })[] = [];
 
-  if (layout === EFieldLayout.RECT) {
+  if (layout === FieldLayoutType.RECT) {
     const { width: fieldWidth, height: fieldHeight } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
 
     for (let y = 0; y < fieldHeight; y++) {
@@ -233,7 +233,7 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
         });
       }
     }
-  } else if (layout === EFieldLayout.HEX) {
+  } else if (layout === FieldLayoutType.HEX) {
     const { start, middle } = FIELD_OPTIONS[layout][differentCardsCount * matchingCardsCount];
     const rowsCount = 2 * (middle - start) + 1;
 
@@ -254,12 +254,12 @@ const PexesoGame: React.FC<IGameProps<EGame.PEXESO>> = (props) => {
     let angle = startingAngle;
 
     for (let i = 0; i < cardsCount; i++) {
-      const radius = CARD_SIZE * (0.5 + (layout === EFieldLayout.SPIRAL ? 0.21 : 0.19) * (angle - startingAngle));
+      const radius = CARD_SIZE * (0.5 + (layout === FieldLayoutType.SPIRAL ? 0.21 : 0.19) * (angle - startingAngle));
 
       cardsOptions.push({
         x: radius * Math.cos(angle),
         y: radius * Math.sin(angle),
-        angle: layout === EFieldLayout.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
+        angle: layout === FieldLayoutType.SPIRAL_ROTATE ? angle + Math.PI / 2 : undefined,
       });
 
       angle += ((CARD_SIZE / radius) * Math.PI) / 4;

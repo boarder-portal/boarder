@@ -1,9 +1,9 @@
-import cp from 'node:child_process';
-import util from 'node:util';
-import fs from 'fs-extra';
+import generate from '@babel/generator';
 import { parse } from '@babel/parser';
 import traverse, { NodePath } from '@babel/traverse';
-import generate from '@babel/generator';
+import fs from 'fs-extra';
+import cp from 'node:child_process';
+import util from 'node:util';
 
 const exec = util.promisify(cp.exec);
 

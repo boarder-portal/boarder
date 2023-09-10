@@ -1,7 +1,7 @@
-import { EMap } from 'common/types/bombers';
+import { MapType } from 'common/types/bombers';
 
-const MAPS: Record<EMap, string> = {
-  [EMap.CHESS]: `
+const MAPS: Record<MapType, string> = {
+  [MapType.CHESS]: `
     2b-b-b-b-b-b-b-b1
     --b-b-b-b-b-b-b--
     wbwwwbwbwbwbwwwbw
@@ -14,7 +14,7 @@ const MAPS: Record<EMap, string> = {
     --b-b-b-b-b-b-b--
     0b-b-b-b-b-b-b-b3
   `,
-  [EMap.HALL]: `
+  [MapType.HALL]: `
     2-bb-b-bbb-b-bb-1
     -wbw-w-w-w-w-wbw-
     b-b-b-b-b-b-b-b-b
@@ -27,7 +27,7 @@ const MAPS: Record<EMap, string> = {
     -wbw-w-w-w-w-wbw-
     0-bb-b-bbb-b-bb-3
   `,
-  [EMap.BUG]: `
+  [MapType.BUG]: `
     2-wb-b-bwb-b-bw-1
     -b-wb-b---b-bw-b-
     w-b-wbwbwbwbw-b-w
@@ -40,7 +40,7 @@ const MAPS: Record<EMap, string> = {
     -b-wb-b---b-bw-b-
     0-wb-b-bwb-b-bw-3
   `,
-  [EMap.BUNKER]: `
+  [MapType.BUNKER]: `
     2-b-b-b-b-b-b-b-1
     -wbwbw-wbw-wbwbw-
     bw-w-wbb-bbw-w-wb
@@ -53,7 +53,7 @@ const MAPS: Record<EMap, string> = {
     -wbwbw-wbw-wbwbw-
     0-b-b-b-b-b-b-b-3
   `,
-  [EMap.TURTLE]: `
+  [MapType.TURTLE]: `
     2--b-b-b-b-b-b--1
     -wwwb-b-w-b-bwww-
     bw-b-wwb-bww-b-wb
@@ -66,7 +66,7 @@ const MAPS: Record<EMap, string> = {
     -wwwb-b-w-b-bwww-
     0--b-b-b-b-b-b--3
   `,
-  [EMap.CABINET]: `
+  [MapType.CABINET]: `
     2bwb-b-b-b-b-bwb1
     --w-b-b-b-b-b-w--
     wbwbwbwwwwwbwbwbw
@@ -79,7 +79,7 @@ const MAPS: Record<EMap, string> = {
     --w-b-b-b-b-b-w--
     0bwb-b-b-b-b-bwb3
   `,
-  [EMap.RACE]: `
+  [MapType.RACE]: `
     2--b-b-b-b-b-b--1
     -wb-b-b-b-b-b-bw-
     bw-w-b-b-b-b-w-wb
@@ -92,7 +92,7 @@ const MAPS: Record<EMap, string> = {
     -wb-b-b-b-b-b-bw-
     0--b-b-b-b-b-b--3
   `,
-  [EMap.WAVE]: `
+  [MapType.WAVE]: `
     2-b-b-b-b-b-b-b-1
     -bww--wbwbw--wwb-
     bwwbbwwb-bwwbbwwb
@@ -105,7 +105,7 @@ const MAPS: Record<EMap, string> = {
     -bww--wbwbw--wwb-
     0-b-b-b-b-b-b-b-3
   `,
-  [EMap.SIGHT]: `
+  [MapType.SIGHT]: `
     2-bb--b-b-b--bb-1
     -bb-ww-bwb-ww-bb-
     bww-b-b-b-b-b-wwb
@@ -118,7 +118,7 @@ const MAPS: Record<EMap, string> = {
     -bb-ww-bwb-ww-bb-
     0-bb--b-b-b--bb-3
   `,
-  [EMap.FIELD]: `
+  [MapType.FIELD]: `
     2-bb--b-b-b--bb-1
     -bwb-b-----b-bwb-
     bbb-----b-----bbb
@@ -131,7 +131,7 @@ const MAPS: Record<EMap, string> = {
     -bwb-b-----b-bwb-
     0-bb--b-b-b--bb-3
   `,
-  [EMap.SUNFLOWER]: `
+  [MapType.SUNFLOWER]: `
     2-b--b--b--b--b-1
     -bbww-bb-bb-wwbb-
     bbb--b-bwb-b--bbb
@@ -144,7 +144,7 @@ const MAPS: Record<EMap, string> = {
     -bbww-bb-bb-wwbb-
     0-b--b--b--b--b-3
   `,
-  [EMap.MEMBRANE]: `
+  [MapType.MEMBRANE]: `
     2-b-b-b-b-b-b-b-1
     -b-w-b-bwb-b-w-b-
     bwbwbwb-b-bwbwbwb
@@ -157,7 +157,7 @@ const MAPS: Record<EMap, string> = {
     -b-w-b-bwb-b-w-b-
     0-b-b-b-b-b-b-b-3
   `,
-  [EMap.BUTTERFLY]: `
+  [MapType.BUTTERFLY]: `
     2-b--b-bbb-b--b-1
     -wbbb-ww-ww-bbbw-
     bw-ww-bb-bb-ww-wb
@@ -170,7 +170,7 @@ const MAPS: Record<EMap, string> = {
     -wbbb-ww-ww-bbbw-
     0-b--b-bbb-b--b-3
   `,
-  [EMap.SIEGE]: `
+  [MapType.SIEGE]: `
     2-b-bbwbbbwbb-b-1
     ----bbwbwbwbb----
     w-b-wwwbbbwww-b-w
@@ -183,7 +183,7 @@ const MAPS: Record<EMap, string> = {
     ----bbwbwbwbb----
     0-b-bbwbbbwbb-b-3
   `,
-  [EMap.CRAB]: `
+  [MapType.CRAB]: `
     2bb-wwb-b-bww-bb1
     ---b-b--b--b-b---
     b-bw---w-w---wb-b

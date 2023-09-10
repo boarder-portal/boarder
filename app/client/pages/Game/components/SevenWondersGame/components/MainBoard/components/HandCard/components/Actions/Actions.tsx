@@ -1,41 +1,41 @@
 import React, { useCallback } from 'react';
 
-import { EGamePhase, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import {
-  IOwnerResource,
-  ISevenWondersCourtesansBuildInfo,
+  CourtesansBuildInfo,
+  OwnerResource,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { Action, GamePhaseType, Payments, Player } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 
-import DraftLeaderActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
+import BuildActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/BuildActions';
 import CancelAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CancelAction/CancelAction';
 import CourtesanAction from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/CourtesanAction/CourtesanAction';
-import BuildActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/BuildActions/BuildActions';
+import DraftLeaderActions from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/Actions/components/DraftLeaderAction/DraftLeaderAction';
 
-interface IActionsProps {
+interface ActionsProps {
   className?: string;
   cardIndex: number;
-  card: ICard;
-  player: IPlayer;
-  leftNeighbor: IPlayer;
-  rightNeighbor: IPlayer;
+  card: Card;
+  player: Player;
+  leftNeighbor: Player;
+  rightNeighbor: Player;
   isChosen: boolean;
-  gamePhase: EGamePhase | null;
-  courtesansBuildInfo: ISevenWondersCourtesansBuildInfo | null;
-  resourceTradePrices: TResourceTradePrices;
-  resourcePools: IOwnerResource[][];
-  wonderLevelBuildType: EBuildType;
-  wonderLevelTradeVariants: ITradeVariant[];
+  gamePhase: GamePhaseType | null;
+  courtesansBuildInfo: CourtesansBuildInfo | null;
+  resourceTradePrices: ResourceTradePrices;
+  resourcePools: OwnerResource[][];
+  wonderLevelBuildType: BuildKind;
+  wonderLevelTradeVariants: TradeVariant[];
   onCancelCard(): void;
-  onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
-  onStartCopyingLeader(cardIndex: number, action: TAction, payments?: TPayments): void;
+  onCardAction(cardIndex: number, action: Action, payments?: Payments): void;
+  onStartCopyingLeader(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const Actions: React.FC<IActionsProps> = (props) => {
+const Actions: React.FC<ActionsProps> = (props) => {
   const {
     className,
     cardIndex,
@@ -56,7 +56,7 @@ const Actions: React.FC<IActionsProps> = (props) => {
   } = props;
 
   const handleIndexCardAction = useCallback(
-    (action: TAction, payments?: TPayments) => {
+    (action: Action, payments?: Payments) => {
       onCardAction(cardIndex, action, payments);
     },
     [cardIndex, onCardAction],
@@ -77,7 +77,7 @@ const Actions: React.FC<IActionsProps> = (props) => {
     );
   }
 
-  if (gamePhase === EGamePhase.DRAFT_LEADERS) {
+  if (gamePhase === GamePhaseType.DRAFT_LEADERS) {
     return <DraftLeaderActions className={className} onCardAction={handleIndexCardAction} />;
   }
 

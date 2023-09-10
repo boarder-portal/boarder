@@ -1,48 +1,48 @@
-import React, { useMemo } from 'react';
 import classNames from 'classnames';
+import React, { useMemo } from 'react';
 
-import { ESuit } from 'common/types/cards';
-import { EHandStage, IPlayer } from 'common/types/hearts';
+import { Suit } from 'common/types/cards';
+import { HandStage, Player as PlayerModel } from 'common/types/hearts';
 
-import { EPlayerPosition } from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
+import { PlayerPosition } from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
 
+import Flex, { FlexProps } from 'client/components/common/Flex/Flex';
+import Text from 'client/components/common/Text/Text';
 import Hand from 'client/pages/Game/components/HeartsGame/components/Hand/Hand';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
-import Text from 'client/components/common/Text/Text';
-import Flex, { IFlexProps } from 'client/components/common/Flex/Flex';
 
 import styles from './Player.module.scss';
 
-interface IPlayerProps {
+interface PlayerProps {
   className?: string;
-  player: IPlayer;
-  position: EPlayerPosition;
+  player: PlayerModel;
+  position: PlayerPosition;
   isActive: boolean;
-  stage: EHandStage;
-  playedSuit: ESuit | null;
+  stage: HandStage;
+  playedSuit: Suit | null;
   heartsEnteredPlay: boolean;
   isOwnHand: boolean;
   isFirstTurn: boolean;
   onSelectCard(cardIndex: number): void;
 }
 
-function getFlexDirection(position: EPlayerPosition): IFlexProps['direction'] {
-  if (position === EPlayerPosition.TOP) {
+function getFlexDirection(position: PlayerPosition): FlexProps['direction'] {
+  if (position === PlayerPosition.TOP) {
     return 'columnReverse';
   }
 
-  if (position === EPlayerPosition.BOTTOM) {
+  if (position === PlayerPosition.BOTTOM) {
     return 'column';
   }
 
-  if (position === EPlayerPosition.LEFT) {
+  if (position === PlayerPosition.LEFT) {
     return 'rowReverse';
   }
 
   return 'row';
 }
 
-const Player: React.FC<IPlayerProps> = (props) => {
+const Player: React.FC<PlayerProps> = (props) => {
   const {
     className,
     player,
@@ -64,7 +64,7 @@ const Player: React.FC<IPlayerProps> = (props) => {
     <Flex
       className={classNames(
         styles.root,
-        position === EPlayerPosition.LEFT || position === EPlayerPosition.RIGHT ? styles[position] : undefined,
+        position === PlayerPosition.LEFT || position === PlayerPosition.RIGHT ? styles[position] : undefined,
         className,
       )}
       alignItems="center"

@@ -1,35 +1,35 @@
+import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
-import classNames from 'classnames';
 
-import { EGameClientEvent, EHandStage, EPassDirection, IPlayer } from 'common/types/hearts';
-import { ESuit } from 'common/types/cards';
-import { EGame } from 'common/types/game';
+import { Suit } from 'common/types/cards';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, HandStage, PassDirection, Player as PlayerModel } from 'common/types/hearts';
 
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
-import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
 import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
+import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
 
 import usePlayer from 'client/hooks/usePlayer';
 
-import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
+import Player from 'client/pages/Game/components/HeartsGame/components/Player/Player';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './HeartsGame.module.scss';
 
-const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
+const HeartsGame: React.FC<GameProps<GameType.HEARTS>> = (props) => {
   const { io, gameInfo } = props;
 
-  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [players, setPlayers] = useState<PlayerModel[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [stage, setStage] = useState<EHandStage>(EHandStage.PASS);
+  const [stage, setStage] = useState<HandStage>(HandStage.PASS);
   const [heartsEnteredPlay, setHeartsEnteredPlay] = useState(false);
-  const [playedSuit, setPlayedSuit] = useState<ESuit | null>(null);
+  const [playedSuit, setPlayedSuit] = useState<Suit | null>(null);
   const [isFirstTurn, setIsFirstTurn] = useState(true);
-  const [passDirection, setPassDirection] = useState<EPassDirection>(EPassDirection.NONE);
+  const [passDirection, setPassDirection] = useState<PassDirection>(PassDirection.NONE);
 
   const player = usePlayer(players);
 
@@ -45,13 +45,13 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
 
   const selectCard = useCallback(
     (cardIndex: number) => {
-      io.emit(EGameClientEvent.CHOOSE_CARD, cardIndex);
+      io.emit(GameClientEventType.CHOOSE_CARD, cardIndex);
     },
     [io],
   );
 
   const directionBlock = useMemo(() => {
-    return passDirection === EPassDirection.LEFT ? (
+    return passDirection === PassDirection.LEFT ? (
       <ArrowLeftIcon className={styles.direction} />
     ) : (
       <ArrowRightIcon className={styles.direction} />
@@ -64,7 +64,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
     batchedUpdates(() => {
       setPlayers(gameInfo.players);
       setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
-      setStage(gameInfo.hand?.stage ?? EHandStage.PASS);
+      setStage(gameInfo.hand?.stage ?? HandStage.PASS);
       setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
       setPlayedSuit(getPlayedSuit(gameInfo));
       setIsFirstTurn(getIsFirstTurn(gameInfo));
@@ -98,7 +98,7 @@ const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
         );
       })}
 
-      {stage === EHandStage.PASS && directionBlock}
+      {stage === HandStage.PASS && directionBlock}
     </div>
   );
 };

@@ -1,23 +1,23 @@
-import React, { CSSProperties } from 'react';
 import classNames from 'classnames';
+import React, { CSSProperties } from 'react';
 
-import { ICard } from 'common/types/sevenWonders/cards';
+import { Card as CardModel } from 'common/types/sevenWonders/cards';
 
 import Image from 'client/components/common/Image/Image';
 
 import styles from './Card.module.scss';
 
-interface ICardProps {
+interface CardProps {
   className?: string;
   style?: CSSProperties;
-  card: ICard;
+  card: CardModel;
   flip?: boolean;
   width?: number;
   isCopiedLeader?: boolean;
   zoomOnHover?: boolean;
 }
 
-const Card: React.FC<ICardProps> = (props) => {
+const Card: React.FC<CardProps> = (props) => {
   const { className, style, card, flip, width = 110, isCopiedLeader, zoomOnHover } = props;
 
   return (

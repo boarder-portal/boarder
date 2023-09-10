@@ -1,8 +1,8 @@
-import { IGameOptions } from 'common/types/carcassonne';
+import { GameOptions } from 'common/types/carcassonne';
 
 export { default as ALL_CARDS } from 'common/constants/games/carcassonne/cards';
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 1,
   maxPlayersCount: 5,
 };

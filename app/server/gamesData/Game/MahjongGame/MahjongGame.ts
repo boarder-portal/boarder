@@ -1,29 +1,29 @@
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 
-import { EGame } from 'common/types/game';
-import { EHandsCount, EWind, IGame, IGamePlayerData, IHandResult, IPlayer } from 'common/types/mahjong';
+import { GameType } from 'common/types/game';
+import { Game, GamePlayerData, HandResult, HandsCount, Player, WindSide } from 'common/types/mahjong';
 
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 
 const ROTATED_WINDS = [
-  [EWind.EAST, EWind.SOUTH, EWind.WEST, EWind.NORTH],
-  [EWind.SOUTH, EWind.EAST, EWind.NORTH, EWind.WEST],
-  [EWind.NORTH, EWind.WEST, EWind.EAST, EWind.SOUTH],
-  [EWind.WEST, EWind.NORTH, EWind.SOUTH, EWind.EAST],
+  [WindSide.EAST, WindSide.SOUTH, WindSide.WEST, WindSide.NORTH],
+  [WindSide.SOUTH, WindSide.EAST, WindSide.NORTH, WindSide.WEST],
+  [WindSide.NORTH, WindSide.WEST, WindSide.EAST, WindSide.SOUTH],
+  [WindSide.WEST, WindSide.NORTH, WindSide.SOUTH, WindSide.EAST],
 ];
 
-export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
-  playersData: IGamePlayerData[] = this.getPlayersData(() => ({}));
-  resultsByHand: IHandResult[] = [];
+export default class MahjongGame extends GameEntity<GameType.MAHJONG> {
+  playersData: GamePlayerData[] = this.getPlayersData(() => ({}));
+  resultsByHand: HandResult[] = [];
 
   round: Round | null = null;
 
-  *lifecycle(): TGenerator {
-    const roundsCount = this.options.handsCount === EHandsCount.ONE ? 1 : 4;
-    const handsInRoundCount = this.options.handsCount === EHandsCount.SIXTEEN ? 4 : 1;
+  *lifecycle(): EntityGenerator {
+    const roundsCount = this.options.handsCount === HandsCount.ONE ? 1 : 4;
+    const handsInRoundCount = this.options.handsCount === HandsCount.SIXTEEN ? 4 : 1;
 
     for (let round = 0; round < roundsCount; round++) {
       this.round = this.spawnEntity(
@@ -41,11 +41,11 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
     }
   }
 
-  addHandResult(result: IHandResult): void {
+  addHandResult(result: HandResult): void {
     this.resultsByHand.push(result);
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => {
       return {
         ...this.playersData[playerIndex],
@@ -56,7 +56,7 @@ export default class MahjongGame extends GameEntity<EGame.MAHJONG> {
     });
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       players: this.getGamePlayers(),
       resultsByHand: this.resultsByHand,

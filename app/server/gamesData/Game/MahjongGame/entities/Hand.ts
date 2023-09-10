@@ -1,31 +1,33 @@
-import shuffle from 'lodash/shuffle';
-import sum from 'lodash/sum';
-import sortBy from 'lodash/sortBy';
 import findLastIndex from 'lodash/findLastIndex';
+import shuffle from 'lodash/shuffle';
+import sortBy from 'lodash/sortBy';
+import sum from 'lodash/sum';
 
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 import { DECK } from 'common/constants/games/mahjong/tiles';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  EGameClientEvent,
-  EHandPhase,
-  ESet,
-  ESuit,
-  IFlowerTile,
-  IHand,
-  IHandMahjong,
-  IHandPlayerData,
-  IHandResult,
-  IKongSet,
-  TConcealedSet,
-  TMeldedSet,
-  TPlayableTile,
-  TTile,
+  ConcealedSet,
+  FlowerTile,
+  GameClientEventType,
+  HandMahjong,
+  Hand as HandModel,
+  HandPhase,
+  HandPlayerData,
+  HandResult,
+  KongSet,
+  MeldedSet,
+  PlayableTile,
+  SetType,
+  Suit,
+  Tile,
 } from 'common/types/mahjong';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
+import { moveElement } from 'common/utilities/array';
+import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
+import { getHandMahjong } from 'common/utilities/mahjong/scoring';
+import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
 import {
   getLastTileCandidates,
   getNewCurrentTileIndex,
@@ -33,44 +35,41 @@ import {
   getTileSortValue,
   isEqualTiles,
   isEqualTilesCallback,
-  isFlower,
-  suited,
 } from 'common/utilities/mahjong/tiles';
-import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
-import { getHandMahjong } from 'common/utilities/mahjong/scoring';
-import { moveElement } from 'common/utilities/array';
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
+import { isFlower, suited } from 'common/utilities/mahjong/tilesBase';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 
+import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 import Turn from 'server/gamesData/Game/MahjongGame/entities/Turn';
-import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 
-export interface IHandOptions {
+export interface HandOptions {
   startPlayerIndex: number;
   isLastInGame: boolean;
 }
 
-export interface IHandMahjongOptions {
-  winningTile: TTile;
+export interface HandMahjongOptions {
+  winningTile: Tile;
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
 }
 
-export default class Hand extends TurnEntity<EGame.MAHJONG> {
+export default class Hand extends TurnEntity<GameType.MAHJONG> {
   game: MahjongGame;
   round: Round;
 
   isLastInGame: boolean;
-  phase = EHandPhase.REPLACE_FLOWERS;
-  playersData: IHandPlayerData[] = this.getPlayersData(() => ({
+  phase = HandPhase.REPLACE_FLOWERS;
+  playersData: HandPlayerData[] = this.getPlayersData(() => ({
     hand: [],
     declaredSets: [],
     flowers: [],
     discard: [],
     readyForNewHand: false,
   }));
-  wall: TTile[] = [];
+  wall: Tile[] = [];
   needToDrawTile = true;
   isReplacementTile = false;
 
@@ -78,7 +77,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
   finish = this.createTrigger();
 
-  constructor(round: Round, options: IHandOptions) {
+  constructor(round: Round, options: HandOptions) {
     super(round, {
       activePlayerIndex: options.startPlayerIndex,
     });
@@ -88,7 +87,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.isLastInGame = options.isLastInGame;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.wall = shuffle(DECK);
 
     this.forEachPlayer((playerIndex) => {
@@ -123,7 +122,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       if (!playerSettings.autoReplaceFlowers) {
         while (hand.some(isFlower)) {
           const { type, value } = yield* this.race({
-            declare: this.waitForPlayerSocketEvent(EGameClientEvent.DECLARE, {
+            declare: this.waitForPlayerSocketEvent(GameClientEventType.DECLARE, {
               playerIndex: this.activePlayerIndex,
             }),
             settingsChange: this.game.waitForPlayerSettingChange(this.activePlayerIndex),
@@ -160,16 +159,16 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       this.passTurn();
     }
 
-    this.phase = EHandPhase.PLAY;
+    this.phase = HandPhase.PLAY;
 
-    const handResult: IHandResult = {
+    const handResult: HandResult = {
       mahjong: null,
       winnerIndex: -1,
       scores: this.getPlayersData(() => 0),
     };
 
     while (true) {
-      let addedTile: TTile | null = null;
+      let addedTile: Tile | null = null;
       let addedTileIndex = -1;
 
       if (this.needToDrawTile) {
@@ -239,7 +238,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     if (!this.isLastInGame) {
       while (this.playersData.some(({ readyForNewHand }) => !readyForNewHand)) {
-        const { data, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.READY_FOR_NEW_HAND);
+        const { data, playerIndex } = yield* this.waitForSocketEvent(GameClientEventType.READY_FOR_NEW_HAND);
 
         this.playersData[playerIndex].readyForNewHand = data;
 
@@ -248,7 +247,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     }
   }
 
-  addConcealedKong(playerIndex: number, set: TConcealedSet<IKongSet>): void {
+  addConcealedKong(playerIndex: number, set: ConcealedSet<KongSet>): void {
     const { hand, declaredSets } = this.playersData[playerIndex];
     const kongTile = getSetTile(set);
 
@@ -261,7 +260,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     });
   }
 
-  addMeldedSet(playerIndex: number, set: TMeldedSet, stolenFrom: number, stolenTile: TPlayableTile): void {
+  addMeldedSet(playerIndex: number, set: MeldedSet, stolenFrom: number, stolenTile: PlayableTile): void {
     const { hand, declaredSets } = this.playersData[playerIndex];
     const stolenTileIndex = set.tiles.findIndex(isEqualTilesCallback(stolenTile));
 
@@ -286,7 +285,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     });
   }
 
-  addTileToPlayerHand(playerIndex: number, tile: TTile): void {
+  addTileToPlayerHand(playerIndex: number, tile: Tile): void {
     this.playersData[playerIndex].hand.push(tile);
 
     if (this.getPlayerSettings(playerIndex).sortHand) {
@@ -297,10 +296,10 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
   addTilesToPlayerHand(
     playerIndex: number,
     withAdditional = true,
-  ): { replacedFlowers: boolean; lastAddedTile: TTile | null } {
+  ): { replacedFlowers: boolean; lastAddedTile: Tile | null } {
     const playerSettings = this.getPlayerSettings(playerIndex);
     const { declaredSets, flowers } = this.playersData[playerIndex];
-    const addedTiles: TTile[] = [];
+    const addedTiles: Tile[] = [];
     let replacedFlowers = false;
 
     while (
@@ -335,11 +334,11 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.game.sendGameInfo();
   }
 
-  discardTile(playerIndex: number, tile: TTile): void {
+  discardTile(playerIndex: number, tile: Tile): void {
     this.playersData[playerIndex].discard.push(tile);
   }
 
-  downgradeToPung(playerIndex: number, kong: TMeldedSet<IKongSet>): void {
+  downgradeToPung(playerIndex: number, kong: MeldedSet<KongSet>): void {
     const { declaredSets } = this.playersData[playerIndex];
 
     const meldedKongIndex = declaredSets.findIndex(({ set }) => isEqualSets(set, kong));
@@ -356,7 +355,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
 
     declaredSets[meldedKongIndex] = {
       set: {
-        type: ESet.PUNG,
+        type: SetType.PUNG,
         tiles: meldedKong.set.tiles.slice(0, -1),
         concealedType: meldedKong.set.concealedType,
       },
@@ -365,7 +364,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     };
   }
 
-  getNewTile(): TTile | null {
+  getNewTile(): Tile | null {
     return this.wall.pop() ?? null;
   }
 
@@ -376,7 +375,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     return this.round.playersData.findIndex(({ wind }) => wind === nextPlayerWind);
   }
 
-  getPlayerMahjong(playerIndex: number, options: IHandMahjongOptions): IHandMahjong | null {
+  getPlayerMahjong(playerIndex: number, options: HandMahjongOptions): HandMahjong | null {
     const { hand, declaredSets, flowers } = this.playersData[playerIndex];
 
     return getHandMahjong({
@@ -391,11 +390,11 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     });
   }
 
-  *listenForEvents(): TGenerator {
+  *listenForEvents(): EntityGenerator {
     yield* this.race([
       this.finish,
       this.all([
-        this.listenForEvent(EGameClientEvent.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
+        this.listenForEvent(GameClientEventType.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
           this.changePlayerTileIndex(playerIndex, from, to);
         }),
         this.game.listenForSettingsChange(({ playerIndex, key, value }) => {
@@ -413,14 +412,14 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.playersData[playerIndex].discard.pop();
   }
 
-  removeTileFromHand(playerIndex: number, index: number): TTile | null {
+  removeTileFromHand(playerIndex: number, index: number): Tile | null {
     return this.playersData[playerIndex].hand.splice(index, 1).at(0) ?? null;
   }
 
-  replaceFlower(playerIndex: number, flower: IFlowerTile): TTile | null {
+  replaceFlower(playerIndex: number, flower: FlowerTile): Tile | null {
     const playerSettings = this.getPlayerSettings(playerIndex);
     const { hand, flowers } = this.playersData[playerIndex];
-    let tile: TTile | null = null;
+    let tile: Tile | null = null;
     let currentFlower = flower;
 
     while (true) {
@@ -452,7 +451,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     return tile;
   }
 
-  replaceFlowers(playerIndex: number): { replaced: boolean; tile: TTile | null } {
+  replaceFlowers(playerIndex: number): { replaced: boolean; tile: Tile | null } {
     const flowers = this.playersData[playerIndex].hand.filter(isFlower);
 
     if (!flowers.length) {
@@ -462,7 +461,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
       };
     }
 
-    let tile: TTile | null = null;
+    let tile: Tile | null = null;
     let replaced = false;
 
     for (const flower of flowers) {
@@ -482,7 +481,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     this.game.sendGameInfo();
   }
 
-  toJSON(): IHand {
+  toJSON(): HandModel {
     return {
       activePlayerIndex: this.activePlayerIndex,
       tilesLeft: this.wall.length,
@@ -492,7 +491,7 @@ export default class Hand extends TurnEntity<EGame.MAHJONG> {
     };
   }
 
-  upgradeToKong(playerIndex: number, kong: TMeldedSet<IKongSet>): TPlayableTile | null {
+  upgradeToKong(playerIndex: number, kong: MeldedSet<KongSet>): PlayableTile | null {
     const { hand, declaredSets } = this.playersData[playerIndex];
     const kongTile = getSetTile(kong);
 

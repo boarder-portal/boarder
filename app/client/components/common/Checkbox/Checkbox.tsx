@@ -1,12 +1,12 @@
-import { FC } from 'react';
 import classNames from 'classnames';
+import { FC } from 'react';
 
 import Flex from 'client/components/common/Flex/Flex';
 import CheckIcon from 'client/components/icons/CheckIcon/CheckIcon';
 
 import styles from './Checkbox.module.scss';
 
-interface ICheckboxProps {
+interface CheckboxProps {
   className?: string;
   checked: boolean;
   disabled?: boolean;
@@ -14,7 +14,7 @@ interface ICheckboxProps {
   onChange(newValue: boolean): void;
 }
 
-const Checkbox: FC<ICheckboxProps> = (props) => {
+const Checkbox: FC<CheckboxProps> = (props) => {
   const { checked, disabled, label, onChange } = props;
 
   return (

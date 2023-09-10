@@ -1,41 +1,43 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {}
+export enum GameClientEventType {}
 
-export enum EGameServerEvent {}
+export enum GameServerEventType {}
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IPlayerData {}
+export interface PlayerData {}
 
-export interface IPlayer extends IGamePlayer<EGame.{{constCased}}> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.{{constCased}}> {
+  data: PlayerData;
 }
 
-export interface IGame {
-  players: IPlayer[];
+export interface Game {
+  players: Player[];
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.{{constCased}}> {}
+export interface ClientEventMap extends CommonClientEventMap<GameType.{{constCased}}> {}
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.{{constCased}}> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.{{constCased}}> {}
+
+type {{pascalCased}}GameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.{{constCased}}]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.{{constCased}}]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: {{pascalCased}}GameOptions;
+      info: Game;
       result: void;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

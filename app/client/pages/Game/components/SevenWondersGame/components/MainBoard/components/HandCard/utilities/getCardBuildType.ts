@@ -1,35 +1,35 @@
-import { ICard } from 'common/types/sevenWonders/cards';
-import { ECardActionType, IPlayer } from 'common/types/sevenWonders';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { CardActionType, Player } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
 
 export default function getCardBuildType(
-  card: ICard,
-  player: IPlayer,
-  tradeVariants: ITradeVariant[],
+  card: Card,
+  player: Player,
+  tradeVariants: TradeVariant[],
   discount: number,
-): EBuildType {
+): BuildKind {
   const possibleBuildActions = getPossibleBuildActions(player);
 
-  if (!possibleBuildActions.includes(ECardActionType.BUILD_STRUCTURE)) {
-    return EBuildType.NOT_ALLOWED;
+  if (!possibleBuildActions.includes(CardActionType.BUILD_STRUCTURE)) {
+    return BuildKind.NOT_ALLOWED;
   }
 
   if (player.data.builtCards.some((builtCard) => builtCard.id === card.id)) {
-    return EBuildType.ALREADY_BUILT;
+    return BuildKind.ALREADY_BUILT;
   }
 
   const { price } = card;
 
   if (!price) {
-    return EBuildType.FREE;
+    return BuildKind.FREE;
   }
 
   if (price.buildings && player.data.builtCards.some((builtCard) => price.buildings?.includes(builtCard.id))) {
-    return EBuildType.FREE_BY_BUILDING;
+    return BuildKind.FREE_BY_BUILDING;
   }
 
   return getBuildType(price, player, tradeVariants, discount);

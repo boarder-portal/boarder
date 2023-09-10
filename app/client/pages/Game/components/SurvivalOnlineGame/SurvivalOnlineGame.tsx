@@ -2,40 +2,40 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import { EDirection, EGameClientEvent, EGameServerEvent, IPlayer, TMap } from 'common/types/survivalOnline';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
+import { Direction, GameClientEventType, GameServerEventType, Map, Player } from 'common/types/survivalOnline';
 
 import renderMap from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
 
-import useSocket from 'client/hooks/useSocket';
+import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import usePlayer from 'client/hooks/usePlayer';
-import useGlobalListener from 'client/hooks/useGlobalListener';
+import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './SurvivalOnlineGame.module.scss';
 
-const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
-  ArrowUp: EDirection.UP,
-  ArrowDown: EDirection.DOWN,
-  ArrowRight: EDirection.RIGHT,
-  ArrowLeft: EDirection.LEFT,
+const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
+  ArrowUp: Direction.UP,
+  ArrowDown: Direction.DOWN,
+  ArrowRight: Direction.RIGHT,
+  ArrowLeft: Direction.LEFT,
 };
 
-const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) => {
+const SurvivalOnlineGame: React.FC<GameProps<GameType.SURVIVAL_ONLINE>> = (props) => {
   const { io, gameInfo } = props;
 
-  const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
+  const [players, setPlayers] = useState<Player[]>(gameInfo.players);
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const mapRef = useRef<TMap>(gameInfo.map);
+  const mapRef = useRef<Map>(gameInfo.map);
 
   const player = usePlayer(players);
 
@@ -63,7 +63,7 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
   });
 
   useSocket(io, {
-    [EGameServerEvent.UPDATE_GAME]: ({ players, cells }) => {
+    [GameServerEventType.UPDATE_GAME]: ({ players, cells }) => {
       console.log('UPDATE_GAME', { players, cells });
 
       cells.forEach((cell) => {
@@ -94,7 +94,7 @@ const SurvivalOnlineGame: React.FC<IGameProps<EGame.SURVIVAL_ONLINE>> = (props) 
     const direction = DIRECTIONS_MAP[e.key];
 
     if (direction) {
-      io.emit(EGameClientEvent.MOVE_PLAYER, direction);
+      io.emit(GameClientEventType.MOVE_PLAYER, direction);
     }
   });
 

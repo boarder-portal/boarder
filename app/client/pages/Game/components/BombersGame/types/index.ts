@@ -1,5 +1,5 @@
-import { TImagesDictionary } from 'client/hooks/useImages';
+import { ImagesDictionary } from 'client/hooks/useImages';
 
-export type TBomberImage = 'grass' | 'wall' | 'box' | 'bomb' | 'bonusBomb' | 'bonusRange' | 'bonusSpeed' | 'bonusHp';
+export type BomberImage = 'grass' | 'wall' | 'box' | 'bomb' | 'bonusBomb' | 'bonusRange' | 'bonusSpeed' | 'bonusHp';
 
-export type TBombersImages = TImagesDictionary<TBomberImage>;
+export type BombersImages = ImagesDictionary<BomberImage>;

@@ -1,50 +1,50 @@
 import findLastIndex from 'lodash/findLastIndex';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  EGameClientEvent,
-  IDeclareInfo,
-  IHandMahjong,
-  ITurn,
-  ITurnPlayerData,
-  TPlayableTile,
-  TTile,
+  DeclareInfo,
+  GameClientEventType,
+  HandMahjong,
+  PlayableTile,
+  Tile,
+  Turn as TurnModel,
+  TurnPlayerData,
 } from 'common/types/mahjong';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getPossibleMeldedSets, isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
 import { isEqualTilesCallback, isPlayable } from 'common/utilities/mahjong/tiles';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
+import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
-export interface ITurnOptions {
+export interface TurnOptions {
   activePlayerIndex: number;
-  currentTile: TTile | null;
+  currentTile: Tile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
 }
 
-export type TTurnResult =
+export type TurnResult =
   | { type: 'steal'; nextTurn: number; isReplacementTile: boolean }
-  | { type: 'mahjong'; mahjong: IHandMahjong; playerIndex: number; stolenFrom: number | null }
+  | { type: 'mahjong'; mahjong: HandMahjong; playerIndex: number; stolenFrom: number | null }
   | null;
 
-export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
+export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
   game: MahjongGame;
   hand: Hand;
 
   activePlayerIndex: number;
-  currentTile: TTile | null;
+  currentTile: Tile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
-  declareInfo: IDeclareInfo | null = null;
-  playersData: ITurnPlayerData[] = this.getPlayersData(() => ({
+  declareInfo: DeclareInfo | null = null;
+  playersData: TurnPlayerData[] = this.getPlayersData(() => ({
     declareDecision: null,
   }));
 
-  constructor(hand: Hand, options: ITurnOptions) {
+  constructor(hand: Hand, options: TurnOptions) {
     super(hand);
 
     this.game = hand.game;
@@ -55,10 +55,10 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     this.isReplacementTile = options.isReplacementTile;
   }
 
-  *lifecycle(): TGenerator<TTurnResult> {
+  *lifecycle(): EntityGenerator<TurnResult> {
     while (true) {
       const { type, value } = yield* this.race({
-        declare: this.waitForPlayerSocketEvents([EGameClientEvent.DISCARD_TILE, EGameClientEvent.DECLARE], {
+        declare: this.waitForPlayerSocketEvents([GameClientEventType.DISCARD_TILE, GameClientEventType.DECLARE], {
           playerIndex: this.activePlayerIndex,
         }),
         settingChange: this.game.waitForPlayerSettingChange(this.activePlayerIndex),
@@ -90,7 +90,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
 
       const { event, data } = value;
 
-      if (event === EGameClientEvent.DECLARE) {
+      if (event === GameClientEventType.DECLARE) {
         const declared = data;
 
         if (declared === null || declared === 'pass') {
@@ -224,7 +224,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     this.game.sendGameInfo();
   }
 
-  toJSON(): ITurn {
+  toJSON(): TurnModel {
     return {
       currentTile: this.currentTile,
       currentTileIndex: this.currentTileIndex,
@@ -233,7 +233,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
     };
   }
 
-  *waitForDeclare(tile: TPlayableTile, isRobbingKong: boolean): TGenerator<TTurnResult> {
+  *waitForDeclare(tile: PlayableTile, isRobbingKong: boolean): EntityGenerator<TurnResult> {
     this.declareInfo = {
       tile,
       isRobbingKong,
@@ -282,7 +282,7 @@ export default class Turn extends ServerEntity<EGame.MAHJONG, TTurnResult> {
 
     while (this.playersData.some(({ declareDecision }) => declareDecision === null)) {
       const { type, value } = yield* this.race({
-        declare: this.waitForSocketEvent(EGameClientEvent.DECLARE),
+        declare: this.waitForSocketEvent(GameClientEventType.DECLARE),
         settingChange: this.game.waitForSettingChange(),
       });
       const playerData = this.playersData[value.playerIndex];

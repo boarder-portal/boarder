@@ -1,21 +1,21 @@
-import { EBuff, IBuff } from 'common/types/bombers';
+import { Buff, BuffType } from 'common/types/bombers';
 
-export function isSuperSpeed(buff: IBuff): boolean {
-  return buff.type === EBuff.SUPER_SPEED;
+export function isSuperSpeed(buff: Buff): boolean {
+  return buff.type === BuffType.SUPER_SPEED;
 }
 
-export function isSuperBomb(buff: IBuff): boolean {
-  return buff.type === EBuff.SUPER_BOMB;
+export function isSuperBomb(buff: Buff): boolean {
+  return buff.type === BuffType.SUPER_BOMB;
 }
 
-export function isSuperRange(buff: IBuff): boolean {
-  return buff.type === EBuff.SUPER_RANGE;
+export function isSuperRange(buff: Buff): boolean {
+  return buff.type === BuffType.SUPER_RANGE;
 }
 
-export function isInvincibility(buff: IBuff): boolean {
-  return buff.type === EBuff.INVINCIBILITY;
+export function isInvincibility(buff: Buff): boolean {
+  return buff.type === BuffType.INVINCIBILITY;
 }
 
-export function isBombInvincibility(buff: IBuff): boolean {
-  return buff.type === EBuff.BOMB_INVINCIBILITY;
+export function isBombInvincibility(buff: Buff): boolean {
+  return buff.type === BuffType.BOMB_INVINCIBILITY;
 }

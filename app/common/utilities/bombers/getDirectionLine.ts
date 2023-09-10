@@ -1,5 +1,5 @@
-import { EDirection, ELine } from 'common/types/bombers';
+import { Direction, Line } from 'common/types/bombers';
 
-export default function getDirectionLine(direction: EDirection): ELine {
-  return direction === EDirection.UP || direction === EDirection.DOWN ? ELine.VERTICAL : ELine.HORIZONTAL;
+export default function getDirectionLine(direction: Direction): Line {
+  return direction === Direction.UP || direction === Direction.DOWN ? Line.VERTICAL : Line.HORIZONTAL;
 }

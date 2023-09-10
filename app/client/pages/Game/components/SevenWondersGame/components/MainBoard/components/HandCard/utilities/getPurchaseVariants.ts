@@ -1,10 +1,10 @@
 import groupBy from 'lodash/groupBy';
 
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { IPrice } from 'common/types/sevenWonders';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { Price } from 'common/types/sevenWonders';
 
-import getUniqCombinationsByN from 'common/utilities/getUniqCombinationsByN';
 import { getSetsCombinations } from 'common/utilities/combinations';
+import getUniqCombinationsByN from 'common/utilities/getUniqCombinationsByN';
 
 /**
  * price: {
@@ -40,9 +40,9 @@ import { getSetsCombinations } from 'common/utilities/combinations';
  * ]
  */
 export default function getPurchaseVariants(
-  price: IPrice | undefined,
-  resourcePools: IOwnerResource[][],
-): IOwnerResource[][] {
+  price: Price | undefined,
+  resourcePools: OwnerResource[][],
+): OwnerResource[][] {
   const cardResourcePrice = price?.resources;
 
   if (!cardResourcePrice) {
@@ -73,7 +73,7 @@ export default function getPurchaseVariants(
      * ]
      *
      */
-    const resourceVariants: IOwnerResource[][][] = [];
+    const resourceVariants: OwnerResource[][][] = [];
 
     for (const cardResource of cardResourcePrice) {
       const resourceGroup = resourceGroups[cardResource.type];

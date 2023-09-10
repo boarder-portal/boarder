@@ -1,21 +1,21 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
+import Text from 'client/components/common/Text/Text';
 
 import styles from './GameEnd.module.scss';
 
-interface IGameEndProps {
+interface GameEndProps {
   children?: React.ReactNode;
 }
 
-const GameEnd: React.FC<IGameEndProps> = (props) => {
+const GameEnd: React.FC<GameEndProps> = (props) => {
   const { children } = props;
 
-  const { game } = useParams<{ game: EGame }>();
+  const { game } = useParams<{ game: GameType }>();
 
   return (
     <Flex className={styles.root} justifyContent="center" alignItems="center" direction="column" between={5}>

@@ -1,21 +1,21 @@
 import { useState } from 'react';
 
-import { EGame, TGameOptions } from 'common/types/game';
+import { GameOptions, GameType } from 'common/types/game';
 
-import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
 
 import { gameOptionsAtoms } from 'client/atoms/gameOptionsAtoms';
 
-export interface IUseGameOptions<Game extends EGame> {
-  options: TGameOptions<Game>;
-  setOptions(options: TGameOptions<Game> | ((options: TGameOptions<Game>) => TGameOptions<Game>)): void;
+export interface UseGameOptions<Game extends GameType> {
+  options: GameOptions<Game>;
+  setOptions(options: GameOptions<Game> | ((options: GameOptions<Game>) => GameOptions<Game>)): void;
   refreshDefaultOptions(): void;
 }
 
-export default function useGameOptions<Game extends EGame>(game: Game): IUseGameOptions<Game> {
+export default function useGameOptions<Game extends GameType>(game: Game): UseGameOptions<Game> {
   const [defaultOptions, setDefaultOptions] = useLocalStorageAtom(gameOptionsAtoms[game]);
-  const [options, setOptions] = useState<TGameOptions<Game>>(defaultOptions);
+  const [options, setOptions] = useState<GameOptions<Game>>(defaultOptions);
 
   return {
     options,

@@ -2,7 +2,7 @@ import times from 'lodash/times';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
-import { IPlayer, TMap } from 'common/types/survivalOnline';
+import { Map, Player } from 'common/types/survivalOnline';
 
 import renderCell from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderCell';
 import renderInventory from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderInventory';
@@ -13,8 +13,8 @@ export default function renderMap({
   player,
 }: {
   context: CanvasRenderingContext2D;
-  map: TMap;
-  player: IPlayer;
+  map: Map;
+  player: Player;
 }): void {
   context.clearRect(0, 0, VIEW_SIZE.width * CELL_SIZE, VIEW_SIZE.height * CELL_SIZE);
 

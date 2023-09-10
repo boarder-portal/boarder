@@ -1,22 +1,22 @@
-import shuffle from 'lodash/shuffle';
 import random from 'lodash/random';
+import shuffle from 'lodash/shuffle';
 
-import { EGame } from 'common/types/game';
-import { EGameClientEvent, EHandStage, IPlayer } from 'common/types/hearts';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, HandStage, Player } from 'common/types/hearts';
 
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
 import isFirstTurn from 'common/utilities/hearts/isFirstTurn';
-import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
 import { getRandomElement } from 'common/utilities/random';
+import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-export default class HeartsBot extends BotEntity<EGame.HEARTS> {
-  *lifecycle(): TGenerator {
+export default class HeartsBot extends BotEntity<GameType.HEARTS> {
+  *lifecycle(): EntityGenerator {
     while (true) {
       yield* this.waitForNewHand();
 
-      if (this.getGameInfo().hand?.stage === EHandStage.PASS) {
+      if (this.getGameInfo().hand?.stage === HandStage.PASS) {
         const hand = this.getPlayer().data.hand?.hand;
 
         if (hand) {
@@ -25,7 +25,7 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
           yield* this.delay(random(200, 300));
 
           for (const index of indexes) {
-            this.sendSocketEvent(EGameClientEvent.CHOOSE_CARD, index);
+            this.sendSocketEvent(GameClientEventType.CHOOSE_CARD, index);
           }
         }
       }
@@ -53,7 +53,7 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
 
           yield* this.delay(random(200, 700));
 
-          this.sendSocketEvent(EGameClientEvent.CHOOSE_CARD, getRandomElement(indexes));
+          this.sendSocketEvent(GameClientEventType.CHOOSE_CARD, getRandomElement(indexes));
         }
 
         yield* this.refreshGameInfo();
@@ -61,11 +61,11 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
     }
   }
 
-  getPlayer(): IPlayer {
+  getPlayer(): Player {
     return this.getGameInfo().players[this.playerIndex];
   }
 
-  *waitForNewHand(): TGenerator {
+  *waitForNewHand(): EntityGenerator {
     while (true) {
       if (this.getPlayer().data.hand?.hand.length) {
         return;
@@ -75,9 +75,9 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
     }
   }
 
-  *waitForPlayStage(): TGenerator {
+  *waitForPlayStage(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo().hand?.stage === EHandStage.PLAY) {
+      if (this.getGameInfo().hand?.stage === HandStage.PLAY) {
         return;
       }
 
@@ -85,7 +85,7 @@ export default class HeartsBot extends BotEntity<EGame.HEARTS> {
     }
   }
 
-  *waitForTurn(): TGenerator {
+  *waitForTurn(): EntityGenerator {
     while (true) {
       if (this.getGameInfo().hand?.turn?.activePlayerIndex === this.playerIndex) {
         return;

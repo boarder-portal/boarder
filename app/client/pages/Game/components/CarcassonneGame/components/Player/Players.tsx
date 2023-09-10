@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import map from 'lodash/map';
-import times from 'lodash/times';
-import sumBy from 'lodash/sumBy';
 import classNames from 'classnames';
+import map from 'lodash/map';
+import sumBy from 'lodash/sumBy';
+import times from 'lodash/times';
+import React, { useEffect, useState } from 'react';
 
-import { ECityGoods, EMeepleType, IPlayer } from 'common/types/carcassonne';
-import { ITimestamp } from 'common/types';
+import { Timestamp } from 'common/types';
+import { CityGoodsType, MeepleType, Player } from 'common/types/carcassonne';
 
-import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import Flex from 'client/components/common/Flex/Flex';
+import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 
 import styles from './Player.module.scss';
 
-interface IPlayersProps {
+interface PlayersProps {
   className?: string;
-  players: IPlayer[];
+  players: Player[];
   activePlayerIndex: number;
-  turnEndsAt: ITimestamp | null;
+  turnEndsAt: Timestamp | null;
 }
 
-const Players: React.FC<IPlayersProps> = (props) => {
+const Players: React.FC<PlayersProps> = (props) => {
   const { className, players, activePlayerIndex, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
@@ -55,8 +55,8 @@ const Players: React.FC<IPlayersProps> = (props) => {
             <div>{sumBy(player.data.score, ({ score }) => score)}</div>
 
             <div>
-              Пшено: {player.data.goods[ECityGoods.WHEAT]}, Ткань: {player.data.goods[ECityGoods.FABRIC]}, Вино:{' '}
-              {player.data.goods[ECityGoods.WINE]}
+              Пшено: {player.data.goods[CityGoodsType.WHEAT]}, Ткань: {player.data.goods[CityGoodsType.FABRIC]}, Вино:{' '}
+              {player.data.goods[CityGoodsType.WINE]}
             </div>
 
             <Flex between={1}>
@@ -65,7 +65,7 @@ const Players: React.FC<IPlayersProps> = (props) => {
                   <Meeple
                     key={`${type}-${index}`}
                     className={styles.meeple}
-                    type={type as EMeepleType}
+                    type={type as MeepleType}
                     color={player.data.color}
                   />
                 )),

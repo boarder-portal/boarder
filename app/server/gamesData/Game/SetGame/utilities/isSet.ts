@@ -1,6 +1,6 @@
-import { ICard } from 'common/types/set';
+import { Card } from 'common/types/set';
 
-export default function isSet(cards: ICard[]): boolean {
+export default function isSet(cards: Card[]): boolean {
   const colorsSet = new Set(cards.map(({ color }) => color));
   const countsSet = new Set(cards.map(({ count }) => count));
   const fillsSet = new Set(cards.map(({ fill }) => fill));

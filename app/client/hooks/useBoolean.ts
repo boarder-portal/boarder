@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-export interface IUseBoolean {
+export interface UseBoolean {
   value: boolean;
   setValue(value: boolean | ((value: boolean) => boolean)): void;
   toggle(): void;
@@ -8,7 +8,7 @@ export interface IUseBoolean {
   setFalse(): void;
 }
 
-export function useBoolean(init: boolean): IUseBoolean {
+export default function useBoolean(init: boolean): UseBoolean {
   const [value, setValue] = useState(init);
 
   return {

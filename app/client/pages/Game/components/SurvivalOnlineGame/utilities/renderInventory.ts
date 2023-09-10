@@ -1,7 +1,7 @@
 import times from 'lodash/times';
 
-import { CELL_SIZE, COLORS, INVENTORY_ITEMS_COUNT, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 import { OBJECT_PIXELS } from 'client/pages/Game/components/SurvivalOnlineGame/constants/objectPixels';
+import { CELL_SIZE, COLORS, INVENTORY_ITEMS_COUNT, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
 import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 

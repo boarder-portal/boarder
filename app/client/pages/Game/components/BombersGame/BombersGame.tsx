@@ -3,75 +3,75 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { MAP_NAMES, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
 
-import { EGame } from 'common/types/game';
+import { BomberImage } from 'client/pages/Game/components/BombersGame/types';
+import { Size } from 'common/types';
 import {
-  EBuff,
-  EDirection,
-  EGameClientEvent,
-  EGameServerEvent,
-  ELine,
-  EObject,
-  IExplodedDirection,
-  IPlayer,
-  IPlayerData,
-  TMap,
+  BuffType,
+  Direction,
+  ExplodedDirection,
+  GameClientEventType,
+  GameServerEventType,
+  Line,
+  Map,
+  ObjectType,
+  PlayerData,
+  Player as PlayerModel,
 } from 'common/types/bombers';
-import { ISize } from 'common/types';
-import { TBomberImage } from 'client/pages/Game/components/BombersGame/types';
+import { GameType } from 'common/types/game';
 
-import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
+import getCellScreenSize from 'client/utilities/getCellScreenSize';
 import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
 
-import useSocket from 'client/hooks/useSocket';
 import useGlobalListener from 'client/hooks/useGlobalListener';
-import useImmutableCallback from 'client/hooks/useImmutableCallback';
-import useRaf from 'client/hooks/useRaf';
-import usePlayer from 'client/hooks/usePlayer';
 import useImages from 'client/hooks/useImages';
-import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import usePlayer from 'client/hooks/usePlayer';
+import useRaf from 'client/hooks/useRaf';
+import useSocket from 'client/hooks/useSocket';
 import useBoundTimestamps from 'client/pages/Game/hooks/useBoundTimetamps';
+import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
 
-import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
-import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
 import Flex from 'client/components/common/Flex/Flex';
+import Player from 'client/pages/Game/components/BombersGame/components/Player/Player';
+import Stat from 'client/pages/Game/components/BombersGame/components/Stat/Stat';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './BombersGame.module.scss';
 
-const BUFFS_MAP: Partial<Record<string, EBuff>> = {
-  Digit1: EBuff.SUPER_SPEED,
-  Digit2: EBuff.SUPER_BOMB,
-  Digit3: EBuff.SUPER_RANGE,
-  Digit4: EBuff.INVINCIBILITY,
+const BUFFS_MAP: Partial<Record<string, BuffType>> = {
+  Digit1: BuffType.SUPER_SPEED,
+  Digit2: BuffType.SUPER_BOMB,
+  Digit3: BuffType.SUPER_RANGE,
+  Digit4: BuffType.INVINCIBILITY,
 };
 
-const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
-  ArrowUp: EDirection.UP,
-  ArrowDown: EDirection.DOWN,
-  ArrowRight: EDirection.RIGHT,
-  ArrowLeft: EDirection.LEFT,
-  KeyW: EDirection.UP,
-  KeyS: EDirection.DOWN,
-  KeyD: EDirection.RIGHT,
-  KeyA: EDirection.LEFT,
+const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
+  ArrowUp: Direction.UP,
+  ArrowDown: Direction.DOWN,
+  ArrowRight: Direction.RIGHT,
+  ArrowLeft: Direction.LEFT,
+  KeyW: Direction.UP,
+  KeyS: Direction.DOWN,
+  KeyD: Direction.RIGHT,
+  KeyA: Direction.LEFT,
 };
 
-const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
+const BombersGame: React.FC<GameProps<GameType.BOMBERS>> = (props) => {
   const { io, gameInfo, gameOptions } = props;
 
   const createTimestamp = useCreateTimestamp();
 
-  const [players, setPlayers] = useState<IPlayer[]>(gameInfo.players);
-  const [canvasSize, setCanvasSize] = useState<ISize>({ width: 0, height: 0 });
+  const [players, setPlayers] = useState<PlayerModel[]>(gameInfo.players);
+  const [canvasSize, setCanvasSize] = useState<Size>({ width: 0, height: 0 });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-  const mapRef = useRef<TMap>(gameInfo.map);
+  const mapRef = useRef<Map>(gameInfo.map);
   const canControlRef = useRef<boolean>(gameInfo.canControl);
-  const playersDataRef = useRef<IPlayerData[]>(
+  const playersDataRef = useRef<PlayerData[]>(
     players.map((player) => ({
       ...player.data,
       startMovingTimestamp: player.data.startMovingTimestamp && createTimestamp(player.data.startMovingTimestamp),
@@ -81,8 +81,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       })),
     })),
   );
-  const explodedDirectionsRef = useRef(new Set<IExplodedDirection>());
-  const pressedDirectionsRef = useRef<EDirection[]>([]);
+  const explodedDirectionsRef = useRef(new Set<ExplodedDirection>());
+  const pressedDirectionsRef = useRef<Direction[]>([]);
 
   const player = usePlayer(players);
   const startsAtTimestamp = useMemo(() => {
@@ -93,18 +93,18 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     return new SharedDataManager({
       map: mapRef.current,
       players: playersDataRef.current,
-      isPassableObject: (object) => object.type === EObject.BONUS,
+      isPassableObject: (object) => object.type === ObjectType.BONUS,
     });
   }, []);
 
-  const viewSize = useMemo<ISize>(() => {
+  const viewSize = useMemo<Size>(() => {
     return {
       width: gameInfo.map[0].length,
       height: gameInfo.map.length,
     };
   }, [gameInfo.map]);
 
-  const images = useImages<TBomberImage>({
+  const images = useImages<BomberImage>({
     grass: '/bombers/grass.jpg',
     wall: '/bombers/wall.png',
     box: '/bombers/box.png',
@@ -142,27 +142,27 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
   });
 
   useSocket(io, {
-    [EGameServerEvent.CAN_CONTROL]: (canControl) => {
+    [GameServerEventType.CAN_CONTROL]: (canControl) => {
       canControlRef.current = canControl;
 
       console.time('time');
     },
-    [EGameServerEvent.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
+    [GameServerEventType.SYNC_COORDS]: ({ playerIndex, direction, startMovingTimestamp, coords }) => {
       const playerData = playersDataRef.current[playerIndex];
 
       playerData.coords = coords;
       playerData.direction = direction;
       playerData.startMovingTimestamp = startMovingTimestamp && createTimestamp(startMovingTimestamp);
     },
-    [EGameServerEvent.PLACE_BOMB]: ({ coords, bomb }) => {
+    [GameServerEventType.PLACE_BOMB]: ({ coords, bomb }) => {
       mapRef.current[coords.y][coords.x].objects.push(bomb);
     },
-    [EGameServerEvent.BOMBS_EXPLODED]: ({ bombs, hitPlayers, explodedBoxes, destroyedWalls }) => {
+    [GameServerEventType.BOMBS_EXPLODED]: ({ bombs, hitPlayers, explodedBoxes, destroyedWalls }) => {
       bombs.forEach(({ id, coords, explodedDirections }) => {
         sharedDataManager.removeMapObject(id, coords);
 
-        explodedDirectionsRef.current.add(explodedDirections[ELine.HORIZONTAL]);
-        explodedDirectionsRef.current.add(explodedDirections[ELine.VERTICAL]);
+        explodedDirectionsRef.current.add(explodedDirections[Line.HORIZONTAL]);
+        explodedDirectionsRef.current.add(explodedDirections[Line.VERTICAL]);
       });
 
       hitPlayers.forEach(({ index, damage }) => {
@@ -187,8 +187,8 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
       setTimeout(() => {
         bombs.forEach(({ explodedDirections }) => {
-          explodedDirectionsRef.current.delete(explodedDirections[ELine.HORIZONTAL]);
-          explodedDirectionsRef.current.delete(explodedDirections[ELine.VERTICAL]);
+          explodedDirectionsRef.current.delete(explodedDirections[Line.HORIZONTAL]);
+          explodedDirectionsRef.current.delete(explodedDirections[Line.VERTICAL]);
         });
       }, 250);
 
@@ -196,7 +196,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
       mapRef.current.forEach((row) => {
         row.forEach((cell) => {
-          if (cell.objects.some((o) => o.type === EObject.BOX)) {
+          if (cell.objects.some((o) => o.type === ObjectType.BOX)) {
             anyBoxLeft = true;
           }
         });
@@ -206,12 +206,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         console.timeEnd('time');
       }
     },
-    [EGameServerEvent.WALL_CREATED]: ({ coords, wall, deadPlayers }) => {
+    [GameServerEventType.WALL_CREATED]: ({ coords, wall, deadPlayers }) => {
       const cell = mapRef.current[coords.y][coords.x];
 
       cell.objects.push(wall);
 
-      cell.objects = cell.objects.filter((object) => object.type !== EObject.BONUS);
+      cell.objects = cell.objects.filter((object) => object.type !== ObjectType.BONUS);
 
       deadPlayers.forEach((playerIndex) => {
         const playerData = playersDataRef.current[playerIndex];
@@ -224,12 +224,12 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.BONUS_CONSUMED]: ({ id, coords, playerIndex }) => {
+    [GameServerEventType.BONUS_CONSUMED]: ({ id, coords, playerIndex }) => {
       const bonus = mapRef.current[coords.y][coords.x].objects.find((object) => object.id === id);
 
       sharedDataManager.removeMapObject(id, coords);
 
-      if (bonus?.type === EObject.BONUS) {
+      if (bonus?.type === ObjectType.BONUS) {
         sharedDataManager.consumePlayerBonus(playerIndex, {
           type: bonus.bonusType,
         });
@@ -239,14 +239,14 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.PLAYER_HEALED]: (playerIndex) => {
+    [GameServerEventType.PLAYER_HEALED]: (playerIndex) => {
       sharedDataManager.healPlayer(playerIndex);
 
       if (playerIndex === player?.index) {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.PLAYER_DIED]: (playerIndex) => {
+    [GameServerEventType.PLAYER_DIED]: (playerIndex) => {
       const playerData = playersDataRef.current[playerIndex];
 
       playerData.hp = 0;
@@ -256,21 +256,21 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.BUFF_ACTIVATED]: ({ playerIndex, buff }) => {
+    [GameServerEventType.BUFF_ACTIVATED]: ({ playerIndex, buff }) => {
       sharedDataManager.activatePlayerBuff(playerIndex, buff.type, createTimestamp(buff.endsAt));
 
       if (playerIndex === player?.index) {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.BUFF_DEACTIVATED]: ({ playerIndex, type }) => {
+    [GameServerEventType.BUFF_DEACTIVATED]: ({ playerIndex, type }) => {
       sharedDataManager.deactivatePlayerBuff(playerIndex, type);
 
       if (playerIndex === player?.index) {
         refreshPlayersData();
       }
     },
-    [EGameServerEvent.WALLS_DESTROYED]: (destroyedWalls) => {
+    [GameServerEventType.WALLS_DESTROYED]: (destroyedWalls) => {
       destroyedWalls.forEach(({ id, coords }) => {
         sharedDataManager.removeMapObject(id, coords);
       });
@@ -283,7 +283,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     }
 
     if (e.code === 'Space' || e.code === 'KeyV') {
-      io.emit(EGameClientEvent.PLACE_BOMB);
+      io.emit(GameClientEventType.PLACE_BOMB);
 
       return;
     }
@@ -293,7 +293,7 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
 
     if (direction && !pressedDirections.includes(direction)) {
       if (pressedDirections.length === 0) {
-        io.emit(EGameClientEvent.START_MOVING, direction);
+        io.emit(GameClientEventType.START_MOVING, direction);
       }
 
       pressedDirections.push(direction);
@@ -310,9 +310,9 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
       if (directionIndex !== -1) {
         if (directionIndex === 0 && canControlRef.current) {
           if (pressedDirections.length > 1) {
-            io.emit(EGameClientEvent.START_MOVING, pressedDirections[1]);
+            io.emit(GameClientEventType.START_MOVING, pressedDirections[1]);
           } else {
-            io.emit(EGameClientEvent.STOP_MOVING);
+            io.emit(GameClientEventType.STOP_MOVING);
           }
         }
 
@@ -329,13 +329,13 @@ const BombersGame: React.FC<IGameProps<EGame.BOMBERS>> = (props) => {
     const buff = BUFFS_MAP[e.code];
 
     if (gameOptions.withAbilities && buff) {
-      io.emit(EGameClientEvent.ACTIVATE_BUFF, buff);
+      io.emit(GameClientEventType.ACTIVATE_BUFF, buff);
 
       return;
     }
 
     if (e.code === 'KeyH') {
-      io.emit(EGameClientEvent.HEAL);
+      io.emit(GameClientEventType.HEAL);
 
       return;
     }

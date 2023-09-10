@@ -3,26 +3,26 @@ import times from 'lodash/times';
 import { ALL_DRAGONS, ALL_SUITS, ALL_VALUES, ALL_WINDS } from 'common/constants/games/mahjong';
 
 import {
-  EDragon,
-  ESet,
-  ESetConcealedType,
-  ESuit,
-  ETileType,
-  EWind,
-  ISuitedTile,
-  TPlayableTile,
-  TSet,
-  TTile,
+  DragonColor,
+  PlayableTile,
+  Set,
+  SetConcealedType,
+  SetType,
+  Suit,
+  SuitedTile,
+  Tile,
+  TileType,
+  WindSide,
 } from 'common/types/mahjong';
 
-import { dragon, suited, wind } from 'common/utilities/mahjong/tiles';
+import { dragon, suited, wind } from 'common/utilities/mahjong/tilesBase';
 import { getPermutations } from 'common/utilities/permutations';
 
-export const STANDARD_TILES: TPlayableTile[] = [
+export const STANDARD_TILES: PlayableTile[] = [
   ...ALL_SUITS.map((suit) =>
     ALL_VALUES.map((value) => {
       return {
-        type: ETileType.SUIT,
+        type: TileType.SUIT,
         suit,
         value,
       } as const;
@@ -30,13 +30,13 @@ export const STANDARD_TILES: TPlayableTile[] = [
   ).flat(),
   ...ALL_WINDS.map((side) => {
     return {
-      type: ETileType.WIND,
+      type: TileType.WIND,
       side,
     } as const;
   }).flat(),
   ...ALL_DRAGONS.map((color) => {
     return {
-      type: ETileType.DRAGON,
+      type: TileType.DRAGON,
       color,
     } as const;
   }).flat(),
@@ -44,58 +44,58 @@ export const STANDARD_TILES: TPlayableTile[] = [
 
 export const ALL_FLOWERS = times(8, (index) => {
   return {
-    type: ETileType.FLOWER,
+    type: TileType.FLOWER,
     index,
   } as const;
 });
 
-export const ALL_TILES: TTile[] = [...STANDARD_TILES, ...ALL_FLOWERS];
+export const ALL_TILES: Tile[] = [...STANDARD_TILES, ...ALL_FLOWERS];
 
-export const DECK: TTile[] = [...STANDARD_TILES.map((tile) => times(4, () => tile)).flat(), ...ALL_FLOWERS];
+export const DECK: Tile[] = [...STANDARD_TILES.map((tile) => times(4, () => tile)).flat(), ...ALL_FLOWERS];
 
-export const GREEN_TILES: TPlayableTile[] = [
-  suited(2, ESuit.BAMBOOS),
-  suited(3, ESuit.BAMBOOS),
-  suited(4, ESuit.BAMBOOS),
-  suited(6, ESuit.BAMBOOS),
-  suited(8, ESuit.BAMBOOS),
-  dragon(EDragon.GREEN),
+export const GREEN_TILES: PlayableTile[] = [
+  suited(2, Suit.BAMBOOS),
+  suited(3, Suit.BAMBOOS),
+  suited(4, Suit.BAMBOOS),
+  suited(6, Suit.BAMBOOS),
+  suited(8, Suit.BAMBOOS),
+  dragon(DragonColor.GREEN),
 ];
 
-export const ORPHANS: TPlayableTile[] = [
-  suited(1, ESuit.BAMBOOS),
-  suited(9, ESuit.BAMBOOS),
-  suited(1, ESuit.CHARACTERS),
-  suited(9, ESuit.CHARACTERS),
-  suited(1, ESuit.DOTS),
-  suited(9, ESuit.DOTS),
-  dragon(EDragon.GREEN),
-  dragon(EDragon.RED),
-  dragon(EDragon.WHITE),
-  wind(EWind.EAST),
-  wind(EWind.SOUTH),
-  wind(EWind.WEST),
-  wind(EWind.NORTH),
+export const ORPHANS: PlayableTile[] = [
+  suited(1, Suit.BAMBOOS),
+  suited(9, Suit.BAMBOOS),
+  suited(1, Suit.CHARACTERS),
+  suited(9, Suit.CHARACTERS),
+  suited(1, Suit.DOTS),
+  suited(9, Suit.DOTS),
+  dragon(DragonColor.GREEN),
+  dragon(DragonColor.RED),
+  dragon(DragonColor.WHITE),
+  wind(WindSide.EAST),
+  wind(WindSide.SOUTH),
+  wind(WindSide.WEST),
+  wind(WindSide.NORTH),
 ];
 
-export const REVERSIBLE_TILES: TPlayableTile[] = [
-  suited(1, ESuit.DOTS),
-  suited(2, ESuit.DOTS),
-  suited(3, ESuit.DOTS),
-  suited(4, ESuit.DOTS),
-  suited(5, ESuit.DOTS),
-  suited(8, ESuit.DOTS),
-  suited(9, ESuit.DOTS),
-  suited(2, ESuit.BAMBOOS),
-  suited(4, ESuit.BAMBOOS),
-  suited(5, ESuit.BAMBOOS),
-  suited(6, ESuit.BAMBOOS),
-  suited(8, ESuit.BAMBOOS),
-  suited(9, ESuit.BAMBOOS),
-  dragon(EDragon.WHITE),
+export const REVERSIBLE_TILES: PlayableTile[] = [
+  suited(1, Suit.DOTS),
+  suited(2, Suit.DOTS),
+  suited(3, Suit.DOTS),
+  suited(4, Suit.DOTS),
+  suited(5, Suit.DOTS),
+  suited(8, Suit.DOTS),
+  suited(9, Suit.DOTS),
+  suited(2, Suit.BAMBOOS),
+  suited(4, Suit.BAMBOOS),
+  suited(5, Suit.BAMBOOS),
+  suited(6, Suit.BAMBOOS),
+  suited(8, Suit.BAMBOOS),
+  suited(9, Suit.BAMBOOS),
+  dragon(DragonColor.WHITE),
 ];
 
-export const KNITTED_SEQUENCES: ISuitedTile[][][] = getPermutations([
+export const KNITTED_SEQUENCES: SuitedTile[][][] = getPermutations([
   [1, 4, 7],
   [2, 5, 8],
   [3, 6, 9],
@@ -103,7 +103,7 @@ export const KNITTED_SEQUENCES: ISuitedTile[][][] = getPermutations([
   knittedChows.map((knittedChow, index) => knittedChow.map((value) => suited(value, ALL_SUITS[index]))),
 );
 
-export const TERMINAL_CHOWS_SETS: TSet[][] = getPermutations([
+export const TERMINAL_CHOWS_SETS: Set[][] = getPermutations([
   [
     [1, 2, 3],
     [7, 8, 9],
@@ -117,9 +117,9 @@ export const TERMINAL_CHOWS_SETS: TSet[][] = getPermutations([
   sets
     .map((values, index) =>
       values.map((values) => ({
-        type: values.length === 2 ? ESet.PAIR : ESet.CHOW,
+        type: values.length === 2 ? SetType.PAIR : SetType.CHOW,
         tiles: values.map((value) => suited(value, ALL_SUITS[index])),
-        concealedType: ESetConcealedType.CONCEALED,
+        concealedType: SetConcealedType.CONCEALED,
       })),
     )
     .flat(),

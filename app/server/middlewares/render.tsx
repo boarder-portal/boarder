@@ -1,10 +1,10 @@
-import React from 'react';
-import path from 'path';
-import { Request, Response } from 'express';
 import { ChunkExtractor } from '@loadable/server';
+import { Request, Response } from 'express';
+import path from 'path';
+import React from 'react';
 import { renderToString } from 'react-dom/server';
 
-import createStore, { getInitialState, IStore } from 'client/utilities/store';
+import createStore, { Store, getInitialState } from 'client/utilities/store';
 
 const nodeStats = path.resolve('./build/node/loadable-stats.json');
 
@@ -36,7 +36,7 @@ export default async function render(req: Request, res: Response): Promise<Respo
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
     const { default: App } = nodeExtractor.requireEntrypoint();
 
-    const store: IStore = createStore(getInitialState());
+    const store: Store = createStore(getInitialState());
 
     store.value.user = req.session.user || null;
 

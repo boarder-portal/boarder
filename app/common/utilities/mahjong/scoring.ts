@@ -1,25 +1,24 @@
 import sortBy from 'lodash/sortBy';
 
 import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong/tiles';
-import { ALL_FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 import { MIN_SCORE } from 'common/constants/games/mahjong';
+import { ALL_FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
 import {
-  EFan,
-  EFanType,
-  ESet,
-  ESetConcealedType,
-  EWind,
-  IFlowerTile,
-  IHandMahjong,
-  TDeclaredSet,
-  TFan,
-  TPlayableTile,
-  TSet,
-  TTile,
+  DeclaredSet,
+  Fan,
+  FanKind,
+  FanType,
+  FlowerTile,
+  HandMahjong,
+  PlayableTile,
+  Set,
+  SetConcealedType,
+  SetType,
+  Tile,
+  WindSide,
 } from 'common/types/mahjong';
 
-import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
 import {
   canAddFan,
   getFansScore,
@@ -29,6 +28,7 @@ import {
   getWholeHandFans,
   getWholeHandSetsFans,
 } from 'common/utilities/mahjong/fans';
+import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
 import {
   getSupposedHandTileCount,
   getTileCount,
@@ -37,26 +37,26 @@ import {
   isTileSubset,
 } from 'common/utilities/mahjong/tiles';
 
-export interface IHandScoreOptions {
-  hand: TTile[];
-  declaredSets: TDeclaredSet[];
-  flowers: IFlowerTile[];
-  seatWind: EWind | null;
-  roundWind: EWind | null;
+export interface HandScoreOptions {
+  hand: Tile[];
+  declaredSets: DeclaredSet[];
+  flowers: FlowerTile[];
+  seatWind: WindSide | null;
+  roundWind: WindSide | null;
   isSelfDraw: boolean;
   isReplacementTile: boolean;
   isRobbingKong: boolean;
   isLastWallTile: boolean;
-  lastTileCandidates: TTile[];
+  lastTileCandidates: Tile[];
   minScore?: number;
 }
 
-export interface IHandScoreFullOptions extends IHandScoreOptions {
-  winningTile?: TTile;
-  waits?: TPlayableTile[];
+export interface HandScoreFullOptions extends HandScoreOptions {
+  winningTile?: Tile;
+  waits?: PlayableTile[];
 }
 
-export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
+export function getAllWaits(options: HandScoreOptions): PlayableTile[] {
   const { hand, declaredSets } = options;
   const wholeHand = [...hand, ...declaredSets.flatMap(({ tiles }) => tiles)];
   const possibleTiles = STANDARD_TILES.filter((tile) => {
@@ -85,7 +85,7 @@ export function getAllWaits(options: IHandScoreOptions): TPlayableTile[] {
   return waitsWithoutSingleWait;
 }
 
-export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | null {
+export function getHandMahjong(options: HandScoreFullOptions): HandMahjong | null {
   const { hand, declaredSets, seatWind, roundWind, isSelfDraw, minScore = MIN_SCORE } = options;
   const waits = options.waits ?? getAllWaits(options);
   const winningTile = options.winningTile ?? waits.at(0);
@@ -108,8 +108,8 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     isSelfDraw,
   });
 
-  let bestFans: TFan[] = [];
-  let chosenSets: TSet[] | null = null;
+  let bestFans: Fan[] = [];
+  let chosenSets: Set[] | null = null;
   let maxScore = 0;
 
   if (
@@ -123,7 +123,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
     setsVariations.forEach((sets) => {
       const wholeHandSetsFans = getWholeHandSetsFans(sets, isSelfDraw);
       const specialSetsFans = getSpecialSetsFans(sets, winningTile, waits);
-      const setsFans: TFan[] = [];
+      const setsFans: Fan[] = [];
 
       getAllSetsCombinations(sets).forEach((sets) => {
         setsFans.push(...getSetsFans(sets, seatWind, roundWind));
@@ -131,10 +131,10 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 
       const fans = [...wholeHandFans, ...wholeHandSetsFans, ...setsFans, ...specialFans, ...specialSetsFans];
 
-      if (fans.every((fan) => fan.fan === EFan.FLOWER_TILES)) {
+      if (fans.every((fan) => fan.fan === FanKind.FLOWER_TILES)) {
         fans.push({
-          type: EFanType.HAND,
-          fan: EFan.CHICKEN_HAND,
+          type: FanType.HAND,
+          fan: FanKind.CHICKEN_HAND,
         });
       }
 
@@ -149,7 +149,7 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   } else {
     const fans = [...wholeHandFans, ...specialFans];
 
-    if (wholeHandFans.some(({ fan }) => fan === EFan.LESSER_HONORS_AND_KNITTED_TILES)) {
+    if (wholeHandFans.some(({ fan }) => fan === FanKind.LESSER_HONORS_AND_KNITTED_TILES)) {
       const simples = wholeHand.filter((tile) => !isHonor(tile));
 
       if (simples.length === 9) {
@@ -159,12 +159,12 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 
         if (knittedSequence) {
           fans.push({
-            type: EFanType.SETS,
-            fan: EFan.KNITTED_STRAIGHT,
+            type: FanType.SETS,
+            fan: FanKind.KNITTED_STRAIGHT,
             sets: knittedSequence.map((tiles) => ({
-              type: ESet.KNITTED_CHOW,
+              type: SetType.KNITTED_CHOW,
               tiles,
-              concealedType: ESetConcealedType.CONCEALED,
+              concealedType: SetConcealedType.CONCEALED,
             })),
           });
         }
@@ -173,8 +173,8 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
 
     if (isSelfDraw) {
       fans.push({
-        type: EFanType.HAND,
-        fan: EFan.FULLY_CONCEALED_HAND,
+        type: FanType.HAND,
+        fan: FanKind.FULLY_CONCEALED_HAND,
       });
     }
 
@@ -201,17 +201,17 @@ export function getHandMahjong(options: IHandScoreFullOptions): IHandMahjong | n
   };
 }
 
-export function getPureFansScore(fans: TFan[]): number {
-  return getFansScore(fans.filter(({ fan }) => fan !== EFan.FLOWER_TILES));
+export function getPureFansScore(fans: Fan[]): number {
+  return getFansScore(fans.filter(({ fan }) => fan !== FanKind.FLOWER_TILES));
 }
 
-function getBestFans(fans: TFan[], minScore: number): { fans: TFan[]; score: number } | null {
+function getBestFans(fans: Fan[], minScore: number): { fans: Fan[]; score: number } | null {
   fans = sortBy(fans, ({ fan }) => ALL_FANS.indexOf(fan));
 
-  let pickedFans = null as TFan[] | null;
+  let pickedFans = null as Fan[] | null;
   let maxScore = 0;
 
-  const calculateBestMahjong = (fansLeft: TFan[], includedFans: TFan[]): void => {
+  const calculateBestMahjong = (fansLeft: Fan[], includedFans: Fan[]): void => {
     const firstFan = fansLeft.at(0);
 
     if (!firstFan) {
@@ -248,5 +248,8 @@ function getBestFans(fans: TFan[], minScore: number): { fans: TFan[]; score: num
     return null;
   }
 
-  return { fans: pickedFans, score: getFansScore(pickedFans) };
+  return {
+    fans: pickedFans,
+    score: getFansScore(pickedFans),
+  };
 }

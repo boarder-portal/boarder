@@ -1,15 +1,15 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
-import { ICard } from 'common/types/set';
+import { Card } from 'common/types/set';
 
 import styles from './CardObject.module.scss';
 
-interface ICardObjectProps {
-  card: ICard;
+interface CardObjectProps {
+  card: Card;
 }
 
-const CardObject: React.FC<ICardObjectProps> = (props) => {
+const CardObject: React.FC<CardObjectProps> = (props) => {
   const { card } = props;
 
   return (

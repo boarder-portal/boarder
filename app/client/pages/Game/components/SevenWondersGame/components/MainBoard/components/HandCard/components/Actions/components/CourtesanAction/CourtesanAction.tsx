@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
 
-import { ISevenWondersCourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { TAction, TPayments } from 'common/types/sevenWonders';
-import { ICard } from 'common/types/sevenWonders/cards';
+import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { Action, Payments } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
-interface ICourtesanActionProps {
+interface CourtesanActionProps {
   className?: string;
-  card: ICard;
-  courtesansBuildInfo: ISevenWondersCourtesansBuildInfo;
-  onCardAction(cardIndex: number, action: TAction, payments?: TPayments): void;
+  card: Card;
+  courtesansBuildInfo: CourtesansBuildInfo;
+  onCardAction(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
+const CourtesanAction: React.FC<CourtesanActionProps> = (props) => {
   const { className, card, courtesansBuildInfo, onCardAction } = props;
 
   const handleSelect = useCallback(() => {
@@ -20,7 +20,7 @@ const CourtesanAction: React.FC<ICourtesanActionProps> = (props) => {
       {
         ...courtesansBuildInfo.action,
         copiedCard: card,
-      } as TAction,
+      } as Action,
       courtesansBuildInfo.payments,
     );
   }, [card, courtesansBuildInfo.action, courtesansBuildInfo.cardIndex, courtesansBuildInfo.payments, onCardAction]);

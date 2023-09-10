@@ -1,32 +1,32 @@
+import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
-import classNames from 'classnames';
 
-import { EAgePhase, EGameClientEvent, EGamePhase, ENeighborSide, IPlayer } from 'common/types/sevenWonders';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
+import { AgePhaseType, GameClientEventType, GamePhaseType, NeighborSide, Player } from 'common/types/sevenWonders';
+import { Card } from 'common/types/sevenWonders/cards';
 
 import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
 
 import usePlayer from 'client/hooks/usePlayer';
 
-import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
-import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
 import Flex from 'client/components/common/Flex/Flex';
 import Image from 'client/components/common/Image/Image';
+import MainBoard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/MainBoard';
+import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './SevenWondersGame.module.scss';
 
-const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
+const SevenWondersGame: React.FC<GameProps<GameType.SEVEN_WONDERS>> = (props) => {
   const { io, gameOptions, gameInfo } = props;
 
-  const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [discard, setDiscard] = useState<ICard[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [discard, setDiscard] = useState<Card[]>([]);
   const [age, setAge] = useState<number | null>(null);
-  const [gamePhase, setGamePhase] = useState<EGamePhase | null>(null);
-  const [agePhase, setAgePhase] = useState<EAgePhase | null>(null);
+  const [gamePhase, setGamePhase] = useState<GamePhaseType | null>(null);
+  const [agePhase, setAgePhase] = useState<AgePhaseType | null>(null);
 
   const player = usePlayer(players);
 
@@ -41,17 +41,17 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   }, [player, players]);
 
   const leftNeighbor = useMemo(
-    () => (player ? players[getNeighbor(player.index, players.length, ENeighborSide.LEFT)] : null),
+    () => (player ? players[getNeighbor(player.index, players.length, NeighborSide.LEFT)] : null),
     [player, players],
   );
   const rightNeighbor = useMemo(
-    () => (player ? players[getNeighbor(player.index, players.length, ENeighborSide.RIGHT)] : null),
+    () => (player ? players[getNeighbor(player.index, players.length, NeighborSide.RIGHT)] : null),
     [player, players],
   );
 
   const pickCitySide = useCallback(
     (citySide: number | null) => {
-      io.emit(EGameClientEvent.PICK_CITY_SIDE, citySide);
+      io.emit(GameClientEventType.PICK_CITY_SIDE, citySide);
     },
     [io],
   );
@@ -64,7 +64,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
       setDiscard(gameInfo.discard);
       setGamePhase(gameInfo.phase?.type ?? null);
 
-      if (gameInfo.phase?.type === EGamePhase.AGE) {
+      if (gameInfo.phase?.type === GamePhaseType.AGE) {
         setAge(gameInfo.phase.age);
         setAgePhase(gameInfo.phase.phase);
       } else {
@@ -78,7 +78,7 @@ const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
     return null;
   }
 
-  if (gamePhase === EGamePhase.PICK_CITY_SIDE) {
+  if (gamePhase === GamePhaseType.PICK_CITY_SIDE) {
     return (
       <Flex className={styles.root} justifyContent="center" direction="column">
         <Flex justifyContent="center" between={4}>

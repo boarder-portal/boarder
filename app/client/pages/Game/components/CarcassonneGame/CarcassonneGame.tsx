@@ -1,24 +1,26 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
-import classNames from 'classnames';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
+import { Coords } from 'common/types';
 import {
-  EGameClientEvent,
-  EMeepleType,
-  IAttachCardEvent,
-  ICard,
-  IPlacedMeeple,
-  IPlayer,
-  TBoard,
-  TObjects,
+  AttachCardEvent,
+  Board,
+  Card,
+  GameClientEventType,
+  MeepleType,
+  Objects,
+  PlacedMeeple,
+  Player,
 } from 'common/types/carcassonne';
-import { ICoords } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
+import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
+import Timestamp from 'common/utilities/Timestamp';
 import {
   getAttachedObjectId,
   getNeighborCoords,
@@ -29,40 +31,38 @@ import {
   isCardRoad,
   isSideObject,
 } from 'common/utilities/carcassonne';
-import { getRotatedCoords } from 'client/pages/Game/components/CarcassonneGame/utilities/coords';
-import Timestamp from 'common/utilities/Timestamp';
 
-import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import usePlayer from 'client/hooks/usePlayer';
-import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
+import useBoardControl from 'client/pages/Game/components/CarcassonneGame/hooks/useBoardControl';
 import useBoundTimestamps from 'client/pages/Game/hooks/useBoundTimetamps';
+import useCreateTimestamp from 'client/pages/Game/hooks/useCreateTimestamp';
 
-import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
-import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
-import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
+import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
+import Players from 'client/pages/Game/components/CarcassonneGame/components/Player/Players';
 
-import { playSound, POP_SOUND } from 'client/sounds';
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
+import { POP_SOUND, playSound } from 'client/sounds';
 
 import styles from './CarcassonneGame.module.scss';
 
-const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
+const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
   const { io, gameInfo } = props;
 
   const createTimestamp = useCreateTimestamp();
 
-  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [board, setBoard] = useState<TBoard>({});
-  const [objects, setObjects] = useState<TObjects>({});
+  const [board, setBoard] = useState<Board>({});
+  const [objects, setObjects] = useState<Objects>({});
   const [cardsLeft, setCardsLeft] = useState<number>(0);
   const [serverTurnEndsAt, setServerTurnEndsAt] = useState<Timestamp | null>(null);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
-  const [placedCardCoords, setPlacedCardCoords] = useState<ICoords | null>(null);
-  const [allowedMoves, setAllowedMoves] = useState<ICoords[]>([]);
-  const [allowedMeeples, setAllowedMeeples] = useState<(EMeepleType[] | null)[]>();
+  const [placedCardCoords, setPlacedCardCoords] = useState<Coords | null>(null);
+  const [allowedMoves, setAllowedMoves] = useState<Coords[]>([]);
+  const [allowedMeeples, setAllowedMeeples] = useState<(MeepleType[] | null)[]>();
 
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
@@ -75,12 +75,12 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   const selectedCard = player?.data.cards[selectedCardIndex];
 
   const calculateAllowedMoves = useCallback(
-    (selectedCard: ICard | undefined) => {
+    (selectedCard: Card | undefined) => {
       if (!selectedCard) {
         return;
       }
 
-      const allowedMoves: ICoords[] = [];
+      const allowedMoves: Coords[] = [];
       const traversedCoords = new Set<string>();
 
       forEach(board, (row) => {
@@ -169,7 +169,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   }, []);
 
   const placeCard = useCallback(
-    (coords: ICoords) => {
+    (coords: Coords) => {
       if (!selectedCard || !player || placedCardCoords || !isAbleToPlaceCard) {
         return;
       }
@@ -178,7 +178,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
 
       const allowedMeeples = selectedCard.objects.map((object) => {
         if (isCardMonastery(object)) {
-          return [EMeepleType.COMMON, EMeepleType.FAT];
+          return [MeepleType.COMMON, MeepleType.FAT];
         }
 
         let isOccupied = false;
@@ -208,15 +208,15 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
         });
 
         if (!isOccupied) {
-          return [EMeepleType.COMMON, EMeepleType.FAT];
+          return [MeepleType.COMMON, MeepleType.FAT];
         }
 
         if ((isCardCity(object) || isCardRoad(object)) && hasOurMeeple) {
-          return [EMeepleType.BUILDER];
+          return [MeepleType.BUILDER];
         }
 
         if (isCardField(object) && hasOurMeeple) {
-          return [EMeepleType.PIG];
+          return [MeepleType.PIG];
         }
 
         return null;
@@ -235,13 +235,13 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   );
 
   const attachCard = useCallback(
-    (placedMeeple: IPlacedMeeple | null) => {
+    (placedMeeple: PlacedMeeple | null) => {
       if (!selectedCard || !player || !placedCardCoords) {
         return;
       }
 
       const rotation = selectedCardRotationRef.current;
-      const attachCardEvent: IAttachCardEvent = {
+      const attachCardEvent: AttachCardEvent = {
         cardIndex: selectedCardIndex,
         coords: placedCardCoords,
         rotation,
@@ -267,7 +267,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
 
       hideSelectedCard();
 
-      io.emit(EGameClientEvent.ATTACH_CARD, attachCardEvent);
+      io.emit(GameClientEventType.ATTACH_CARD, attachCardEvent);
     },
     [board, hideSelectedCard, io, placedCardCoords, player, selectedCard, selectedCardIndex],
   );
@@ -320,7 +320,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
     ],
   );
 
-  const onAllowedMoveEnter = useCallback(({ x, y }: ICoords) => {
+  const onAllowedMoveEnter = useCallback(({ x, y }: Coords) => {
     const selectedCardElem = selectedCardRef.current;
     const draggingCardElem = draggingCardRef.current;
 
@@ -342,7 +342,7 @@ const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   }, [hideSelectedCard]);
 
   const onPlaceMeepleClick = useCallback(
-    (placedMeeple: IPlacedMeeple) => {
+    (placedMeeple: PlacedMeeple) => {
       attachCard(placedMeeple);
     },
     [attachCard],

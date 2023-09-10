@@ -9,14 +9,14 @@ import {
   stringLiteral,
 } from '@babel/types';
 
-import { IGenerateOptions } from '../createGame';
-import modifyFile from './modifyFile';
+import { GenerateOptions } from '../createGame';
 import addImport from './addImport';
+import modifyFile from './modifyFile';
 import shortenImport from './shortenImport';
 
 const FILE_PATH = path.resolve('./app/client/atoms/gameOptionsAtoms.ts');
 
-export default async function addDefaultOptions(options: IGenerateOptions): Promise<void> {
+export default async function addDefaultOptions(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {
     if (path.isProgram()) {
       addImport(
@@ -32,7 +32,7 @@ export default async function addDefaultOptions(options: IGenerateOptions): Prom
       if (id.type === 'Identifier' && id.name === 'DEFAULT_OPTIONS' && init?.type === 'ObjectExpression') {
         init.properties.push(
           objectProperty(
-            memberExpression(identifier('EGame'), identifier(options.constCased)),
+            memberExpression(identifier('GameType'), identifier(options.constCased)),
             identifier(`${options.constCased}_OPTIONS`),
             true,
           ),

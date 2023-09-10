@@ -1,10 +1,10 @@
-import { ESuit, EValue, ICard } from 'common/types/cards';
+import { Card, Suit, Value } from 'common/types/cards';
 
 export const CARDS_SORT = '23456789TJQKA';
 
-export const DECK: ICard[] = Object.values(ESuit)
+export const DECK: Card[] = Object.values(Suit)
   .map((suit) =>
-    Object.values(EValue).map((value) => ({
+    Object.values(Value).map((value) => ({
       suit,
       value,
     })),

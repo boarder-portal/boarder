@@ -1,9 +1,9 @@
-import { DragEvent, FC, memo, useEffect, useMemo, useRef, useState } from 'react';
-import sortBy from 'lodash/sortBy';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
+import sortBy from 'lodash/sortBy';
+import { DragEvent, FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 
-import { TTile } from 'common/types/mahjong';
+import { Tile as TileModel } from 'common/types/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
@@ -11,54 +11,54 @@ import { stringifyTile } from 'common/utilities/mahjong/stringify';
 import { isEqualTiles } from 'common/utilities/mahjong/tiles';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
-import { usePrevious } from 'client/hooks/usePrevious';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import usePrevious from 'client/hooks/usePrevious';
 
-import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import DragArea from 'client/components/common/DragArea/DragArea';
+import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './Tiles.module.scss';
 
-export enum EOpenType {
+export enum OpenType {
   OPEN = 'OPEN',
   CONCEALED = 'CONCEALED',
   SEMI_CONCEALED = 'SEMI_CONCEALED',
 }
 
-interface ITilesProps {
-  tiles: TTile[];
+interface TilesProps {
+  tiles: TileModel[];
   tileWidth: number;
-  openType?: EOpenType;
+  openType?: OpenType;
   hoverable?: boolean;
   rotatedTileIndex?: number;
   selectedTileIndex?: number;
-  highlightedTile?: TTile | null;
+  highlightedTile?: TileModel | null;
   onChangeTileIndex?(from: number, to: number): void;
   onTileDragStart?(tileIndex: number): void;
   onTileClick?(tileIndex: number): void;
-  onTileHover?(tile: TTile): void;
-  onTileHoverExit?(tile: TTile): void;
+  onTileHover?(tile: TileModel): void;
+  onTileHoverExit?(tile: TileModel): void;
 }
 
-interface ILocalTile {
-  tile: TTile;
+interface LocalTile {
+  tile: TileModel;
   index: number;
 }
 
-const getLocalTiles = (tiles: TTile[]): ILocalTile[] => {
+const getLocalTiles = (tiles: TileModel[]): LocalTile[] => {
   return tiles.map((tile, index) => ({
     tile,
     index,
   }));
 };
 
-const Tiles: FC<ITilesProps> = (props) => {
+const Tiles: FC<TilesProps> = (props) => {
   const {
     tiles,
     tileWidth,
-    openType = EOpenType.OPEN,
+    openType = OpenType.OPEN,
     hoverable,
     rotatedTileIndex = -1,
     selectedTileIndex = -1,
@@ -70,9 +70,9 @@ const Tiles: FC<ITilesProps> = (props) => {
     onTileHoverExit,
   } = props;
   const tileHeight = getTileHeight(tileWidth);
-  const isKnown = openType !== EOpenType.CONCEALED;
+  const isKnown = openType !== OpenType.CONCEALED;
 
-  const [localTiles, setLocalTiles] = useState<ILocalTile[]>(getLocalTiles(tiles));
+  const [localTiles, setLocalTiles] = useState<LocalTile[]>(getLocalTiles(tiles));
   const [withTransition, setWithTransition] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -151,8 +151,7 @@ const Tiles: FC<ITilesProps> = (props) => {
   const tilesNodes = useMemo(() => {
     const nodesWithTiles = localTiles.map((tile, index) => {
       const isRotated = tile.index === rotatedTileIndex;
-      const open =
-        openType === EOpenType.OPEN || (openType === EOpenType.SEMI_CONCEALED && (index === 0 || index === 3));
+      const open = openType === OpenType.OPEN || (openType === OpenType.SEMI_CONCEALED && (index === 0 || index === 3));
       const key = `${stringifyTile(tile.tile)}-${
         localTiles.filter((localTile) => isEqualTiles(tile.tile, localTile.tile) && localTile.index < tile.index).length
       }`;

@@ -36,7 +36,10 @@
           "/client\\//",
           "/server\\//",
           ["parent", "sibling", "index"]
-        ]
+        ],
+        "alphabetize": {
+          "order": "asc"
+        }
       }
     ],
     "@typescript-eslint/indent": 0,
@@ -47,6 +50,8 @@
     "@typescript-eslint/ban-ts-comment": 0,
     "@typescript-eslint/no-var-requires": 0,
     "@typescript-eslint/no-this-alias": 0,
+    "@typescript-eslint/no-unnecessary-type-constraint": 0,
+    "@typescript-eslint/no-unused-vars": 0,
     "no-unused-expressions": 0,
     "no-restricted-imports": [
       "error",
@@ -242,6 +247,12 @@
       {
         "before": false,
         "after": true
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
       }
     ],
     "space-before-blocks": ["error", "always"],

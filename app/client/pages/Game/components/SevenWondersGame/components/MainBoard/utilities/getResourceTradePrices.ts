@@ -1,22 +1,22 @@
-import { ITradeEffect } from 'common/types/sevenWonders/effects';
-import { ENeighborSide } from 'common/types/sevenWonders';
-import { ECardType } from 'common/types/sevenWonders/cards';
+import { NeighborSide } from 'common/types/sevenWonders';
+import { CardType } from 'common/types/sevenWonders/cards';
+import { TradeEffect } from 'common/types/sevenWonders/effects';
 
 const BASE_RESOURCE_PRICE = 2;
 
-export type TResourceTradePrices = Record<
-  ENeighborSide,
+export type ResourceTradePrices = Record<
+  NeighborSide,
   {
-    [ECardType.RAW_MATERIAL]: number;
-    [ECardType.MANUFACTURED_GOODS]: number;
+    [CardType.RAW_MATERIAL]: number;
+    [CardType.MANUFACTURED_GOODS]: number;
   }
 >;
 
-export default function getResourceTradePrices(tradeEffects: ITradeEffect[]): TResourceTradePrices {
+export default function getResourceTradePrices(tradeEffects: TradeEffect[]): ResourceTradePrices {
   return tradeEffects.reduce(
     (accTradeResourcePrices, tradeEffect) => {
       tradeEffect.sources.forEach((resourceOwner) => {
-        if (resourceOwner !== ENeighborSide.LEFT && resourceOwner !== ENeighborSide.RIGHT) {
+        if (resourceOwner !== NeighborSide.LEFT && resourceOwner !== NeighborSide.RIGHT) {
           return;
         }
 
@@ -31,13 +31,13 @@ export default function getResourceTradePrices(tradeEffects: ITradeEffect[]): TR
       return accTradeResourcePrices;
     },
     {
-      [ENeighborSide.LEFT]: {
-        [ECardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
-        [ECardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
+      [NeighborSide.LEFT]: {
+        [CardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
+        [CardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
       },
-      [ENeighborSide.RIGHT]: {
-        [ECardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
-        [ECardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
+      [NeighborSide.RIGHT]: {
+        [CardType.RAW_MATERIAL]: BASE_RESOURCE_PRICE,
+        [CardType.MANUFACTURED_GOODS]: BASE_RESOURCE_PRICE,
       },
     },
   );

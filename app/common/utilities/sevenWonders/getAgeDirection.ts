@@ -1,9 +1,9 @@
-import { EGamePhase, ENeighborSide } from 'common/types/sevenWonders';
+import { GamePhaseType, NeighborSide } from 'common/types/sevenWonders';
 
-export default function getAgeDirection(phase: EGamePhase | null, age: number | null): ENeighborSide {
-  if (phase === EGamePhase.AGE && age !== null) {
-    return age % 2 ? ENeighborSide.RIGHT : ENeighborSide.LEFT;
+export default function getAgeDirection(phase: GamePhaseType | null, age: number | null): NeighborSide {
+  if (phase === GamePhaseType.AGE && age !== null) {
+    return age % 2 ? NeighborSide.RIGHT : NeighborSide.LEFT;
   }
 
-  return ENeighborSide.RIGHT;
+  return NeighborSide.RIGHT;
 }

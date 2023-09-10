@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { BASE_CARD_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 
-import { ICoords } from 'common/types';
+import { Coords } from 'common/types';
 
 export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent, zoom: number): void }): {
   boardWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
@@ -20,10 +20,10 @@ export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
 
-  const translateRef = useRef<ICoords>({ x: 0, y: 0 });
+  const translateRef = useRef<Coords>({ x: 0, y: 0 });
   const zoomRef = useRef<number>(1);
 
-  const lastDragPointRef = useRef<ICoords | null>(null);
+  const lastDragPointRef = useRef<Coords | null>(null);
   const isDraggingRef = useRef<boolean>(false);
 
   const transformBoard = useCallback(() => {

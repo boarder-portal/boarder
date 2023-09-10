@@ -1,37 +1,37 @@
-import { EGame } from 'common/types/game';
-import { EObject, IBaseObject } from 'common/types/survivalOnline';
+import { GameType } from 'common/types/game';
+import { BaseObject, ObjectType } from 'common/types/survivalOnline';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {
-  IServerCell,
-  IServerCellWithEntity,
+  ServerCell,
+  ServerCellWithEntity,
 } from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
-export interface IBaseOptions {
-  cell: IServerCell;
+export interface BaseOptions {
+  cell: ServerCell;
 }
 
-export default class Base extends ServerEntity<EGame.SURVIVAL_ONLINE> {
+export default class Base extends ServerEntity<GameType.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
-  cell: IServerCellWithEntity<Base>;
+  cell: ServerCellWithEntity<Base>;
 
-  constructor(game: SurvivalOnlineGame, options: IBaseOptions) {
+  constructor(game: SurvivalOnlineGame, options: BaseOptions) {
     super(game);
 
     this.game = game;
-    this.cell = options.cell as IServerCellWithEntity<Base>;
+    this.cell = options.cell as ServerCellWithEntity<Base>;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     yield* this.eternity();
   }
 
-  toJSON(): IBaseObject {
+  toJSON(): BaseObject {
     return {
-      type: EObject.BASE,
+      type: ObjectType.BASE,
     };
   }
 }

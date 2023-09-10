@@ -1,15 +1,15 @@
 import { OBJECT_PIXELS } from 'client/pages/Game/components/SurvivalOnlineGame/constants/objectPixels';
 
-import { EBiome, EObject, ICell } from 'common/types/survivalOnline';
+import { BiomeType, Cell, ObjectType } from 'common/types/survivalOnline';
 
-import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 import renderEyes from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderEyes';
+import renderObject from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderObject';
 
 export default function renderCell(
   context: CanvasRenderingContext2D,
   startX: number,
   startY: number,
-  cell: ICell | undefined,
+  cell: Cell | undefined,
 ): void {
   if (!cell) {
     return;
@@ -17,7 +17,7 @@ export default function renderCell(
 
   const { biome, object } = cell;
 
-  if (biome === EBiome.GRASS) {
+  if (biome === BiomeType.GRASS) {
     renderObject({ context, startX, startY, rects: OBJECT_PIXELS.grass });
   }
 
@@ -25,15 +25,15 @@ export default function renderCell(
     return;
   }
 
-  if (object.type === EObject.TREE) {
+  if (object.type === ObjectType.TREE) {
     renderObject({ context, startX, startY, rects: OBJECT_PIXELS.tree });
-  } else if (object.type === EObject.PLAYER) {
+  } else if (object.type === ObjectType.PLAYER) {
     renderObject({ context, startX, startY, rects: OBJECT_PIXELS.player.body });
 
     renderEyes(context, startX, startY, object.direction, OBJECT_PIXELS.player.eye);
-  } else if (object.type === EObject.BASE) {
+  } else if (object.type === ObjectType.BASE) {
     renderObject({ context, startX, startY, rects: OBJECT_PIXELS.base });
-  } else if (object.type === EObject.ZOMBIE) {
+  } else if (object.type === ObjectType.ZOMBIE) {
     renderObject({ context, startX, startY, rects: OBJECT_PIXELS.zombie.body });
 
     renderEyes(context, startX, startY, object.direction, OBJECT_PIXELS.zombie.eye);

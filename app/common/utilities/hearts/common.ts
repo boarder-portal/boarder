@@ -1,12 +1,12 @@
-import { ESuit, EValue, ICard } from 'common/types/cards';
+import { Card, Suit, Value } from 'common/types/cards';
 
-import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
 import card from 'common/utilities/cards/card';
+import { isEqualCardsCallback } from 'common/utilities/cards/isEqualCards';
 
-export const isDeuceOfClubs = isEqualCardsCallback(card(EValue.DEUCE, ESuit.CLUBS));
+export const isDeuceOfClubs = isEqualCardsCallback(card(Value.DEUCE, Suit.CLUBS));
 
-export const isQueenOfSpades = isEqualCardsCallback(card(EValue.QUEEN, ESuit.SPADES));
+export const isQueenOfSpades = isEqualCardsCallback(card(Value.QUEEN, Suit.SPADES));
 
-export function isHeart(card: ICard): boolean {
-  return card.suit === ESuit.HEARTS;
+export function isHeart(card: Card): boolean {
+  return card.suit === Suit.HEARTS;
 }

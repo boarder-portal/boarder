@@ -1,15 +1,15 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 
-import { IExplodedDirection } from 'common/types/bombers';
+import { ExplodedDirection } from 'common/types/bombers';
 
-export interface IRenderExplodedDirectionOptions {
+export interface RenderExplodedDirectionOptions {
   ctx: CanvasRenderingContext2D;
-  explodedDirection: IExplodedDirection;
+  explodedDirection: ExplodedDirection;
 }
 
 const EDGE_MARGIN = 0.02;
 
-export default function renderExplodedDirection(options: IRenderExplodedDirectionOptions): void {
+export default function renderExplodedDirection(options: RenderExplodedDirectionOptions): void {
   const { ctx, explodedDirection } = options;
 
   const startX = (explodedDirection.start.x + EDGE_MARGIN) * CELL_SIZE;

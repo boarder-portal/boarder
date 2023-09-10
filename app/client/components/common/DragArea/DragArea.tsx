@@ -1,14 +1,14 @@
-import { AllHTMLAttributes, DragEvent, forwardRef, memo, MouseEvent, useEffect, useRef } from 'react';
+import { AllHTMLAttributes, DragEvent, MouseEvent, forwardRef, memo, useEffect, useRef } from 'react';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 
-export interface IDragAreaProps extends AllHTMLAttributes<HTMLDivElement> {
+export interface DragAreaProps extends AllHTMLAttributes<HTMLDivElement> {
   onDragEnter?(): void;
   onDragLeave?(): void;
 }
 
-const DragArea = forwardRef<HTMLDivElement, IDragAreaProps>((props, ref) => {
+const DragArea = forwardRef<HTMLDivElement, DragAreaProps>((props, ref) => {
   const { onDragEnter, onDragLeave, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);

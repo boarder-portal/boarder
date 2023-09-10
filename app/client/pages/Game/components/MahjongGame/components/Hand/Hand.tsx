@@ -1,36 +1,36 @@
-import { FC, memo } from 'react';
 import classNames from 'classnames';
+import { FC, memo } from 'react';
 
-import { IPlayer, TTile } from 'common/types/mahjong';
+import { Player, Tile } from 'common/types/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 
-import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
-import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 import Flex from 'client/components/common/Flex/Flex';
+import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
+import Tiles, { OpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
 import styles from './Hand.module.scss';
 
-interface IHandProps {
-  player: IPlayer;
+interface HandProps {
+  player: Player;
   score: number;
   tileWidth: number;
   open: boolean;
   rotation: number;
   playerIndex: number;
   selectedTileIndex: number;
-  highlightedTile: TTile | null;
+  highlightedTile: Tile | null;
   isActive: boolean;
-  players: IPlayer[];
+  players: Player[];
   onChangeTileIndex?(from: number, to: number): void;
   onDiscardTile?(tileIndex: number): void;
   onTileDragStart?(tileIndex: number): void;
-  onTileHover?(tile: TTile): void;
-  onTileHoverExit?(tile: TTile): void;
+  onTileHover?(tile: Tile): void;
+  onTileHoverExit?(tile: Tile): void;
 }
 
-const Hand: FC<IHandProps> = (props) => {
+const Hand: FC<HandProps> = (props) => {
   const {
     player: { name, data },
     score,
@@ -78,9 +78,7 @@ const Hand: FC<IHandProps> = (props) => {
             <Tiles
               key={index}
               tiles={tiles}
-              openType={
-                isDeclaredMeldedSet(set) ? EOpenType.OPEN : open ? EOpenType.SEMI_CONCEALED : EOpenType.CONCEALED
-              }
+              openType={isDeclaredMeldedSet(set) ? OpenType.OPEN : open ? OpenType.SEMI_CONCEALED : OpenType.CONCEALED}
               tileWidth={tileWidth * 0.75}
               rotatedTileIndex={rotatedTileIndex}
               highlightedTile={highlightedTile}
@@ -92,7 +90,7 @@ const Hand: FC<IHandProps> = (props) => {
 
         <Tiles
           tiles={data.hand?.hand ?? []}
-          openType={open ? EOpenType.OPEN : EOpenType.CONCEALED}
+          openType={open ? OpenType.OPEN : OpenType.CONCEALED}
           tileWidth={tileWidth}
           hoverable={Boolean(onDiscardTile || onChangeTileIndex)}
           selectedTileIndex={selectedTileIndex}

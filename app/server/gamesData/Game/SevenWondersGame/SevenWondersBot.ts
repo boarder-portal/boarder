@@ -1,17 +1,17 @@
 import random from 'lodash/random';
 
-import { EGame } from 'common/types/game';
-import { ECardActionType, EGameClientEvent, EGamePhase, IPlayer } from 'common/types/sevenWonders';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { GameType } from 'common/types/game';
+import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/sevenWonders';
 
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'common/utilities/random';
+import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
+import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-export default class SevenWondersBot extends BotEntity<EGame.SEVEN_WONDERS> {
-  *lifecycle(): TGenerator {
-    this.sendSocketEvent(EGameClientEvent.PICK_CITY_SIDE, random(0, 1));
+export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
+  *lifecycle(): EntityGenerator {
+    this.sendSocketEvent(GameClientEventType.PICK_CITY_SIDE, random(0, 1));
 
     while (true) {
       yield* this.waitForWaitingAction();
@@ -27,22 +27,22 @@ export default class SevenWondersBot extends BotEntity<EGame.SEVEN_WONDERS> {
         hand: player.data.age?.hand ?? [],
         discard,
         gamePhase: phase?.type ?? null,
-        agePhase: phase?.type === EGamePhase.AGE ? phase.phase : null,
+        agePhase: phase?.type === GamePhaseType.AGE ? phase.phase : null,
       });
 
       yield* this.delay(random(200, 1000, true));
 
-      this.sendSocketEvent(EGameClientEvent.EXECUTE_ACTION, {
+      this.sendSocketEvent(GameClientEventType.EXECUTE_ACTION, {
         cardIndex: getRandomIndex(hand.length),
         action:
-          phase?.type === EGamePhase.DRAFT_LEADERS
+          phase?.type === GamePhaseType.DRAFT_LEADERS
             ? {
-                type: ECardActionType.PICK_LEADER,
+                type: CardActionType.PICK_LEADER,
               }
             : {
-                type: ECardActionType.BUILD_STRUCTURE,
+                type: CardActionType.BUILD_STRUCTURE,
                 freeBuildType: {
-                  type: EBuildType.FREE_BY_BUILDING,
+                  type: BuildKind.FREE_BY_BUILDING,
                 },
               },
       });
@@ -51,11 +51,11 @@ export default class SevenWondersBot extends BotEntity<EGame.SEVEN_WONDERS> {
     }
   }
 
-  getPlayer(): IPlayer {
+  getPlayer(): Player {
     return this.getGameInfo().players[this.playerIndex];
   }
 
-  *waitForWaitingAction(): TGenerator {
+  *waitForWaitingAction(): EntityGenerator {
     while (true) {
       const turnData = this.getPlayer().data.turn;
 

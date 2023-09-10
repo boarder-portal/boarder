@@ -1,24 +1,24 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   OPEN_CARD = 'OPEN_CARD',
 }
 
-export enum EGameServerEvent {
+export enum GameServerEventType {
   OPEN_CARD = 'OPEN_CARD',
   HIDE_CARDS = 'HIDE_CARDS',
   REMOVE_CARDS = 'REMOVE_CARDS',
   UPDATE_PLAYERS = 'UPDATE_PLAYERS',
 }
 
-export enum ESet {
+export enum SetType {
   COMMON = 'common',
   FRIENDS = 'friends',
   GAME_OF_THRONES = 'gameOfThrones',
@@ -33,105 +33,107 @@ export enum ESet {
   BREAKING_BAD = 'breakingBad',
 }
 
-export enum EFieldLayout {
+export enum FieldLayoutType {
   RECT = 'RECT',
   HEX = 'HEX',
   SPIRAL = 'SPIRAL',
   SPIRAL_ROTATE = 'SPIRAL_ROTATE',
 }
 
-export enum EShuffleType {
+export enum ShuffleType {
   RANDOM = 'RANDOM',
   TURNED = 'TURNED',
 }
 
-export type TShuffleOptions =
+export type ShuffleOptions =
   | null
   | {
-      type: EShuffleType.RANDOM;
+      type: ShuffleType.RANDOM;
       afterMovesCount: number;
       cardsCount: number;
     }
   | {
-      type: EShuffleType.TURNED;
+      type: ShuffleType.TURNED;
       afterMovesCount: number;
     };
 
-export interface IGameOptions extends ICommonGameOptions {
-  set: ESet;
+export interface GameOptions extends BaseGameOptions {
+  set: SetType;
   matchingCardsCount: number;
   differentCardsCount: number;
   pickRandomImages: boolean;
   useImageVariants: boolean;
-  layout: EFieldLayout;
-  shuffleOptions: TShuffleOptions;
+  layout: FieldLayoutType;
+  shuffleOptions: ShuffleOptions;
 }
 
-export interface IPlayerData {
+export interface PlayerData {
   score: number;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.PEXESO> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.PEXESO> {
+  data: PlayerData;
 }
 
-export interface IGame {
-  players: IPlayer[];
+export interface Game {
+  players: Player[];
   activePlayerIndex: number;
-  cards: ICard[];
-  turn: ITurn | null;
+  cards: Card[];
+  turn: Turn | null;
 }
 
-export interface ITurn {
+export interface Turn {
   openedCardsIndexes: number[];
 }
 
-export interface ICard {
+export interface Card {
   imageId: number;
   imageVariant: number;
   isInGame: boolean;
 }
 
-export interface IShuffleCardsIndexes {
+export interface ShuffleCardsIndexes {
   indexes: number[];
   permutation: number[];
 }
 
-export interface IUpdatePlayersEvent {
-  players: IPlayer[];
+export interface UpdatePlayersEvent {
+  players: Player[];
   activePlayerIndex: number;
 }
 
-export interface IHideCardsEvent {
+export interface HideCardsEvent {
   indexes: number[];
-  shuffleIndexes: IShuffleCardsIndexes | null;
+  shuffleIndexes: ShuffleCardsIndexes | null;
 }
 
-export interface IRemoveCardsEvent {
+export interface RemoveCardsEvent {
   indexes: number[];
-  shuffleIndexes: IShuffleCardsIndexes | null;
+  shuffleIndexes: ShuffleCardsIndexes | null;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.PEXESO> {
-  [EGameClientEvent.OPEN_CARD]: number;
+export interface ClientEventMap extends CommonClientEventMap<GameType.PEXESO> {
+  [GameClientEventType.OPEN_CARD]: number;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.PEXESO> {
-  [EGameServerEvent.OPEN_CARD]: number;
-  [EGameServerEvent.UPDATE_PLAYERS]: IUpdatePlayersEvent;
-  [EGameServerEvent.HIDE_CARDS]: IHideCardsEvent;
-  [EGameServerEvent.REMOVE_CARDS]: IRemoveCardsEvent;
+export interface ServerEventMap extends CommonServerEventMap<GameType.PEXESO> {
+  [GameServerEventType.OPEN_CARD]: number;
+  [GameServerEventType.UPDATE_PLAYERS]: UpdatePlayersEvent;
+  [GameServerEventType.HIDE_CARDS]: HideCardsEvent;
+  [GameServerEventType.REMOVE_CARDS]: RemoveCardsEvent;
 }
+
+type PexesoGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.PEXESO]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.PEXESO]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: PexesoGameOptions;
+      info: Game;
       result: number[];
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

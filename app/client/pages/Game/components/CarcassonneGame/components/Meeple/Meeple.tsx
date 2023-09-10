@@ -1,21 +1,21 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
-import { EMeepleType, EPlayerColor } from 'common/types/carcassonne';
+import { MeepleType, PlayerColor } from 'common/types/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Meeple.module.scss';
 
-interface IMeepleProps {
+interface MeepleProps {
   className?: string;
   style?: React.CSSProperties;
-  type: EMeepleType;
-  color: EPlayerColor;
+  type: MeepleType;
+  color: PlayerColor;
   onClick?(): void;
 }
 
-const Meeple: React.FC<IMeepleProps> = (props) => {
+const Meeple: React.FC<MeepleProps> = (props) => {
   const { className, style, type, color, onClick } = props;
 
   return (

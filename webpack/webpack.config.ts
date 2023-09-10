@@ -1,26 +1,26 @@
-import webpack, { Configuration } from 'webpack';
-import path from 'path';
-import nodeExternals from 'webpack-node-externals';
 import LoadablePlugin from '@loadable/webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
+import webpack, { Configuration } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import nodeExternals from 'webpack-node-externals';
 
 import isNotUndefined from '../app/common/utilities/isNotUndefined';
 
-enum ETarget {
+enum TargetType {
   WEB = 'web',
   NODE = 'node',
 }
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-function getConfig(target: ETarget): Configuration {
+function getConfig(target: TargetType): Configuration {
   return {
     name: target,
     mode: IS_PRODUCTION ? 'production' : 'development',
     target,
     entry:
-      target === ETarget.WEB
+      target === TargetType.WEB
         ? path.resolve('./app/client/client.tsx')
         : path.resolve('./app/server/middlewares/ServerApp.tsx'),
     module: {
@@ -62,13 +62,13 @@ function getConfig(target: ETarget): Configuration {
         chunks: 'all',
       },
     },
-    externals: target === ETarget.NODE ? ['@loadable/component', nodeExternals()] : undefined,
+    externals: target === TargetType.NODE ? ['@loadable/component', nodeExternals()] : undefined,
     output: {
       filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
       chunkFilename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
       path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
-      libraryTarget: target === ETarget.NODE ? 'commonjs2' : undefined,
+      libraryTarget: target === TargetType.NODE ? 'commonjs2' : undefined,
     },
     resolve: {
       alias: {
@@ -91,11 +91,11 @@ function getConfig(target: ETarget): Configuration {
         filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].css`,
       }),
       new webpack.DefinePlugin({
-        SERVER: target === ETarget.NODE,
+        SERVER: target === TargetType.NODE,
       }),
-      process.env.ANALYZE_BUNDLE && target === ETarget.WEB ? new BundleAnalyzerPlugin() : undefined,
+      process.env.ANALYZE_BUNDLE && target === TargetType.WEB ? new BundleAnalyzerPlugin() : undefined,
     ].filter(isNotUndefined),
   };
 }
 
-export default [getConfig(ETarget.WEB), getConfig(ETarget.NODE)];
+export default [getConfig(TargetType.WEB), getConfig(TargetType.NODE)];

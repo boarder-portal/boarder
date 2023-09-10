@@ -1,28 +1,28 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import chunk from 'lodash/chunk';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { EGameClientEvent, ICard, IPlayer, ISendSetEvent } from 'common/types/set';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
+import { Card as CardModel, GameClientEventType, Player, SendSetEvent } from 'common/types/set';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
-import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
-import Text from 'client/components/common/Text/Text';
-import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
+import Flex from 'client/components/common/Flex/Flex';
+import Text from 'client/components/common/Text/Text';
+import Card from 'client/pages/Game/components/SetGame/components/Card/Card';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './SetGame.module.scss';
 
-const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
+const SetGame: React.FC<GameProps<GameType.SET>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
-  const [cards, setCards] = useState<ICard[]>([]);
-  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [cards, setCards] = useState<CardModel[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
 
-  const handleCardClick = useImmutableCallback((card: ICard) => {
+  const handleCardClick = useImmutableCallback((card: CardModel) => {
     if (gameResult) {
       return;
     }
@@ -45,19 +45,19 @@ const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
       setSelectedCardsIds(updatedSelectedCardsIds);
 
       if (updatedSelectedCardsIds.size === 3) {
-        const data: ISendSetEvent = {
+        const data: SendSetEvent = {
           cardsIds: [...updatedSelectedCardsIds],
         };
 
         console.log('SEND_SET', data);
 
-        io.emit(EGameClientEvent.SEND_SET, data);
+        io.emit(GameClientEventType.SEND_SET, data);
       }
     }
   });
 
   const handleNoSetClick = useCallback(() => {
-    io.emit(EGameClientEvent.SEND_NO_SET);
+    io.emit(GameClientEventType.SEND_NO_SET);
   }, [io]);
 
   useEffect(() => {

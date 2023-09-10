@@ -1,19 +1,19 @@
-import path from 'node:path';
 import camelCase from 'lodash/camelCase';
 import snakeCase from 'lodash/snakeCase';
 import startCase from 'lodash/startCase';
 import upperFirst from 'lodash/upperFirst';
+import path from 'node:path';
 
-import addGameEnumField from './utilities/addGameEnumField';
-import addLocalStorageOptionsAndSettingsKeys from './utilities/addLocalStorageOptionsAndSettingsKeys';
-import addGameNameAndPlayerSettings from './utilities/addGameNameAndPlayerSettings';
+import addConstants from './utilities/addConstants';
 import addDefaultOptions from './utilities/addDefaultOptions';
 import addGame from './utilities/addGame';
-import addGameEntity from './utilities/addGameEntity';
-import addConstants from './utilities/addConstants';
 import addGameComponent from './utilities/addGameComponent';
-import addGameStyles from './utilities/addGameStyles';
+import addGameEntity from './utilities/addGameEntity';
 import addGameEntityClass from './utilities/addGameEntityClass';
+import addGameEnumField from './utilities/addGameEnumField';
+import addGameNameAndPlayerSettings from './utilities/addGameNameAndPlayerSettings';
+import addGameStyles from './utilities/addGameStyles';
+import addLocalStorageOptionsAndSettingsKeys from './utilities/addLocalStorageOptionsAndSettingsKeys';
 import addTypes from './utilities/addTypes';
 
 const [gameName] = process.argv.slice(2);
@@ -27,7 +27,7 @@ const constCased = snakeCase(gameName).toUpperCase();
 const startCased = startCase(gameName);
 const pascalCased = upperFirst(camelCased);
 
-export interface IGenerateOptions {
+export interface GenerateOptions {
   camelCased: string;
   constCased: string;
   pascalCased: string;
@@ -42,7 +42,7 @@ export interface IGenerateOptions {
 }
 
 (async () => {
-  const options: IGenerateOptions = {
+  const options: GenerateOptions = {
     camelCased,
     constCased,
     pascalCased,
@@ -52,7 +52,7 @@ export interface IGenerateOptions {
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
     lobbyFilename: path.resolve(`./app/client/pages/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`),
     gameComponentFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.tsx`),
-    gameStylesFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.pcss`),
+    gameStylesFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.scss`),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
   };
 

@@ -1,16 +1,16 @@
 import React, { FC } from 'react';
 import { StaticRouter } from 'react-router-dom';
 
-import { IStore, StoreContext } from 'client/utilities/store';
+import { Store, StoreContext } from 'client/utilities/store';
 
 import App from 'client/components/App/App';
 
-interface IServerAppProps {
+interface ServerAppProps {
   url: string;
-  store: IStore;
+  store: Store;
 }
 
-const ServerApp: FC<IServerAppProps> = (props) => {
+const ServerApp: FC<ServerAppProps> = (props) => {
   const { url, store } = props;
 
   return (

@@ -1,11 +1,11 @@
-import { AllHTMLAttributes, FC, memo } from 'react';
 import classNames from 'classnames';
+import { AllHTMLAttributes, FC, memo } from 'react';
 
 import styles from './TableCell.module.scss';
 
-interface ITableCellProps extends AllHTMLAttributes<HTMLTableCellElement> {}
+interface TableCellProps extends AllHTMLAttributes<HTMLTableCellElement> {}
 
-const TableCell: FC<ITableCellProps> = (props) => {
+const TableCell: FC<TableCellProps> = (props) => {
   const { children, className, ...rest } = props;
 
   return (

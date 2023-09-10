@@ -1,26 +1,25 @@
-import { EGame } from 'common/types/game';
-import { EGameClientEvent, ITurn } from 'common/types/carcassonne';
-import { ITimestamp } from 'common/types';
+import { GameClientEventType, Turn as TurnModel } from 'common/types/carcassonne';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import Timestamp from 'common/utilities/Timestamp';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
-export interface ITurnOptions {
+export interface TurnOptions {
   activePlayerIndex: number;
   duration: number;
 }
 
-export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
+export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
   game: CarcassonneGame;
 
   activePlayerIndex: number;
   endsAt: Timestamp;
   placedAnyCards = false;
 
-  constructor(game: CarcassonneGame, options: ITurnOptions) {
+  constructor(game: CarcassonneGame, options: TurnOptions) {
     super(game);
 
     this.game = game;
@@ -28,7 +27,7 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
     this.endsAt = this.createTimestamp(options.duration);
   }
 
-  *lifecycle(): TGenerator<boolean> {
+  *lifecycle(): EntityGenerator<boolean> {
     yield* this.race([
       // TODO: when uncomment add isPauseSupported(): true in CarcassonneGame
       // this.waitForTimestamp(this.endsAt),
@@ -38,16 +37,16 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
     return this.placedAnyCards;
   }
 
-  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
     return [this.endsAt];
   }
 
-  *makeMoves(): TGenerator {
+  *makeMoves(): EntityGenerator {
     let isBuilderMove = false;
 
     while (true) {
       const { cardIndex, coords, rotation, meeple } = yield* this.waitForPlayerSocketEvent(
-        EGameClientEvent.ATTACH_CARD,
+        GameClientEventType.ATTACH_CARD,
         {
           playerIndex: this.activePlayerIndex,
         },
@@ -72,7 +71,7 @@ export default class Turn extends ServerEntity<EGame.CARCASSONNE, boolean> {
     }
   }
 
-  toJSON(): ITurn {
+  toJSON(): TurnModel {
     return {
       endsAt: this.endsAt,
     };

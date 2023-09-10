@@ -1,11 +1,11 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games/bombers';
 
-import { EBuff, EDirection, IPlayerData } from 'common/types/bombers';
+import { BuffType, Direction, PlayerData } from 'common/types/bombers';
 
-export interface IRenderPlayerOptions {
+export interface RenderPlayerOptions {
   ctx: CanvasRenderingContext2D;
-  playerData: IPlayerData;
+  playerData: PlayerData;
 }
 
 const HP_VERTICAL_PROPORTION = 0.15;
@@ -22,15 +22,15 @@ const BUFF_RADIUS = BUFF_SIZE / 2;
 const BUFF_TOP_MARGIN = BOMBER_SIZE * 0.1;
 const BUFF_BETWEEN_MARGIN = BUFF_SIZE * 0.1;
 
-const BUFF_COLORS: Record<EBuff, string> = {
-  [EBuff.SUPER_SPEED]: '#00bfff',
-  [EBuff.SUPER_BOMB]: '#000',
-  [EBuff.SUPER_RANGE]: '#b83dba',
-  [EBuff.INVINCIBILITY]: '#f00',
-  [EBuff.BOMB_INVINCIBILITY]: '#f00',
+const BUFF_COLORS: Record<BuffType, string> = {
+  [BuffType.SUPER_SPEED]: '#00bfff',
+  [BuffType.SUPER_BOMB]: '#000',
+  [BuffType.SUPER_RANGE]: '#b83dba',
+  [BuffType.INVINCIBILITY]: '#f00',
+  [BuffType.BOMB_INVINCIBILITY]: '#f00',
 };
 
-export default function renderPlayer(options: IRenderPlayerOptions): void {
+export default function renderPlayer(options: RenderPlayerOptions): void {
   const { ctx, playerData } = options;
 
   const startX = (playerData.coords.x - BOMBER_CELL_SIZE / 2) * CELL_SIZE;
@@ -46,11 +46,11 @@ export default function renderPlayer(options: IRenderPlayerOptions): void {
 
   ctx.fillRect(startX, startY, BOMBER_SIZE, BOMBER_SIZE);
 
-  if (playerData.direction === EDirection.LEFT || playerData.direction === EDirection.DOWN) {
+  if (playerData.direction === Direction.LEFT || playerData.direction === Direction.DOWN) {
     renderEye(startX + EYE_EDGE_MARGIN * BOMBER_SIZE, startY + EYE_EDGE_MARGIN * BOMBER_SIZE);
   }
 
-  if (playerData.direction === EDirection.RIGHT || playerData.direction === EDirection.DOWN) {
+  if (playerData.direction === Direction.RIGHT || playerData.direction === Direction.DOWN) {
     renderEye(
       startX + (1 - EYE_WIDTH_PROPORTION - EYE_EDGE_MARGIN) * BOMBER_SIZE,
       startY + EYE_EDGE_MARGIN * BOMBER_SIZE,

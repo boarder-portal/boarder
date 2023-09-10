@@ -1,53 +1,53 @@
 import map from 'lodash/map';
 
-import { EGame, TGameOptions } from 'common/types/game';
-import { ITimestamp } from 'common/types';
+import { Timestamp as TimestampModel } from 'common/types';
+import { GameOptions, GameType } from 'common/types/game';
 
-import AbortError from 'server/gamesData/Game/utilities/AbortError';
 import Timestamp from 'common/utilities/Timestamp';
+import AbortError from 'server/gamesData/Game/utilities/AbortError';
 import { now } from 'server/utilities/time';
 
 import Game from 'server/gamesData/Game/Game';
 
-export interface IEntityContext<G extends EGame> {
+export interface EntityContext<G extends GameType> {
   game: Game<G>;
 }
 
-export type TParentOrContext<Game extends EGame> = IEntityContext<Game> | Entity<Game, any>;
+export type ParentOrContext<Game extends GameType> = EntityContext<Game> | Entity<Game, any>;
 
-interface IGeneratorResult<Result> {
-  run(resolve: TResolve<Result>, reject: TReject): void;
+interface GeneratorResult<Result> {
+  run(resolve: Resolve<Result>, reject: Reject): void;
   cancel(): void;
 }
 
-export type TEffectCallback<Result> = (
+export type EffectCallback<Result> = (
   resolve: (result: Result) => void,
   reject: (error: unknown) => void,
 ) => (() => unknown) | void;
 
-export type TGenerator<Result = void, Yield = never, EffectResult = unknown> = Generator<
-  TEffectCallback<EffectResult>,
+export type EntityGenerator<Result = void, Yield = never, EffectResult = unknown> = Generator<
+  EffectCallback<EffectResult>,
   Result,
   Yield
 >;
 
-export type TIterableOrGenerator<Result = void, Yield = never, EffectResult = unknown> =
-  | TGenerator<Result, Yield, EffectResult>
+export type IterableOrGenerator<Result = void, Yield = never, EffectResult = unknown> =
+  | EntityGenerator<Result, Yield, EffectResult>
   | {
-      [Symbol.iterator](): TGenerator<Result, Yield, EffectResult>;
+      [Symbol.iterator](): EntityGenerator<Result, Yield, EffectResult>;
     };
 
-export type TEffectGenerator<Result> = TGenerator<Result, Result, Result>;
+export type EffectGenerator<Result> = EntityGenerator<Result, Result, Result>;
 
-export type TGeneratorReturnValue<Generator> = Generator extends TGenerator<infer Result>
+export type GeneratorReturnValue<Generator> = Generator extends EntityGenerator<infer Result>
   ? Result
   : Generator extends {
-      [Symbol.iterator](): TGenerator<infer Result>;
+      [Symbol.iterator](): EntityGenerator<infer Result>;
     }
   ? Result
   : never;
 
-type TEffectResult<Result> =
+type EffectResult<Result> =
   | {
       type: 'success';
       value: Result;
@@ -57,55 +57,55 @@ type TEffectResult<Result> =
       error: unknown;
     };
 
-type TAbortCallback = () => unknown;
+type AbortCallback = () => unknown;
 
-type TCancelTask = (() => void) | undefined;
+type CancelTask = (() => void) | undefined;
 
-type TResolve<Result> = (result: Result) => unknown;
+type Resolve<Result> = (result: Result) => unknown;
 
-type TReject = (err: unknown) => unknown;
+type Reject = (err: unknown) => unknown;
 
-type TAllEffectReturnValue<T extends TIterableOrGenerator<unknown>[]> = {
-  [P in keyof T]: TGeneratorReturnValue<T[P]>;
+type AllEffectReturnValue<T extends IterableOrGenerator<unknown>[]> = {
+  [P in keyof T]: GeneratorReturnValue<T[P]>;
 };
 
-type IRaceObjectReturnValue<T> = {
+type RaceObjectReturnValue<T> = {
   [P in keyof T]: {
     type: P;
-    value: T extends Record<string, TIterableOrGenerator<unknown>> ? TGeneratorReturnValue<T[P]> : never;
+    value: T extends Record<string, IterableOrGenerator<unknown>> ? GeneratorReturnValue<T[P]> : never;
   };
 }[keyof T];
 
-export interface ITrigger<Value = void> {
+export interface Trigger<Value = void> {
   (value: Value): void;
-  [Symbol.iterator](): TEffectGenerator<Value>;
+  [Symbol.iterator](): EffectGenerator<Value>;
 }
 
-export default abstract class Entity<Game extends EGame, Result = unknown> {
+export default abstract class Entity<Game extends GameType, Result = unknown> {
   #children = new Set<Entity<Game>>();
   #parent: Entity<Game, any> | null = null;
-  #abortCallbacks = new Set<TAbortCallback>();
-  #successCallbacks = new Set<TResolve<Result>>();
-  #errorCallbacks = new Set<TReject>();
+  #abortCallbacks = new Set<AbortCallback>();
+  #successCallbacks = new Set<Resolve<Result>>();
+  #errorCallbacks = new Set<Reject>();
   #timestamps = new Set<Timestamp>();
   #started = false;
   #destroyed = false;
-  #result: TEffectResult<Result> | undefined;
+  #result: EffectResult<Result> | undefined;
   spawned = false;
   paused = false;
-  context: IEntityContext<Game>;
-  options: TGameOptions<Game>;
+  context: EntityContext<Game>;
+  options: GameOptions<Game>;
 
-  constructor(parentOrContext: TParentOrContext<Game>) {
+  constructor(parentOrContext: ParentOrContext<Game>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
 
     this.context = context;
     this.options = context.game.options;
   }
 
-  protected abstract lifecycle(): TGenerator<Result>;
+  protected abstract lifecycle(): EntityGenerator<Result>;
 
-  #addAbortCallback(abortCallback: TAbortCallback): () => void {
+  #addAbortCallback(abortCallback: AbortCallback): () => void {
     this.#abortCallbacks.add(abortCallback);
 
     return () => {
@@ -113,23 +113,23 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #getAllTimestamps(): (ITimestamp | null | undefined)[] {
+  #getAllTimestamps(): (TimestampModel | null | undefined)[] {
     return [...this.#timestamps, ...(this.getCurrentTimestamps?.() ?? [])];
   }
 
-  #getGeneratorResult<Result>(generatorOrIterable: TIterableOrGenerator<Result>): IGeneratorResult<Result> {
-    const generator: TGenerator<Result> = generatorOrIterable[Symbol.iterator]();
-    let cancel: TCancelTask;
+  #getGeneratorResult<Result>(generatorOrIterable: IterableOrGenerator<Result>): GeneratorResult<Result> {
+    const generator: EntityGenerator<Result> = generatorOrIterable[Symbol.iterator]();
+    let cancel: CancelTask;
 
     return {
       run: (resolve, reject) => {
-        let prevResult: TEffectResult<never> = {
+        let prevResult: EffectResult<never> = {
           type: 'success',
           value: undefined as never,
         };
 
         const runIteration = () => {
-          let iteratorResult: IteratorResult<TEffectCallback<unknown>, Result>;
+          let iteratorResult: IteratorResult<EffectCallback<unknown>, Result>;
 
           try {
             iteratorResult =
@@ -142,7 +142,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
             return resolve(iteratorResult.value);
           }
 
-          const effectResult: IGeneratorResult<unknown> = this.#handleAnyEffect(iteratorResult.value);
+          const effectResult: GeneratorResult<unknown> = this.#handleAnyEffect(iteratorResult.value);
 
           cancel = effectResult.cancel;
 
@@ -174,14 +174,14 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  #handleAnyEffect<Result>(callback: TEffectCallback<Result>): IGeneratorResult<Result> {
-    let unregisterEffect: TCancelTask;
+  #handleAnyEffect<Result>(callback: EffectCallback<Result>): GeneratorResult<Result> {
+    let unregisterEffect: CancelTask;
 
     return {
       run: (resolve, reject) => {
         let resolvedOrRejected = false;
         let async = false;
-        let syncResult: TEffectResult<Result> | undefined;
+        let syncResult: EffectResult<Result> | undefined;
 
         const cleanup = callback(
           (result) => {
@@ -244,7 +244,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *afterLifecycle(): TGenerator {
+  *afterLifecycle(): EntityGenerator {
     // empty
   }
 
@@ -256,7 +256,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     // empty
   }
 
-  *all<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TAllEffectReturnValue<T>> {
+  *all<T extends IterableOrGenerator<unknown>[]>(generators: T): EffectGenerator<AllEffectReturnValue<T>> {
     return yield (resolve, reject) => {
       const results: unknown[] = generators.map(() => undefined);
       let resultsLeft = generators.length;
@@ -270,7 +270,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           resultsLeft--;
 
           if (!resultsLeft) {
-            resolve(results as TAllEffectReturnValue<T>);
+            resolve(results as AllEffectReturnValue<T>);
           }
         }, reject);
 
@@ -285,11 +285,11 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *async<Result>(callback: TEffectCallback<Result>): TEffectGenerator<Result> {
+  *async<Result>(callback: EffectCallback<Result>): EffectGenerator<Result> {
     return yield callback;
   }
 
-  *beforeLifecycle(): TGenerator {
+  *beforeLifecycle(): EntityGenerator {
     // empty
   }
 
@@ -300,7 +300,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     });
   }
 
-  createTrigger<Value = void>(): ITrigger<Value> {
+  createTrigger<Value = void>(): Trigger<Value> {
     const callbacks = new Set<(value: Value) => unknown>();
     const trigger = ((value) => {
       const startingCallbacks = new Set(callbacks);
@@ -310,7 +310,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
           callback(value);
         }
       }
-    }) as ITrigger<Value>;
+    }) as Trigger<Value>;
 
     trigger[Symbol.iterator] = function* () {
       return yield (resolve) => {
@@ -325,7 +325,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return trigger;
   }
 
-  *delay(ms: number): TEffectGenerator<void> {
+  *delay(ms: number): EffectGenerator<void> {
     yield (resolve) => {
       const timestamp = this.createTimestamp(ms);
       const unsubscribe = timestamp.subscribe(resolve);
@@ -340,7 +340,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *eternity(): TEffectGenerator<void> {
+  *eternity(): EffectGenerator<void> {
     yield () => {
       // empty
     };
@@ -358,7 +358,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
   }
 
-  getCurrentTimestamps?(): (ITimestamp | null | undefined)[];
+  getCurrentTimestamps?(): (TimestampModel | null | undefined)[];
 
   pause(pausedAt: number): void {
     if (this.paused) {
@@ -378,18 +378,18 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     this.afterPause();
   }
 
-  race<T extends TIterableOrGenerator<unknown>[]>(generators: T): TEffectGenerator<TGeneratorReturnValue<T[keyof T]>>;
-  race<T extends Record<string, TIterableOrGenerator<unknown>>>(
+  race<T extends IterableOrGenerator<unknown>[]>(generators: T): EffectGenerator<GeneratorReturnValue<T[keyof T]>>;
+  race<T extends Record<string, IterableOrGenerator<unknown>>>(
     generators: T,
-  ): TEffectGenerator<IRaceObjectReturnValue<T>>;
-  *race<T extends TIterableOrGenerator<unknown>[] | Record<string, TIterableOrGenerator<unknown>>>(
+  ): EffectGenerator<RaceObjectReturnValue<T>>;
+  *race<T extends IterableOrGenerator<unknown>[] | Record<string, IterableOrGenerator<unknown>>>(
     generators: T,
-  ): TEffectGenerator<
-    T extends TIterableOrGenerator<unknown>[] ? TGeneratorReturnValue<T[keyof T]> : IRaceObjectReturnValue<T>
+  ): EffectGenerator<
+    T extends IterableOrGenerator<unknown>[] ? GeneratorReturnValue<T[keyof T]> : RaceObjectReturnValue<T>
   > {
     return yield (resolve, reject) => {
       const cancels = map(generators, (generator, key) => {
-        const { run, cancel } = this.#getGeneratorResult(generator as any as TGenerator<Result>);
+        const { run, cancel } = this.#getGeneratorResult(generator as any as EntityGenerator<Result>);
 
         run((result) => {
           resolve(Array.isArray(generators) ? result : ({ type: key, value: result } as any));
@@ -406,7 +406,10 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     };
   }
 
-  *repeatTask<Result = void>(ms: number, task: (this: this) => TGenerator<Result | void>): TGenerator<Result> {
+  *repeatTask<Result = void>(
+    ms: number,
+    task: (this: this) => EntityGenerator<Result | void>,
+  ): EntityGenerator<Result> {
     let msToNextTask = ms;
 
     while (true) {
@@ -423,7 +426,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     }
   }
 
-  run(resolve: TResolve<Result>, reject: TReject): () => void {
+  run(resolve: Resolve<Result>, reject: Reject): () => void {
     const unsubscribe = () => {
       this.#successCallbacks.delete(resolve);
       this.#errorCallbacks.delete(reject);
@@ -452,9 +455,9 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
     this.#started = true;
 
-    ((resolve: TResolve<Result>, reject: TReject) => {
+    ((resolve: Resolve<Result>, reject: Reject) => {
       this.#getGeneratorResult(this.beforeLifecycle()).run(() => {
-        const runAfterLifecycle = (resolve: TResolve<void>, reject: TReject) => {
+        const runAfterLifecycle = (resolve: Resolve<void>, reject: Reject) => {
           this.#getGeneratorResult(this.afterLifecycle()).run(resolve, reject);
         };
 
@@ -505,12 +508,12 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     return entity;
   }
 
-  spawnTask<Result>(action: TGenerator<Result>): TGenerator<Result> {
+  spawnTask<Result>(action: EntityGenerator<Result>): EntityGenerator<Result> {
     const { run } = this.#getGeneratorResult(action);
 
-    let taskResult: TEffectResult<Result> | undefined;
-    let taskResolve: TResolve<Result> | undefined;
-    let taskReject: TReject | undefined;
+    let taskResult: EffectResult<Result> | undefined;
+    let taskResolve: Resolve<Result> | undefined;
+    let taskReject: Reject | undefined;
     let async = false;
 
     run(
@@ -542,7 +545,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
 
     async = true;
 
-    return (function* (): TEffectGenerator<Result> {
+    return (function* (): EffectGenerator<Result> {
       return yield (resolve, reject) => {
         if (taskResult?.type === 'success') {
           resolve(taskResult.value);
@@ -556,7 +559,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     })();
   }
 
-  *[Symbol.iterator](): TEffectGenerator<Result> {
+  *[Symbol.iterator](): EffectGenerator<Result> {
     return yield (resolve, reject) => {
       return this.run(resolve, reject);
     };
@@ -584,7 +587,7 @@ export default abstract class Entity<Game extends EGame, Result = unknown> {
     this.afterUnpause();
   }
 
-  *waitForTimestamp(timestamp: Timestamp): TEffectGenerator<void> {
+  *waitForTimestamp(timestamp: Timestamp): EffectGenerator<void> {
     return yield (resolve) => {
       return timestamp.subscribe(resolve);
     };

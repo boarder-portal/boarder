@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { CSSProperties, useCallback } from 'react';
 
-import { ECardId, ELandmarkId } from 'common/types/machiKoro';
 import typedReactMemo from 'client/types/typedReactMemo';
+import { CardId, LandmarkId } from 'common/types/machiKoro';
 
 import Image from 'client/components/common/Image/Image';
 
@@ -10,7 +10,7 @@ import { HOVER_SOUND, playSound } from 'client/sounds';
 
 import styles from './Card.module.scss';
 
-interface ICardProps<ID> {
+interface CardProps<ID> {
   className?: string;
   style?: CSSProperties;
   id: ID;
@@ -19,7 +19,7 @@ interface ICardProps<ID> {
   onClick?(id: ID): void;
 }
 
-const Card = <ID extends ECardId | ELandmarkId>(props: ICardProps<ID>) => {
+const Card = <ID extends CardId | LandmarkId>(props: CardProps<ID>) => {
   const { className, style, id, inactive, zoom = 'norm', onClick } = props;
 
   const handleHover = useCallback(() => {

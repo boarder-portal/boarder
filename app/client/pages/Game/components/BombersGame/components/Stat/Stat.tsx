@@ -1,19 +1,19 @@
-import React, { FC, memo } from 'react';
-import times from 'lodash/times';
 import classNames from 'classnames';
+import times from 'lodash/times';
+import React, { FC, memo } from 'react';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Stat.module.scss';
 
-interface IStatProps {
+interface StatProps {
   label: string;
   value: number;
   maxValue: number;
   overflow: number;
 }
 
-const Stat: FC<IStatProps> = (props) => {
+const Stat: FC<StatProps> = (props) => {
   const { label, value, maxValue, overflow } = props;
 
   return (

@@ -1,21 +1,21 @@
 import 'regenerator-runtime/runtime';
-import path from 'path';
 import express from 'express';
 import expressSession from 'express-session';
 import morgan from 'morgan';
 import multer from 'multer';
+import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 
 import { PORT } from 'server/constants';
 
-import { IUser } from 'common/types';
+import { User } from 'common/types';
 
+import apiRouter from 'server/api/apiRouter';
 import app from 'server/expressApp';
 import httpServer from 'server/httpServer';
-import sessionSettings from 'server/sessionSettings';
 import render from 'server/middlewares/render';
-import apiRouter from 'server/api/apiRouter';
+import sessionSettings from 'server/sessionSettings';
 
 import webpackConfig from '../../webpack/webpack.config';
 
@@ -58,7 +58,7 @@ httpServer.listen(PORT, () => console.log(`\nListening on port ${PORT}...\n`));
 
 declare module 'express-session' {
   interface SessionData {
-    user?: IUser;
+    user?: User;
     destroy?(): void;
   }
 }

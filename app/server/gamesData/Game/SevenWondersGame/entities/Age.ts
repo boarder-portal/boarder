@@ -1,26 +1,25 @@
-import shuffle from 'lodash/shuffle';
 import chunk from 'lodash/chunk';
+import shuffle from 'lodash/shuffle';
 
 import { CARDS_BY_AGE } from 'common/constants/games/sevenWonders';
 
-import { EGame } from 'common/types/game';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { GameType } from 'common/types/game';
 import {
-  EAgePhase,
-  ECardActionType,
-  ENeighborSide,
-  EWaitingActionType,
-  IAge,
-  IAgePlayerData,
-  IExecuteActionEvent,
-  ITurnPlayerData,
-  TWaitingAction,
+  Age as AgeModel,
+  AgePhaseType,
+  AgePlayerData,
+  CardActionType,
+  ExecuteActionEvent,
+  NeighborSide,
+  TurnPlayerData,
+  WaitingAction,
+  WaitingActionType,
 } from 'common/types/sevenWonders';
-import { EFreeCardPeriod, EFreeCardSource, TEffect } from 'common/types/sevenWonders/effects';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ECardType, ICard } from 'common/types/sevenWonders/cards';
+import { Card, CardType } from 'common/types/sevenWonders/cards';
+import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/sevenWonders/effects';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import rotateObjects from 'common/utilities/rotateObjects';
 import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
 import {
@@ -31,25 +30,26 @@ import {
   isStructureInheritancePassiveEffect,
   isVictoryTokensCoinPassiveEffect,
 } from 'common/utilities/sevenWonders/isEffect';
-import rotateObjects from 'common/utilities/rotateObjects';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
+import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
-export interface IAgeOptions {
+export interface AgeOptions {
   age: number;
 }
 
-export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
+export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
   game: SevenWondersGame;
 
   age: number;
-  phase = EAgePhase.RECRUIT_LEADERS;
-  playersData: IAgePlayerData[];
+  phase = AgePhaseType.RECRUIT_LEADERS;
+  playersData: AgePlayerData[];
 
   turn: Turn | null = null;
 
-  constructor(game: SevenWondersGame, options: IAgeOptions) {
+  constructor(game: SevenWondersGame, options: AgeOptions) {
     super(game);
 
     this.game = game;
@@ -60,18 +60,18 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
     }));
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].buildEffects = this.game
         .getAllPlayerEffects(playerIndex)
         .filter(isBuildCardEffect)
-        .filter((effect) => effect.period !== EFreeCardPeriod.NOW);
+        .filter((effect) => effect.period !== FreeCardPeriodType.NOW);
     });
 
     if (this.options.includeLeaders) {
       this.turn = this.spawnEntity(
         new Turn(this.game, {
-          startingWaitingAction: EWaitingActionType.RECRUIT_LEADER,
+          startingWaitingAction: WaitingActionType.RECRUIT_LEADER,
           executeActions: this.executePlayersActions,
           getWaitingActions: this.getWaitingActions,
         }),
@@ -84,11 +84,11 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
     this.game.sendGameInfo();
 
-    this.phase = EAgePhase.BUILD_STRUCTURES;
+    this.phase = AgePhaseType.BUILD_STRUCTURES;
 
     this.playersData.forEach((playerData) => {
       playerData.buildEffects = playerData.buildEffects.filter(
-        ({ period }) => period !== EFreeCardPeriod.LEADER_RECRUITMENT,
+        ({ period }) => period !== FreeCardPeriodType.LEADER_RECRUITMENT,
       );
     });
 
@@ -98,11 +98,11 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
       ageCards = ageCards.filter(({ fromLeadersExtension }) => !fromLeadersExtension);
     }
 
-    const addedGuildCards = shuffle(ageCards.filter(({ type }) => type === ECardType.GUILD)).slice(
+    const addedGuildCards = shuffle(ageCards.filter(({ type }) => type === CardType.GUILD)).slice(
       0,
       this.playersCount + 2,
     );
-    const usedCards = ageCards.reduce<ICard[]>((cards, card) => {
+    const usedCards = ageCards.reduce<Card[]>((cards, card) => {
       return card.minPlayersCounts.reduce((cards, cardPlayersCount) => {
         if (cardPlayersCount > this.playersCount) {
           return cards;
@@ -121,7 +121,7 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
     while (!this.isLastTurn()) {
       this.turn = this.spawnEntity(
         new Turn(this.game, {
-          startingWaitingAction: EWaitingActionType.BUILD_CARD,
+          startingWaitingAction: WaitingActionType.BUILD_CARD,
           executeActions: this.executePlayersActions,
           getWaitingActions: this.getWaitingActions,
         }),
@@ -150,8 +150,8 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
       const playerShieldsCount = this.game.getPlayerShieldsCount(playerIndex);
 
       [
-        this.game.getNeighbor(playerIndex, ENeighborSide.LEFT),
-        this.game.getNeighbor(playerIndex, ENeighborSide.RIGHT),
+        this.game.getNeighbor(playerIndex, NeighborSide.LEFT),
+        this.game.getNeighbor(playerIndex, NeighborSide.RIGHT),
       ].forEach((neighbor) => {
         const neighborShieldsCount = this.game.getPlayerShieldsCount(neighbor);
 
@@ -170,13 +170,13 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
   executePlayerAction(
     playerIndex: number,
-    executeActionEvent: IExecuteActionEvent,
-    waitingForAction: TWaitingAction,
+    executeActionEvent: ExecuteActionEvent,
+    waitingForAction: WaitingAction,
     receivedCoins: number[],
-  ): TEffect[] {
+  ): Effect[] {
     const { cardIndex, action, payments } = executeActionEvent;
 
-    if (action.type === ECardActionType.PICK_LEADER) {
+    if (action.type === CardActionType.PICK_LEADER) {
       return [];
     }
 
@@ -194,16 +194,16 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
     });
     const card = playerHandCards[cardIndex];
     const waitingBuildEffect = getWaitingBuildEffect(waitingForAction, buildEffects);
-    const newEffects: TEffect[] = [];
+    const newEffects: Effect[] = [];
 
-    if (action.type === ECardActionType.BUILD_STRUCTURE) {
+    if (action.type === CardActionType.BUILD_STRUCTURE) {
       this.game.buildCard(playerIndex, card);
 
       if (!action.freeBuildType && !waitingBuildEffect?.isFree) {
         this.game.changePlayerCoins(playerIndex, -Math.max(0, (card.price?.coins ?? 0) - (action.discount ?? 0)));
       }
 
-      if (action.freeBuildType?.type === EBuildType.FREE_WITH_EFFECT) {
+      if (action.freeBuildType?.type === BuildKind.FREE_WITH_EFFECT) {
         this.usePlayerBuildEffect(playerIndex, action.freeBuildType.effectIndex);
       }
 
@@ -211,13 +211,13 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
       const effects = this.game.getAllPlayerEffects(playerIndex);
 
-      if (card.type === ECardType.COMMERCIAL) {
+      if (card.type === CardType.COMMERCIAL) {
         effects.filter(isCommercialCardsPassiveEffect).forEach((effect) => {
           this.game.changePlayerCoins(playerIndex, effect.count);
         });
       }
 
-      if (action.freeBuildType?.type === EBuildType.FREE_BY_BUILDING) {
+      if (action.freeBuildType?.type === BuildKind.FREE_BY_BUILDING) {
         effects.filter(isStructureInheritancePassiveEffect).forEach((effect) => {
           this.game.changePlayerCoins(playerIndex, effect.count);
         });
@@ -228,34 +228,34 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
         newEffects.push(...action.copiedCard.effects);
       }
-    } else if (action.type === ECardActionType.BUILD_WONDER_STAGE) {
+    } else if (action.type === CardActionType.BUILD_WONDER_STAGE) {
       const city = this.game.getPlayerCity(playerIndex);
       const wonderLevel = city.wonders[action.stageIndex];
 
       this.game.buildWonderStage(playerIndex, {
         index: action.stageIndex,
         card,
-        cardType: card.type === ECardType.LEADER ? 'leader' : this.age,
+        cardType: card.type === CardType.LEADER ? 'leader' : this.age,
       });
       this.game.changePlayerCoins(playerIndex, -(wonderLevel.price.coins ?? 0));
 
       newEffects.push(...wonderLevel.effects);
-    } else if (action.type === ECardActionType.DISCARD) {
+    } else if (action.type === CardActionType.DISCARD) {
       this.game.changePlayerCoins(playerIndex, 3);
 
-      if (card.type !== ECardType.LEADER) {
+      if (card.type !== CardType.LEADER) {
         this.game.discardCards([card]);
       }
     }
 
     playerHandCards.splice(cardIndex, 1);
 
-    if (waitingForAction.type === EWaitingActionType.EFFECT_BUILD_CARD) {
+    if (waitingForAction.type === WaitingActionType.EFFECT_BUILD_CARD) {
       this.usePlayerBuildEffect(playerIndex, waitingForAction.buildEffectIndex);
     }
 
     if (payments) {
-      (Object.entries(payments) as [ENeighborSide, number][]).forEach(([neighborSide, payment]) => {
+      (Object.entries(payments) as [NeighborSide, number][]).forEach(([neighborSide, payment]) => {
         const neighbor = this.game.getNeighbor(playerIndex, neighborSide);
 
         receivedCoins[neighbor] += payment;
@@ -275,11 +275,11 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
     return newEffects;
   }
 
-  executePlayersActions = (playersData: ITurnPlayerData[]): number[] => {
+  executePlayersActions = (playersData: TurnPlayerData[]): number[] => {
     const receivedCoins = this.getPlayersData(() => 0);
     const newPlayersEffects: {
       playerIndex: number;
-      effects: TEffect[];
+      effects: Effect[];
     }[] = [];
 
     playersData.forEach(({ chosenActionEvent, waitingForAction }, index) => {
@@ -300,20 +300,20 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
     return receivedCoins;
   };
 
-  getWaitingActions = (): (TWaitingAction | null)[] => {
+  getWaitingActions = (): (WaitingAction | null)[] => {
     const isLastTurn = this.isLastTurn();
-    const waitingActions: (TWaitingAction | null)[] = this.getPlayersData(() => null);
+    const waitingActions: (WaitingAction | null)[] = this.getPlayersData(() => null);
     let someoneBuildsLastCard = false;
 
     if (isLastTurn) {
       this.playersData.forEach(({ buildEffects }, index) => {
         const buildLastCardEffectIndex = buildEffects.findIndex(
-          (effect) => effect.period === EFreeCardPeriod.LAST_AGE_TURN,
+          (effect) => effect.period === FreeCardPeriodType.LAST_AGE_TURN,
         );
 
         if (buildLastCardEffectIndex !== -1) {
           waitingActions[index] = {
-            type: EWaitingActionType.EFFECT_BUILD_CARD,
+            type: WaitingActionType.EFFECT_BUILD_CARD,
             buildEffectIndex: buildLastCardEffectIndex,
           };
 
@@ -324,12 +324,12 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
     this.playersData.forEach(({ buildEffects }, index) => {
       const buildNowEffectIndex = buildEffects.findIndex(
-        (effect) => effect.period === EFreeCardPeriod.NOW && effect.source !== EFreeCardSource.DISCARD,
+        (effect) => effect.period === FreeCardPeriodType.NOW && effect.source !== FreeCardSourceType.DISCARD,
       );
 
       if (buildNowEffectIndex !== -1) {
         waitingActions[index] = {
-          type: EWaitingActionType.EFFECT_BUILD_CARD,
+          type: WaitingActionType.EFFECT_BUILD_CARD,
           buildEffectIndex: buildNowEffectIndex,
         };
       }
@@ -356,7 +356,7 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
       this.playersData.forEach(({ buildEffects }, index) => {
         const buildFromDiscardEffectIndex = buildEffects.findIndex(
-          (effect) => effect.period === EFreeCardPeriod.NOW && effect.source === EFreeCardSource.DISCARD,
+          (effect) => effect.period === FreeCardPeriodType.NOW && effect.source === FreeCardSourceType.DISCARD,
         );
 
         if (buildFromDiscardEffectIndex !== -1) {
@@ -374,7 +374,7 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
 
       if (highestDiscardTarget) {
         waitingActions[highestDiscardTarget.playerIndex] = {
-          type: EWaitingActionType.EFFECT_BUILD_CARD,
+          type: WaitingActionType.EFFECT_BUILD_CARD,
           buildEffectIndex: highestDiscardTarget.effectIndex,
         };
       }
@@ -384,10 +384,10 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
   };
 
   isLastTurn(): boolean {
-    return this.phase === EAgePhase.BUILD_STRUCTURES && this.playersData.some(({ hand }) => hand.length <= 1);
+    return this.phase === AgePhaseType.BUILD_STRUCTURES && this.playersData.some(({ hand }) => hand.length <= 1);
   }
 
-  toJSON(): IAge {
+  toJSON(): AgeModel {
     return {
       age: this.age,
       phase: this.phase,
@@ -397,7 +397,7 @@ export default class Age extends ServerEntity<EGame.SEVEN_WONDERS> {
   usePlayerBuildEffect(playerIndex: number, effectIndex: number): void {
     const buildEffect = this.playersData[playerIndex].buildEffects[effectIndex];
 
-    if (buildEffect.period !== EFreeCardPeriod.ETERNITY) {
+    if (buildEffect.period !== FreeCardPeriodType.ETERNITY) {
       this.playersData[playerIndex].buildEffects.splice(effectIndex, 1);
     }
   }

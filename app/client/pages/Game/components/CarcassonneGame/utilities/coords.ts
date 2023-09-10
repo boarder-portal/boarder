@@ -1,6 +1,6 @@
-import { ICoords } from 'common/types';
+import { Coords } from 'common/types';
 
-export function getRotatedCoords(coords: ICoords, rotation: number): ICoords {
+export function getRotatedCoords(coords: Coords, rotation: number): Coords {
   const { x, y } = coords;
 
   if (rotation === 0 || rotation === 2) {

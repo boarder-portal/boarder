@@ -1,46 +1,46 @@
+import classNames from 'classnames';
 import React, { CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
-import classNames from 'classnames';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 import {
-  EGameClientEvent,
-  EHandPhase,
-  EWind,
-  IDeclareInfo,
-  IHandResult,
-  IPlayer,
-  TDeclareDecision,
-  TTile,
+  DeclareDecision,
+  DeclareInfo,
+  GameClientEventType,
+  HandPhase,
+  HandResult,
+  Player,
+  Tile,
+  WindSide,
 } from 'common/types/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
+import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 import { getWindHumanName } from 'common/utilities/mahjong/stringify';
 import { getNewCurrentTileIndex, isEqualTiles } from 'common/utilities/mahjong/tiles';
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
 
-import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
-import usePlayer from 'client/hooks/usePlayer';
-import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
-import { useBoolean } from 'client/hooks/useBoolean';
-import { usePrevious } from 'client/hooks/usePrevious';
+import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import usePlayer from 'client/hooks/usePlayer';
+import usePrevious from 'client/hooks/usePrevious';
+import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
 
-import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
-import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
-import ControlPanel from 'client/pages/Game/components/MahjongGame/components/ControlPanel/ControlPanel';
 import Flex from 'client/components/common/Flex/Flex';
-import FansModal from 'client/pages/Game/components/MahjongGame/components/FansModal/FansModal';
-import ResultsModal from 'client/pages/Game/components/MahjongGame/components/ResultsModal/ResultsModal';
 import CalculatorModal from 'client/pages/Game/components/MahjongGame/components/CalculatorModal/CalculatorModal';
+import ControlPanel from 'client/pages/Game/components/MahjongGame/components/ControlPanel/ControlPanel';
+import Discard from 'client/pages/Game/components/MahjongGame/components/Discard/Discard';
+import FansModal from 'client/pages/Game/components/MahjongGame/components/FansModal/FansModal';
+import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
+import ResultsModal from 'client/pages/Game/components/MahjongGame/components/ResultsModal/ResultsModal';
 
-import { IGameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/pages/Game/Game';
 import { NEW_TURN, playSound } from 'client/sounds';
 
 import styles from './MahjongGame.module.scss';
 
-enum ELayoutType {
+enum LayoutType {
   HORIZONTAL_RIGHT = 'horizontal-right',
   HORIZONTAL_BOTTOM = 'horizontal-bottom',
   VERTICAL_RIGHT = 'vertical-right',
@@ -53,10 +53,10 @@ const GRID_GAP = 12;
 const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
-const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
+const MahjongGame: React.FC<GameProps<GameType.MAHJONG>> = (props) => {
   const { io, gameOptions, gameInfo, changeSetting } = props;
 
-  const [layoutType, setLayoutType] = useState<ELayoutType>(ELayoutType.HORIZONTAL_RIGHT);
+  const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
   const { value: fansModalOpen, setTrue: openFansModal, setFalse: closeFansModal } = useBoolean(false);
   const { value: resultsModalOpen, setTrue: openResultsModal, setFalse: closeResultsModal } = useBoolean(false);
@@ -65,20 +65,20 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     setTrue: openCalculatorModal,
     setFalse: closeCalculatorModal,
   } = useBoolean(false);
-  const [openedResult, setOpenedResult] = useState<IHandResult | null>(null);
-  const [players, setPlayers] = useState<IPlayer[]>([]);
-  const [handPhase, setHandPhase] = useState<EHandPhase | null>(null);
-  const [resultsByHand, setResultsByHand] = useState<IHandResult[]>([]);
-  const [roundWind, setRoundWind] = useState<EWind | null>(null);
+  const [openedResult, setOpenedResult] = useState<HandResult | null>(null);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [handPhase, setHandPhase] = useState<HandPhase | null>(null);
+  const [resultsByHand, setResultsByHand] = useState<HandResult[]>([]);
+  const [roundWind, setRoundWind] = useState<WindSide | null>(null);
   const [roundHandIndex, setRoundHandIndex] = useState(-1);
   const [isLastHandInGame, setIsLastHandInGame] = useState(false);
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
   const [wallTilesLeft, setWallTilesLeft] = useState<number | null>(null);
-  const [currentTile, setCurrentTile] = useState<TTile | null>(null);
+  const [currentTile, setCurrentTile] = useState<Tile | null>(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(-1);
-  const [declareInfo, setDeclareInfo] = useState<IDeclareInfo | null>(null);
+  const [declareInfo, setDeclareInfo] = useState<DeclareInfo | null>(null);
   const [isReplacementTile, setIsReplacementTile] = useState(false);
-  const [highlightedTile, setHighlightedTile] = useState<TTile | null>(null);
+  const [highlightedTile, setHighlightedTile] = useState<Tile | null>(null);
   const [draggingTileIndex, setDraggingTileIndex] = useState(-1);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -96,7 +96,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
   const isAnyModalOpen = fansModalOpen || resultsModalOpen || calculatorModalOpen;
   const isAway = document.hidden || isAnyModalOpen;
 
-  const purePlayerHand = useMemo<TTile[]>(() => {
+  const purePlayerHand = useMemo<Tile[]>(() => {
     if (!player?.data.hand) {
       return [];
     }
@@ -131,7 +131,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     const availableTilesWidth = fieldLayout === 'HORIZONTAL' ? fieldHeight : fieldWidth;
 
     batchedUpdates(() => {
-      setLayoutType(ELayoutType[`${fieldLayout}_${panelLayout}`]);
+      setLayoutType(LayoutType[`${fieldLayout}_${panelLayout}`]);
       setTileWidth(availableTilesWidth / 16);
     });
   });
@@ -164,18 +164,18 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
       setCurrentTileIndex(getNewCurrentTileIndex(currentTileIndex, from, to));
     });
 
-    io.emit(EGameClientEvent.CHANGE_TILE_INDEX, {
+    io.emit(GameClientEventType.CHANGE_TILE_INDEX, {
       from,
       to,
     });
   });
 
-  const declareDecision = useImmutableCallback((decision: TDeclareDecision | null) => {
-    io.emit(EGameClientEvent.DECLARE, decision);
+  const declareDecision = useImmutableCallback((decision: DeclareDecision | null) => {
+    io.emit(GameClientEventType.DECLARE, decision);
   });
 
   const startNewHand = useImmutableCallback((ready: boolean) => {
-    io.emit(EGameClientEvent.READY_FOR_NEW_HAND, ready);
+    io.emit(GameClientEventType.READY_FOR_NEW_HAND, ready);
   });
 
   const discardTile = useImmutableCallback((tileIndex: number) => {
@@ -205,7 +205,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
       ...players.slice(player.index + 1),
     ]);
 
-    io.emit(EGameClientEvent.DISCARD_TILE, tileIndex);
+    io.emit(GameClientEventType.DISCARD_TILE, tileIndex);
   });
 
   const handleCloseResultsModal = useImmutableCallback(() => {
@@ -215,7 +215,7 @@ const MahjongGame: React.FC<IGameProps<EGame.MAHJONG>> = (props) => {
     });
   });
 
-  const handleTileHover = useImmutableCallback((tile: TTile) => {
+  const handleTileHover = useImmutableCallback((tile: Tile) => {
     setHighlightedTile((highlightedTile) => (isEqualTiles(tile, highlightedTile) ? highlightedTile : tile));
   });
 

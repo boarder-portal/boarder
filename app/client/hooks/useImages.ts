@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
 import mapValues from 'lodash/mapValues';
+import { useEffect, useRef, useState } from 'react';
 
-export type TImagesDictionary<Image extends string> = Record<Image, HTMLImageElement>;
+export type ImagesDictionary<Image extends string> = Record<Image, HTMLImageElement>;
 
-export default function useImages<Image extends string>(
-  images: Record<Image, string>,
-): TImagesDictionary<Image> | null {
+export default function useImages<Image extends string>(images: Record<Image, string>): ImagesDictionary<Image> | null {
   const [loaded, setLoaded] = useState<boolean>(false);
 
   const imagesRef = useRef(images);
-  const htmlImagesRef = useRef<TImagesDictionary<Image> | null>(null);
+  const htmlImagesRef = useRef<ImagesDictionary<Image> | null>(null);
 
   useEffect(() => {
     const promises: Promise<unknown>[] = [];

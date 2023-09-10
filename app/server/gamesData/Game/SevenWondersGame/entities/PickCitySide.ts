@@ -1,29 +1,29 @@
 import shuffle from 'lodash/shuffle';
 
-import { EGame } from 'common/types/game';
-import { ECity, EGameClientEvent, IPickCitySidePlayerData } from 'common/types/sevenWonders';
+import { GameType } from 'common/types/game';
+import { CityName, GameClientEventType, PickCitySidePlayerData } from 'common/types/sevenWonders';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
-const ALL_CITIES = Object.values(ECity);
+const ALL_CITIES = Object.values(CityName);
 
-export interface IPickedCitySideInfo {
-  city: ECity;
+export interface PickedCitySideInfo {
+  city: CityName;
   pickedSide: number;
 }
 
-export default class PickCitySide extends ServerEntity<EGame.SEVEN_WONDERS, IPickedCitySideInfo[]> {
-  static sidePicked(playerData: IPickCitySidePlayerData): playerData is IPickedCitySideInfo {
+export default class PickCitySide extends ServerEntity<GameType.SEVEN_WONDERS, PickedCitySideInfo[]> {
+  static sidePicked(playerData: PickCitySidePlayerData): playerData is PickedCitySideInfo {
     return playerData.pickedSide !== null;
   }
 
   game: SevenWondersGame;
 
-  playersData: IPickCitySidePlayerData[] = this.getPlayersData(() => ({
-    city: ECity.RHODOS,
+  playersData: PickCitySidePlayerData[] = this.getPlayersData(() => ({
+    city: CityName.RHODOS,
     pickedSide: null,
   }));
 
@@ -33,11 +33,11 @@ export default class PickCitySide extends ServerEntity<EGame.SEVEN_WONDERS, IPic
     this.game = game;
   }
 
-  *lifecycle(): TGenerator<IPickedCitySideInfo[]> {
+  *lifecycle(): EntityGenerator<PickedCitySideInfo[]> {
     let cities = ALL_CITIES;
 
     if (!this.options.includeLeaders) {
-      cities = cities.filter((city) => city !== ECity.ROMA);
+      cities = cities.filter((city) => city !== CityName.ROMA);
     }
 
     const shuffledCities = shuffle(cities);
@@ -47,7 +47,7 @@ export default class PickCitySide extends ServerEntity<EGame.SEVEN_WONDERS, IPic
     });
 
     while (!this.playersData.every(PickCitySide.sidePicked)) {
-      const { data: pickedSide, playerIndex } = yield* this.waitForSocketEvent(EGameClientEvent.PICK_CITY_SIDE);
+      const { data: pickedSide, playerIndex } = yield* this.waitForSocketEvent(GameClientEventType.PICK_CITY_SIDE);
 
       this.playersData[playerIndex].pickedSide = pickedSide;
 

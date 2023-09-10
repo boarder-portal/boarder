@@ -1,18 +1,18 @@
-import { FC, useCallback, useMemo, MouseEvent, useRef } from 'react';
+import classNames from 'classnames';
+import { FC, MouseEvent, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import classNames from 'classnames/bind';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
 import styles from './Modal.module.scss';
 
-interface IModalProps {
+interface ModalProps {
   containerClassName?: string;
   open: boolean;
   onClose?(): void;
 }
 
-const Modal: FC<IModalProps> = (props) => {
+const Modal: FC<ModalProps> = (props) => {
   const { containerClassName, open, children, onClose } = props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);

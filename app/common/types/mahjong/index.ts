@@ -1,38 +1,38 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   DISCARD_TILE = 'DISCARD_TILE',
   DECLARE = 'DECLARE',
   CHANGE_TILE_INDEX = 'CHANGE_TILE_INDEX',
   READY_FOR_NEW_HAND = 'READY_FOR_NEW_HAND',
 }
 
-export enum EGameServerEvent {}
+export enum GameServerEventType {}
 
-export interface IGameOptions extends ICommonGameOptions {
-  handsCount: EHandsCount;
+export interface GameOptions extends BaseGameOptions {
+  handsCount: HandsCount;
 }
 
-export interface IGamePlayerData {}
+export interface GamePlayerData {}
 
-export interface IPlayerData extends IGamePlayerData {
-  round: IRoundPlayerData | null;
-  hand: IHandPlayerData | null;
-  turn: ITurnPlayerData | null;
+export interface PlayerData extends GamePlayerData {
+  round: RoundPlayerData | null;
+  hand: HandPlayerData | null;
+  turn: TurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.MAHJONG> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.MAHJONG> {
+  data: PlayerData;
 }
 
-export interface IPlayerSettings extends ICommonPlayerSettings {
+export interface PlayerSettings extends BasePlayerSettings {
   autoPass: boolean;
   autoReplaceFlowers: boolean;
   sortHand: boolean;
@@ -42,150 +42,150 @@ export interface IPlayerSettings extends ICommonPlayerSettings {
   highlightSameTile: boolean;
 }
 
-export interface IGame {
-  players: IPlayer[];
-  resultsByHand: IHandResult[];
-  round: IRound | null;
+export interface Game {
+  players: Player[];
+  resultsByHand: HandResult[];
+  round: Round | null;
 }
 
-export interface IHandResult {
-  mahjong: IHandMahjong | null;
+export interface HandResult {
+  mahjong: HandMahjong | null;
   winnerIndex: number;
   scores: number[];
 }
 
-export interface IRound {
-  wind: EWind | null;
+export interface Round {
+  wind: WindSide | null;
   handIndex: number;
-  hand: IHand | null;
+  hand: Hand | null;
 }
 
-export interface IRoundPlayerData {
-  wind: EWind;
+export interface RoundPlayerData {
+  wind: WindSide;
 }
 
-export interface IHand {
+export interface Hand {
   activePlayerIndex: number;
   tilesLeft: number;
   isLastInGame: boolean;
-  phase: EHandPhase;
-  turn: ITurn | null;
+  phase: HandPhase;
+  turn: Turn | null;
 }
 
-export enum EHandPhase {
+export enum HandPhase {
   REPLACE_FLOWERS = 'REPLACE_FLOWERS',
   PLAY = 'PLAY',
 }
 
-export interface IGameDeclaredMeldedSet {
-  set: TMeldedSet;
+export interface GameDeclaredMeldedSet {
+  set: MeldedSet;
   stolenTileIndex: number;
   stolenFrom: number;
 }
 
-export interface IGameDeclaredConcealedSet {
-  set: TConcealedSet<IKongSet>;
+export interface GameDeclaredConcealedSet {
+  set: ConcealedSet<KongSet>;
   stolenTileIndex: number;
   stolenFrom: null;
 }
 
-export type TGameDeclaredSet = IGameDeclaredMeldedSet | IGameDeclaredConcealedSet;
+export type GameDeclaredSet = GameDeclaredMeldedSet | GameDeclaredConcealedSet;
 
-export interface IHandPlayerData {
-  hand: TTile[];
-  declaredSets: TGameDeclaredSet[];
-  flowers: IFlowerTile[];
-  discard: TTile[];
+export interface HandPlayerData {
+  hand: Tile[];
+  declaredSets: GameDeclaredSet[];
+  flowers: FlowerTile[];
+  discard: Tile[];
   readyForNewHand: boolean;
 }
 
-export interface ITurn {
-  currentTile: TTile | null;
+export interface Turn {
+  currentTile: Tile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
-  declareInfo: IDeclareInfo | null;
+  declareInfo: DeclareInfo | null;
 }
 
-export interface IDeclareInfo {
-  tile: TPlayableTile;
+export interface DeclareInfo {
+  tile: PlayableTile;
   isRobbingKong: boolean;
 }
 
-export type TDeclareDecision =
+export type DeclareDecision =
   | {
       type: 'set';
-      set: TDeclaredSet;
+      set: DeclaredSet;
     }
   | {
       type: 'flower';
-      flower: IFlowerTile;
+      flower: FlowerTile;
     }
   | 'mahjong'
   | 'pass'
   | null;
 
-export interface ITurnPlayerData {
-  declareDecision: TDeclareDecision;
+export interface TurnPlayerData {
+  declareDecision: DeclareDecision;
 }
 
-export enum EHandsCount {
+export enum HandsCount {
   ONE = 'ONE',
   FOUR = 'FOUR',
   SIXTEEN = 'SIXTEEN',
 }
 
-export enum ETileType {
+export enum TileType {
   SUIT = 'SUIT',
   DRAGON = 'DRAGON',
   WIND = 'WIND',
   FLOWER = 'FLOWER',
 }
 
-export enum ESuit {
+export enum Suit {
   BAMBOOS = 'BAMBOOS',
   CHARACTERS = 'CHARACTERS',
   DOTS = 'DOTS',
 }
 
-export interface ISuitedTile {
-  type: ETileType.SUIT;
-  suit: ESuit;
+export interface SuitedTile {
+  type: TileType.SUIT;
+  suit: Suit;
   value: number;
 }
 
-export enum EDragon {
+export enum DragonColor {
   RED = 'RED',
   GREEN = 'GREEN',
   WHITE = 'WHITE',
 }
 
-export interface IDragonTile {
-  type: ETileType.DRAGON;
-  color: EDragon;
+export interface DragonTile {
+  type: TileType.DRAGON;
+  color: DragonColor;
 }
 
-export enum EWind {
+export enum WindSide {
   EAST = 'EAST',
   SOUTH = 'SOUTH',
   WEST = 'WEST',
   NORTH = 'NORTH',
 }
 
-export interface IWindTile {
-  type: ETileType.WIND;
-  side: EWind;
+export interface WindTile {
+  type: TileType.WIND;
+  side: WindSide;
 }
 
-export interface IFlowerTile {
-  type: ETileType.FLOWER;
+export interface FlowerTile {
+  type: TileType.FLOWER;
   index: number;
 }
 
-export type TTile = ISuitedTile | IDragonTile | IWindTile | IFlowerTile;
+export type Tile = SuitedTile | DragonTile | WindTile | FlowerTile;
 
-export type TPlayableTile = ISuitedTile | IDragonTile | IWindTile;
+export type PlayableTile = SuitedTile | DragonTile | WindTile;
 
-export enum EFan {
+export enum FanKind {
   // 88 points
   BIG_FOUR_WINDS = 'BIG_FOUR_WINDS',
   BIG_THREE_DRAGONS = 'BIG_THREE_DRAGONS',
@@ -292,13 +292,13 @@ export enum EFan {
   FLOWER_TILES = 'FLOWER_TILES',
 }
 
-export enum EFanType {
+export enum FanType {
   SETS = 'SETS',
   HAND = 'HAND',
   SPECIAL = 'SPECIAL',
 }
 
-export enum ESet {
+export enum SetType {
   PAIR = 'PAIR',
   PUNG = 'PUNG',
   KONG = 'KONG',
@@ -306,103 +306,106 @@ export enum ESet {
   KNITTED_CHOW = 'KNITTED_CHOW',
 }
 
-export enum ESetConcealedType {
+export enum SetConcealedType {
   CONCEALED = 'CONCEALED',
   MELDED = 'MELDED',
   WINNING_MELDED = 'WINNING_MELDED',
 }
 
-export interface IBaseSet {
-  tiles: TPlayableTile[];
-  concealedType: ESetConcealedType;
+export interface BaseSet {
+  tiles: PlayableTile[];
+  concealedType: SetConcealedType;
 }
 
-export interface IPairSet extends IBaseSet {
-  type: ESet.PAIR;
+export interface PairSet extends BaseSet {
+  type: SetType.PAIR;
 }
 
-export interface IPungSet extends IBaseSet {
-  type: ESet.PUNG;
+export interface PungSet extends BaseSet {
+  type: SetType.PUNG;
 }
 
-export interface IKongSet extends IBaseSet {
-  type: ESet.KONG;
+export interface KongSet extends BaseSet {
+  type: SetType.KONG;
 }
 
-export interface IChowSet extends IBaseSet {
-  type: ESet.CHOW;
-  tiles: ISuitedTile[];
+export interface ChowSet extends BaseSet {
+  type: SetType.CHOW;
+  tiles: SuitedTile[];
 }
 
-export interface IKnittedChowSet extends IBaseSet {
-  type: ESet.KNITTED_CHOW;
-  tiles: ISuitedTile[];
+export interface KnittedChowSet extends BaseSet {
+  type: SetType.KNITTED_CHOW;
+  tiles: SuitedTile[];
 }
 
-export type TSet = IPairSet | IPungSet | IKongSet | IChowSet | IKnittedChowSet;
+export type Set = PairSet | PungSet | KongSet | ChowSet | KnittedChowSet;
 
-export type TConcealedSet<Set extends TSet = TSet> = Set & {
-  concealedType: ESetConcealedType.CONCEALED;
+export type ConcealedSet<S extends Set = Set> = S & {
+  concealedType: SetConcealedType.CONCEALED;
 };
 
-export type TMeldedSet<Set extends TSet = TSet> = Set & {
-  concealedType: ESetConcealedType.MELDED | ESetConcealedType.WINNING_MELDED;
+export type MeldedSet<S extends Set = Set> = S & {
+  concealedType: SetConcealedType.MELDED | SetConcealedType.WINNING_MELDED;
 };
 
-export type TDeclaredSet = TConcealedSet<IKongSet> | TMeldedSet;
+export type DeclaredSet = ConcealedSet<KongSet> | MeldedSet;
 
-export interface IHandFan {
-  type: EFanType.HAND;
-  fan: EFan;
+export interface HandFan {
+  type: FanType.HAND;
+  fan: FanKind;
 }
 
-export interface ISetsFan {
-  type: EFanType.SETS;
-  fan: EFan;
-  sets: TSet[];
+export interface SetsFan {
+  type: FanType.SETS;
+  fan: FanKind;
+  sets: Set[];
 }
 
-export interface ISpecialFan {
-  type: EFanType.SPECIAL;
-  fan: EFan;
-  tile: TTile | null;
+export interface SpecialFan {
+  type: FanType.SPECIAL;
+  fan: FanKind;
+  tile: Tile | null;
 }
 
-export type TFan = IHandFan | ISetsFan | ISpecialFan;
+export type Fan = HandFan | SetsFan | SpecialFan;
 
-export interface IHandMahjong {
-  hand: TPlayableTile[];
-  declaredSets: TDeclaredSet[];
-  winningTile: TPlayableTile;
-  fans: TFan[];
-  sets: TSet[] | null;
-  waits: TPlayableTile[];
+export interface HandMahjong {
+  hand: PlayableTile[];
+  declaredSets: DeclaredSet[];
+  winningTile: PlayableTile;
+  fans: Fan[];
+  sets: Set[] | null;
+  waits: PlayableTile[];
   score: number;
 }
 
-export interface IChangeTileIndexEvent {
+export interface ChangeTileIndexEvent {
   from: number;
   to: number;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.MAHJONG> {
-  [EGameClientEvent.DISCARD_TILE]: number;
-  [EGameClientEvent.DECLARE]: TDeclareDecision;
-  [EGameClientEvent.CHANGE_TILE_INDEX]: IChangeTileIndexEvent;
-  [EGameClientEvent.READY_FOR_NEW_HAND]: boolean;
+export interface ClientEventMap extends CommonClientEventMap<GameType.MAHJONG> {
+  [GameClientEventType.DISCARD_TILE]: number;
+  [GameClientEventType.DECLARE]: DeclareDecision;
+  [GameClientEventType.CHANGE_TILE_INDEX]: ChangeTileIndexEvent;
+  [GameClientEventType.READY_FOR_NEW_HAND]: boolean;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.MAHJONG> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.MAHJONG> {}
+
+type MahjongGameOptions = GameOptions;
+type MahjongPlayerSettings = PlayerSettings;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.MAHJONG]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.MAHJONG]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: MahjongGameOptions;
+      info: Game;
       result: void;
-      playerSettings: IPlayerSettings;
+      playerSettings: MahjongPlayerSettings;
     };
   }
 }

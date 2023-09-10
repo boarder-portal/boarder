@@ -3,24 +3,25 @@ import sortBy from 'lodash/sortBy';
 import { KNITTED_SEQUENCES } from 'common/constants/games/mahjong/tiles';
 
 import {
-  ESet,
-  ESetConcealedType,
-  IChowSet,
-  IGameDeclaredConcealedSet,
-  IGameDeclaredMeldedSet,
-  IKnittedChowSet,
-  IKongSet,
-  IPairSet,
-  IPungSet,
-  ISuitedTile,
-  TConcealedSet,
-  TGameDeclaredSet,
-  TMeldedSet,
-  TPlayableTile,
-  TSet,
-  TTile,
+  ChowSet,
+  ConcealedSet,
+  GameDeclaredConcealedSet,
+  GameDeclaredMeldedSet,
+  GameDeclaredSet,
+  KnittedChowSet,
+  KongSet,
+  MeldedSet,
+  PairSet,
+  PlayableTile,
+  PungSet,
+  Set,
+  SetConcealedType,
+  SetType,
+  SuitedTile,
+  Tile,
 } from 'common/types/mahjong';
 
+import { getCombinations, getSetsCombinations } from 'common/utilities/combinations';
 import {
   getTileCount,
   getTileSortValue,
@@ -29,70 +30,68 @@ import {
   isFlush,
   isPlayable,
   isStraight,
-  isSuited,
   isTileSubset,
-  kong,
   tilesContainTile,
 } from 'common/utilities/mahjong/tiles';
-import { getCombinations, getSetsCombinations } from 'common/utilities/combinations';
+import { isSuited, kong } from 'common/utilities/mahjong/tilesBase';
 
-const SET_SORT_VALUES: Record<ESet, number> = {
-  [ESet.KNITTED_CHOW]: 0,
-  [ESet.KONG]: 1000,
-  [ESet.PUNG]: 2000,
-  [ESet.CHOW]: 3000,
-  [ESet.PAIR]: 4000,
+const SET_SORT_VALUES: Record<SetType, number> = {
+  [SetType.KNITTED_CHOW]: 0,
+  [SetType.KONG]: 1000,
+  [SetType.PUNG]: 2000,
+  [SetType.CHOW]: 3000,
+  [SetType.PAIR]: 4000,
 };
 
-export function isPair(set: TSet): set is IPairSet {
-  return set.type === ESet.PAIR;
+export function isPair(set: Set): set is PairSet {
+  return set.type === SetType.PAIR;
 }
 
-export function isPung(set: TSet): set is IPungSet {
-  return set.type === ESet.PUNG || set.type === ESet.KONG;
+export function isPung(set: Set): set is PungSet {
+  return set.type === SetType.PUNG || set.type === SetType.KONG;
 }
 
-export function isKong(set: TSet): set is IKongSet {
-  return set.type === ESet.KONG;
+export function isKong(set: Set): set is KongSet {
+  return set.type === SetType.KONG;
 }
 
-export function isChow(set: TSet): set is IChowSet {
-  return set.type === ESet.CHOW;
+export function isChow(set: Set): set is ChowSet {
+  return set.type === SetType.CHOW;
 }
 
-export function isKnittedChow(set: TSet): set is IKnittedChowSet {
-  return set.type === ESet.KNITTED_CHOW;
+export function isKnittedChow(set: Set): set is KnittedChowSet {
+  return set.type === SetType.KNITTED_CHOW;
 }
 
-export function isConcealed(set: TSet): set is TConcealedSet {
-  return set.concealedType === ESetConcealedType.CONCEALED;
+export function isConcealed(set: Set): set is ConcealedSet {
+  return set.concealedType === SetConcealedType.CONCEALED;
 }
 
-export function isMelded(set: TSet): set is TMeldedSet {
+export function isMelded(set: Set): set is MeldedSet {
   return !isConcealed(set);
 }
 
-export function isDeclaredConcealedSet(set: TGameDeclaredSet): set is IGameDeclaredConcealedSet {
+export function isDeclaredConcealedSet(set: GameDeclaredSet): set is GameDeclaredConcealedSet {
   return isConcealed(set.set);
 }
 
-export function isDeclaredMeldedSet(set: TGameDeclaredSet): set is IGameDeclaredMeldedSet {
+export function isDeclaredMeldedSet(set: GameDeclaredSet): set is GameDeclaredMeldedSet {
   return isMelded(set.set);
 }
 
-export function arePungs(sets: TSet[]): sets is IPungSet[] {
+export function arePungs(sets: Set[]): sets is PungSet[] {
   return sets.every(isPung);
 }
 
-export function areKongs(sets: TSet[]): sets is IKongSet[] {
+export function areKongs(sets: Set[]): sets is KongSet[] {
   return sets.every(isKong);
 }
 
-export function areChows(sets: TSet[]): sets is IChowSet[] {
+export function areChows(sets: Set[]): sets is ChowSet[] {
   return sets.every(isChow);
 }
 
-export function isEqualSets(set1: TSet, set2: TSet): boolean {
+export function isEqualSets(set1: Set, set2: Set): boolean {
   return (
     set1.type === set2.type &&
     set1.tiles.length === set2.tiles.length &&
@@ -100,7 +99,7 @@ export function isEqualSets(set1: TSet, set2: TSet): boolean {
   );
 }
 
-export function isEqualSetOfSets(sets1: TSet[], sets2: TSet[]): boolean {
+export function isEqualSetOfSets(sets1: Set[], sets2: Set[]): boolean {
   if (sets1.length !== sets2.length) {
     return false;
   }
@@ -120,11 +119,11 @@ export function isEqualSetOfSets(sets1: TSet[], sets2: TSet[]): boolean {
   });
 }
 
-export function getSetTile<Set extends TSet>(set: Set): Set['tiles'][number] {
-  return set.type === ESet.CHOW || set.type === ESet.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
+export function getSetTile<S extends Set>(set: S): S['tiles'][number] {
+  return set.type === SetType.CHOW || set.type === SetType.KNITTED_CHOW ? set.tiles[1] : set.tiles[0];
 }
 
-export function getSetSortValue(set: TSet): number {
+export function getSetSortValue(set: Set): number {
   if (isKnittedChow(set)) {
     return getSetTile(set).value;
   }
@@ -132,13 +131,13 @@ export function getSetSortValue(set: TSet): number {
   return SET_SORT_VALUES[set.type] + getTileSortValue(getSetTile(set));
 }
 
-export interface ISetsVariationsOptions {
-  hand: TPlayableTile[];
-  declaredSets: TSet[];
+export interface SetsVariationsOptions {
+  hand: PlayableTile[];
+  declaredSets: Set[];
   isSelfDraw: boolean;
 }
 
-export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
+export function getSetsVariations(options: SetsVariationsOptions): Set[][] {
   const sortedHand = sortBy(options.hand, getTileSortValue);
   const winningTile = options.hand.at(-1);
 
@@ -158,7 +157,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
         return [[...options.declaredSets, ...sets]];
       }
 
-      const variations: TSet[][] = [];
+      const variations: Set[][] = [];
 
       sets.forEach((set, setIndex) => {
         if (tilesContainTile(set.tiles, winningTile)) {
@@ -166,7 +165,7 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
             ...sets.slice(0, setIndex),
             {
               ...set,
-              concealedType: ESetConcealedType.WINNING_MELDED,
+              concealedType: SetConcealedType.WINNING_MELDED,
             },
             ...sets.slice(setIndex + 1),
           ]);
@@ -178,17 +177,17 @@ export function getSetsVariations(options: ISetsVariationsOptions): TSet[][] {
     .map((sets) => sortBy(sets, getSetSortValue));
 }
 
-export function getAllSetsCombinations(sets: TSet[]): TSet[][] {
+export function getAllSetsCombinations(sets: Set[]): Set[][] {
   return getSetsCombinations(sets.map((set) => [[set], []])).map((sets) => sets.flat());
 }
 
-interface ISplitSetsOptions {
-  hand: TPlayableTile[];
+interface SplitSetsOptions {
+  hand: PlayableTile[];
   pairsFound: number;
   allPairsAllowed: boolean;
 }
 
-function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
+function splitIntoSets(options: SplitSetsOptions): Set[][] {
   const { hand, pairsFound, allPairsAllowed } = options;
 
   const firstTile = hand.at(0);
@@ -197,7 +196,7 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
     return [[]];
   }
 
-  const sets: TSet[][] = [];
+  const sets: Set[][] = [];
 
   if (pairsFound === 0 || allPairsAllowed) {
     const hasPair = isEqualTiles(firstTile, hand.at(1));
@@ -210,9 +209,9 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
           allPairsAllowed,
         }).map((sets) => [
           {
-            type: ESet.PAIR,
+            type: SetType.PAIR,
             tiles: hand.slice(0, 2),
-            concealedType: ESetConcealedType.CONCEALED,
+            concealedType: SetConcealedType.CONCEALED,
           } as const,
           ...sets,
         ]),
@@ -231,9 +230,9 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
           allPairsAllowed: false,
         }).map((sets) => [
           {
-            type: ESet.PUNG,
+            type: SetType.PUNG,
             tiles: hand.slice(0, 3),
-            concealedType: ESetConcealedType.CONCEALED,
+            concealedType: SetConcealedType.CONCEALED,
           } as const,
           ...sets,
         ]),
@@ -262,9 +261,9 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
               allPairsAllowed: false,
             }).map((sets) => [
               {
-                type: ESet.CHOW,
-                tiles: [firstTile, hand[higherBy1TileIndex] as ISuitedTile, hand[higherBy2TileIndex] as ISuitedTile],
-                concealedType: ESetConcealedType.CONCEALED,
+                type: SetType.CHOW,
+                tiles: [firstTile, hand[higherBy1TileIndex] as SuitedTile, hand[higherBy2TileIndex] as SuitedTile],
+                concealedType: SetConcealedType.CONCEALED,
               },
               ...sets,
             ]),
@@ -301,9 +300,9 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
               allPairsAllowed: false,
             }).map((sets) => [
               ...knittedSequence.map((tiles) => ({
-                type: ESet.KNITTED_CHOW,
+                type: SetType.KNITTED_CHOW,
                 tiles,
-                concealedType: ESetConcealedType.CONCEALED,
+                concealedType: SetConcealedType.CONCEALED,
               })),
               ...sets,
             ]),
@@ -316,8 +315,8 @@ function splitIntoSets(options: ISplitSetsOptions): TSet[][] {
   return sets;
 }
 
-export function getTileHogs(sets: TSet[]): TPlayableTile[] {
-  const tileHogs: TPlayableTile[] = [];
+export function getTileHogs(sets: Set[]): PlayableTile[] {
+  const tileHogs: PlayableTile[] = [];
 
   sets
     .flatMap(({ tiles }) => tiles)
@@ -338,15 +337,15 @@ export function getTileHogs(sets: TSet[]): TPlayableTile[] {
   return tileHogs;
 }
 
-export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]): IKongSet[] {
-  const possibleSets: IKongSet[] = [];
+export function getPossibleKongs(hand: Tile[], declaredSets: GameDeclaredSet[]): KongSet[] {
+  const possibleSets: KongSet[] = [];
 
   hand.forEach((tile, index) => {
     if (getTileCount(hand.slice(index + 1), tile) === 3 && isPlayable(tile)) {
       possibleSets.push({
-        type: ESet.KONG,
+        type: SetType.KONG,
         tiles: kong(tile),
-        concealedType: ESetConcealedType.CONCEALED,
+        concealedType: SetConcealedType.CONCEALED,
       });
     }
   });
@@ -360,9 +359,9 @@ export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]
 
     if (tilesContainTile(hand, pungTile)) {
       possibleSets.push({
-        type: ESet.KONG,
+        type: SetType.KONG,
         tiles: kong(pungTile),
-        concealedType: ESetConcealedType.MELDED,
+        concealedType: SetConcealedType.MELDED,
       });
     }
   });
@@ -370,15 +369,11 @@ export function getPossibleKongs(hand: TTile[], declaredSets: TGameDeclaredSet[]
   return possibleSets;
 }
 
-export function getPossibleMeldedSets(
-  hand: TTile[],
-  discardedTile: TPlayableTile,
-  isChowPossible: boolean,
-): TMeldedSet[] {
-  const possibleSets: TMeldedSet[] = [];
+export function getPossibleMeldedSets(hand: Tile[], discardedTile: PlayableTile, isChowPossible: boolean): MeldedSet[] {
+  const possibleSets: MeldedSet[] = [];
   const allPossibleSets = getCombinations(sortBy([...hand, discardedTile], getTileSortValue), 3);
 
-  const addSet = (setToAdd: TMeldedSet) => {
+  const addSet = (setToAdd: MeldedSet) => {
     if (possibleSets.every((set) => !isEqualSets(set, setToAdd))) {
       possibleSets.push(setToAdd);
     }
@@ -387,24 +382,24 @@ export function getPossibleMeldedSets(
   allPossibleSets.forEach((tiles) => {
     if (tiles.every(isEqualTilesCallback(discardedTile)) && tiles.every(isPlayable)) {
       addSet({
-        type: ESet.PUNG,
+        type: SetType.PUNG,
         tiles,
-        concealedType: ESetConcealedType.MELDED,
+        concealedType: SetConcealedType.MELDED,
       });
     } else if (isChowPossible && tilesContainTile(tiles, discardedTile) && isFlush(tiles) && isStraight(tiles)) {
       addSet({
-        type: ESet.CHOW,
+        type: SetType.CHOW,
         tiles,
-        concealedType: ESetConcealedType.MELDED,
+        concealedType: SetConcealedType.MELDED,
       });
     }
   });
 
   if (getTileCount(hand, discardedTile) === 3) {
     possibleSets.push({
-      type: ESet.KONG,
+      type: SetType.KONG,
       tiles: kong(discardedTile),
-      concealedType: ESetConcealedType.MELDED,
+      concealedType: SetConcealedType.MELDED,
     });
   }
 

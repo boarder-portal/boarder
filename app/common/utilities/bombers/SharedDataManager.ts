@@ -14,30 +14,30 @@ import {
   SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
-import { ICoords, ITimestamp } from 'common/types';
-import { EBonus, EBuff, EDirection, ELine, IBuff } from 'common/types/bombers';
+import { Coords, Timestamp } from 'common/types';
+import { BonusType, Buff, BuffType, Direction, Line } from 'common/types/bombers';
 
-import { isFloatZero } from 'common/utilities/float';
+import { isSuperSpeed } from 'common/utilities/bombers/buffs';
 import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
 import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
-import { isSuperSpeed } from 'common/utilities/bombers/buffs';
+import { isFloatZero } from 'common/utilities/float';
 
-export interface IMapObjectWithId {
+export interface MapObjectWithId {
   id: number;
 }
 
-export interface ISharedCell<MapObject extends IMapObjectWithId> {
+export interface SharedCell<MapObject extends MapObjectWithId> {
   x: number;
   y: number;
   objects: MapObject[];
 }
 
-export type TSharedMap<MapObject extends IMapObjectWithId> = ISharedCell<MapObject>[][];
+export type SharedMap<MapObject extends MapObjectWithId> = SharedCell<MapObject>[][];
 
-export interface ISharedPlayer {
-  coords: ICoords;
-  direction: EDirection;
-  startMovingTimestamp: ITimestamp | null;
+export interface SharedPlayer {
+  coords: Coords;
+  direction: Direction;
+  startMovingTimestamp: Timestamp | null;
   speed: number;
   speedReserve: number;
   maxBombCount: number;
@@ -46,65 +46,65 @@ export interface ISharedPlayer {
   bombRangeReserve: number;
   hp: number;
   hpReserve: number;
-  buffs: IBuff[];
+  buffs: Buff[];
 }
 
-export interface ISharedBonus {
-  type: EBonus;
+export interface SharedBonus {
+  type: BonusType;
 }
 
-export interface ISharedDataManagerOptions<MapObject extends IMapObjectWithId> {
-  map: TSharedMap<MapObject>;
-  players: ISharedPlayer[];
+export interface SharedDataManagerOptions<MapObject extends MapObjectWithId> {
+  map: SharedMap<MapObject>;
+  players: SharedPlayer[];
   isPassableObject(object: MapObject): boolean;
 }
 
-interface IClosestCellInfo<MapObject extends IMapObjectWithId> {
-  cell: ISharedCell<MapObject> | undefined;
+interface ClosestCellInfo<MapObject extends MapObjectWithId> {
+  cell: SharedCell<MapObject> | undefined;
   distance: number;
 }
 
-interface IClosestLineInfo {
+interface ClosestLineInfo {
   line: number;
   distance: number;
 }
 
-interface IMovePlayerResult {
+interface MovePlayerResult {
   distanceLeft: number;
   distanceWalked: number;
 }
 
-export default class SharedDataManager<MapObject extends IMapObjectWithId> {
-  map: TSharedMap<MapObject>;
-  players: ISharedPlayer[];
-  isPassableObject: ISharedDataManagerOptions<MapObject>['isPassableObject'];
+export default class SharedDataManager<MapObject extends MapObjectWithId> {
+  map: SharedMap<MapObject>;
+  players: SharedPlayer[];
+  isPassableObject: SharedDataManagerOptions<MapObject>['isPassableObject'];
 
-  constructor(options: ISharedDataManagerOptions<MapObject>) {
+  constructor(options: SharedDataManagerOptions<MapObject>) {
     this.map = options.map;
     this.players = options.players;
     this.isPassableObject = options.isPassableObject;
   }
 
-  activatePlayerBuff(playerIndex: number, type: EBuff, endsAt: ITimestamp): IBuff {
+  activatePlayerBuff(playerIndex: number, type: BuffType, endsAt: Timestamp): Buff {
     const player = this.players[playerIndex];
 
-    if (type === EBuff.SUPER_SPEED) {
+    if (type === BuffType.SUPER_SPEED) {
       const amountFromReserve = Math.min(player.speedReserve, SUPER_SPEED_COST);
 
       player.speedReserve -= amountFromReserve;
       player.speed -= SUPER_SPEED_COST - amountFromReserve;
-    } else if (type === EBuff.SUPER_BOMB) {
+    } else if (type === BuffType.SUPER_BOMB) {
       const amountFromReserve = Math.min(player.maxBombCountReserve, SUPER_BOMB_COST);
 
       player.maxBombCountReserve -= amountFromReserve;
       player.maxBombCount -= SUPER_BOMB_COST - amountFromReserve;
-    } else if (type === EBuff.SUPER_RANGE) {
+    } else if (type === BuffType.SUPER_RANGE) {
       const amountFromReserve = Math.min(player.bombRangeReserve, SUPER_RANGE_COST);
 
       player.bombRangeReserve -= amountFromReserve;
       player.bombRange -= SUPER_RANGE_COST - amountFromReserve;
-    } else if (type === EBuff.INVINCIBILITY) {
-      this.deactivatePlayerBuff(playerIndex, EBuff.BOMB_INVINCIBILITY);
+    } else if (type === BuffType.INVINCIBILITY) {
+      this.deactivatePlayerBuff(playerIndex, BuffType.BOMB_INVINCIBILITY);
 
       const amountFromReserve = Math.min(player.hpReserve, INVINCIBILITY_COST);
 
@@ -120,7 +120,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
       return activeBuff;
     }
 
-    const newBuff: IBuff = {
+    const newBuff: Buff = {
       type,
       endsAt,
     };
@@ -130,32 +130,32 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     return newBuff;
   }
 
-  canPlayerPassCell(player: ISharedPlayer, cell: ISharedCell<MapObject> | undefined): boolean {
+  canPlayerPassCell(player: SharedPlayer, cell: SharedCell<MapObject> | undefined): boolean {
     return Boolean(cell?.objects.every((object) => player.buffs.some(isSuperSpeed) || this.isPassableObject(object)));
   }
 
-  consumePlayerBonus(playerIndex: number, bonus: ISharedBonus): void {
+  consumePlayerBonus(playerIndex: number, bonus: SharedBonus): void {
     const player = this.players[playerIndex];
 
-    if (bonus.type === EBonus.SPEED) {
+    if (bonus.type === BonusType.SPEED) {
       if (player.speed >= MAX_SPEED) {
         player.speedReserve++;
       } else {
         player.speed++;
       }
-    } else if (bonus.type === EBonus.BOMB_COUNT) {
+    } else if (bonus.type === BonusType.BOMB_COUNT) {
       if (player.maxBombCount >= MAX_BOMB_COUNT) {
         player.maxBombCountReserve++;
       } else {
         player.maxBombCount++;
       }
-    } else if (bonus.type === EBonus.BOMB_RANGE) {
+    } else if (bonus.type === BonusType.BOMB_RANGE) {
       if (player.bombRange >= MAX_BOMB_RANGE) {
         player.bombRangeReserve++;
       } else {
         player.bombRange++;
       }
-    } else if (bonus.type === EBonus.HP) {
+    } else if (bonus.type === BonusType.HP) {
       if (player.hp >= MAX_HP) {
         player.hpReserve++;
       } else {
@@ -164,13 +164,13 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     }
   }
 
-  deactivatePlayerBuff(playerIndex: number, type: EBuff): void {
+  deactivatePlayerBuff(playerIndex: number, type: BuffType): void {
     const player = this.players[playerIndex];
 
     player.buffs = player.buffs.filter((buff) => buff.type !== type);
   }
 
-  getCell(coords: ICoords): ISharedCell<MapObject> | undefined {
+  getCell(coords: Coords): SharedCell<MapObject> | undefined {
     if (coords.x < 0 || coords.y < 0) {
       return;
     }
@@ -178,8 +178,8 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     return this.map.at(coords.y)?.at(coords.x);
   }
 
-  getClosestCell(player: ISharedPlayer, direction: EDirection): IClosestCellInfo<MapObject> {
-    if (direction === EDirection.DOWN) {
+  getClosestCell(player: SharedPlayer, direction: Direction): ClosestCellInfo<MapObject> {
+    if (direction === Direction.DOWN) {
       const bottom = player.coords.y + BOMBER_CELL_SIZE / 2;
 
       return {
@@ -188,7 +188,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
       };
     }
 
-    if (direction === EDirection.UP) {
+    if (direction === Direction.UP) {
       const top = player.coords.y - BOMBER_CELL_SIZE / 2;
 
       return {
@@ -197,7 +197,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
       };
     }
 
-    if (direction === EDirection.RIGHT) {
+    if (direction === Direction.RIGHT) {
       const right = player.coords.x + BOMBER_CELL_SIZE / 2;
 
       return {
@@ -214,7 +214,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     };
   }
 
-  getClosestOrBehindCell(player: ISharedPlayer, direction: EDirection): IClosestCellInfo<MapObject> {
+  getClosestOrBehindCell(player: SharedPlayer, direction: Direction): ClosestCellInfo<MapObject> {
     const closestCellInfo = this.getClosestCell(player, direction);
     const canPass = this.canPlayerPassCell(player, closestCellInfo.cell);
 
@@ -228,8 +228,8 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     };
   }
 
-  getClosestPlayerLine(player: ISharedPlayer, line: ELine): IClosestLineInfo | null {
-    const coord = line === ELine.VERTICAL ? player.coords.x : player.coords.y;
+  getClosestPlayerLine(player: SharedPlayer, line: Line): ClosestLineInfo | null {
+    const coord = line === Line.VERTICAL ? player.coords.x : player.coords.y;
     const closestLine = Math.floor(coord) + 0.5;
     const distance = Math.abs(coord - closestLine);
 
@@ -239,26 +239,26 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     };
   }
 
-  getDesiredPlayerLine(player: ISharedPlayer): ELine {
+  getDesiredPlayerLine(player: SharedPlayer): Line {
     return getDirectionLine(player.direction);
   }
 
-  getPlayerLine(player: ISharedPlayer): ELine {
+  getPlayerLine(player: SharedPlayer): Line {
     const isOnVertical = isFloatZero(player.coords.x % 0.5);
     const isOnHorizontal = isFloatZero(player.coords.y % 0.5);
 
-    if ((player.direction === EDirection.UP || player.direction === EDirection.DOWN) && isOnVertical) {
-      return ELine.VERTICAL;
+    if ((player.direction === Direction.UP || player.direction === Direction.DOWN) && isOnVertical) {
+      return Line.VERTICAL;
     }
 
-    if ((player.direction === EDirection.LEFT || player.direction === EDirection.RIGHT) && isOnHorizontal) {
-      return ELine.HORIZONTAL;
+    if ((player.direction === Direction.LEFT || player.direction === Direction.RIGHT) && isOnHorizontal) {
+      return Line.HORIZONTAL;
     }
 
-    return isOnVertical ? ELine.VERTICAL : ELine.HORIZONTAL;
+    return isOnVertical ? Line.VERTICAL : Line.HORIZONTAL;
   }
 
-  getPlayerSpeed(player: ISharedPlayer): number {
+  getPlayerSpeed(player: SharedPlayer): number {
     return player.buffs.some(isSuperSpeed) ? SUPER_SPEED : player.speed;
   }
 
@@ -275,7 +275,7 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     return true;
   }
 
-  movePlayer(playerIndex: number, timePassed: number): IMovePlayerResult {
+  movePlayer(playerIndex: number, timePassed: number): MovePlayerResult {
     if (timePassed <= 0) {
       return { distanceLeft: 0, distanceWalked: 0 };
     }
@@ -319,13 +319,13 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
 
         distanceToPass = distance;
         movingDirection =
-          line === ELine.VERTICAL
+          line === Line.VERTICAL
             ? closestLine < player.coords.y
-              ? EDirection.UP
-              : EDirection.DOWN
+              ? Direction.UP
+              : Direction.DOWN
             : closestLine < player.coords.x
-            ? EDirection.LEFT
-            : EDirection.RIGHT;
+            ? Direction.LEFT
+            : Direction.RIGHT;
       }
 
       const distancePassed = Math.min(distanceLeft, distanceToPass);
@@ -348,19 +348,19 @@ export default class SharedDataManager<MapObject extends IMapObjectWithId> {
     };
   }
 
-  movePlayerDistance(player: ISharedPlayer, distance: number, direction: EDirection): void {
-    if (direction === EDirection.UP) {
+  movePlayerDistance(player: SharedPlayer, distance: number, direction: Direction): void {
+    if (direction === Direction.UP) {
       player.coords.y -= distance;
-    } else if (direction === EDirection.DOWN) {
+    } else if (direction === Direction.DOWN) {
       player.coords.y += distance;
-    } else if (direction === EDirection.LEFT) {
+    } else if (direction === Direction.LEFT) {
       player.coords.x -= distance;
-    } else if (direction === EDirection.RIGHT) {
+    } else if (direction === Direction.RIGHT) {
       player.coords.x += distance;
     }
   }
 
-  removeMapObject(id: number, coords: ICoords): void {
+  removeMapObject(id: number, coords: Coords): void {
     const { objects } = this.map[coords.y][coords.x];
 
     const wallIndex = objects.findIndex((object) => object.id === id);

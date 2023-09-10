@@ -9,14 +9,14 @@ import {
   stringLiteral,
 } from '@babel/types';
 
-import { IGenerateOptions } from '../createGame';
-import modifyFile from './modifyFile';
+import { GenerateOptions } from '../createGame';
 import addImport from './addImport';
+import modifyFile from './modifyFile';
 import shortenImport from './shortenImport';
 
 const FILE_PATH = path.resolve('./app/client/pages/Game/Game.tsx');
 
-export default async function addGame(options: IGenerateOptions): Promise<void> {
+export default async function addGame(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {
     if (path.isProgram()) {
       addImport(
@@ -32,7 +32,7 @@ export default async function addGame(options: IGenerateOptions): Promise<void> 
       if (id.type === 'Identifier' && id.name === 'GAMES_MAP' && init?.type === 'ObjectExpression') {
         init.properties.push(
           objectProperty(
-            memberExpression(identifier('EGame'), identifier(options.constCased)),
+            memberExpression(identifier('GameType'), identifier(options.constCased)),
             identifier(`${options.pascalCased}Game`),
             true,
           ),

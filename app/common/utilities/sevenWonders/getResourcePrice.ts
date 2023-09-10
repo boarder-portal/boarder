@@ -1,19 +1,19 @@
-import { EResource } from 'common/types/sevenWonders';
-import { ECardType } from 'common/types/sevenWonders/cards';
+import { ResourceType } from 'common/types/sevenWonders';
+import { CardType } from 'common/types/sevenWonders/cards';
 
-export default function getResourceType(resource: EResource): ECardType.RAW_MATERIAL | ECardType.MANUFACTURED_GOODS {
+export default function getResourceType(resource: ResourceType): CardType.RAW_MATERIAL | CardType.MANUFACTURED_GOODS {
   switch (resource) {
-    case EResource.CLAY:
-    case EResource.WOOD:
-    case EResource.ORE:
-    case EResource.STONE: {
-      return ECardType.RAW_MATERIAL;
+    case ResourceType.CLAY:
+    case ResourceType.WOOD:
+    case ResourceType.ORE:
+    case ResourceType.STONE: {
+      return CardType.RAW_MATERIAL;
     }
 
-    case EResource.LOOM:
-    case EResource.PAPYRUS:
-    case EResource.GLASS: {
-      return ECardType.MANUFACTURED_GOODS;
+    case ResourceType.LOOM:
+    case ResourceType.PAPYRUS:
+    case ResourceType.GLASS: {
+      return CardType.MANUFACTURED_GOODS;
     }
   }
 }

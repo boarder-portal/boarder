@@ -1,11 +1,11 @@
-import { ICoords, ISize } from 'common/types';
+import { Coords, Size } from 'common/types';
 
 export function drawImage(
   options: {
     ctx: CanvasRenderingContext2D;
     image: HTMLImageElement;
-  } & ICoords &
-    ISize,
+  } & Coords &
+    Size,
 ): void {
   const { ctx, image, x, y, width, height } = options;
 

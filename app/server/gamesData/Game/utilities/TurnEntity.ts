@@ -1,16 +1,16 @@
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
+import { ParentOrContext } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import { TParentOrContext } from 'server/gamesData/Game/utilities/Entity';
 
-export interface ITurnEntityOptions {
+export interface TurnEntityOptions {
   activePlayerIndex?: number;
 }
 
-export default abstract class TurnEntity<Game extends EGame, Result = unknown> extends ServerEntity<Game, Result> {
+export default abstract class TurnEntity<Game extends GameType, Result = unknown> extends ServerEntity<Game, Result> {
   activePlayerIndex: number;
 
-  constructor(parentOrContext: TParentOrContext<Game>, options?: ITurnEntityOptions) {
+  protected constructor(parentOrContext: ParentOrContext<Game>, options?: TurnEntityOptions) {
     super(parentOrContext);
 
     this.activePlayerIndex = options?.activePlayerIndex ?? 0;

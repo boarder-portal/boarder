@@ -1,48 +1,48 @@
 import { useCallback, useMemo } from 'react';
 
-import { ECardActionType, EPlayerDirection, IPlayer, TAction, TBuildType, TPayments } from 'common/types/sevenWonders';
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import {
-  EBuildType,
-  IBuildInfo,
+  BuildInfo,
+  BuildKind,
 } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ECardId, ICard } from 'common/types/sevenWonders/cards';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { Action, BuildType, CardActionType, Payments, Player, PlayerDirection } from 'common/types/sevenWonders';
+import { Card, CardId } from 'common/types/sevenWonders/cards';
 
-import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import { TResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getCardBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
+import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import { isReducedPriceEffect } from 'common/utilities/sevenWonders/isEffect';
 
-function getTitle(buildType: EBuildType): string {
+function getTitle(buildType: BuildKind): string {
   switch (buildType) {
-    case EBuildType.FREE:
-    case EBuildType.FREE_BY_BUILDING:
-    case EBuildType.FREE_BY_OWN_RESOURCES:
-    case EBuildType.OWN_RESOURCES_AND_COINS: {
+    case BuildKind.FREE:
+    case BuildKind.FREE_BY_BUILDING:
+    case BuildKind.FREE_BY_OWN_RESOURCES:
+    case BuildKind.OWN_RESOURCES_AND_COINS: {
       return 'Построить';
     }
 
-    case EBuildType.WITH_TRADE: {
+    case BuildKind.WITH_TRADE: {
       return 'Построить c торговлей';
     }
 
-    case EBuildType.ALREADY_BUILT: {
+    case BuildKind.ALREADY_BUILT: {
       return 'Уже построено';
     }
 
-    case EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS:
-    case EBuildType.NOT_ALLOWED: {
+    case BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS:
+    case BuildKind.NOT_ALLOWED: {
       return 'Нельзя построить';
     }
 
-    case EBuildType.FREE_WITH_EFFECT: {
+    case BuildKind.FREE_WITH_EFFECT: {
       throw new Error('Невозможный вариант');
     }
   }
 }
 
-function getPlayerDiscount(card: ICard, player: IPlayer, direction: EPlayerDirection): number {
+function getPlayerDiscount(card: Card, player: Player, direction: PlayerDirection): number {
   return Math.max(
     ...getAllPlayerEffects(player.data)
       .filter(isReducedPriceEffect)
@@ -52,25 +52,25 @@ function getPlayerDiscount(card: ICard, player: IPlayer, direction: EPlayerDirec
   );
 }
 
-function getDiscount(card: ICard, player: IPlayer, leftNeighbor: IPlayer, rightNeighbor: IPlayer): number {
+function getDiscount(card: Card, player: Player, leftNeighbor: Player, rightNeighbor: Player): number {
   return Math.max(
-    getPlayerDiscount(card, player, EPlayerDirection.SELF),
-    getPlayerDiscount(card, leftNeighbor, EPlayerDirection.RIGHT),
-    getPlayerDiscount(card, rightNeighbor, EPlayerDirection.LEFT),
+    getPlayerDiscount(card, player, PlayerDirection.SELF),
+    getPlayerDiscount(card, leftNeighbor, PlayerDirection.RIGHT),
+    getPlayerDiscount(card, rightNeighbor, PlayerDirection.LEFT),
   );
 }
 
 export default function useCardBuildInfo(
-  card: ICard,
+  card: Card,
   cardIndex: number,
-  resourcePools: IOwnerResource[][],
-  resourceTradePrices: TResourceTradePrices,
-  player: IPlayer,
-  leftNeighbor: IPlayer,
-  rightNeighbor: IPlayer,
-  onCardAction: (action: TAction, payments?: TPayments) => void,
-  onStartCopyingLeader: (cardIndex: number, action: TAction, payments?: TPayments) => void,
-): IBuildInfo {
+  resourcePools: OwnerResource[][],
+  resourceTradePrices: ResourceTradePrices,
+  player: Player,
+  leftNeighbor: Player,
+  rightNeighbor: Player,
+  onCardAction: (action: Action, payments?: Payments) => void,
+  onStartCopyingLeader: (cardIndex: number, action: Action, payments?: Payments) => void,
+): BuildInfo {
   const { price: cardPrice } = card;
 
   const tradeVariants = useMemo(
@@ -89,12 +89,12 @@ export default function useCardBuildInfo(
   const title = useMemo(() => getTitle(type), [type]);
 
   const onBuild = useCallback(
-    (freeBuildType: TBuildType | null, payments?: TPayments) => {
-      if (card.id === ECardId.COURTESANS_GUILD) {
+    (freeBuildType: BuildType | null, payments?: Payments) => {
+      if (card.id === CardId.COURTESANS_GUILD) {
         onStartCopyingLeader(
           cardIndex,
           {
-            type: ECardActionType.BUILD_STRUCTURE,
+            type: CardActionType.BUILD_STRUCTURE,
             freeBuildType,
           },
           payments,
@@ -105,7 +105,7 @@ export default function useCardBuildInfo(
 
       onCardAction(
         {
-          type: ECardActionType.BUILD_STRUCTURE,
+          type: CardActionType.BUILD_STRUCTURE,
           freeBuildType,
           discount,
         },

@@ -2,7 +2,7 @@ import { CELL_SIZE } from 'common/constants/games/survivalOnline';
 
 import renderRect from 'client/pages/Game/components/SurvivalOnlineGame/utilities/renderRect';
 
-export interface ISurvivalOnlineRectInfo {
+export interface SurvivalOnlineRectInfo {
   color: string;
   x: number;
   y: number;
@@ -21,7 +21,7 @@ export default function renderObject({
   context: CanvasRenderingContext2D;
   startX: number;
   startY: number;
-  rects: ISurvivalOnlineRectInfo[];
+  rects: SurvivalOnlineRectInfo[];
   width?: number;
   height?: number;
 }): void {

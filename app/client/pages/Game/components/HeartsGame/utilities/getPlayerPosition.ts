@@ -1,30 +1,30 @@
-export enum EPlayerPosition {
+export enum PlayerPosition {
   BOTTOM = 'bottom',
   LEFT = 'left',
   TOP = 'top',
   RIGHT = 'right',
 }
 
-export default function getPlayerPosition(index: number, playersCount: number): EPlayerPosition {
+export default function getPlayerPosition(index: number, playersCount: number): PlayerPosition {
   if (index === 0) {
-    return EPlayerPosition.BOTTOM;
+    return PlayerPosition.BOTTOM;
   }
 
   if (index === 1) {
     if (playersCount === 2) {
-      return EPlayerPosition.TOP;
+      return PlayerPosition.TOP;
     }
 
-    return EPlayerPosition.LEFT;
+    return PlayerPosition.LEFT;
   }
 
   if (index === 2) {
     if (playersCount === 3) {
-      return EPlayerPosition.RIGHT;
+      return PlayerPosition.RIGHT;
     }
 
-    return EPlayerPosition.TOP;
+    return PlayerPosition.TOP;
   }
 
-  return EPlayerPosition.RIGHT;
+  return PlayerPosition.RIGHT;
 }

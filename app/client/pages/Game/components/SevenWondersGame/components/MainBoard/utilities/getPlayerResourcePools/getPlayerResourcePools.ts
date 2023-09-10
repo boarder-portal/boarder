@@ -1,10 +1,10 @@
-import { ENeighborSide, IPlayer } from 'common/types/sevenWonders';
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { NeighborSide, Player } from 'common/types/sevenWonders';
 
 import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
-import { getPlayerResources } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResources';
-import getResourcePools from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getResourcePools';
 import getBankResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getBankResources';
+import getResourcePools from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getResourcePools';
+import { getPlayerResources } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResources';
 
 /**
  * [
@@ -27,13 +27,13 @@ import getBankResources from 'client/pages/Game/components/SevenWondersGame/comp
  * ]
  */
 export default function getPlayerResourcePools(
-  player: IPlayer,
-  leftNeighbor: IPlayer,
-  rightNeighbor: IPlayer,
-): IOwnerResource[][] {
+  player: Player,
+  leftNeighbor: Player,
+  rightNeighbor: Player,
+): OwnerResource[][] {
   const playerResources = getOwnerResources(getPlayerResources(player), 'own');
-  const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), ENeighborSide.LEFT);
-  const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), ENeighborSide.RIGHT);
+  const leftNeighborResources = getOwnerResources(getPlayerResources(leftNeighbor, true), NeighborSide.LEFT);
+  const rightNeighborResources = getOwnerResources(getPlayerResources(rightNeighbor, true), NeighborSide.RIGHT);
   const bankResources = getBankResources(player);
 
   return getResourcePools([...playerResources, ...leftNeighborResources, ...rightNeighborResources, ...bankResources]);

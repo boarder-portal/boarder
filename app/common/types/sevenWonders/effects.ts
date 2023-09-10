@@ -1,19 +1,19 @@
-import { ECardType } from 'common/types/sevenWonders/cards';
 import {
-  ECardActionType,
-  ENeighborSide,
-  EPlayerDirection,
-  EScientificSymbol,
-  IResource,
-  TResourceOwner,
+  CardActionType,
+  NeighborSide,
+  PlayerDirection,
+  Resource,
+  ResourceOwner,
+  ScientificSymbolType,
 } from 'common/types/sevenWonders';
+import { CardType } from 'common/types/sevenWonders/cards';
 
-export interface IGain {
+export interface Gain {
   points?: number;
   coins?: number;
 }
 
-export enum EEffect {
+export enum EffectType {
   GAIN = 'GAIN',
   RESOURCES = 'RESOURCES',
   TRADE = 'TRADE',
@@ -33,65 +33,65 @@ export enum EEffect {
   SCIENTIFIC_SET = 'SCIENTIFIC_SET',
 }
 
-export interface IGainEffect {
-  type: EEffect.GAIN;
-  gain: IGain;
+export interface GainEffect {
+  type: EffectType.GAIN;
+  gain: Gain;
 }
 
-export interface IResourcesEffect {
-  type: EEffect.RESOURCES;
-  variants: IResource[];
+export interface ResourcesEffect {
+  type: EffectType.RESOURCES;
+  variants: Resource[];
 }
 
-export interface ITradeEffect {
-  type: EEffect.TRADE;
-  sources: TResourceOwner[];
+export interface TradeEffect {
+  type: EffectType.TRADE;
+  sources: ResourceOwner[];
   price: number;
-  resources: (ECardType.RAW_MATERIAL | ECardType.MANUFACTURED_GOODS)[];
+  resources: (CardType.RAW_MATERIAL | CardType.MANUFACTURED_GOODS)[];
 }
 
-export interface ICardsTypeEffect {
-  type: EEffect.CARDS_TYPE;
-  cardTypes: ECardType[];
-  gain: IGain;
-  directions: EPlayerDirection[];
+export interface CardsTypeEffect {
+  type: EffectType.CARDS_TYPE;
+  cardTypes: CardType[];
+  gain: Gain;
+  directions: PlayerDirection[];
 }
 
-export interface IWonderLevelsEffect {
-  type: EEffect.WONDER_LEVELS;
-  gain: IGain;
-  directions: EPlayerDirection[];
+export interface WonderLevelsEffect {
+  type: EffectType.WONDER_LEVELS;
+  gain: Gain;
+  directions: PlayerDirection[];
 }
 
-export interface IShieldsEffect {
-  type: EEffect.SHIELDS;
+export interface ShieldsEffect {
+  type: EffectType.SHIELDS;
   count: number;
 }
 
-export interface IScientificSymbolsEffect {
-  type: EEffect.SCIENTIFIC_SYMBOLS;
-  variants: EScientificSymbol[];
+export interface ScientificSymbolsEffect {
+  type: EffectType.SCIENTIFIC_SYMBOLS;
+  variants: ScientificSymbolType[];
 }
 
-export interface IWinsEffect {
-  type: EEffect.WINS;
-  gain: IGain;
-  directions: EPlayerDirection[];
+export interface WinsEffect {
+  type: EffectType.WINS;
+  gain: Gain;
+  directions: PlayerDirection[];
 }
 
-export interface ILossesEffect {
-  type: EEffect.LOSSES;
-  gain: IGain;
-  directions: EPlayerDirection[];
+export interface LossesEffect {
+  type: EffectType.LOSSES;
+  gain: Gain;
+  directions: PlayerDirection[];
 }
 
-export interface IGainByCoinsEffect {
-  type: EEffect.GAIN_BY_COINS;
+export interface GainByCoinsEffect {
+  type: EffectType.GAIN_BY_COINS;
   count: number;
-  gain: IGain;
+  gain: Gain;
 }
 
-export enum EFreeCardPeriod {
+export enum FreeCardPeriodType {
   NOW = 'NOW',
   AGE = 'AGE',
   LAST_AGE_TURN = 'LAST_AGE_TURN',
@@ -99,81 +99,81 @@ export enum EFreeCardPeriod {
   LEADER_RECRUITMENT = 'LEADER_RECRUITMENT',
 }
 
-export enum EFreeCardSource {
+export enum FreeCardSourceType {
   HAND = 'HAND',
   DISCARD = 'DISCARD',
   LEADERS = 'LEADERS',
 }
 
-export interface IBuildCardEffect {
-  type: EEffect.BUILD_CARD;
-  period: EFreeCardPeriod;
+export interface BuildCardEffect {
+  type: EffectType.BUILD_CARD;
+  period: FreeCardPeriodType;
   count?: number;
-  cardTypes?: ECardType[];
-  source: EFreeCardSource;
+  cardTypes?: CardType[];
+  source: FreeCardSourceType;
   isFree: boolean;
-  possibleActions: ECardActionType[];
+  possibleActions: CardActionType[];
   priority?: number;
 }
 
-export interface ICopyCardEffect {
-  type: EEffect.COPY_CARD;
-  neighbors: ENeighborSide[];
-  cardType: ECardType;
+export interface CopyCardEffect {
+  type: EffectType.COPY_CARD;
+  neighbors: NeighborSide[];
+  cardType: CardType;
 }
 
-export interface IReducedPriceEffect {
-  type: EEffect.REDUCED_PRICE;
-  objectType: ECardType | 'wonderLevel';
+export interface ReducedPriceEffect {
+  type: EffectType.REDUCED_PRICE;
+  objectType: CardType | 'wonderLevel';
   discount: {
     coins?: number;
     resources?: number;
   };
-  direction: EPlayerDirection;
+  direction: PlayerDirection;
 }
 
-export enum ECoinPassiveSource {
+export enum CoinPassiveSourceType {
   TRADE = 'TRADE',
   VICTORY_TOKENS = 'VICTORY_TOKENS',
   COMMERCIAL_CARDS = 'COMMERCIAL_CARDS',
   STRUCTURE_INHERITANCE = 'STRUCTURE_INHERITANCE',
 }
 
-export interface ICoinPassiveEffect {
-  type: EEffect.COIN_PASSIVE;
-  source: ECoinPassiveSource;
+export interface CoinPassiveEffect {
+  type: EffectType.COIN_PASSIVE;
+  source: CoinPassiveSourceType;
   count: number;
 }
 
-export interface IReturnDefeatsEffect {
-  type: EEffect.RETURN_DEFEATS;
+export interface ReturnDefeatsEffect {
+  type: EffectType.RETURN_DEFEATS;
 }
 
-export interface IDrawLeadersEffect {
-  type: EEffect.DRAW_LEADERS;
+export interface DrawLeadersEffect {
+  type: EffectType.DRAW_LEADERS;
   count: number;
 }
 
-export interface IScientificSetEffect {
-  type: EEffect.SCIENTIFIC_SET;
-  gain: IGain;
+export interface ScientificSetEffect {
+  type: EffectType.SCIENTIFIC_SET;
+  gain: Gain;
 }
 
-export type TEffect =
-  | IGainEffect
-  | IResourcesEffect
-  | ITradeEffect
-  | ICardsTypeEffect
-  | IWonderLevelsEffect
-  | IShieldsEffect
-  | IScientificSymbolsEffect
-  | IWinsEffect
-  | ILossesEffect
-  | IGainByCoinsEffect
-  | IBuildCardEffect
-  | ICopyCardEffect
-  | IReducedPriceEffect
-  | ICoinPassiveEffect
-  | IReturnDefeatsEffect
-  | IDrawLeadersEffect
-  | IScientificSetEffect;
+export type Effect =
+  | GainEffect
+  | ResourcesEffect
+  | TradeEffect
+  | CardsTypeEffect
+  | WonderLevelsEffect
+  | ShieldsEffect
+  | ScientificSymbolsEffect
+  | WinsEffect
+  | LossesEffect
+  | GainByCoinsEffect
+  | BuildCardEffect
+  | CopyCardEffect
+  | ReducedPriceEffect
+  | CoinPassiveEffect
+  | ReturnDefeatsEffect
+  | DrawLeadersEffect
+  | ScientificSetEffect;

@@ -1,20 +1,20 @@
 import React from 'react';
 
-import { ECardType, IPlayer } from 'common/types/onitama';
+import { CardType, Player } from 'common/types/onitama';
 
-import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';
 import Flex from 'client/components/common/Flex/Flex';
+import OnitamaCard from 'client/pages/Game/components/OnitamaGame/OnitamaCard';
 
-interface IOnitamaPlayerProps {
-  player: IPlayer;
-  fifthCard: ECardType;
+interface OnitamaPlayerProps {
+  player: Player;
+  fifthCard: CardType;
   isActive: boolean;
   isFlipped: boolean;
   selectedCardIndex: number;
-  onCardClick?(card: ECardType): void;
+  onCardClick?(card: CardType): void;
 }
 
-const OnitamaPlayer: React.FC<IOnitamaPlayerProps> = (props) => {
+const OnitamaPlayer: React.FC<OnitamaPlayerProps> = (props) => {
   const { player, fifthCard, isActive, isFlipped, selectedCardIndex, onCardClick } = props;
 
   return (

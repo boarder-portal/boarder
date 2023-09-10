@@ -1,28 +1,28 @@
-import { EGame } from 'common/types/game';
-import { EGameServerEvent, EObject, IWall } from 'common/types/bombers';
+import { GameServerEventType, ObjectType, Wall as WallModel } from 'common/types/bombers';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
-export interface IWallOptions {
+export interface WallOptions {
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
   isArtificial: boolean;
 }
 
-export default class Wall extends ServerEntity<EGame.BOMBERS> {
+export default class Wall extends ServerEntity<GameType.BOMBERS> {
   game: BombersGame;
 
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
   isArtificial: boolean;
 
   destroy = this.createTrigger();
 
-  constructor(game: BombersGame, options: IWallOptions) {
+  constructor(game: BombersGame, options: WallOptions) {
     super(game);
 
     this.game = game;
@@ -31,7 +31,7 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
     this.isArtificial = options.isArtificial;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     if (this.isArtificial) {
       const deadPlayers: number[] = [];
 
@@ -49,7 +49,7 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
         }
       });
 
-      this.sendSocketEvent(EGameServerEvent.WALL_CREATED, {
+      this.sendSocketEvent(GameServerEventType.WALL_CREATED, {
         coords: this.game.getCellCoords(this.cell),
         wall: this.toJSON(),
         deadPlayers,
@@ -59,9 +59,9 @@ export default class Wall extends ServerEntity<EGame.BOMBERS> {
     yield* this.destroy;
   }
 
-  toJSON(): IWall {
+  toJSON(): WallModel {
     return {
-      type: EObject.WALL,
+      type: ObjectType.WALL,
       id: this.id,
     };
   }

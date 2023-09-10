@@ -1,37 +1,37 @@
-import { EGame, TGameInfo, TGameResult, TPlayerSettings } from 'common/types/game';
-import { ECommonGameClientEvent, ECommonGameServerEvent, TChangeSettingEvent } from 'common/types';
+import { ChangeSettingEvent, CommonGameClientEvent, CommonGameServerEvent } from 'common/types';
+import { GameInfo, GameResult, GameType, PlayerSettings } from 'common/types/game';
 
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import AbortError from 'server/gamesData/Game/utilities/AbortError';
-import { now } from 'server/utilities/time';
 import { areBotsAvailable } from 'common/utilities/bots';
+import AbortError from 'server/gamesData/Game/utilities/AbortError';
+import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import { now } from 'server/utilities/time';
 
 import { BOTS } from 'server/gamesData/Game/Game';
 
-export type TSettingsChangeEvent<Game extends EGame> = {
+export type SettingsChangeEvent<Game extends GameType> = {
   playerIndex: number;
-  settings: TPlayerSettings<Game>;
-} & TChangeSettingEvent<Game>;
+  settings: PlayerSettings<Game>;
+} & ChangeSettingEvent<Game>;
 
-export default abstract class GameEntity<Game extends EGame> extends ServerEntity<Game, TGameResult<Game>> {
+export default abstract class GameEntity<Game extends GameType> extends ServerEntity<Game, GameResult<Game>> {
   spawned = true;
 
-  abstract toJSON(): TGameInfo<Game>;
+  abstract toJSON(): GameInfo<Game>;
 
-  *beforeLifecycle(): TGenerator {
+  *beforeLifecycle(): EntityGenerator {
     yield* super.beforeLifecycle();
 
     this.spawnTask(this.spawnBots());
     this.spawnTask(this.watchSettingChange());
   }
 
-  getGameInfo(): TGameInfo<Game> {
+  getGameInfo(): GameInfo<Game> {
     return this.toJSON();
   }
 
-  getSettingChangeEvent(playerIndex: number, event: TChangeSettingEvent<Game>): TSettingsChangeEvent<Game> {
+  getSettingChangeEvent(playerIndex: number, event: ChangeSettingEvent<Game>): SettingsChangeEvent<Game> {
     return {
       playerIndex,
       settings: this.getPlayers()[playerIndex].settings,
@@ -43,29 +43,29 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     return false;
   }
 
-  *listenForSettingsChange(callback: (event: TSettingsChangeEvent<Game>) => unknown): TGenerator {
-    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
+  *listenForSettingsChange(callback: (event: SettingsChangeEvent<Game>) => unknown): EntityGenerator {
+    yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
       callback(this.getSettingChangeEvent(playerIndex, data as any));
     });
   }
 
   ping(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.PING, now());
+    this.sendSocketEvent(CommonGameServerEvent.PING, now());
   }
 
-  *pingIndefinitely(interval: number): TGenerator {
+  *pingIndefinitely(interval: number): EntityGenerator {
     yield* this.repeatTask(interval, function* () {
       this.ping();
     });
   }
 
   sendGameInfo(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.GET_INFO, this.getGameInfo(), {
+    this.sendSocketEvent(CommonGameServerEvent.GET_INFO, this.getGameInfo(), {
       batch: true,
     });
   }
 
-  *spawnBot(Bot: IBotConstructor<Game>, playerIndex: number): TGenerator {
+  *spawnBot(Bot: BotConstructor<Game>, playerIndex: number): EntityGenerator {
     try {
       yield* this.spawnEntity(new Bot(this, { playerIndex }));
     } catch (err) {
@@ -75,9 +75,9 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     }
   }
 
-  *spawnBots(): TGenerator {
+  *spawnBots(): EntityGenerator {
     const bot = areBotsAvailable(this.context.game.game)
-      ? (BOTS[this.context.game.game] as IBotConstructor<Game>)
+      ? (BOTS[this.context.game.game] as BotConstructor<Game>)
       : null;
 
     if (!bot) {
@@ -91,25 +91,25 @@ export default abstract class GameEntity<Game extends EGame> extends ServerEntit
     );
   }
 
-  *waitForPlayerSettingChange(playerIndex: number): TGenerator<TSettingsChangeEvent<Game>> {
-    const data = yield* this.waitForPlayerSocketEvent(ECommonGameClientEvent.CHANGE_SETTING, {
+  *waitForPlayerSettingChange(playerIndex: number): EntityGenerator<SettingsChangeEvent<Game>> {
+    const data = yield* this.waitForPlayerSocketEvent(CommonGameClientEvent.CHANGE_SETTING, {
       playerIndex,
     });
 
     return this.getSettingChangeEvent(playerIndex, data as any);
   }
 
-  *waitForSettingChange(): TGenerator<TSettingsChangeEvent<Game>> {
-    const { data, playerIndex } = yield* this.waitForSocketEvent(ECommonGameClientEvent.CHANGE_SETTING);
+  *waitForSettingChange(): EntityGenerator<SettingsChangeEvent<Game>> {
+    const { data, playerIndex } = yield* this.waitForSocketEvent(CommonGameClientEvent.CHANGE_SETTING);
 
     return this.getSettingChangeEvent(playerIndex, data as any);
   }
 
-  *watchSettingChange(): TGenerator {
-    yield* this.listenForEvent(ECommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
+  *watchSettingChange(): EntityGenerator {
+    yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
       const player = this.getPlayers()[playerIndex];
 
-      player.settings[data.key as keyof TPlayerSettings<Game>] = data.value as any;
+      player.settings[data.key as keyof PlayerSettings<Game>] = data.value as any;
 
       this.sendGameInfo();
     });

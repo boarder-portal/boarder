@@ -10,40 +10,40 @@ import {
   SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
-import { EGame } from 'common/types/game';
+import { Coords, Timestamp as TimestampModel } from 'common/types';
 import {
-  EBuff,
-  EDirection,
-  EGameClientEvent,
-  EGameServerEvent,
-  EPlayerColor,
-  IBuff,
-  IPlayerData,
+  Buff,
+  BuffType,
+  Direction,
+  GameClientEventType,
+  GameServerEventType,
+  PlayerColor,
+  PlayerData,
 } from 'common/types/bombers';
-import { ICoords, ITimestamp } from 'common/types';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import PlayerEntity, { IPlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
-import isNotUndefined from 'common/utilities/isNotUndefined';
-import { isFloatZero } from 'common/utilities/float';
-import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';
 import Timestamp from 'common/utilities/Timestamp';
+import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';
+import { isFloatZero } from 'common/utilities/float';
+import isNotUndefined from 'common/utilities/isNotUndefined';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import PlayerEntity, { PlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
 
-export interface IPlayerOptions extends ICommonPlayerOptions {
-  color: EPlayerColor;
-  coords: ICoords;
+export interface PlayerOptions extends ICommonPlayerOptions {
+  color: PlayerColor;
+  coords: Coords;
 }
 
-export default class Player extends PlayerEntity<EGame.BOMBERS> {
+export default class Player extends PlayerEntity<GameType.BOMBERS> {
   game: BombersGame;
 
-  color: EPlayerColor;
-  coords: ICoords;
-  direction = EDirection.DOWN;
+  color: PlayerColor;
+  coords: Coords;
+  direction = Direction.DOWN;
   isDisabled = false;
   startMovingTimestamp: Timestamp | null = null;
   speed = 1;
@@ -54,15 +54,15 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   bombRangeReserve = 0;
   hp = MAX_HP;
   hpReserve = 0;
-  buffs: IBuff[] = [];
+  buffs: Buff[] = [];
   placedBombs = new Set<Bomb>();
 
   disable = this.createTrigger();
   grantControls = this.createTrigger();
-  cancelBuffTimeout = this.createTrigger<EBuff>();
+  cancelBuffTimeout = this.createTrigger<BuffType>();
   hit = this.createTrigger<number>();
 
-  constructor(game: BombersGame, options: IPlayerOptions) {
+  constructor(game: BombersGame, options: PlayerOptions) {
     super(game, options);
 
     this.game = game;
@@ -70,7 +70,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.coords = options.coords;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.spawnTask(this.waitForControls());
     this.spawnTask(this.waitForDisable());
 
@@ -83,21 +83,21 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
         break;
       }
 
-      this.spawnTask(this.activateBuff(EBuff.BOMB_INVINCIBILITY));
+      this.spawnTask(this.activateBuff(BuffType.BOMB_INVINCIBILITY));
     }
 
-    this.sendSocketEvent(EGameServerEvent.PLAYER_DIED, this.index);
+    this.sendSocketEvent(GameServerEventType.PLAYER_DIED, this.index);
 
     this.disable();
   }
 
-  *activateBuff(type: EBuff): TGenerator {
+  *activateBuff(type: BuffType): EntityGenerator {
     const endsAt = this.createTimestamp(BUFF_DURATIONS[type]);
     const buff = this.game.sharedDataManager.activatePlayerBuff(this.index, type, endsAt);
 
     this.cancelBuffTimeout(type);
 
-    this.sendSocketEvent(EGameServerEvent.BUFF_ACTIVATED, {
+    this.sendSocketEvent(GameServerEventType.BUFF_ACTIVATED, {
       playerIndex: this.index,
       buff,
     });
@@ -113,7 +113,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
     this.game.sharedDataManager.deactivatePlayerBuff(this.index, type);
 
-    this.sendSocketEvent(EGameServerEvent.BUFF_DEACTIVATED, {
+    this.sendSocketEvent(GameServerEventType.BUFF_DEACTIVATED, {
       playerIndex: this.index,
       type,
     });
@@ -127,19 +127,19 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     return this.placedBombs.size < this.maxBombCount;
   }
 
-  consumeBonus(bonus: Bonus, coords: ICoords): void {
+  consumeBonus(bonus: Bonus, coords: Coords): void {
     bonus.consume();
 
     this.game.sharedDataManager.consumePlayerBonus(this.index, bonus);
 
-    this.sendSocketEvent(EGameServerEvent.BONUS_CONSUMED, {
+    this.sendSocketEvent(GameServerEventType.BONUS_CONSUMED, {
       id: bonus.id,
       playerIndex: this.index,
       coords,
     });
   }
 
-  getCurrentCell(): IServerCell {
+  getCurrentCell(): ServerCell {
     const cell = this.game.getCell({
       x: Math.floor(this.coords.x),
       y: Math.floor(this.coords.y),
@@ -152,28 +152,28 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     return cell;
   }
 
-  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+  getCurrentTimestamps(): (TimestampModel | null | undefined)[] {
     return [this.startMovingTimestamp, ...this.buffs.map(({ endsAt }) => endsAt)];
   }
 
-  getOccupiedCells(): IServerCell[] {
+  getOccupiedCells(): ServerCell[] {
     const bomberCell = this.getCurrentCell();
-    const occupiedCells: (IServerCell | undefined)[] = [bomberCell];
+    const occupiedCells: (ServerCell | undefined)[] = [bomberCell];
 
     if (this.coords.x + BOMBER_CELL_SIZE / 2 > bomberCell.x + 1) {
-      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.RIGHT));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, Direction.RIGHT));
     }
 
     if (this.coords.x - BOMBER_CELL_SIZE / 2 < bomberCell.x) {
-      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.LEFT));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, Direction.LEFT));
     }
 
     if (this.coords.y + BOMBER_CELL_SIZE / 2 > bomberCell.y + 1) {
-      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.DOWN));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, Direction.DOWN));
     }
 
     if (this.coords.y - BOMBER_CELL_SIZE / 2 < bomberCell.y) {
-      occupiedCells.push(this.game.getCellBehind(bomberCell, EDirection.UP));
+      occupiedCells.push(this.game.getCellBehind(bomberCell, Direction.UP));
     }
 
     return occupiedCells.filter(isNotUndefined);
@@ -181,7 +181,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
 
   heal = (): void => {
     if (this.game.sharedDataManager.healPlayer(this.index)) {
-      this.sendSocketEvent(EGameServerEvent.PLAYER_HEALED, this.index);
+      this.sendSocketEvent(GameServerEventType.PLAYER_HEALED, this.index);
     }
   };
 
@@ -193,17 +193,17 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.hit(Infinity);
   }
 
-  *listenForEvents(): TGenerator {
+  *listenForEvents(): EntityGenerator {
     yield* this.race([
       this.disable,
       this.all([
-        this.listenForOwnEvent(EGameClientEvent.START_MOVING, this.startMoving),
-        this.listenForOwnEvent(EGameClientEvent.STOP_MOVING, this.stopMoving),
-        this.listenForOwnEvent(EGameClientEvent.PLACE_BOMB, () => {
+        this.listenForOwnEvent(GameClientEventType.START_MOVING, this.startMoving),
+        this.listenForOwnEvent(GameClientEventType.STOP_MOVING, this.stopMoving),
+        this.listenForOwnEvent(GameClientEventType.PLACE_BOMB, () => {
           this.game.placeBomb(this, this.getCurrentCell());
         }),
-        this.listenForOwnEvent(EGameClientEvent.HEAL, this.heal),
-        this.listenForOwnEvent(EGameClientEvent.ACTIVATE_BUFF, this.tryToActivateBuff),
+        this.listenForOwnEvent(GameClientEventType.HEAL, this.heal),
+        this.listenForOwnEvent(GameClientEventType.ACTIVATE_BUFF, this.tryToActivateBuff),
       ]),
     ]);
   }
@@ -253,7 +253,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.placedBombs.delete(bomb);
   }
 
-  startMoving = (direction: EDirection): void => {
+  startMoving = (direction: Direction): void => {
     this.direction = direction;
     this.startMovingTimestamp = this.createTimestamp();
 
@@ -269,7 +269,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
   };
 
   syncCoords(): void {
-    this.sendSocketEvent(EGameServerEvent.SYNC_COORDS, {
+    this.sendSocketEvent(GameServerEventType.SYNC_COORDS, {
       playerIndex: this.index,
       direction: this.direction,
       startMovingTimestamp: this.startMovingTimestamp,
@@ -277,7 +277,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     });
   }
 
-  toJSON(): IPlayerData {
+  toJSON(): PlayerData {
     return pick(this, [
       'color',
       'coords',
@@ -295,17 +295,17 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     ]);
   }
 
-  tryToActivateBuff = (type: EBuff): void => {
+  tryToActivateBuff = (type: BuffType): void => {
     if (!this.game.options.withAbilities) {
       return;
     }
 
     if (
-      (type === EBuff.SUPER_SPEED && this.speed + this.speedReserve <= SUPER_SPEED_COST) ||
-      (type === EBuff.SUPER_BOMB && this.maxBombCount + this.maxBombCountReserve <= SUPER_BOMB_COST) ||
-      (type === EBuff.SUPER_RANGE && this.bombRange + this.bombRangeReserve <= SUPER_RANGE_COST) ||
-      (type === EBuff.INVINCIBILITY && this.hp + this.hpReserve <= INVINCIBILITY_COST) ||
-      type === EBuff.BOMB_INVINCIBILITY
+      (type === BuffType.SUPER_SPEED && this.speed + this.speedReserve <= SUPER_SPEED_COST) ||
+      (type === BuffType.SUPER_BOMB && this.maxBombCount + this.maxBombCountReserve <= SUPER_BOMB_COST) ||
+      (type === BuffType.SUPER_RANGE && this.bombRange + this.bombRangeReserve <= SUPER_RANGE_COST) ||
+      (type === BuffType.INVINCIBILITY && this.hp + this.hpReserve <= INVINCIBILITY_COST) ||
+      type === BuffType.BOMB_INVINCIBILITY
     ) {
       return;
     }
@@ -313,7 +313,7 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     this.spawnTask(this.activateBuff(type));
   };
 
-  *waitForBuffCancel(type: EBuff): TGenerator<true> {
+  *waitForBuffCancel(type: BuffType): EntityGenerator<true> {
     while (true) {
       const buffType = yield* this.cancelBuffTimeout;
 
@@ -323,12 +323,12 @@ export default class Player extends PlayerEntity<EGame.BOMBERS> {
     }
   }
 
-  *waitForControls(): TGenerator {
+  *waitForControls(): EntityGenerator {
     yield* this.grantControls;
     yield* this.listenForEvents();
   }
 
-  *waitForDisable(): TGenerator {
+  *waitForDisable(): EntityGenerator {
     yield* this.disable;
 
     this.isDisabled = true;

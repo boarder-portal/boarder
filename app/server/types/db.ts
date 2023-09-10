@@ -1,5 +1,5 @@
-import { IDBUser } from 'common/types';
+import { DBUser } from 'common/types';
 
-export interface IDB {
-  users: IDBUser[];
+export interface DB {
+  users: DBUser[];
 }

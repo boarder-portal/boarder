@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface ICancelActionProps {
+interface CancelActionProps {
   className?: string;
   onCancelCard(): void;
 }
 
-const CancelAction: React.FC<ICancelActionProps> = (props) => {
+const CancelAction: React.FC<CancelActionProps> = (props) => {
   const { className, onCancelCard } = props;
 
   return (

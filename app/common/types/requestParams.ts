@@ -1,9 +1,9 @@
-import { IDBUser } from 'common/types';
+import { DBUser } from 'common/types';
 
-export interface IRegisterParams {
-  user: IDBUser;
+export interface RegisterParams {
+  user: DBUser;
 }
 
-export interface ILoginParams {
-  user: IDBUser;
+export interface LoginParams {
+  user: DBUser;
 }

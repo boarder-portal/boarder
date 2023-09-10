@@ -1,39 +1,39 @@
-import { DragEvent, FC, memo, useCallback, useEffect, useState } from 'react';
-import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
+import isEqual from 'lodash/isEqual';
+import { DragEvent, FC, memo, useCallback, useEffect, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
-import { TTile } from 'common/types/mahjong';
+import { Tile as TileModel } from 'common/types/mahjong';
 
-import { isEqualTiles } from 'common/utilities/mahjong/tiles';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
+import { isEqualTiles } from 'common/utilities/mahjong/tiles';
 
-import { usePrevious } from 'client/hooks/usePrevious';
-import { useBoolean } from 'client/hooks/useBoolean';
+import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
+import usePrevious from 'client/hooks/usePrevious';
 
-import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
-import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
-import Flex from 'client/components/common/Flex/Flex';
 import DragArea from 'client/components/common/DragArea/DragArea';
+import Flex from 'client/components/common/Flex/Flex';
+import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
+import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 
 import styles from './Discard.module.scss';
 
-interface IDiscardProps {
-  tiles: TTile[];
+interface DiscardProps {
+  tiles: TileModel[];
   tileWidth: number;
   area: string;
   rotation: number;
   isLastTileSelected: boolean;
-  highlightedTile: TTile | null;
-  draggingTile: TTile | null;
+  highlightedTile: TileModel | null;
+  draggingTile: TileModel | null;
   draggingTileIndex: number;
   onTileDrop?(tileIndex: number): void;
-  onTileHover?(tile: TTile): void;
-  onTileHoverExit?(tile: TTile): void;
+  onTileHover?(tile: TileModel): void;
+  onTileHoverExit?(tile: TileModel): void;
 }
 
-const Discard: FC<IDiscardProps> = (props) => {
+const Discard: FC<DiscardProps> = (props) => {
   const {
     tiles,
     tileWidth,
@@ -49,7 +49,7 @@ const Discard: FC<IDiscardProps> = (props) => {
   } = props;
   const tileHeight = getTileHeight(tileWidth);
 
-  const [localTiles, setLocalTiles] = useState<TTile[]>(tiles);
+  const [localTiles, setLocalTiles] = useState<TileModel[]>(tiles);
   const { value: isDraggedOver, setTrue: dragEnter, setFalse: dragLeave } = useBoolean(false);
 
   const previousTiles = usePrevious(tiles);

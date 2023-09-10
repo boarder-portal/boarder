@@ -1,11 +1,11 @@
 import { AllHTMLAttributes, CSSProperties, FC, memo, useLayoutEffect, useRef } from 'react';
 
-interface IRealSizeElementProps extends AllHTMLAttributes<HTMLDivElement> {
+interface RotatedElementProps extends AllHTMLAttributes<HTMLDivElement> {
   rootStyle?: CSSProperties;
   rotation: number;
 }
 
-const RotatedElement: FC<IRealSizeElementProps> = (props) => {
+const RotatedElement: FC<RotatedElementProps> = (props) => {
   const { rotation, rootStyle, style, ...rest } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);

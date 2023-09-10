@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 
-import { IState, StoreContext } from 'client/utilities/store';
+import { State, StoreContext } from 'client/utilities/store';
 
-export default function useAtom<Key extends keyof IState>(key: Key): [IState[Key], (v: IState[Key]) => void] {
+export default function useAtom<Key extends keyof State>(key: Key): [State[Key], (v: State[Key]) => void] {
   const store = useContext(StoreContext);
-  const [value, setValue] = useState<IState[Key]>(store.value[key]);
+  const [value, setValue] = useState<State[Key]>(store.value[key]);
 
   useEffect(() => {
     store.listeners[key].push(setValue);
@@ -15,7 +15,7 @@ export default function useAtom<Key extends keyof IState>(key: Key): [IState[Key
   }, [key, store.listeners]);
 
   const setAtomValue = useCallback(
-    (value: IState[Key]) => {
+    (value: State[Key]) => {
       store.value[key] = value;
 
       store.listeners[key].forEach((listener) => {

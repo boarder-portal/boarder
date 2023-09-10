@@ -1,6 +1,6 @@
 import times from 'lodash/times';
 
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
 import { getSetsCombinations } from 'common/utilities/combinations';
 
@@ -31,7 +31,7 @@ import { getSetsCombinations } from 'common/utilities/combinations';
  *    ]
  * ]
  */
-export default function getResourcePools(ownerResources: IOwnerResource[][]): IOwnerResource[][] {
+export default function getResourcePools(ownerResources: OwnerResource[][]): OwnerResource[][] {
   return getSetsCombinations(ownerResources).map((resourcePool) =>
     resourcePool.flatMap((resource) =>
       times(resource.count, () => ({

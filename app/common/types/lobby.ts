@@ -1,29 +1,29 @@
-import { IGamePlayer } from 'common/types';
-import { EGame, TGameOptions } from 'common/types/game';
+import { GamePlayer } from 'common/types';
+import { GameOptions, GameType } from 'common/types/game';
 
-export enum ELobbyEvent {
+export enum LobbyEventType {
   UPDATE = 'UPDATE',
   CREATE_GAME = 'CREATE_GAME',
   GAME_CREATED = 'GAME_CREATED',
 }
 
-export interface ILobbyClientEventMap<Game extends EGame> {
-  [ELobbyEvent.CREATE_GAME]: TGameOptions<Game>;
+export interface LobbyClientEventMap<Game extends GameType> {
+  [LobbyEventType.CREATE_GAME]: GameOptions<Game>;
 }
 
-export interface ILobbyServerEventMap<Game extends EGame> {
-  [ELobbyEvent.GAME_CREATED]: string;
-  [ELobbyEvent.UPDATE]: ILobbyUpdateEvent<Game>;
+export interface LobbyServerEventMap<Game extends GameType> {
+  [LobbyEventType.GAME_CREATED]: string;
+  [LobbyEventType.UPDATE]: LobbyUpdateEvent<Game>;
 }
 
-export interface ILobbyGame<Game extends EGame> {
+export interface LobbyGame<Game extends GameType> {
   id: string;
   name: string;
-  players: IGamePlayer<Game>[];
+  players: GamePlayer<Game>[];
   hasStarted: boolean;
-  options: TGameOptions<Game>;
+  options: GameOptions<Game>;
 }
 
-export interface ILobbyUpdateEvent<Game extends EGame> {
-  games: ILobbyGame<Game>[];
+export interface LobbyUpdateEvent<Game extends GameType> {
+  games: LobbyGame<Game>[];
 }

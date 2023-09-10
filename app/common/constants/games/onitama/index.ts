@@ -1,91 +1,91 @@
-import { ECardType, IGameOptions } from 'common/types/onitama';
+import { CardType, GameOptions } from 'common/types/onitama';
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 2,
   maxPlayersCount: 2,
 };
 
-export const ALL_CARDS: Record<ECardType, number[][]> = {
-  [ECardType.TIGER]: [
+export const ALL_CARDS: Record<CardType, number[][]> = {
+  [CardType.TIGER]: [
     [+2, 0],
     [-1, 0],
   ],
-  [ECardType.DRAGON]: [
+  [CardType.DRAGON]: [
     [+1, -2],
     [+1, +2],
     [-1, -1],
     [-1, +1],
   ],
-  [ECardType.FROG]: [
+  [CardType.FROG]: [
     [0, -2],
     [+1, -1],
     [-1, +1],
   ],
-  [ECardType.RABBIT]: [
+  [CardType.RABBIT]: [
     [0, +2],
     [+1, +1],
     [-1, -1],
   ],
-  [ECardType.CRAB]: [
+  [CardType.CRAB]: [
     [0, -2],
     [+1, 0],
     [0, +2],
   ],
-  [ECardType.ELEPHANT]: [
+  [CardType.ELEPHANT]: [
     [+1, -1],
     [+1, +1],
     [0, -1],
     [0, +1],
   ],
-  [ECardType.GOOSE]: [
+  [CardType.GOOSE]: [
     [+1, -1],
     [0, -1],
     [0, +1],
     [-1, +1],
   ],
-  [ECardType.ROOSTER]: [
+  [CardType.ROOSTER]: [
     [+1, +1],
     [0, +1],
     [0, -1],
     [-1, -1],
   ],
-  [ECardType.MONKEY]: [
+  [CardType.MONKEY]: [
     [+1, -1],
     [+1, +1],
     [-1, +1],
     [-1, -1],
   ],
-  [ECardType.MANTIS]: [
+  [CardType.MANTIS]: [
     [+1, -1],
     [+1, +1],
     [-1, 0],
   ],
-  [ECardType.HORSE]: [
+  [CardType.HORSE]: [
     [+1, 0],
     [0, -1],
     [-1, 0],
   ],
-  [ECardType.OX]: [
+  [CardType.OX]: [
     [+1, 0],
     [0, +1],
     [-1, 0],
   ],
-  [ECardType.CRANE]: [
+  [CardType.CRANE]: [
     [-1, -1],
     [-1, +1],
     [+1, 0],
   ],
-  [ECardType.BOAR]: [
+  [CardType.BOAR]: [
     [+1, 0],
     [0, -1],
     [0, +1],
   ],
-  [ECardType.EEL]: [
+  [CardType.EEL]: [
     [+1, -1],
     [0, +1],
     [-1, -1],
   ],
-  [ECardType.COBRA]: [
+  [CardType.COBRA]: [
     [+1, +1],
     [0, -1],
     [-1, +1],

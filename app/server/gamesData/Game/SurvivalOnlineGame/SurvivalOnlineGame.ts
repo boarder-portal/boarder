@@ -1,31 +1,38 @@
 import times from 'lodash/times';
 
-import { EGame } from 'common/types/game';
-import { EBiome, EDirection, EGameServerEvent, ICell, IGame, IPlayer } from 'common/types/survivalOnline';
+import { GameType } from 'common/types/game';
+import {
+  BiomeType,
+  Cell,
+  Direction,
+  Game,
+  GameServerEventType,
+  Player as PlayerModel,
+} from 'common/types/survivalOnline';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { getRandomElement } from 'common/utilities/random';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Base from 'server/gamesData/Game/SurvivalOnlineGame/entities/Base';
 import Player from 'server/gamesData/Game/SurvivalOnlineGame/entities/Player';
 import Tree from 'server/gamesData/Game/SurvivalOnlineGame/entities/Tree';
 import Zombie from 'server/gamesData/Game/SurvivalOnlineGame/entities/Zombie';
 
-export type TEntity = Base | Player | Tree | Zombie;
+export type Entity = Base | Player | Tree | Zombie;
 
-export type TMapEntity = Base | Player | Tree | Zombie;
+export type MapEntity = Base | Player | Tree | Zombie;
 
-export type TMovingEntity = Player | Zombie;
+export type MovingEntity = Player | Zombie;
 
-export interface IServerCell<Entity extends TMapEntity = TMapEntity> {
+export interface ServerCell<Entity extends MapEntity = MapEntity> {
   x: number;
   y: number;
-  biome: EBiome;
+  biome: BiomeType;
   entity: Entity | null;
 }
 
-export interface IServerCellWithEntity<Entity extends TMapEntity> extends IServerCell<Entity> {
+export interface ServerCellWithEntity<Entity extends MapEntity> extends ServerCell<Entity> {
   entity: Entity;
 }
 
@@ -33,11 +40,11 @@ const MAP_WIDTH = 101;
 const MAP_HEIGHT = 101;
 
 const EDGE_CELLS: { x: number; y: number }[] = [];
-const DIRECTIONS_DIFFS: Record<EDirection, { x: number; y: number }> = {
-  [EDirection.UP]: { x: 0, y: -1 },
-  [EDirection.DOWN]: { x: 0, y: +1 },
-  [EDirection.LEFT]: { x: -1, y: 0 },
-  [EDirection.RIGHT]: { x: +1, y: 0 },
+const DIRECTIONS_DIFFS: Record<Direction, { x: number; y: number }> = {
+  [Direction.UP]: { x: 0, y: -1 },
+  [Direction.DOWN]: { x: 0, y: +1 },
+  [Direction.LEFT]: { x: -1, y: 0 },
+  [Direction.RIGHT]: { x: +1, y: 0 },
 };
 
 for (let x = 0; x < MAP_WIDTH; x++) {
@@ -55,13 +62,13 @@ const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 0.25);
 const ZOMBIES_MOVE_INTERVAL = 500;
 const ZOMBIES_GENERATE_INTERVAL = 30 * 1000;
 
-export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE> {
+export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONLINE> {
   players: Player[] = [];
-  map: IServerCell[][] = [];
+  map: ServerCell[][] = [];
   base: Base | null = null;
   zombies = new Set<Zombie>();
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.generateWorld();
 
     yield* this.all([
@@ -80,7 +87,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
         this.map[y].push({
           x,
           y,
-          biome: EBiome.GRASS,
+          biome: BiomeType.GRASS,
           entity: null,
         });
       });
@@ -118,18 +125,18 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     this.spawnZombies(START_ZOMBIE_COUNT);
   }
 
-  getCellInDirection(fromCell: IServerCell, direction: EDirection): IServerCell | null {
+  getCellInDirection(fromCell: ServerCell, direction: Direction): ServerCell | null {
     const { x: dx, y: dy } = DIRECTIONS_DIFFS[direction];
 
     return this.map[fromCell.y + dy]?.[fromCell.x + dx] ?? null;
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): PlayerModel[] {
     return this.getPlayersWithData((playerIndex) => this.players[playerIndex].toPlayerData());
   }
 
-  getRandomFreeCell(): IServerCell {
-    let cell: IServerCell;
+  getRandomFreeCell(): ServerCell {
+    let cell: ServerCell;
 
     do {
       const randomIndex = Math.floor(Math.random() * MAP_WIDTH * MAP_HEIGHT);
@@ -146,10 +153,10 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     return true;
   }
 
-  moveEntityInDirection<Entity extends TMovingEntity>(
+  moveEntityInDirection<Entity extends MovingEntity>(
     entity: Entity,
-    direction: EDirection,
-  ): [] | [IServerCellWithEntity<Entity>] | [IServerCell, IServerCellWithEntity<Entity>] {
+    direction: Direction,
+  ): [] | [ServerCellWithEntity<Entity>] | [ServerCell, ServerCellWithEntity<Entity>] {
     const { cell } = entity;
     const cellInDirection = this.getCellInDirection(cell, direction);
 
@@ -160,23 +167,23 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
       this.removeEntity(cell);
 
       if (entity instanceof Player) {
-        this.players[entity.index].cell = cellInDirection as IServerCellWithEntity<Player>;
+        this.players[entity.index].cell = cellInDirection as ServerCellWithEntity<Player>;
       }
 
-      return [cell, cellInDirection as IServerCellWithEntity<Entity>];
+      return [cell, cellInDirection as ServerCellWithEntity<Entity>];
     }
 
     if (entity.direction !== direction) {
       entity.direction = direction;
 
-      return [entity.cell as IServerCellWithEntity<Entity>];
+      return [entity.cell as ServerCellWithEntity<Entity>];
     }
 
     return [];
   }
 
-  *moveZombies(): TGenerator {
-    const cellsToUpdate: IServerCell[] = [];
+  *moveZombies(): EntityGenerator {
+    const cellsToUpdate: ServerCell[] = [];
 
     for (const zombie of this.zombies) {
       cellsToUpdate.push(...zombie.move());
@@ -185,31 +192,31 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     this.sendGameUpdate([...new Set(cellsToUpdate)], false);
   }
 
-  placeEntity<Entity extends TMapEntity>(entity: Entity, cell: IServerCell): void {
+  placeEntity<Entity extends MapEntity>(entity: Entity, cell: ServerCell): void {
     cell.entity = entity;
   }
 
-  removeEntity(cell: IServerCellWithEntity<TEntity>): void {
-    (cell as IServerCell).entity = null;
+  removeEntity(cell: ServerCellWithEntity<Entity>): void {
+    (cell as ServerCell).entity = null;
   }
 
-  sendGameUpdate(cells: IServerCell[], withPlayers: boolean): void {
+  sendGameUpdate(cells: ServerCell[], withPlayers: boolean): void {
     if (cells.length) {
-      this.sendSocketEvent(EGameServerEvent.UPDATE_GAME, {
+      this.sendSocketEvent(GameServerEventType.UPDATE_GAME, {
         cells: cells.map(this.transformCell),
         players: withPlayers ? this.getGamePlayers() : null,
       });
     }
   }
 
-  spawnMapEntity<Entity extends TMapEntity>(entity: Entity, cell: IServerCell): Entity {
+  spawnMapEntity<Entity extends MapEntity>(entity: Entity, cell: ServerCell): Entity {
     this.spawnEntity(entity);
     this.placeEntity(entity, cell);
 
     return entity;
   }
 
-  *spawnZombie(cell: IServerCellWithEntity<Zombie>): TGenerator {
+  *spawnZombie(cell: ServerCellWithEntity<Zombie>): EntityGenerator {
     const zombie = this.spawnMapEntity(new Zombie(this, { cell }), cell);
 
     this.zombies.add(zombie);
@@ -225,7 +232,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
         break;
       }
 
-      let zombieCell: IServerCell;
+      let zombieCell: ServerCell;
 
       do {
         const { x, y } = getRandomElement(EDGE_CELLS);
@@ -233,11 +240,11 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
         zombieCell = this.map[y][x];
       } while (zombieCell.entity);
 
-      this.spawnTask(this.spawnZombie(zombieCell as IServerCellWithEntity<Zombie>));
+      this.spawnTask(this.spawnZombie(zombieCell as ServerCellWithEntity<Zombie>));
     }
   }
 
-  transformCell = (cell: IServerCell): ICell => {
+  transformCell = (cell: ServerCell): Cell => {
     return {
       x: cell.x,
       y: cell.y,
@@ -246,7 +253,7 @@ export default class SurvivalOnlineGame extends GameEntity<EGame.SURVIVAL_ONLINE
     };
   };
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       map: this.map.map((row) => row.map(this.transformCell)),
       players: this.getGamePlayers(),

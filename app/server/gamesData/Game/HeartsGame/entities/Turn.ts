@@ -1,32 +1,32 @@
-import { EGame } from 'common/types/game';
-import { ICard } from 'common/types/cards';
-import { EGameClientEvent, ITurn, ITurnPlayerData } from 'common/types/hearts';
+import { Card } from 'common/types/cards';
+import { GameType } from 'common/types/game';
+import { GameClientEventType, Turn as TurnModel, TurnPlayerData } from 'common/types/hearts';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import isDefined from 'common/utilities/isDefined';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
-export interface ITurnResult {
+export interface TurnResult {
   highestCardPlayerIndex: number;
-  takenCards: ICard[];
+  takenCards: Card[];
 }
 
-export interface ITurnOptions {
+export interface TurnOptions {
   startPlayerIndex: number;
 }
 
-export default class Turn extends TurnEntity<EGame.HEARTS, ITurnResult> {
+export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
   game: HeartsGame;
   hand: Hand;
 
-  playersData: ITurnPlayerData[];
+  playersData: TurnPlayerData[];
   startPlayerIndex: number;
 
-  constructor(hand: Hand, options: ITurnOptions) {
+  constructor(hand: Hand, options: TurnOptions) {
     super(hand, {
       activePlayerIndex: options.startPlayerIndex,
     });
@@ -39,12 +39,12 @@ export default class Turn extends TurnEntity<EGame.HEARTS, ITurnResult> {
     this.startPlayerIndex = options.startPlayerIndex;
   }
 
-  *lifecycle(): TGenerator<ITurnResult> {
+  *lifecycle(): EntityGenerator<TurnResult> {
     for (let i = 0; i < this.playersCount; i++) {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
-        chosenCardIndex = yield* this.waitForPlayerSocketEvent(EGameClientEvent.CHOOSE_CARD, {
+        chosenCardIndex = yield* this.waitForPlayerSocketEvent(GameClientEventType.CHOOSE_CARD, {
           playerIndex: this.activePlayerIndex,
         });
       }
@@ -71,7 +71,7 @@ export default class Turn extends TurnEntity<EGame.HEARTS, ITurnResult> {
     };
   }
 
-  toJSON(): ITurn {
+  toJSON(): TurnModel {
     return {
       startPlayerIndex: this.startPlayerIndex,
       activePlayerIndex: this.activePlayerIndex,

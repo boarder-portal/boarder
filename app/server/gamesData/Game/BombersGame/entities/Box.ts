@@ -1,33 +1,33 @@
-import { BONUS_PROBABILITY, BONUSES_WEIGHTS } from 'common/constants/games/bombers';
+import { BONUSES_WEIGHTS, BONUS_PROBABILITY } from 'common/constants/games/bombers';
 
-import { EGame } from 'common/types/game';
-import { EBonus, EObject, IBox } from 'common/types/bombers';
+import { BonusType, Box as BoxModel, ObjectType } from 'common/types/bombers';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { getWeightedRandomKey } from 'common/utilities/random';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
-export interface IBoxOptions {
+export interface BoxOptions {
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
 }
 
-export default class Box extends ServerEntity<EGame.BOMBERS, EBonus | null> {
+export default class Box extends ServerEntity<GameType.BOMBERS, BonusType | null> {
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
 
-  explodeTrigger = this.createTrigger<EBonus | null>();
+  explodeTrigger = this.createTrigger<BonusType | null>();
 
-  constructor(game: BombersGame, options: IBoxOptions) {
+  constructor(game: BombersGame, options: BoxOptions) {
     super(game);
 
     this.id = options.id;
     this.cell = options.cell;
   }
 
-  *lifecycle(): TGenerator<EBonus | null> {
+  *lifecycle(): EntityGenerator<BonusType | null> {
     return yield* this.explodeTrigger;
   }
 
@@ -35,9 +35,9 @@ export default class Box extends ServerEntity<EGame.BOMBERS, EBonus | null> {
     this.explodeTrigger(Math.random() < BONUS_PROBABILITY ? getWeightedRandomKey(BONUSES_WEIGHTS) : null);
   }
 
-  toJSON(): IBox {
+  toJSON(): BoxModel {
     return {
-      type: EObject.BOX,
+      type: ObjectType.BOX,
       id: this.id,
     };
   }

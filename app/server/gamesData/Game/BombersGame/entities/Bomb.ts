@@ -2,42 +2,41 @@ import mapValues from 'lodash/mapValues';
 
 import { SUPER_BOMB_DAMAGE, SUPER_BOMB_MAX_PIERCED_OBJECTS_COUNT } from 'common/constants/games/bombers';
 
-import { EGame } from 'common/types/game';
-import { EDirection, ELine, EObject, IBomb, IHitPlayer, TExplodedDirections } from 'common/types/bombers';
-import { ITimestamp } from 'common/types';
+import { Bomb as BombModel, Direction, ExplodedDirections, HitPlayer, Line, ObjectType } from 'common/types/bombers';
+import { GameType } from 'common/types/game';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 import Timestamp from 'common/utilities/Timestamp';
+import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
-import BombersGame, { IServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
+import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
 import Wall from 'server/gamesData/Game/BombersGame/entities/Wall';
 
-export interface IBombOptions {
+export interface BombOptions {
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
   range: number;
   explodesAt: Timestamp;
   isSuperBomb: boolean;
   isSuperRange: boolean;
 }
 
-export interface IExplosionResult {
-  hitPlayers: IHitPlayer[];
+export interface ExplosionResult {
+  hitPlayers: HitPlayer[];
   explodedBoxes: Box[];
   destroyedWalls: Wall[];
-  explodedDirections: TExplodedDirections;
+  explodedDirections: ExplodedDirections;
 }
 
-const ALL_DIRECTIONS = Object.values(EDirection);
+const ALL_DIRECTIONS = Object.values(Direction);
 
-export default class Bomb extends ServerEntity<EGame.BOMBERS> {
+export default class Bomb extends ServerEntity<GameType.BOMBERS> {
   game: BombersGame;
 
   id: number;
-  cell: IServerCell;
+  cell: ServerCell;
   range: number;
   explodesAt: Timestamp;
   isSuperBomb: boolean;
@@ -45,7 +44,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
   explodeTrigger = this.createTrigger();
 
-  constructor(game: BombersGame, options: IBombOptions) {
+  constructor(game: BombersGame, options: BombOptions) {
     super(game);
 
     this.game = game;
@@ -57,22 +56,22 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
     this.isSuperRange = options.isSuperRange;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     yield* this.explodeTrigger;
   }
 
-  explode(): IExplosionResult {
+  explode(): ExplosionResult {
     this.explodeTrigger();
 
-    const hitPlayers: IHitPlayer[] = [];
+    const hitPlayers: HitPlayer[] = [];
     const explodedBoxes: Box[] = [];
     const destroyedWalls: Wall[] = [];
-    const explodedDirections: Record<ELine, { start: IServerCell; end: IServerCell }> = {
-      [ELine.HORIZONTAL]: {
+    const explodedDirections: Record<Line, { start: ServerCell; end: ServerCell }> = {
+      [Line.HORIZONTAL]: {
         start: this.cell,
         end: this.cell,
       },
-      [ELine.VERTICAL]: {
+      [Line.VERTICAL]: {
         start: this.cell,
         end: this.cell,
       },
@@ -80,7 +79,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
 
     const playersOccupiedCells = this.game.players.map((player) => player.getOccupiedCells());
 
-    const addCell = (cell: IServerCell, piercedObjectsCount: number, explodeWalls: boolean): void => {
+    const addCell = (cell: ServerCell, piercedObjectsCount: number, explodeWalls: boolean): void => {
       playersOccupiedCells.forEach((cells, playerIndex) => {
         if (cells.includes(cell)) {
           hitPlayers.push({
@@ -100,7 +99,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
     addCell(this.cell, 0, this.isSuperBomb);
 
     ALL_DIRECTIONS.forEach((direction) => {
-      let currentCell: IServerCell = this.cell;
+      let currentCell: ServerCell = this.cell;
       let piercedObjectsCount = 0;
 
       for (let i = 0; i < this.range; i++) {
@@ -121,7 +120,7 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
         if (explosionPassed || !currentCell.objects.some(BombersGame.isWall)) {
           const line = getDirectionLine(direction);
 
-          if (direction === EDirection.LEFT || direction === EDirection.UP) {
+          if (direction === Direction.LEFT || direction === Direction.UP) {
             explodedDirections[line].start = currentCell;
           } else {
             explodedDirections[line].end = currentCell;
@@ -149,13 +148,13 @@ export default class Bomb extends ServerEntity<EGame.BOMBERS> {
     };
   }
 
-  getCurrentTimestamps(): (ITimestamp | null | undefined)[] {
+  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
     return [this.explodesAt];
   }
 
-  toJSON(): IBomb {
+  toJSON(): BombModel {
     return {
-      type: EObject.BOMB,
+      type: ObjectType.BOMB,
       id: this.id,
       range: this.range,
       explodesAt: this.explodesAt,

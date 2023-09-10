@@ -1,57 +1,57 @@
 import pick from 'lodash/pick';
 
+import { GamePlayer } from 'common/types';
 import {
-  EGame,
-  TGameClientEvent,
-  TGameClientEventData,
-  TGameServerDatalessEvent,
-  TGameServerEvent,
-  TGameServerEventData,
-  TPlayerSettings,
+  GameClientEvent,
+  GameClientEventData,
+  GameServerDatalessEvent,
+  GameServerEvent,
+  GameServerEventData,
+  GameType,
+  PlayerSettings,
 } from 'common/types/game';
-import { IGamePlayer } from 'common/types';
 
-import Entity, { TEffectGenerator, TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import Entity, { EffectGenerator, EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
-import { ISendSocketEventOptions } from 'server/gamesData/Game/Game';
+import { SendSocketEventOptions } from 'server/gamesData/Game/Game';
 
-export interface IWaitForSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  validate?(data: unknown): asserts data is TGameClientEventData<Game, Event>;
+export interface WaitForSocketEventOptions<Game extends GameType, Event extends GameClientEvent<Game>> {
+  validate?(data: unknown): asserts data is GameClientEventData<Game, Event>;
 }
 
-export interface IWaitForSocketEventsOptions<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  validate?(event: Event, data: unknown): asserts data is TGameClientEventData<Game, Event>;
+export interface WaitForSocketEventsOptions<Game extends GameType, Event extends GameClientEvent<Game>> {
+  validate?(event: Event, data: unknown): asserts data is GameClientEventData<Game, Event>;
 }
 
-export interface IWaitForSocketEventResult<Game extends EGame, Event extends TGameClientEvent<Game>> {
-  data: TGameClientEventData<Game, Event>;
+export interface WaitForSocketEventResult<Game extends GameType, Event extends GameClientEvent<Game>> {
+  data: GameClientEventData<Game, Event>;
   playerIndex: number;
 }
 
-export type IWaitForSocketEventsResult<Game extends EGame, Event extends TGameClientEvent<Game>> = {
+export type WaitForSocketEventsResult<Game extends GameType, Event extends GameClientEvent<Game>> = {
   [E in Event]: {
     event: E;
-  } & IWaitForSocketEventResult<Game, E>;
+  } & WaitForSocketEventResult<Game, E>;
 }[Event];
 
-export interface IWaitForPlayerSocketEventOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
-  extends IWaitForSocketEventOptions<Game, Event> {
+export interface WaitForPlayerSocketEventOptions<Game extends GameType, Event extends GameClientEvent<Game>>
+  extends WaitForSocketEventOptions<Game, Event> {
   playerIndex: number;
 }
 
-export interface IWaitForPlayerSocketEventsOptions<Game extends EGame, Event extends TGameClientEvent<Game>>
-  extends IWaitForSocketEventsOptions<Game, Event> {
+export interface WaitForPlayerSocketEventsOptions<Game extends GameType, Event extends GameClientEvent<Game>>
+  extends WaitForSocketEventsOptions<Game, Event> {
   playerIndex: number;
 }
 
-export type TWaitForPlayerSocketEventsResult<Game extends EGame, Event extends TGameClientEvent<Game>> = {
+export type WaitForPlayerSocketEventsResult<Game extends GameType, Event extends GameClientEvent<Game>> = {
   [E in Event]: {
     event: E;
-    data: TGameClientEventData<Game, E>;
+    data: GameClientEventData<Game, E>;
   };
 }[Event];
 
-export default abstract class ServerEntity<Game extends EGame, Result = unknown> extends Entity<Game, Result> {
+export default abstract class ServerEntity<Game extends GameType, Result = unknown> extends Entity<Game, Result> {
   static #validate(data: unknown, validator?: (data: unknown) => unknown): boolean {
     try {
       validator?.(data);
@@ -66,15 +66,15 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
-  getPlayer(playerIndex: number): IGamePlayer<Game> {
+  getPlayer(playerIndex: number): GamePlayer<Game> {
     return this.context.game.players[playerIndex];
   }
 
-  getPlayerSettings(playerIndex: number): TPlayerSettings<Game> {
+  getPlayerSettings(playerIndex: number): PlayerSettings<Game> {
     return this.getPlayer(playerIndex)?.settings;
   }
 
-  getPlayers(): IGamePlayer<Game>[] {
+  getPlayers(): GamePlayer<Game>[] {
     return this.context.game.players;
   }
 
@@ -82,7 +82,7 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     return this.getPlayers().map(({ index }) => callback(index));
   }
 
-  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (IGamePlayer<Game> & { data: Data })[] {
+  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (GamePlayer<Game> & { data: Data })[] {
     return this.getPlayers().map((player) => ({
       ...pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']),
       data: callback(player.index),
@@ -93,11 +93,11 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     return this.getPlayers().length;
   }
 
-  *listenForEvent<Event extends TGameClientEvent<Game>, Result = void>(
+  *listenForEvent<Event extends GameClientEvent<Game>, Result = void>(
     event: Event,
-    callback: (result: IWaitForSocketEventResult<Game, Event>) => Result | void,
-    options?: IWaitForSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<Result> {
+    callback: (result: WaitForSocketEventResult<Game, Event>) => Result | void,
+    options?: WaitForSocketEventOptions<Game, Event>,
+  ): EffectGenerator<Result> {
     return yield (resolve, reject) => {
       return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
         if (this.paused) {
@@ -122,11 +122,11 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
-  *listenForPlayerEvent<Event extends TGameClientEvent<Game>, Result = void>(
+  *listenForPlayerEvent<Event extends GameClientEvent<Game>, Result = void>(
     event: Event,
-    callback: (data: TGameClientEventData<Game, Event>) => Result | void,
-    options: IWaitForPlayerSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<Result> {
+    callback: (data: GameClientEventData<Game, Event>) => Result | void,
+    options: WaitForPlayerSocketEventOptions<Game, Event>,
+  ): EffectGenerator<Result> {
     return yield (resolve, reject) => {
       return this.context.game.listenSocketEvent(
         event,
@@ -152,28 +152,28 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
-  sendSocketEvent<Event extends TGameServerDatalessEvent<Game>>(
+  sendSocketEvent<Event extends GameServerDatalessEvent<Game>>(
     event: Event,
     data?: undefined,
-    options?: ISendSocketEventOptions<Game>,
+    options?: SendSocketEventOptions<Game>,
   ): void;
-  sendSocketEvent<Event extends TGameServerEvent<Game>>(
+  sendSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
-    data: TGameServerEventData<Game, Event>,
-    options?: ISendSocketEventOptions<Game>,
+    data: GameServerEventData<Game, Event>,
+    options?: SendSocketEventOptions<Game>,
   ): void;
-  sendSocketEvent<Event extends TGameServerEvent<Game>>(
+  sendSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
-    data: TGameServerEventData<Game, Event>,
-    options?: ISendSocketEventOptions<Game>,
+    data: GameServerEventData<Game, Event>,
+    options?: SendSocketEventOptions<Game>,
   ): void {
     this.context.game.sendSocketEvent(event, data, options);
   }
 
-  *waitForPlayerSocketEvent<Event extends TGameClientEvent<Game>>(
+  *waitForPlayerSocketEvent<Event extends GameClientEvent<Game>>(
     event: Event,
-    options: IWaitForPlayerSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<TGameClientEventData<Game, Event>> {
+    options: WaitForPlayerSocketEventOptions<Game, Event>,
+  ): EffectGenerator<GameClientEventData<Game, Event>> {
     return yield (resolve) => {
       return this.context.game.listenSocketEvent(
         event,
@@ -191,14 +191,14 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
-  waitForPlayerSocketEvents<Event extends TGameClientEvent<Game>>(
+  waitForPlayerSocketEvents<Event extends GameClientEvent<Game>>(
     events: Event[],
-    options: IWaitForPlayerSocketEventsOptions<Game, Event>,
-  ): TEffectGenerator<TWaitForPlayerSocketEventsResult<Game, Event>> {
+    options: WaitForPlayerSocketEventsOptions<Game, Event>,
+  ): EffectGenerator<WaitForPlayerSocketEventsResult<Game, Event>> {
     const entity = this;
 
     return this.race(
-      events.map(function* (event): TGenerator<TWaitForPlayerSocketEventsResult<Game, Event>> {
+      events.map(function* (event): EntityGenerator<WaitForPlayerSocketEventsResult<Game, Event>> {
         return {
           event,
           data: yield* entity.waitForPlayerSocketEvent<Event>(event, {
@@ -212,10 +212,10 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     );
   }
 
-  *waitForSocketEvent<Event extends TGameClientEvent<Game>>(
+  *waitForSocketEvent<Event extends GameClientEvent<Game>>(
     event: Event,
-    options?: IWaitForSocketEventOptions<Game, Event>,
-  ): TEffectGenerator<IWaitForSocketEventResult<Game, Event>> {
+    options?: WaitForSocketEventOptions<Game, Event>,
+  ): EffectGenerator<WaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
       return this.context.game.listenSocketEvent(event, (data, playerIndex) => {
         if (this.paused) {
@@ -232,14 +232,14 @@ export default abstract class ServerEntity<Game extends EGame, Result = unknown>
     };
   }
 
-  waitForSocketEvents<Event extends TGameClientEvent<Game>>(
+  waitForSocketEvents<Event extends GameClientEvent<Game>>(
     events: Event[],
-    options?: IWaitForSocketEventsOptions<Game, Event>,
-  ): TEffectGenerator<IWaitForSocketEventsResult<Game, Event>> {
+    options?: WaitForSocketEventsOptions<Game, Event>,
+  ): EffectGenerator<WaitForSocketEventsResult<Game, Event>> {
     const entity = this;
 
     return this.race(
-      events.map(function* (event): TGenerator<IWaitForSocketEventsResult<Game, Event>> {
+      events.map(function* (event): EntityGenerator<WaitForSocketEventsResult<Game, Event>> {
         return {
           event,
           ...(yield* entity.waitForSocketEvent<Event>(event, {

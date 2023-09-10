@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import Flex from 'client/components/common/Flex/Flex';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
+import Flex from 'client/components/common/Flex/Flex';
 
-import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
+import { CreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-const SevenWondersCreateGameOptions: React.FC<ICreateGameOptionsProps<EGame.SEVEN_WONDERS>> = (props) => {
+const SevenWondersCreateGameOptions: React.FC<CreateGameOptionsProps<GameType.SEVEN_WONDERS>> = (props) => {
   const { options, changeOptions } = props;
 
   const handleIncludeLeadersChange = useCallback(

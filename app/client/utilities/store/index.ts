@@ -1,38 +1,38 @@
 import { createContext } from 'react';
 
-import { IUser } from 'common/types';
+import { User } from 'common/types';
 
-export interface IState {
-  user: IUser | null;
+export interface State {
+  user: User | null;
 }
 
-export interface IAtomListener {
+export interface AtomListener {
   (value: any): void;
 }
 
-type TListeners = Record<keyof IState, IAtomListener[]>;
+type Listeners = Record<keyof State, AtomListener[]>;
 
-export interface IStore {
-  value: IState;
-  listeners: TListeners;
+export interface Store {
+  value: State;
+  listeners: Listeners;
 }
 
-export function getInitialState(): IState {
+export function getInitialState(): State {
   return {
     user: null,
   };
 }
 
-export const StoreContext = createContext<IStore>({} as IStore);
+export const StoreContext = createContext<Store>({} as Store);
 
-export default function createStore(initialState: IState): IStore {
+export default function createStore(initialState: State): Store {
   return {
     value: initialState,
-    listeners: Object.keys(initialState).reduce<TListeners>((listeners, key) => {
+    listeners: Object.keys(initialState).reduce<Listeners>((listeners, key) => {
       return {
         ...listeners,
         [key]: [],
       };
-    }, {} as TListeners),
+    }, {} as Listeners),
   };
 }

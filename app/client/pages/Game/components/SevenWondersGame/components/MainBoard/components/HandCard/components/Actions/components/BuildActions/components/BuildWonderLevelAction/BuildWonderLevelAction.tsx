@@ -1,59 +1,59 @@
 import React, { useCallback } from 'react';
 
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { ECardActionType, IPlayer, TAction, TPayments } from 'common/types/sevenWonders';
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { Action, CardActionType, Payments, Player } from 'common/types/sevenWonders';
 
-import { ITradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
+import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
 
-import { useBoolean } from 'client/hooks/useBoolean';
+import useBoolean from 'client/hooks/useBoolean';
 
 import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 
-interface IBuildWonderLevelActionProps {
-  player: IPlayer;
-  buildType: EBuildType;
-  tradeVariants: ITradeVariant[];
-  onCardAction(action: TAction, payments?: TPayments): void;
+interface BuildWonderLevelActionProps {
+  player: Player;
+  buildType: BuildKind;
+  tradeVariants: TradeVariant[];
+  onCardAction(action: Action, payments?: Payments): void;
 }
 
-function getTitle(buildType: EBuildType): string {
+function getTitle(buildType: BuildKind): string {
   switch (buildType) {
-    case EBuildType.FREE:
-    case EBuildType.FREE_BY_BUILDING:
-    case EBuildType.FREE_BY_OWN_RESOURCES:
-    case EBuildType.OWN_RESOURCES_AND_COINS: {
+    case BuildKind.FREE:
+    case BuildKind.FREE_BY_BUILDING:
+    case BuildKind.FREE_BY_OWN_RESOURCES:
+    case BuildKind.OWN_RESOURCES_AND_COINS: {
       return 'Заложить';
     }
 
-    case EBuildType.WITH_TRADE: {
+    case BuildKind.WITH_TRADE: {
       return 'Заложить c торговлей';
     }
 
-    case EBuildType.ALREADY_BUILT: {
+    case BuildKind.ALREADY_BUILT: {
       return 'Уже построены';
     }
 
-    case EBuildType.NOT_ENOUGH_RESOURCES_OR_COINS:
-    case EBuildType.NOT_ALLOWED: {
+    case BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS:
+    case BuildKind.NOT_ALLOWED: {
       return 'Нельзя заложить';
     }
 
-    case EBuildType.FREE_WITH_EFFECT: {
+    case BuildKind.FREE_WITH_EFFECT: {
       throw new Error('Невозможный вариант');
     }
   }
 }
 
-const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) => {
+const BuildWonderLevelAction: React.FC<BuildWonderLevelActionProps> = (props) => {
   const { player, buildType, tradeVariants, onCardAction } = props;
 
   const { value: isTradeModalVisible, setTrue: openTradeModal, setFalse: closeTradeModal } = useBoolean(false);
 
   const build = useCallback(
-    (payments?: TPayments) => {
+    (payments?: Payments) => {
       onCardAction(
         {
-          type: ECardActionType.BUILD_WONDER_STAGE,
+          type: CardActionType.BUILD_WONDER_STAGE,
           stageIndex: player.data.builtStages.length,
         },
         payments,
@@ -64,18 +64,18 @@ const BuildWonderLevelAction: React.FC<IBuildWonderLevelActionProps> = (props) =
 
   const handleClick = useCallback(() => {
     if (
-      buildType === EBuildType.FREE ||
-      buildType === EBuildType.FREE_BY_OWN_RESOURCES ||
-      buildType === EBuildType.OWN_RESOURCES_AND_COINS ||
-      buildType === EBuildType.FREE_BY_BUILDING
+      buildType === BuildKind.FREE ||
+      buildType === BuildKind.FREE_BY_OWN_RESOURCES ||
+      buildType === BuildKind.OWN_RESOURCES_AND_COINS ||
+      buildType === BuildKind.FREE_BY_BUILDING
     ) {
       build();
-    } else if (buildType === EBuildType.WITH_TRADE) {
+    } else if (buildType === BuildKind.WITH_TRADE) {
       openTradeModal();
     }
   }, [build, buildType, openTradeModal]);
 
-  if (buildType === EBuildType.ALREADY_BUILT || buildType === EBuildType.NOT_ALLOWED) {
+  if (buildType === BuildKind.ALREADY_BUILT || buildType === BuildKind.NOT_ALLOWED) {
     return null;
   }
 

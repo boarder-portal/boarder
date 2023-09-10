@@ -1,20 +1,20 @@
-import { ECardId, ECardType, ICard } from 'common/types/sevenWonders/cards';
-import { EEffect } from 'common/types/sevenWonders/effects';
-import { ENeighborSide, EPlayerDirection, EResource, EScientificSymbol } from 'common/types/sevenWonders';
+import { NeighborSide, PlayerDirection, ResourceType, ScientificSymbolType } from 'common/types/sevenWonders';
+import { Card, CardId, CardType } from 'common/types/sevenWonders/cards';
+import { EffectType } from 'common/types/sevenWonders/effects';
 
-const CARDS_BY_AGE: ICard[][] = [
+const CARDS_BY_AGE: Card[][] = [
   // age 1
   [
     // manufactured goods
     {
-      id: ECardId.LOOM,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.LOOM,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.LOOM,
+              type: ResourceType.LOOM,
               count: 1,
             },
           ],
@@ -23,14 +23,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.GLASSWORKS,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.GLASSWORKS,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.GLASS,
+              type: ResourceType.GLASS,
               count: 1,
             },
           ],
@@ -39,14 +39,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.PRESS,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.PRESS,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.PAPYRUS,
+              type: ResourceType.PAPYRUS,
               count: 1,
             },
           ],
@@ -57,14 +57,14 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // raw materials
     {
-      id: ECardId.LUMBER_YARD,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.LUMBER_YARD,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 1,
             },
           ],
@@ -73,14 +73,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.STONE_PIT,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.STONE_PIT,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 1,
             },
           ],
@@ -89,14 +89,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.CLAY_POOL,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.CLAY_POOL,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 1,
             },
           ],
@@ -105,14 +105,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.ORE_VEIN,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.ORE_VEIN,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 1,
             },
           ],
@@ -121,18 +121,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.TREE_FARM,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.TREE_FARM,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 1,
             },
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 1,
             },
           ],
@@ -144,18 +144,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [6],
     },
     {
-      id: ECardId.EXCAVATION,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.EXCAVATION,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 1,
             },
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 1,
             },
           ],
@@ -167,18 +167,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [4],
     },
     {
-      id: ECardId.CLAY_PIT,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.CLAY_PIT,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 1,
             },
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 1,
             },
           ],
@@ -190,18 +190,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3],
     },
     {
-      id: ECardId.TIMBER_YARD,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.TIMBER_YARD,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 1,
             },
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 1,
             },
           ],
@@ -213,18 +213,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3],
     },
     {
-      id: ECardId.FOREST_CAVE,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.FOREST_CAVE,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 1,
             },
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 1,
             },
           ],
@@ -236,18 +236,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [5],
     },
     {
-      id: ECardId.MINE,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.MINE,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 1,
             },
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 1,
             },
           ],
@@ -261,11 +261,11 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // civilian
     {
-      id: ECardId.PAWNSHOP,
-      type: ECardType.CIVILIAN,
+      id: CardId.PAWNSHOP,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 3,
           },
@@ -274,11 +274,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [4, 7],
     },
     {
-      id: ECardId.BATHS,
-      type: ECardType.CIVILIAN,
+      id: CardId.BATHS,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 3,
           },
@@ -287,7 +287,7 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
         ],
@@ -295,11 +295,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.ALTAR,
-      type: ECardType.CIVILIAN,
+      id: CardId.ALTAR,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 2,
           },
@@ -308,11 +308,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.THEATER,
-      type: ECardType.CIVILIAN,
+      id: CardId.THEATER,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 2,
           },
@@ -323,11 +323,11 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // commercial
     {
-      id: ECardId.TAVERN,
-      type: ECardType.COMMERCIAL,
+      id: CardId.TAVERN,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             coins: 5,
           },
@@ -336,40 +336,40 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [4, 5, 7],
     },
     {
-      id: ECardId.EAST_TRADING_POST,
-      type: ECardType.COMMERCIAL,
+      id: CardId.EAST_TRADING_POST,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.TRADE,
-          sources: [ENeighborSide.RIGHT],
+          type: EffectType.TRADE,
+          sources: [NeighborSide.RIGHT],
           price: 1,
-          resources: [ECardType.RAW_MATERIAL],
+          resources: [CardType.RAW_MATERIAL],
         },
       ],
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.WEST_TRADING_POST,
-      type: ECardType.COMMERCIAL,
+      id: CardId.WEST_TRADING_POST,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.TRADE,
-          sources: [ENeighborSide.LEFT],
+          type: EffectType.TRADE,
+          sources: [NeighborSide.LEFT],
           price: 1,
-          resources: [ECardType.RAW_MATERIAL],
+          resources: [CardType.RAW_MATERIAL],
         },
       ],
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.MARKETPLACE,
-      type: ECardType.COMMERCIAL,
+      id: CardId.MARKETPLACE,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.TRADE,
-          sources: [ENeighborSide.LEFT, ENeighborSide.RIGHT],
+          type: EffectType.TRADE,
+          sources: [NeighborSide.LEFT, NeighborSide.RIGHT],
           price: 1,
-          resources: [ECardType.MANUFACTURED_GOODS],
+          resources: [CardType.MANUFACTURED_GOODS],
         },
       ],
       minPlayersCounts: [3, 6],
@@ -377,18 +377,18 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // military
     {
-      id: ECardId.STOCKADE,
-      type: ECardType.MILITARY,
+      id: CardId.STOCKADE,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 1,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
         ],
@@ -396,18 +396,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.BARRACKS,
-      type: ECardType.MILITARY,
+      id: CardId.BARRACKS,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 1,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
         ],
@@ -415,18 +415,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.GUARD_TOWER,
-      type: ECardType.MILITARY,
+      id: CardId.GUARD_TOWER,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 1,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
         ],
@@ -436,18 +436,18 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // scientific
     {
-      id: ECardId.APOTHECARY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.APOTHECARY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.COMPASS],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.COMPASS],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
@@ -455,18 +455,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.WORKSHOP,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.WORKSHOP,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.GEAR],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.GEAR],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
@@ -474,18 +474,18 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.SCRIPTORIUM,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.SCRIPTORIUM,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.TABLET],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.TABLET],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -498,14 +498,14 @@ const CARDS_BY_AGE: ICard[][] = [
   [
     // manufactured goods
     {
-      id: ECardId.LOOM,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.LOOM,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.LOOM,
+              type: ResourceType.LOOM,
               count: 1,
             },
           ],
@@ -514,14 +514,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.GLASSWORKS,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.GLASSWORKS,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.GLASS,
+              type: ResourceType.GLASS,
               count: 1,
             },
           ],
@@ -530,14 +530,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.PRESS,
-      type: ECardType.MANUFACTURED_GOODS,
+      id: CardId.PRESS,
+      type: CardType.MANUFACTURED_GOODS,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.PAPYRUS,
+              type: ResourceType.PAPYRUS,
               count: 1,
             },
           ],
@@ -548,14 +548,14 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // raw materials
     {
-      id: ECardId.SAWMILL,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.SAWMILL,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 2,
             },
           ],
@@ -567,14 +567,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.QUARRY,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.QUARRY,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 2,
             },
           ],
@@ -586,14 +586,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.BRICKYARD,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.BRICKYARD,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 2,
             },
           ],
@@ -605,14 +605,14 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.FOUNDRY,
-      type: ECardType.RAW_MATERIAL,
+      id: CardId.FOUNDRY,
+      type: CardType.RAW_MATERIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 2,
             },
           ],
@@ -626,11 +626,11 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // civilian
     {
-      id: ECardId.AQUEDUCT,
-      type: ECardType.CIVILIAN,
+      id: CardId.AQUEDUCT,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 5,
           },
@@ -639,20 +639,20 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 3,
           },
         ],
-        buildings: [ECardId.BATHS],
+        buildings: [CardId.BATHS],
       },
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.TEMPLE,
-      type: ECardType.CIVILIAN,
+      id: CardId.TEMPLE,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 3,
           },
@@ -661,28 +661,28 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
-        buildings: [ECardId.ALTAR],
+        buildings: [CardId.ALTAR],
       },
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.STATUE,
-      type: ECardType.CIVILIAN,
+      id: CardId.STATUE,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 4,
           },
@@ -691,24 +691,24 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
         ],
-        buildings: [ECardId.THEATER],
+        buildings: [CardId.THEATER],
       },
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.COURTHOUSE,
-      type: ECardType.CIVILIAN,
+      id: CardId.COURTHOUSE,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 4,
           },
@@ -717,37 +717,37 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
-        buildings: [ECardId.SCRIPTORIUM],
+        buildings: [CardId.SCRIPTORIUM],
       },
       minPlayersCounts: [3, 5],
     },
 
     // commercial
     {
-      id: ECardId.FORUM,
-      type: ECardType.COMMERCIAL,
+      id: CardId.FORUM,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.LOOM,
+              type: ResourceType.LOOM,
               count: 1,
             },
             {
-              type: EResource.GLASS,
+              type: ResourceType.GLASS,
               count: 1,
             },
             {
-              type: EResource.PAPYRUS,
+              type: ResourceType.PAPYRUS,
               count: 1,
             },
           ],
@@ -756,35 +756,35 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
         ],
-        buildings: [ECardId.EAST_TRADING_POST, ECardId.WEST_TRADING_POST],
+        buildings: [CardId.EAST_TRADING_POST, CardId.WEST_TRADING_POST],
       },
       minPlayersCounts: [3, 6, 7],
     },
     {
-      id: ECardId.CARAVANSERY,
-      type: ECardType.COMMERCIAL,
+      id: CardId.CARAVANSERY,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.RESOURCES,
+          type: EffectType.RESOURCES,
           variants: [
             {
-              type: EResource.CLAY,
+              type: ResourceType.CLAY,
               count: 1,
             },
             {
-              type: EResource.STONE,
+              type: ResourceType.STONE,
               count: 1,
             },
             {
-              type: EResource.ORE,
+              type: ResourceType.ORE,
               count: 1,
             },
             {
-              type: EResource.WOOD,
+              type: ResourceType.WOOD,
               count: 1,
             },
           ],
@@ -793,22 +793,22 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
         ],
-        buildings: [ECardId.MARKETPLACE],
+        buildings: [CardId.MARKETPLACE],
       },
       minPlayersCounts: [3, 5, 6],
     },
     {
-      id: ECardId.VINEYARD,
-      type: ECardType.COMMERCIAL,
+      id: CardId.VINEYARD,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.SELF, EPlayerDirection.RIGHT],
-          cardTypes: [ECardType.RAW_MATERIAL],
+          type: EffectType.CARDS_TYPE,
+          directions: [PlayerDirection.LEFT, PlayerDirection.SELF, PlayerDirection.RIGHT],
+          cardTypes: [CardType.RAW_MATERIAL],
           gain: {
             coins: 1,
           },
@@ -817,13 +817,13 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.BAZAR,
-      type: ECardType.COMMERCIAL,
+      id: CardId.BAZAR,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.SELF, EPlayerDirection.RIGHT],
-          cardTypes: [ECardType.MANUFACTURED_GOODS],
+          type: EffectType.CARDS_TYPE,
+          directions: [PlayerDirection.LEFT, PlayerDirection.SELF, PlayerDirection.RIGHT],
+          cardTypes: [CardType.MANUFACTURED_GOODS],
           gain: {
             coins: 2,
           },
@@ -834,18 +834,18 @@ const CARDS_BY_AGE: ICard[][] = [
 
     // military
     {
-      id: ECardId.WALLS,
-      type: ECardType.MILITARY,
+      id: CardId.WALLS,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 2,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 3,
           },
         ],
@@ -853,22 +853,22 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.TRAINING_GROUND,
-      type: ECardType.MILITARY,
+      id: CardId.TRAINING_GROUND,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 2,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
         ],
@@ -876,148 +876,148 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [4, 6, 7],
     },
     {
-      id: ECardId.STABLES,
-      type: ECardType.MILITARY,
+      id: CardId.STABLES,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 2,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
         ],
-        buildings: [ECardId.APOTHECARY],
+        buildings: [CardId.APOTHECARY],
       },
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.ARCHERY_RANGE,
-      type: ECardType.MILITARY,
+      id: CardId.ARCHERY_RANGE,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 2,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
         ],
-        buildings: [ECardId.WORKSHOP],
+        buildings: [CardId.WORKSHOP],
       },
       minPlayersCounts: [3, 6],
     },
 
     // scientific
     {
-      id: ECardId.DISPENSARY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.DISPENSARY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.COMPASS],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.COMPASS],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
-        buildings: [ECardId.APOTHECARY],
+        buildings: [CardId.APOTHECARY],
       },
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.LABORATORY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.LABORATORY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.GEAR],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.GEAR],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
-        buildings: [ECardId.WORKSHOP],
+        buildings: [CardId.WORKSHOP],
       },
       minPlayersCounts: [3, 5],
     },
     {
-      id: ECardId.LIBRARY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.LIBRARY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.TABLET],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.TABLET],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 2,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
-        buildings: [ECardId.SCRIPTORIUM],
+        buildings: [CardId.SCRIPTORIUM],
       },
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.SCHOOL,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.SCHOOL,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.TABLET],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.TABLET],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -1030,11 +1030,11 @@ const CARDS_BY_AGE: ICard[][] = [
   [
     // civilian
     {
-      id: ECardId.PANTHEON,
-      type: ECardType.CIVILIAN,
+      id: CardId.PANTHEON,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 7,
           },
@@ -1043,36 +1043,36 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
-        buildings: [ECardId.TEMPLE],
+        buildings: [CardId.TEMPLE],
       },
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.GARDENS,
-      type: ECardType.CIVILIAN,
+      id: CardId.GARDENS,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 5,
           },
@@ -1081,24 +1081,24 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
         ],
-        buildings: [ECardId.STATUE],
+        buildings: [CardId.STATUE],
       },
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.TOWN_HALL,
-      type: ECardType.CIVILIAN,
+      id: CardId.TOWN_HALL,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 6,
           },
@@ -1107,15 +1107,15 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 2,
           },
         ],
@@ -1123,11 +1123,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 5, 6],
     },
     {
-      id: ECardId.PALACE,
-      type: ECardType.CIVILIAN,
+      id: CardId.PALACE,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 8,
           },
@@ -1136,31 +1136,31 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
         ],
@@ -1168,11 +1168,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.SENATE,
-      type: ECardType.CIVILIAN,
+      id: CardId.SENATE,
+      type: CardType.CIVILIAN,
       effects: [
         {
-          type: EEffect.GAIN,
+          type: EffectType.GAIN,
           gain: {
             points: 6,
           },
@@ -1181,108 +1181,108 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
         ],
-        buildings: [ECardId.LIBRARY],
+        buildings: [CardId.LIBRARY],
       },
       minPlayersCounts: [3, 5],
     },
 
     // commercial
     {
-      id: ECardId.HAVEN,
-      type: ECardType.COMMERCIAL,
+      id: CardId.HAVEN,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.RAW_MATERIAL],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.RAW_MATERIAL],
           gain: {
             points: 1,
             coins: 1,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
         ],
-        buildings: [ECardId.FORUM],
+        buildings: [CardId.FORUM],
       },
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.LIGHTHOUSE,
-      type: ECardType.COMMERCIAL,
+      id: CardId.LIGHTHOUSE,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.COMMERCIAL],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.COMMERCIAL],
           gain: {
             points: 1,
             coins: 1,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
         ],
-        buildings: [ECardId.CARAVANSERY],
+        buildings: [CardId.CARAVANSERY],
       },
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.CHAMBER_OF_COMMERCE,
-      type: ECardType.COMMERCIAL,
+      id: CardId.CHAMBER_OF_COMMERCE,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.MANUFACTURED_GOODS],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.MANUFACTURED_GOODS],
           gain: {
             points: 2,
             coins: 2,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -1290,104 +1290,104 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [4, 6],
     },
     {
-      id: ECardId.ARENA,
-      type: ECardType.COMMERCIAL,
+      id: CardId.ARENA,
+      type: CardType.COMMERCIAL,
       effects: [
         {
-          type: EEffect.WONDER_LEVELS,
+          type: EffectType.WONDER_LEVELS,
           gain: {
             points: 1,
             coins: 3,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 2,
           },
         ],
-        buildings: [ECardId.DISPENSARY],
+        buildings: [CardId.DISPENSARY],
       },
       minPlayersCounts: [3, 5, 7],
     },
 
     // military
     {
-      id: ECardId.FORTIFICATIONS,
-      type: ECardType.MILITARY,
+      id: CardId.FORTIFICATIONS,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 3,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 3,
           },
         ],
-        buildings: [ECardId.WALLS],
+        buildings: [CardId.WALLS],
       },
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.CIRCUS,
-      type: ECardType.MILITARY,
+      id: CardId.CIRCUS,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 3,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 3,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
         ],
-        buildings: [ECardId.TRAINING_GROUND],
+        buildings: [CardId.TRAINING_GROUND],
       },
       minPlayersCounts: [4, 5, 6],
     },
     {
-      id: ECardId.ARSENAL,
-      type: ECardType.MILITARY,
+      id: CardId.ARSENAL,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 3,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
@@ -1395,198 +1395,198 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [3, 4, 7],
     },
     {
-      id: ECardId.SIEGE_WORKSHOP,
-      type: ECardType.MILITARY,
+      id: CardId.SIEGE_WORKSHOP,
+      type: CardType.MILITARY,
       effects: [
         {
-          type: EEffect.SHIELDS,
+          type: EffectType.SHIELDS,
           count: 3,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 3,
           },
         ],
-        buildings: [ECardId.LABORATORY],
+        buildings: [CardId.LABORATORY],
       },
       minPlayersCounts: [3, 5],
     },
 
     // scientific
     {
-      id: ECardId.LODGE,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.LODGE,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.COMPASS],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.COMPASS],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
-        buildings: [ECardId.DISPENSARY],
+        buildings: [CardId.DISPENSARY],
       },
       minPlayersCounts: [3, 6],
     },
     {
-      id: ECardId.OBSERVATORY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.OBSERVATORY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.GEAR],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.GEAR],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
-        buildings: [ECardId.LABORATORY],
+        buildings: [CardId.LABORATORY],
       },
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.UNIVERSITY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.UNIVERSITY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.TABLET],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.TABLET],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
-        buildings: [ECardId.LIBRARY],
+        buildings: [CardId.LIBRARY],
       },
       minPlayersCounts: [3, 4],
     },
     {
-      id: ECardId.ACADEMY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.ACADEMY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.COMPASS],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.COMPASS],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 3,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
-        buildings: [ECardId.SCHOOL],
+        buildings: [CardId.SCHOOL],
       },
       minPlayersCounts: [3, 7],
     },
     {
-      id: ECardId.STUDY,
-      type: ECardType.SCIENTIFIC,
+      id: CardId.STUDY,
+      type: CardType.SCIENTIFIC,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.GEAR],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.GEAR],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
-        buildings: [ECardId.SCHOOL],
+        buildings: [CardId.SCHOOL],
       },
       minPlayersCounts: [3, 5],
     },
 
     // guilds
     {
-      id: ECardId.WORKERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.WORKERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.RAW_MATERIAL],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.RAW_MATERIAL],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
         ],
@@ -1594,26 +1594,26 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.CRAFTSMENS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.CRAFTSMENS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.MANUFACTURED_GOODS],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.MANUFACTURED_GOODS],
           gain: {
             points: 2,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 2,
           },
         ],
@@ -1621,30 +1621,30 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.TRADERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.TRADERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.COMMERCIAL],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.COMMERCIAL],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
@@ -1652,30 +1652,30 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.PHILOSOPHERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.PHILOSOPHERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.SCIENTIFIC],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.SCIENTIFIC],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 3,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -1683,26 +1683,26 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.SPIES_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.SPIES_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.MILITARY],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.MILITARY],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 3,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
@@ -1710,29 +1710,29 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.STRATEGISTS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.STRATEGISTS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.LOSSES,
+          type: EffectType.LOSSES,
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
@@ -1740,46 +1740,46 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.SHIPOWNERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.SHIPOWNERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.RAW_MATERIAL],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.RAW_MATERIAL],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.MANUFACTURED_GOODS],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.MANUFACTURED_GOODS],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.GUILD],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.GUILD],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.SELF],
+          directions: [PlayerDirection.SELF],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 3,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
@@ -1787,26 +1787,26 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.SCIENTISTS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.SCIENTISTS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.SCIENTIFIC_SYMBOLS,
-          variants: [EScientificSymbol.GEAR, EScientificSymbol.COMPASS, EScientificSymbol.TABLET],
+          type: EffectType.SCIENTIFIC_SYMBOLS,
+          variants: [ScientificSymbolType.GEAR, ScientificSymbolType.COMPASS, ScientificSymbolType.TABLET],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 2,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 2,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -1814,30 +1814,30 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.MAGISTRATES_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.MAGISTRATES_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.CIVILIAN],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.CIVILIAN],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 3,
           },
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
@@ -1845,29 +1845,29 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.BUILDERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.BUILDERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.WONDER_LEVELS,
+          type: EffectType.WONDER_LEVELS,
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.SELF, EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.SELF, PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 2,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 2,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
         ],
@@ -1875,11 +1875,11 @@ const CARDS_BY_AGE: ICard[][] = [
       minPlayersCounts: [],
     },
     {
-      id: ECardId.GAMERS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.GAMERS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.GAIN_BY_COINS,
+          type: EffectType.GAIN_BY_COINS,
           gain: {
             points: 1,
           },
@@ -1889,19 +1889,19 @@ const CARDS_BY_AGE: ICard[][] = [
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 1,
           },
         ],
@@ -1910,31 +1910,31 @@ const CARDS_BY_AGE: ICard[][] = [
       fromLeadersExtension: true,
     },
     {
-      id: ECardId.COURTESANS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.COURTESANS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.COPY_CARD,
-          neighbors: [ENeighborSide.LEFT, ENeighborSide.RIGHT],
-          cardType: ECardType.LEADER,
+          type: EffectType.COPY_CARD,
+          neighbors: [NeighborSide.LEFT, NeighborSide.RIGHT],
+          cardType: CardType.LEADER,
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],
@@ -1943,34 +1943,34 @@ const CARDS_BY_AGE: ICard[][] = [
       fromLeadersExtension: true,
     },
     {
-      id: ECardId.DIPLOMATS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.DIPLOMATS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.LEADER],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.LEADER],
           gain: {
             points: 1,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.STONE,
+            type: ResourceType.STONE,
             count: 1,
           },
           {
-            type: EResource.WOOD,
+            type: ResourceType.WOOD,
             count: 1,
           },
           {
-            type: EResource.GLASS,
+            type: ResourceType.GLASS,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
         ],
@@ -1979,34 +1979,34 @@ const CARDS_BY_AGE: ICard[][] = [
       fromLeadersExtension: true,
     },
     {
-      id: ECardId.ARCHITECTS_GUILD,
-      type: ECardType.GUILD,
+      id: CardId.ARCHITECTS_GUILD,
+      type: CardType.GUILD,
       effects: [
         {
-          type: EEffect.CARDS_TYPE,
-          cardTypes: [ECardType.GUILD],
+          type: EffectType.CARDS_TYPE,
+          cardTypes: [CardType.GUILD],
           gain: {
             points: 3,
           },
-          directions: [EPlayerDirection.LEFT, EPlayerDirection.RIGHT],
+          directions: [PlayerDirection.LEFT, PlayerDirection.RIGHT],
         },
       ],
       price: {
         resources: [
           {
-            type: EResource.ORE,
+            type: ResourceType.ORE,
             count: 3,
           },
           {
-            type: EResource.CLAY,
+            type: ResourceType.CLAY,
             count: 1,
           },
           {
-            type: EResource.PAPYRUS,
+            type: ResourceType.PAPYRUS,
             count: 1,
           },
           {
-            type: EResource.LOOM,
+            type: ResourceType.LOOM,
             count: 1,
           },
         ],

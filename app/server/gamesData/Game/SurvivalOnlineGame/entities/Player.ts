@@ -1,46 +1,46 @@
-import { EGame } from 'common/types/game';
-import { EDirection, EGameClientEvent, EObject, IPlayerData, IPlayerObject } from 'common/types/survivalOnline';
+import { GameType } from 'common/types/game';
+import { Direction, GameClientEventType, ObjectType, PlayerData, PlayerObject } from 'common/types/survivalOnline';
 
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
-import PlayerEntity, { IPlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import PlayerEntity, { PlayerOptions as CommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 
 import SurvivalOnlineGame, {
-  IServerCell,
-  IServerCellWithEntity,
+  ServerCell,
+  ServerCellWithEntity,
 } from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
-export interface IPlayerOptions extends ICommonPlayerOptions {
-  cell: IServerCell;
+export interface PlayerOptions extends CommonPlayerOptions {
+  cell: ServerCell;
 }
 
-export default class Player extends PlayerEntity<EGame.SURVIVAL_ONLINE> {
+export default class Player extends PlayerEntity<GameType.SURVIVAL_ONLINE> {
   game: SurvivalOnlineGame;
 
-  cell: IServerCellWithEntity<Player>;
-  direction = EDirection.DOWN;
+  cell: ServerCellWithEntity<Player>;
+  direction = Direction.DOWN;
 
-  constructor(game: SurvivalOnlineGame, options: IPlayerOptions) {
+  constructor(game: SurvivalOnlineGame, options: PlayerOptions) {
     super(game, options);
 
     this.game = game;
-    this.cell = options.cell as IServerCellWithEntity<Player>;
+    this.cell = options.cell as ServerCellWithEntity<Player>;
   }
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.spawnTask(this.listenForEvents());
 
     yield* this.eternity();
   }
 
-  *listenForEvents(): TGenerator {
+  *listenForEvents(): EntityGenerator {
     yield* this.all([
-      this.listenForOwnEvent(EGameClientEvent.MOVE_PLAYER, (direction) => {
+      this.listenForOwnEvent(GameClientEventType.MOVE_PLAYER, (direction) => {
         this.game.sendGameUpdate(this.game.moveEntityInDirection(this, direction), true);
       }),
     ]);
   }
 
-  toPlayerData(): IPlayerData {
+  toPlayerData(): PlayerData {
     return {
       cell: {
         ...this.game.transformCell(this.cell),
@@ -49,9 +49,9 @@ export default class Player extends PlayerEntity<EGame.SURVIVAL_ONLINE> {
     };
   }
 
-  toJSON(): IPlayerObject {
+  toJSON(): PlayerObject {
     return {
-      type: EObject.PLAYER,
+      type: ObjectType.PLAYER,
       index: this.index,
       direction: this.direction,
     };

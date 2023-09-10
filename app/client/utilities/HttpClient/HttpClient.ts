@@ -1,5 +1,5 @@
-import { IUser } from 'common/types';
-import { ILoginParams, IRegisterParams } from 'common/types/requestParams';
+import { User } from 'common/types';
+import { LoginParams, RegisterParams } from 'common/types/requestParams';
 
 class HttpClient {
   async get(url: string, params?: any) {
@@ -21,15 +21,15 @@ class HttpClient {
     return rawResponse.json();
   }
 
-  async getUser(): Promise<IUser | null> {
+  async getUser(): Promise<User | null> {
     return this.get('/api/user');
   }
 
-  async register(params: IRegisterParams): Promise<IUser> {
+  async register(params: RegisterParams): Promise<User> {
     return this.post('/api/register', params);
   }
 
-  async login(params: ILoginParams): Promise<IUser | null> {
+  async login(params: LoginParams): Promise<User | null> {
     return this.post('/api/login', params);
   }
 

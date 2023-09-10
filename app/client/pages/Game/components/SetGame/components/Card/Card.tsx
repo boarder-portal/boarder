@@ -1,21 +1,21 @@
-import React, { useCallback } from 'react';
-import times from 'lodash/times';
 import classNames from 'classnames';
+import times from 'lodash/times';
+import React, { useCallback } from 'react';
 
-import { ICard } from 'common/types/set';
+import { Card as CardModel } from 'common/types/set';
 
-import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';
 import Flex from 'client/components/common/Flex/Flex';
+import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';
 
 import styles from './Card.module.scss';
 
-interface ICardProps {
-  card: ICard;
+interface CardProps {
+  card: CardModel;
   isSelected: boolean;
-  onClick(card: ICard): void;
+  onClick(card: CardModel): void;
 }
 
-const Card: React.FC<ICardProps> = (props) => {
+const Card: React.FC<CardProps> = (props) => {
   const { card, isSelected, onClick } = props;
 
   const handleClick = useCallback(() => {

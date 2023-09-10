@@ -1,18 +1,18 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import Image from 'client/components/common/Image/Image';
 
 import styles from './BackCard.module.scss';
 
-interface IBackCardProps {
+interface BackCardProps {
   className?: string;
   style?: React.CSSProperties;
   type: number | 'leader';
   onClick?(): void;
 }
 
-const BackCard: React.FC<IBackCardProps> = (props) => {
+const BackCard: React.FC<BackCardProps> = (props) => {
   const { className, style, type, onClick } = props;
 
   return (

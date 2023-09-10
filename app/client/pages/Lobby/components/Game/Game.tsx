@@ -1,5 +1,5 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
@@ -7,7 +7,7 @@ import Text from 'client/components/common/Text/Text';
 
 import styles from './Game.module.scss';
 
-interface ILobbyGameProps {
+interface GameProps {
   className?: string;
   title: string;
   options: React.ReactNode;
@@ -17,7 +17,7 @@ interface ILobbyGameProps {
   onClick?(): void;
 }
 
-const Game: React.FC<ILobbyGameProps> = (props) => {
+const Game: React.FC<GameProps> = (props) => {
   const { className, title, options, players, maxPlayers, hasStarted, onClick } = props;
 
   return (

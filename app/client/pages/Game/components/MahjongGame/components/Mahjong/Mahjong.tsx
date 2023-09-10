@@ -1,35 +1,35 @@
-import { FC, memo } from 'react';
+import classNames from 'classnames';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
-import classNames from 'classnames';
+import { FC, memo } from 'react';
 
-import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 import { MIN_SCORE } from 'common/constants/games/mahjong';
+import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
-import { EFan, ESetConcealedType, IHandMahjong } from 'common/types/mahjong';
+import { FanKind, HandMahjong, SetConcealedType } from 'common/types/mahjong';
 
-import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import isDefined from 'common/utilities/isDefined';
+import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
 import { getPureFansScore } from 'common/utilities/mahjong/scoring';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
-import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
+import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
+import Tiles, { OpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
 import styles from './Mahjong.module.scss';
 
-interface IMahjongProps {
-  mahjong: IHandMahjong;
+interface MahjongProps {
+  mahjong: HandMahjong;
   tileWidth: number;
   showHand?: boolean;
   showWaits?: boolean;
   showScoreEval?: boolean;
 }
 
-const Mahjong: FC<IMahjongProps> = (props) => {
+const Mahjong: FC<MahjongProps> = (props) => {
   const { mahjong, tileWidth, showHand = true, showWaits = true, showScoreEval } = props;
 
   const groupedFans = groupBy(mahjong.fans, (fan) => fan.fan);
@@ -54,7 +54,7 @@ const Mahjong: FC<IMahjongProps> = (props) => {
                 key={index}
                 tiles={set.tiles}
                 tileWidth={tileWidth}
-                openType={set.concealedType === ESetConcealedType.CONCEALED ? EOpenType.SEMI_CONCEALED : EOpenType.OPEN}
+                openType={set.concealedType === SetConcealedType.CONCEALED ? OpenType.SEMI_CONCEALED : OpenType.OPEN}
               />
             ))}
 
@@ -102,13 +102,13 @@ const Mahjong: FC<IMahjongProps> = (props) => {
         }
       >
         {map(groupedFans, (fans, fanString) => {
-          const fan = fanString as EFan;
+          const fan = fanString as FanKind;
 
           return (
             <TableRow key={fan}>
               <TableCell className={styles.tableCell}>{FAN_NAMES[fan]}</TableCell>
               <TableCell className={styles.tableCell}>
-                {fan === EFan.FLOWER_TILES || fan === EFan.TILE_HOG ? (
+                {fan === FanKind.FLOWER_TILES || fan === FanKind.TILE_HOG ? (
                   <Tiles
                     tiles={fans
                       .filter(isSpecialFan)

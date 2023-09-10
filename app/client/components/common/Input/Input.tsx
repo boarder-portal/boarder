@@ -4,14 +4,14 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './Input.module.scss';
 
-interface IInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   className?: string;
   label: string;
   value: string;
   onChange(newValue: string): void;
 }
 
-const Input: FC<IInputProps> = (props) => {
+const Input: FC<InputProps> = (props) => {
   const { className, label, onChange, ...restProps } = props;
 
   const handleChange = useCallback(

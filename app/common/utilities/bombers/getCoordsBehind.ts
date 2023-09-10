@@ -1,22 +1,22 @@
-import { ICoords } from 'common/types';
-import { EDirection } from 'common/types/bombers';
+import { Coords } from 'common/types';
+import { Direction } from 'common/types/bombers';
 
-export default function getCoordsBehind(coords: ICoords, direction: EDirection): ICoords {
-  if (direction === EDirection.UP) {
+export default function getCoordsBehind(coords: Coords, direction: Direction): Coords {
+  if (direction === Direction.UP) {
     return {
       x: coords.x,
       y: coords.y - 1,
     };
   }
 
-  if (direction === EDirection.DOWN) {
+  if (direction === Direction.DOWN) {
     return {
       x: coords.x,
       y: coords.y + 1,
     };
   }
 
-  if (direction === EDirection.LEFT) {
+  if (direction === Direction.LEFT) {
     return {
       x: coords.x - 1,
       y: coords.y,

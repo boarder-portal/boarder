@@ -1,25 +1,25 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { TIME_TO_START } from 'common/constants/games/bombers';
 
-import { IExplodedDirection, IPlayer, IPlayerData, TMap } from 'common/types/bombers';
-import { TBombersImages } from 'client/pages/Game/components/BombersGame/types';
-import { ITimestamp } from 'common/types';
+import { BombersImages } from 'client/pages/Game/components/BombersGame/types';
+import { Timestamp } from 'common/types';
+import { ExplodedDirection, Map, Player, PlayerData } from 'common/types/bombers';
 
-import renderPlayer from 'client/pages/Game/components/BombersGame/utilities/renderPlayer';
 import renderCell from 'client/pages/Game/components/BombersGame/utilities/renderCell';
 import renderExplodedDirection from 'client/pages/Game/components/BombersGame/utilities/renderExplodedDirection';
+import renderPlayer from 'client/pages/Game/components/BombersGame/utilities/renderPlayer';
 
-export interface IRenderMapOptions {
+export interface RenderMapOptions {
   ctx: CanvasRenderingContext2D;
-  map: TMap;
-  playersData: IPlayerData[];
-  explodedDirections: Set<IExplodedDirection>;
-  startsAt: ITimestamp;
-  player: IPlayer | null;
-  images: TBombersImages;
+  map: Map;
+  playersData: PlayerData[];
+  explodedDirections: Set<ExplodedDirection>;
+  startsAt: Timestamp;
+  player: Player | null;
+  images: BombersImages;
 }
 
-export default function renderMap(options: IRenderMapOptions): void {
+export default function renderMap(options: RenderMapOptions): void {
   const { ctx, map, playersData, explodedDirections, startsAt, player, images } = options;
 
   map.forEach((row) => {

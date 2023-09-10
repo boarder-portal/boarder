@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react';
 
-import { ECardActionType, TAction, TPayments } from 'common/types/sevenWonders';
+import { Action, CardActionType, Payments } from 'common/types/sevenWonders';
 
-interface IDraftLeaderActionProps {
+interface DraftLeaderActionProps {
   className?: string;
-  onCardAction(action: TAction, payments?: TPayments): void;
+  onCardAction(action: Action, payments?: Payments): void;
 }
 
-const DraftLeaderAction: React.FC<IDraftLeaderActionProps> = (props) => {
+const DraftLeaderAction: React.FC<DraftLeaderActionProps> = (props) => {
   const { className, onCardAction } = props;
 
   const handleSelect = useCallback(() => {
     onCardAction({
-      type: ECardActionType.PICK_LEADER,
+      type: CardActionType.PICK_LEADER,
     });
   }, [onCardAction]);
 

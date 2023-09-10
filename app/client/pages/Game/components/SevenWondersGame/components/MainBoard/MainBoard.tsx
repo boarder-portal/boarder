@@ -1,74 +1,74 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
+import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { GameType } from 'common/types/game';
 import {
-  EAgePhase,
-  ECardActionType,
-  EGameClientEvent,
-  EGamePhase,
-  ENeighborSide,
-  IExecuteActionEvent,
-  IGameOptions,
-  IPlayer,
-  TAction,
-  TPayments,
+  Action,
+  AgePhaseType,
+  CardActionType,
+  ExecuteActionEvent,
+  GameClientEventType,
+  GameOptions,
+  GamePhaseType,
+  NeighborSide,
+  Payments,
+  Player,
 } from 'common/types/sevenWonders';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { ISevenWondersCourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { EGame } from 'common/types/game';
-import { TGameClientSocket } from 'common/types/socket';
+import { Card } from 'common/types/sevenWonders/cards';
+import { GameClientSocket } from 'common/types/socket';
 
-import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
+import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
 import getHand from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getHand';
 import getPlayerResourcePools from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/getPlayerResourcePools';
-import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
-import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
-import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
-import getResourceTradePrices from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getObjectSpecificResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getPlayerResourcePools/utilities/getObjectSpecificResources';
 import getResourcePoolsWithAdditionalResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
+import getResourceTradePrices from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
+import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
+import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
+import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
+import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
+import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
+import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
-import { usePrevious } from 'client/hooks/usePrevious';
+import usePrevious from 'client/hooks/usePrevious';
 
-import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
-import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
-import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 import Flex from 'client/components/common/Flex/Flex';
 import ArrowLeftIcon from 'client/components/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIcon';
+import BackCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/BackCard/BackCard';
+import HandCard from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/HandCard';
+import Wonder from 'client/pages/Game/components/SevenWondersGame/components/Wonder/Wonder';
 
-import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
+import { NEW_TURN, SELECT_SOUND, playSound } from 'client/sounds';
 
 import styles from './MainBoard.module.scss';
 
-interface IMainBoardProps {
+interface MainBoardProps {
   className?: string;
-  io: TGameClientSocket<EGame.SEVEN_WONDERS>;
-  gameOptions: IGameOptions;
-  player: IPlayer;
-  discard: ICard[];
+  io: GameClientSocket<GameType.SEVEN_WONDERS>;
+  gameOptions: GameOptions;
+  player: Player;
+  discard: Card[];
   age: number | null;
-  gamePhase: EGamePhase | null;
-  agePhase: EAgePhase | null;
-  leftNeighbor: IPlayer;
-  rightNeighbor: IPlayer;
+  gamePhase: GamePhaseType | null;
+  agePhase: AgePhaseType | null;
+  leftNeighbor: Player;
+  rightNeighbor: Player;
 }
 
-const MainBoard: React.FC<IMainBoardProps> = (props) => {
+const MainBoard: React.FC<MainBoardProps> = (props) => {
   const { className, io, gameOptions, player, discard, age, gamePhase, agePhase, leftNeighbor, rightNeighbor } = props;
 
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
-  const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<ISevenWondersCourtesansBuildInfo | null>(null);
+  const [courtesansBuildInfo, setCourtesansBuildInfo] = useState<CourtesansBuildInfo | null>(null);
 
   const cardsDirection = useMemo(() => getAgeDirection(gamePhase, age ?? 0), [age, gamePhase]);
 
   const chosenCardIndex = player.data.turn?.chosenActionEvent?.cardIndex;
 
-  const handleStartCopyingLeader = useCallback((cardIndex: number, action: TAction, payments?: TPayments) => {
+  const handleStartCopyingLeader = useCallback((cardIndex: number, action: Action, payments?: Payments) => {
     setCourtesansBuildInfo({
       cardIndex,
       action,
@@ -77,19 +77,19 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, []);
 
   const handleCardAction = useCallback(
-    (cardIndex: number, action: TAction, payments?: TPayments) => {
+    (cardIndex: number, action: Action, payments?: Payments) => {
       playSound(SELECT_SOUND);
       setCourtesansBuildInfo(null);
 
-      const data: IExecuteActionEvent = {
+      const data: ExecuteActionEvent = {
         cardIndex,
         action,
         payments,
       };
 
-      console.log(EGameClientEvent.EXECUTE_ACTION, data);
+      console.log(GameClientEventType.EXECUTE_ACTION, data);
 
-      io.emit(EGameClientEvent.EXECUTE_ACTION, data);
+      io.emit(GameClientEventType.EXECUTE_ACTION, data);
     },
     [io],
   );
@@ -97,7 +97,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   const cancelCard = useCallback(() => {
     playSound(SELECT_SOUND);
 
-    io.emit(EGameClientEvent.CANCEL_ACTION);
+    io.emit(GameClientEventType.CANCEL_ACTION);
   }, [io]);
 
   const handleClickHandSwitcher = useCallback(() => {
@@ -168,11 +168,11 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
 
   const wonderLevelBuildType = useMemo(() => {
     if (player.data.builtStages.length === city.wonders.length) {
-      return EBuildType.ALREADY_BUILT;
+      return BuildKind.ALREADY_BUILT;
     }
 
-    if (!getPossibleBuildActions(player).includes(ECardActionType.BUILD_WONDER_STAGE)) {
-      return EBuildType.NOT_ALLOWED;
+    if (!getPossibleBuildActions(player).includes(CardActionType.BUILD_WONDER_STAGE)) {
+      return BuildKind.NOT_ALLOWED;
     }
 
     return getBuildType(wonderLevelPrice, player, wonderLevelTradeVariants, 0);
@@ -185,7 +185,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
   }, [hand.length, prevHand.length]);
 
   useEffect(() => {
-    if (agePhase === EAgePhase.RECRUIT_LEADERS) {
+    if (agePhase === AgePhaseType.RECRUIT_LEADERS) {
       setIsViewingLeaders(false);
     }
   }, [agePhase]);
@@ -195,11 +195,11 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
       <div className={styles.wonderWrapper}>
         <Wonder player={player} />
 
-        {(gamePhase === EGamePhase.DRAFT_LEADERS || agePhase === EAgePhase.BUILD_STRUCTURES) &&
+        {(gamePhase === GamePhaseType.DRAFT_LEADERS || agePhase === AgePhaseType.BUILD_STRUCTURES) &&
           gameOptions.includeLeaders && (
             <BackCard
               className={styles.switchHand}
-              type={isViewingLeaders && agePhase === EAgePhase.BUILD_STRUCTURES ? age ?? 0 : 'leader'}
+              type={isViewingLeaders && agePhase === AgePhaseType.BUILD_STRUCTURES ? age ?? 0 : 'leader'}
               onClick={handleClickHandSwitcher}
             />
           )}
@@ -234,7 +234,7 @@ const MainBoard: React.FC<IMainBoardProps> = (props) => {
           ))}
         </Flex>
 
-        {cardsDirection === ENeighborSide.LEFT ? (
+        {cardsDirection === NeighborSide.LEFT ? (
           <ArrowLeftIcon className={styles.leftArrow} />
         ) : (
           <ArrowRightIcon className={styles.rightArrow} />

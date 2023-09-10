@@ -1,25 +1,25 @@
 import {
-  ECardActionType,
-  ECity,
-  ENeighborSide,
-  EPlayerDirection,
-  EResource,
-  EScientificSymbol,
-  ICity,
+  CardActionType,
+  City,
+  CityName,
+  NeighborSide,
+  PlayerDirection,
+  ResourceType,
+  ScientificSymbolType,
 } from 'common/types/sevenWonders';
-import { EEffect, EFreeCardPeriod, EFreeCardSource } from 'common/types/sevenWonders/effects';
-import { ECardType } from 'common/types/sevenWonders/cards';
+import { CardType } from 'common/types/sevenWonders/cards';
+import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/sevenWonders/effects';
 
-const CITIES: Record<ECity, ICity> = {
-  [ECity.RHODOS]: {
+const CITIES: Record<CityName, City> = {
+  [CityName.RHODOS]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.ORE,
+                type: ResourceType.ORE,
                 count: 1,
               },
             ],
@@ -30,14 +30,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -48,14 +48,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.SHIELDS,
+                type: EffectType.SHIELDS,
                 count: 2,
               },
             ],
@@ -64,14 +64,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 4,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -83,10 +83,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.ORE,
+                type: ResourceType.ORE,
                 count: 1,
               },
             ],
@@ -97,18 +97,18 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.SHIELDS,
+                type: EffectType.SHIELDS,
                 count: 1,
               },
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                   coins: 3,
@@ -121,18 +121,18 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 4,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.SHIELDS,
+                type: EffectType.SHIELDS,
                 count: 1,
               },
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 4,
                   coins: 4,
@@ -145,15 +145,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.ALEXANDRIA]: {
+  [CityName.ALEXANDRIA]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.GLASS,
+                type: ResourceType.GLASS,
                 count: 1,
               },
             ],
@@ -164,14 +164,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -182,29 +182,29 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.RESOURCES,
+                type: EffectType.RESOURCES,
                 variants: [
                   {
-                    type: EResource.CLAY,
+                    type: ResourceType.CLAY,
                     count: 1,
                   },
                   {
-                    type: EResource.ORE,
+                    type: ResourceType.ORE,
                     count: 1,
                   },
                   {
-                    type: EResource.WOOD,
+                    type: ResourceType.WOOD,
                     count: 1,
                   },
                   {
-                    type: EResource.STONE,
+                    type: ResourceType.STONE,
                     count: 1,
                   },
                 ],
@@ -215,14 +215,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.GLASS,
+                  type: ResourceType.GLASS,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -234,10 +234,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.GLASS,
+                type: ResourceType.GLASS,
                 count: 1,
               },
             ],
@@ -248,29 +248,29 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.RESOURCES,
+                type: EffectType.RESOURCES,
                 variants: [
                   {
-                    type: EResource.WOOD,
+                    type: ResourceType.WOOD,
                     count: 1,
                   },
                   {
-                    type: EResource.STONE,
+                    type: ResourceType.STONE,
                     count: 1,
                   },
                   {
-                    type: EResource.ORE,
+                    type: ResourceType.ORE,
                     count: 1,
                   },
                   {
-                    type: EResource.CLAY,
+                    type: ResourceType.CLAY,
                     count: 1,
                   },
                 ],
@@ -281,25 +281,25 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.RESOURCES,
+                type: EffectType.RESOURCES,
                 variants: [
                   {
-                    type: EResource.GLASS,
+                    type: ResourceType.GLASS,
                     count: 1,
                   },
                   {
-                    type: EResource.LOOM,
+                    type: ResourceType.LOOM,
                     count: 1,
                   },
                   {
-                    type: EResource.PAPYRUS,
+                    type: ResourceType.PAPYRUS,
                     count: 1,
                   },
                 ],
@@ -310,14 +310,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -328,15 +328,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.EPHESOS]: {
+  [CityName.EPHESOS]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.PAPYRUS,
+                type: ResourceType.PAPYRUS,
                 count: 1,
               },
             ],
@@ -347,14 +347,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -365,14 +365,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   coins: 9,
                 },
@@ -383,14 +383,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -402,10 +402,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.PAPYRUS,
+                type: ResourceType.PAPYRUS,
                 count: 1,
               },
             ],
@@ -416,14 +416,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 2,
                   coins: 4,
@@ -435,14 +435,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                   coins: 4,
@@ -454,22 +454,22 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 1,
                 },
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
                 {
-                  type: EResource.GLASS,
+                  type: ResourceType.GLASS,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 5,
                   coins: 4,
@@ -481,15 +481,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.BABYLON]: {
+  [CityName.BABYLON]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.CLAY,
+                type: ResourceType.CLAY,
                 count: 1,
               },
             ],
@@ -500,14 +500,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -518,15 +518,15 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.SCIENTIFIC_SYMBOLS,
-                variants: [EScientificSymbol.TABLET, EScientificSymbol.COMPASS, EScientificSymbol.GEAR],
+                type: EffectType.SCIENTIFIC_SYMBOLS,
+                variants: [ScientificSymbolType.TABLET, ScientificSymbolType.COMPASS, ScientificSymbolType.GEAR],
               },
             ],
           },
@@ -534,14 +534,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 4,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -553,10 +553,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.CLAY,
+                type: ResourceType.CLAY,
                 count: 1,
               },
             ],
@@ -567,18 +567,18 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -589,26 +589,26 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.GLASS,
+                  type: ResourceType.GLASS,
                   count: 1,
                 },
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.LAST_AGE_TURN,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.LAST_AGE_TURN,
                 count: 1,
-                source: EFreeCardSource.HAND,
+                source: FreeCardSourceType.HAND,
                 isFree: false,
                 possibleActions: [
-                  ECardActionType.BUILD_STRUCTURE,
-                  ECardActionType.BUILD_WONDER_STAGE,
-                  ECardActionType.DISCARD,
+                  CardActionType.BUILD_STRUCTURE,
+                  CardActionType.BUILD_WONDER_STAGE,
+                  CardActionType.DISCARD,
                 ],
               },
             ],
@@ -617,19 +617,19 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 1,
                 },
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.SCIENTIFIC_SYMBOLS,
-                variants: [EScientificSymbol.TABLET, EScientificSymbol.COMPASS, EScientificSymbol.GEAR],
+                type: EffectType.SCIENTIFIC_SYMBOLS,
+                variants: [ScientificSymbolType.TABLET, ScientificSymbolType.COMPASS, ScientificSymbolType.GEAR],
               },
             ],
           },
@@ -637,15 +637,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.OLYMPIA]: {
+  [CityName.OLYMPIA]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.WOOD,
+                type: ResourceType.WOOD,
                 count: 1,
               },
             ],
@@ -656,14 +656,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -674,28 +674,28 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.AGE,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.AGE,
                 count: 1,
                 cardTypes: [
-                  ECardType.RAW_MATERIAL,
-                  ECardType.MANUFACTURED_GOODS,
-                  ECardType.CIVILIAN,
-                  ECardType.COMMERCIAL,
-                  ECardType.SCIENTIFIC,
-                  ECardType.MILITARY,
-                  ECardType.GUILD,
+                  CardType.RAW_MATERIAL,
+                  CardType.MANUFACTURED_GOODS,
+                  CardType.CIVILIAN,
+                  CardType.COMMERCIAL,
+                  CardType.SCIENTIFIC,
+                  CardType.MILITARY,
+                  CardType.GUILD,
                 ],
-                source: EFreeCardSource.HAND,
+                source: FreeCardSourceType.HAND,
                 isFree: true,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
               },
             ],
           },
@@ -703,14 +703,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -722,10 +722,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.WOOD,
+                type: ResourceType.WOOD,
                 count: 1,
               },
             ],
@@ -736,17 +736,17 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.TRADE,
-                sources: [ENeighborSide.LEFT, ENeighborSide.RIGHT],
+                type: EffectType.TRADE,
+                sources: [NeighborSide.LEFT, NeighborSide.RIGHT],
                 price: 1,
-                resources: [ECardType.RAW_MATERIAL],
+                resources: [CardType.RAW_MATERIAL],
               },
             ],
           },
@@ -754,14 +754,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 5,
                 },
@@ -772,20 +772,20 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.COPY_CARD,
-                neighbors: [ENeighborSide.LEFT, ENeighborSide.RIGHT],
-                cardType: ECardType.GUILD,
+                type: EffectType.COPY_CARD,
+                neighbors: [NeighborSide.LEFT, NeighborSide.RIGHT],
+                cardType: CardType.GUILD,
               },
             ],
           },
@@ -793,15 +793,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.HALIKARNASSOS]: {
+  [CityName.HALIKARNASSOS]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.LOOM,
+                type: ResourceType.LOOM,
                 count: 1,
               },
             ],
@@ -812,14 +812,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -830,19 +830,19 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
                 count: 1,
-                source: EFreeCardSource.DISCARD,
+                source: FreeCardSourceType.DISCARD,
                 isFree: true,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
                 priority: 100,
               },
             ],
@@ -851,14 +851,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -870,10 +870,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.LOOM,
+                type: ResourceType.LOOM,
                 count: 1,
               },
             ],
@@ -884,25 +884,25 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 2,
                 },
               },
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
                 count: 1,
-                source: EFreeCardSource.DISCARD,
+                source: FreeCardSourceType.DISCARD,
                 isFree: true,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
                 priority: 100,
               },
             ],
@@ -911,25 +911,25 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 1,
                 },
               },
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
                 count: 1,
-                source: EFreeCardSource.DISCARD,
+                source: FreeCardSourceType.DISCARD,
                 isFree: true,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
                 priority: 100,
               },
             ],
@@ -938,27 +938,27 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.GLASS,
+                  type: ResourceType.GLASS,
                   count: 1,
                 },
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 1,
                 },
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
                 count: 1,
-                source: EFreeCardSource.DISCARD,
+                source: FreeCardSourceType.DISCARD,
                 isFree: true,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
                 priority: 100,
               },
             ],
@@ -967,15 +967,15 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.GIZAH]: {
+  [CityName.GIZAH]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.STONE,
+                type: ResourceType.STONE,
                 count: 1,
               },
             ],
@@ -986,14 +986,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -1004,14 +1004,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 5,
                 },
@@ -1022,14 +1022,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 4,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -1041,10 +1041,10 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.RESOURCES,
+            type: EffectType.RESOURCES,
             variants: [
               {
-                type: EResource.STONE,
+                type: ResourceType.STONE,
                 count: 1,
               },
             ],
@@ -1055,14 +1055,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
@@ -1074,14 +1074,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 5,
                 },
@@ -1093,14 +1093,14 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 3,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 5,
                 },
@@ -1112,18 +1112,18 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 1,
                 },
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 4,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 7,
                 },
@@ -1135,17 +1135,17 @@ const CITIES: Record<ECity, ICity> = {
       },
     ],
   },
-  [ECity.ROMA]: {
+  [CityName.ROMA]: {
     sides: [
       {
         effects: [
           {
-            type: EEffect.BUILD_CARD,
-            period: EFreeCardPeriod.LEADER_RECRUITMENT,
-            cardTypes: [ECardType.LEADER],
+            type: EffectType.BUILD_CARD,
+            period: FreeCardPeriodType.LEADER_RECRUITMENT,
+            cardTypes: [CardType.LEADER],
             isFree: true,
-            source: EFreeCardSource.LEADERS,
-            possibleActions: [ECardActionType.BUILD_STRUCTURE],
+            source: FreeCardSourceType.LEADERS,
+            possibleActions: [CardActionType.BUILD_STRUCTURE],
           },
         ],
         wonders: [
@@ -1153,22 +1153,22 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 1,
                 },
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 1,
                 },
                 {
-                  type: EResource.ORE,
+                  type: ResourceType.ORE,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 4,
                 },
@@ -1180,22 +1180,22 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 1,
                 },
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 6,
                 },
@@ -1208,28 +1208,28 @@ const CITIES: Record<ECity, ICity> = {
       {
         effects: [
           {
-            type: EEffect.REDUCED_PRICE,
-            objectType: ECardType.LEADER,
+            type: EffectType.REDUCED_PRICE,
+            objectType: CardType.LEADER,
             discount: {
               coins: 1,
             },
-            direction: EPlayerDirection.LEFT,
+            direction: PlayerDirection.LEFT,
           },
           {
-            type: EEffect.REDUCED_PRICE,
-            objectType: ECardType.LEADER,
+            type: EffectType.REDUCED_PRICE,
+            objectType: CardType.LEADER,
             discount: {
               coins: 2,
             },
-            direction: EPlayerDirection.SELF,
+            direction: PlayerDirection.SELF,
           },
           {
-            type: EEffect.REDUCED_PRICE,
-            objectType: ECardType.LEADER,
+            type: EffectType.REDUCED_PRICE,
+            objectType: CardType.LEADER,
             discount: {
               coins: 1,
             },
-            direction: EPlayerDirection.RIGHT,
+            direction: PlayerDirection.RIGHT,
           },
         ],
         wonders: [
@@ -1237,24 +1237,24 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 1,
                 },
                 {
-                  type: EResource.WOOD,
+                  type: ResourceType.WOOD,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   coins: 5,
                 },
               },
               {
-                type: EEffect.DRAW_LEADERS,
+                type: EffectType.DRAW_LEADERS,
                 count: 4,
               },
             ],
@@ -1263,34 +1263,34 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.LOOM,
+                  type: ResourceType.LOOM,
                   count: 1,
                 },
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 1,
                 },
                 {
-                  type: EResource.CLAY,
+                  type: ResourceType.CLAY,
                   count: 1,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
               },
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
-                cardTypes: [ECardType.LEADER],
-                source: EFreeCardSource.LEADERS,
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
+                cardTypes: [CardType.LEADER],
+                source: FreeCardSourceType.LEADERS,
                 count: 1,
                 isFree: false,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
               },
             ],
           },
@@ -1298,30 +1298,30 @@ const CITIES: Record<ECity, ICity> = {
             price: {
               resources: [
                 {
-                  type: EResource.PAPYRUS,
+                  type: ResourceType.PAPYRUS,
                   count: 1,
                 },
                 {
-                  type: EResource.STONE,
+                  type: ResourceType.STONE,
                   count: 2,
                 },
               ],
             },
             effects: [
               {
-                type: EEffect.GAIN,
+                type: EffectType.GAIN,
                 gain: {
                   points: 3,
                 },
               },
               {
-                type: EEffect.BUILD_CARD,
-                period: EFreeCardPeriod.NOW,
-                cardTypes: [ECardType.LEADER],
+                type: EffectType.BUILD_CARD,
+                period: FreeCardPeriodType.NOW,
+                cardTypes: [CardType.LEADER],
                 isFree: false,
-                source: EFreeCardSource.LEADERS,
+                source: FreeCardSourceType.LEADERS,
                 count: 1,
-                possibleActions: [ECardActionType.BUILD_STRUCTURE],
+                possibleActions: [CardActionType.BUILD_STRUCTURE],
               },
             ],
           },

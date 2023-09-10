@@ -1,23 +1,23 @@
-import React, { useCallback } from 'react';
-import times from 'lodash/times';
 import classNames from 'classnames';
+import times from 'lodash/times';
+import React, { useCallback } from 'react';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
-import { ECardType } from 'common/types/onitama';
+import { CardType } from 'common/types/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './OnitamaCard.module.scss';
 
-interface IOnitamaCardProps {
-  card: ECardType;
+interface OnitamaCardProps {
+  card: CardType;
   isFlipped: boolean;
   isSelected: boolean;
-  onClick?(card: ECardType): void;
+  onClick?(card: CardType): void;
 }
 
-const OnitamaCard: React.FC<IOnitamaCardProps> = (props) => {
+const OnitamaCard: React.FC<OnitamaCardProps> = (props) => {
   const { card, isFlipped, isSelected, onClick } = props;
   const legalMoves = ALL_CARDS[card];
 

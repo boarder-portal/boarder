@@ -1,18 +1,20 @@
 import { useCallback, useContext } from 'react';
 
-import { ITimestamp } from 'common/types';
+import { Timestamp as TimestampModel } from 'common/types';
 
-import Timestamp from 'common/utilities/Timestamp';
 import { now } from 'client/utilities/time';
+import Timestamp from 'common/utilities/Timestamp';
 
 import { TimeDiffContext } from 'client/pages/Game/contexts';
 
-export interface ITimestampOptions {
+export interface TimestampOptions {
   addMs: number | null;
   pausedAt?: number;
 }
 
-export default function useCreateTimestamp(): (serverTimestampOrOptions?: ITimestamp | ITimestampOptions) => Timestamp {
+export default function useCreateTimestamp(): (
+  serverTimestampOrOptions?: TimestampModel | TimestampOptions,
+) => Timestamp {
   const getTimeDiff = useContext(TimeDiffContext);
 
   return useCallback(

@@ -1,10 +1,10 @@
 import { FC } from 'react';
 
-interface ICheckIconProps {
+interface CheckIconProps {
   className?: string;
 }
 
-const CheckIcon: FC<ICheckIconProps> = (props) => {
+const CheckIcon: FC<CheckIconProps> = (props) => {
   const { className } = props;
 
   return (

@@ -1,11 +1,11 @@
-import { IResource, TAction, TPayments, TResourceOwner } from 'common/types/sevenWonders';
+import { Action, Payments, Resource, ResourceOwner } from 'common/types/sevenWonders';
 
-export interface IOwnerResource extends IResource {
-  owner: TResourceOwner;
+export interface OwnerResource extends Resource {
+  owner: ResourceOwner;
 }
 
-export interface ISevenWondersCourtesansBuildInfo {
+export interface CourtesansBuildInfo {
   cardIndex: number;
-  action: TAction;
-  payments?: TPayments;
+  action: Action;
+  payments?: Payments;
 }

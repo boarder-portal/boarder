@@ -1,19 +1,19 @@
 import React from 'react';
 
-import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
+import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
-import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
+import Image from 'client/components/common/Image/Image';
 
 import styles from './ResourceAndPrice.module.scss';
 
-interface IResourcesAndPriceProps {
+interface ResourcesAndPriceProps {
   price: number;
-  resources: IOwnerResource[];
+  resources: OwnerResource[];
   reverse?: boolean;
 }
 
-const ResourcesAndPrice: React.FC<IResourcesAndPriceProps> = (props) => {
+const ResourcesAndPrice: React.FC<ResourcesAndPriceProps> = (props) => {
   const { price, resources, reverse } = props;
 
   if (!price) {

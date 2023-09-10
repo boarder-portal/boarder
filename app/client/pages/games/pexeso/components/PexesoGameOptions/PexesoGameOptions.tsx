@@ -1,13 +1,13 @@
 import React, { FC, memo } from 'react';
 
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import Flex from 'client/components/common/Flex/Flex';
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
+import Flex from 'client/components/common/Flex/Flex';
 
-import { IGameOptionsProps } from 'client/pages/Lobby/Lobby';
+import { GameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-const PexesoGameOptions: FC<IGameOptionsProps<EGame.PEXESO>> = (props) => {
+const PexesoGameOptions: FC<GameOptionsProps<GameType.PEXESO>> = (props) => {
   const { options } = props;
 
   return (

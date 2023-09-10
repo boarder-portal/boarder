@@ -1,30 +1,30 @@
-import times from 'lodash/times';
 import shuffle from 'lodash/shuffle';
+import times from 'lodash/times';
 
-import { EGame } from 'common/types/game';
-import { ECardType, EGameClientEvent, EPlayerColor, IGame, IPlayer, IPlayerData, TBoard } from 'common/types/onitama';
+import { GameType } from 'common/types/game';
+import { Board, CardType, Game, GameClientEventType, Player, PlayerColor, PlayerData } from 'common/types/onitama';
 
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 import { equalsCoords } from 'common/utilities/coords';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 
-const ALL_CARDS = Object.values(ECardType);
+const ALL_CARDS = Object.values(CardType);
 
-export default class OnitamaGame extends TurnGameEntity<EGame.ONITAMA> {
-  playersData: IPlayerData[] = this.getPlayersData((playerIndex) => ({
-    color: playerIndex === 0 ? EPlayerColor.BLUE : EPlayerColor.RED,
+export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
+  playersData: PlayerData[] = this.getPlayersData((playerIndex) => ({
+    color: playerIndex === 0 ? PlayerColor.BLUE : PlayerColor.RED,
     cards: [],
   }));
-  board: TBoard = [
-    times(5, (index) => ({ color: EPlayerColor.BLUE, isMaster: index === 2 })),
+  board: Board = [
+    times(5, (index) => ({ color: PlayerColor.BLUE, isMaster: index === 2 })),
     times(5, () => null),
     times(5, () => null),
     times(5, () => null),
-    times(5, (index) => ({ color: EPlayerColor.RED, isMaster: index === 2 })),
+    times(5, (index) => ({ color: PlayerColor.RED, isMaster: index === 2 })),
   ];
-  fifthCard = ECardType.TIGER;
+  fifthCard = CardType.TIGER;
 
-  *lifecycle(): TGenerator<number> {
+  *lifecycle(): EntityGenerator<number> {
     let index = 0;
     const usedCards = shuffle(ALL_CARDS);
     const getCard = () => usedCards[index++];
@@ -38,7 +38,7 @@ export default class OnitamaGame extends TurnGameEntity<EGame.ONITAMA> {
     this.fifthCard = getCard();
 
     while (true) {
-      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(EGameClientEvent.MOVE_PIECE, {
+      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
       });
 
@@ -71,11 +71,11 @@ export default class OnitamaGame extends TurnGameEntity<EGame.ONITAMA> {
     return this.activePlayerIndex;
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       board: this.board,
       players: this.getGamePlayers(),

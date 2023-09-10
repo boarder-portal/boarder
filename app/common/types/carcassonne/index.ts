@@ -1,39 +1,39 @@
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  ICoords,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
-  ITimestamp,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  Coords,
+  GamePlayer,
+  Timestamp,
 } from 'common/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   ATTACH_CARD = 'ATTACH_CARD',
 }
 
-export enum ECardObject {
+export enum CardObjectType {
   CITY = 'CITY',
   ROAD = 'ROAD',
   FIELD = 'FIELD',
   MONASTERY = 'MONASTERY',
 }
 
-export enum ECityGoods {
+export enum CityGoodsType {
   WHEAT = 'WHEAT',
   FABRIC = 'FABRIC',
   WINE = 'WINE',
 }
 
-export enum EMeepleType {
+export enum MeepleType {
   COMMON = 'COMMON',
   FAT = 'FAT',
   BUILDER = 'BUILDER',
   PIG = 'PIG',
 }
 
-export enum EPlayerColor {
+export enum PlayerColor {
   RED = 'RED',
   BLUE = 'BLUE',
   GREEN = 'GREEN',
@@ -41,164 +41,166 @@ export enum EPlayerColor {
   YELLOW = 'YELLOW',
 }
 
-export interface ICardObject {
-  type: ECardObject;
-  meepleCoords: ICoords;
+export interface BaseCardObject {
+  type: CardObjectType;
+  meepleCoords: Coords;
 }
 
-export interface ICardCity extends ICardObject {
-  type: ECardObject.CITY;
+export interface CardCity extends BaseCardObject {
+  type: CardObjectType.CITY;
   sideParts: number[];
   shields?: number;
   cathedral?: true;
-  goods?: ECityGoods;
+  goods?: CityGoodsType;
 }
 
-export interface ICardField extends ICardObject {
-  type: ECardObject.FIELD;
+export interface CardField extends BaseCardObject {
+  type: CardObjectType.FIELD;
   sideParts: number[];
   cities?: number[];
 }
 
-export interface ICardRoad extends ICardObject {
-  type: ECardObject.ROAD;
+export interface CardRoad extends BaseCardObject {
+  type: CardObjectType.ROAD;
   sideParts: number[];
   inn?: true;
 }
 
-export interface ICardMonastery extends ICardObject {
-  type: ECardObject.MONASTERY;
+export interface CardMonastery extends BaseCardObject {
+  type: CardObjectType.MONASTERY;
 }
 
-export type TCardObject = ICardCity | ICardField | ICardRoad | ICardMonastery;
+export type CardObject = CardCity | CardField | CardRoad | CardMonastery;
 
-export interface ICard {
+export interface Card {
   id: number;
   count: number;
-  objects: TCardObject[];
+  objects: CardObject[];
 }
 
-export interface IPlayerMeeple {
+export interface PlayerMeeple {
   playerIndex: number;
-  type: EMeepleType;
+  type: MeepleType;
 }
 
-export interface IGameObject {
+export interface BaseGameObject {
   id: number;
-  type: ECardObject;
-  cards: ICoords[];
-  meeples: IPlayerMeeple[];
+  type: CardObjectType;
+  cards: Coords[];
+  meeples: PlayerMeeple[];
 }
 
-export interface IGameCity extends IGameObject {
-  type: ECardObject.CITY;
+export interface GameCity extends BaseGameObject {
+  type: CardObjectType.CITY;
   shields: number;
   cathedral: boolean;
-  goods: Partial<Record<ECityGoods, number>>;
+  goods: Partial<Record<CityGoodsType, number>>;
   isFinished: boolean;
 }
 
-export interface IGameField extends IGameObject {
-  type: ECardObject.FIELD;
+export interface GameField extends BaseGameObject {
+  type: CardObjectType.FIELD;
   cities: number[];
 }
 
-export interface IGameRoad extends IGameObject {
-  type: ECardObject.ROAD;
+export interface GameRoad extends BaseGameObject {
+  type: CardObjectType.ROAD;
   inn: boolean;
   isFinished: boolean;
 }
 
-export interface IGameMonastery extends IGameObject {
-  type: ECardObject.MONASTERY;
+export interface GameMonastery extends BaseGameObject {
+  type: CardObjectType.MONASTERY;
 }
 
-export type TGameObject = IGameCity | IGameField | IGameRoad | IGameMonastery;
+export type GameObject = GameCity | GameField | GameRoad | GameMonastery;
 
-export type TObjects = Partial<Record<number, TGameObject>>;
+export type Objects = Partial<Record<number, GameObject>>;
 
-export interface IGameCard extends ICoords {
+export interface GameCard extends Coords {
   id: number;
   rotation: number;
   objectsBySideParts: number[];
   monasteryId: number | null;
-  meeple: IGamePlacedMeeple | null;
+  meeple: GamePlacedMeeple | null;
 }
 
-export type TBoard = Partial<Record<number, Partial<Record<number, IGameCard>>>>;
+export type Board = Partial<Record<number, Partial<Record<number, GameCard>>>>;
 
-export interface IGameOptions extends ICommonGameOptions {}
+export interface GameOptions extends BaseGameOptions {}
 
-export interface IObjectScore {
+export interface ObjectScore {
   objectId: number;
   score: number;
 }
 
-export interface IGoodsScore {
-  goods: ECityGoods;
+export interface GoodsScore {
+  goods: CityGoodsType;
   score: number;
 }
 
-export type TScore = IObjectScore | IGoodsScore;
+export type Score = ObjectScore | GoodsScore;
 
-export interface IPlayerData {
-  color: EPlayerColor;
-  score: TScore[];
-  cards: ICard[];
-  meeples: Record<EMeepleType, number>;
-  goods: Record<ECityGoods, number>;
-  lastMoves: ICoords[];
+export interface PlayerData {
+  color: PlayerColor;
+  score: Score[];
+  cards: Card[];
+  meeples: Record<MeepleType, number>;
+  goods: Record<CityGoodsType, number>;
+  lastMoves: Coords[];
 }
 
-export interface IPlayer extends IGamePlayer<EGame.CARCASSONNE> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.CARCASSONNE> {
+  data: PlayerData;
 }
 
-export interface IPlacedMeeple {
-  type: EMeepleType;
+export interface PlacedMeeple {
+  type: MeepleType;
   cardObjectId: number;
 }
 
-export interface IGamePlacedMeeple extends IPlacedMeeple {
+export interface GamePlacedMeeple extends PlacedMeeple {
   playerIndex: number;
   gameObjectId: number;
 }
 
-export interface IGame {
-  players: IPlayer[];
+export interface Game {
+  players: Player[];
   activePlayerIndex: number;
-  board: TBoard;
-  objects: TObjects;
+  board: Board;
+  objects: Objects;
   cardsLeft: number;
-  turn: ITurn | null;
+  turn: Turn | null;
 }
 
-export interface ITurn {
-  endsAt: ITimestamp;
+export interface Turn {
+  endsAt: Timestamp;
 }
 
-export interface IAttachCardEvent {
+export interface AttachCardEvent {
   cardIndex: number;
-  coords: ICoords;
+  coords: Coords;
   rotation: number;
-  meeple: IPlacedMeeple | null;
+  meeple: PlacedMeeple | null;
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.CARCASSONNE> {
-  [EGameClientEvent.ATTACH_CARD]: IAttachCardEvent;
+export interface ClientEventMap extends CommonClientEventMap<GameType.CARCASSONNE> {
+  [GameClientEventType.ATTACH_CARD]: AttachCardEvent;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.CARCASSONNE> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.CARCASSONNE> {}
+
+type CarcassonneGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.CARCASSONNE]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.CARCASSONNE]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: CarcassonneGameOptions;
+      info: Game;
       result: void;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

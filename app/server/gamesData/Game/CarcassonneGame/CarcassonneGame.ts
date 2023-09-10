@@ -1,31 +1,30 @@
 import cloneDeep from 'lodash/cloneDeep';
-import times from 'lodash/times';
 import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
+import times from 'lodash/times';
 
 import { ALL_CARDS, BASE_TIME, CARDS_IN_HAND, TURN_INCREMENT } from 'common/constants/games/carcassonne';
 
-import { EGame } from 'common/types/game';
+import { Coords } from 'common/types';
 import {
-  ECardObject,
-  ECityGoods,
-  EMeepleType,
-  EPlayerColor,
-  ICard,
-  IGame,
-  IGameCard,
-  IPlacedMeeple,
-  IPlayer,
-  IPlayerData,
-  TBoard,
-  TCardObject,
-  TGameObject,
-  TObjects,
-  TScore,
+  Board,
+  Card,
+  CardObject,
+  CardObjectType,
+  CityGoodsType,
+  Game,
+  GameCard,
+  GameObject,
+  MeepleType,
+  Objects,
+  PlacedMeeple,
+  Player,
+  PlayerColor,
+  PlayerData,
+  Score,
 } from 'common/types/carcassonne';
-import { ICoords } from 'common/types';
+import { GameType } from 'common/types/game';
 
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -38,59 +37,60 @@ import {
   isGameRoad,
   isSideObject,
 } from 'common/utilities/carcassonne';
-import { TGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 
 import Turn from 'server/gamesData/Game/CarcassonneGame/entities/Turn';
 
-interface IAttachCardOptions {
-  card: ICard;
-  coords: ICoords;
+interface AttachCardOptions {
+  card: Card;
+  coords: Coords;
   rotation: number;
-  meeple: IPlacedMeeple | null;
+  meeple: PlacedMeeple | null;
   playerIndex: number | null;
 }
 
-interface IAttachPlayerCardOptions {
+interface AttachPlayerCardOptions {
   cardIndex: number;
-  coords: ICoords;
+  coords: Coords;
   rotation: number;
-  meeple: IPlacedMeeple | null;
+  meeple: PlacedMeeple | null;
   playerIndex: number;
   isFirstTurnCard: boolean;
 }
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
-  playersData: IPlayerData[] = this.getPlayersData(() => ({
-    color: EPlayerColor.RED,
+export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE> {
+  playersData: PlayerData[] = this.getPlayersData(() => ({
+    color: PlayerColor.RED,
     score: [],
     cards: [],
     meeples: {
-      [EMeepleType.COMMON]: 7,
-      [EMeepleType.FAT]: 1,
-      [EMeepleType.BUILDER]: 1,
-      [EMeepleType.PIG]: 1,
+      [MeepleType.COMMON]: 7,
+      [MeepleType.FAT]: 1,
+      [MeepleType.BUILDER]: 1,
+      [MeepleType.PIG]: 1,
     },
     goods: {
-      [ECityGoods.WHEAT]: 0,
-      [ECityGoods.FABRIC]: 0,
-      [ECityGoods.WINE]: 0,
+      [CityGoodsType.WHEAT]: 0,
+      [CityGoodsType.FABRIC]: 0,
+      [CityGoodsType.WINE]: 0,
     },
     lastMoves: [],
   }));
-  deck: ICard[] = shuffle(
+  deck: Card[] = shuffle(
     cloneDeep(ALL_CARDS)
       .map((card) => times(card.count, () => card))
       .flat(),
   );
-  board: TBoard = {};
-  objects: TObjects = {};
+  board: Board = {};
+  objects: Objects = {};
   lastId = 1;
 
   turn: Turn | null = null;
 
-  *lifecycle(): TGenerator {
+  *lifecycle(): EntityGenerator {
     this.spawnTask(this.pingIndefinitely(15 * 1000));
 
     this.attachCard({
@@ -101,7 +101,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
       playerIndex: null,
     });
 
-    const colors = shuffle(Object.values(EPlayerColor));
+    const colors = shuffle(Object.values(PlayerColor));
 
     this.playersData.forEach((playerData, index) => {
       playerData.color = colors[index];
@@ -143,23 +143,23 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
       }
     });
 
-    const maxGoods: Record<ECityGoods, number> = {
-      [ECityGoods.WHEAT]: 0,
-      [ECityGoods.FABRIC]: 0,
-      [ECityGoods.WINE]: 0,
+    const maxGoods: Record<CityGoodsType, number> = {
+      [CityGoodsType.WHEAT]: 0,
+      [CityGoodsType.FABRIC]: 0,
+      [CityGoodsType.WINE]: 0,
     };
 
     this.playersData.forEach(({ goods }) => {
       forEach(goods, (count, goodsType) => {
-        maxGoods[goodsType as ECityGoods] = Math.max(maxGoods[goodsType as ECityGoods], count);
+        maxGoods[goodsType as CityGoodsType] = Math.max(maxGoods[goodsType as CityGoodsType], count);
       });
     });
 
     this.playersData.forEach(({ goods }, playerIndex) => {
       forEach(goods, (count, goodsType) => {
-        if (count && maxGoods[goodsType as ECityGoods] === count) {
+        if (count && maxGoods[goodsType as CityGoodsType] === count) {
           this.addPlayerScore(playerIndex, {
-            goods: goodsType as ECityGoods,
+            goods: goodsType as CityGoodsType,
             score: 15,
           });
         }
@@ -169,7 +169,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     this.sendGameInfo();
   }
 
-  addObjectScore(object: TGameObject): void {
+  addObjectScore(object: GameObject): void {
     const addScore = (playerIndex: number, score: number): void => {
       this.addPlayerScore(playerIndex, {
         objectId: object.id,
@@ -195,7 +195,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
       addScore(owners[0], object.cards.length);
     } else if (isGameField(object)) {
       owners.forEach((playerIndex) => {
-        const hasPig = getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === EMeepleType.PIG);
+        const hasPig = getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === MeepleType.PIG);
         const finishedCities = object.cities.filter((cityId) => {
           const city = this.objects[cityId];
 
@@ -221,15 +221,15 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     }
   }
 
-  addPlayerScore(playerIndex: number, score: TScore): void {
+  addPlayerScore(playerIndex: number, score: Score): void {
     if (score.score) {
       this.playersData[playerIndex].score.push(score);
     }
   }
 
-  attachCard(options: IAttachCardOptions): IGameCard {
+  attachCard(options: AttachCardOptions): GameCard {
     const { card, coords, rotation, meeple, playerIndex } = options;
-    const gameCard: IGameCard = ((this.board[coords.y] ||= {})[coords.x] = {
+    const gameCard: GameCard = ((this.board[coords.y] ||= {})[coords.x] = {
       ...coords,
       id: card.id,
       rotation,
@@ -248,7 +248,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     const idsMap = new Map<number, number>();
 
     card.objects.forEach((object, objectId) => {
-      let gameObject: TGameObject | undefined;
+      let gameObject: GameObject | undefined;
 
       if (isSideObject(object)) {
         const attachedObjectIds = new Set<number>();
@@ -287,7 +287,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
         if (isCardCity(object)) {
           gameObject = {
             id: newId,
-            type: ECardObject.CITY,
+            type: CardObjectType.CITY,
             cards: [],
             shields: 0,
             cathedral: false,
@@ -298,7 +298,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
         } else if (isCardField(object)) {
           gameObject = {
             id: newId,
-            type: ECardObject.FIELD,
+            type: CardObjectType.FIELD,
             cards: [],
             cities: [],
             meeples: [],
@@ -306,7 +306,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
         } else if (isCardRoad(object)) {
           gameObject = {
             id: newId,
-            type: ECardObject.ROAD,
+            type: CardObjectType.ROAD,
             cards: [],
             inn: false,
             isFinished: false,
@@ -315,7 +315,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
         } else {
           gameObject = {
             id: newId,
-            type: ECardObject.MONASTERY,
+            type: CardObjectType.MONASTERY,
             cards: [],
             meeples: [],
           };
@@ -408,7 +408,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     return gameCard;
   }
 
-  attachPlayerCard(options: IAttachPlayerCardOptions): boolean {
+  attachPlayerCard(options: AttachPlayerCardOptions): boolean {
     const { cardIndex, coords, rotation, meeple, playerIndex, isFirstTurnCard } = options;
     const playerData = this.playersData[playerIndex];
 
@@ -473,7 +473,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
 
         if (isGameCity(object)) {
           forEach(object.goods, (count, goodsType) => {
-            playerData.goods[goodsType as ECityGoods] += count || 0;
+            playerData.goods[goodsType as CityGoodsType] += count || 0;
           });
         }
       }
@@ -489,8 +489,8 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
       }
 
       if (
-        getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === EMeepleType.BUILDER) &&
-        meeple?.type !== EMeepleType.BUILDER
+        getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === MeepleType.BUILDER) &&
+        meeple?.type !== MeepleType.BUILDER
       ) {
         attachedToBuilder = true;
       }
@@ -507,7 +507,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     return this.playersData[playerIndex].cards.length !== 0;
   }
 
-  getGamePlayers(): IPlayer[] {
+  getGamePlayers(): Player[] {
     return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
   }
 
@@ -532,14 +532,14 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     return nextPlayerIndexWithCards;
   }
 
-  getPlayerObjectMeeples(object: TGameObject, playerIndex: number): number {
+  getPlayerObjectMeeples(object: GameObject, playerIndex: number): number {
     return getObjectPlayerMeeples(object, playerIndex).reduce(
-      (count, { type }) => count + (type === EMeepleType.COMMON ? 1 : type === EMeepleType.FAT ? 2 : 0),
+      (count, { type }) => count + (type === MeepleType.COMMON ? 1 : type === MeepleType.FAT ? 2 : 0),
       0,
     );
   }
 
-  mergeCardObject(targetObject: TGameObject, mergedObject: TCardObject): void {
+  mergeCardObject(targetObject: GameObject, mergedObject: CardObject): void {
     if (isGameRoad(targetObject) && isCardRoad(mergedObject)) {
       targetObject.inn ||= mergedObject.inn ?? false;
     } else if (isGameCity(targetObject) && isCardCity(mergedObject)) {
@@ -552,7 +552,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     }
   }
 
-  mergeGameObject(targetObject: TGameObject, mergedObject: TGameObject): void {
+  mergeGameObject(targetObject: GameObject, mergedObject: GameObject): void {
     const mergeCards = () => {
       targetObject.cards = [...new Set([...targetObject.cards, ...mergedObject.cards])];
     };
@@ -570,7 +570,8 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
       targetObject.cathedral ||= mergedObject.cathedral;
 
       forEach(mergedObject.goods, (count, goodsType) => {
-        targetObject.goods[goodsType as ECityGoods] = (targetObject.goods[goodsType as ECityGoods] || 0) + (count || 0);
+        targetObject.goods[goodsType as CityGoodsType] =
+          (targetObject.goods[goodsType as CityGoodsType] || 0) + (count || 0);
       });
 
       mergeCards();
@@ -615,7 +616,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     });
   }
 
-  returnMeeples(object: TGameObject): void {
+  returnMeeples(object: GameObject): void {
     object.meeples.forEach(({ playerIndex, type }) => {
       this.playersData[playerIndex].meeples[type]++;
     });
@@ -631,8 +632,8 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     });
   }
 
-  traverseNeighbors(coords: ICoords, callback: (card: IGameCard | undefined) => void): void {
-    const getCard = (coords: ICoords) => this.board[coords.y]?.[coords.x];
+  traverseNeighbors(coords: Coords, callback: (card: GameCard | undefined) => void): void {
+    const getCard = (coords: Coords) => this.board[coords.y]?.[coords.x];
 
     callback(getCard({ x: coords.x, y: coords.y - 1 }));
     callback(getCard({ x: coords.x + 1, y: coords.y - 1 }));
@@ -644,7 +645,7 @@ export default class CarcassonneGame extends TurnGameEntity<EGame.CARCASSONNE> {
     callback(getCard({ x: coords.x - 1, y: coords.y - 1 }));
   }
 
-  toJSON(): IGame {
+  toJSON(): Game {
     return {
       players: this.getGamePlayers(),
       activePlayerIndex: this.activePlayerIndex,

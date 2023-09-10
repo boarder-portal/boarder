@@ -1,6 +1,6 @@
-import { IGameOptions } from 'common/types/set';
+import { GameOptions } from 'common/types/set';
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 1,
   maxPlayersCount: 8,
 };

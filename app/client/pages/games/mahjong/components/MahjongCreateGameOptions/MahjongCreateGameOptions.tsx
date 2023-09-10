@@ -2,20 +2,20 @@ import { FC, memo } from 'react';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
-import { EGame } from 'common/types/game';
-import { EHandsCount } from 'common/types/mahjong';
+import { GameType } from 'common/types/game';
+import { HandsCount } from 'common/types/mahjong';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
 
-import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
+import { CreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-const MahjongCreateGameOptions: FC<ICreateGameOptionsProps<EGame.MAHJONG>> = (props) => {
+const MahjongCreateGameOptions: FC<CreateGameOptionsProps<GameType.MAHJONG>> = (props) => {
   const { options, changeOptions } = props;
 
-  const handleHandsCountChange = useImmutableCallback((handsCount: EHandsCount) => {
+  const handleHandsCountChange = useImmutableCallback((handsCount: HandsCount) => {
     changeOptions({
       handsCount,
     });
@@ -26,7 +26,7 @@ const MahjongCreateGameOptions: FC<ICreateGameOptionsProps<EGame.MAHJONG>> = (pr
       <Select
         label="Количество раздач"
         value={options.handsCount}
-        options={Object.values(EHandsCount).map((handsCount) => ({
+        options={Object.values(HandsCount).map((handsCount) => ({
           text: HAND_COUNTS[handsCount],
           value: handsCount,
         }))}

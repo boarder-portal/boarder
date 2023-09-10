@@ -1,15 +1,15 @@
-import { ELobbyEvent, ILobbyClientEventMap, ILobbyServerEventMap } from 'common/types/lobby';
-import { EGame } from 'common/types/game';
-import { TNamespace, TServerSocket } from 'common/types/socket';
+import { GameType } from 'common/types/game';
+import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap } from 'common/types/lobby';
+import { Namespace, ServerSocket } from 'common/types/socket';
 
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 
 import Game from 'server/gamesData/Game/Game';
 import ioInstance from 'server/io';
 
-class Lobby<G extends EGame> {
+class Lobby<G extends GameType> {
   games: Game<G>[] = [];
-  io: TNamespace<ILobbyClientEventMap<G>, ILobbyServerEventMap<G>>;
+  io: Namespace<LobbyClientEventMap<G>, LobbyServerEventMap<G>>;
   game: G;
   lastCreatedId = 0;
 
@@ -21,7 +21,7 @@ class Lobby<G extends EGame> {
     this.io.on('connection', (socket) => {
       this.sendLobbyUpdate(socket);
 
-      socket.on(ELobbyEvent.CREATE_GAME, (options) => {
+      socket.on(LobbyEventType.CREATE_GAME, (options) => {
         const createdGame = new Game({
           game,
           name: `Игра ${++this.lastCreatedId}`,
@@ -32,15 +32,15 @@ class Lobby<G extends EGame> {
 
         this.games.push(createdGame);
 
-        socket.emit(ELobbyEvent.GAME_CREATED, createdGame.id);
+        socket.emit(LobbyEventType.GAME_CREATED, createdGame.id);
 
         this.sendLobbyUpdate();
       });
     });
   }
 
-  sendLobbyUpdate = (socket?: TServerSocket<ILobbyClientEventMap<G>, ILobbyServerEventMap<G>>): void => {
-    (socket ?? this.io).emit(ELobbyEvent.UPDATE, {
+  sendLobbyUpdate = (socket?: ServerSocket<LobbyClientEventMap<G>, LobbyServerEventMap<G>>): void => {
+    (socket ?? this.io).emit(LobbyEventType.UPDATE, {
       games: this.games.map((game) => ({
         id: game.id,
         name: game.name,

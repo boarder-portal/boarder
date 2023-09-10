@@ -1,32 +1,32 @@
+import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import {
-  ICommonClientEventMap,
-  ICommonServerEventMap,
-  IGameOptions as ICommonGameOptions,
-  IGamePlayer,
-  IPlayerSettings as ICommonPlayerSettings,
+  BaseGameOptions,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonServerEventMap,
+  GamePlayer,
 } from 'common/types';
-import { ICard } from 'common/types/sevenWonders/cards';
-import { IBuildCardEffect, TEffect } from 'common/types/sevenWonders/effects';
-import { EBuildType } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
+import { Card } from 'common/types/sevenWonders/cards';
+import { BuildCardEffect, Effect } from 'common/types/sevenWonders/effects';
 
-export enum EGameClientEvent {
+export enum GameClientEventType {
   PICK_CITY_SIDE = 'PICK_CITY_SIDE',
   EXECUTE_ACTION = 'EXECUTE_ACTION',
   CANCEL_ACTION = 'CANCEL_ACTION',
 }
 
-export enum EScientificSymbol {
+export enum ScientificSymbolType {
   GEAR = 'GEAR',
   COMPASS = 'COMPASS',
   TABLET = 'TABLET',
 }
 
-export interface IGameOptions extends ICommonGameOptions {
+export interface GameOptions extends BaseGameOptions {
   includeLeaders: boolean;
 }
 
-export enum ECity {
+export enum CityName {
   RHODOS = 'RHODOS',
   ALEXANDRIA = 'ALEXANDRIA',
   EPHESOS = 'EPHESOS',
@@ -38,176 +38,176 @@ export enum ECity {
   ROMA = 'ROMA',
 }
 
-export interface IWonder {
-  price: IPrice;
-  effects: TEffect[];
+export interface Wonder {
+  price: Price;
+  effects: Effect[];
   position?: number;
 }
 
-export interface ICitySide {
-  effects: TEffect[];
-  wonders: IWonder[];
+export interface CitySide {
+  effects: Effect[];
+  wonders: Wonder[];
 }
 
-export interface ICity {
-  sides: ICitySide[];
+export interface City {
+  sides: CitySide[];
 }
 
-export interface IWonderBuiltStage {
+export interface WonderBuiltStage {
   index: number;
-  card: ICard;
+  card: Card;
   cardType: number | 'leader';
 }
 
-export enum EWaitingActionType {
+export enum WaitingActionType {
   PICK_LEADER = 'PICK_LEADER',
   RECRUIT_LEADER = 'RECRUIT_LEADER',
   BUILD_CARD = 'BUILD_CARD',
   EFFECT_BUILD_CARD = 'EFFECT_BUILD_CARD',
 }
 
-export interface IWaitingPickLeaderAction {
-  type: EWaitingActionType.PICK_LEADER;
+export interface WaitingPickLeaderAction {
+  type: WaitingActionType.PICK_LEADER;
 }
 
-export interface IWaitingRecruitLeaderAction {
-  type: EWaitingActionType.RECRUIT_LEADER;
+export interface WaitingRecruitLeaderAction {
+  type: WaitingActionType.RECRUIT_LEADER;
 }
 
-export interface IWaitingBuildCardAction {
-  type: EWaitingActionType.BUILD_CARD;
+export interface WaitingBuildCardAction {
+  type: WaitingActionType.BUILD_CARD;
 }
 
-export interface IWaitingEffectBuildCardAction {
-  type: EWaitingActionType.EFFECT_BUILD_CARD;
+export interface WaitingEffectBuildCardAction {
+  type: WaitingActionType.EFFECT_BUILD_CARD;
   buildEffectIndex: number;
 }
 
-export type TWaitingAction =
-  | IWaitingPickLeaderAction
-  | IWaitingRecruitLeaderAction
-  | IWaitingBuildCardAction
-  | IWaitingEffectBuildCardAction;
+export type WaitingAction =
+  | WaitingPickLeaderAction
+  | WaitingRecruitLeaderAction
+  | WaitingBuildCardAction
+  | WaitingEffectBuildCardAction;
 
-export interface IGamePlayerData {
+export interface GamePlayerData {
   points: number;
-  builtCards: ICard[];
-  city: ECity;
+  builtCards: Card[];
+  city: CityName;
   citySide: number;
-  builtStages: IWonderBuiltStage[];
+  builtStages: WonderBuiltStage[];
   coins: number;
   victoryPoints: number[];
   defeatPoints: number[];
-  leadersHand: ICard[];
-  copiedCard: ICard | null;
+  leadersHand: Card[];
+  copiedCard: Card | null;
 }
 
-export interface IPlayerData extends IGamePlayerData {
-  pickCitySide: IPickCitySidePlayerData | null;
-  leadersDraft: ILeadersDraftPlayerData | null;
-  age: IAgePlayerData | null;
-  turn: ITurnPlayerData | null;
+export interface PlayerData extends GamePlayerData {
+  pickCitySide: PickCitySidePlayerData | null;
+  leadersDraft: LeadersDraftPlayerData | null;
+  age: AgePlayerData | null;
+  turn: TurnPlayerData | null;
 }
 
-export interface IPlayer extends IGamePlayer<EGame.SEVEN_WONDERS> {
-  data: IPlayerData;
+export interface Player extends GamePlayer<GameType.SEVEN_WONDERS> {
+  data: PlayerData;
 }
 
-export interface IPickCitySidePhase {
-  type: EGamePhase.PICK_CITY_SIDE;
+export interface PickCitySidePhase {
+  type: GamePhaseType.PICK_CITY_SIDE;
 }
 
-export interface ILeadersDraftPhase {
-  type: EGamePhase.DRAFT_LEADERS;
+export interface LeadersDraftPhase {
+  type: GamePhaseType.DRAFT_LEADERS;
 }
 
-export interface IAgePhase extends IAge {
-  type: EGamePhase.AGE;
+export interface AgePhase extends Age {
+  type: GamePhaseType.AGE;
 }
 
-export type TGamePhase = IPickCitySidePhase | ILeadersDraftPhase | IAgePhase;
+export type GamePhase = PickCitySidePhase | LeadersDraftPhase | AgePhase;
 
-export interface IGame {
-  players: IPlayer[];
-  discard: ICard[];
-  phase: TGamePhase | null;
+export interface Game {
+  players: Player[];
+  discard: Card[];
+  phase: GamePhase | null;
 }
 
-export interface IPickCitySidePlayerData {
-  city: ECity;
+export interface PickCitySidePlayerData {
+  city: CityName;
   pickedSide: number | null;
 }
 
-export interface ILeadersDraftPlayerData {
-  pickedLeaders: ICard[];
-  leadersPool: ICard[];
+export interface LeadersDraftPlayerData {
+  pickedLeaders: Card[];
+  leadersPool: Card[];
 }
 
-export interface IAgePlayerData {
-  hand: ICard[];
-  buildEffects: IBuildCardEffect[];
+export interface AgePlayerData {
+  hand: Card[];
+  buildEffects: BuildCardEffect[];
 }
 
-export interface IAge {
+export interface Age {
   age: number;
-  phase: EAgePhase;
+  phase: AgePhaseType;
 }
 
-export interface ITurnPlayerData {
+export interface TurnPlayerData {
   receivedCoins: number;
-  chosenActionEvent: IExecuteActionEvent | null;
-  waitingForAction: TWaitingAction | null;
+  chosenActionEvent: ExecuteActionEvent | null;
+  waitingForAction: WaitingAction | null;
 }
 
-export enum ECardActionType {
+export enum CardActionType {
   BUILD_STRUCTURE = 'BUILD_STRUCTURE',
   BUILD_WONDER_STAGE = 'BUILD_WONDER_STAGE',
   DISCARD = 'DISCARD',
   PICK_LEADER = 'PICK_LEADER',
 }
 
-export interface IBuildingBuildType {
-  type: EBuildType.FREE_BY_BUILDING;
+export interface BuildingBuildType {
+  type: BuildKind.FREE_BY_BUILDING;
 }
 
-export interface IBuildEffectBuildType {
-  type: EBuildType.FREE_WITH_EFFECT;
+export interface BuildEffectBuildType {
+  type: BuildKind.FREE_WITH_EFFECT;
   effectIndex: number;
 }
 
-export type TBuildType = IBuildingBuildType | IBuildEffectBuildType;
+export type BuildType = BuildingBuildType | BuildEffectBuildType;
 
-export interface IBuildStructureAction {
-  type: ECardActionType.BUILD_STRUCTURE;
-  freeBuildType: TBuildType | null;
-  copiedCard?: ICard;
+export interface BuildStructureAction {
+  type: CardActionType.BUILD_STRUCTURE;
+  freeBuildType: BuildType | null;
+  copiedCard?: Card;
   discount?: number;
 }
 
-export interface IBuildWonderStageAction {
-  type: ECardActionType.BUILD_WONDER_STAGE;
+export interface BuildWonderStageAction {
+  type: CardActionType.BUILD_WONDER_STAGE;
   stageIndex: number;
 }
 
-export interface IDiscardAction {
-  type: ECardActionType.DISCARD;
+export interface DiscardAction {
+  type: CardActionType.DISCARD;
 }
 
-export interface IPickLeaderAction {
-  type: ECardActionType.PICK_LEADER;
+export interface PickLeaderAction {
+  type: CardActionType.PICK_LEADER;
 }
 
-export type TAction = IBuildStructureAction | IBuildWonderStageAction | IDiscardAction | IPickLeaderAction;
+export type Action = BuildStructureAction | BuildWonderStageAction | DiscardAction | PickLeaderAction;
 
-export type TPayments = Record<ENeighborSide | 'bank', number>;
+export type Payments = Record<NeighborSide | 'bank', number>;
 
-export interface IExecuteActionEvent {
+export interface ExecuteActionEvent {
   cardIndex: number;
-  action: TAction;
-  payments?: TPayments;
+  action: Action;
+  payments?: Payments;
 }
 
-export enum EResource {
+export enum ResourceType {
   WOOD = 'WOOD',
   ORE = 'ORE',
   CLAY = 'CLAY',
@@ -218,58 +218,60 @@ export enum EResource {
   PAPYRUS = 'PAPYRUS',
 }
 
-export interface IResource {
-  type: EResource;
+export interface Resource {
+  type: ResourceType;
   count: number;
 }
 
-export enum ENeighborSide {
+export enum NeighborSide {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
 }
 
-export enum EPlayerDirection {
+export enum PlayerDirection {
   LEFT = 'LEFT',
   RIGHT = 'RIGHT',
   SELF = 'SELF',
   ALL = 'ALL',
 }
 
-export interface IPrice {
-  resources?: IResource[];
+export interface Price {
+  resources?: Resource[];
   coins?: number;
 }
 
-export type TResourceOwner = ENeighborSide | 'own' | 'bank';
+export type ResourceOwner = NeighborSide | 'own' | 'bank';
 
-export enum EGamePhase {
+export enum GamePhaseType {
   PICK_CITY_SIDE = 'PICK_CITY_SIDE',
   DRAFT_LEADERS = 'DRAFT_LEADERS',
   AGE = 'AGE',
 }
 
-export enum EAgePhase {
+export enum AgePhaseType {
   RECRUIT_LEADERS = 'RECRUIT_LEADERS',
   BUILD_STRUCTURES = 'BUILD_STRUCTURES',
 }
 
-export interface IClientEventMap extends ICommonClientEventMap<EGame.SEVEN_WONDERS> {
-  [EGameClientEvent.PICK_CITY_SIDE]: number | null;
-  [EGameClientEvent.EXECUTE_ACTION]: IExecuteActionEvent;
-  [EGameClientEvent.CANCEL_ACTION]: undefined;
+export interface ClientEventMap extends CommonClientEventMap<GameType.SEVEN_WONDERS> {
+  [GameClientEventType.PICK_CITY_SIDE]: number | null;
+  [GameClientEventType.EXECUTE_ACTION]: ExecuteActionEvent;
+  [GameClientEventType.CANCEL_ACTION]: undefined;
 }
 
-export interface IServerEventMap extends ICommonServerEventMap<EGame.SEVEN_WONDERS> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.SEVEN_WONDERS> {}
+
+type SevenWondersGameOptions = GameOptions;
 
 declare module 'common/types/game' {
-  interface IGamesParams {
-    [EGame.SEVEN_WONDERS]: {
-      clientEventMap: IClientEventMap;
-      serverEventMap: IServerEventMap;
-      options: IGameOptions;
-      info: IGame;
+  interface GamesParams {
+    [GameType.SEVEN_WONDERS]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: SevenWondersGameOptions;
+      info: Game;
       result: void;
-      playerSettings: ICommonPlayerSettings;
+      playerSettings: BasePlayerSettings;
     };
   }
 }

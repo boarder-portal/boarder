@@ -1,19 +1,19 @@
-import { EFieldLayout, ESet, IGameOptions } from 'common/types/pexeso';
+import { FieldLayoutType, GameOptions, SetType } from 'common/types/pexeso';
 
-interface ISetConfig {
+interface SetConfig {
   imagesCount: number;
   imageVariantsCount: number;
 }
 
-interface IFieldOptions {
-  [EFieldLayout.RECT]: Record<
+interface FieldOptions {
+  [FieldLayoutType.RECT]: Record<
     number,
     {
       width: number;
       height: number;
     }
   >;
-  [EFieldLayout.HEX]: Record<
+  [FieldLayoutType.HEX]: Record<
     number,
     {
       start: number;
@@ -22,13 +22,13 @@ interface IFieldOptions {
   >;
 }
 
-export const DEFAULT_GAME_OPTIONS: IGameOptions = {
+export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 1,
   maxPlayersCount: 8,
-  set: ESet.COMMON,
+  set: SetType.COMMON,
   matchingCardsCount: 2,
   differentCardsCount: 30,
-  layout: EFieldLayout.RECT,
+  layout: FieldLayoutType.RECT,
   pickRandomImages: false,
   useImageVariants: false,
   shuffleOptions: null,
@@ -41,8 +41,8 @@ export const DIFFERENT_CARDS_COUNTS = [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 
 export const SHUFFLE_AFTER_MOVES_COUNTS = [1, 2, 3, 4, 5, 6];
 export const SHUFFLE_CARDS_COUNTS = [2, 3, 4, 5, 6];
 
-export const FIELD_OPTIONS: IFieldOptions = {
-  [EFieldLayout.RECT]: {
+export const FIELD_OPTIONS: FieldOptions = {
+  [FieldLayoutType.RECT]: {
     8: { width: 4, height: 2 },
     12: { width: 4, height: 3 },
     16: { width: 4, height: 4 },
@@ -86,7 +86,7 @@ export const FIELD_OPTIONS: IFieldOptions = {
     432: { width: 27, height: 16 },
     504: { width: 28, height: 18 },
   },
-  [EFieldLayout.HEX]: {
+  [FieldLayoutType.HEX]: {
     16: { start: 5, middle: 6 },
     24: { start: 4, middle: 6 },
     72: { start: 9, middle: 12 },
@@ -96,59 +96,59 @@ export const FIELD_OPTIONS: IFieldOptions = {
   },
 };
 
-export const LAYOUT_NAMES: Record<EFieldLayout, string> = {
-  [EFieldLayout.RECT]: 'Прямоугольник',
-  [EFieldLayout.HEX]: 'Шестиугольник',
-  [EFieldLayout.SPIRAL]: 'Спираль',
-  [EFieldLayout.SPIRAL_ROTATE]: 'Спираль (поворот)',
+export const LAYOUT_NAMES: Record<FieldLayoutType, string> = {
+  [FieldLayoutType.RECT]: 'Прямоугольник',
+  [FieldLayoutType.HEX]: 'Шестиугольник',
+  [FieldLayoutType.SPIRAL]: 'Спираль',
+  [FieldLayoutType.SPIRAL_ROTATE]: 'Спираль (поворот)',
 };
 
-export const SETS: Record<ESet, ISetConfig> = {
-  [ESet.COMMON]: {
+export const SETS: Record<SetType, SetConfig> = {
+  [SetType.COMMON]: {
     imagesCount: 30,
     imageVariantsCount: 4,
   },
-  [ESet.FRIENDS]: {
+  [SetType.FRIENDS]: {
     imagesCount: 30,
     imageVariantsCount: 2,
   },
-  [ESet.GAME_OF_THRONES]: {
+  [SetType.GAME_OF_THRONES]: {
     imagesCount: 84,
     imageVariantsCount: 1,
   },
-  [ESet.HARRY_POTTER]: {
+  [SetType.HARRY_POTTER]: {
     imagesCount: 30,
     imageVariantsCount: 1,
   },
-  [ESet.LOST]: {
+  [SetType.LOST]: {
     imagesCount: 40,
     imageVariantsCount: 2,
   },
-  [ESet.PHILADELPHIA]: {
+  [SetType.PHILADELPHIA]: {
     imagesCount: 30,
     imageVariantsCount: 1,
   },
-  [ESet.PIRATES]: {
+  [SetType.PIRATES]: {
     imagesCount: 30,
     imageVariantsCount: 1,
   },
-  [ESet.POKER]: {
+  [SetType.POKER]: {
     imagesCount: 30,
     imageVariantsCount: 1,
   },
-  [ESet.STAR_WARS]: {
+  [SetType.STAR_WARS]: {
     imagesCount: 40,
     imageVariantsCount: 1,
   },
-  [ESet.DST]: {
+  [SetType.DST]: {
     imagesCount: 40,
     imageVariantsCount: 1,
   },
-  [ESet.BUILDINGS]: {
+  [SetType.BUILDINGS]: {
     imagesCount: 30,
     imageVariantsCount: 1,
   },
-  [ESet.BREAKING_BAD]: {
+  [SetType.BREAKING_BAD]: {
     imagesCount: 20,
     imageVariantsCount: 1,
   },

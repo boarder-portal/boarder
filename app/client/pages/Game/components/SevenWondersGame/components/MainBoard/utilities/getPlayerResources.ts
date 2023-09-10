@@ -1,8 +1,8 @@
-import { IPlayer, IResource } from 'common/types/sevenWonders';
+import { Player, Resource } from 'common/types/sevenWonders';
 
-import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
 import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTradeResources';
+import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 
 /**
  * Если есть карточка WOOD / STONE, CLAY * 2 и ресурс города - GLASS
@@ -13,7 +13,7 @@ import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTrad
  *    [{ type: 'GLASS', count: 1 }],
  * ]
  */
-export function getPlayerResources(player: IPlayer, onlyTradableResources?: boolean): IResource[][] {
+export function getPlayerResources(player: Player, onlyTradableResources?: boolean): Resource[][] {
   return onlyTradableResources
     ? getPlayerTradeResources(player)
     : getAllPlayerEffects(player.data)

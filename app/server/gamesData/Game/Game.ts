@@ -1,126 +1,126 @@
-import uuid from 'uuid/v4';
 import forEach from 'lodash/forEach';
-import shuffle from 'lodash/shuffle';
 import pick from 'lodash/pick';
+import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
+import uuid from 'uuid/v4';
 
 import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/games/common';
 
-import { ECommonGameClientEvent, ECommonGameServerEvent, EPlayerStatus, IGamePlayer } from 'common/types';
+import { CommonGameClientEvent, CommonGameServerEvent, GamePlayer, PlayerStatus } from 'common/types';
 import {
-  EGame,
-  IGameData,
-  IGameState,
-  TGameClientEvent,
-  TGameClientEventData,
-  TGameClientEventListener,
-  TGameOptions,
-  TGameResult,
-  TGameServerEvent,
-  TGameServerEventData,
+  GameClientEvent,
+  GameClientEventData,
+  GameClientEventListener,
+  GameData,
+  GameOptions,
+  GameResult,
+  GameServerEvent,
+  GameServerEventData,
+  GameState,
+  GameType,
 } from 'common/types/game';
-import { TGameNamespace, TGameServerSocket } from 'common/types/socket';
+import { GameNamespace, GameServerSocket } from 'common/types/socket';
 
-import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-import { IEntityContext } from 'server/gamesData/Game/utilities/Entity';
-import removeNamespace from 'server/utilities/removeNamespace';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import { IBotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import { now } from 'server/utilities/time';
 import { areBotsAvailable } from 'common/utilities/bots';
+import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
+import { EntityContext } from 'server/gamesData/Game/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
+import removeNamespace from 'server/utilities/removeNamespace';
+import { now } from 'server/utilities/time';
 
-import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
+import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
-import ioInstance from 'server/io';
-import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
-import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
-import SetGame from 'server/gamesData/Game/SetGame/SetGame';
-import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
-import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
-import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
+import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
+import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
+import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
+import SetGame from 'server/gamesData/Game/SetGame/SetGame';
+import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
+import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
+import ioInstance from 'server/io';
 
-export interface IServerGamePlayer<Game extends EGame> extends IGamePlayer<Game> {
-  sockets: Set<TGameServerSocket<Game>>;
+export interface ServerGamePlayer<Game extends GameType> extends GamePlayer<Game> {
+  sockets: Set<GameServerSocket<Game>>;
 }
 
-export type TPlayerClientEventListener<Game extends EGame, Event extends TGameClientEvent<Game>> = (
-  data: TGameClientEventData<Game, Event>,
+export type PlayerClientEventListener<Game extends GameType, Event extends GameClientEvent<Game>> = (
+  data: GameClientEventData<Game, Event>,
   playerIndex: number,
 ) => unknown;
 
-export interface IGameCreateOptions<Game extends EGame> {
+export interface GameCreateOptions<Game extends GameType> {
   game: Game;
   name: string;
-  options: TGameOptions<Game>;
+  options: GameOptions<Game>;
   onDeleteGame(gameId: string): void;
   onUpdateGame(gameId: string): void;
 }
 
-interface IBatchedAction<Game extends EGame, Event extends TGameServerEvent<Game>> {
+interface BatchedAction<Game extends GameType, Event extends GameServerEvent<Game>> {
   event: Event;
-  data: TGameServerEventData<Game, Event>;
-  socket?: TGameServerSocket<Game>;
+  data: GameServerEventData<Game, Event>;
+  socket?: GameServerSocket<Game>;
 }
 
-export interface ISendSocketEventOptions<Game extends EGame> {
-  socket?: TGameServerSocket<Game>;
+export interface SendSocketEventOptions<Game extends GameType> {
+  socket?: GameServerSocket<Game>;
   batch?: boolean;
 }
 
 const GAME_ENTITIES_MAP: {
-  [Game in EGame]: { new (context: IEntityContext<Game>): GameEntity<Game> };
+  [Game in GameType]: { new (context: EntityContext<Game>): GameEntity<Game> };
 } = {
-  [EGame.PEXESO]: PexesoGame,
-  [EGame.SURVIVAL_ONLINE]: SurvivalOnlineGame,
-  [EGame.SET]: SetGame,
-  [EGame.ONITAMA]: OnitamaGame,
-  [EGame.CARCASSONNE]: CarcassonneGame,
-  [EGame.SEVEN_WONDERS]: SevenWondersGame,
-  [EGame.HEARTS]: HeartsGame,
-  [EGame.BOMBERS]: BombersGame,
-  [EGame.MACHI_KORO]: MachiKoroGame,
-  [EGame.MAHJONG]: MahjongGame,
+  [GameType.PEXESO]: PexesoGame,
+  [GameType.SURVIVAL_ONLINE]: SurvivalOnlineGame,
+  [GameType.SET]: SetGame,
+  [GameType.ONITAMA]: OnitamaGame,
+  [GameType.CARCASSONNE]: CarcassonneGame,
+  [GameType.SEVEN_WONDERS]: SevenWondersGame,
+  [GameType.HEARTS]: HeartsGame,
+  [GameType.BOMBERS]: BombersGame,
+  [GameType.MACHI_KORO]: MachiKoroGame,
+  [GameType.MAHJONG]: MahjongGame,
 };
 
-export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: IBotConstructor<Game> } = {
-  [EGame.SEVEN_WONDERS]: SevenWondersBot,
-  [EGame.HEARTS]: HeartsBot,
-  [EGame.MAHJONG]: MahjongBot,
+export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstructor<Game> } = {
+  [GameType.SEVEN_WONDERS]: SevenWondersBot,
+  [GameType.HEARTS]: HeartsBot,
+  [GameType.MAHJONG]: MahjongBot,
 };
 
 const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];
 
-class Game<Game extends EGame> {
-  io: TGameNamespace<Game>;
+class Game<Game extends GameType> {
+  io: GameNamespace<Game>;
   game: Game;
   id: string;
   name: string;
-  players: IServerGamePlayer<Game>[];
-  options: TGameOptions<Game>;
+  players: ServerGamePlayer<Game>[];
+  options: GameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
-  result: TGameResult<Game> | null = null;
-  state: IGameState = {
+  result: GameResult<Game> | null = null;
+  state: GameState = {
     type: 'active',
     changeTimestamp: 0,
   };
   deleted = false;
-  batchedActions: IBatchedAction<Game, TGameServerEvent<Game>>[] = [];
+  batchedActions: BatchedAction<Game, GameServerEvent<Game>>[] = [];
   batchedActionsTimeout: NodeJS.Timeout | null = null;
   deleteGameTimeout: NodeJS.Timeout | null = null;
   onDeleteGame: (gameId: string) => void;
   onUpdateGame: (gameId: string) => void;
 
   temporaryListeners: {
-    [Event in TGameClientEvent<Game>]?: Set<TGameClientEventListener<Game, Event>>;
+    [Event in GameClientEvent<Game>]?: Set<GameClientEventListener<Game, Event>>;
   } = {};
 
-  constructor({ game, name, options, onDeleteGame, onUpdateGame }: IGameCreateOptions<Game>) {
+  constructor({ game, name, options, onDeleteGame, onUpdateGame }: GameCreateOptions<Game>) {
     this.game = game;
     this.id = uuid();
     this.name = name;
@@ -149,7 +149,7 @@ class Game<Game extends EGame> {
           player = this.addPlayer({
             ...user,
             name: user.login,
-            status: EPlayerStatus.NOT_READY,
+            status: PlayerStatus.NOT_READY,
             isBot: false,
             settings: socket.playerSettings as any,
           });
@@ -164,7 +164,7 @@ class Game<Game extends EGame> {
       }
 
       if (this.hasStarted() && player) {
-        player.status = EPlayerStatus.PLAYING;
+        player.status = PlayerStatus.PLAYING;
       }
 
       player?.sockets.add(socket);
@@ -175,7 +175,7 @@ class Game<Game extends EGame> {
         });
       });
 
-      (socket as TGameServerSocket<EGame>).on(ECommonGameClientEvent.TOGGLE_PAUSE, () => {
+      (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.TOGGLE_PAUSE, () => {
         if (!player || !this.hasStarted() || !this.gameEntity?.isPauseSupported()) {
           return;
         }
@@ -189,23 +189,23 @@ class Game<Game extends EGame> {
 
         if (this.state.type === 'paused') {
           this.gameEntity.pause(timestamp);
-          this.sendSocketEvent(ECommonGameServerEvent.PAUSE, timestamp);
+          this.sendSocketEvent(CommonGameServerEvent.PAUSE, timestamp);
         } else {
           this.gameEntity.unpause(timestamp);
-          this.sendSocketEvent(ECommonGameServerEvent.UNPAUSE, timestamp);
+          this.sendSocketEvent(CommonGameServerEvent.UNPAUSE, timestamp);
         }
       });
 
-      (socket as TGameServerSocket<EGame>).on(ECommonGameClientEvent.TOGGLE_READY, () => {
+      (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.TOGGLE_READY, () => {
         if (!player || this.hasStarted()) {
           return;
         }
 
-        player.status = player.status === EPlayerStatus.READY ? EPlayerStatus.NOT_READY : EPlayerStatus.READY;
+        player.status = player.status === PlayerStatus.READY ? PlayerStatus.NOT_READY : PlayerStatus.READY;
 
         let isEnoughPlayers = false;
 
-        if (this.players.every(({ status }) => status === EPlayerStatus.READY)) {
+        if (this.players.every(({ status }) => status === PlayerStatus.READY)) {
           isEnoughPlayers = this.players.length >= this.options.minPlayersCount;
 
           if (!isEnoughPlayers && this.areBotsAvailable()) {
@@ -215,7 +215,7 @@ class Game<Game extends EGame> {
               this.addPlayer({
                 login: `bot-${index}`,
                 name: botNames[index],
-                status: EPlayerStatus.READY,
+                status: PlayerStatus.READY,
                 isBot: true,
                 settings: PLAYER_SETTINGS[this.game],
               });
@@ -248,9 +248,9 @@ class Game<Game extends EGame> {
         let shouldDeleteGame: boolean;
 
         if (this.hasStarted()) {
-          player.status = EPlayerStatus.DISCONNECTED;
+          player.status = PlayerStatus.DISCONNECTED;
 
-          shouldDeleteGame = this.players.every(({ status, isBot }) => status === EPlayerStatus.DISCONNECTED || isBot);
+          shouldDeleteGame = this.players.every(({ status, isBot }) => status === PlayerStatus.DISCONNECTED || isBot);
         } else {
           this.players.splice(player.index, 1);
 
@@ -271,8 +271,8 @@ class Game<Game extends EGame> {
     this.setDeleteTimeout();
   }
 
-  addPlayer(playerData: Omit<IGamePlayer<Game>, 'index'>): IServerGamePlayer<Game> {
-    const player: IServerGamePlayer<Game> = {
+  addPlayer(playerData: Omit<GamePlayer<Game>, 'index'>): ServerGamePlayer<Game> {
+    const player: ServerGamePlayer<Game> = {
       ...playerData,
       index: this.players.length,
       sockets: new Set(),
@@ -305,17 +305,17 @@ class Game<Game extends EGame> {
     this.gameEntity?.destroy();
   }
 
-  end(result: TGameResult<Game>): void {
+  end(result: GameResult<Game>): void {
     this.result = result;
 
-    this.sendSocketEvent(ECommonGameServerEvent.END, result);
+    this.sendSocketEvent(CommonGameServerEvent.END, result);
   }
 
-  getClientPlayers(): IGamePlayer<Game>[] {
+  getClientPlayers(): GamePlayer<Game>[] {
     return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']));
   }
 
-  getSocketPlayer(socket: TGameServerSocket<Game>): IServerGamePlayer<Game> | undefined {
+  getSocketPlayer(socket: GameServerSocket<Game>): ServerGamePlayer<Game> | undefined {
     const user = socket.user;
 
     if (user) {
@@ -350,14 +350,14 @@ class Game<Game extends EGame> {
     return entity;
   }
 
-  listenSocketEvent<Event extends TGameClientEvent<Game>>(
+  listenSocketEvent<Event extends GameClientEvent<Game>>(
     event: Event,
-    listener: TPlayerClientEventListener<Game, Event>,
+    listener: PlayerClientEventListener<Game, Event>,
     playerIndex?: number,
   ): () => void {
     const game = this;
 
-    const playerListener = function (this: TGameServerSocket<Game>, data: TGameClientEventData<Game, Event>) {
+    const playerListener = function (this: GameServerSocket<Game>, data: GameClientEventData<Game, Event>) {
       const socketPlayer = game.getSocketPlayer(this);
 
       if (!socketPlayer) {
@@ -386,8 +386,8 @@ class Game<Game extends EGame> {
     };
   }
 
-  sendGameData(socket?: TGameServerSocket<Game>): void {
-    const gameData: IGameData<Game> = {
+  sendGameData(socket?: GameServerSocket<Game>): void {
+    const gameData: GameData<Game> = {
       name: this.name,
       options: this.options,
       info: this.gameEntity?.getGameInfo() ?? null,
@@ -397,16 +397,16 @@ class Game<Game extends EGame> {
       state: this.state,
     };
 
-    this.sendSocketEvent(ECommonGameServerEvent.GET_DATA, gameData as any, {
+    this.sendSocketEvent(CommonGameServerEvent.GET_DATA, gameData as any, {
       socket,
       batch: true,
     });
   }
 
-  sendSocketEvent<Event extends TGameServerEvent<Game>>(
+  sendSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
-    data: TGameServerEventData<Game, Event>,
-    options?: ISendSocketEventOptions<Game>,
+    data: GameServerEventData<Game, Event>,
+    options?: SendSocketEventOptions<Game>,
   ): void {
     if (!options?.batch) {
       // @ts-ignore
@@ -419,7 +419,7 @@ class Game<Game extends EGame> {
       (action) => action.event === event && action.socket === options.socket,
     );
 
-    const batchedAction: IBatchedAction<Game, Event> = {
+    const batchedAction: BatchedAction<Game, Event> = {
       event,
       data,
       socket: options.socket,
@@ -445,7 +445,7 @@ class Game<Game extends EGame> {
   }
 
   sendUpdatePlayersEvent(): void {
-    this.sendSocketEvent(ECommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers() as any);
+    this.sendSocketEvent(CommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers() as any);
   }
 
   setDeleteTimeout(): void {
@@ -457,7 +457,7 @@ class Game<Game extends EGame> {
 
     this.players.forEach((player, index) => {
       player.index = index;
-      player.status = EPlayerStatus.PLAYING;
+      player.status = PlayerStatus.PLAYING;
     });
 
     this.gameEntity = this.initMainGameEntity();

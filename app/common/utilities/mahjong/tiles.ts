@@ -1,140 +1,68 @@
 import { ALL_DRAGONS, ALL_SUITS, ALL_WINDS } from 'common/constants/games/mahjong';
 import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 
-import {
-  EDragon,
-  ESuit,
-  ETileType,
-  EWind,
-  IDragonTile,
-  IFlowerTile,
-  IHandPlayerData,
-  ISuitedTile,
-  IWindTile,
-  TPlayableTile,
-  TTile,
-} from 'common/types/mahjong';
+import { HandPlayerData, PlayableTile, Suit, SuitedTile, Tile, TileType } from 'common/types/mahjong';
 
 import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
+import { isDragon, isFlower, isSuited, isWind } from 'common/utilities/mahjong/tilesBase';
 
-export function suited(value: number, suit: ESuit): ISuitedTile {
-  return {
-    type: ETileType.SUIT,
-    suit,
-    value,
-  };
-}
-
-export function dragon(color: EDragon): IDragonTile {
-  return {
-    type: ETileType.DRAGON,
-    color,
-  };
-}
-
-export function wind(side: EWind): IWindTile {
-  return {
-    type: ETileType.WIND,
-    side,
-  };
-}
-
-export function flower(index: number): IFlowerTile {
-  return {
-    type: ETileType.FLOWER,
-    index,
-  };
-}
-
-export function pair<Tile extends TTile>(tile: Tile): Tile[] {
-  return [tile, tile];
-}
-
-export function pung<Tile extends TTile>(tile: Tile): Tile[] {
-  return [tile, tile, tile];
-}
-
-export function kong<Tile extends TTile>(tile: Tile): Tile[] {
-  return [tile, tile, tile, tile];
-}
-
-export function chow(tile: ISuitedTile): ISuitedTile[] {
-  return [suited(tile.value - 1, tile.suit), tile, suited(tile.value + 1, tile.suit)];
-}
-
-export function isSuited(tile: TTile): tile is ISuitedTile {
-  return tile.type === ETileType.SUIT;
-}
-
-export function isDragon(tile: TTile): tile is IDragonTile {
-  return tile.type === ETileType.DRAGON;
-}
-
-export function isWind(tile: TTile): tile is IWindTile {
-  return tile.type === ETileType.WIND;
-}
-
-export function isFlower(tile: TTile): tile is IFlowerTile {
-  return tile.type === ETileType.FLOWER;
-}
-
-export function isPlayable(tile: TTile): tile is TPlayableTile {
+export function isPlayable(tile: Tile): tile is PlayableTile {
   return !isFlower(tile);
 }
 
-export function isHonor(tile: TTile): boolean {
+export function isHonor(tile: Tile): boolean {
   return isDragon(tile) || isWind(tile);
 }
 
-export function isTerminal(tile: TTile): boolean {
+export function isTerminal(tile: Tile): boolean {
   return isSuited(tile) && (tile.value === 1 || tile.value === 9);
 }
 
-export function isTerminalOrHonor(tile: TTile): boolean {
+export function isTerminalOrHonor(tile: Tile): boolean {
   return isTerminal(tile) || isHonor(tile);
 }
 
-export function isEqualTiles(tile1: TTile, tile2: TTile | null | undefined): boolean {
+export function isEqualTiles(tile1: Tile, tile2: Tile | null | undefined): boolean {
   if (tile1.type !== tile2?.type) {
     return false;
   }
 
-  if (tile1.type === ETileType.SUIT && tile2.type === ETileType.SUIT) {
+  if (tile1.type === TileType.SUIT && tile2.type === TileType.SUIT) {
     return tile1.suit === tile2.suit && tile1.value === tile2.value;
   }
 
-  if (tile1.type === ETileType.DRAGON && tile2.type === ETileType.DRAGON) {
+  if (tile1.type === TileType.DRAGON && tile2.type === TileType.DRAGON) {
     return tile1.color === tile2.color;
   }
 
-  if (tile1.type === ETileType.WIND && tile2.type === ETileType.WIND) {
+  if (tile1.type === TileType.WIND && tile2.type === TileType.WIND) {
     return tile1.side === tile2.side;
   }
 
-  if (tile1.type === ETileType.FLOWER && tile2.type === ETileType.FLOWER) {
+  if (tile1.type === TileType.FLOWER && tile2.type === TileType.FLOWER) {
     return tile1.index === tile2.index;
   }
 
   return false;
 }
 
-export function isEqualTilesCallback(tile1: TTile): (tile2: TTile | null | undefined) => boolean {
+export function isEqualTilesCallback(tile1: Tile): (tile2: Tile | null | undefined) => boolean {
   return (tile2) => isEqualTiles(tile1, tile2);
 }
 
-export function tilesContainTile(tiles: TTile[], tile: TTile): boolean {
+export function tilesContainTile(tiles: Tile[], tile: Tile): boolean {
   return tiles.some(isEqualTilesCallback(tile));
 }
 
-export function getTileCount(tiles: TTile[], tile: TTile): number {
+export function getTileCount(tiles: Tile[], tile: Tile): number {
   return tiles.filter(isEqualTilesCallback(tile)).length;
 }
 
-export function isTileSubset(tiles: TTile[], tilesSet: TTile[]): boolean {
+export function isTileSubset(tiles: Tile[], tilesSet: Tile[]): boolean {
   return tiles.every((tile) => tilesContainTile(tilesSet, tile));
 }
 
-export function isFlush(tiles: TTile[]): tiles is ISuitedTile[] {
+export function isFlush(tiles: Tile[]): tiles is SuitedTile[] {
   if (!areSuited(tiles)) {
     return false;
   }
@@ -142,7 +70,7 @@ export function isFlush(tiles: TTile[]): tiles is ISuitedTile[] {
   return getSuitsCount(tiles) === 1;
 }
 
-export function isStraight(tiles: TTile[], possibleShifts = [1]): tiles is ISuitedTile[] {
+export function isStraight(tiles: Tile[], possibleShifts = [1]): tiles is SuitedTile[] {
   if (!areSuited(tiles)) {
     return false;
   }
@@ -154,33 +82,33 @@ export function isStraight(tiles: TTile[], possibleShifts = [1]): tiles is ISuit
   );
 }
 
-export function areSuited(tiles: TTile[]): tiles is ISuitedTile[] {
+export function areSuited(tiles: Tile[]): tiles is SuitedTile[] {
   return tiles.every(isSuited);
 }
 
-export function areSameValues(tiles: ISuitedTile[]): boolean {
+export function areSameValues(tiles: SuitedTile[]): boolean {
   return tiles.every((tile) => tile.value === tiles.at(0)?.value);
 }
 
-export function getSuitsCount(tiles: TTile[]): number {
+export function getSuitsCount(tiles: Tile[]): number {
   return tiles.reduce((suits, tile) => {
     if (isSuited(tile)) {
       suits.add(tile.suit);
     }
 
     return suits;
-  }, new Set<ESuit>()).size;
+  }, new Set<Suit>()).size;
 }
 
-export function getSortedValues(tiles: ISuitedTile[]): number[] {
+export function getSortedValues(tiles: SuitedTile[]): number[] {
   return tiles.map(({ value }) => value).sort();
 }
 
-export function getSortedValuesString(tiles: ISuitedTile[]): string {
+export function getSortedValuesString(tiles: SuitedTile[]): string {
   return getSortedValues(tiles).join('');
 }
 
-export function getTileSortValue(tile: TTile): number {
+export function getTileSortValue(tile: Tile): number {
   if (isFlower(tile)) {
     return 300 + tile.index;
   }
@@ -212,7 +140,7 @@ export function getNewCurrentTileIndex(currentTileIndex: number, from: number, t
   return to >= currentTileIndex ? currentTileIndex - 1 : currentTileIndex;
 }
 
-export function getLastTileCandidates(playersData: (IHandPlayerData | null)[], isSelfDraw: boolean): TTile[] {
+export function getLastTileCandidates(playersData: (HandPlayerData | null)[], isSelfDraw: boolean): Tile[] {
   const allTiles = [
     ...playersData.flatMap((playerData) => {
       if (!playerData) {
@@ -229,7 +157,7 @@ export function getLastTileCandidates(playersData: (IHandPlayerData | null)[], i
   return getLastTileCandidatesFromTiles(allTiles, isSelfDraw);
 }
 
-export function getLastTileCandidatesFromTiles(tiles: TTile[], isSelfDraw: boolean): TTile[] {
+export function getLastTileCandidatesFromTiles(tiles: Tile[], isSelfDraw: boolean): Tile[] {
   const threshold = isSelfDraw ? 3 : 4;
 
   return STANDARD_TILES.filter((tile) => {

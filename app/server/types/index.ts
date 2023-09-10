@@ -1,13 +1,8 @@
-import { IUser } from 'common/types';
-
-export interface ISession {
-  user?: IUser;
-  destroy?(): void;
-}
+import { User } from 'common/types';
 
 declare module 'socket.io' {
   interface Socket {
-    user: IUser | null;
+    user: User | null;
     playerSettings: unknown;
   }
 }

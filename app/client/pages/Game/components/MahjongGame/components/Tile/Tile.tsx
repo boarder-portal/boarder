@@ -1,24 +1,24 @@
-import { AllHTMLAttributes, CSSProperties, FC, memo, MouseEvent } from 'react';
 import classNames from 'classnames';
+import { AllHTMLAttributes, CSSProperties, FC, MouseEvent, memo } from 'react';
 
-import { TTile } from 'common/types/mahjong';
-import { EGame } from 'common/types/game';
+import { GameType } from 'common/types/game';
+import { Tile as TileModel } from 'common/types/mahjong';
 
-import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/stringify';
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
-import { isSuited, isWind } from 'common/utilities/mahjong/tiles';
+import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/stringify';
+import { isSuited, isWind } from 'common/utilities/mahjong/tilesBase';
 
-import usePlayerSettings from 'client/hooks/usePlayerSettings';
 import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
+import usePlayerSettings from 'client/hooks/usePlayerSettings';
 
-import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 import Image from 'client/components/common/Image/Image';
+import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 
 import styles from './Tile.module.scss';
 
-interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
+interface TileProps extends AllHTMLAttributes<HTMLDivElement> {
   rootStyle?: CSSProperties;
-  tile: TTile | null;
+  tile: TileModel | null;
   width: number;
   rotation?: number;
   hoverable?: boolean;
@@ -28,7 +28,7 @@ interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
   onMouseLeave?(e?: MouseEvent): void;
 }
 
-const Tile: FC<ITileProps> = (props) => {
+const Tile: FC<TileProps> = (props) => {
   const {
     className,
     style,
@@ -44,7 +44,7 @@ const Tile: FC<ITileProps> = (props) => {
   } = props;
   const height = getTileHeight(width);
 
-  const { settings } = usePlayerSettings(EGame.MAHJONG);
+  const { settings } = usePlayerSettings(GameType.MAHJONG);
 
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 
