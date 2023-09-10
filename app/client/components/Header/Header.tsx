@@ -9,7 +9,7 @@ import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 
-import styles from './Header.pcss';
+import styles from './Header.module.scss';
 
 interface IHeaderProps {}
 

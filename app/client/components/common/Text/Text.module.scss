@@ -1,0 +1,35 @@
+.size {
+  &_s {
+    font-size: 13px;
+  }
+
+  &_m {
+    font-size: 15px;
+  }
+
+  &_l {
+    font-size: 18px;
+  }
+
+  &_xl {
+    font-size: 24px;
+  }
+
+  &_xxl {
+    font-size: 32px;
+  }
+}
+
+.weight {
+  &_normal {
+    font-weight: normal;
+  }
+
+  &_bold {
+    font-weight: bold;
+  }
+}
+
+.root {
+  line-height: 1;
+}

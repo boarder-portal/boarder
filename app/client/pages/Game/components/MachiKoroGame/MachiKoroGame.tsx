@@ -24,7 +24,7 @@ import StatusAndActions from 'client/pages/Game/components/MachiKoroGame/compone
 import { IGameProps } from 'client/pages/Game/Game';
 import { NEW_TURN, playSound } from 'client/sounds';
 
-import styles from './MachiKoroGame.pcss';
+import styles from './MachiKoroGame.module.scss';
 
 const FORBIDDEN_TO_SWAP_CARD_TYPES: ECardType[] = [ECardType.MAJOR];
 

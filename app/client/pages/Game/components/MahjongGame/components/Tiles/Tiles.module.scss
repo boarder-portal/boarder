@@ -1,8 +1,3 @@
-.tiles {
-  display: inline-block;
-  position: relative;
-}
-
 .tile {
   position: absolute;
   top: 0;
@@ -12,4 +7,9 @@
   &.withTransition {
     transition: transform 0.15s ease-out;
   }
+}
+
+.tiles {
+  display: inline-block;
+  position: relative;
 }

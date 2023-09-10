@@ -31,7 +31,7 @@ function getConfig(target: ETarget): Configuration {
           exclude: /node_modules/,
         },
         {
-          test: /\.pcss$/,
+          test: /\.scss$/,
           use: [
             MiniCssExtractPlugin.loader,
             {
@@ -43,7 +43,7 @@ function getConfig(target: ETarget): Configuration {
                 },
               },
             },
-            'postcss-loader',
+            'sass-loader',
           ],
         },
         {

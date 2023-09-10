@@ -19,7 +19,7 @@ import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
 
-import styles from './Mahjong.pcss';
+import styles from './Mahjong.module.scss';
 
 interface IMahjongProps {
   mahjong: IHandMahjong;

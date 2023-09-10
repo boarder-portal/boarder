@@ -31,7 +31,7 @@ import SevenWondersGameOptions from 'client/pages/games/sevenWonders/components/
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
-import styles from './Lobby.pcss';
+import styles from './Lobby.module.scss';
 
 export type TChangeOptions<Game extends EGame> = <K extends keyof TGameOptions<Game>>(
   optionsChange: Pick<TGameOptions<Game>, K>,

@@ -20,7 +20,7 @@ import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 
 import { ICreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-import styles from './PexesoCreateGameOptions.pcss';
+import styles from './PexesoCreateGameOptions.module.scss';
 
 const PexesoCreateGameOptions: React.FC<ICreateGameOptionsProps<EGame.PEXESO>> = (props) => {
   const { options, changeOptions } = props;

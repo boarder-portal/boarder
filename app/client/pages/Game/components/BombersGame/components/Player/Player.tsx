@@ -5,7 +5,7 @@ import { IPlayer } from 'common/types/bombers';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Player.pcss';
+import styles from './Player.module.scss';
 
 interface IPlayerProps {
   player: IPlayer;

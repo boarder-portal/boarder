@@ -25,7 +25,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './PexesoGame.pcss';
+import styles from './PexesoGame.module.scss';
 
 interface IPexesoClientCard extends ICard {
   id: number;

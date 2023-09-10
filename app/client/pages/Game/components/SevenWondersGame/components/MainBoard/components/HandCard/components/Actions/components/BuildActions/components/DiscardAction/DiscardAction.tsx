@@ -6,7 +6,7 @@ import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBu
 
 import Text from 'client/components/common/Text/Text';
 
-import styles from './DiscardAction.pcss';
+import styles from './DiscardAction.module.scss';
 
 interface IDiscardActionProps {
   player: IPlayer;

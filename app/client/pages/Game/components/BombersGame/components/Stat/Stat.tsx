@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Stat.pcss';
+import styles from './Stat.module.scss';
 
 interface IStatProps {
   label: string;

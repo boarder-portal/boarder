@@ -8,7 +8,7 @@ import { EGame } from 'common/types/game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Home.pcss';
+import styles from './Home.module.scss';
 
 const GAMES_IN_DEVELOPMENT: EGame[] = [];
 

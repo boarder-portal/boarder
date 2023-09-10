@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import TableRow from 'client/components/common/TableRow/TableRow';
 
-import styles from './Table.pcss';
+import styles from './Table.module.scss';
 
 interface ITableProps extends AllHTMLAttributes<HTMLTableElement> {
   className?: string;
@@ -21,7 +21,7 @@ const Table: FC<ITableProps> = (props) => {
     <table
       className={classNames(
         styles.root,
-        styles[layout],
+        styles[`layout_${layout}`],
         { [styles.bordered]: bordered, [styles.fullWidth]: fullWidth },
         className,
       )}

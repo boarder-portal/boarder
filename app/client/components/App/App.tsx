@@ -1,4 +1,5 @@
-import '../../styles/reset.pcss';
+import '../../styles/reset.scss';
+
 import { FC } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ import Login from 'client/pages/Login/Login';
 import Game from 'client/pages/Game/Game';
 import Lobby from 'client/pages/Lobby/Lobby';
 
-import styles from './App.pcss';
+import styles from './App.module.scss';
 
 const App: FC = () => {
   return (

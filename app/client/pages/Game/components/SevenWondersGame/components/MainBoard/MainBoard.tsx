@@ -43,7 +43,7 @@ import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIco
 
 import { NEW_TURN, playSound, SELECT_SOUND } from 'client/sounds';
 
-import styles from './MainBoard.pcss';
+import styles from './MainBoard.module.scss';
 
 interface IMainBoardProps {
   className?: string;

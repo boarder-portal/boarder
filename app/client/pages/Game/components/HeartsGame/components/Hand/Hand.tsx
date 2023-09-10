@@ -11,7 +11,7 @@ import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Hand.pcss';
+import styles from './Hand.module.scss';
 
 enum ECardState {
   DEFAULT = 'default',

@@ -38,7 +38,7 @@ import CalculatorModal from 'client/pages/Game/components/MahjongGame/components
 import { IGameProps } from 'client/pages/Game/Game';
 import { NEW_TURN, playSound } from 'client/sounds';
 
-import styles from './MahjongGame.pcss';
+import styles from './MahjongGame.module.scss';
 
 enum ELayoutType {
   HORIZONTAL_RIGHT = 'horizontal-right',

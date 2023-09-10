@@ -1,17 +1,19 @@
-.root {
-  border-collapse: collapse;
+.fullWidth {
+  width: 100%;
+}
 
-  &.fullWidth {
-    width: 100%;
-  }
-
-  &.fixed {
+.layout {
+  &_fixed {
     table-layout: fixed;
   }
 
-  &.auto {
+  &_auto {
     table-layout: auto;
   }
+}
+
+.root {
+  border-collapse: collapse;
 
   thead, tfoot {
     td {

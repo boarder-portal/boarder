@@ -2,7 +2,7 @@ import { ChangeEvent, FC, InputHTMLAttributes, useCallback } from 'react';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Input.pcss';
+import styles from './Input.module.scss';
 
 interface IInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   className?: string;

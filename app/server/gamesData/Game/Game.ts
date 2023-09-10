@@ -188,10 +188,10 @@ class Game<Game extends EGame> {
         };
 
         if (this.state.type === 'paused') {
-          this.gameEntity?.pause(timestamp);
+          this.gameEntity.pause(timestamp);
           this.sendSocketEvent(ECommonGameServerEvent.PAUSE, timestamp);
         } else {
-          this.gameEntity?.unpause(timestamp);
+          this.gameEntity.unpause(timestamp);
           this.sendSocketEvent(ECommonGameServerEvent.UNPAUSE, timestamp);
         }
       });

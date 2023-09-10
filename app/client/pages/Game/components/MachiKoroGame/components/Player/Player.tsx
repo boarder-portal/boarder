@@ -15,7 +15,7 @@ import Card from 'client/pages/Game/components/MachiKoroGame/components/Card/Car
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
 import Image from 'client/components/common/Image/Image';
 
-import styles from './Player.pcss';
+import styles from './Player.module.scss';
 
 interface IPlayerProps {
   className?: string;

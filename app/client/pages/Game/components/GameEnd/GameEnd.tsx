@@ -6,7 +6,7 @@ import { EGame } from 'common/types/game';
 import Text from 'client/components/common/Text/Text';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './GameEnd.pcss';
+import styles from './GameEnd.module.scss';
 
 interface IGameEndProps {
   children?: React.ReactNode;

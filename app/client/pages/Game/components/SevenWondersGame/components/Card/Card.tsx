@@ -5,7 +5,7 @@ import { ICard } from 'common/types/sevenWonders/cards';
 
 import Image from 'client/components/common/Image/Image';
 
-import styles from './Card.pcss';
+import styles from './Card.module.scss';
 
 interface ICardProps {
   className?: string;

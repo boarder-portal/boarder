@@ -1,47 +1,48 @@
-.root {
-  --size: 42px;
-  --stripedDirection: to right;
-
-  &.red {
+.color {
+  &_red {
     --color: red;
   }
 
-  &.blue {
+  &_blue {
     --color: blue;
   }
 
-  &.green {
+  &_green {
     --color: green;
   }
+}
 
-  &.oval {
+.shape {
+  &_oval {
     width: calc(var(--size) * 1.5);
     height: var(--size);
     border-radius: calc(var(--size) * 0.1);
   }
 
-  &.rhombus {
+  &_rhombus {
     --stripedDirection: 45deg;
     width: calc(var(--size) * 0.8);
     height: calc(var(--size) * 0.8);
     transform: rotate(45deg);
   }
 
-  &.wave {
+  &_wave {
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
   }
+}
 
-  &.empty {
+.fill {
+  &_empty {
     border: 3px solid var(--color);
   }
 
-  &.filled {
+  &_filled {
     background: var(--color);
   }
 
-  &.striped {
+  &_striped {
     border: 3px solid var(--color);
     background: repeating-linear-gradient(
       var(--stripedDirection),
@@ -53,16 +54,19 @@
   }
 }
 
-@media (max-width: 1000px) {
-  .root {
-    --size: 20px;
+.root {
+  --size: 42px;
+  --stripedDirection: to right;
+}
 
-    &.empty {
-      border: 1px solid var(--color);
+@media (max-width: 1000px) {
+  .fill {
+    &_empty {
+      border-width: 1px;
     }
 
-    &.striped {
-      border: 1px solid var(--color);
+    &_striped {
+      border-width: 1px;
       background: repeating-linear-gradient(
         var(--stripedDirection),
         transparent,
@@ -71,5 +75,9 @@
         var(--color) 2px
       );
     }
+  }
+
+  .root {
+    --size: 20px;
   }
 }

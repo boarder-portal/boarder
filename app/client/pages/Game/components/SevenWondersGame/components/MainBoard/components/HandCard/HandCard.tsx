@@ -17,7 +17,7 @@ import Actions from 'client/pages/Game/components/SevenWondersGame/components/Ma
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
-import styles from './HandCard.pcss';
+import styles from './HandCard.module.scss';
 
 interface IHandCardProps {
   card: ICard;

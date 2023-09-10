@@ -8,7 +8,7 @@ import { ECardType } from 'common/types/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './OnitamaCard.pcss';
+import styles from './OnitamaCard.module.scss';
 
 interface IOnitamaCardProps {
   card: ECardType;

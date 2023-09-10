@@ -9,7 +9,7 @@ import TableRow from 'client/components/common/TableRow/TableRow';
 import Flex from 'client/components/common/Flex/Flex';
 import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 
-import styles from './FansModal.pcss';
+import styles from './FansModal.module.scss';
 
 interface IFansModalProps {
   open: boolean;

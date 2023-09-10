@@ -28,7 +28,7 @@ import Button from 'client/components/common/Button/Button';
 
 import { TChangeSettingCallback } from 'client/pages/Game/Game';
 
-import styles from './ControlPanel.pcss';
+import styles from './ControlPanel.module.scss';
 
 interface IControlPanelProps {
   className?: string;

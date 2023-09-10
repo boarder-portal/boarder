@@ -45,7 +45,7 @@ import Button from 'client/components/common/Button/Button';
 import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
 import Select from 'client/components/common/Select/Select';
 
-import styles from './CalculatorModal.pcss';
+import styles from './CalculatorModal.module.scss';
 
 enum ESelectMode {
   CHOW = 'CHOW',

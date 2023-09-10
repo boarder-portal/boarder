@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styles from './DotSeparator.pcss';
+import styles from './DotSeparator.module.scss';
 
 const DotSeparator: React.FC = () => {
   return <span className={styles.root}>{'  •  '}</span>;

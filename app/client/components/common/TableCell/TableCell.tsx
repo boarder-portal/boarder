@@ -1,7 +1,7 @@
 import { AllHTMLAttributes, FC, memo } from 'react';
 import classNames from 'classnames';
 
-import styles from './TableCell.pcss';
+import styles from './TableCell.module.scss';
 
 interface ITableCellProps extends AllHTMLAttributes<HTMLTableCellElement> {}
 

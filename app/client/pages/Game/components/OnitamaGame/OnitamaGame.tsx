@@ -17,7 +17,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './OnitamaGame.pcss';
+import styles from './OnitamaGame.module.scss';
 
 const getLegalMoves = (from: ICoords, card: ECardType, board: TBoard, player: IPlayer): ICoords[] => {
   const cells: ICoords[] = [];
@@ -110,7 +110,7 @@ const OnitamaGame: React.FC<IGameProps<EGame.ONITAMA>> = (props) => {
   }, [gameInfo]);
 
   if (gameResult !== null) {
-    return <GameEnd></GameEnd>;
+    return <GameEnd />;
   }
 
   if (!board.length || !players.length) {

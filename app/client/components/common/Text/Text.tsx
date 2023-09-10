@@ -1,7 +1,7 @@
 import { forwardRef, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 
-import styles from './Text.pcss';
+import styles from './Text.module.scss';
 
 interface ITextProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;

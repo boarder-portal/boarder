@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
-import styles from './Modal.pcss';
+import styles from './Modal.module.scss';
 
 interface IModalProps {
   containerClassName?: string;

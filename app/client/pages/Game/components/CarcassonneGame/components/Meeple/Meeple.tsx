@@ -5,7 +5,7 @@ import { EMeepleType, EPlayerColor } from 'common/types/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Meeple.pcss';
+import styles from './Meeple.module.scss';
 
 interface IMeepleProps {
   className?: string;

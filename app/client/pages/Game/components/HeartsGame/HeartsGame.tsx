@@ -18,7 +18,7 @@ import ArrowRightIcon from 'client/components/icons/ArrowRightIcon/ArrowRightIco
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './HeartsGame.pcss';
+import styles from './HeartsGame.module.scss';
 
 const HeartsGame: React.FC<IGameProps<EGame.HEARTS>> = (props) => {
   const { io, gameInfo } = props;

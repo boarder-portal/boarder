@@ -17,7 +17,7 @@ import Image from 'client/components/common/Image/Image';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './SevenWondersGame.pcss';
+import styles from './SevenWondersGame.module.scss';
 
 const SevenWondersGame: React.FC<IGameProps<EGame.SEVEN_WONDERS>> = (props) => {
   const { io, gameOptions, gameInfo } = props;

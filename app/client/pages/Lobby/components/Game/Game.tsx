@@ -5,7 +5,7 @@ import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 
-import styles from './Game.pcss';
+import styles from './Game.module.scss';
 
 interface ILobbyGameProps {
   className?: string;

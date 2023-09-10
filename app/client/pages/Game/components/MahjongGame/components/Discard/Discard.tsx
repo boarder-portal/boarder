@@ -17,7 +17,7 @@ import RotatedElement from 'client/components/common/RotatedElement/RotatedEleme
 import Flex from 'client/components/common/Flex/Flex';
 import DragArea from 'client/components/common/DragArea/DragArea';
 
-import styles from './Discard.pcss';
+import styles from './Discard.module.scss';
 
 interface IDiscardProps {
   tiles: TTile[];

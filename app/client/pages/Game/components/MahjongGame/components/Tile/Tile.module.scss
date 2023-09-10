@@ -1,3 +1,23 @@
+.back, .content {
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hint {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  pointer-events: none;
+  color: #f00;
+  font-weight: bold;
+}
+
 .root {
   display: inline-block;
   flex-shrink: 0;
@@ -26,24 +46,4 @@
       background-color: #afac86;
     }
   }
-}
-
-.back, .content {
-  width: 100%;
-  height: 100%;
-}
-
-.content {
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.hint {
-  position: absolute;
-  top: 2%;
-  left: 2%;
-  pointer-events: none;
-  color: #f00;
-  font-weight: bold;
 }

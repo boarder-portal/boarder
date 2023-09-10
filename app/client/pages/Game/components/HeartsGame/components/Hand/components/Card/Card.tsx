@@ -5,7 +5,7 @@ import { ESuit, ICard } from 'common/types/cards';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Card.pcss';
+import styles from './Card.module.scss';
 
 interface ICardProps {
   className?: string;

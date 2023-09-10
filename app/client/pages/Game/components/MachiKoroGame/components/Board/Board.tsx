@@ -7,7 +7,7 @@ import isNotUndefined from 'common/utilities/isNotUndefined';
 
 import CardLine from 'client/pages/Game/components/MachiKoroGame/components/CardLine/CardLine';
 
-import styles from './Board.pcss';
+import styles from './Board.module.scss';
 
 interface IBoardProps {
   board: ECardId[];

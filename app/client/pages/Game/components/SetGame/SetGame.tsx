@@ -13,7 +13,7 @@ import Button from 'client/components/common/Button/Button';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './SetGame.pcss';
+import styles from './SetGame.module.scss';
 
 const SetGame: React.FC<IGameProps<EGame.SET>> = (props) => {
   const { io, gameInfo, gameResult } = props;

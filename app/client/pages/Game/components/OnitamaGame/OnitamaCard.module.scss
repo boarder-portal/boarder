@@ -1,3 +1,11 @@
+.cells {
+  transform: scaleY(-1);
+
+  &.isFlipped {
+    transform: scaleX(-1);
+  }
+}
+
 .root {
   width: 100px;
   padding: 4px 10px;
@@ -6,13 +14,5 @@
 
   &.selected {
     background: #7f7;
-  }
-}
-
-.cells {
-  transform: scaleY(-1);
-
-  &.isFlipped {
-    transform: scaleX(-1);
   }
 }

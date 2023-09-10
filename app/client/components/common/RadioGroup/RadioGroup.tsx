@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './RadioGroup.pcss';
+import styles from './RadioGroup.module.scss';
 
 export interface ISelectOption<Value> {
   text: React.ReactNode;

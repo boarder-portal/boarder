@@ -10,7 +10,7 @@ import Flex from 'client/components/common/Flex/Flex';
 import Button from 'client/components/common/Button/Button';
 import Input from 'client/components/common/Input/Input';
 
-import styles from './Registration.pcss';
+import styles from './Registration.module.scss';
 
 const Registration: React.FC = () => {
   const history = useHistory();

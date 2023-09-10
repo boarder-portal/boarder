@@ -8,7 +8,7 @@ import Image from 'client/components/common/Image/Image';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
-import styles from './Card.pcss';
+import styles from './Card.module.scss';
 
 interface ICardProps<ID> {
   className?: string;

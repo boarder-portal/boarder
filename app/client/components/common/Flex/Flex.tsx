@@ -1,7 +1,7 @@
 import { AllHTMLAttributes, forwardRef } from 'react';
 import classNames from 'classnames';
 
-import styles from './Flex.pcss';
+import styles from './Flex.module.scss';
 
 export interface IFlexProps extends AllHTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -9,11 +9,21 @@ export interface IFlexProps extends AllHTMLAttributes<HTMLDivElement> {
   direction?: 'row' | 'rowReverse' | 'column' | 'columnReverse';
   justifyContent?: 'center' | 'flexStart' | 'flexEnd' | 'spaceBetween';
   alignItems?: 'center' | 'flexStart' | 'flexEnd' | 'stretch';
-  between?: 1 | 2 | 3 | 4 | 5 | 6;
+  between?: number;
 }
 
 const Flex = forwardRef<HTMLDivElement | null, IFlexProps>((props, ref) => {
-  const { className, children, inline, direction = 'row', justifyContent, alignItems, between, ...restProps } = props;
+  const {
+    className,
+    children,
+    inline,
+    direction = 'row',
+    justifyContent,
+    alignItems,
+    between,
+    style,
+    ...restProps
+  } = props;
 
   return (
     <div
@@ -27,6 +37,10 @@ const Flex = forwardRef<HTMLDivElement | null, IFlexProps>((props, ref) => {
         className,
       )}
       ref={ref}
+      style={{
+        ...style,
+        '--between': between,
+      }}
       {...restProps}
     >
       {children}

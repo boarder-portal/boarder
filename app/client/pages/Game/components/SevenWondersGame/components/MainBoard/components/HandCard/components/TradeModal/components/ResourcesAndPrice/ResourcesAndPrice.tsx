@@ -5,7 +5,7 @@ import { IOwnerResource } from 'client/pages/Game/components/SevenWondersGame/co
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './ResourceAndPrice.pcss';
+import styles from './ResourceAndPrice.module.scss';
 
 interface IResourcesAndPriceProps {
   price: number;

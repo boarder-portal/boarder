@@ -1,11 +1,3 @@
-.root {
-  --indexWidth: 60px;
-
-  &.results {
-    width: 960px;
-  }
-}
-
 .row {
   background-color: transparent;
   transition: background-color 0.1s ease-in-out;
@@ -48,4 +40,12 @@
 
 .winner {
   font-weight: bold;
+}
+
+.root {
+  --indexWidth: 60px;
+
+  &.results {
+    width: 960px;
+  }
 }

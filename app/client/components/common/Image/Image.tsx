@@ -5,7 +5,7 @@ interface IImgProps extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 const Image: React.FC<IImgProps> = (props) => {
-  return <img {...props} src={`${props.src}`} />;
+  return <img {...props} />;
 };
 
 export default React.memo(Image);

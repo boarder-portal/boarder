@@ -1,3 +1,5 @@
+@import "../../../styles/functions";
+
 .label {
   font-size: 13px;
   color: #aaa;
@@ -37,7 +39,7 @@
   cursor: pointer;
 
   &.selected {
-    background: color(white shade(5%));
+    background: shade(#fff, 5%);
   }
 
   &.disabled {
@@ -46,7 +48,7 @@
   }
 
   &:hover {
-    background: color(white shade(5%));
+    background: shade(#fff, 5%);
   }
 }
 

@@ -14,7 +14,7 @@ import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 import Image from 'client/components/common/Image/Image';
 
-import styles from './Tile.pcss';
+import styles from './Tile.module.scss';
 
 interface ITileProps extends AllHTMLAttributes<HTMLDivElement> {
   rootStyle?: CSSProperties;

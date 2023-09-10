@@ -19,7 +19,7 @@ import DragArea from 'client/components/common/DragArea/DragArea';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
-import styles from './Tiles.pcss';
+import styles from './Tiles.module.scss';
 
 export enum EOpenType {
   OPEN = 'OPEN',

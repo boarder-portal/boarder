@@ -7,7 +7,7 @@ import { ICard } from 'common/types/set';
 import CardObject from 'client/pages/Game/components/SetGame/components/Card/componetns/CardObject/CardObject';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Card.pcss';
+import styles from './Card.module.scss';
 
 interface ICardProps {
   card: ICard;

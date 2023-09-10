@@ -14,7 +14,7 @@ import TableRow from 'client/components/common/TableRow/TableRow';
 import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './ResultsModal.pcss';
+import styles from './ResultsModal.module.scss';
 
 enum EViewMode {
   TABLE = 'TABLE',

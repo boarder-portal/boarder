@@ -11,7 +11,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
-import styles from './TradeModal.pcss';
+import styles from './TradeModal.module.scss';
 
 interface ITradeModalProps {
   isVisible: boolean;

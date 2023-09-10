@@ -11,7 +11,7 @@ import Card from 'client/pages/Game/components/HeartsGame/components/Hand/compon
 import Text from 'client/components/common/Text/Text';
 import Flex, { IFlexProps } from 'client/components/common/Flex/Flex';
 
-import styles from './Player.pcss';
+import styles from './Player.module.scss';
 
 interface IPlayerProps {
   className?: string;

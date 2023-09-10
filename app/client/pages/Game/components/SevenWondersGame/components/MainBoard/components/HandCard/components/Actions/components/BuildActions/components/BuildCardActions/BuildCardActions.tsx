@@ -16,7 +16,7 @@ import { useBoolean } from 'client/hooks/useBoolean';
 import TradeModal from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/components/TradeModal/TradeModal';
 import Text from 'client/components/common/Text/Text';
 
-import styles from './BuildCardActions.pcss';
+import styles from './BuildCardActions.module.scss';
 
 interface IBuildCardActionsProps {
   card: ICard;

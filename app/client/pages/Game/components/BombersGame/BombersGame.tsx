@@ -38,7 +38,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './BombersGame.pcss';
+import styles from './BombersGame.module.scss';
 
 const BUFFS_MAP: Partial<Record<string, EBuff>> = {
   Digit1: EBuff.SUPER_SPEED,

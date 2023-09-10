@@ -2,7 +2,7 @@ import { memo, FC } from 'react';
 import times from 'lodash/times';
 import classNames from 'classnames';
 
-import styles from './Dice.pcss';
+import styles from './Dice.module.scss';
 
 export type TDice = 1 | 2 | 3 | 4 | 5 | 6;
 

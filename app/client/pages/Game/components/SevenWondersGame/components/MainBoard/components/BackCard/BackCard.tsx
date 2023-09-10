@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import Image from 'client/components/common/Image/Image';
 
-import styles from './BackCard.pcss';
+import styles from './BackCard.module.scss';
 
 interface IBackCardProps {
   className?: string;

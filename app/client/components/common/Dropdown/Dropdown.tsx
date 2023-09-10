@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useBoolean } from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 
-import styles from './Dropdown.pcss';
+import styles from './Dropdown.module.scss';
 
 interface IDropdownProps {
   className?: string;

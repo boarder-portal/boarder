@@ -10,7 +10,7 @@ import { ITimestamp } from 'common/types';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Player.pcss';
+import styles from './Player.module.scss';
 
 interface IPlayersProps {
   className?: string;

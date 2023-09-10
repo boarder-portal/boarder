@@ -46,7 +46,7 @@ import Flex from 'client/components/common/Flex/Flex';
 import { playSound, POP_SOUND } from 'client/sounds';
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './CarcassonneGame.pcss';
+import styles from './CarcassonneGame.module.scss';
 
 const CarcassonneGame: React.FC<IGameProps<EGame.CARCASSONNE>> = (props) => {
   const { io, gameInfo } = props;

@@ -1,0 +1,13 @@
+.name {
+  &.active {
+    color: #f00;
+    font-weight: bold;
+  }
+}
+
+.root {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+}

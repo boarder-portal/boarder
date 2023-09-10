@@ -7,7 +7,7 @@ import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
 import ArrowDropDownIcon from 'client/components/icons/ArrowDropDownIcon/ArrowDropDownIcon';
 
-import styles from './Select.pcss';
+import styles from './Select.module.scss';
 
 interface ISelectProps<Value> {
   className?: string;

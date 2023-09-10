@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Flex from 'client/components/common/Flex/Flex';
 import CheckIcon from 'client/components/icons/CheckIcon/CheckIcon';
 
-import styles from './Checkbox.pcss';
+import styles from './Checkbox.module.scss';
 
 interface ICheckboxProps {
   className?: string;

@@ -1,0 +1,67 @@
+@import "../../../styles/functions";
+
+.size {
+  &_m {
+    padding: 12px 24px;
+  }
+
+  &_s {
+    padding: 6px 12px;
+  }
+}
+
+.variant {
+  &_contained {
+    --color: white;
+    --bg-color: #333;
+
+    &:hover {
+      --bg-color: #{shade(#333, 15%)};
+
+      box-shadow:
+        0 2px 4px -1px rgb(0 0 0 / 20%),
+        0 4px 5px 0 rgb(0 0 0 / 14%),
+        0 1px 10px 0 rgb(0 0 0 / 12%);
+    }
+
+    &:active {
+      --bg-color: #{shade(#333, 30%)};
+
+      box-shadow:
+        0 2px 4px -1px rgb(0 0 0 / 20%),
+        0 2px 5px 0 rgb(0 0 0 / 14%),
+        0 1px 5px 0 rgb(0 0 0 / 12%);
+    }
+  }
+
+  &_outlined {
+    --color: #333;
+    --bg-color: transparent;
+
+    &:hover {
+      --bg-color: #eee;
+      --border-color: #333;
+    }
+
+    &:active {
+      --bg-color: #{shade(#eee, 10%)};
+    }
+  }
+}
+
+.disabled {
+  cursor: initial;
+  opacity: 0.3;
+}
+
+.root {
+  --border-color: #333;
+
+  color: var(--color);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  outline: 0;
+  cursor: pointer;
+  transition: 0.2s;
+}

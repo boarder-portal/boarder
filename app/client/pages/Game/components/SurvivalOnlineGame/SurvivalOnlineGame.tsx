@@ -17,7 +17,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { IGameProps } from 'client/pages/Game/Game';
 
-import styles from './SurvivalOnlineGame.pcss';
+import styles from './SurvivalOnlineGame.module.scss';
 
 const DIRECTIONS_MAP: Partial<Record<string, EDirection>> = {
   ArrowUp: EDirection.UP,

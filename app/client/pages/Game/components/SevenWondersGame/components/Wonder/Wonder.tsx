@@ -15,7 +15,7 @@ import BackCard from 'client/pages/Game/components/SevenWondersGame/components/M
 import Image from 'client/components/common/Image/Image';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Wonder.pcss';
+import styles from './Wonder.module.scss';
 
 interface IWonderProps {
   className?: string;

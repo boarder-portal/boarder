@@ -8,7 +8,7 @@ import Text from 'client/components/common/Text/Text';
 import Button from 'client/components/common/Button/Button';
 import Dice, { TDice } from 'client/components/Dice/Dice';
 
-import styles from './StatusAndAction.pcss';
+import styles from './StatusAndAction.module.scss';
 
 interface IActionsProps {
   className?: string;

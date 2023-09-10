@@ -39,7 +39,7 @@ import Modal from 'client/components/common/Modal/Modal';
 import { GameStateContext, TimeDiffContext } from 'client/pages/Game/contexts';
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
-import styles from './Game.pcss';
+import styles from './Game.module.scss';
 
 export type TChangeSettingCallback<Game extends EGame> = <Key extends keyof TPlayerSettings<Game>>(
   key: Key,

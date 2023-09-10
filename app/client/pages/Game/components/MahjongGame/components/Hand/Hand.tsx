@@ -10,7 +10,7 @@ import RotatedElement from 'client/components/common/RotatedElement/RotatedEleme
 import Tiles, { EOpenType } from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
 import Flex from 'client/components/common/Flex/Flex';
 
-import styles from './Hand.pcss';
+import styles from './Hand.module.scss';
 
 interface IHandProps {
   player: IPlayer;
