@@ -1,4 +1,5 @@
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
+import { SECOND } from 'common/constants/date';
 import { TIME_TO_START } from 'common/constants/games/bombers';
 
 import { BombersImages } from 'client/pages/Game/components/BombersGame/types';
@@ -71,7 +72,7 @@ export default function renderMap(options: RenderMapOptions): void {
     ctx.fillStyle = 'blue';
     ctx.lineWidth = Math.round(fontSize / 20);
 
-    const caption = timeLeftToStart < 0 ? 'GO!' : String(Math.ceil(timeLeftToStart / 1000));
+    const caption = timeLeftToStart < 0 ? 'GO!' : String(Math.ceil(timeLeftToStart / SECOND));
     const { fontBoundingBoxAscent, fontBoundingBoxDescent, width } = ctx.measureText(caption);
     const textX = (ctx.canvas.width - width) / 2;
     const textY = (ctx.canvas.height + fontBoundingBoxAscent - fontBoundingBoxDescent) / 2;

@@ -2,6 +2,7 @@ import chunk from 'lodash/chunk';
 import shuffle from 'lodash/shuffle';
 import sortBy from 'lodash/sortBy';
 
+import { SECOND } from 'common/constants/date';
 import { CARDS_SORT } from 'common/constants/game/cards';
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 import { DECKS } from 'server/gamesData/Game/HeartsGame/constants';
@@ -30,7 +31,7 @@ const SUIT_VALUES: Record<Suit, number> = {
   [Suit.SPADES]: 1e4,
   [Suit.HEARTS]: 1e6,
 };
-const SHOW_CARDS_TIMEOUT = 2 * 1000;
+const SHOW_CARDS_TIMEOUT = 2 * SECOND;
 
 export interface HandOptions {
   startStage: HandStage;

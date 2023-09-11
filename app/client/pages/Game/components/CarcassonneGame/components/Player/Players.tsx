@@ -4,6 +4,8 @@ import sumBy from 'lodash/sumBy';
 import times from 'lodash/times';
 import { FC, memo, useEffect, useState } from 'react';
 
+import { SECOND } from 'common/constants/date';
+
 import { WithClassName } from 'client/types/react';
 import { Timestamp } from 'common/types';
 import { CityGoodsType, MeepleType, Player } from 'common/types/games/carcassonne';
@@ -26,7 +28,7 @@ const Players: FC<PlayersProps> = (props) => {
 
   useEffect(() => {
     const setSecondsLeft = () => {
-      const secondsLeft = turnEndsAt ? Math.floor(turnEndsAt.timeLeft / 1000) : 0;
+      const secondsLeft = turnEndsAt ? Math.floor(turnEndsAt.timeLeft / SECOND) : 0;
 
       setTurnSecondsLeft(secondsLeft);
     };

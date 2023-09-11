@@ -1,5 +1,7 @@
 import times from 'lodash/times';
 
+import { SECOND } from 'common/constants/date';
+
 import { GameType } from 'common/types/game';
 import {
   BiomeType,
@@ -61,7 +63,7 @@ const START_ZOMBIE_COUNT = Math.round(EDGE_CELLS.length * 0.1);
 const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 0.25);
 
 const ZOMBIES_MOVE_INTERVAL = 500;
-const ZOMBIES_GENERATE_INTERVAL = 30 * 1000;
+const ZOMBIES_GENERATE_INTERVAL = 30 * SECOND;
 
 export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONLINE> {
   players: Player[] = [];

@@ -3,6 +3,7 @@ import forEach from 'lodash/forEach';
 import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
+import { SECOND } from 'common/constants/date';
 import { ALL_CARDS, BASE_TIME, CARDS_IN_HAND, TURN_INCREMENT } from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
@@ -92,7 +93,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
   turn: Turn | null = null;
 
   *lifecycle(): EntityGenerator<GameResult> {
-    this.spawnTask(this.pingIndefinitely(15 * 1000));
+    this.spawnTask(this.pingIndefinitely(15 * SECOND));
 
     this.attachCard({
       card: ALL_CARDS[0],

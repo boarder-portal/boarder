@@ -1,5 +1,7 @@
 import random from 'lodash/random';
 
+import { SECOND } from 'common/constants/date';
+
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { GameType } from 'common/types/game';
 import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/games/sevenWonders';
@@ -30,7 +32,7 @@ export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
         agePhase: phase?.type === GamePhaseType.AGE ? phase.phase : null,
       });
 
-      yield* this.delay(random(200, 1000, true));
+      yield* this.delay(random(0.2 * SECOND, SECOND, true));
 
       this.sendSocketEvent(GameClientEventType.EXECUTE_ACTION, {
         cardIndex: getRandomIndex(hand.length),

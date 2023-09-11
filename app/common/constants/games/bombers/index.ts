@@ -1,3 +1,5 @@
+import { SECOND } from 'common/constants/date';
+
 import { BonusType, BuffType, GameOptions, MapType } from 'common/types/games/bombers';
 
 export { default as MAPS } from './maps';
@@ -9,9 +11,9 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   withAbilities: true,
 };
 
-export const TIME_TO_START = 3000;
+export const TIME_TO_START = 3 * SECOND;
 
-export const EXPLOSION_TICK_DURATION = 1000;
+export const EXPLOSION_TICK_DURATION = SECOND;
 export const EXPLOSION_TICKS_COUNT = 3;
 
 export const BONUS_PROBABILITY = 0.9;
@@ -37,16 +39,16 @@ export const SUPER_RANGE_COST = 5;
 export const SUPER_RANGE = 15;
 export const INVINCIBILITY_COST = 2;
 
-export const START_SPAWN_WALLS_TIMEOUT = 5 * 1000;
-export const START_SPAWN_WALL_TIMEOUT = 1000;
-export const RESET_WALLS_TIMEOUT = 3 * 1000;
+export const START_SPAWN_WALLS_TIMEOUT = 5 * SECOND;
+export const START_SPAWN_WALL_TIMEOUT = SECOND;
+export const RESET_WALLS_TIMEOUT = 3 * SECOND;
 
 export const BUFF_DURATIONS: Record<BuffType, number> = {
-  [BuffType.SUPER_SPEED]: 5 * 1000,
-  [BuffType.SUPER_BOMB]: 5 * 1000,
-  [BuffType.SUPER_RANGE]: 5 * 1000,
-  [BuffType.INVINCIBILITY]: 5 * 1000,
-  [BuffType.BOMB_INVINCIBILITY]: 1.2 * 1000,
+  [BuffType.SUPER_SPEED]: 5 * SECOND,
+  [BuffType.SUPER_BOMB]: 5 * SECOND,
+  [BuffType.SUPER_RANGE]: 5 * SECOND,
+  [BuffType.INVINCIBILITY]: 5 * SECOND,
+  [BuffType.BOMB_INVINCIBILITY]: 1.2 * SECOND,
 };
 
 export const BOMBER_CELL_SIZE = 0.7;

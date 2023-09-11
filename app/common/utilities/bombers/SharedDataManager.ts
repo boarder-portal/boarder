@@ -1,3 +1,4 @@
+import { SECOND } from 'common/constants/date';
 import {
   BOMBER_CELL_MARGIN,
   BOMBER_CELL_SIZE,
@@ -283,7 +284,7 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     const player = this.players[playerIndex];
 
     const desiredLine = this.getDesiredPlayerLine(player);
-    let distanceLeft = ((CELLS_PER_SECOND + this.getPlayerSpeed(player) * SPEED_INCREMENT) * timePassed) / 1000;
+    let distanceLeft = ((CELLS_PER_SECOND + this.getPlayerSpeed(player) * SPEED_INCREMENT) * timePassed) / SECOND;
     let distanceWalked = 0;
     let movingDirection = player.direction;
 

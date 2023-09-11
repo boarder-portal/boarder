@@ -2,7 +2,9 @@ import connectRedis from 'connect-redis';
 import expressSession, { SessionOptions } from 'express-session';
 import redis from 'redis';
 
-const SESSION_ALIVE_TIME_MS = 3 * 30 * 24 * 60 * 60 * 1000;
+import { MONTH } from 'common/constants/date';
+
+const SESSION_ALIVE_TIME_MS = 3 * MONTH;
 
 const redisStore = connectRedis(expressSession);
 const redisClient = redis.createClient();

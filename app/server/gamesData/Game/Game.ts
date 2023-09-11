@@ -4,6 +4,7 @@ import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 import uuid from 'uuid/v4';
 
+import { SECOND } from 'common/constants/date';
 import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/game';
 
 import { CommonGameClientEvent, CommonGameServerEvent, GamePlayer, PlayerStatus } from 'common/types';
@@ -449,7 +450,7 @@ class Game<Game extends GameType> {
   }
 
   setDeleteTimeout(): void {
-    this.deleteGameTimeout = setTimeout(() => this.delete(), 10000);
+    this.deleteGameTimeout = setTimeout(() => this.delete(), 10 * SECOND);
   }
 
   start(): void {

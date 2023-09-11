@@ -1,6 +1,7 @@
 import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
+import { SECOND } from 'common/constants/date';
 import {
   EXPLOSION_TICKS_COUNT,
   EXPLOSION_TICK_DURATION,
@@ -56,7 +57,7 @@ export type ServerMap = ServerCell[][];
 
 type MapLayout = (ObjectType.BOX | ObjectType.WALL | number | null)[][];
 
-const FRAME_DURATION = 1000 / 60;
+const FRAME_DURATION = SECOND / 60;
 
 const ALL_MAPS = Object.values(MapType);
 
@@ -114,7 +115,7 @@ export default class BombersGame extends GameEntity<GameType.BOMBERS> {
   }
 
   *lifecycle(): EntityGenerator<GameResult> {
-    this.spawnTask(this.pingIndefinitely(1000));
+    this.spawnTask(this.pingIndefinitely(SECOND));
 
     this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) => {
       return row.map((objectType, x) => {
