@@ -1,3 +1,7 @@
-interface Window {
-  initialState: string;
+import { State } from 'client/utilities/store';
+
+declare global {
+  interface Window {
+    initialState: State;
+  }
 }

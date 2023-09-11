@@ -1,3 +1,5 @@
+import { SECOND } from 'common/constants/date';
+
 import { FieldLayoutType, GameOptions, SetType } from 'common/types/games/pexeso';
 
 interface SetConfig {
@@ -34,8 +36,9 @@ export const DEFAULT_GAME_OPTIONS: GameOptions = {
   shuffleOptions: null,
 };
 
-export const MIN_PLAYERS_COUNT = 2;
-export const MAX_PLAYERS_COUNT = 4;
+export const CARD_ANIMATION_DURATION = 0.3 * SECOND;
+export const OPEN_DURATION = 2 * SECOND;
+
 export const MATCHING_CARDS_COUNTS = [2, 3, 4, 5, 6];
 export const DIFFERENT_CARDS_COUNTS = [4, 6, 8, 10, 12, 16, 20, 24, 30, 36, 40, 48, 54, 60, 72, 84];
 export const SHUFFLE_AFTER_MOVES_COUNTS = [1, 2, 3, 4, 5, 6];

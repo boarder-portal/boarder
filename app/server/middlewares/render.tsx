@@ -58,7 +58,7 @@ export default async function render(req: Request, res: Response): Promise<Respo
       `
         ${linkTags}
         ${styleTags}
-        <script>window.initialState='${JSON.stringify(store.value)}'</script>
+        <script>window.initialState=${JSON.stringify(store.value).replace(/</g, '\\u003c')}</script>
       `,
     );
   } catch (err) {

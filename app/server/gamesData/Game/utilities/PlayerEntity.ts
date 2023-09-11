@@ -10,7 +10,7 @@ export interface PlayerOptions {
 export default abstract class PlayerEntity<Game extends GameType, Result = unknown> extends ServerEntity<Game, Result> {
   index: number;
 
-  constructor(parentOrContext: ParentOrContext<Game>, options: PlayerOptions) {
+  protected constructor(parentOrContext: ParentOrContext<Game>, options: PlayerOptions) {
     super(parentOrContext);
 
     this.index = options.index;

@@ -14,6 +14,12 @@ export enum GameType {
   MAHJONG = 'mahjong',
 }
 
+export enum GameStatus {
+  WAITING = 'WAITING',
+  GAME_IN_PROGRESS = 'GAME_IN_PROGRESS',
+  GAME_ENDED = 'GAME_ENDED',
+}
+
 export interface GameState {
   type: 'paused' | 'active';
   changeTimestamp: number;

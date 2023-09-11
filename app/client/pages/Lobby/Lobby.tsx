@@ -127,6 +127,15 @@ const Lobby = <Game extends GameType>() => {
     [changeOptions],
   );
 
+  const handleDestroyOnLeaveChange = useCallback(
+    (destroyOnLeave: boolean) => {
+      changeOptions({
+        destroyOnLeave,
+      });
+    },
+    [changeOptions],
+  );
+
   if (!lobby) {
     return null;
   }
@@ -136,16 +145,13 @@ const Lobby = <Game extends GameType>() => {
   const CreateGameOptions = CREATE_GAME_OPTIONS_MAP[game] as ComponentType<CreateGameOptionsProps<Game>> | undefined;
   const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<GameOptionsProps<Game>>;
 
-  const showPlayerCounts = minPlayersCount !== maxPlayersCount;
-  const showBotsSettings = areBotsAvailable(game);
-
   return (
     <div>
       <Text size="xxl" weight="bold">
         {GAME_NAMES[game]}
       </Text>
 
-      <Flex className={styles.gamesAndOptions}>
+      <Flex className={styles.gamesAndOptions} between={10}>
         <Flex className={styles.games} direction="column" between={3}>
           {lobby.games.length ? (
             lobby.games.map((game) => (
@@ -155,7 +161,7 @@ const Lobby = <Game extends GameType>() => {
                 options={GameOptions && <GameOptions options={game.options} />}
                 players={game.players.length}
                 maxPlayers={game.options.maxPlayersCount}
-                hasStarted={game.hasStarted}
+                status={game.status}
                 onClick={() => navigateToGame(game.id)}
               />
             ))
@@ -167,47 +173,59 @@ const Lobby = <Game extends GameType>() => {
         </Flex>
 
         <Flex className={styles.options} direction="column" between={3}>
-          {(showPlayerCounts || showBotsSettings || CreateGameOptions) && <Text size="xxl">Настройки игры</Text>}
+          <Text size="xxl">Настройки игры</Text>
 
-          {showPlayerCounts && (
-            <>
-              <Select
-                label="Минимальное количество игроков"
-                value={options.minPlayersCount}
-                options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
-                  const value = minPlayersCount + index;
+          <Flex className={styles.optionsBlock} direction="column" between={3}>
+            {minPlayersCount !== maxPlayersCount && (
+              <>
+                <Select
+                  label="Минимальное количество игроков"
+                  value={options.minPlayersCount}
+                  options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                    const value = minPlayersCount + index;
 
-                  return {
-                    value,
-                    text: value,
-                    disabled: value > options.maxPlayersCount,
-                  };
-                })}
-                onChange={handleMinPlayersCountChange}
-              />
+                    return {
+                      value,
+                      text: value,
+                      disabled: value > options.maxPlayersCount,
+                    };
+                  })}
+                  onChange={handleMinPlayersCountChange}
+                />
 
-              <Select
-                label="Максимальное количество игроков"
-                value={options.maxPlayersCount}
-                options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
-                  const value = minPlayersCount + index;
+                <Select
+                  label="Максимальное количество игроков"
+                  value={options.maxPlayersCount}
+                  options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                    const value = minPlayersCount + index;
 
-                  return {
-                    value,
-                    text: value,
-                    disabled: value < options.minPlayersCount,
-                  };
-                })}
-                onChange={handleMaxPlayersCountChange}
-              />
-            </>
+                    return {
+                      value,
+                      text: value,
+                      disabled: value < options.minPlayersCount,
+                    };
+                  })}
+                  onChange={handleMaxPlayersCountChange}
+                />
+              </>
+            )}
+
+            <Checkbox
+              checked={options.destroyOnLeave ?? true}
+              label="Удалять при выходе всех игроков"
+              onChange={handleDestroyOnLeaveChange}
+            />
+
+            {areBotsAvailable(game) && (
+              <Checkbox checked={options.useBots ?? false} label="Добавить ботов" onChange={handleUseBotsChange} />
+            )}
+          </Flex>
+
+          {CreateGameOptions && (
+            <Flex className={styles.optionsBlock} direction="column" between={3}>
+              <CreateGameOptions options={options} changeOptions={changeOptions} />
+            </Flex>
           )}
-
-          {showBotsSettings && (
-            <Checkbox checked={options.useBots ?? false} label="Добавить ботов" onChange={handleUseBotsChange} />
-          )}
-
-          {CreateGameOptions && <CreateGameOptions options={options} changeOptions={changeOptions} />}
 
           <Button onClick={createGame}>Создать игру</Button>
         </Flex>

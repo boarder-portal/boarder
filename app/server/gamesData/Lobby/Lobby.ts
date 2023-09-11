@@ -45,7 +45,7 @@ class Lobby<G extends GameType> {
         id: game.id,
         name: game.name,
         players: game.players,
-        hasStarted: game.hasStarted(),
+        status: game.status,
         options: game.options,
       })),
     });

@@ -37,6 +37,7 @@ export interface BaseGameOptions {
   minPlayersCount: number;
   maxPlayersCount: number;
   useBots?: boolean;
+  destroyOnLeave?: boolean;
 }
 
 export interface BasePlayerSettings {}

@@ -93,8 +93,9 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   #result: EffectResult<Result> | undefined;
   spawned = false;
   paused = false;
-  context: EntityContext<Game>;
-  options: GameOptions<Game>;
+
+  readonly context: EntityContext<Game>;
+  readonly options: GameOptions<Game>;
 
   constructor(parentOrContext: ParentOrContext<Game>) {
     const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;

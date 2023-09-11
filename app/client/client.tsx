@@ -10,7 +10,7 @@ import App from 'client/components/App/App';
 (async () => {
   await loadableReady();
 
-  const store = createStore(JSON.parse(window.initialState));
+  const store = createStore(window.initialState);
 
   hydrate(
     <BrowserRouter>

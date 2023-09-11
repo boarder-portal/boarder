@@ -18,6 +18,7 @@ import {
   GameServerEvent,
   GameServerEventData,
   GameState,
+  GameStatus,
   GameType,
 } from 'common/types/game';
 import { GameNamespace, GameServerSocket } from 'common/types/socket';
@@ -102,6 +103,7 @@ class Game<Game extends GameType> {
   game: Game;
   id: string;
   name: string;
+  status: GameStatus = GameStatus.WAITING;
   players: ServerGamePlayer<Game>[];
   options: GameOptions<Game>;
   gameEntity: GameEntity<Game> | null = null;
@@ -162,10 +164,6 @@ class Game<Game extends GameType> {
         if (player) {
           this.clearDeleteTimeout();
         }
-      }
-
-      if (this.hasStarted() && player) {
-        player.status = PlayerStatus.PLAYING;
       }
 
       player?.sockets.add(socket);
@@ -231,8 +229,6 @@ class Game<Game extends GameType> {
         } else {
           this.sendUpdatePlayersEvent();
         }
-
-        this.onUpdateGame(this.id);
       });
 
       socket.on('disconnect', () => {
@@ -246,22 +242,16 @@ class Game<Game extends GameType> {
           return;
         }
 
-        let shouldDeleteGame: boolean;
-
         if (this.hasStarted()) {
           player.status = PlayerStatus.DISCONNECTED;
-
-          shouldDeleteGame = this.players.every(({ status, isBot }) => status === PlayerStatus.DISCONNECTED || isBot);
         } else {
           this.players.splice(player.index, 1);
 
           this.sendUpdatePlayersEvent();
           this.onUpdateGame(this.id);
-
-          shouldDeleteGame = this.players.length === 0;
         }
 
-        if (shouldDeleteGame) {
+        if (this.players.every(({ status, isBot }) => status === PlayerStatus.DISCONNECTED || isBot)) {
           this.setDeleteTimeout();
         }
       });
@@ -307,7 +297,10 @@ class Game<Game extends GameType> {
   }
 
   end(result: GameResult<Game>): void {
+    this.status = GameStatus.GAME_ENDED;
     this.result = result;
+
+    this.onUpdateGame(this.id);
 
     this.sendSocketEvent(CommonGameServerEvent.END, result);
   }
@@ -450,10 +443,15 @@ class Game<Game extends GameType> {
   }
 
   setDeleteTimeout(): void {
-    this.deleteGameTimeout = setTimeout(() => this.delete(), 10 * SECOND);
+    const { destroyOnLeave = true } = this.options;
+
+    if (destroyOnLeave || this.status !== GameStatus.GAME_IN_PROGRESS) {
+      this.deleteGameTimeout = setTimeout(() => this.delete(), 10 * SECOND);
+    }
   }
 
   start(): void {
+    this.status = GameStatus.GAME_IN_PROGRESS;
     this.players = shuffle(this.players);
 
     this.players.forEach((player, index) => {
@@ -463,6 +461,7 @@ class Game<Game extends GameType> {
 
     this.gameEntity = this.initMainGameEntity();
 
+    this.onUpdateGame(this.id);
     this.sendGameData();
   }
 }

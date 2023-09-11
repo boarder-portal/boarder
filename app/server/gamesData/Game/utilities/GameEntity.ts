@@ -34,7 +34,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
   getSettingChangeEvent(playerIndex: number, event: ChangeSettingEvent<Game>): SettingsChangeEvent<Game> {
     return {
       playerIndex,
-      settings: this.getPlayers()[playerIndex].settings,
+      settings: this.getPlayer(playerIndex).settings,
       ...event,
     };
   }
@@ -107,7 +107,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
 
   *watchSettingChange(): EntityGenerator {
     yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
-      const player = this.getPlayers()[playerIndex];
+      const player = this.getPlayer(playerIndex);
 
       player.settings[data.key as keyof PlayerSettings<Game>] = data.value as any;
 

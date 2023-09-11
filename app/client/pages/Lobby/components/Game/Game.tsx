@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { FC, ReactNode, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
+import { GameStatus } from 'common/types/game';
 
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
@@ -14,12 +15,18 @@ interface GameProps extends WithClassName {
   options: ReactNode;
   players: number;
   maxPlayers: number;
-  hasStarted: boolean;
+  status: GameStatus;
   onClick?(): void;
 }
 
+const STATUS_CAPTION: Record<GameStatus, string> = {
+  [GameStatus.WAITING]: 'ожидание игроков',
+  [GameStatus.GAME_IN_PROGRESS]: 'идет игра',
+  [GameStatus.GAME_ENDED]: 'игра окончена',
+};
+
 const Game: FC<GameProps> = (props) => {
-  const { className, title, options, players, maxPlayers, hasStarted, onClick } = props;
+  const { className, title, options, players, maxPlayers, status, onClick } = props;
 
   return (
     <Flex className={classNames(styles.root, className)} alignItems="center" onClick={onClick}>
@@ -29,7 +36,7 @@ const Game: FC<GameProps> = (props) => {
 
           <DotSeparator />
 
-          {hasStarted ? 'идет игра' : 'ожидание игроков'}
+          {STATUS_CAPTION[status]}
         </Text>
 
         {options}

@@ -117,15 +117,13 @@ export default class BombersGame extends GameEntity<GameType.BOMBERS> {
   *lifecycle(): EntityGenerator<GameResult> {
     this.spawnTask(this.pingIndefinitely(SECOND));
 
-    this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) => {
-      return row.map((objectType, x) => {
-        return {
-          x,
-          y,
-          objects: [],
-        };
-      });
-    });
+    this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) =>
+      row.map((objectType, x) => ({
+        x,
+        y,
+        objects: [],
+      })),
+    );
     this.artificialWallsPath = this.getArtificialWallsPath();
 
     const spawnPoints: Coords[] = [];

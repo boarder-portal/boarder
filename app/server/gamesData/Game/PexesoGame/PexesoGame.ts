@@ -2,7 +2,7 @@ import flatten from 'lodash/flatten';
 import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
-import { SETS } from 'common/constants/games/pexeso';
+import { CARD_ANIMATION_DURATION, OPEN_DURATION, SETS } from 'common/constants/games/pexeso';
 import { SHUFFLE_PERMUTATIONS } from 'server/gamesData/Game/PexesoGame/constants';
 
 import { GameType } from 'common/types/game';
@@ -22,9 +22,6 @@ import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 
 import Turn from 'server/gamesData/Game/PexesoGame/entities/Turn';
-
-const OPEN_CLOSE_ANIMATION_DURATION = 300;
-const OPEN_DURATION = 1600;
 
 export default class PexesoGame extends TurnGameEntity<GameType.PEXESO> {
   cards: Card[] = [];
@@ -70,7 +67,7 @@ export default class PexesoGame extends TurnGameEntity<GameType.PEXESO> {
 
       const openedCardsIndexes = yield* this.turn;
 
-      yield* this.delay(OPEN_DURATION + OPEN_CLOSE_ANIMATION_DURATION);
+      yield* this.delay(OPEN_DURATION);
 
       const openedCards = openedCardsIndexes.map((cardIndex) => this.cards[cardIndex]);
       const areOpenedCardsSame = openedCards.every(({ imageId }) => imageId === openedCards[0].imageId);
@@ -109,6 +106,8 @@ export default class PexesoGame extends TurnGameEntity<GameType.PEXESO> {
       if (isGameEnd) {
         break;
       }
+
+      yield* this.delay(CARD_ANIMATION_DURATION);
     }
 
     this.turn = null;

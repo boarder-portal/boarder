@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy';
 import times from 'lodash/times';
 import { FC, MouseEvent, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
+import { CARD_ANIMATION_DURATION, FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -267,7 +267,13 @@ const PexesoGame: FC<GameProps<GameType.PEXESO>> = (props) => {
   }
 
   return (
-    <Flex className={styles.root} between={5}>
+    <Flex
+      className={styles.root}
+      between={5}
+      style={{
+        '--animation-duration': `${CARD_ANIMATION_DURATION}ms`,
+      }}
+    >
       <div ref={cardsLayoutContainerRef}>
         <div ref={cardsLayoutRef} className={styles.cardsLayout}>
           {sortBy(

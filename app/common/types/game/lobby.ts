@@ -1,5 +1,5 @@
 import { GamePlayer } from 'common/types';
-import { GameOptions, GameType } from 'common/types/game/index';
+import { GameOptions, GameStatus, GameType } from 'common/types/game/index';
 
 export enum LobbyEventType {
   UPDATE = 'UPDATE',
@@ -19,8 +19,8 @@ export interface LobbyServerEventMap<Game extends GameType> {
 export interface LobbyGame<Game extends GameType> {
   id: string;
   name: string;
+  status: GameStatus;
   players: GamePlayer<Game>[];
-  hasStarted: boolean;
   options: GameOptions<Game>;
 }
 

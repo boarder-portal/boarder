@@ -62,12 +62,16 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
     }
   }
 
+  get playersCount(): number {
+    return this.getPlayers().length;
+  }
+
   forEachPlayer(callback: (playerIndex: number) => unknown): void {
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
   getPlayer(playerIndex: number): GamePlayer<Game> {
-    return this.context.game.players[playerIndex];
+    return this.getPlayers()[playerIndex];
   }
 
   getPlayerSettings(playerIndex: number): PlayerSettings<Game> {
@@ -87,10 +91,6 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
       ...pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']),
       data: callback(player.index),
     }));
-  }
-
-  get playersCount(): number {
-    return this.getPlayers().length;
   }
 
   *listenForEvent<Event extends GameClientEvent<Game>, Result = void>(
