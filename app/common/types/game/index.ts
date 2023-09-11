@@ -12,6 +12,7 @@ export enum GameType {
   BOMBERS = 'bombers',
   MACHI_KORO = 'machiKoro',
   MAHJONG = 'mahjong',
+  RED_SEVEN = 'redSeven',
 }
 
 export enum GameStatus {

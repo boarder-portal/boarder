@@ -29,6 +29,7 @@ export const GAME_OPTIONS_KEYS = {
   [GameType.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [GameType.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
   [GameType.MAHJONG]: 'game/mahjong/defaultOptions/v1',
+  [GameType.RED_SEVEN]: 'game/redSeven/defaultOptions/v1',
 } as const;
 
 export const PLAYER_SETTINGS_KEYS = {
@@ -42,6 +43,7 @@ export const PLAYER_SETTINGS_KEYS = {
   [GameType.BOMBERS]: 'game/bombers/playerSettings/v1',
   [GameType.MACHI_KORO]: 'game/machiKoro/playerSettings/v1',
   [GameType.MAHJONG]: 'game/mahjong/playerSettings/v1.3',
+  [GameType.RED_SEVEN]: 'game/redSeven/playerSettings/v1',
 } as const;
 
 export default class LocalStorageAtom<Key extends LocalStorageKey> {

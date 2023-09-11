@@ -13,6 +13,7 @@ export const GAME_NAMES: Record<GameType, string> = {
   [GameType.BOMBERS]: 'Бомберы',
   [GameType.MACHI_KORO]: 'Machi Koro',
   [GameType.MAHJONG]: 'Маджонг',
+  [GameType.RED_SEVEN]: 'Red 7',
 };
 
 export const PLAYER_SETTINGS: {
@@ -28,8 +29,9 @@ export const PLAYER_SETTINGS: {
   [GameType.BOMBERS]: {},
   [GameType.MACHI_KORO]: {},
   [GameType.MAHJONG]: MAHJONG_PLAYER_SETTINGS,
+  [GameType.RED_SEVEN]: {},
 };
 
 export const BOTS_SUPPORTED_GAMES = [GameType.SEVEN_WONDERS, GameType.HEARTS, GameType.MAHJONG] as const;
 
-export const GAMES_IN_DEVELOPMENT: GameType[] = [];
+export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN];

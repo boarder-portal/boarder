@@ -32,6 +32,7 @@ import MachiKoroGame from 'client/pages/Game/components/MachiKoroGame/MachiKoroG
 import MahjongGame from 'client/pages/Game/components/MahjongGame/MahjongGame';
 import OnitamaGame from 'client/pages/Game/components/OnitamaGame/OnitamaGame';
 import PexesoGame from 'client/pages/Game/components/PexesoGame/PexesoGame';
+import RedSevenGame from 'client/pages/Game/components/RedSevenGame/RedSevenGame';
 import SetGame from 'client/pages/Game/components/SetGame/SetGame';
 import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/SevenWondersGame';
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -69,6 +70,7 @@ const GAMES_MAP: {
   [GameType.BOMBERS]: BombersGame,
   [GameType.MACHI_KORO]: MachiKoroGame,
   [GameType.MAHJONG]: MahjongGame,
+  [GameType.RED_SEVEN]: RedSevenGame,
 };
 
 const Game = <G extends GameType>() => {

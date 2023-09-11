@@ -8,6 +8,7 @@ import { DEFAULT_GAME_OPTIONS as MACHI_KORO_OPTIONS } from 'common/constants/gam
 import { DEFAULT_GAME_OPTIONS as MAHJONG_OPTIONS } from 'common/constants/games/mahjong';
 import { DEFAULT_GAME_OPTIONS as ONITAMA_OPTIONS } from 'common/constants/games/onitama';
 import { DEFAULT_GAME_OPTIONS as PEXESO_OPTIONS } from 'common/constants/games/pexeso';
+import { DEFAULT_GAME_OPTIONS as RED_SEVEN_OPTIONS } from 'common/constants/games/redSeven';
 import { DEFAULT_GAME_OPTIONS as SET_OPTIONS } from 'common/constants/games/set';
 import { DEFAULT_GAME_OPTIONS as SEVEN_WONDERS_OPTIONS } from 'common/constants/games/sevenWonders';
 import { DEFAULT_GAME_OPTIONS as SURVIVAL_ONLINE_OPTIONS } from 'common/constants/games/survivalOnline';
@@ -29,6 +30,7 @@ export const DEFAULT_OPTIONS: {
   [GameType.BOMBERS]: BOMBERS_OPTIONS,
   [GameType.MACHI_KORO]: MACHI_KORO_OPTIONS,
   [GameType.MAHJONG]: MAHJONG_OPTIONS,
+  [GameType.RED_SEVEN]: RED_SEVEN_OPTIONS,
 };
 
 export const gameOptionsAtoms = mapValues(mapKeys(GameType), (game) => {

@@ -42,6 +42,7 @@ import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
+import RedSevenGame from 'server/gamesData/Game/RedSevenGame/RedSevenGame';
 import SetGame from 'server/gamesData/Game/SetGame/SetGame';
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
@@ -88,6 +89,7 @@ const GAME_ENTITIES_MAP: {
   [GameType.BOMBERS]: BombersGame,
   [GameType.MACHI_KORO]: MachiKoroGame,
   [GameType.MAHJONG]: MahjongGame,
+  [GameType.RED_SEVEN]: RedSevenGame,
 };
 
 export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstructor<Game> } = {
