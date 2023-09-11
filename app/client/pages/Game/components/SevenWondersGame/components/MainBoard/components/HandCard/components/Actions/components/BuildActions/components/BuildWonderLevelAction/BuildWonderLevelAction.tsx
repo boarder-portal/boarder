@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { Action, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
@@ -44,7 +44,7 @@ function getTitle(buildType: BuildKind): string {
   }
 }
 
-const BuildWonderLevelAction: React.FC<BuildWonderLevelActionProps> = (props) => {
+const BuildWonderLevelAction: FC<BuildWonderLevelActionProps> = (props) => {
   const { player, buildType, tradeVariants, onCardAction } = props;
 
   const { value: isTradeModalVisible, setTrue: openTradeModal, setFalse: closeTradeModal } = useBoolean(false);
@@ -93,4 +93,4 @@ const BuildWonderLevelAction: React.FC<BuildWonderLevelActionProps> = (props) =>
   );
 };
 
-export default React.memo(BuildWonderLevelAction);
+export default memo(BuildWonderLevelAction);

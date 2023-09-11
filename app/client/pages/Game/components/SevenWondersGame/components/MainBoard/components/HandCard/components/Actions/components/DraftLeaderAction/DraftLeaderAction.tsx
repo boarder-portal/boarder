@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { Action, CardActionType, Payments } from 'common/types/games/sevenWonders';
@@ -7,7 +7,7 @@ interface DraftLeaderActionProps extends WithClassName {
   onCardAction(action: Action, payments?: Payments): void;
 }
 
-const DraftLeaderAction: React.FC<DraftLeaderActionProps> = (props) => {
+const DraftLeaderAction: FC<DraftLeaderActionProps> = (props) => {
   const { className, onCardAction } = props;
 
   const handleSelect = useCallback(() => {
@@ -23,4 +23,4 @@ const DraftLeaderAction: React.FC<DraftLeaderActionProps> = (props) => {
   );
 };
 
-export default React.memo(DraftLeaderAction);
+export default memo(DraftLeaderAction);

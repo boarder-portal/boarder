@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { CSSProperties, FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 
@@ -8,12 +8,12 @@ import Image from 'client/components/common/Image/Image';
 import styles from './BackCard.module.scss';
 
 interface BackCardProps extends WithClassName {
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   type: number | 'leader';
   onClick?(): void;
 }
 
-const BackCard: React.FC<BackCardProps> = (props) => {
+const BackCard: FC<BackCardProps> = (props) => {
   const { className, style, type, onClick } = props;
 
   return (
@@ -26,4 +26,4 @@ const BackCard: React.FC<BackCardProps> = (props) => {
   );
 };
 
-export default React.memo(BackCard);
+export default memo(BackCard);

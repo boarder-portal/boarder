@@ -1,5 +1,5 @@
-import React from 'react';
+import { memo } from 'react';
 
-const typedReactMemo: <T>(c: T) => T = React.memo;
+const typedReactMemo: <T>(c: T) => T = memo;
 
 export default typedReactMemo;

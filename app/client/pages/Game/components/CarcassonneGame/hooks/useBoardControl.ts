@@ -1,20 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent, MutableRefObject, WheelEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import { BASE_CARD_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 
 import { Coords } from 'common/types';
 
-export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent, zoom: number): void }): {
-  boardWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
-  boardRef: React.MutableRefObject<HTMLDivElement | null>;
-  zoomRef: React.MutableRefObject<number>;
+interface UseBoardControlOptions {
+  onZoom(e: WheelEvent, zoom: number): void;
+}
+
+interface UseBoardControl {
+  boardWrapperRef: MutableRefObject<HTMLDivElement | null>;
+  boardRef: MutableRefObject<HTMLDivElement | null>;
+  zoomRef: MutableRefObject<number>;
   isAbleToPlaceCard: boolean;
 
-  handleMouseDown(e: React.MouseEvent): void;
-  handleMouseUp(e: React.MouseEvent): void;
-  handleMouseMove(e: React.MouseEvent): void;
-  handleMouseWheel(e: React.WheelEvent): void;
-} {
+  handleMouseDown(e: MouseEvent): void;
+  handleMouseUp(e: MouseEvent): void;
+  handleMouseMove(e: MouseEvent): void;
+  handleMouseWheel(e: WheelEvent): void;
+}
+
+export default function useBoardControl(options: UseBoardControlOptions): UseBoardControl {
+  const { onZoom } = options;
+
   const [isAbleToPlaceCard, setIsInteractable] = useState(true);
 
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -37,7 +45,7 @@ export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent
     `;
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: MouseEvent) => {
     isDraggingRef.current = true;
     lastDragPointRef.current = {
       x: e.clientX,
@@ -46,7 +54,7 @@ export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent
   }, []);
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: MouseEvent) => {
       if (!isDraggingRef.current || !lastDragPointRef.current || !boardRef.current) {
         return;
       }
@@ -81,7 +89,7 @@ export default function useBoardControl({ onZoom }: { onZoom(e: React.WheelEvent
   }, []);
 
   const handleMouseWheel = useCallback(
-    (e: React.WheelEvent) => {
+    (e: WheelEvent) => {
       if (!boardWrapperRef.current || !translateRef.current) {
         return;
       }

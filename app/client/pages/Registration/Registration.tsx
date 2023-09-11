@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { FC, FormEvent, memo, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
@@ -12,7 +12,7 @@ import Text from 'client/components/common/Text/Text';
 
 import styles from './Registration.module.scss';
 
-const Registration: React.FC = () => {
+const Registration: FC = () => {
   const history = useHistory();
   const [, setUser] = useAtom('user');
 
@@ -21,7 +21,7 @@ const Registration: React.FC = () => {
   const [passwordForCheck, setPasswordForCheck] = useState('');
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
 
       const user = await httpClient.register({
@@ -58,4 +58,4 @@ const Registration: React.FC = () => {
   );
 };
 
-export default React.memo(Registration);
+export default memo(Registration);

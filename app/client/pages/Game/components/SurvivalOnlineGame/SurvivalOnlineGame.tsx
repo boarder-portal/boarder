@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { FC, memo, useEffect, useRef, useState } from 'react';
 
 import { CELL_SIZE, VIEW_SIZE } from 'common/constants/games/survivalOnline';
 
@@ -26,7 +26,7 @@ const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
   ArrowLeft: Direction.LEFT,
 };
 
-const SurvivalOnlineGame: React.FC<GameProps<GameType.SURVIVAL_ONLINE>> = (props) => {
+const SurvivalOnlineGame: FC<GameProps<GameType.SURVIVAL_ONLINE>> = (props) => {
   const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<Player[]>(gameInfo.players);
@@ -116,4 +116,4 @@ const SurvivalOnlineGame: React.FC<GameProps<GameType.SURVIVAL_ONLINE>> = (props
   );
 };
 
-export default React.memo(SurvivalOnlineGame);
+export default memo(SurvivalOnlineGame);

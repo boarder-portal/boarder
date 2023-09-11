@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
@@ -27,7 +27,7 @@ interface BuildActionsProps extends WithClassName {
   onStartCopyingLeader(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const BuildActions: React.FC<BuildActionsProps> = (props) => {
+const BuildActions: FC<BuildActionsProps> = (props) => {
   const {
     className,
     cardIndex,
@@ -71,4 +71,4 @@ const BuildActions: React.FC<BuildActionsProps> = (props) => {
   );
 };
 
-export default React.memo(BuildActions);
+export default memo(BuildActions);

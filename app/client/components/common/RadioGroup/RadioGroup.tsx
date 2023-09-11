@@ -1,12 +1,12 @@
 import classNames from 'classnames';
-import React from 'react';
+import { ReactNode } from 'react';
 
 import Flex from 'client/components/common/Flex/Flex';
 
 import styles from './RadioGroup.module.scss';
 
 export interface SelectOption<Value> {
-  text: React.ReactNode;
+  text: ReactNode;
   value: Value;
   disabled?: boolean;
 }
@@ -17,7 +17,7 @@ interface RadioGroupProps<Value> {
   onChange(newValue: Value): void;
 }
 
-const RadioGroup = <Value extends unknown>(props: RadioGroupProps<Value>): JSX.Element => {
+const RadioGroup = <Value extends unknown>(props: RadioGroupProps<Value>) => {
   const { value, options, onChange } = props;
 
   return (

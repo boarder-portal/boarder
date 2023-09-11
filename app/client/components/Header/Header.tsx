@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
@@ -13,7 +13,7 @@ import styles from './Header.module.scss';
 
 interface HeaderProps {}
 
-const Header: React.FC<HeaderProps> = () => {
+const Header: FC<HeaderProps> = () => {
   const [user, setUser] = useAtom('user');
 
   const logout = useCallback(async () => {
@@ -57,4 +57,4 @@ const Header: React.FC<HeaderProps> = () => {
   );
 };
 
-export default React.memo(Header);
+export default memo(Header);

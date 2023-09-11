@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import times from 'lodash/times';
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { Card as CardModel } from 'common/types/games/set';
 
@@ -15,7 +15,7 @@ interface CardProps {
   onClick(card: CardModel): void;
 }
 
-const Card: React.FC<CardProps> = (props) => {
+const Card: FC<CardProps> = (props) => {
   const { card, isSelected, onClick } = props;
 
   const handleClick = useCallback(() => {
@@ -40,4 +40,4 @@ const Card: React.FC<CardProps> = (props) => {
   );
 };
 
-export default React.memo(Card);
+export default memo(Card);

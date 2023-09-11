@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/game';
@@ -12,7 +12,7 @@ import styles from './Home.module.scss';
 
 const GAMES_IN_DEVELOPMENT: GameType[] = [];
 
-const Home: React.FC = () => {
+const Home: FC = () => {
   const history = useHistory();
 
   const handleGameClick = useCallback(
@@ -51,4 +51,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default React.memo(Home);
+export default memo(Home);

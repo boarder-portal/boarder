@@ -1,4 +1,4 @@
-import React, { ComponentType, useCallback, useRef, useState } from 'react';
+import { ComponentType, memo, useCallback, useRef, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -71,7 +71,7 @@ const GAMES_MAP: {
   [GameType.MAHJONG]: MahjongGame,
 };
 
-function Game<G extends GameType>() {
+const Game = <G extends GameType>() => {
   const { game, gameId } = useParams<{ game: G; gameId: string }>();
 
   const [gameName, setGameName] = useState<string | null>(null);
@@ -218,6 +218,6 @@ function Game<G extends GameType>() {
       </GameStateContext.Provider>
     </TimeDiffContext.Provider>
   );
-}
+};
 
-export default React.memo(Game);
+export default memo(Game);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { PASS_CARDS_COUNT } from 'common/constants/games/hearts';
 
@@ -62,7 +62,7 @@ function getCardState(
     : CardStateType.DISABLED;
 }
 
-const Hand: React.FC<HandProps> = (props) => {
+const Hand: FC<HandProps> = (props) => {
   const {
     className,
     isActive,
@@ -112,4 +112,4 @@ const Hand: React.FC<HandProps> = (props) => {
   );
 };
 
-export default React.memo(Hand);
+export default memo(Hand);

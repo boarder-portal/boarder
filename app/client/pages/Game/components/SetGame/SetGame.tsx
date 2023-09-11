@@ -1,5 +1,5 @@
 import chunk from 'lodash/chunk';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GameType } from 'common/types/game';
 import { Card as CardModel, GameClientEventType, Player, SendSetEvent } from 'common/types/games/set';
@@ -15,7 +15,7 @@ import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './SetGame.module.scss';
 
-const SetGame: React.FC<GameProps<GameType.SET>> = (props) => {
+const SetGame: FC<GameProps<GameType.SET>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<CardModel[]>([]);
@@ -114,4 +114,4 @@ const SetGame: React.FC<GameProps<GameType.SET>> = (props) => {
   );
 };
 
-export default React.memo(SetGame);
+export default memo(SetGame);

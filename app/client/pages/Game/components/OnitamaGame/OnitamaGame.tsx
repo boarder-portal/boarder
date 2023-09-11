@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
@@ -43,7 +43,7 @@ const getLegalMoves = (from: Coords, card: CardType, board: Board, player: Playe
   return cells;
 };
 
-const OnitamaGame: React.FC<GameProps<GameType.ONITAMA>> = (props) => {
+const OnitamaGame: FC<GameProps<GameType.ONITAMA>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [board, setBoard] = useState<Board>([]);
@@ -177,4 +177,4 @@ const OnitamaGame: React.FC<GameProps<GameType.ONITAMA>> = (props) => {
   );
 };
 
-export default React.memo(OnitamaGame);
+export default memo(OnitamaGame);

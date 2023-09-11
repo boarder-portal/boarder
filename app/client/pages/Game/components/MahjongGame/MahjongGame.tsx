@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, FC, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
@@ -53,7 +53,7 @@ const GRID_GAP = 12;
 const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
-const MahjongGame: React.FC<GameProps<GameType.MAHJONG>> = (props) => {
+const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
   const { io, gameOptions, gameInfo, changeSetting } = props;
 
   const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);
@@ -395,4 +395,4 @@ const MahjongGame: React.FC<GameProps<GameType.MAHJONG>> = (props) => {
   );
 };
 
-export default React.memo(MahjongGame);
+export default memo(MahjongGame);

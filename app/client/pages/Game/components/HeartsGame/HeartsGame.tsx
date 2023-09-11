@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
@@ -20,7 +20,7 @@ import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './HeartsGame.module.scss';
 
-const HeartsGame: React.FC<GameProps<GameType.HEARTS>> = (props) => {
+const HeartsGame: FC<GameProps<GameType.HEARTS>> = (props) => {
   const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<PlayerModel[]>([]);
@@ -103,4 +103,4 @@ const HeartsGame: React.FC<GameProps<GameType.HEARTS>> = (props) => {
   );
 };
 
-export default React.memo(HeartsGame);
+export default memo(HeartsGame);

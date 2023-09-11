@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import times from 'lodash/times';
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
@@ -17,7 +17,7 @@ interface OnitamaCardProps {
   onClick?(card: CardType): void;
 }
 
-const OnitamaCard: React.FC<OnitamaCardProps> = (props) => {
+const OnitamaCard: FC<OnitamaCardProps> = (props) => {
   const { card, isFlipped, isSelected, onClick } = props;
   const legalMoves = ALL_CARDS[card];
 
@@ -69,4 +69,4 @@ const OnitamaCard: React.FC<OnitamaCardProps> = (props) => {
   );
 };
 
-export default React.memo(OnitamaCard);
+export default memo(OnitamaCard);

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FC, MouseEvent as ReactMouseEvent, memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { BASE_CARD_SIZE, MEEPLE_SIZE } from 'client/pages/Game/components/CarcassonneGame/constants';
 import { ALL_CARDS } from 'common/constants/games/carcassonne';
@@ -48,7 +48,7 @@ import { POP_SOUND, playSound } from 'client/sounds';
 
 import styles from './CarcassonneGame.module.scss';
 
-const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
+const CarcassonneGame: FC<GameProps<GameType.CARCASSONNE>> = (props) => {
   const { io, gameInfo } = props;
 
   const createTimestamp = useCreateTimestamp();
@@ -130,7 +130,7 @@ const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
     [board, objects],
   );
 
-  const transformDraggingCard = useCallback((e: React.MouseEvent | MouseEvent, zoom: number) => {
+  const transformDraggingCard = useCallback((e: ReactMouseEvent | MouseEvent, zoom: number) => {
     const draggingCardElem = draggingCardRef.current;
 
     if (!draggingCardElem) {
@@ -273,7 +273,7 @@ const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
   );
 
   const handleContextMenu = useCallback(
-    (e: React.MouseEvent) => {
+    (e: ReactMouseEvent) => {
       e.preventDefault();
 
       if (placedCardCoords) {
@@ -290,7 +290,7 @@ const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
   );
 
   const onHandCardClick = useCallback(
-    (e: React.MouseEvent, index: number) => {
+    (e: ReactMouseEvent, index: number) => {
       if (player?.index !== activePlayerIndex) {
         return;
       }
@@ -570,4 +570,4 @@ const CarcassonneGame: React.FC<GameProps<GameType.CARCASSONNE>> = (props) => {
   );
 };
 
-export default React.memo(CarcassonneGame);
+export default memo(CarcassonneGame);

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 
 import { GameType } from 'common/types/game';
 
@@ -8,7 +8,7 @@ import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './{{pascalCased}}Game.module.scss';
 
-const {{pascalCased}}Game: React.FC<GameProps<GameType.{{constCased}}>> = (props) => {
+const {{pascalCased}}Game: FC<GameProps<GameType.{{constCased}}>> = (props) => {
   const { io, gameInfo } = props;
 
   useSocket(io, {});
@@ -20,4 +20,4 @@ const {{pascalCased}}Game: React.FC<GameProps<GameType.{{constCased}}>> = (props
   return null;
 };
 
-export default React.memo({{pascalCased}}Game);
+export default memo({{pascalCased}}Game);

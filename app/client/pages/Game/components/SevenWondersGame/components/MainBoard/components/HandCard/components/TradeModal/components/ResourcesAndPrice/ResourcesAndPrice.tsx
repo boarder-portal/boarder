@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 
@@ -13,7 +13,7 @@ interface ResourcesAndPriceProps {
   reverse?: boolean;
 }
 
-const ResourcesAndPrice: React.FC<ResourcesAndPriceProps> = (props) => {
+const ResourcesAndPrice: FC<ResourcesAndPriceProps> = (props) => {
   const { price, resources, reverse } = props;
 
   if (!price) {
@@ -35,4 +35,4 @@ const ResourcesAndPrice: React.FC<ResourcesAndPriceProps> = (props) => {
   );
 };
 
-export default React.memo(ResourcesAndPrice);
+export default memo(ResourcesAndPrice);

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
 import { WithClassName } from 'client/types/react';
@@ -11,7 +11,7 @@ interface CourtesanActionProps extends WithClassName {
   onCardAction(cardIndex: number, action: Action, payments?: Payments): void;
 }
 
-const CourtesanAction: React.FC<CourtesanActionProps> = (props) => {
+const CourtesanAction: FC<CourtesanActionProps> = (props) => {
   const { className, card, courtesansBuildInfo, onCardAction } = props;
 
   const handleSelect = useCallback(() => {
@@ -32,4 +32,4 @@ const CourtesanAction: React.FC<CourtesanActionProps> = (props) => {
   );
 };
 
-export default React.memo(CourtesanAction);
+export default memo(CourtesanAction);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { Card as CardModel, Suit } from 'common/types/game/cards';
@@ -22,7 +22,7 @@ const SUITS_MAP: Record<Suit, string> = {
 };
 const RED_COLORS = [Suit.HEARTS, Suit.DIAMONDS];
 
-const Card: React.FC<CardProps> = (props) => {
+const Card: FC<CardProps> = (props) => {
   const { className, card, isVisible, onClick } = props;
 
   return (
@@ -48,4 +48,4 @@ const Card: React.FC<CardProps> = (props) => {
   );
 };
 
-export default React.memo(Card);
+export default memo(Card);

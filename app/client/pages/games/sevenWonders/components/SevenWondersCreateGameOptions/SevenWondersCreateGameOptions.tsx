@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { GameType } from 'common/types/game';
 
@@ -7,7 +7,7 @@ import Flex from 'client/components/common/Flex/Flex';
 
 import { CreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
-const SevenWondersCreateGameOptions: React.FC<CreateGameOptionsProps<GameType.SEVEN_WONDERS>> = (props) => {
+const SevenWondersCreateGameOptions: FC<CreateGameOptionsProps<GameType.SEVEN_WONDERS>> = (props) => {
   const { options, changeOptions } = props;
 
   const handleIncludeLeadersChange = useCallback(
@@ -26,4 +26,4 @@ const SevenWondersCreateGameOptions: React.FC<CreateGameOptionsProps<GameType.SE
   );
 };
 
-export default React.memo(SevenWondersCreateGameOptions);
+export default memo(SevenWondersCreateGameOptions);

@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import map from 'lodash/map';
 import sumBy from 'lodash/sumBy';
 import times from 'lodash/times';
-import React, { useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { Timestamp } from 'common/types';
@@ -19,7 +19,7 @@ interface PlayersProps extends WithClassName {
   turnEndsAt: Timestamp | null;
 }
 
-const Players: React.FC<PlayersProps> = (props) => {
+const Players: FC<PlayersProps> = (props) => {
   const { className, players, activePlayerIndex, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
@@ -78,4 +78,4 @@ const Players: React.FC<PlayersProps> = (props) => {
   );
 };
 
-export default React.memo(Players);
+export default memo(Players);

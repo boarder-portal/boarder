@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { StaticRouter } from 'react-router-dom';
 
 import { Store, StoreContext } from 'client/utilities/store';

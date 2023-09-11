@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { FC, memo, useCallback } from 'react';
 
 import { NeighborSide, Payments } from 'common/types/games/sevenWonders';
 
@@ -20,7 +20,7 @@ interface TradeModalProps {
   onClose(): void;
 }
 
-const TradeModal: React.FC<TradeModalProps> = (props) => {
+const TradeModal: FC<TradeModalProps> = (props) => {
   const { isVisible, tradeVariants, onBuild, onClose } = props;
 
   const handleSelectTradeVariant = useCallback(
@@ -83,4 +83,4 @@ const TradeModal: React.FC<TradeModalProps> = (props) => {
   );
 };
 
-export default React.memo(TradeModal);
+export default memo(TradeModal);

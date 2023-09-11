@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { FC, memo, useCallback, useRef, useState } from 'react';
 
 import {
   DIFFERENT_CARDS_COUNTS,
@@ -22,7 +22,7 @@ import { CreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
 
 import styles from './PexesoCreateGameOptions.module.scss';
 
-const PexesoCreateGameOptions: React.FC<CreateGameOptionsProps<GameType.PEXESO>> = (props) => {
+const PexesoCreateGameOptions: FC<CreateGameOptionsProps<GameType.PEXESO>> = (props) => {
   const { options, changeOptions } = props;
 
   const [shuffleCardsCount, setShuffleCardsCount] = useState(2);
@@ -274,4 +274,4 @@ const PexesoCreateGameOptions: React.FC<CreateGameOptionsProps<GameType.PEXESO>>
   );
 };
 
-export default React.memo(PexesoCreateGameOptions);
+export default memo(PexesoCreateGameOptions);

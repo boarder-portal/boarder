@@ -1,7 +1,6 @@
 import { ChunkExtractor } from '@loadable/server';
 import { Request, Response } from 'express';
 import path from 'path';
-import React from 'react';
 import { renderToString } from 'react-dom/server';
 
 import createStore, { Store, getInitialState } from 'client/utilities/store';

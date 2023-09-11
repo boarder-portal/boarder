@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
@@ -27,7 +27,7 @@ interface WonderProps extends WithClassName {
 const GROUP_HEIGHT = 125;
 const CARD_DEFAULT_GROUP_VERTICAL_SPACE = 33;
 
-const Wonder: React.FC<WonderProps> = (props) => {
+const Wonder: FC<WonderProps> = (props) => {
   const { className, player, copiedLeaderId, isOtherPlayer } = props;
 
   const cardGroups = useCardGroups(player);
@@ -128,4 +128,4 @@ const Wonder: React.FC<WonderProps> = (props) => {
   );
 };
 
-export default React.memo(Wonder);
+export default memo(Wonder);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import { CourtesansBuildInfo } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/types';
@@ -58,7 +58,7 @@ interface MainBoardProps extends WithClassName {
   rightNeighbor: Player;
 }
 
-const MainBoard: React.FC<MainBoardProps> = (props) => {
+const MainBoard: FC<MainBoardProps> = (props) => {
   const { className, io, gameOptions, player, discard, age, gamePhase, agePhase, leftNeighbor, rightNeighbor } = props;
 
   const [isViewingLeaders, setIsViewingLeaders] = useState(false);
@@ -244,4 +244,4 @@ const MainBoard: React.FC<MainBoardProps> = (props) => {
   );
 };
 
-export default React.memo(MainBoard);
+export default memo(MainBoard);

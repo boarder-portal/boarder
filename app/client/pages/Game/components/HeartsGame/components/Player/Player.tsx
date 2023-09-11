@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useMemo } from 'react';
+import { FC, memo, useMemo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { Suit } from 'common/types/game/cards';
@@ -42,7 +42,7 @@ function getFlexDirection(position: PlayerPosition): FlexProps['direction'] {
   return 'row';
 }
 
-const Player: React.FC<PlayerProps> = (props) => {
+const Player: FC<PlayerProps> = (props) => {
   const {
     className,
     player,
@@ -96,4 +96,4 @@ const Player: React.FC<PlayerProps> = (props) => {
   );
 };
 
-export default React.memo(Player);
+export default memo(Player);

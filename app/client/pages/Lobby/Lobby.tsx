@@ -1,5 +1,5 @@
 import times from 'lodash/times';
-import React, { ComponentType, useCallback, useState } from 'react';
+import { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/game';

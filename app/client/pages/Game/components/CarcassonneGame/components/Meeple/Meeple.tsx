@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { CSSProperties, FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { MeepleType, PlayerColor } from 'common/types/games/carcassonne';
@@ -9,13 +9,13 @@ import Flex from 'client/components/common/Flex/Flex';
 import styles from './Meeple.module.scss';
 
 interface MeepleProps extends WithClassName {
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   type: MeepleType;
   color: PlayerColor;
   onClick?(): void;
 }
 
-const Meeple: React.FC<MeepleProps> = (props) => {
+const Meeple: FC<MeepleProps> = (props) => {
   const { className, style, type, color, onClick } = props;
 
   return (
@@ -25,4 +25,4 @@ const Meeple: React.FC<MeepleProps> = (props) => {
   );
 };
 
-export default React.memo(Meeple);
+export default memo(Meeple);

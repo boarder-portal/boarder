@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo } from 'react';
 
 import { Action, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
 
@@ -13,7 +13,7 @@ interface DiscardActionProps {
   onCardAction(action: Action, payments?: Payments): void;
 }
 
-const DiscardAction: React.FC<DiscardActionProps> = (props) => {
+const DiscardAction: FC<DiscardActionProps> = (props) => {
   const { player, onCardAction } = props;
 
   const possibleBuildActions = getPossibleBuildActions(player);
@@ -41,4 +41,4 @@ const DiscardAction: React.FC<DiscardActionProps> = (props) => {
   );
 };
 
-export default React.memo(DiscardAction);
+export default memo(DiscardAction);

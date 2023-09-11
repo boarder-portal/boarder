@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import sortBy from 'lodash/sortBy';
 import times from 'lodash/times';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FC, MouseEvent, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
@@ -52,7 +52,7 @@ const shuffleCards = (cards: PexesoClientCard[], shuffleIndexes: ShuffleCardsInd
 
 const getOrthogonalFieldCardCoord = (coord: number): number => (CARD_SIZE + CARDS_MARGIN) * coord;
 
-const PexesoGame: React.FC<GameProps<GameType.PEXESO>> = (props) => {
+const PexesoGame: FC<GameProps<GameType.PEXESO>> = (props) => {
   const { io, gameOptions, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<PexesoClientCard[]>(
@@ -130,7 +130,7 @@ const PexesoGame: React.FC<GameProps<GameType.PEXESO>> = (props) => {
   );
 
   const handleCardRightClick = useCallback(
-    (e: React.MouseEvent, cardIndex: number) => {
+    (e: MouseEvent, cardIndex: number) => {
       e.preventDefault();
 
       const highlightedIndex = highlightedCardsIndexes.indexOf(cardIndex);
@@ -318,4 +318,4 @@ const PexesoGame: React.FC<GameProps<GameType.PEXESO>> = (props) => {
   );
 };
 
-export default React.memo(PexesoGame);
+export default memo(PexesoGame);

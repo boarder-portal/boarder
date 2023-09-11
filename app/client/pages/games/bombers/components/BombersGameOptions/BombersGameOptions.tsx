@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 import { MAP_NAMES } from 'common/constants/games/bombers';
 

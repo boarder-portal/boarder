@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 import { Player as PlayerModel } from 'common/types/games/bombers';
 

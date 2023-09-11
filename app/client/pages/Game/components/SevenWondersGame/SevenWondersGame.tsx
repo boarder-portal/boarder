@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
@@ -25,7 +25,7 @@ import { GameProps } from 'client/pages/Game/Game';
 
 import styles from './SevenWondersGame.module.scss';
 
-const SevenWondersGame: React.FC<GameProps<GameType.SEVEN_WONDERS>> = (props) => {
+const SevenWondersGame: FC<GameProps<GameType.SEVEN_WONDERS>> = (props) => {
   const { io, gameOptions, gameInfo } = props;
 
   const [players, setPlayers] = useState<Player[]>([]);
@@ -137,4 +137,4 @@ const SevenWondersGame: React.FC<GameProps<GameType.SEVEN_WONDERS>> = (props) =>
   );
 };
 
-export default React.memo(SevenWondersGame);
+export default memo(SevenWondersGame);

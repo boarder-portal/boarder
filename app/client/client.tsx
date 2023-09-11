@@ -1,6 +1,5 @@
 import 'regenerator-runtime/runtime';
 import { loadableReady } from '@loadable/component';
-import React from 'react';
 import { hydrate } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 

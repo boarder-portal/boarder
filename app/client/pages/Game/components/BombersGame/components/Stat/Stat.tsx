@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import times from 'lodash/times';
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 
 import Flex from 'client/components/common/Flex/Flex';
 

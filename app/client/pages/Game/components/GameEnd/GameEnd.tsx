@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, ReactNode, memo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { GameType } from 'common/types/game';
@@ -9,10 +9,10 @@ import Text from 'client/components/common/Text/Text';
 import styles from './GameEnd.module.scss';
 
 interface GameEndProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-const GameEnd: React.FC<GameEndProps> = (props) => {
+const GameEnd: FC<GameEndProps> = (props) => {
   const { children } = props;
 
   const { game } = useParams<{ game: GameType }>();
@@ -30,4 +30,4 @@ const GameEnd: React.FC<GameEndProps> = (props) => {
   );
 };
 
-export default React.memo(GameEnd);
+export default memo(GameEnd);

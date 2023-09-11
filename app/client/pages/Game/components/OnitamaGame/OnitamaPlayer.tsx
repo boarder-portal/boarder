@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { CardType, Player } from 'common/types/games/onitama';
 
@@ -14,7 +14,7 @@ interface OnitamaPlayerProps {
   onCardClick?(card: CardType): void;
 }
 
-const OnitamaPlayer: React.FC<OnitamaPlayerProps> = (props) => {
+const OnitamaPlayer: FC<OnitamaPlayerProps> = (props) => {
   const { player, fifthCard, isActive, isFlipped, selectedCardIndex, onCardClick } = props;
 
   return (
@@ -45,4 +45,4 @@ const OnitamaPlayer: React.FC<OnitamaPlayerProps> = (props) => {
   );
 };
 
-export default React.memo(OnitamaPlayer);
+export default memo(OnitamaPlayer);

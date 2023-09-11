@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CELL_SIZE } from 'client/pages/Game/components/BombersGame/constants';
 import { MAP_NAMES, MAX_BOMB_COUNT, MAX_BOMB_RANGE, MAX_HP, MAX_SPEED } from 'common/constants/games/bombers';
@@ -58,7 +58,7 @@ const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
   KeyA: Direction.LEFT,
 };
 
-const BombersGame: React.FC<GameProps<GameType.BOMBERS>> = (props) => {
+const BombersGame: FC<GameProps<GameType.BOMBERS>> = (props) => {
   const { io, gameInfo, gameOptions } = props;
 
   const createTimestamp = useCreateTimestamp();
@@ -442,4 +442,4 @@ const BombersGame: React.FC<GameProps<GameType.BOMBERS>> = (props) => {
   );
 };
 
-export default React.memo(BombersGame);
+export default memo(BombersGame);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { Card } from 'common/types/games/set';
 
@@ -9,7 +9,7 @@ interface CardObjectProps {
   card: Card;
 }
 
-const CardObject: React.FC<CardObjectProps> = (props) => {
+const CardObject: FC<CardObjectProps> = (props) => {
   const { card } = props;
 
   return (
@@ -24,4 +24,4 @@ const CardObject: React.FC<CardObjectProps> = (props) => {
   );
 };
 
-export default React.memo(CardObject);
+export default memo(CardObject);

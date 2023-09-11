@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { CSSProperties } from 'react';
+import { CSSProperties, FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import { Card as CardModel } from 'common/types/games/sevenWonders/cards';
@@ -17,7 +17,7 @@ interface CardProps extends WithClassName {
   zoomOnHover?: boolean;
 }
 
-const Card: React.FC<CardProps> = (props) => {
+const Card: FC<CardProps> = (props) => {
   const { className, style, card, flip, width = 110, isCopiedLeader, zoomOnHover } = props;
 
   return (
@@ -38,4 +38,4 @@ const Card: React.FC<CardProps> = (props) => {
   );
 };
 
-export default React.memo(Card);
+export default memo(Card);

@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 
@@ -6,7 +6,7 @@ interface CancelActionProps extends WithClassName {
   onCancelCard(): void;
 }
 
-const CancelAction: React.FC<CancelActionProps> = (props) => {
+const CancelAction: FC<CancelActionProps> = (props) => {
   const { className, onCancelCard } = props;
 
   return (
@@ -16,4 +16,4 @@ const CancelAction: React.FC<CancelActionProps> = (props) => {
   );
 };
 
-export default React.memo(CancelAction);
+export default memo(CancelAction);
