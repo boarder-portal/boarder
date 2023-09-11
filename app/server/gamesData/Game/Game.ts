@@ -7,7 +7,7 @@ import uuid from 'uuid/v4';
 import { SECOND } from 'common/constants/date';
 import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/game';
 
-import { CommonGameClientEvent, CommonGameServerEvent, GamePlayer, PlayerStatus } from 'common/types';
+import { BaseGamePlayer, CommonGameClientEvent, CommonGameServerEvent, PlayerStatus } from 'common/types';
 import {
   GameClientEvent,
   GameClientEventData,
@@ -48,7 +48,7 @@ import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWonder
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 import ioInstance from 'server/io';
 
-export interface ServerGamePlayer<Game extends GameType> extends GamePlayer<Game> {
+export interface ServerGamePlayer<Game extends GameType> extends BaseGamePlayer<Game> {
   sockets: Set<GameServerSocket<Game>>;
 }
 
@@ -264,7 +264,7 @@ class Game<Game extends GameType> {
     this.setDeleteTimeout();
   }
 
-  addPlayer(playerData: Omit<GamePlayer<Game>, 'index'>): ServerGamePlayer<Game> {
+  addPlayer(playerData: Omit<BaseGamePlayer<Game>, 'index'>): ServerGamePlayer<Game> {
     const player: ServerGamePlayer<Game> = {
       ...playerData,
       index: this.players.length,
@@ -307,7 +307,7 @@ class Game<Game extends GameType> {
     this.sendSocketEvent(CommonGameServerEvent.END, result);
   }
 
-  getClientPlayers(): GamePlayer<Game>[] {
+  getClientPlayers(): BaseGamePlayer<Game>[] {
     return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']));
   }
 

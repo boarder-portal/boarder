@@ -1,10 +1,10 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
   Coords,
-  GamePlayer,
   Timestamp,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -150,7 +150,7 @@ export interface PlayerData {
   lastMoves: Coords[];
 }
 
-export interface Player extends GamePlayer<GameType.CARCASSONNE> {
+export interface Player extends BaseGamePlayer<GameType.CARCASSONNE> {
   data: PlayerData;
 }
 

@@ -1,4 +1,4 @@
-import { GamePlayer } from 'common/types';
+import { BaseGamePlayer } from 'common/types';
 import { GameOptions, GameStatus, GameType } from 'common/types/game/index';
 
 export enum LobbyEventType {
@@ -20,7 +20,7 @@ export interface LobbyGame<Game extends GameType> {
   id: string;
   name: string;
   status: GameStatus;
-  players: GamePlayer<Game>[];
+  players: BaseGamePlayer<Game>[];
   options: GameOptions<Game>;
 }
 

@@ -1,6 +1,6 @@
 import pick from 'lodash/pick';
 
-import { GamePlayer } from 'common/types';
+import { BaseGamePlayer } from 'common/types';
 import {
   GameClientEvent,
   GameClientEventData,
@@ -70,7 +70,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
     this.getPlayers().forEach(({ index }) => callback(index));
   }
 
-  getPlayer(playerIndex: number): GamePlayer<Game> {
+  getPlayer(playerIndex: number): BaseGamePlayer<Game> {
     return this.getPlayers()[playerIndex];
   }
 
@@ -78,7 +78,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
     return this.getPlayer(playerIndex)?.settings;
   }
 
-  getPlayers(): GamePlayer<Game>[] {
+  getPlayers(): BaseGamePlayer<Game>[] {
     return this.context.game.players;
   }
 
@@ -86,7 +86,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
     return this.getPlayers().map(({ index }) => callback(index));
   }
 
-  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (GamePlayer<Game> & { data: Data })[] {
+  getPlayersWithData<Data>(callback: (playerIndex: number) => Data): (BaseGamePlayer<Game> & { data: Data })[] {
     return this.getPlayers().map((player) => ({
       ...pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']),
       data: callback(player.index),

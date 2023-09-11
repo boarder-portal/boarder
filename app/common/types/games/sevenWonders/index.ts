@@ -1,10 +1,10 @@
 import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/types';
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 import { Card } from 'common/types/games/sevenWonders/cards';
@@ -109,7 +109,7 @@ export interface PlayerData extends GamePlayerData {
   turn: TurnPlayerData | null;
 }
 
-export interface Player extends GamePlayer<GameType.SEVEN_WONDERS> {
+export interface Player extends BaseGamePlayer<GameType.SEVEN_WONDERS> {
   data: PlayerData;
 }
 

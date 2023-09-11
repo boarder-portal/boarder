@@ -1,9 +1,9 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
@@ -18,7 +18,7 @@ export interface PlayerData {
   score: number;
 }
 
-export interface Player extends GamePlayer<GameType.SET> {
+export interface Player extends BaseGamePlayer<GameType.SET> {
   data: PlayerData;
 }
 

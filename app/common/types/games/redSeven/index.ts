@@ -1,9 +1,9 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
@@ -15,7 +15,7 @@ export interface GameOptions extends BaseGameOptions {}
 
 export interface PlayerData {}
 
-export interface Player extends GamePlayer<GameType.RED_SEVEN> {
+export interface Player extends BaseGamePlayer<GameType.RED_SEVEN> {
   data: PlayerData;
 }
 

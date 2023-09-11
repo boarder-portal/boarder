@@ -1,10 +1,10 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
   Coords,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
@@ -19,7 +19,7 @@ export interface PlayerData {
   color: PlayerColor;
 }
 
-export interface Player extends GamePlayer<GameType.ONITAMA> {
+export interface Player extends BaseGamePlayer<GameType.ONITAMA> {
   data: PlayerData;
 }
 

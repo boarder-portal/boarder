@@ -1,9 +1,9 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
@@ -21,7 +21,7 @@ export interface PlayerData {
   cell: CellWithObject<PlayerObject>;
 }
 
-export interface Player extends GamePlayer<GameType.SURVIVAL_ONLINE> {
+export interface Player extends BaseGamePlayer<GameType.SURVIVAL_ONLINE> {
   data: PlayerData;
 }
 

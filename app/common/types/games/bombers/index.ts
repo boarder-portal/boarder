@@ -1,10 +1,10 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
   Coords,
-  GamePlayer,
   Timestamp,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -71,7 +71,7 @@ export interface PlayerData {
   buffs: Buff[];
 }
 
-export interface Player extends GamePlayer<GameType.BOMBERS> {
+export interface Player extends BaseGamePlayer<GameType.BOMBERS> {
   data: PlayerData;
 }
 

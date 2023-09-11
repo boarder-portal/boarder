@@ -1,9 +1,9 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
@@ -126,7 +126,7 @@ export interface PlayerData {
   landmarksIds: LandmarkId[];
 }
 
-export interface Player extends GamePlayer<GameType.MACHI_KORO> {
+export interface Player extends BaseGamePlayer<GameType.MACHI_KORO> {
   data: PlayerData;
 }
 

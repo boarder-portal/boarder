@@ -1,9 +1,9 @@
 import {
   BaseGameOptions,
+  BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
   CommonServerEventMap,
-  GamePlayer,
 } from 'common/types';
 import { GameType } from 'common/types/game';
 import { Card } from 'common/types/game/cards';
@@ -23,7 +23,7 @@ export interface PlayerData extends GamePlayerData {
   turn: TurnPlayerData | null;
 }
 
-export interface Player extends GamePlayer<GameType.HEARTS> {
+export interface Player extends BaseGamePlayer<GameType.HEARTS> {
   data: PlayerData;
 }
 

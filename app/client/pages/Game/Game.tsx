@@ -3,11 +3,11 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import { useHistory, useParams } from 'react-router-dom';
 
 import {
+  BaseGamePlayer,
   CommonClientEventMap,
   CommonGameClientEvent,
   CommonGameServerEvent,
   CommonServerEventMap,
-  GamePlayer,
   PlayerStatus,
 } from 'common/types';
 import { GameInfo, GameOptions, GameResult, GameState, GameType, PlayerSettings } from 'common/types/game';
@@ -80,7 +80,7 @@ const Game = <G extends GameType>() => {
   const [gameOptions, setGameOptions] = useState<GameOptions<G>>(DEFAULT_OPTIONS[game]);
   const [gameInfo, setGameInfo] = useState<GameInfo<G> | null>(null);
   const [gameResult, setGameResult] = useState<GameResult<G> | null>(null);
-  const [players, setPlayers] = useState<GamePlayer<G>[]>([]);
+  const [players, setPlayers] = useState<BaseGamePlayer<G>[]>([]);
   const [timeDiff, setTimeDiff] = useState(0);
   const [gameState, setGameState] = useState<GameState>({
     type: 'active',

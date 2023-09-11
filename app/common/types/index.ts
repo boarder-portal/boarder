@@ -15,7 +15,7 @@ export enum PlayerStatus {
   DISCONNECTED = 'DISCONNECTED',
 }
 
-export interface GamePlayer<Game extends GameType> extends User {
+export interface BaseGamePlayer<Game extends GameType> extends User {
   name: string;
   status: PlayerStatus;
   index: number;
@@ -85,7 +85,7 @@ export interface CommonServerEventMap<Game extends GameType> {
   [CommonGameServerEvent.UNPAUSE]: number;
   [CommonGameServerEvent.GET_DATA]: GameData<Game>;
   [CommonGameServerEvent.GET_INFO]: GameInfo<Game>;
-  [CommonGameServerEvent.UPDATE_PLAYERS]: GamePlayer<Game>[];
+  [CommonGameServerEvent.UPDATE_PLAYERS]: BaseGamePlayer<Game>[];
   [CommonGameServerEvent.PING]: number;
   [CommonGameServerEvent.END]: GameResult<Game>;
 }

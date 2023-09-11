@@ -1,4 +1,4 @@
-import { GamePlayer } from 'common/types';
+import { BaseGamePlayer } from 'common/types';
 import { GamesParams } from 'common/types/game/params';
 
 export enum GameType {
@@ -31,7 +31,7 @@ export interface GameData<Game extends GameType> {
   options: GameOptions<Game>;
   info: GameInfo<Game> | null;
   result: GameResult<Game> | null;
-  players: GamePlayer<Game>[];
+  players: BaseGamePlayer<Game>[];
   timestamp: number;
   state: GameState;
 }
