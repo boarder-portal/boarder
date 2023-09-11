@@ -31,3 +31,5 @@ export const PLAYER_SETTINGS: {
 };
 
 export const BOTS_SUPPORTED_GAMES = [GameType.SEVEN_WONDERS, GameType.HEARTS, GameType.MAHJONG] as const;
+
+export const GAMES_IN_DEVELOPMENT: GameType[] = [];

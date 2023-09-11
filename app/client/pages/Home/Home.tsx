@@ -1,7 +1,7 @@
 import { FC, memo, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { GAME_NAMES } from 'common/constants/game';
+import { GAMES_IN_DEVELOPMENT, GAME_NAMES } from 'common/constants/game';
 
 import { GameType } from 'common/types/game';
 
@@ -9,8 +9,6 @@ import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
 
 import styles from './Home.module.scss';
-
-const GAMES_IN_DEVELOPMENT: GameType[] = [];
 
 const Home: FC = () => {
   const history = useHistory();

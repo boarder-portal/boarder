@@ -28,6 +28,8 @@ export default async function addGameNameAndPlayerSettings(options: GenerateOpti
             true,
           ),
         );
+      } else if (id.type === 'Identifier' && id.name === 'GAMES_IN_DEVELOPMENT' && init?.type === 'ArrayExpression') {
+        init.elements.push(memberExpression(identifier('GameType'), identifier(options.constCased)));
       }
     }
   });
