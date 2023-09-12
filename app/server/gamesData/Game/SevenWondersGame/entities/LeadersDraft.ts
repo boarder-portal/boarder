@@ -62,6 +62,8 @@ export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, C
       this.game.sendGameInfo();
     }
 
+    this.turn = null;
+
     this.playersData.forEach(({ leadersPool, pickedLeaders }) => {
       pickedLeaders.push(...leadersPool.splice(0));
     });

@@ -147,9 +147,8 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
 
       moveElement(newHand, from, to);
 
-      setPlayers([
-        ...players.slice(0, player.index),
-        {
+      setPlayers(
+        players.with(player.index, {
           ...player,
           data: {
             ...player.data,
@@ -158,9 +157,9 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
               hand: newHand,
             },
           },
-        },
-        ...players.slice(player.index + 1),
-      ]);
+        }),
+      );
+
       setCurrentTileIndex(getNewCurrentTileIndex(currentTileIndex, from, to));
     });
 
@@ -189,9 +188,8 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
 
     newDiscard.push(...newHand.splice(tileIndex, 1));
 
-    setPlayers([
-      ...players.slice(0, player.index),
-      {
+    setPlayers(
+      players.with(player.index, {
         ...player,
         data: {
           ...player.data,
@@ -201,9 +199,8 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
             hand: newHand,
           },
         },
-      },
-      ...players.slice(player.index + 1),
-    ]);
+      }),
+    );
 
     io.emit(GameClientEventType.DISCARD_TILE, tileIndex);
   });

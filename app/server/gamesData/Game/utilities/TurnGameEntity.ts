@@ -16,11 +16,34 @@ export default abstract class TurnGameEntity<Game extends GameType> extends Game
     this.activePlayerIndex = options?.activePlayerIndex ?? 0;
   }
 
-  getNextPlayerIndex(): number {
-    return (this.activePlayerIndex + 1) % this.playersCount;
+  getNextActivePlayerIndex(): number {
+    const startPlayerIndex = this.getNextPlayerIndex(this.activePlayerIndex);
+    let nextPlayerIndex = startPlayerIndex;
+
+    while (!this.isPlayerInPlay(nextPlayerIndex)) {
+      nextPlayerIndex = this.getNextPlayerIndex(nextPlayerIndex);
+
+      if (nextPlayerIndex === startPlayerIndex) {
+        return -1;
+      }
+    }
+
+    return nextPlayerIndex;
+  }
+
+  getNextPlayerIndex(playerIndex = this.activePlayerIndex): number {
+    return super.getNextPlayerIndex(playerIndex);
+  }
+
+  hasActivePlayer(): boolean {
+    return this.activePlayerIndex !== -1;
+  }
+
+  isPlayerInPlay(playerIndex: number): boolean {
+    return true;
   }
 
   passTurn(): void {
-    this.activePlayerIndex = this.getNextPlayerIndex();
+    this.activePlayerIndex = this.getNextActivePlayerIndex();
   }
 }

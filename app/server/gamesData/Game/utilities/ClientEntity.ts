@@ -44,6 +44,8 @@ export default abstract class ClientEntity<Game extends GameType, Result = unkno
 
   *afterLifecycle(): EntityGenerator {
     this.#socket?.disconnect();
+
+    yield* super.afterLifecycle();
   }
 
   *beforeLifecycle(): EntityGenerator {

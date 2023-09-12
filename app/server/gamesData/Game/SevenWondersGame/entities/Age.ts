@@ -166,6 +166,8 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
         }
       });
     });
+
+    this.turn = null;
   }
 
   executePlayerAction(

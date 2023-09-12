@@ -185,10 +185,14 @@ export default class BombersGame extends GameEntity<GameType.BOMBERS> {
 
   afterPause(): void {
     this.setCanControl(false);
+
+    super.afterPause();
   }
 
   afterUnpause(): void {
     this.setCanControl(true);
+
+    super.afterUnpause();
   }
 
   createWall(coords: Coords, isArtificial: boolean): void {

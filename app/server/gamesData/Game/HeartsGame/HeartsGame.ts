@@ -10,7 +10,9 @@ import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
 export default class HeartsGame extends GameEntity<GameType.HEARTS> {
-  playersData: GamePlayerData[] = this.getPlayersData(() => ({ score: 0 }));
+  playersData: GamePlayerData[] = this.getPlayersData(() => ({
+    score: 0,
+  }));
   handIndex = -1;
   passDirection: PassDirection = PassDirection.NONE;
 

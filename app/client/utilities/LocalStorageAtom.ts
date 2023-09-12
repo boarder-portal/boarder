@@ -29,7 +29,7 @@ export const GAME_OPTIONS_KEYS = {
   [GameType.BOMBERS]: 'game/bombers/defaultOptions/v2',
   [GameType.MACHI_KORO]: 'game/machiKoro/defaultOptions/v1',
   [GameType.MAHJONG]: 'game/mahjong/defaultOptions/v1',
-  [GameType.RED_SEVEN]: 'game/redSeven/defaultOptions/v1',
+  [GameType.RED_SEVEN]: 'game/redSeven/defaultOptions/v1.2',
 } as const;
 
 export const PLAYER_SETTINGS_KEYS = {

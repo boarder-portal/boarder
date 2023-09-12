@@ -39,6 +39,8 @@ export default class MahjongGame extends GameEntity<GameType.MAHJONG> {
 
       yield* this.round;
     }
+
+    this.round = null;
   }
 
   addHandResult(result: HandResult): void {

@@ -58,7 +58,7 @@ class Lobby<G extends GameType> {
       return;
     }
 
-    this.games = [...this.games.slice(0, gameIndex), ...this.games.slice(gameIndex + 1)];
+    this.games = this.games.toSpliced(gameIndex, 1);
 
     this.sendLobbyUpdate();
   };

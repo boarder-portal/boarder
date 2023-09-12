@@ -52,7 +52,7 @@ export type WaitForPlayerSocketEventsResult<Game extends GameType, Event extends
 }[Event];
 
 export default abstract class ServerEntity<Game extends GameType, Result = unknown> extends Entity<Game, Result> {
-  static #validate(data: unknown, validator?: (data: unknown) => unknown): boolean {
+  static validate(data: unknown, validator?: (data: unknown) => unknown): boolean {
     try {
       validator?.(data);
 
@@ -68,6 +68,10 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
 
   forEachPlayer(callback: (playerIndex: number) => unknown): void {
     this.getPlayers().forEach(({ index }) => callback(index));
+  }
+
+  getNextPlayerIndex(playerIndex: number): number {
+    return (playerIndex + 1) % this.playersCount;
   }
 
   getPlayer(playerIndex: number): BaseGamePlayer<Game> {
@@ -105,7 +109,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
         }
 
         try {
-          if (ServerEntity.#validate(data, options?.validate)) {
+          if (ServerEntity.validate(data, options?.validate)) {
             const result = callback({
               data,
               playerIndex,
@@ -136,7 +140,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           }
 
           try {
-            if (ServerEntity.#validate(data, options?.validate)) {
+            if (ServerEntity.validate(data, options?.validate)) {
               const result = callback(data);
 
               if (result !== undefined) {
@@ -182,7 +186,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
             return;
           }
 
-          if (ServerEntity.#validate(data, options?.validate)) {
+          if (ServerEntity.validate(data, options?.validate)) {
             resolve(data);
           }
         },
@@ -222,7 +226,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           return;
         }
 
-        if (ServerEntity.#validate(data, options?.validate)) {
+        if (ServerEntity.validate(data, options?.validate)) {
           resolve({
             data,
             playerIndex,

@@ -121,6 +121,8 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   afterPause(): void {
     this.stopMoving();
+
+    super.afterPause();
   }
 
   canPlaceBombs(): boolean {

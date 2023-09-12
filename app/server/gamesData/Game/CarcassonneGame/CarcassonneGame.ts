@@ -111,7 +111,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
       playerData.cards.push(...this.deck.splice(-CARDS_IN_HAND));
     });
 
-    while (this.activePlayerIndex !== -1) {
+    while (this.hasActivePlayer()) {
       const activePlayerData = this.playersData[this.activePlayerIndex];
 
       this.turn = this.spawnEntity(
@@ -129,7 +129,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
         activePlayerData.lastMoves = [];
       }
 
-      this.activePlayerIndex = this.getPlayerIndexWithCards(this.getNextPlayerIndex());
+      this.passTurn();
     }
 
     this.turn = null;
@@ -520,25 +520,15 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
     );
   }
 
-  getPlayerIndexWithCards(currentPlayerIndex: number): number {
-    let nextPlayerIndexWithCards = currentPlayerIndex;
-
-    while (!this.canPlayAnyCards(nextPlayerIndexWithCards)) {
-      nextPlayerIndexWithCards = (nextPlayerIndexWithCards + 1) % this.playersCount;
-
-      if (nextPlayerIndexWithCards === currentPlayerIndex) {
-        return -1;
-      }
-    }
-
-    return nextPlayerIndexWithCards;
-  }
-
   getPlayerObjectMeeples(object: GameObject, playerIndex: number): number {
     return getObjectPlayerMeeples(object, playerIndex).reduce(
       (count, { type }) => count + (type === MeepleType.COMMON ? 1 : type === MeepleType.FAT ? 2 : 0),
       0,
     );
+  }
+
+  isPlayerInPlay(playerIndex: number): boolean {
+    return this.canPlayAnyCards(playerIndex);
   }
 
   mergeCardObject(targetObject: GameObject, mergedObject: CardObject): void {
@@ -623,9 +613,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
       this.playersData[playerIndex].meeples[type]++;
     });
 
-    const returnFromCards = isGameMonastery(object) ? object.cards.slice(0) : object.cards;
-
-    returnFromCards.forEach((coords) => {
+    object.cards.forEach((coords) => {
       const card = this.board[coords.y]?.[coords.x];
 
       if (card?.meeple && card.meeple.gameObjectId === object.id) {

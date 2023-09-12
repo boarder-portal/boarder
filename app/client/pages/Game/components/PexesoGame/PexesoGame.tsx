@@ -129,23 +129,17 @@ const PexesoGame: FC<GameProps<GameType.PEXESO>> = (props) => {
     [activePlayerIndex, io, player],
   );
 
-  const handleCardRightClick = useCallback(
-    (e: MouseEvent, cardIndex: number) => {
-      e.preventDefault();
+  const handleCardRightClick = useCallback((e: MouseEvent, cardIndex: number) => {
+    e.preventDefault();
 
+    setHighlightedCardsIndexes((highlightedCardsIndexes) => {
       const highlightedIndex = highlightedCardsIndexes.indexOf(cardIndex);
 
-      if (highlightedIndex === -1) {
-        setHighlightedCardsIndexes([...highlightedCardsIndexes, cardIndex]);
-      } else {
-        setHighlightedCardsIndexes([
-          ...highlightedCardsIndexes.slice(0, highlightedIndex),
-          ...highlightedCardsIndexes.slice(highlightedIndex + 1),
-        ]);
-      }
-    },
-    [highlightedCardsIndexes],
-  );
+      return highlightedIndex === -1
+        ? [...highlightedCardsIndexes, cardIndex]
+        : highlightedCardsIndexes.toSpliced(highlightedIndex, 1);
+    });
+  }, []);
 
   useEffect(() => {
     const { imagesCount, imageVariantsCount } = SETS[gameOptions.set];

@@ -40,7 +40,7 @@ export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
   }
 
   *lifecycle(): EntityGenerator<TurnResult> {
-    for (let i = 0; i < this.playersCount; i++) {
+    while (this.hasActivePlayer()) {
       let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
@@ -54,7 +54,7 @@ export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
         chosenCardIndex,
       );
 
-      this.activePlayerIndex = i === this.playersCount - 1 ? -1 : this.getNextPlayerIndex();
+      this.passTurn();
 
       this.game.sendGameInfo();
     }
@@ -69,6 +69,10 @@ export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
       highestCardPlayerIndex: getHighestCardIndex(playedCards, this.startPlayerIndex),
       takenCards: playedCards,
     };
+  }
+
+  isPlayerInPlay(playerIndex: number): boolean {
+    return !this.playersData[playerIndex].playedCard;
   }
 
   toJSON(): TurnModel {

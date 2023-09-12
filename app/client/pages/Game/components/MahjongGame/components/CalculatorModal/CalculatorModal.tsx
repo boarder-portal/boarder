@@ -373,11 +373,11 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   );
 
   const removeSet = useCallback((setIndex: number) => {
-    setDeclaredSets((declaredSets) => [...declaredSets.slice(0, setIndex), ...declaredSets.slice(setIndex + 1)]);
+    setDeclaredSets((declaredSets) => declaredSets.toSpliced(setIndex, 1));
   }, []);
 
   const removeTileFromHand = useCallback((tileIndex) => {
-    setHand((hand) => [...hand.slice(0, tileIndex), ...hand.slice(tileIndex + 1)]);
+    setHand((hand) => hand.toSpliced(tileIndex, 1));
   }, []);
 
   const removeWinningTile = useCallback(() => {
