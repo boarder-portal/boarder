@@ -77,3 +77,7 @@ export type GameServerEventListener<Game extends GameType, Event extends GameSer
 export type GameOptions<Game extends GameType> = GamesParams[Game]['options'];
 
 export type PlayerSettings<Game extends GameType> = GamesParams[Game]['playerSettings'];
+
+export type TestCaseType<Game extends GameType> = GamesParams[Game]['testCaseType'];
+
+export type GameEventType<Game extends GameType> = GamesParams[Game]['gameEventType'];

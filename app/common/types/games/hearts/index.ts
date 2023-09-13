@@ -70,6 +70,10 @@ export type GameResult = void;
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.HEARTS> {
   [GameClientEventType.CHOOSE_CARD]: number;
 }
@@ -85,6 +89,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }

@@ -257,6 +257,10 @@ export type GameResult = void;
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.SEVEN_WONDERS> {
   [GameClientEventType.PICK_CITY_SIDE]: number | null;
   [GameClientEventType.EXECUTE_ACTION]: ExecuteActionEvent;
@@ -274,6 +278,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }

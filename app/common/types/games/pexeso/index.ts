@@ -101,6 +101,10 @@ export type GameResult = number[];
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface UpdatePlayersEvent {
   players: Player[];
   activePlayerIndex: number;
@@ -136,6 +140,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }

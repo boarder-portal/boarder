@@ -382,6 +382,10 @@ export interface PlayerSettings extends BasePlayerSettings {
   highlightSameTile: boolean;
 }
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface ChangeTileIndexEvent {
   from: number;
   to: number;
@@ -405,6 +409,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }

@@ -117,6 +117,10 @@ export type GameResult = number[];
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.RED_SEVEN> {
   [GameClientEventType.PLAY_MOVE]: Move;
   [GameClientEventType.REVERT_LAST_MOVE]: void;
@@ -133,6 +137,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }

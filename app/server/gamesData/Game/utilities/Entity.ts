@@ -567,7 +567,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   }
 
   toJSON(): unknown {
-    return null;
+    throw new Error('Provide custom toJSON');
   }
 
   unpause(unpausedAt: number): void {

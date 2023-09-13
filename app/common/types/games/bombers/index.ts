@@ -169,6 +169,10 @@ export interface GameResult {
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
 export interface SyncCoordsEvent {
   playerIndex: number;
   direction: Direction;
@@ -270,6 +274,8 @@ declare module 'common/types/game/params' {
       info: Game;
       result: GameResult;
       playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventType: GameEventType;
     };
   }
 }
