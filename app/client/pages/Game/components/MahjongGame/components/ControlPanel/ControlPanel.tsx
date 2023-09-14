@@ -99,7 +99,7 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
     openSettingsModal,
   } = props;
 
-  const settings = usePlayerSettings(GameType.MAHJONG);
+  const { settings } = usePlayerSettings(GameType.MAHJONG);
 
   const isActive = player?.index === activePlayerIndex;
 

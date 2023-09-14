@@ -12,6 +12,16 @@ export const GameStateContext = createContext<GameState>({
   changeTimestamp: 0,
 });
 
-export const PlayerSettingsContexts = mapValues(mapKeys(GameType), (game) => createContext(PLAYER_SETTINGS[game])) as {
-  [Game in GameType]: Context<PlayerSettings<Game>>;
+export interface PlayerSettingsContext<Game extends GameType> {
+  settings: PlayerSettings<Game>;
+  changeSetting<Key extends keyof PlayerSettings<Game>>(key: Key, value: PlayerSettings<Game>[Key]): void;
+}
+
+export const PlayerSettingsContexts = mapValues(mapKeys(GameType), (game) =>
+  createContext({
+    settings: PLAYER_SETTINGS[game],
+    changeSetting() {},
+  } as PlayerSettingsContext<typeof game>),
+) as {
+  [Game in GameType]: Context<PlayerSettingsContext<Game>>;
 };

@@ -1,4 +1,4 @@
-import { ComponentType, memo, useCallback, useRef, useState } from 'react';
+import { ComponentType, memo, useCallback, useMemo, useRef, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import {
   CommonServerEventMap,
   PlayerStatus,
 } from 'common/types';
-import { GameInfo, GameOptions, GameResult, GameState, GameType, PlayerSettings } from 'common/types/game';
+import { GameInfo, GameOptions, GameResult, GameState, GameType } from 'common/types/game';
 import { GameClientSocket } from 'common/types/socket';
 
 import { now } from 'client/utilities/time';
@@ -39,14 +39,14 @@ import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/Seve
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
-import { GameStateContext, PlayerSettingsContexts, TimeDiffContext } from 'client/pages/Game/contexts';
+import {
+  GameStateContext,
+  PlayerSettingsContext,
+  PlayerSettingsContexts,
+  TimeDiffContext,
+} from 'client/pages/Game/contexts';
 
 import styles from './Game.module.scss';
-
-export type ChangeSettingCallback<Game extends GameType> = <Key extends keyof PlayerSettings<Game>>(
-  key: Key,
-  value: PlayerSettings<Game>[Key],
-) => void;
 
 export interface GameProps<Game extends GameType> {
   io: GameClientSocket<Game>;
@@ -55,7 +55,6 @@ export interface GameProps<Game extends GameType> {
   gameResult: GameResult<Game> | null;
   gameState: GameState;
   getTimeDiff(): number;
-  changePlayerSetting: ChangeSettingCallback<Game>;
 }
 
 const GAMES_MAP: {
@@ -151,7 +150,7 @@ const Game = <G extends GameType>() => {
     socket?.emit(CommonGameClientEvent.TOGGLE_READY);
   }, [socket]);
 
-  const changeSetting: ChangeSettingCallback<G> = useImmutableCallback((key, value) => {
+  const changeSetting: PlayerSettingsContext<G>['changeSetting'] = useImmutableCallback((key, value) => {
     onChangeSetting(key, value);
 
     // @ts-ignore
@@ -161,6 +160,13 @@ const Game = <G extends GameType>() => {
   const getTimeDiff = useImmutableCallback(() => {
     return timeDiff;
   });
+
+  const playerSettingsContext = useMemo<PlayerSettingsContext<G>>(() => {
+    return {
+      settings: player?.settings ?? localPlayerSettings,
+      changeSetting,
+    };
+  }, [changeSetting, localPlayerSettings, player?.settings]);
 
   useGlobalListener('keyup', typeof document === 'undefined' ? null : document, (e) => {
     if (e.code === 'KeyP') {
@@ -205,7 +211,7 @@ const Game = <G extends GameType>() => {
   const PlayerSettingsContext = PlayerSettingsContexts[game];
 
   return (
-    <PlayerSettingsContext.Provider value={player?.settings ?? localPlayerSettings}>
+    <PlayerSettingsContext.Provider value={playerSettingsContext}>
       <TimeDiffContext.Provider value={getTimeDiff}>
         <GameStateContext.Provider value={gameState}>
           <Game
@@ -215,7 +221,6 @@ const Game = <G extends GameType>() => {
             gameResult={gameResult}
             gameState={gameState}
             getTimeDiff={getTimeDiff}
-            changePlayerSetting={changeSetting}
           />
 
           <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>

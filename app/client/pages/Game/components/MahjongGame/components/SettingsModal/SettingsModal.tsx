@@ -10,19 +10,16 @@ import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';
 import Text from 'client/components/common/Text/Text';
 
-import { ChangeSettingCallback } from 'client/pages/Game/Game';
-
 interface SettingsModalProps {
   open: boolean;
   player: Player | null;
   onClose(): void;
-  changePlayerSetting: ChangeSettingCallback<GameType.MAHJONG>;
 }
 
 const SettingsModal: FC<SettingsModalProps> = (props) => {
-  const { open, player, onClose, changePlayerSetting } = props;
+  const { open, player, onClose } = props;
 
-  const settings = usePlayerSettings(GameType.MAHJONG);
+  const { settings, changeSetting } = usePlayerSettings(GameType.MAHJONG);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -37,31 +34,31 @@ const SettingsModal: FC<SettingsModalProps> = (props) => {
               <Checkbox
                 checked={settings.autoPass}
                 label="Авто-пас"
-                onChange={(checked) => changePlayerSetting('autoPass', checked)}
+                onChange={(checked) => changeSetting('autoPass', checked)}
               />
 
               <Checkbox
                 checked={settings.autoReplaceFlowers}
                 label="Авто-замена цветов"
-                onChange={(checked) => changePlayerSetting('autoReplaceFlowers', checked)}
+                onChange={(checked) => changeSetting('autoReplaceFlowers', checked)}
               />
 
               <Checkbox
                 checked={settings.sortHand}
                 label="Авто-сортировка руки"
-                onChange={(checked) => changePlayerSetting('sortHand', checked)}
+                onChange={(checked) => changeSetting('sortHand', checked)}
               />
 
               <Checkbox
                 checked={settings.showLosingHand}
                 label="Показывать проигрышную руку"
-                onChange={(checked) => changePlayerSetting('showLosingHand', checked)}
+                onChange={(checked) => changeSetting('showLosingHand', checked)}
               />
 
               <Checkbox
                 checked={settings.showCurrentTile}
                 label="Показывать текущую кость"
-                onChange={(checked) => changePlayerSetting('showCurrentTile', checked)}
+                onChange={(checked) => changeSetting('showCurrentTile', checked)}
               />
             </>
           )}
@@ -69,13 +66,13 @@ const SettingsModal: FC<SettingsModalProps> = (props) => {
           <Checkbox
             checked={settings.showTileHints}
             label="Показывать значения костей"
-            onChange={(checked) => changePlayerSetting('showTileHints', checked)}
+            onChange={(checked) => changeSetting('showTileHints', checked)}
           />
 
           <Checkbox
             checked={settings.highlightSameTile}
             label="Подсвечивать идентичные кости"
-            onChange={(checked) => changePlayerSetting('highlightSameTile', checked)}
+            onChange={(checked) => changeSetting('highlightSameTile', checked)}
           />
         </Flex>
       </Flex>

@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
-import { GameType, PlayerSettings } from 'common/types/game';
+import { GameType } from 'common/types/game';
 
-import { PlayerSettingsContexts } from 'client/pages/Game/contexts';
+import { PlayerSettingsContext, PlayerSettingsContexts } from 'client/pages/Game/contexts';
 
-export default function usePlayerSettings<Game extends GameType>(game: Game): PlayerSettings<Game> {
+export default function usePlayerSettings<Game extends GameType>(game: Game): PlayerSettingsContext<Game> {
   return useContext(PlayerSettingsContexts[game]);
 }

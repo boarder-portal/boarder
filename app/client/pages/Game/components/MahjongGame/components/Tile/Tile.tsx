@@ -44,7 +44,9 @@ const Tile: FC<TileProps> = (props) => {
   } = props;
   const height = getTileHeight(width);
 
-  const { showTileHints } = usePlayerSettings(GameType.MAHJONG);
+  const {
+    settings: { showTileHints },
+  } = usePlayerSettings(GameType.MAHJONG);
 
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 

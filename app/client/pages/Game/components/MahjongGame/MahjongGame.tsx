@@ -56,7 +56,7 @@ const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
 const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
-  const { io, gameOptions, gameInfo, changePlayerSetting } = props;
+  const { io, gameOptions, gameInfo } = props;
 
   const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
@@ -88,7 +88,9 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
 
   const sortedPlayers = useSortedPlayers(players);
   const player = usePlayer(players);
-  const { sortHand, showCurrentTile, highlightSameTile } = usePlayerSettings(GameType.MAHJONG);
+  const {
+    settings: { sortHand, showCurrentTile, highlightSameTile },
+  } = usePlayerSettings(GameType.MAHJONG);
 
   const tileHeight = getTileHeight(tileWidth);
   const handInProcess = activePlayerIndex !== -1;
@@ -388,12 +390,7 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
         onClose={handleCloseResultsModal}
       />
 
-      <SettingsModal
-        open={settingsModalOpen}
-        player={player}
-        onClose={closeSettingsModal}
-        changePlayerSetting={changePlayerSetting}
-      />
+      <SettingsModal open={settingsModalOpen} player={player} onClose={closeSettingsModal} />
     </div>
   );
 };
