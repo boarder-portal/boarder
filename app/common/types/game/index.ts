@@ -80,4 +80,8 @@ export type PlayerSettings<Game extends GameType> = GamesParams[Game]['playerSet
 
 export type TestCaseType<Game extends GameType> = GamesParams[Game]['testCaseType'];
 
-export type GameEventType<Game extends GameType> = GamesParams[Game]['gameEventType'];
+export type GameEventMap<Game extends GameType> = GamesParams[Game]['gameEventMap'];
+
+export type GameEventType<Game extends GameType> = keyof GameEventMap<Game> & string;
+
+export type GameEventData<Game extends GameType, Event extends GameEventType<Game>> = GameEventMap<Game>[Event];

@@ -1,4 +1,4 @@
-import { GameData, GameInfo, GameResult, GameType, PlayerSettings } from 'common/types/game';
+import { GameData, GameInfo, GameResult, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
 
 export interface User {
   login: string;
@@ -33,11 +33,12 @@ export interface Size {
   height: number;
 }
 
-export interface BaseGameOptions {
+export interface BaseGameOptions<Game extends GameType> {
   minPlayersCount: number;
   maxPlayersCount: number;
   useBots?: boolean;
   destroyOnLeave?: boolean;
+  testCaseType?: TestCaseType<Game>;
 }
 
 export interface BasePlayerSettings {}
@@ -89,3 +90,5 @@ export interface CommonServerEventMap<Game extends GameType> {
   [CommonGameServerEvent.PING]: number;
   [CommonGameServerEvent.END]: GameResult<Game>;
 }
+
+export interface CommonGameEventMap<Game extends GameType> {}

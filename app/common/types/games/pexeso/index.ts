@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -57,7 +58,7 @@ export type ShuffleOptions =
       afterMovesCount: number;
     };
 
-export interface GameOptions extends BaseGameOptions {
+export interface GameOptions extends BaseGameOptions<GameType.PEXESO> {
   set: SetType;
   matchingCardsCount: number;
   differentCardsCount: number;
@@ -105,6 +106,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.PEXESO> {}
+
 export interface UpdatePlayersEvent {
   players: Player[];
   activePlayerIndex: number;
@@ -141,7 +144,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

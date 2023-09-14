@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -15,7 +16,7 @@ export enum GameServerEventType {
   UPDATE_GAME = 'UPDATE_GAME',
 }
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.SURVIVAL_ONLINE> {}
 
 export interface PlayerData {
   cell: CellWithObject<PlayerObject>;
@@ -94,6 +95,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.SURVIVAL_ONLINE> {}
+
 export interface UpdateGameEvent {
   players: Player[] | null;
   cells: Cell[];
@@ -117,7 +120,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

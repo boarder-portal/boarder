@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
   Coords,
   Timestamp,
@@ -127,7 +128,7 @@ export interface GameCard extends Coords {
 
 export type Board = Partial<Record<number, Partial<Record<number, GameCard>>>>;
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.CARCASSONNE> {}
 
 export interface ObjectScore {
   objectId: number;
@@ -181,6 +182,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.CARCASSONNE> {}
+
 export interface Turn {
   endsAt: Timestamp;
 }
@@ -208,7 +211,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -1,22 +1,39 @@
 import { ChangeSettingEvent, CommonGameClientEvent, CommonGameServerEvent } from 'common/types';
-import { GameInfo, GameResult, GameType, PlayerSettings } from 'common/types/game';
+import {
+  GameEventData,
+  GameEventType,
+  GameInfo,
+  GameResult,
+  GameType,
+  PlayerSettings,
+  TestCaseType,
+} from 'common/types/game';
 
 import { areBotsAvailable } from 'common/utilities/bots';
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
 import { now } from 'server/utilities/time';
 
-import { BOTS } from 'server/gamesData/Game/Game';
+import { BOTS, TEST_CASES } from 'server/gamesData/Game/Game';
 
 export type SettingsChangeEvent<Game extends GameType> = {
   playerIndex: number;
   settings: PlayerSettings<Game>;
 } & ChangeSettingEvent<Game>;
 
+type GameEventTriggerValue<Game extends GameType> = {
+  [GameEvent in GameEventType<Game>]: {
+    event: GameEvent;
+    data: GameEventData<Game, GameEvent>;
+  };
+}[GameEventType<Game>];
+
 export default abstract class GameEntity<Game extends GameType> extends ServerEntity<Game, GameResult<Game>> {
   spawned = true;
+  eventTrigger = this.createTrigger<GameEventTriggerValue<Game>>();
 
   abstract toJSON(): GameInfo<Game>;
 
@@ -24,7 +41,18 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     yield* super.beforeLifecycle();
 
     this.spawnTask(this.spawnBots());
+    this.spawnTask(this.spawnTestCase());
     this.spawnTask(this.watchSettingChange());
+  }
+
+  dispatchGameEvent<GameEvent extends GameEventType<Game>>(
+    event: GameEvent,
+    data: GameEventData<Game, GameEvent>,
+  ): void {
+    this.eventTrigger({
+      event,
+      data,
+    });
   }
 
   getGameInfo(): GameInfo<Game> {
@@ -89,6 +117,32 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
         .filter(({ isBot }) => isBot)
         .map(({ index }) => this.spawnBot(bot, index)),
     );
+  }
+
+  *spawnTestCase(): EntityGenerator {
+    const caseType = this.options.testCaseType;
+
+    if (process.env.NODE_ENV === 'production' || !caseType) {
+      return;
+    }
+
+    const TestCase = (
+      TEST_CASES[this.context.game.game] as Partial<{
+        [TestCase in TestCaseType<Game>]: TestCaseConstructor<Game>;
+      }>
+    )?.[caseType as TestCaseType<Game>];
+
+    if (!TestCase) {
+      return;
+    }
+
+    try {
+      yield* this.spawnEntity(new TestCase(this as any));
+    } catch (err) {
+      if (!(err instanceof AbortError)) {
+        console.log('TestCase error', err);
+      }
+    }
   }
 
   *waitForPlayerSettingChange(playerIndex: number): EntityGenerator<SettingsChangeEvent<Game>> {

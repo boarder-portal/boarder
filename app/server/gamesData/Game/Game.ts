@@ -20,16 +20,19 @@ import {
   GameState,
   GameStatus,
   GameType,
+  TestCaseType,
 } from 'common/types/game';
 import { GameNamespace, GameServerSocket } from 'common/types/socket';
 
 import { areBotsAvailable } from 'common/utilities/bots';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import { EntityContext } from 'server/gamesData/Game/utilities/Entity';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import BaseGameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
 import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
 import removeNamespace from 'server/utilities/removeNamespace';
 import { now } from 'server/utilities/time';
+
+import mahjongTestCases from 'server/gamesData/Game/MahjongGame/testCases';
 
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
@@ -76,9 +79,9 @@ export interface SendSocketEventOptions<Game extends GameType> {
   batch?: boolean;
 }
 
-const GAME_ENTITIES_MAP: {
-  [Game in GameType]: { new (context: EntityContext<Game>): GameEntity<Game> };
-} = {
+export type GameEntity<Game extends GameType> = InstanceType<typeof GAME_ENTITIES_MAP[Game]> & BaseGameEntity<Game>;
+
+const GAME_ENTITIES_MAP = {
   [GameType.PEXESO]: PexesoGame,
   [GameType.SURVIVAL_ONLINE]: SurvivalOnlineGame,
   [GameType.SET]: SetGame,
@@ -96,6 +99,12 @@ export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstruct
   [GameType.SEVEN_WONDERS]: SevenWondersBot,
   [GameType.HEARTS]: HeartsBot,
   [GameType.MAHJONG]: MahjongBot,
+};
+
+export const TEST_CASES: Partial<{
+  [Game in GameType]: Partial<{ [TestCase in TestCaseType<Game>]: TestCaseConstructor<Game> }>;
+}> = {
+  [GameType.MAHJONG]: mahjongTestCases,
 };
 
 const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];
@@ -329,8 +338,8 @@ class Game<Game extends GameType> {
 
   initMainGameEntity(): GameEntity<Game> {
     const entity = new GAME_ENTITIES_MAP[this.game]({
-      game: this,
-    });
+      game: this as never,
+    }) as GameEntity<Game>;
 
     entity.run(
       (result) => this.end(result),

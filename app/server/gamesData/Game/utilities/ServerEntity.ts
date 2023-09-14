@@ -66,8 +66,8 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
     return this.getPlayers().length;
   }
 
-  forEachPlayer(callback: (playerIndex: number) => unknown): void {
-    this.getPlayers().forEach(({ index }) => callback(index));
+  forEachPlayer(callback: (playerIndex: number, player: BaseGamePlayer<Game>) => unknown): void {
+    this.getPlayers().forEach(({ index }) => callback(index, this.getPlayer(index)));
   }
 
   getNextPlayerIndex(playerIndex: number): number {

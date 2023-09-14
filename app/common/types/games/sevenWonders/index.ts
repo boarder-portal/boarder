@@ -4,6 +4,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -22,7 +23,7 @@ export enum ScientificSymbolType {
   TABLET = 'TABLET',
 }
 
-export interface GameOptions extends BaseGameOptions {
+export interface GameOptions extends BaseGameOptions<GameType.SEVEN_WONDERS> {
   includeLeaders: boolean;
 }
 
@@ -261,6 +262,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.SEVEN_WONDERS> {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.SEVEN_WONDERS> {
   [GameClientEventType.PICK_CITY_SIDE]: number | null;
   [GameClientEventType.EXECUTE_ACTION]: ExecuteActionEvent;
@@ -279,7 +282,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -12,7 +13,7 @@ export enum GameClientEventType {
   SEND_NO_SET = 'SEND_NO_SET',
 }
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.SET> {}
 
 export interface PlayerData {
   score: number;
@@ -61,6 +62,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.SET> {}
+
 export interface SendSetEvent {
   cardsIds: number[];
 }
@@ -82,7 +85,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
   Coords,
 } from 'common/types';
@@ -12,7 +13,7 @@ export enum GameClientEventType {
   MOVE_PIECE = 'MOVE_PIECE',
 }
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.ONITAMA> {}
 
 export interface PlayerData {
   cards: CardType[];
@@ -69,6 +70,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.ONITAMA> {}
+
 export interface MovePieceEvent {
   from: Coords;
   to: Coords;
@@ -91,7 +94,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

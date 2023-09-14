@@ -11,6 +11,7 @@ import {
   ConcealedSet,
   FlowerTile,
   GameClientEventType,
+  GameEventType,
   HandMahjong,
   Hand as HandModel,
   HandPhase,
@@ -20,7 +21,6 @@ import {
   MeldedSet,
   PlayableTile,
   SetType,
-  Suit,
   Tile,
 } from 'common/types/games/mahjong';
 
@@ -36,7 +36,7 @@ import {
   isEqualTiles,
   isEqualTilesCallback,
 } from 'common/utilities/mahjong/tiles';
-import { isFlower, suited } from 'common/utilities/mahjong/tilesBase';
+import { isFlower } from 'common/utilities/mahjong/tilesBase';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 
@@ -88,27 +88,13 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
   }
 
   *lifecycle(): EntityGenerator {
-    this.wall = shuffle(DECK);
+    this.game.dispatchGameEvent(GameEventType.HAND_STARTED, this);
+
+    if (this.wall.length === 0) {
+      this.wall = shuffle(DECK);
+    }
 
     this.forEachPlayer((playerIndex) => {
-      // if (!this.getPlayers()[playerIndex].isBot) {
-      //   this.playersData[playerIndex].hand = [
-      //     suited(1, ESuit.CHARACTERS),
-      //     suited(1, ESuit.CHARACTERS),
-      //     suited(1, ESuit.CHARACTERS),
-      //     suited(2, ESuit.CHARACTERS),
-      //     suited(3, ESuit.CHARACTERS),
-      //     suited(4, ESuit.CHARACTERS),
-      //     suited(5, ESuit.CHARACTERS),
-      //     suited(6, ESuit.CHARACTERS),
-      //     suited(7, ESuit.CHARACTERS),
-      //     suited(8, ESuit.CHARACTERS),
-      //     suited(9, ESuit.CHARACTERS),
-      //     suited(9, ESuit.CHARACTERS),
-      //     suited(9, ESuit.CHARACTERS),
-      //   ];
-      // }
-
       this.addTilesToPlayerHand(playerIndex, false);
       this.sortPlayerTiles(playerIndex);
     });

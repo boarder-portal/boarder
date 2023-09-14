@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
   Coords,
   Timestamp,
@@ -31,7 +32,7 @@ export enum GameServerEventType {
   WALLS_DESTROYED = 'WALLS_DESTROYED',
 }
 
-export interface GameOptions extends BaseGameOptions {
+export interface GameOptions extends BaseGameOptions<GameType.BOMBERS> {
   mapType: MapType | null;
   withAbilities: boolean;
 }
@@ -173,6 +174,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.BOMBERS> {}
+
 export interface SyncCoordsEvent {
   playerIndex: number;
   direction: Direction;
@@ -275,7 +278,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -3,9 +3,12 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
+
+import HandEntity from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
 export enum GameClientEventType {
   DISCARD_TILE = 'DISCARD_TILE',
@@ -16,7 +19,7 @@ export enum GameClientEventType {
 
 export enum GameServerEventType {}
 
-export interface GameOptions extends BaseGameOptions {
+export interface GameOptions extends BaseGameOptions<GameType.MAHJONG> {
   handsCount: HandsCount;
 }
 
@@ -382,9 +385,17 @@ export interface PlayerSettings extends BasePlayerSettings {
   highlightSameTile: boolean;
 }
 
-export enum TestCaseType {}
+export enum TestCaseType {
+  THIRTEEN_ORPHANS_HAND = 'THIRTEEN_ORPHANS_HAND',
+}
 
-export enum GameEventType {}
+export enum GameEventType {
+  HAND_STARTED = 'HAND_STARTED',
+}
+
+export interface GameEventMap extends CommonGameEventMap<GameType.MAHJONG> {
+  [GameEventType.HAND_STARTED]: HandEntity;
+}
 
 export interface ChangeTileIndexEvent {
   from: number;
@@ -410,7 +421,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

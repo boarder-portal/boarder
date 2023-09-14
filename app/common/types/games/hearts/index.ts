@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -12,7 +13,7 @@ export enum GameClientEventType {
   CHOOSE_CARD = 'CHOOSE_CARD',
 }
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.HEARTS> {}
 
 export interface GamePlayerData {
   score: number;
@@ -74,6 +75,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.HEARTS> {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.HEARTS> {
   [GameClientEventType.CHOOSE_CARD]: number;
 }
@@ -90,7 +93,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

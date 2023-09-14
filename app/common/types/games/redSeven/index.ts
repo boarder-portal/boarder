@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -14,7 +15,7 @@ export enum GameClientEventType {
 
 export enum GameServerEventType {}
 
-export interface GameOptions extends BaseGameOptions {
+export interface GameOptions extends BaseGameOptions<GameType.RED_SEVEN> {
   advancedRules: boolean;
   withActionRule: boolean;
   v1p2Rules: boolean;
@@ -121,6 +122,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.RED_SEVEN> {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.RED_SEVEN> {
   [GameClientEventType.PLAY_MOVE]: Move;
   [GameClientEventType.REVERT_LAST_MOVE]: void;
@@ -138,7 +141,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -1,6 +1,7 @@
 import { DEFAULT_PLAYER_SETTINGS as MAHJONG_PLAYER_SETTINGS } from 'common/constants/games/mahjong';
 
-import { GameType, PlayerSettings } from 'common/types/game';
+import { GameType, PlayerSettings, TestCaseType } from 'common/types/game';
+import { TestCaseType as MahjongTestCaseType } from 'common/types/games/mahjong';
 
 export const GAME_NAMES: Record<GameType, string> = {
   [GameType.PEXESO]: 'Pexeso',
@@ -30,6 +31,12 @@ export const PLAYER_SETTINGS: {
   [GameType.MACHI_KORO]: {},
   [GameType.MAHJONG]: MAHJONG_PLAYER_SETTINGS,
   [GameType.RED_SEVEN]: {},
+};
+
+export const TEST_CASES: {
+  [Game in GameType]?: Record<string, TestCaseType<Game>>;
+} = {
+  [GameType.MAHJONG]: MahjongTestCaseType,
 };
 
 export const BOTS_SUPPORTED_GAMES = [GameType.SEVEN_WONDERS, GameType.HEARTS, GameType.MAHJONG] as const;

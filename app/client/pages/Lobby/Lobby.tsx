@@ -1,11 +1,12 @@
+import isEmpty from 'lodash/isEmpty';
 import times from 'lodash/times';
 import { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { GAME_NAMES } from 'common/constants/game';
+import { GAME_NAMES, TEST_CASES } from 'common/constants/game';
 
 import typedReactMemo from 'client/types/typedReactMemo';
-import { GameOptions, GameType } from 'common/types/game';
+import { GameOptions, GameType, TestCaseType } from 'common/types/game';
 import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap, LobbyUpdateEvent } from 'common/types/game/lobby';
 
 import { areBotsAvailable } from 'common/utilities/bots';
@@ -72,6 +73,8 @@ const Lobby = <Game extends GameType>() => {
   const history = useHistory();
   const { options, setOptions, refreshDefaultOptions } = useGameOptions(game);
 
+  const testCases = TEST_CASES[game];
+
   const navigateToGame = useImmutableCallback((gameId: string) => {
     history.push(`/${game}/game/${gameId}`);
   });
@@ -113,6 +116,15 @@ const Lobby = <Game extends GameType>() => {
     (maxPlayersCount: number) => {
       changeOptions({
         maxPlayersCount,
+      });
+    },
+    [changeOptions],
+  );
+
+  const handleTestCaseChange = useCallback(
+    (testCaseType: TestCaseType<Game> | '') => {
+      changeOptions({
+        testCaseType: testCaseType || undefined,
       });
     },
     [changeOptions],
@@ -208,6 +220,18 @@ const Lobby = <Game extends GameType>() => {
                   onChange={handleMaxPlayersCountChange}
                 />
               </>
+            )}
+
+            {process.env.NODE_ENV !== 'production' && testCases && !isEmpty(testCases) && (
+              <Select
+                label="Тестовый сценарий"
+                value={options.testCaseType ?? ''}
+                options={['' as const, ...Object.values(testCases)].map((testCaseType) => ({
+                  value: testCaseType,
+                  text: testCaseType || 'Отсутствует',
+                }))}
+                onChange={handleTestCaseChange}
+              />
             )}
 
             <Checkbox

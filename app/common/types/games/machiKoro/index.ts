@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -31,7 +32,7 @@ export enum GameServerEventType {
   HARBOR_EFFECT = 'HARBOR_EFFECT',
 }
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.MACHI_KORO> {}
 
 export enum PlayerWaitingActionType {
   CHOOSE_DICES_COUNT = 'CHOOSE_DICES_COUNT',
@@ -151,6 +152,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.MACHI_KORO> {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.MACHI_KORO> {
   [GameClientEventType.DICES_COUNT]: number;
   [GameClientEventType.NEED_TO_REROLL]: boolean;
@@ -200,7 +203,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

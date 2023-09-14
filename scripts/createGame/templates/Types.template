@@ -3,6 +3,7 @@ import {
   BaseGamePlayer,
   BasePlayerSettings,
   CommonClientEventMap,
+  CommonGameEventMap,
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -11,7 +12,7 @@ export enum GameClientEventType {}
 
 export enum GameServerEventType {}
 
-export interface GameOptions extends BaseGameOptions {}
+export interface GameOptions extends BaseGameOptions<GameType.{{constCased}}> {}
 
 export interface PlayerData {}
 
@@ -31,6 +32,8 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
+export interface GameEventMap extends CommonGameEventMap<GameType.{{constCased}}> {}
+
 export interface ClientEventMap extends CommonClientEventMap<GameType.{{constCased}}> {}
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.{{constCased}}> {}
@@ -45,7 +48,7 @@ declare module 'common/types/game/params' {
       result: GameResult;
       playerSettings: PlayerSettings;
       testCaseType: TestCaseType;
-      gameEventType: GameEventType;
+      gameEventMap: GameEventMap;
     };
   }
 }

@@ -33,6 +33,7 @@
           "/utilities\\//",
           "/hooks\\//",
           "/components\\//",
+          "/testCases/",
           "/Bot$/",
           "/client\\//",
           "/server\\//",
