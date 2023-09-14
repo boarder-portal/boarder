@@ -67,7 +67,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     };
   }
 
-  isPauseSupported(): boolean {
+  isPauseAvailable(): boolean {
     return false;
   }
 

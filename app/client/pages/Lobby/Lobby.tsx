@@ -23,6 +23,8 @@ import Text from 'client/components/common/Text/Text';
 import LobbyGame from 'client/pages/Lobby/components/Game/Game';
 import BombersCreateGameOptions from 'client/pages/games/bombers/components/BombersCreateGameOptions/BombersCreateGameOptions';
 import BombersGameOptions from 'client/pages/games/bombers/components/BombersGameOptions/BombersGameOptions';
+import CarcassonneCreateGameOptions from 'client/pages/games/carcassonne/components/CarcassonneCreateGameOptions/CarcassonneCreateGameOptions';
+import CarcassonneGameOptions from 'client/pages/games/carcassonne/components/CarcassonneGameOptions/CarcassonneGameOptions';
 import MahjongCreateGameOptions from 'client/pages/games/mahjong/components/MahjongCreateGameOptions/MahjongCreateGameOptions';
 import MahjongGameOptions from 'client/pages/games/mahjong/components/MahjongGameOptions/MahjongGameOptions';
 import PexesoCreateGameOptions from 'client/pages/games/pexeso/components/PexesoCreateGameOptions/PexesoCreateGameOptions';
@@ -51,6 +53,7 @@ const CREATE_GAME_OPTIONS_MAP: Partial<{
   [Game in GameType]: ComponentType<CreateGameOptionsProps<Game>>;
 }> = {
   [GameType.PEXESO]: PexesoCreateGameOptions,
+  [GameType.CARCASSONNE]: CarcassonneCreateGameOptions,
   [GameType.SEVEN_WONDERS]: SevenWondersCreateGameOptions,
   [GameType.BOMBERS]: BombersCreateGameOptions,
   [GameType.MAHJONG]: MahjongCreateGameOptions,
@@ -60,6 +63,7 @@ const GAME_OPTIONS_MAP: Partial<{
   [Game in GameType]: ComponentType<GameOptionsProps<Game>>;
 }> = {
   [GameType.PEXESO]: PexesoGameOptions,
+  [GameType.CARCASSONNE]: CarcassonneGameOptions,
   [GameType.SEVEN_WONDERS]: SevenWondersGameOptions,
   [GameType.BOMBERS]: BombersGameOptions,
   [GameType.MAHJONG]: MahjongGameOptions,

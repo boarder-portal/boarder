@@ -49,7 +49,7 @@ import { POP_SOUND, playSound } from 'client/sounds';
 import styles from './CarcassonneGame.module.scss';
 
 const CarcassonneGame: FC<GameProps<GameType.CARCASSONNE>> = (props) => {
-  const { io, gameInfo } = props;
+  const { io, gameOptions, gameInfo } = props;
 
   const createTimestamp = useCreateTimestamp();
 
@@ -555,6 +555,7 @@ const CarcassonneGame: FC<GameProps<GameType.CARCASSONNE>> = (props) => {
       <Players
         className={styles.players}
         players={players}
+        gameOptions={gameOptions}
         activePlayerIndex={activePlayerIndex}
         turnEndsAt={serverTurnEndsAt}
       />

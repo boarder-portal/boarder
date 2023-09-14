@@ -527,6 +527,10 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
     );
   }
 
+  isPauseAvailable(): boolean {
+    return Boolean(this.options.withTimer);
+  }
+
   isPlayerInPlay(playerIndex: number): boolean {
     return this.canPlayAnyCards(playerIndex);
   }

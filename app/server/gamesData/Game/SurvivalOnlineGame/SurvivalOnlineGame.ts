@@ -152,7 +152,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     return cell;
   }
 
-  isPauseSupported(): boolean {
+  isPauseAvailable(): boolean {
     return true;
   }
 

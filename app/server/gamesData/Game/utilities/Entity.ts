@@ -379,8 +379,10 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     this.afterPause();
   }
 
-  race<T extends IterableOrGenerator<unknown>[]>(generators: T): EffectGenerator<GeneratorReturnValue<T[keyof T]>>;
-  race<T extends Record<string, IterableOrGenerator<unknown>>>(
+  race<T extends (IterableOrGenerator<unknown> | null | undefined)[]>(
+    generators: T,
+  ): EffectGenerator<GeneratorReturnValue<T[keyof T]>>;
+  race<T extends Record<string, IterableOrGenerator<unknown> | null | undefined>>(
     generators: T,
   ): EffectGenerator<RaceObjectReturnValue<T>>;
   *race<T extends IterableOrGenerator<unknown>[] | Record<string, IterableOrGenerator<unknown>>>(
@@ -390,6 +392,10 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   > {
     return yield (resolve, reject) => {
       const cancels = map(generators, (generator, key) => {
+        if (!generator) {
+          return;
+        }
+
         const { run, cancel } = this.#getGeneratorResult(generator as any as EntityGenerator<Result>);
 
         run((result) => {
@@ -401,7 +407,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
 
       return () => {
         cancels.forEach((cancel) => {
-          cancel();
+          cancel?.();
         });
       };
     };

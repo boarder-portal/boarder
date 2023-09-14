@@ -385,7 +385,7 @@ export default class BombersGame extends GameEntity<GameType.BOMBERS> {
     return BombersGame.isBonus(object);
   }
 
-  isPauseSupported(): boolean {
+  isPauseAvailable(): boolean {
     return true;
   }
 

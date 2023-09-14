@@ -186,7 +186,7 @@ class Game<Game extends GameType> {
       });
 
       (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.TOGGLE_PAUSE, () => {
-        if (!player || !this.hasStarted() || !this.gameEntity?.isPauseSupported()) {
+        if (!player || !this.hasStarted() || !this.gameEntity?.isPauseAvailable()) {
           return;
         }
 

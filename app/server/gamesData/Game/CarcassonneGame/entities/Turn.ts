@@ -28,11 +28,7 @@ export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
   }
 
   *lifecycle(): EntityGenerator<boolean> {
-    yield* this.race([
-      // TODO: when uncomment add isPauseSupported(): true in CarcassonneGame
-      // this.waitForTimestamp(this.endsAt),
-      this.makeMoves(),
-    ]);
+    yield* this.race([this.game.options.withTimer ? this.waitForTimestamp(this.endsAt) : null, this.makeMoves()]);
 
     return this.placedAnyCards;
   }

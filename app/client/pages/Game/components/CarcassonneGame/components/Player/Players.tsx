@@ -8,7 +8,7 @@ import { SECOND } from 'common/constants/date';
 
 import { WithClassName } from 'client/types/react';
 import { Timestamp } from 'common/types';
-import { CityGoodsType, MeepleType, Player } from 'common/types/games/carcassonne';
+import { CityGoodsType, GameOptions, MeepleType, Player } from 'common/types/games/carcassonne';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Meeple from 'client/pages/Game/components/CarcassonneGame/components/Meeple/Meeple';
@@ -17,12 +17,13 @@ import styles from './Player.module.scss';
 
 interface PlayersProps extends WithClassName {
   players: Player[];
+  gameOptions: GameOptions;
   activePlayerIndex: number;
   turnEndsAt: Timestamp | null;
 }
 
 const Players: FC<PlayersProps> = (props) => {
-  const { className, players, activePlayerIndex, turnEndsAt } = props;
+  const { className, players, gameOptions, activePlayerIndex, turnEndsAt } = props;
 
   const [turnSecondsLeft, setTurnSecondsLeft] = useState(0);
 
@@ -51,7 +52,7 @@ const Players: FC<PlayersProps> = (props) => {
           <div key={player.login} className={classNames(styles.player, { [styles.active]: isActive })}>
             <div>
               <span>{player.name}</span>
-              {isActive && <span> {turnSecondsLeft}</span>}
+              {gameOptions.withTimer && isActive && <span> {turnSecondsLeft}</span>}
             </div>
 
             <div>{sumBy(player.data.score, ({ score }) => score)}</div>
