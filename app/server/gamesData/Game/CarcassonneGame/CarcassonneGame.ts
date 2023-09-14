@@ -4,7 +4,13 @@ import shuffle from 'lodash/shuffle';
 import times from 'lodash/times';
 
 import { SECOND } from 'common/constants/date';
-import { ALL_CARDS, BASE_TIME, CARDS_IN_HAND, TURN_INCREMENT } from 'common/constants/games/carcassonne';
+import {
+  ALL_CARDS,
+  BASE_TIME,
+  CARDS_IN_HAND,
+  DEFAULT_WITH_TIMER,
+  TURN_INCREMENT,
+} from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -528,7 +534,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
   }
 
   isPauseAvailable(): boolean {
-    return Boolean(this.options.withTimer);
+    return this.options.withTimer ?? DEFAULT_WITH_TIMER;
   }
 
   isPlayerInPlay(playerIndex: number): boolean {

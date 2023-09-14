@@ -1,5 +1,7 @@
 import { FC, memo } from 'react';
 
+import { DEFAULT_WITH_TIMER } from 'common/constants/games/carcassonne';
+
 import { GameType } from 'common/types/game';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
@@ -20,7 +22,7 @@ const CarcassonneCreateGameOptions: FC<CreateGameOptionsProps<GameType.CARCASSON
 
   return (
     <Flex direction="column" between={3}>
-      <Checkbox checked={options.withTimer ?? false} label="На время" onChange={handleWithTimerChange} />
+      <Checkbox checked={options.withTimer ?? DEFAULT_WITH_TIMER} label="На время" onChange={handleWithTimerChange} />
     </Flex>
   );
 };

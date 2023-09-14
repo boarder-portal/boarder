@@ -4,6 +4,7 @@ import { GameOptions } from 'common/types/games/carcassonne';
 
 export { default as ALL_CARDS } from 'common/constants/games/carcassonne/cards';
 
+export const DEFAULT_WITH_TIMER = false;
 export const DEFAULT_GAME_OPTIONS: GameOptions = {
   minPlayersCount: 1,
   maxPlayersCount: 5,

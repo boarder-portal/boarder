@@ -3,6 +3,9 @@ import { DEFAULT_PLAYER_SETTINGS as MAHJONG_PLAYER_SETTINGS } from 'common/const
 import { GameType, PlayerSettings, TestCaseType } from 'common/types/game';
 import { TestCaseType as MahjongTestCaseType } from 'common/types/games/mahjong';
 
+export const DEFAULT_USE_BOTS = false;
+export const DEFAULT_DESTROY_ON_LEAVE = true;
+
 export const GAME_NAMES: Record<GameType, string> = {
   [GameType.PEXESO]: 'Pexeso',
   [GameType.SURVIVAL_ONLINE]: 'Выживать онлайн',

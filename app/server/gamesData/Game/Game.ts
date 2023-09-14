@@ -5,7 +5,12 @@ import times from 'lodash/times';
 import uuid from 'uuid/v4';
 
 import { SECOND } from 'common/constants/date';
-import { BOTS_SUPPORTED_GAMES, PLAYER_SETTINGS } from 'common/constants/game';
+import {
+  BOTS_SUPPORTED_GAMES,
+  DEFAULT_DESTROY_ON_LEAVE,
+  DEFAULT_USE_BOTS,
+  PLAYER_SETTINGS,
+} from 'common/constants/game';
 
 import { BaseGamePlayer, CommonGameClientEvent, CommonGameServerEvent, PlayerStatus } from 'common/types';
 import {
@@ -286,7 +291,9 @@ class Game<Game extends GameType> {
   }
 
   areBotsAvailable(): boolean {
-    return Boolean(this.options.useBots && areBotsAvailable(this.game));
+    const { useBots = DEFAULT_USE_BOTS } = this.options;
+
+    return useBots && areBotsAvailable(this.game);
   }
 
   clearDeleteTimeout(): void {
@@ -454,7 +461,7 @@ class Game<Game extends GameType> {
   }
 
   setDeleteTimeout(): void {
-    const { destroyOnLeave = true } = this.options;
+    const { destroyOnLeave = DEFAULT_DESTROY_ON_LEAVE } = this.options;
 
     if (destroyOnLeave || this.status !== GameStatus.GAME_IN_PROGRESS) {
       this.deleteGameTimeout = setTimeout(() => this.delete(), 10 * SECOND);

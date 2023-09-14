@@ -3,7 +3,7 @@ import times from 'lodash/times';
 import { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { GAME_NAMES, TEST_CASES } from 'common/constants/game';
+import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, GAME_NAMES, TEST_CASES } from 'common/constants/game';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameOptions, GameType, TestCaseType } from 'common/types/game';
@@ -239,13 +239,17 @@ const Lobby = <Game extends GameType>() => {
             )}
 
             <Checkbox
-              checked={options.destroyOnLeave ?? true}
+              checked={options.destroyOnLeave ?? DEFAULT_DESTROY_ON_LEAVE}
               label="Удалять при выходе всех игроков"
               onChange={handleDestroyOnLeaveChange}
             />
 
             {areBotsAvailable(game) && (
-              <Checkbox checked={options.useBots ?? false} label="Добавить ботов" onChange={handleUseBotsChange} />
+              <Checkbox
+                checked={options.useBots ?? DEFAULT_USE_BOTS}
+                label="Добавить ботов"
+                onChange={handleUseBotsChange}
+              />
             )}
           </Flex>
 
