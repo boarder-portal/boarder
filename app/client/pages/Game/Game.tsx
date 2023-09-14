@@ -18,7 +18,8 @@ import { now } from 'client/utilities/time';
 import useAtom from 'client/hooks/useAtom';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
-import usePlayerSettings from 'client/hooks/usePlayerSettings';
+import useLocalPlayerSettings from 'client/hooks/useLocalPlayerSettings';
+import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';
 
 import Button from 'client/components/common/Button/Button';
@@ -38,7 +39,7 @@ import SevenWondersGame from 'client/pages/Game/components/SevenWondersGame/Seve
 import SurvivalOnlineGame from 'client/pages/Game/components/SurvivalOnlineGame/SurvivalOnlineGame';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
-import { GameStateContext, TimeDiffContext } from 'client/pages/Game/contexts';
+import { GameStateContext, PlayerSettingsContexts, TimeDiffContext } from 'client/pages/Game/contexts';
 
 import styles from './Game.module.scss';
 
@@ -89,9 +90,10 @@ const Game = <G extends GameType>() => {
 
   const history = useHistory();
   const [user] = useAtom('user');
-  const { settings: playerSettings, changeSetting: onChangeSetting } = usePlayerSettings(game);
+  const player = usePlayer(players);
+  const { settings: localPlayerSettings, changeSetting: onChangeSetting } = useLocalPlayerSettings(game);
 
-  const socketPathRef = useRef(`/${game}/game/${gameId}?settings=${JSON.stringify(playerSettings)}`);
+  const socketPathRef = useRef(`/${game}/game/${gameId}?settings=${JSON.stringify(localPlayerSettings)}`);
 
   const socket = useSocket<CommonClientEventMap<G>, CommonServerEventMap<G>>(socketPathRef.current, {
     [CommonGameServerEvent.GET_DATA]: (data) => {
@@ -200,25 +202,28 @@ const Game = <G extends GameType>() => {
   }
 
   const Game: ComponentType<GameProps<G>> = GAMES_MAP[game];
+  const PlayerSettingsContext = PlayerSettingsContexts[game];
 
   return (
-    <TimeDiffContext.Provider value={getTimeDiff}>
-      <GameStateContext.Provider value={gameState}>
-        <Game
-          io={socket}
-          gameOptions={gameOptions}
-          gameInfo={gameInfo}
-          gameResult={gameResult}
-          gameState={gameState}
-          getTimeDiff={getTimeDiff}
-          changeSetting={changeSetting}
-        />
+    <PlayerSettingsContext.Provider value={player?.settings ?? localPlayerSettings}>
+      <TimeDiffContext.Provider value={getTimeDiff}>
+        <GameStateContext.Provider value={gameState}>
+          <Game
+            io={socket}
+            gameOptions={gameOptions}
+            gameInfo={gameInfo}
+            gameResult={gameResult}
+            gameState={gameState}
+            getTimeDiff={getTimeDiff}
+            changeSetting={changeSetting}
+          />
 
-        <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>
-          Пауза
-        </Modal>
-      </GameStateContext.Provider>
-    </TimeDiffContext.Provider>
+          <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>
+            Пауза
+          </Modal>
+        </GameStateContext.Provider>
+      </TimeDiffContext.Provider>
+    </PlayerSettingsContext.Provider>
   );
 };
 

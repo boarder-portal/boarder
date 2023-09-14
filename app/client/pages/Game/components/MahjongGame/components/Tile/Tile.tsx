@@ -9,7 +9,7 @@ import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/s
 import { isSuited, isWind } from 'common/utilities/mahjong/tilesBase';
 
 import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
-import usePlayerSettings from 'client/hooks/usePlayerSettings';
+import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
 
 import Image from 'client/components/common/Image/Image';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
@@ -44,7 +44,7 @@ const Tile: FC<TileProps> = (props) => {
   } = props;
   const height = getTileHeight(width);
 
-  const { settings } = usePlayerSettings(GameType.MAHJONG);
+  const { showTileHints } = usePlayerSettings(GameType.MAHJONG);
 
   const hint = tile && (isSuited(tile) ? tile.value : isWind(tile) ? getWindHumanShortName(tile.side) : null);
 
@@ -78,7 +78,7 @@ const Tile: FC<TileProps> = (props) => {
     >
       {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
 
-      {settings.showTileHints && (
+      {showTileHints && (
         <div className={styles.hint} style={{ fontSize: height / 6 }}>
           {hint}
         </div>

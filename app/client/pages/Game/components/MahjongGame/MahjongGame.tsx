@@ -26,6 +26,7 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import usePlayer from 'client/hooks/usePlayer';
 import usePrevious from 'client/hooks/usePrevious';
 import useSortedPlayers from 'client/pages/Game/components/MahjongGame/hooks/useSortedPlayers';
+import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
 
 import Flex from 'client/components/common/Flex/Flex';
 import CalculatorModal from 'client/pages/Game/components/MahjongGame/components/CalculatorModal/CalculatorModal';
@@ -85,13 +86,13 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
 
   const sortedPlayers = useSortedPlayers(players);
   const player = usePlayer(players);
+  const { sortHand, showCurrentTile, highlightSameTile } = usePlayerSettings(GameType.MAHJONG);
 
   const tileHeight = getTileHeight(tileWidth);
   const handInProcess = activePlayerIndex !== -1;
   const isActive = player?.index === activePlayerIndex;
   const isLastWallTile = wallTilesLeft === 0;
   const currentHandResult = handInProcess ? null : resultsByHand.at(-1) ?? null;
-  const highlightSameTile = player?.settings.highlightSameTile;
   const requiresDecision = Boolean(declareInfo && player?.data.turn?.declareDecision === null);
   const isAnyModalOpen = fansModalOpen || resultsModalOpen || calculatorModalOpen;
   const isAway = document.hidden || isAnyModalOpen;
@@ -300,9 +301,9 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
                 players={sortedPlayers}
                 playerIndex={index}
                 isActive={p.index === activePlayerIndex}
-                selectedTileIndex={isPlayer && isActive && p.settings.showCurrentTile ? currentTileIndex : -1}
+                selectedTileIndex={isPlayer && isActive && showCurrentTile ? currentTileIndex : -1}
                 highlightedTile={highlightedTile}
-                onChangeTileIndex={isPlayer && handInProcess && !p.settings.sortHand ? changeTileIndex : undefined}
+                onChangeTileIndex={isPlayer && handInProcess && !sortHand ? changeTileIndex : undefined}
                 onDiscardTile={isPlayer && handInProcess && isActive ? discardTile : undefined}
                 onTileDragStart={isPlayer && handInProcess && isActive ? setDraggingTileIndex : undefined}
                 onTileHover={highlightSameTile ? handleTileHover : undefined}
@@ -327,9 +328,7 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
                 tileWidth={tileWidth * 0.75}
                 area={SIDES[index]}
                 rotation={-index}
-                isLastTileSelected={
-                  p.index === activePlayerIndex && declareInfo ? player?.settings.showCurrentTile ?? true : false
-                }
+                isLastTileSelected={p.index === activePlayerIndex && Boolean(declareInfo) && showCurrentTile}
                 highlightedTile={highlightedTile}
                 draggingTile={draggingTileIndex === -1 ? null : player?.data.hand?.hand.at(draggingTileIndex) ?? null}
                 draggingTileIndex={draggingTileIndex}

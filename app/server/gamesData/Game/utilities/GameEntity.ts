@@ -93,6 +93,10 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     });
   }
 
+  sendUpdatePlayersEvent(): void {
+    this.context.game.sendUpdatePlayersEvent();
+  }
+
   *spawnBot(Bot: BotConstructor<Game>, playerIndex: number): EntityGenerator {
     try {
       yield* this.spawnEntity(new Bot(this, { playerIndex }));
@@ -166,6 +170,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
       player.settings[data.key as keyof PlayerSettings<Game>] = data.value as any;
 
       this.sendGameInfo();
+      this.sendUpdatePlayersEvent();
     });
   }
 }

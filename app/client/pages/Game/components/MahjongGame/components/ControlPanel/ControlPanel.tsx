@@ -22,6 +22,8 @@ import { getSetNumanName } from 'common/utilities/mahjong/stringify';
 import { getLastTileCandidates, isEqualTiles } from 'common/utilities/mahjong/tiles';
 import { isFlower } from 'common/utilities/mahjong/tilesBase';
 
+import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
+
 import Button from 'client/components/common/Button/Button';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Flex from 'client/components/common/Flex/Flex';
@@ -99,6 +101,8 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
     openResultsModal,
     openCalculatorModal,
   } = props;
+
+  const settings = usePlayerSettings(GameType.MAHJONG);
 
   const isActive = player?.index === activePlayerIndex;
 
@@ -207,21 +211,12 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
       possibleDecisions.push({ type: 'mahjong', mahjong });
     }
 
-    if (possibleDecisions.length || !player.settings.autoPass) {
+    if (possibleDecisions.length || !settings.autoPass) {
       possibleDecisions.unshift('pass');
     }
 
     return possibleDecisions;
-  }, [
-    currentTile,
-    declareInfo,
-    getMahjong,
-    handPhase,
-    isActive,
-    isChowPossible,
-    player?.data.hand,
-    player?.settings.autoPass,
-  ]);
+  }, [currentTile, declareInfo, getMahjong, handPhase, isActive, isChowPossible, player?.data.hand, settings.autoPass]);
 
   return (
     <Flex className={className} direction="column" between={2}>
@@ -322,51 +317,53 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
         </Button>
       </div>
 
-      {player && (
-        <Flex direction="column" between={1}>
-          <Checkbox
-            checked={player.settings.autoPass}
-            label="Авто-пас"
-            onChange={(checked) => changeSetting('autoPass', checked)}
-          />
+      <Flex direction="column" between={1}>
+        {player && (
+          <>
+            <Checkbox
+              checked={settings.autoPass}
+              label="Авто-пас"
+              onChange={(checked) => changeSetting('autoPass', checked)}
+            />
 
-          <Checkbox
-            checked={player.settings.autoReplaceFlowers}
-            label="Авто-замена цветов"
-            onChange={(checked) => changeSetting('autoReplaceFlowers', checked)}
-          />
+            <Checkbox
+              checked={settings.autoReplaceFlowers}
+              label="Авто-замена цветов"
+              onChange={(checked) => changeSetting('autoReplaceFlowers', checked)}
+            />
 
-          <Checkbox
-            checked={player.settings.sortHand}
-            label="Авто-сортировка руки"
-            onChange={(checked) => changeSetting('sortHand', checked)}
-          />
+            <Checkbox
+              checked={settings.sortHand}
+              label="Авто-сортировка руки"
+              onChange={(checked) => changeSetting('sortHand', checked)}
+            />
 
-          <Checkbox
-            checked={player.settings.showLosingHand}
-            label="Показывать проигрышную руку"
-            onChange={(checked) => changeSetting('showLosingHand', checked)}
-          />
+            <Checkbox
+              checked={settings.showLosingHand}
+              label="Показывать проигрышную руку"
+              onChange={(checked) => changeSetting('showLosingHand', checked)}
+            />
 
-          <Checkbox
-            checked={player.settings.showCurrentTile}
-            label="Показывать текущую кость"
-            onChange={(checked) => changeSetting('showCurrentTile', checked)}
-          />
+            <Checkbox
+              checked={settings.showCurrentTile}
+              label="Показывать текущую кость"
+              onChange={(checked) => changeSetting('showCurrentTile', checked)}
+            />
+          </>
+        )}
 
-          <Checkbox
-            checked={player.settings.showTileHints}
-            label="Показывать значения костей"
-            onChange={(checked) => changeSetting('showTileHints', checked)}
-          />
+        <Checkbox
+          checked={settings.showTileHints}
+          label="Показывать значения костей"
+          onChange={(checked) => changeSetting('showTileHints', checked)}
+        />
 
-          <Checkbox
-            checked={player.settings.highlightSameTile}
-            label="Подсвечивать идентичные кости"
-            onChange={(checked) => changeSetting('highlightSameTile', checked)}
-          />
-        </Flex>
-      )}
+        <Checkbox
+          checked={settings.highlightSameTile}
+          label="Подсвечивать идентичные кости"
+          onChange={(checked) => changeSetting('highlightSameTile', checked)}
+        />
+      </Flex>
     </Flex>
   );
 };
