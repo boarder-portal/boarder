@@ -25,12 +25,9 @@ import { isFlower } from 'common/utilities/mahjong/tilesBase';
 import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
 
 import Button from 'client/components/common/Button/Button';
-import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Flex from 'client/components/common/Flex/Flex';
 import Tile from 'client/pages/Game/components/MahjongGame/components/Tile/Tile';
 import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Tiles';
-
-import { ChangeSettingCallback } from 'client/pages/Game/Game';
 
 import styles from './ControlPanel.module.scss';
 
@@ -48,11 +45,11 @@ interface ControlPanelProps extends WithClassName {
   activePlayerName: string | null;
   players: Player[];
   onDeclareDecision(decision: DeclareDecision): void;
-  changeSetting: ChangeSettingCallback<GameType.MAHJONG>;
   startNewHand(ready: boolean): void;
   openFansModal(): void;
   openResultsModal(): void;
   openCalculatorModal(): void;
+  openSettingsModal(): void;
 }
 
 type DeclareDecisionButton =
@@ -95,11 +92,11 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
     activePlayerName,
     players,
     onDeclareDecision,
-    changeSetting,
     startNewHand,
     openFansModal,
     openResultsModal,
     openCalculatorModal,
+    openSettingsModal,
   } = props;
 
   const settings = usePlayerSettings(GameType.MAHJONG);
@@ -315,55 +312,11 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
         <Button className={styles.button} size="s" onClick={openCalculatorModal}>
           Калькулятор
         </Button>
+
+        <Button className={styles.button} size="s" onClick={openSettingsModal}>
+          Настройки
+        </Button>
       </div>
-
-      <Flex direction="column" between={1}>
-        {player && (
-          <>
-            <Checkbox
-              checked={settings.autoPass}
-              label="Авто-пас"
-              onChange={(checked) => changeSetting('autoPass', checked)}
-            />
-
-            <Checkbox
-              checked={settings.autoReplaceFlowers}
-              label="Авто-замена цветов"
-              onChange={(checked) => changeSetting('autoReplaceFlowers', checked)}
-            />
-
-            <Checkbox
-              checked={settings.sortHand}
-              label="Авто-сортировка руки"
-              onChange={(checked) => changeSetting('sortHand', checked)}
-            />
-
-            <Checkbox
-              checked={settings.showLosingHand}
-              label="Показывать проигрышную руку"
-              onChange={(checked) => changeSetting('showLosingHand', checked)}
-            />
-
-            <Checkbox
-              checked={settings.showCurrentTile}
-              label="Показывать текущую кость"
-              onChange={(checked) => changeSetting('showCurrentTile', checked)}
-            />
-          </>
-        )}
-
-        <Checkbox
-          checked={settings.showTileHints}
-          label="Показывать значения костей"
-          onChange={(checked) => changeSetting('showTileHints', checked)}
-        />
-
-        <Checkbox
-          checked={settings.highlightSameTile}
-          label="Подсвечивать идентичные кости"
-          onChange={(checked) => changeSetting('highlightSameTile', checked)}
-        />
-      </Flex>
     </Flex>
   );
 };

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { CSSProperties, FC, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FC, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
@@ -35,6 +35,7 @@ import Discard from 'client/pages/Game/components/MahjongGame/components/Discard
 import FansModal from 'client/pages/Game/components/MahjongGame/components/FansModal/FansModal';
 import Hand from 'client/pages/Game/components/MahjongGame/components/Hand/Hand';
 import ResultsModal from 'client/pages/Game/components/MahjongGame/components/ResultsModal/ResultsModal';
+import SettingsModal from 'client/pages/Game/components/MahjongGame/components/SettingsModal/SettingsModal';
 
 import { GameProps } from 'client/pages/Game/Game';
 import { NEW_TURN, playSound } from 'client/sounds';
@@ -55,7 +56,7 @@ const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
 const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
-  const { io, gameOptions, gameInfo, changeSetting } = props;
+  const { io, gameOptions, gameInfo, changePlayerSetting } = props;
 
   const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
@@ -66,6 +67,7 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
     setTrue: openCalculatorModal,
     setFalse: closeCalculatorModal,
   } = useBoolean(false);
+  const { value: settingsModalOpen, setTrue: openSettingsModal, setFalse: closeSettingsModal } = useBoolean(false);
   const [openedResult, setOpenedResult] = useState<HandResult | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [handPhase, setHandPhase] = useState<HandPhase | null>(null);
@@ -274,12 +276,10 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
       ref={rootRef}
       className={classNames(styles.root, styles[layoutType])}
       style={{
-        ...({
-          '--tileWidth': `${tileWidth}px`,
-          '--tileHeight': `${tileHeight}px`,
-          '--gap': `${GRID_GAP}px`,
-          '--panelSize': `${panelSize}px`,
-        } as CSSProperties),
+        '--tileWidth': `${tileWidth}px`,
+        '--tileHeight': `${tileHeight}px`,
+        '--gap': `${GRID_GAP}px`,
+        '--panelSize': `${panelSize}px`,
       }}
     >
       {sortedPlayers.map((p, index) => {
@@ -355,11 +355,11 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
         activePlayerName={activePlayerIndex === -1 ? null : players[activePlayerIndex].name}
         players={sortedPlayers}
         onDeclareDecision={declareDecision}
-        changeSetting={changeSetting}
         startNewHand={startNewHand}
         openFansModal={openFansModal}
         openResultsModal={openResultsModal}
         openCalculatorModal={openCalculatorModal}
+        openSettingsModal={openSettingsModal}
       />
 
       <FansModal open={fansModalOpen} onClose={closeFansModal} />
@@ -386,6 +386,13 @@ const MahjongGame: FC<GameProps<GameType.MAHJONG>> = (props) => {
         results={resultsByHand}
         openedResult={openedResult}
         onClose={handleCloseResultsModal}
+      />
+
+      <SettingsModal
+        open={settingsModalOpen}
+        player={player}
+        onClose={closeSettingsModal}
+        changePlayerSetting={changePlayerSetting}
       />
     </div>
   );

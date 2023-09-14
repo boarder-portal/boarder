@@ -55,7 +55,7 @@ export interface GameProps<Game extends GameType> {
   gameResult: GameResult<Game> | null;
   gameState: GameState;
   getTimeDiff(): number;
-  changeSetting: ChangeSettingCallback<Game>;
+  changePlayerSetting: ChangeSettingCallback<Game>;
 }
 
 const GAMES_MAP: {
@@ -215,7 +215,7 @@ const Game = <G extends GameType>() => {
             gameResult={gameResult}
             gameState={gameState}
             getTimeDiff={getTimeDiff}
-            changeSetting={changeSetting}
+            changePlayerSetting={changeSetting}
           />
 
           <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>

@@ -27,10 +27,10 @@
 }
 
 .root {
-  --tileWidth: 0;
-  --tileHeight: 0;
-  --panelSize: 0;
-  --gap: 0;
+  --tileWidth: 0px;
+  --tileHeight: 0px;
+  --panelSize: 0px;
+  --gap: 0px;
 
   width: 100%;
   height: calc(100vh - 60px);
