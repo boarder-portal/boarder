@@ -129,7 +129,7 @@ export interface GameCard extends Coords {
 export type Board = Partial<Record<number, Partial<Record<number, GameCard>>>>;
 
 export interface GameOptions extends BaseGameOptions<GameType.CARCASSONNE> {
-  withTimer?: boolean;
+  withTimer: boolean;
 }
 
 export interface ObjectScore {

@@ -23,7 +23,7 @@ export const GAME_OPTIONS_KEYS = {
   [GameType.SURVIVAL_ONLINE]: 'game/survivalOnline/defaultOptions/v1',
   [GameType.SET]: 'game/set/defaultOptions/v1',
   [GameType.ONITAMA]: 'game/onitama/defaultOptions/v1',
-  [GameType.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1',
+  [GameType.CARCASSONNE]: 'game/carcassonne/defaultOptions/v1.1',
   [GameType.SEVEN_WONDERS]: 'game/sevenWonders/defaultOptions/v2',
   [GameType.HEARTS]: 'game/hearts/defaultOptions/v1',
   [GameType.BOMBERS]: 'game/bombers/defaultOptions/v2',
