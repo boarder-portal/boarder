@@ -189,73 +189,81 @@ const Lobby = <Game extends GameType>() => {
         </Flex>
 
         <Flex className={styles.options} direction="column" between={3}>
-          <Text size="xxl">Настройки игры</Text>
+          <Text size="xxl">Настройки</Text>
 
-          <Flex className={styles.optionsBlock} direction="column" between={3}>
-            {minPlayersCount !== maxPlayersCount && (
-              <>
+          <Flex className={styles.optionsBlock} direction="column" between={6}>
+            <Text size="l">Общие настройки</Text>
+
+            <Flex direction="column" between={3}>
+              {minPlayersCount !== maxPlayersCount && (
+                <>
+                  <Select
+                    label="Минимальное количество игроков"
+                    value={options.minPlayersCount}
+                    options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                      const value = minPlayersCount + index;
+
+                      return {
+                        value,
+                        text: value,
+                        disabled: value > options.maxPlayersCount,
+                      };
+                    })}
+                    onChange={handleMinPlayersCountChange}
+                  />
+
+                  <Select
+                    label="Максимальное количество игроков"
+                    value={options.maxPlayersCount}
+                    options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
+                      const value = minPlayersCount + index;
+
+                      return {
+                        value,
+                        text: value,
+                        disabled: value < options.minPlayersCount,
+                      };
+                    })}
+                    onChange={handleMaxPlayersCountChange}
+                  />
+                </>
+              )}
+
+              {process.env.NODE_ENV !== 'production' && testCases && !isEmpty(testCases) && (
                 <Select
-                  label="Минимальное количество игроков"
-                  value={options.minPlayersCount}
-                  options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
-                    const value = minPlayersCount + index;
-
-                    return {
-                      value,
-                      text: value,
-                      disabled: value > options.maxPlayersCount,
-                    };
-                  })}
-                  onChange={handleMinPlayersCountChange}
+                  label="Тестовый сценарий"
+                  value={options.testCaseType ?? ''}
+                  options={['' as const, ...Object.values(testCases)].map((testCaseType) => ({
+                    value: testCaseType,
+                    text: testCaseType || 'Отсутствует',
+                  }))}
+                  onChange={handleTestCaseChange}
                 />
+              )}
 
-                <Select
-                  label="Максимальное количество игроков"
-                  value={options.maxPlayersCount}
-                  options={times(maxPlayersCount - minPlayersCount + 1, (index) => {
-                    const value = minPlayersCount + index;
-
-                    return {
-                      value,
-                      text: value,
-                      disabled: value < options.minPlayersCount,
-                    };
-                  })}
-                  onChange={handleMaxPlayersCountChange}
-                />
-              </>
-            )}
-
-            {process.env.NODE_ENV !== 'production' && testCases && !isEmpty(testCases) && (
-              <Select
-                label="Тестовый сценарий"
-                value={options.testCaseType ?? ''}
-                options={['' as const, ...Object.values(testCases)].map((testCaseType) => ({
-                  value: testCaseType,
-                  text: testCaseType || 'Отсутствует',
-                }))}
-                onChange={handleTestCaseChange}
-              />
-            )}
-
-            <Checkbox
-              checked={options.destroyOnLeave ?? DEFAULT_DESTROY_ON_LEAVE}
-              label="Удалять при выходе всех игроков"
-              onChange={handleDestroyOnLeaveChange}
-            />
-
-            {areBotsAvailable(game) && (
               <Checkbox
-                checked={options.useBots ?? DEFAULT_USE_BOTS}
-                label="Добавить ботов"
-                onChange={handleUseBotsChange}
+                checked={options.destroyOnLeave ?? DEFAULT_DESTROY_ON_LEAVE}
+                label="Удалять при выходе всех игроков"
+                onChange={handleDestroyOnLeaveChange}
               />
-            )}
+
+              {areBotsAvailable(game) && (
+                <Checkbox
+                  checked={options.useBots ?? DEFAULT_USE_BOTS}
+                  label="Добавить ботов"
+                  onChange={handleUseBotsChange}
+                />
+              )}
+            </Flex>
           </Flex>
 
           {CreateGameOptions && (
-            <Flex className={styles.optionsBlock} direction="column" between={3}>
-              <CreateGameOptions options={options} changeOptions={changeOptions} />
+            <Flex className={styles.optionsBlock} direction="column" between={6}>
+              <Text size="l">Настройки игры</Text>
+
+              <Flex direction="column" between={3}>
+                <CreateGameOptions options={options} changeOptions={changeOptions} />
+              </Flex>
             </Flex>
           )}
 
