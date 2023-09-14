@@ -9,7 +9,7 @@ import { GameOptionsProps } from 'client/pages/Lobby/Lobby';
 const CarcassonneGameOptions: FC<GameOptionsProps<GameType.CARCASSONNE>> = (props) => {
   const { options } = props;
 
-  return <Flex>{options.withTimer ? 'На время' : 'Без времени'}</Flex>;
+  return <Flex alignItems="center">{options.withTimer ? 'На время' : 'Без времени'}</Flex>;
 };
 
 export default memo(CarcassonneGameOptions);

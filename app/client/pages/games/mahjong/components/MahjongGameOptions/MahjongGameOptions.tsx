@@ -16,7 +16,7 @@ const HANDS_COUNT: Record<HandsCount, string> = {
 const MahjongGameOptions: FC<GameOptionsProps<GameType.MAHJONG>> = (props) => {
   const { options } = props;
 
-  return <Flex>{HANDS_COUNT[options.handsCount]}</Flex>;
+  return <Flex alignItems="center">{HANDS_COUNT[options.handsCount]}</Flex>;
 };
 
 export default memo(MahjongGameOptions);

@@ -11,7 +11,7 @@ const PexesoGameOptions: FC<GameOptionsProps<GameType.PEXESO>> = (props) => {
   const { options } = props;
 
   return (
-    <Flex>
+    <Flex alignItems="center">
       {options.set}
       <>
         <DotSeparator />
