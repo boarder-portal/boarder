@@ -3,6 +3,8 @@ import { FC, ReactNode, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
 
+import useGlobalListener from 'client/hooks/useGlobalListener';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Overlay from 'client/components/common/Overlay/Overlay';
 import Text from 'client/components/common/Text/Text';
@@ -20,6 +22,14 @@ interface ModalProps extends WithClassName {
 
 const Modal: FC<ModalProps> = (props) => {
   const { className, contentClassName, open, title, children, onClose } = props;
+
+  useGlobalListener('keyup', document, (e) => {
+    if (open && e.key === 'Escape') {
+      e.preventDefault();
+
+      onClose?.();
+    }
+  });
 
   return (
     <Overlay

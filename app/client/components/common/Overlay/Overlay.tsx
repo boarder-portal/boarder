@@ -4,8 +4,6 @@ import { createPortal } from 'react-dom';
 
 import { WithClassName } from 'client/types/react';
 
-import useGlobalListener from 'client/hooks/useGlobalListener';
-
 import styles from './Overlay.module.scss';
 
 interface OverlayProps extends WithClassName {
@@ -30,14 +28,6 @@ const Overlay: FC<OverlayProps> = (props) => {
     },
     [onClose],
   );
-
-  useGlobalListener('keyup', document, (e) => {
-    if (open && e.code === 'Escape') {
-      e.preventDefault();
-
-      onClose?.();
-    }
-  });
 
   const content = useMemo(
     () => (
