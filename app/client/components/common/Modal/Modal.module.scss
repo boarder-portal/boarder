@@ -1,28 +1,59 @@
-.overlay {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  position: fixed;
-  padding: 40px;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(1.15);
-  transition: all 0.15s ease-in-out;
+@import "client/styles/mixins";
 
-  &.open {
-    pointer-events: auto;
-    opacity: 1;
-    transform: scale(1);
+@layer component {
+  .crossIcon {
+    @include withTransition();
+
+    --iconColor: #aaa;
+
+    flex-shrink: 0;
+    color: #aaa;
+    cursor: pointer;
+
+    &:hover {
+      --iconColor: #333;
+    }
+  }
+
+  .header {
+    height: var(--headerHeight);
+  }
+
+  .content {
+    height: calc(100% - var(--headerHeight) - var(--gap));
+    overflow: auto;
+  }
+
+  .modal {
+    --headerHeight: 40px;
+    --gap: 20px;
+    --modalBackground: #fff;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding: 24px;
+    background-color: var(--modalBackground);
+  }
+
+  @include desktop {
+    .modal {
+      border-radius: 12px;
+    }
+  }
+
+  @include mobile {
+    .modal {
+      width: 100vw;
+      height: 100vh;
+    }
   }
 }
 
-.container {
-  overflow: auto;
-  max-height: 100%;
-  padding: 12px 24px;
-  background: white;
-  border-radius: 8px;
+@layer override {
+  @include mobile {
+    .overlay {
+      --overlayPadding: 0;
+    }
+  }
 }

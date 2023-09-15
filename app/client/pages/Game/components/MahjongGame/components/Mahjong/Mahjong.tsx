@@ -41,7 +41,7 @@ const Mahjong: FC<MahjongProps> = (props) => {
           <Flex alignItems="center" between={6}>
             <div className={styles.tilesCaption}>Ожидания</div>
 
-            <Tiles tiles={mahjong.waits} tileWidth={tileWidth} />
+            <Tiles className={styles.tiles} tiles={mahjong.waits} tileWidth={tileWidth} />
           </Flex>
         )}
 
@@ -52,15 +52,16 @@ const Mahjong: FC<MahjongProps> = (props) => {
             {mahjong.declaredSets.map((set, index) => (
               <Tiles
                 key={index}
+                className={styles.tiles}
                 tiles={set.tiles}
                 tileWidth={tileWidth}
                 openType={set.concealedType === SetConcealedType.CONCEALED ? OpenType.SEMI_CONCEALED : OpenType.OPEN}
               />
             ))}
 
-            <Tiles tiles={mahjong.hand} tileWidth={tileWidth} />
+            <Tiles className={styles.tiles} tiles={mahjong.hand} tileWidth={tileWidth} />
 
-            <Tile tile={mahjong.winningTile} width={tileWidth} />
+            <Tile className={styles.tile} tile={mahjong.winningTile} width={tileWidth} />
           </Flex>
         )}
 
@@ -69,7 +70,7 @@ const Mahjong: FC<MahjongProps> = (props) => {
             <div className={styles.tilesCaption}>Разбиение</div>
 
             {mahjong.sets.map((set, index) => (
-              <Tiles key={index} tiles={set.tiles} tileWidth={tileWidth} />
+              <Tiles key={index} className={styles.tiles} tiles={set.tiles} tileWidth={tileWidth} />
             ))}
           </Flex>
         )}

@@ -3,6 +3,7 @@ import isEqual from 'lodash/isEqual';
 import sortBy from 'lodash/sortBy';
 import { DragEvent, FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 
+import { WithClassName } from 'client/types/react';
 import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
@@ -27,7 +28,7 @@ export enum OpenType {
   SEMI_CONCEALED = 'SEMI_CONCEALED',
 }
 
-interface TilesProps {
+interface TilesProps extends WithClassName {
   tiles: TileModel[];
   tileWidth: number;
   openType?: OpenType;
@@ -56,6 +57,7 @@ const getLocalTiles = (tiles: TileModel[]): LocalTile[] => {
 
 const Tiles: FC<TilesProps> = (props) => {
   const {
+    className,
     tiles,
     tileWidth,
     openType = OpenType.OPEN,
@@ -230,8 +232,8 @@ const Tiles: FC<TilesProps> = (props) => {
 
   return (
     <DragArea
+      className={classNames(styles.tiles, className)}
       ref={rootRef}
-      className={styles.tiles}
       style={{
         width: tileWidth * (tiles.length - 1) + (rotatedTileIndex === -1 ? tileWidth : tileHeight),
         height: tileHeight,

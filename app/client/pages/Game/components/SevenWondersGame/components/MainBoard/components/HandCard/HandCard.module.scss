@@ -1,16 +1,20 @@
+@import "client/styles/mixins";
+
 .cardWrapper {
-  transition: 200ms;
+  @include withTransition($function: ease-out);
+
   position: relative;
 }
 
 .actions {
+  @include withTransition();
+
   position: absolute;
   left: 0;
   right: 0;
   bottom: 20px;
   opacity: 0;
   pointer-events: none;
-  transition: 200ms;
   color: white;
   cursor: pointer;
   text-shadow: 1px 1px 2px black;

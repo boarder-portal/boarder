@@ -1,28 +1,30 @@
-.box {
-  align-self: flex-start;
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #666;
-  border-radius: 4px;
-}
-
-.checkIcon {
-  width: 16px;
-  height: 16px;
-}
-
-.root {
-  cursor: pointer;
-
-  &.disabled {
-    opacity: 0.4;
-    pointer-events: none;
+@layer component {
+  .box {
+    align-self: flex-start;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #666;
+    border-radius: 4px;
   }
 
-  &:hover {
-    .box {
-      background: #eee;
+  .checkIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .root {
+    cursor: pointer;
+
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    &:hover {
+      .box {
+        background: #eee;
+      }
     }
   }
 }

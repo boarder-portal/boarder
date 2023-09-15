@@ -24,7 +24,7 @@ import useSocket from 'client/hooks/useSocket';
 
 import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
-import Modal from 'client/components/common/Modal/Modal';
+import Overlay from 'client/components/common/Overlay/Overlay';
 import Text from 'client/components/common/Text/Text';
 import BombersGame from 'client/pages/Game/components/BombersGame/BombersGame';
 import CarcassonneGame from 'client/pages/Game/components/CarcassonneGame/CarcassonneGame';
@@ -223,9 +223,9 @@ const Game = <G extends GameType>() => {
             getTimeDiff={getTimeDiff}
           />
 
-          <Modal containerClassName={styles.pauseModal} open={gameState.type === 'paused'}>
+          <Overlay contentClassName={styles.pauseContent} open={gameState.type === 'paused'}>
             Пауза
-          </Modal>
+          </Overlay>
         </GameStateContext.Provider>
       </TimeDiffContext.Provider>
     </PlayerSettingsContext.Provider>

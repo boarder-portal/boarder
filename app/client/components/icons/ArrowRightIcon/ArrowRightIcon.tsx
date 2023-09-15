@@ -1,16 +1,14 @@
 import { FC } from 'react';
 
-import { WithClassName } from 'client/types/react';
+import BaseIcon, { BaseIconProps } from 'client/components/icons/BaseIcon/BaseIcon';
 
-interface ArrowRightIconProps extends WithClassName {}
+interface ArrowRightIconProps extends BaseIconProps {}
 
 const ArrowRightIcon: FC<ArrowRightIconProps> = (props) => {
-  const { className } = props;
-
   return (
-    <svg className={className} viewBox="0 0 24 24">
+    <BaseIcon {...props}>
       <path d="m10 17 5-5-5-5v10z" />
-    </svg>
+    </BaseIcon>
   );
 };
 

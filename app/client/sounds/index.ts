@@ -14,5 +14,5 @@ export function playSound(sound: HTMLAudioElement | null): void {
 
   sound.pause();
   sound.currentTime = 0;
-  sound.play();
+  sound.play().catch(() => {});
 }

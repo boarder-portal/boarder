@@ -7,6 +7,7 @@ import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
 import { HandResult, HandsCount, Player } from 'common/types/games/mahjong';
 
+import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
@@ -59,8 +60,9 @@ const ResultsModal: FC<ResultsModalProps> = (props) => {
 
   return (
     <Modal
-      containerClassName={classNames(styles.root, { [styles.results]: viewMode === ViewMode.TABLE })}
+      contentClassName={classNames(styles.modalContent, { [styles.results]: viewMode === ViewMode.TABLE })}
       open={open}
+      title="Результаты"
       onClose={onClose}
     >
       {viewMode === ViewMode.TABLE ? (
@@ -115,9 +117,9 @@ const ResultsModal: FC<ResultsModalProps> = (props) => {
         </Table>
       ) : (
         <Flex direction="column" between={6}>
-          <div className={styles.backButton} onClick={backToTable}>
-            🠔 Назад
-          </div>
+          <Button className={styles.backButton} variant="outlined" onClick={backToTable}>
+            🠔 К таблице
+          </Button>
 
           {chosenResultWinner && (
             <div className={styles.winnerHeader}>

@@ -1,3 +1,5 @@
+@import "client/styles/mixins";
+
 .tilesGrid {
   display: grid;
   grid-auto-rows: max-content;
@@ -21,7 +23,8 @@
   width: 100px;
 }
 
-.root {
-  width: 1080px;
-  min-height: 600px;
+@include desktop {
+  .root {
+    width: 1080px;
+  }
 }

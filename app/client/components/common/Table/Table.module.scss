@@ -1,29 +1,31 @@
-.fullWidth {
-  width: 100%;
-}
-
-.layout {
-  &_fixed {
-    table-layout: fixed;
+@layer component {
+  .fullWidth {
+    width: 100%;
   }
 
-  &_auto {
-    table-layout: auto;
-  }
-}
+  .layout {
+    &_fixed {
+      table-layout: fixed;
+    }
 
-.root {
-  border-collapse: collapse;
-
-  thead, tfoot {
-    td {
-      font-weight: bold;
+    &_auto {
+      table-layout: auto;
     }
   }
 
-  &.bordered {
-    td {
-      border: 1px solid #000;
+  .root {
+    border-collapse: collapse;
+
+    thead, tfoot {
+      td {
+        font-weight: bold;
+      }
+    }
+
+    &.bordered {
+      td {
+        border: 1px solid #000;
+      }
     }
   }
 }

@@ -1,4 +1,8 @@
+@import "client/styles/mixins";
+
 .grid {
+  @include withTransition(background-color);
+
   padding: 4px;
   display: grid;
   align-items: start;
@@ -7,7 +11,6 @@
   justify-content: start;
   border-radius: 4px;
   background-color: transparent;
-  transition: background-color 0.1s ease-in-out;
 
   &.highlighted {
     background-color: #eeee;

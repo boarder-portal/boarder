@@ -1,4 +1,4 @@
-@import "../../styles/mixins";
+@import "client/styles/mixins";
 
 .caption {
   padding: 3px 8px;
@@ -13,8 +13,9 @@
 
 .game {
   aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: flex-end;
   border-radius: 8px;
-  cursor: pointer;
   border: 2px solid #000;
   background-position: 50% 50%;
   background-size: cover;

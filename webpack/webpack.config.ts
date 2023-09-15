@@ -5,8 +5,6 @@ import webpack, { Configuration } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import nodeExternals from 'webpack-node-externals';
 
-import isNotUndefined from '../app/common/utilities/isNotUndefined';
-
 enum TargetType {
   WEB = 'web',
   NODE = 'node',
@@ -15,14 +13,14 @@ enum TargetType {
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 function getConfig(target: TargetType): Configuration {
+  const isWeb = target === TargetType.WEB;
+  const isNode = target === TargetType.NODE;
+
   return {
     name: target,
     mode: IS_PRODUCTION ? 'production' : 'development',
     target,
-    entry:
-      target === TargetType.WEB
-        ? path.resolve('./app/client/client.tsx')
-        : path.resolve('./app/server/middlewares/ServerApp.tsx'),
+    entry: isWeb ? path.resolve('./app/client/client.tsx') : path.resolve('./app/server/middlewares/ServerApp.tsx'),
     module: {
       rules: [
         {
@@ -62,13 +60,13 @@ function getConfig(target: TargetType): Configuration {
         chunks: 'all',
       },
     },
-    externals: target === TargetType.NODE ? ['@loadable/component', nodeExternals()] : undefined,
+    externals: isNode ? ['@loadable/component', nodeExternals()] : undefined,
     output: {
       filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
       chunkFilename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].js`,
       path: path.resolve(`./build/${target}`),
       publicPath: `/build/${target}/`,
-      libraryTarget: target === TargetType.NODE ? 'commonjs2' : undefined,
+      libraryTarget: isNode ? 'commonjs2' : undefined,
     },
     resolve: {
       alias: {
@@ -91,10 +89,10 @@ function getConfig(target: TargetType): Configuration {
         filename: `[${IS_PRODUCTION ? 'contenthash' : 'name'}].css`,
       }),
       new webpack.DefinePlugin({
-        SERVER: target === TargetType.NODE,
+        SERVER: isNode,
       }),
-      process.env.ANALYZE_BUNDLE && target === TargetType.WEB ? new BundleAnalyzerPlugin() : undefined,
-    ].filter(isNotUndefined),
+      process.env.ANALYZE_BUNDLE && isWeb ? new BundleAnalyzerPlugin() : undefined,
+    ],
   };
 }
 

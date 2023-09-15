@@ -1,0 +1,39 @@
+@import "client/styles/mixins";
+
+@layer component {
+  .content {
+    width: 100%;
+    max-width: calc(100vw - 2 * var(--overlayPadding));
+    height: 100%;
+    max-height: calc(100vh - 2 * var(--overlayPadding));
+  }
+
+  .root {
+    @include withTransition("opacity, transform");
+
+    --overlayPadding: 40px;
+
+    z-index: 1000;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    padding: var(--overlayPadding);
+    inset: 0;
+    display: grid;
+    grid-template: max-content / max-content;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(1.15);
+
+    &.open {
+      pointer-events: auto;
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

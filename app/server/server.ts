@@ -1,4 +1,5 @@
 import 'regenerator-runtime/runtime';
+
 import express from 'express';
 import expressSession from 'express-session';
 import morgan from 'morgan';
@@ -36,9 +37,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(
     webpackDevMiddleware(compiler, {
       publicPath: '/build/web',
-      writeToDisk(filePath) {
-        return /build\/node\//.test(filePath) || /loadable-stats/.test(filePath);
-      },
+      writeToDisk: (filePath) => /build\/node\/|loadable-stats\.json/.test(filePath),
     }),
   );
 }

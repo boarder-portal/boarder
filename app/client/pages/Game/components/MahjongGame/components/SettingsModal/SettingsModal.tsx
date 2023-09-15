@@ -22,12 +22,8 @@ const SettingsModal: FC<SettingsModalProps> = (props) => {
   const { settings, changeSetting } = usePlayerSettings(GameType.MAHJONG);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} title="Настройки" onClose={onClose}>
       <Flex direction="column" between={5}>
-        <Text size="xxl" weight="bold">
-          Настройки
-        </Text>
-
         <Flex direction="column" between={1}>
           {player && (
             <>

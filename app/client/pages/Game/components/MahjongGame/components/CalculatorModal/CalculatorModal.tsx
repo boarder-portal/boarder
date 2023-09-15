@@ -461,7 +461,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [isNotLastOfKindAllowed]);
 
   return (
-    <Modal containerClassName={styles.root} open={open} onClose={onClose}>
+    <Modal className={styles.root} open={open} title="Калькулятор" onClose={onClose}>
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>
@@ -586,9 +586,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
 
           <Flex style={{ height: getTileHeight(HAND_TILE_WIDTH) }}>
             {allWaits.map((wait, index) => {
-              const isImpossible =
-                !tilesContainTile(legalWaits, wait) ||
-                getTileCount(allKnownTiles, wait) >= (isEqualTiles(wait, winningTile) ? 3 : 4);
+              const isImpossible = !tilesContainTile(legalWaits, wait) || getTileCount(allKnownTiles, wait) > 4;
 
               return (
                 <Tile

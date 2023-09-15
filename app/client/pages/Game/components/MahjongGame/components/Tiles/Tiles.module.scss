@@ -1,3 +1,5 @@
+@import "client/styles/mixins";
+
 .tile {
   position: absolute;
   top: 0;
@@ -5,7 +7,7 @@
   will-change: transform;
 
   &.withTransition {
-    transition: transform 0.15s ease-out;
+    @include withTransition(transform, 0.15s);
   }
 }
 

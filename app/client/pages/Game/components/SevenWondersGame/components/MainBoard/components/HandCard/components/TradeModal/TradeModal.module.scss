@@ -1,28 +1,20 @@
-.title {
-  text-align: center;
-}
-
-.container {
-  min-width: 500px;
-}
+@import "client/styles/mixins";
 
 .head {
-  margin-top: 20px;
-}
-
-.variants {
-  margin-top: 8px;
+  position: sticky;
+  top: 0;
+  padding: 12px var(--offset);
+  background-color: var(--modalBackground);
 }
 
 .tradeVariant {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 12px var(--offset);
   border-radius: 8px;
   cursor: pointer;
-  padding: 12px 20px;
-  margin: 0 -20px;
 
   & > div {
-    flex: 0 0 33.33%;
-
     &:nth-child(2) {
       justify-content: center;
     }
@@ -30,5 +22,25 @@
 
   &:hover {
     background: #eee;
+  }
+}
+
+.content {
+  margin: 0 calc(-1 * var(--offset));
+  height: 100%;
+  overflow: auto;
+}
+
+.modalContent {
+  overflow: visible;
+}
+
+.root {
+  --offset: 12px;
+}
+
+@include desktop {
+  .root {
+    min-width: 500px;
   }
 }

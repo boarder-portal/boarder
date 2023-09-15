@@ -1,44 +1,46 @@
-.trigger {
-  &:not(.disabled) {
-    cursor: pointer;
+@layer component {
+  .trigger {
+    &:not(.disabled) {
+      cursor: pointer;
+    }
+
+    &.disabled {
+      pointer-events: none;
+    }
   }
 
-  &.disabled {
-    pointer-events: none;
+  .popup {
+    position: absolute;
+    top: 100%;
+    min-width: 100%;
+    display: none;
+    border-radius: 4px;
+    box-shadow: 0 3px 3px -2px rgb(0 0 0 / 20%),
+    0 3px 4px 0 rgb(0 0 0 / 14%),
+    0 1px 8px 0 rgb(0 0 0 / 12%);
+    z-index: 100;
+    margin-top: 4px;
+    background-color: #fff;
+
+    &.visible {
+      display: block;
+    }
+
+    &.bottomLeft {
+      left: 0;
+    }
+
+    &.bottomCenter {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &.bottomRight {
+      right: 0;
+    }
   }
-}
 
-.popup {
-  position: absolute;
-  top: 100%;
-  min-width: 100%;
-  display: none;
-  border-radius: 4px;
-  box-shadow: 0 3px 3px -2px rgb(0 0 0 / 20%),
-              0 3px 4px 0 rgb(0 0 0 / 14%),
-              0 1px 8px 0 rgb(0 0 0 / 12%);
-  z-index: 100;
-  margin-top: 4px;
-  background-color: #fff;
-
-  &.visible {
-    display: block;
+  .root {
+    position: relative;
   }
-
-  &.bottomLeft {
-    left: 0;
-  }
-
-  &.bottomCenter {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &.bottomRight {
-    right: 0;
-  }
-}
-
-.root {
-  position: relative;
 }

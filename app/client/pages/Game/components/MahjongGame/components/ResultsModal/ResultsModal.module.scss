@@ -1,6 +1,9 @@
+@import "client/styles/mixins";
+
 .row {
+  @include withTransition();
+
   background-color: transparent;
-  transition: background-color 0.1s ease-in-out;
 
   &.clickable {
     cursor: pointer;
@@ -26,7 +29,7 @@
 }
 
 .backButton {
-  cursor: pointer;
+  align-self: flex-start;
 }
 
 .backIcon {
@@ -42,10 +45,10 @@
   font-weight: bold;
 }
 
-.root {
+.modalContent {
   --indexWidth: 60px;
 
   &.results {
-    width: 960px;
+    max-width: 960px;
   }
 }

@@ -1,53 +1,48 @@
 import classNames from 'classnames';
-import { FC, MouseEvent, useCallback, useMemo, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { FC, ReactNode, memo } from 'react';
 
-import useGlobalListener from 'client/hooks/useGlobalListener';
+import { WithClassName } from 'client/types/react';
+
+import Flex from 'client/components/common/Flex/Flex';
+import Overlay from 'client/components/common/Overlay/Overlay';
+import Text from 'client/components/common/Text/Text';
+import CrossIcon from 'client/components/icons/CrossIcon/CrossIcon';
 
 import styles from './Modal.module.scss';
 
-interface ModalProps {
-  containerClassName?: string;
+interface ModalProps extends WithClassName {
+  contentClassName?: string;
   open: boolean;
+  title?: ReactNode;
+  children: ReactNode;
   onClose?(): void;
 }
 
 const Modal: FC<ModalProps> = (props) => {
-  const { containerClassName, open, children, onClose } = props;
+  const { className, contentClassName, open, title, children, onClose } = props;
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  return (
+    <Overlay
+      className={styles.overlay}
+      contentClassName={classNames(styles.modal, className)}
+      open={open}
+      onClose={onClose}
+    >
+      <Flex className={styles.header} between={4} alignItems="center" justifyContent="spaceBetween">
+        {typeof title === 'string' ? (
+          <Text size="xxl" weight="bold" withEllipsis>
+            {title}
+          </Text>
+        ) : (
+          <span>{title}</span>
+        )}
 
-  const handleOverlayClick = useCallback(
-    (e: MouseEvent) => {
-      const container = containerRef.current;
+        <CrossIcon className={styles.crossIcon} onClick={onClose} />
+      </Flex>
 
-      if (!(e.target instanceof Element) || !container || !container.contains(e.target)) {
-        onClose?.();
-      }
-    },
-    [onClose],
+      <div className={classNames(styles.content, contentClassName)}>{children}</div>
+    </Overlay>
   );
-
-  useGlobalListener('keyup', document, (e) => {
-    if (open && e.code === 'Escape') {
-      e.preventDefault();
-
-      onClose?.();
-    }
-  });
-
-  const content = useMemo(
-    () => (
-      <div className={classNames(styles.overlay, { [styles.open]: open })} onClick={handleOverlayClick}>
-        <div ref={containerRef} className={classNames(styles.container, containerClassName)}>
-          {children}
-        </div>
-      </div>
-    ),
-    [children, containerClassName, handleOverlayClick, open],
-  );
-
-  return createPortal(content, document.querySelector('#root')!);
 };
 
-export default Modal;
+export default memo(Modal);

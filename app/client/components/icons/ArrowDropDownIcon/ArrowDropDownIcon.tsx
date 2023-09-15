@@ -1,16 +1,14 @@
 import { FC } from 'react';
 
-import { WithClassName } from 'client/types/react';
+import BaseIcon, { BaseIconProps } from 'client/components/icons/BaseIcon/BaseIcon';
 
-interface ArrowDropDownIconProps extends WithClassName {}
+interface ArrowDropDownIconProps extends BaseIconProps {}
 
 const ArrowDropDownIcon: FC<ArrowDropDownIconProps> = (props) => {
-  const { className } = props;
-
   return (
-    <svg className={className} viewBox="0 0 24 24">
+    <BaseIcon {...props}>
       <path d="m7 10 5 5 5-5z" />
-    </svg>
+    </BaseIcon>
   );
 };
 

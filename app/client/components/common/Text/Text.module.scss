@@ -1,35 +1,44 @@
-.size {
-  &_s {
-    font-size: 13px;
+@layer component {
+  .size {
+    &_s {
+      font-size: 13px;
+    }
+
+    &_m {
+      font-size: 15px;
+    }
+
+    &_l {
+      font-size: 18px;
+    }
+
+    &_xl {
+      font-size: 24px;
+    }
+
+    &_xxl {
+      font-size: 32px;
+    }
   }
 
-  &_m {
-    font-size: 15px;
+  .weight {
+    &_normal {
+      font-weight: normal;
+    }
+
+    &_bold {
+      font-weight: bold;
+    }
   }
 
-  &_l {
-    font-size: 18px;
+  .withEllipsis {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  &_xl {
-    font-size: 24px;
+  .root {
+    line-height: 1.25;
   }
-
-  &_xxl {
-    font-size: 32px;
-  }
-}
-
-.weight {
-  &_normal {
-    font-weight: normal;
-  }
-
-  &_bold {
-    font-weight: bold;
-  }
-}
-
-.root {
-  line-height: 1;
 }

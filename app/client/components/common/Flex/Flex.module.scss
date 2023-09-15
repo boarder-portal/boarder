@@ -1,61 +1,63 @@
-.direction {
-  &_row {
-    flex-direction: row;
+@layer component {
+  .direction {
+    &_row {
+      flex-direction: row;
+    }
+
+    &_rowReverse {
+      flex-direction: row-reverse;
+    }
+
+    &_column {
+      flex-direction: column;
+    }
+
+    &_columnReverse {
+      flex-direction: column-reverse;
+    }
   }
 
-  &_rowReverse {
-    flex-direction: row-reverse;
+  .justifyContent {
+    &_center {
+      justify-content: center;
+    }
+
+    &_flexStart {
+      justify-content: flex-start;
+    }
+
+    &_flexEnd {
+      justify-content: flex-end;
+    }
+
+    &_spaceBetween {
+      justify-content: space-between;
+    }
   }
 
-  &_column {
-    flex-direction: column;
+  .alignItems {
+    &_center {
+      align-items: center;
+    }
+
+    &_flexStart {
+      align-items: flex-start;
+    }
+
+    &_flexEnd {
+      align-items: flex-end;
+    }
+
+    &_stretch {
+      align-items: stretch;
+    }
   }
 
-  &_columnReverse {
-    flex-direction: column-reverse;
-  }
-}
+  .root {
+    display: flex;
 
-.justifyContent {
-  &_center {
-    justify-content: center;
-  }
-
-  &_flexStart {
-    justify-content: flex-start;
-  }
-
-  &_flexEnd {
-    justify-content: flex-end;
-  }
-
-  &_spaceBetween {
-    justify-content: space-between;
-  }
-}
-
-.alignItems {
-  &_center {
-    align-items: center;
-  }
-
-  &_flexStart {
-    align-items: flex-start;
-  }
-
-  &_flexEnd {
-    align-items: flex-end;
-  }
-
-  &_stretch {
-    align-items: stretch;
-  }
-}
-
-.root {
-  display: flex;
-
-  &.inline {
-    display: inline-flex;
+    &.inline {
+      display: inline-flex;
+    }
   }
 }

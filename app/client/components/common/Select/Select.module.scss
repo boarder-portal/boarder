@@ -1,65 +1,68 @@
-@import "../../../styles/functions";
+@import "client/styles/functions";
+@import "client/styles/mixins";
 
-.label {
-  font-size: 13px;
-  color: #aaa;
-}
-
-.trigger {
-  margin: 2px 0 4px;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    height: 1px;
-    width: 100%;
-    background: #666;
+@layer component {
+  .label {
+    font-size: 13px;
+    color: #aaa;
   }
 
-  &.disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-}
+  .trigger {
+    margin: 2px 0 4px;
 
-.icon {
-  width: 20px;
-  height: 20px;
-}
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      height: 1px;
+      width: 100%;
+      background: #666;
+    }
 
-.options {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.option {
-  background: white;
-  padding: 12px 24px;
-  cursor: pointer;
-
-  &.selected {
-    background: shade(#fff, 5%);
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
   }
 
-  &.disabled {
-    color: #bbb;
-    pointer-events: none;
+  .icon {
+    width: 20px;
+    height: 20px;
   }
 
-  &:hover {
-    background: shade(#fff, 5%);
+  .options {
+    max-height: 400px;
+    overflow-y: auto;
   }
-}
 
-.root {
-  transition: 0.2s;
+  .option {
+    background: white;
+    padding: 12px 24px;
+    cursor: pointer;
 
-  &:hover {
-    .trigger {;
-      &::after {
-        height: 2px;
-        background: #333;
+    &.selected {
+      background: shade(#fff, 5%);
+    }
+
+    &.disabled {
+      color: #bbb;
+      pointer-events: none;
+    }
+
+    &:hover {
+      background: shade(#fff, 5%);
+    }
+  }
+
+  .root {
+    @include withTransition();
+
+    &:hover {
+      .trigger {;
+        &::after {
+          height: 2px;
+          background: #333;
+        }
       }
     }
   }
