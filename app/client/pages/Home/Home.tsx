@@ -21,7 +21,7 @@ const Home: FC = () => {
   );
 
   return (
-    <div className={styles.root}>
+    <Flex className={styles.root} direction="column" between={5}>
       <Text size="xxl" weight="bold">
         Игры
       </Text>
@@ -45,7 +45,7 @@ const Home: FC = () => {
             </Flex>
           ))}
       </div>
-    </div>
+    </Flex>
   );
 };
 

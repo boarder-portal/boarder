@@ -162,12 +162,12 @@ const Lobby = <Game extends GameType>() => {
   const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<GameOptionsProps<Game>>;
 
   return (
-    <div>
+    <Flex direction="column" between={5}>
       <Text size="xxl" weight="bold">
         {GAME_NAMES[game]}
       </Text>
 
-      <Flex className={styles.gamesAndOptions} between={10}>
+      <Flex between={10} alignItems="flexStart">
         <Flex className={styles.games} direction="column" between={3}>
           {lobby.games.length ? (
             lobby.games.map((game) => (
@@ -270,7 +270,7 @@ const Lobby = <Game extends GameType>() => {
           <Button onClick={createGame}>Создать игру</Button>
         </Flex>
       </Flex>
-    </div>
+    </Flex>
   );
 };
 

@@ -15,33 +15,31 @@ import styles from './App.module.scss';
 
 const App: FC = () => {
   return (
-    <>
-      <div className={styles.app}>
-        <Header />
+    <div className={styles.app}>
+      <Header />
 
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
+      <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
 
-          <Route exact path="/registration">
-            <Registration />
-          </Route>
+        <Route exact path="/registration">
+          <Registration />
+        </Route>
 
-          <Route exact path="/login">
-            <Login />
-          </Route>
+        <Route exact path="/login">
+          <Login />
+        </Route>
 
-          <Route exact path="/:game/lobby">
-            <Lobby />
-          </Route>
+        <Route exact path="/:game/lobby">
+          <Lobby />
+        </Route>
 
-          <Route exact path="/:game/game/:gameId">
-            <Game />
-          </Route>
-        </Switch>
-      </div>
-    </>
+        <Route exact path="/:game/game/:gameId">
+          <Game />
+        </Route>
+      </Switch>
+    </div>
   );
 };
 

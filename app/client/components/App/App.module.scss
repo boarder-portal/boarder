@@ -1,7 +1,10 @@
 .app {
+  flex-grow: 1;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1920px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   padding-left: 12px;
   padding-right: 12px;
 }
