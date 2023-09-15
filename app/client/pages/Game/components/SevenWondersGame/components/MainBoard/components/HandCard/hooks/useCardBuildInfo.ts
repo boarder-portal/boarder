@@ -47,7 +47,7 @@ function getPlayerDiscount(card: Card, player: Player, direction: PlayerDirectio
     ...getAllPlayerEffects(player.data)
       .filter(isReducedPriceEffect)
       .filter((effect) => effect.objectType === card.type && effect.direction === direction)
-      .map((effect) => effect.discount.coins || 0),
+      .map((effect) => effect.discount.coins ?? 0),
     0,
   );
 }

@@ -54,7 +54,6 @@
 
 .root {
   display: flex;
-  gap: calc(var(--between) * 4px);
 
   &.inline {
     display: inline-flex;

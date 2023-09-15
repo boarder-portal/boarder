@@ -32,13 +32,12 @@ const Flex = forwardRef<HTMLDivElement | null, FlexProps>((props, ref) => {
         styles[`direction_${direction}`],
         justifyContent ? styles[`justifyContent_${justifyContent}`] : '',
         alignItems ? styles[`alignItems_${alignItems}`] : '',
-        between ? styles[`between_${between}`] : '',
         className,
       )}
       ref={ref}
       style={{
         ...style,
-        '--between': between,
+        gap: typeof between === 'number' ? `${between * 4}px` : undefined,
       }}
       {...restProps}
     >

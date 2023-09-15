@@ -250,8 +250,8 @@ const MachiKoroGame: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
         <Board
           board={board}
           withActions={isActive && !isWaitingForAction}
-          availableCoins={player?.data.coins || 0}
-          builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === CardType.MAJOR) || []}
+          availableCoins={player?.data.coins ?? 0}
+          builtMajors={player?.data.cardsIds.filter((cardId) => getCard(cardId).type === CardType.MAJOR) ?? []}
           onSelect={buildCard}
         />
       </Flex>

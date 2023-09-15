@@ -27,7 +27,7 @@ const PexesoCreateGameOptions: FC<CreateGameOptionsProps<GameType.PEXESO>> = (pr
 
   const [shuffleCardsCount, setShuffleCardsCount] = useState(2);
   const lastShuffleOptions = useRef<NonNullable<ShuffleOptions>>(
-    options.shuffleOptions || {
+    options.shuffleOptions ?? {
       type: ShuffleType.TURNED,
       afterMovesCount: 1,
     },

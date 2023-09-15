@@ -5,8 +5,9 @@ import { renderToString } from 'react-dom/server';
 
 import createStore, { Store, getInitialState } from 'client/utilities/store';
 
-const nodeStats = path.resolve('./build/node/loadable-stats.json');
+import ServerApp from 'server/middlewares/ServerApp';
 
+const nodeStats = path.resolve('./build/node/loadable-stats.json');
 const webStats = path.resolve('./build/web/loadable-stats.json');
 
 function renderHtml(bodyContent: string, headContent?: string): string {
@@ -33,15 +34,14 @@ export default async function render(req: Request, res: Response): Promise<Respo
 
   try {
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
-    const { default: App } = nodeExtractor.requireEntrypoint();
+    const { default: App } = nodeExtractor.requireEntrypoint() as { default: typeof ServerApp };
 
     const store: Store = createStore(getInitialState());
 
-    store.value.user = req.session.user || null;
+    store.value.user = req.session.user ?? null;
 
     const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
-    // @ts-ignore
     const jsx = webExtractor.collectChunks(<App url={req.url} store={store} />);
     const html = renderToString(jsx);
 

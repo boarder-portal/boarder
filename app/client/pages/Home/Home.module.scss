@@ -28,15 +28,15 @@
 .root {
   --columns-count: 5;
 
+  @media (max-width: 1440px) {
+    --columns-count: 4;
+  }
+
   @media (max-width: 1080px) {
     --columns-count: 3;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 640px) {
     --columns-count: 2;
-  }
-
-  @media (max-width: 400px) {
-    --columns-count: 1;
   }
 }

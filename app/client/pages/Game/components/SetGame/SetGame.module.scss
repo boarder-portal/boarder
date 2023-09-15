@@ -1,18 +1,11 @@
-.info {
-  margin-left: 40px;
-}
-
 .root {
   display: flex;
+  gap: 40px;
 }
 
-
-@media (max-width: 500px) {
+@media (max-width: 640px) {
   .root {
     flex-direction: column;
-  }
-
-  .info {
-    margin-top: 20px;
+    gap: 20px;
   }
 }

@@ -99,7 +99,7 @@ const SetGame: FC<GameProps<GameType.SET>> = (props) => {
         ))}
       </Flex>
 
-      <Flex className={styles.info} direction="column" between={5}>
+      <Flex direction="column" between={5}>
         {playersBlock}
 
         {!gameResult && <Button onClick={handleNoSetClick}>Нет сета</Button>}

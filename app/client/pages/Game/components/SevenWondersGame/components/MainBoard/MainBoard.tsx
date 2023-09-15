@@ -148,7 +148,7 @@ const MainBoard: FC<MainBoardProps> = (props) => {
   );
 
   const wonderLevelPrice = useMemo(
-    () => city.wonders[player.data.builtStages.length]?.price || null,
+    () => city.wonders[player.data.builtStages.length].price,
     [city.wonders, player.data.builtStages.length],
   );
 
