@@ -116,7 +116,7 @@ const ResultsModal: FC<ResultsModalProps> = (props) => {
       ) : (
         <Flex direction="column" between={6}>
           <Button className={styles.backButton} variant="outlined" onClick={backToTable}>
-            🠔 К таблице
+            ◀ К таблице
           </Button>
 
           {chosenResultWinner && (

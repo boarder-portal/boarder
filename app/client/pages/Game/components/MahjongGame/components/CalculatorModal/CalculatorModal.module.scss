@@ -6,10 +6,6 @@
 }
 
 .tile {
-  &:not(.disabled) {
-    cursor: pointer;
-  }
-
   &.impossible, &.disabled {
     opacity: 0.5;
   }
@@ -23,8 +19,6 @@
   width: 100px;
 }
 
-@include desktop {
-  .modalContent {
-    width: 1080px;
-  }
+.tile, .tiles, .waitsCaption {
+  flex-shrink: 0;
 }

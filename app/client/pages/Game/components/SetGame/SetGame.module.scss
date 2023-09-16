@@ -1,9 +1,11 @@
+@import "client/styles/mixins";
+
 .root {
   display: flex;
   gap: 40px;
 }
 
-@media (max-width: 640px) {
+@include mobile {
   .root {
     flex-direction: column;
     gap: 20px;

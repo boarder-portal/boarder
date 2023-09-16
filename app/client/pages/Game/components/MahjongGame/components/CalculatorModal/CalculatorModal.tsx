@@ -459,7 +459,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [isNotLastOfKindAllowed]);
 
   return (
-    <Modal contentClassName={styles.modalContent} open={open} title="Калькулятор" onClose={onClose}>
+    <Modal open={open} title="Калькулятор" mobileFullHeight onClose={onClose}>
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>
@@ -566,6 +566,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
             return (
               <Tiles
                 key={index}
+                className={styles.tiles}
                 tiles={set.tiles}
                 tileWidth={HAND_TILE_WIDTH}
                 openType={set.concealedType === SetConcealedType.CONCEALED ? OpenType.SEMI_CONCEALED : OpenType.OPEN}
@@ -574,15 +575,17 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
             );
           })}
 
-          <Tiles tiles={hand} tileWidth={HAND_TILE_WIDTH} onTileClick={removeTileFromHand} />
+          <Tiles className={styles.tiles} tiles={hand} tileWidth={HAND_TILE_WIDTH} onTileClick={removeTileFromHand} />
 
-          {winningTile && <Tile tile={winningTile} width={HAND_TILE_WIDTH} onClick={removeWinningTile} />}
+          {winningTile && (
+            <Tile className={styles.tile} tile={winningTile} width={HAND_TILE_WIDTH} onClick={removeWinningTile} />
+          )}
         </Flex>
 
         <Flex alignItems="center" between={6}>
           <div className={styles.waitsCaption}>Ожидания</div>
 
-          <Flex style={{ height: getTileHeight(HAND_TILE_WIDTH) }}>
+          <Flex className={styles.tiles} style={{ height: getTileHeight(HAND_TILE_WIDTH) }}>
             {allWaits.map((wait, index) => {
               const isImpossible = !tilesContainTile(legalWaits, wait) || getTileCount(allKnownTiles, wait) > 4;
 

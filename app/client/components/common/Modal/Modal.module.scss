@@ -50,7 +50,10 @@
   @include mobile {
     .modal {
       width: 100vw;
-      height: 100vh;
+
+      &.mobileFullHeight {
+        height: 100vh;
+      }
     }
   }
 }
@@ -58,7 +61,7 @@
 @layer override {
   @include mobile {
     .overlay {
-      --overlayPadding: 0;
+      --overlayPadding: 0px;
     }
   }
 }

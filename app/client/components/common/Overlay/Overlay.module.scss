@@ -3,21 +3,22 @@
 @layer component {
   .content {
     width: 100%;
-    max-width: calc(100vw - 2 * var(--overlayPadding));
+    max-width: calc(100vw - 2 * var(--overlayPaddingX));
     height: 100%;
-    max-height: calc(100vh - 2 * var(--overlayPadding));
+    max-height: calc(100vh - 2 * var(--overlayPaddingY));
   }
 
   .root {
     @include withTransition("opacity, transform");
 
-    --overlayPadding: 40px;
+    --overlayPaddingX: var(--overlayPadding, 40px);
+    --overlayPaddingY: var(--overlayPadding, 40px);
 
     z-index: 1000;
     position: fixed;
     width: 100vw;
     height: 100vh;
-    padding: var(--overlayPadding);
+    padding: var(--overlayPaddingY) var(--overlayPaddingX);
     inset: 0;
     display: grid;
     grid-template: max-content / max-content;
