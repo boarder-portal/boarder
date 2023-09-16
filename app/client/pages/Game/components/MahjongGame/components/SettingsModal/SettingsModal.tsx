@@ -7,13 +7,10 @@ import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
 
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Flex from 'client/components/common/Flex/Flex';
-import Modal from 'client/components/common/Modal/Modal';
-import Text from 'client/components/common/Text/Text';
+import Modal, { BaseModalProps } from 'client/components/common/Modal/Modal';
 
-interface SettingsModalProps {
-  open: boolean;
+interface SettingsModalProps extends BaseModalProps {
   player: Player | null;
-  onClose(): void;
 }
 
 const SettingsModal: FC<SettingsModalProps> = (props) => {

@@ -83,12 +83,7 @@ const BuildWonderLevelAction: FC<BuildWonderLevelActionProps> = (props) => {
     <>
       <div onClick={handleClick}>{getTitle(buildType)}</div>
 
-      <TradeModal
-        isVisible={isTradeModalVisible}
-        tradeVariants={tradeVariants}
-        onBuild={build}
-        onClose={closeTradeModal}
-      />
+      <TradeModal open={isTradeModalVisible} tradeVariants={tradeVariants} onBuild={build} onClose={closeTradeModal} />
     </>
   );
 };

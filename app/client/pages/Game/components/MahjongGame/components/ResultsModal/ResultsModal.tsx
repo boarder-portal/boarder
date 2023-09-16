@@ -9,7 +9,7 @@ import { HandResult, HandsCount, Player } from 'common/types/games/mahjong';
 
 import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
-import Modal from 'client/components/common/Modal/Modal';
+import Modal, { BaseModalProps } from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
@@ -22,13 +22,11 @@ enum ViewMode {
   MAHJONG = 'MAHJONG',
 }
 
-interface ResultsModalProps {
-  open: boolean;
+interface ResultsModalProps extends BaseModalProps {
   handsCount: HandsCount;
   players: Player[];
   results: HandResult[];
   openedResult: HandResult | null;
-  onClose(): void;
 }
 
 const ResultsModal: FC<ResultsModalProps> = (props) => {
@@ -106,7 +104,7 @@ const ResultsModal: FC<ResultsModalProps> = (props) => {
               >
                 <TableCell className={styles.indexCell}>{index + 1}</TableCell>
 
-                {players.map((score, index) => (
+                {players.map((_player, index) => (
                   <TableCell key={index} className={styles.resultCell}>
                     {scores?.at(index) ?? '\u00a0'}
                   </TableCell>

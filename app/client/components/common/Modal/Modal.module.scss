@@ -25,8 +25,8 @@
   }
 
   .modal {
-    --headerHeight: 40px;
-    --gap: 20px;
+    --headerHeight: 0;
+    --gap: 0;
     --modalBackground: #fff;
 
     display: flex;
@@ -34,6 +34,11 @@
     gap: var(--gap);
     padding: 24px;
     background-color: var(--modalBackground);
+
+    &.withHeader {
+      --headerHeight: 40px;
+      --gap: 20px;
+    }
   }
 
   @include desktop {

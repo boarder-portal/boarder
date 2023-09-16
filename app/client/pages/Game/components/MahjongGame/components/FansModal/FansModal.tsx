@@ -3,7 +3,7 @@ import { FC, memo } from 'react';
 import { ALL_FANS, FAN_DESCRIPTIONS, FAN_EXAMPLES, FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Modal from 'client/components/common/Modal/Modal';
+import Modal, { BaseModalProps } from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
 import TableCell from 'client/components/common/TableCell/TableCell';
 import TableRow from 'client/components/common/TableRow/TableRow';
@@ -11,10 +11,7 @@ import Tiles from 'client/pages/Game/components/MahjongGame/components/Tiles/Til
 
 import styles from './FansModal.module.scss';
 
-interface FansModalProps {
-  open: boolean;
-  onClose(): void;
-}
+interface FansModalProps extends BaseModalProps {}
 
 const FansModal: FC<FansModalProps> = (props) => {
   const { open, onClose } = props;

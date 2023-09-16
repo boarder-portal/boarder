@@ -32,15 +32,13 @@
 }
 
 .modalContent {
+  --offset: 12px;
+
   overflow: visible;
 }
 
-.root {
-  --offset: 12px;
-}
-
 @include desktop {
-  .root {
+  .modalContent {
     min-width: 500px;
   }
 }

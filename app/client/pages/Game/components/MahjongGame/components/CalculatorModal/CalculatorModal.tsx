@@ -35,7 +35,7 @@ import usePrevious from 'client/hooks/usePrevious';
 import Button from 'client/components/common/Button/Button';
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Flex from 'client/components/common/Flex/Flex';
-import Modal from 'client/components/common/Modal/Modal';
+import Modal, { BaseModalProps } from 'client/components/common/Modal/Modal';
 import RadioGroup, { SelectOption } from 'client/components/common/RadioGroup/RadioGroup';
 import Select from 'client/components/common/Select/Select';
 import Mahjong from 'client/pages/Game/components/MahjongGame/components/Mahjong/Mahjong';
@@ -53,8 +53,7 @@ enum SelectMode {
   WINNING_TILE = 'WINNING_TILE',
 }
 
-interface CalculatorModalProps {
-  open: boolean;
+interface CalculatorModalProps extends BaseModalProps {
   declaredSets: DeclaredSet[];
   hand: TileModel[];
   winningTile: TileModel | null;
@@ -65,7 +64,6 @@ interface CalculatorModalProps {
   activePlayerIndex: number;
   player: Player | null;
   players: Player[];
-  onClose(): void;
 }
 
 const TILE_WIDTH = 50;
@@ -461,7 +459,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [isNotLastOfKindAllowed]);
 
   return (
-    <Modal className={styles.root} open={open} title="Калькулятор" onClose={onClose}>
+    <Modal contentClassName={styles.modalContent} open={open} title="Калькулятор" onClose={onClose}>
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>

@@ -137,7 +137,7 @@ const BuildCardActions: FC<BuildCardActionsProps> = (props) => {
       )}
 
       <TradeModal
-        isVisible={isTradeModalVisible}
+        open={isTradeModalVisible}
         tradeVariants={availableTradeVariants}
         onBuild={trade}
         onClose={closeTradeModal}

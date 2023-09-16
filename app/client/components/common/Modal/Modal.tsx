@@ -12,16 +12,21 @@ import CrossIcon from 'client/components/icons/CrossIcon/CrossIcon';
 
 import styles from './Modal.module.scss';
 
-interface ModalProps extends WithClassName {
-  contentClassName?: string;
+export interface BaseModalProps {
   open: boolean;
+  onClose?(): void;
+}
+
+export interface ModalProps extends WithClassName, BaseModalProps {
+  contentClassName?: string;
   title?: ReactNode;
   children: ReactNode;
-  onClose?(): void;
 }
 
 const Modal: FC<ModalProps> = (props) => {
   const { className, contentClassName, open, title, children, onClose } = props;
+
+  const withHeader = Boolean(title || onClose);
 
   useGlobalListener('keyup', document, (e) => {
     if (open && e.key === 'Escape') {
@@ -34,21 +39,23 @@ const Modal: FC<ModalProps> = (props) => {
   return (
     <Overlay
       className={styles.overlay}
-      contentClassName={classNames(styles.modal, className)}
+      contentClassName={classNames(styles.modal, { [styles.withHeader]: withHeader }, className)}
       open={open}
       onClose={onClose}
     >
-      <Flex className={styles.header} between={4} alignItems="center" justifyContent="spaceBetween">
-        {typeof title === 'string' ? (
-          <Text size="xxl" weight="bold" withEllipsis>
-            {title}
-          </Text>
-        ) : (
-          <span>{title}</span>
-        )}
+      {withHeader && (
+        <Flex className={styles.header} between={4} alignItems="center" justifyContent="spaceBetween">
+          {typeof title === 'string' ? (
+            <Text size="xxl" weight="bold" withEllipsis>
+              {title}
+            </Text>
+          ) : (
+            <span>{title}</span>
+          )}
 
-        <CrossIcon className={styles.crossIcon} onClick={onClose} />
-      </Flex>
+          {onClose && <CrossIcon className={styles.crossIcon} onClick={onClose} />}
+        </Flex>
+      )}
 
       <div className={classNames(styles.content, contentClassName)}>{children}</div>
     </Overlay>
