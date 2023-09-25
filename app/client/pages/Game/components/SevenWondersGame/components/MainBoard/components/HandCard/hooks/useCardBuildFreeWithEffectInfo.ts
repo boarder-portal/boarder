@@ -5,7 +5,7 @@ import { Action, BuildType, CardActionType, Payments, Player } from 'common/type
 import { Card, CardId } from 'common/types/games/sevenWonders/cards';
 import { EffectType, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
-import { getPlayerWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import { getPlayerWaitingBuildEffect } from 'common/utilities/games/sevenWonders/getWaitingBuildEffect';
 
 export default function useCardBuildFreeWithEffectInfo(
   card: Card,

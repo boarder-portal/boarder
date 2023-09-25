@@ -27,11 +27,11 @@ import getObjectSpecificResources from 'client/pages/Game/components/SevenWonder
 import getResourcePoolsWithAdditionalResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourcePoolsWithAdditionalResources';
 import getResourceTradePrices from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
-import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
+import getAgeDirection from 'common/utilities/games/sevenWonders/getAgeDirection';
+import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
+import getPlayerCity from 'common/utilities/games/sevenWonders/getPlayerCity';
+import getPossibleBuildActions from 'common/utilities/games/sevenWonders/getPossibleBuildActions';
+import { isTradeEffect } from 'common/utilities/games/sevenWonders/isEffect';
 
 import usePrevious from 'client/hooks/usePrevious';
 

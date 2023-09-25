@@ -32,9 +32,9 @@ import {
 } from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
-import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
-import { isBombInvincibility, isInvincibility, isSuperBomb, isSuperRange } from 'common/utilities/bombers/buffs';
-import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
+import SharedDataManager from 'common/utilities/games/bombers/SharedDataManager';
+import { isBombInvincibility, isInvincibility, isSuperBomb, isSuperRange } from 'common/utilities/games/bombers/buffs';
+import getCoordsBehind from 'common/utilities/games/bombers/getCoordsBehind';
 import { getRandomElement } from 'common/utilities/random';
 import { EntityGenerator, ParentOrContext } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';

@@ -3,8 +3,8 @@ import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
 
 import { HandPlayerData, PlayableTile, Suit, SuitedTile, Tile, TileType } from 'common/types/games/mahjong';
 
-import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
-import { isDragon, isFlower, isSuited, isWind } from 'common/utilities/mahjong/tilesBase';
+import { isDeclaredMeldedSet } from 'common/utilities/games/mahjong/sets';
+import { isDragon, isFlower, isSuited, isWind } from 'common/utilities/games/mahjong/tilesBase';
 
 export function isPlayable(tile: Tile): tile is PlayableTile {
   return !isFlower(tile);

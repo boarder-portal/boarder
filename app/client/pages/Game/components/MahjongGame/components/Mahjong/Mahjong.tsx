@@ -8,9 +8,9 @@ import { FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
 import { FanKind, HandMahjong, SetConcealedType } from 'common/types/games/mahjong';
 
+import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/games/mahjong/fans';
+import { getPureFansScore } from 'common/utilities/games/mahjong/scoring';
 import isDefined from 'common/utilities/isDefined';
-import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
-import { getPureFansScore } from 'common/utilities/mahjong/scoring';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Table from 'client/components/common/Table/Table';

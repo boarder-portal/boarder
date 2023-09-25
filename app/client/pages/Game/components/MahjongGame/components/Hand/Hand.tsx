@@ -3,8 +3,8 @@ import { FC, memo } from 'react';
 
 import { Player, Tile } from 'common/types/games/mahjong';
 
-import { isDeclaredMeldedSet } from 'common/utilities/mahjong/sets';
-import { getWindHumanName } from 'common/utilities/mahjong/stringify';
+import { isDeclaredMeldedSet } from 'common/utilities/games/mahjong/sets';
+import { getWindHumanName } from 'common/utilities/games/mahjong/stringify';
 
 import Flex from 'client/components/common/Flex/Flex';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';

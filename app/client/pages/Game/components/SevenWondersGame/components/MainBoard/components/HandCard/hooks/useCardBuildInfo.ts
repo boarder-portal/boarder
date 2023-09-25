@@ -11,8 +11,8 @@ import { Card, CardId } from 'common/types/games/sevenWonders/cards';
 import getCardBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getCardBuildType';
 import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
 import getTradeVariants from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getTradeVariants';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isReducedPriceEffect } from 'common/utilities/sevenWonders/isEffect';
+import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
+import { isReducedPriceEffect } from 'common/utilities/games/sevenWonders/isEffect';
 
 function getTitle(buildType: BuildKind): string {
   switch (buildType) {

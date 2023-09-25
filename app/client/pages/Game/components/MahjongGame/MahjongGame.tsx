@@ -16,9 +16,9 @@ import {
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
-import { getWindHumanName } from 'common/utilities/mahjong/stringify';
-import { getNewCurrentTileIndex, isEqualTiles } from 'common/utilities/mahjong/tiles';
+import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
+import { getWindHumanName } from 'common/utilities/games/mahjong/stringify';
+import { getNewCurrentTileIndex, isEqualTiles } from 'common/utilities/games/mahjong/tiles';
 
 import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';

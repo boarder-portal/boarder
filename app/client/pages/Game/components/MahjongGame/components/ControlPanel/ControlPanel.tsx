@@ -15,12 +15,12 @@ import {
   WindSide,
 } from 'common/types/games/mahjong';
 
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
-import { getHandMahjong, getPureFansScore } from 'common/utilities/mahjong/scoring';
-import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/mahjong/sets';
-import { getSetNumanName } from 'common/utilities/mahjong/stringify';
-import { getLastTileCandidates, isEqualTiles } from 'common/utilities/mahjong/tiles';
-import { isFlower } from 'common/utilities/mahjong/tilesBase';
+import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
+import { getHandMahjong, getPureFansScore } from 'common/utilities/games/mahjong/scoring';
+import { getPossibleKongs, getPossibleMeldedSets, isEqualSets } from 'common/utilities/games/mahjong/sets';
+import { getSetNumanName } from 'common/utilities/games/mahjong/stringify';
+import { getLastTileCandidates, isEqualTiles } from 'common/utilities/games/mahjong/tiles';
+import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
 
 import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';
 

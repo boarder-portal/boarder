@@ -6,7 +6,7 @@ import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
-import { isEqualTiles } from 'common/utilities/mahjong/tiles';
+import { isEqualTiles } from 'common/utilities/games/mahjong/tiles';
 
 import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';

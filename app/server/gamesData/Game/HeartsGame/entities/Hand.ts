@@ -17,7 +17,7 @@ import {
   PassDirection,
 } from 'common/types/games/hearts';
 
-import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
+import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/games/hearts/common';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

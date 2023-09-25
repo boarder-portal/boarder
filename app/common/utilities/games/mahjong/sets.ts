@@ -32,8 +32,8 @@ import {
   isStraight,
   isTileSubset,
   tilesContainTile,
-} from 'common/utilities/mahjong/tiles';
-import { isSuited, kong } from 'common/utilities/mahjong/tilesBase';
+} from 'common/utilities/games/mahjong/tiles';
+import { isSuited, kong } from 'common/utilities/games/mahjong/tilesBase';
 
 const SET_SORT_VALUES: Record<SetType, number> = {
   [SetType.KNITTED_CHOW]: 0,

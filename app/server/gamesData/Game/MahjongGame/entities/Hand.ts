@@ -25,9 +25,9 @@ import {
 } from 'common/types/games/mahjong';
 
 import { moveElement } from 'common/utilities/array';
-import { getHandWithoutTile } from 'common/utilities/mahjong/hand';
-import { getHandMahjong } from 'common/utilities/mahjong/scoring';
-import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/mahjong/sets';
+import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
+import { getHandMahjong } from 'common/utilities/games/mahjong/scoring';
+import { getSetTile, isDeclaredMeldedSet, isEqualSets, isPung } from 'common/utilities/games/mahjong/sets';
 import {
   getLastTileCandidates,
   getNewCurrentTileIndex,
@@ -35,8 +35,8 @@ import {
   getTileSortValue,
   isEqualTiles,
   isEqualTilesCallback,
-} from 'common/utilities/mahjong/tiles';
-import { isFlower } from 'common/utilities/mahjong/tilesBase';
+} from 'common/utilities/games/mahjong/tiles';
+import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 

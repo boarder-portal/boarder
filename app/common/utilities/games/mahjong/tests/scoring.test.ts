@@ -7,9 +7,9 @@ import {
   parsePlayableTiles,
   parsePung,
   parseTiles,
-} from 'common/utilities/mahjong/parse';
-import { HandScoreOptions, getHandMahjong } from 'common/utilities/mahjong/scoring';
-import { stringifyMahjong } from 'common/utilities/mahjong/stringify';
+} from 'common/utilities/games/mahjong/parse';
+import { HandScoreOptions, getHandMahjong } from 'common/utilities/games/mahjong/scoring';
+import { stringifyMahjong } from 'common/utilities/games/mahjong/stringify';
 
 const standardOptions: Omit<HandScoreOptions, 'hand'> = {
   roundWind: WindSide.EAST,
@@ -1724,7 +1724,7 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
 
-      test('shouldn\'t be included when for multiple sets', () => {
+      test("shouldn't be included when for multiple sets", () => {
         expect(
           stringifyMahjong(
             getHandMahjong({

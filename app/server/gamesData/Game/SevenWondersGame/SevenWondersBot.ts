@@ -6,8 +6,8 @@ import { BuildKind } from 'client/pages/Game/components/SevenWondersGame/compone
 import { GameType } from 'common/types/game';
 import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/games/sevenWonders';
 
+import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'common/utilities/random';
-import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
 import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 

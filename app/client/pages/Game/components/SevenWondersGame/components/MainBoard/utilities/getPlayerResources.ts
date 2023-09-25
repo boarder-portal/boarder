@@ -1,8 +1,8 @@
 import { Player, Resource } from 'common/types/games/sevenWonders';
 
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import getPlayerTradeResources from 'common/utilities/sevenWonders/getPlayerTradeResources';
-import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
+import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
+import getPlayerTradeResources from 'common/utilities/games/sevenWonders/getPlayerTradeResources';
+import { isResourceEffect } from 'common/utilities/games/sevenWonders/isEffect';
 
 /**
  * Если есть карточка WOOD / STONE, CLAY * 2 и ресурс города - GLASS

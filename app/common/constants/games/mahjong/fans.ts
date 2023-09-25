@@ -1,6 +1,6 @@
 import { FanKind, Tile } from 'common/types/games/mahjong';
 
-import { parsePlayableTileSets } from 'common/utilities/mahjong/parse';
+import { parsePlayableTileSets } from 'common/utilities/games/mahjong/parse';
 
 export const ALL_FANS = Object.values(FanKind);
 

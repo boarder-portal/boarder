@@ -23,8 +23,8 @@ import {
 } from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
-import { isInvincibility, isSuperSpeed } from 'common/utilities/bombers/buffs';
 import { isFloatZero } from 'common/utilities/float';
+import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
 import isNotUndefined from 'common/utilities/isNotUndefined';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { PlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';

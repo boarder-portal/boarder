@@ -15,7 +15,7 @@ import {
   WindSide,
 } from 'common/types/games/mahjong';
 
-import { dragon, suited, wind } from 'common/utilities/mahjong/tilesBase';
+import { dragon, suited, wind } from 'common/utilities/games/mahjong/tilesBase';
 import { getPermutations } from 'common/utilities/permutations';
 
 export const STANDARD_TILES: PlayableTile[] = [

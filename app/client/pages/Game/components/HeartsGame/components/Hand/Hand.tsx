@@ -7,7 +7,7 @@ import { WithClassName } from 'client/types/react';
 import { Card as CardModel, Suit } from 'common/types/game/cards';
 import { HandStage } from 'common/types/games/hearts';
 
-import isCardAllowed from 'common/utilities/hearts/isCardAllowed';
+import isCardAllowed from 'common/utilities/games/hearts/isCardAllowed';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Card from 'client/pages/Game/components/HeartsGame/components/Hand/components/Card/Card';

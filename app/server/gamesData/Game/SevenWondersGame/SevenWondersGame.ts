@@ -26,16 +26,16 @@ import {
 } from 'common/types/games/sevenWonders/effects';
 
 import { getSetsCombinations } from 'common/utilities/combinations';
-import getAgeDirection from 'common/utilities/sevenWonders/getAgeDirection';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
-import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
+import getAgeDirection from 'common/utilities/games/sevenWonders/getAgeDirection';
+import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
+import getNeighbor from 'common/utilities/games/sevenWonders/getNeighbor';
+import getPlayerCity from 'common/utilities/games/sevenWonders/getPlayerCity';
 import {
   isCopyEffect,
   isScientificSetEffect,
   isScientificSymbolsEffect,
   isShieldsEffect,
-} from 'common/utilities/sevenWonders/isEffect';
+} from 'common/utilities/games/sevenWonders/isEffect';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 

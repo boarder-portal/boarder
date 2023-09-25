@@ -2,7 +2,7 @@ import { FC, memo, useCallback, useMemo } from 'react';
 
 import { Action, CardActionType, Payments, Player } from 'common/types/games/sevenWonders';
 
-import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
+import getPossibleBuildActions from 'common/utilities/games/sevenWonders/getPossibleBuildActions';
 
 import Text from 'client/components/common/Text/Text';
 

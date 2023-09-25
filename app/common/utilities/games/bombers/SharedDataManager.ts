@@ -18,10 +18,10 @@ import {
 import { Coords, Timestamp } from 'common/types';
 import { BonusType, Buff, BuffType, Direction, Line } from 'common/types/games/bombers';
 
-import { isSuperSpeed } from 'common/utilities/bombers/buffs';
-import getCoordsBehind from 'common/utilities/bombers/getCoordsBehind';
-import getDirectionLine from 'common/utilities/bombers/getDirectionLine';
 import { isFloatZero } from 'common/utilities/float';
+import { isSuperSpeed } from 'common/utilities/games/bombers/buffs';
+import getCoordsBehind from 'common/utilities/games/bombers/getCoordsBehind';
+import getDirectionLine from 'common/utilities/games/bombers/getDirectionLine';
 
 export interface MapObjectWithId {
   id: number;

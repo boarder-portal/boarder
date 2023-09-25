@@ -11,8 +11,8 @@ import {
 
 import { Fan, HandMahjong, Set, SetConcealedType, SetType, Tile, TileType, WindSide } from 'common/types/games/mahjong';
 
-import { isSetsFan, isSpecialFan } from 'common/utilities/mahjong/fans';
-import { getSetTile } from 'common/utilities/mahjong/sets';
+import { isSetsFan, isSpecialFan } from 'common/utilities/games/mahjong/fans';
+import { getSetTile } from 'common/utilities/games/mahjong/sets';
 
 const SET_NAMES: Record<SetType, string> = {
   [SetType.PAIR]: 'pair',

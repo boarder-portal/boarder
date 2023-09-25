@@ -30,7 +30,7 @@ import {
   isCardMonastery,
   isCardRoad,
   isSideObject,
-} from 'common/utilities/carcassonne';
+} from 'common/utilities/games/carcassonne';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import usePlayer from 'client/hooks/usePlayer';

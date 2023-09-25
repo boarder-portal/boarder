@@ -11,7 +11,7 @@ import {
   PlayerWaitingActionType,
 } from 'common/types/games/machiKoro';
 
-import getCard from 'common/utilities/machiKoro/getCard';
+import getCard from 'common/utilities/games/machiKoro/getCard';
 
 import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';

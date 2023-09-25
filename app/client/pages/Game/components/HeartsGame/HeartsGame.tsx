@@ -7,8 +7,8 @@ import { Suit } from 'common/types/game/cards';
 import { GameClientEventType, HandStage, PassDirection, Player as PlayerModel } from 'common/types/games/hearts';
 
 import getPlayerPosition from 'client/pages/Game/components/HeartsGame/utilities/getPlayerPosition';
-import getPlayedSuit from 'common/utilities/hearts/getPlayedSuit';
-import getIsFirstTurn from 'common/utilities/hearts/isFirstTurn';
+import getPlayedSuit from 'common/utilities/games/hearts/getPlayedSuit';
+import getIsFirstTurn from 'common/utilities/games/hearts/isFirstTurn';
 
 import usePlayer from 'client/hooks/usePlayer';
 

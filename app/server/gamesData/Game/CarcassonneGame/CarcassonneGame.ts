@@ -38,7 +38,7 @@ import {
   isGameMonastery,
   isGameRoad,
   isSideObject,
-} from 'common/utilities/carcassonne';
+} from 'common/utilities/games/carcassonne';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 

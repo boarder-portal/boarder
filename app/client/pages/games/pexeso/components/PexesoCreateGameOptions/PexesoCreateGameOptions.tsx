@@ -11,7 +11,7 @@ import {
 import { GameType } from 'common/types/game';
 import { FieldLayoutType, GameOptions, SetType, ShuffleOptions, ShuffleType } from 'common/types/games/pexeso';
 
-import { arePexesoOptionsValid } from 'common/utilities/pexeso';
+import { arePexesoOptionsValid } from 'common/utilities/games/pexeso';
 
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';

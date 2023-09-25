@@ -5,8 +5,8 @@ import { GameType } from 'common/types/game';
 import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
-import { getWindHumanShortName, stringifyTile } from 'common/utilities/mahjong/stringify';
-import { isSuited, isWind } from 'common/utilities/mahjong/tilesBase';
+import { getWindHumanShortName, stringifyTile } from 'common/utilities/games/mahjong/stringify';
+import { isSuited, isWind } from 'common/utilities/games/mahjong/tilesBase';
 
 import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 import usePlayerSettings from 'client/pages/Game/hooks/usePlayerSettings';

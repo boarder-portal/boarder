@@ -8,9 +8,9 @@ import { Player, Resource } from 'common/types/games/sevenWonders';
 import { CardType } from 'common/types/games/sevenWonders/cards';
 
 import getOwnerResources from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getOwnerResources';
+import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
+import { isTradeEffect } from 'common/utilities/games/sevenWonders/isEffect';
 import isNotUndefined from 'common/utilities/isNotUndefined';
-import getAllPlayerEffects from 'common/utilities/sevenWonders/getAllPlayerEffects';
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
 
 export default function getBankResources(player: Player): OwnerResource[][] {
   const tradeEffects = getAllPlayerEffects(player.data).filter(isTradeEffect);

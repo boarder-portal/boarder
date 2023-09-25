@@ -1,7 +1,7 @@
 import { GamePlayerData } from 'common/types/games/sevenWonders';
 import { Effect } from 'common/types/games/sevenWonders/effects';
 
-import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
+import getPlayerCity from 'common/utilities/games/sevenWonders/getPlayerCity';
 
 export default function getAllPlayerEffects(playerData: GamePlayerData): Effect[] {
   const citySide = getPlayerCity(playerData);

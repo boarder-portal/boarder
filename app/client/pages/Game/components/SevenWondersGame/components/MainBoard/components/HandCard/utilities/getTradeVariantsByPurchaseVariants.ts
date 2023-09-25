@@ -5,7 +5,7 @@ import { OwnerResource } from 'client/pages/Game/components/SevenWondersGame/com
 import { NeighborSide, Payments } from 'common/types/games/sevenWonders';
 
 import { ResourceTradePrices } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/utilities/getResourceTradePrices';
-import getResourceType from 'common/utilities/sevenWonders/getResourcePrice';
+import getResourceType from 'common/utilities/games/sevenWonders/getResourcePrice';
 
 export interface TradeVariant {
   resources: OwnerResource[];

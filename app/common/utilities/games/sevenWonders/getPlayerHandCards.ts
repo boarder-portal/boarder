@@ -2,7 +2,7 @@ import { AgePhaseType, GamePhaseType, WaitingAction } from 'common/types/games/s
 import { Card } from 'common/types/games/sevenWonders/cards';
 import { BuildCardEffect, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
-import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import { getWaitingBuildEffect } from 'common/utilities/games/sevenWonders/getWaitingBuildEffect';
 
 export interface GetPlayerHandCardsOptions {
   waitingForAction: WaitingAction | null | undefined;

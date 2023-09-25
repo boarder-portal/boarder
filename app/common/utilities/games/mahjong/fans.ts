@@ -21,8 +21,7 @@ import {
   WindSide,
 } from 'common/types/games/mahjong';
 
-import isDefined from 'common/utilities/isDefined';
-import { HandScoreFullOptions } from 'common/utilities/mahjong/scoring';
+import { HandScoreFullOptions } from 'common/utilities/games/mahjong/scoring';
 import {
   areChows,
   areKongs,
@@ -35,7 +34,7 @@ import {
   isKnittedChow,
   isPair,
   isPung,
-} from 'common/utilities/mahjong/sets';
+} from 'common/utilities/games/mahjong/sets';
 import {
   areSameValues,
   areSuited,
@@ -51,8 +50,9 @@ import {
   isTerminalOrHonor,
   isTileSubset,
   tilesContainTile,
-} from 'common/utilities/mahjong/tiles';
-import { isDragon, isSuited, isWind, wind } from 'common/utilities/mahjong/tilesBase';
+} from 'common/utilities/games/mahjong/tiles';
+import { isDragon, isSuited, isWind, wind } from 'common/utilities/games/mahjong/tilesBase';
+import isDefined from 'common/utilities/isDefined';
 
 export function isHandFan(fan: Fan): fan is HandFan {
   return fan.type === FanType.HAND;

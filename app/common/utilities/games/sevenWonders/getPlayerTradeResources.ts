@@ -1,9 +1,9 @@
 import { Player, Resource } from 'common/types/games/sevenWonders';
 import { CardType } from 'common/types/games/sevenWonders/cards';
 
+import getPlayerCity from 'common/utilities/games/sevenWonders/getPlayerCity';
+import { isResourceEffect } from 'common/utilities/games/sevenWonders/isEffect';
 import isNotUndefined from 'common/utilities/isNotUndefined';
-import getPlayerCity from 'common/utilities/sevenWonders/getPlayerCity';
-import { isResourceEffect } from 'common/utilities/sevenWonders/isEffect';
 
 export default function getPlayerTradeResources(player: Player): Resource[][] {
   const builtCardsResourceVariants = player.data.builtCards

@@ -21,7 +21,7 @@ import {
 
 import renderMap from 'client/pages/Game/components/BombersGame/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
-import SharedDataManager from 'common/utilities/bombers/SharedDataManager';
+import SharedDataManager from 'common/utilities/games/bombers/SharedDataManager';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImages from 'client/hooks/useImages';

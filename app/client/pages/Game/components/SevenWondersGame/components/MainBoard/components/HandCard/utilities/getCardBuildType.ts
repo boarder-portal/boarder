@@ -4,7 +4,7 @@ import { Card } from 'common/types/games/sevenWonders/cards';
 
 import getBuildType from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getBuildType';
 import { TradeVariant } from 'client/pages/Game/components/SevenWondersGame/components/MainBoard/components/HandCard/utilities/getTradeVariantsByPurchaseVariants';
-import getPossibleBuildActions from 'common/utilities/sevenWonders/getPossibleBuildActions';
+import getPossibleBuildActions from 'common/utilities/games/sevenWonders/getPossibleBuildActions';
 
 export default function getCardBuildType(
   card: Card,

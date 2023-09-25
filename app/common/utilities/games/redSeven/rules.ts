@@ -1,6 +1,6 @@
 import { Card, CardColor } from 'common/types/games/redSeven';
 
-import { compareCards, getCardValue, getHighestCard } from 'common/utilities/redSeven/cards';
+import { compareCards, getCardValue, getHighestCard } from 'common/utilities/games/redSeven/cards';
 
 export function checkRule(playerPalettes: Card[][], playerIndex: number, rule: CardColor): boolean {
   const playerPalette = playerPalettes[playerIndex];

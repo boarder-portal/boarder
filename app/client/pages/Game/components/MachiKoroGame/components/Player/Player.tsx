@@ -5,8 +5,8 @@ import { ALL_LANDMARK_CARDS } from 'common/constants/games/machiKoro';
 import { WithClassName } from 'client/types/react';
 import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/games/machiKoro';
 
+import getCard from 'common/utilities/games/machiKoro/getCard';
 import isNotUndefined from 'common/utilities/isNotUndefined';
-import getCard from 'common/utilities/machiKoro/getCard';
 
 import usePrevious from 'client/hooks/usePrevious';
 

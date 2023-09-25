@@ -7,7 +7,7 @@ import { Player, WaitingActionType } from 'common/types/games/sevenWonders';
 import { CardId } from 'common/types/games/sevenWonders/cards';
 import { FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
-import { isTradeEffect } from 'common/utilities/sevenWonders/isEffect';
+import { isTradeEffect } from 'common/utilities/games/sevenWonders/isEffect';
 
 import useCardGroups from 'client/pages/Game/components/SevenWondersGame/components/Wonder/hooks/useCardGroups';
 

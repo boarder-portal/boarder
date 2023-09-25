@@ -8,8 +8,8 @@ import { Tile as TileModel } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
 import { moveElement } from 'common/utilities/array';
-import { stringifyTile } from 'common/utilities/mahjong/stringify';
-import { isEqualTiles } from 'common/utilities/mahjong/tiles';
+import { stringifyTile } from 'common/utilities/games/mahjong/stringify';
+import { isEqualTiles } from 'common/utilities/games/mahjong/tiles';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';

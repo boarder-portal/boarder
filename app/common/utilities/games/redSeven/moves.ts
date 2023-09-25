@@ -1,6 +1,6 @@
 import { Card, CardColor, GameOptions, Move, MoveType } from 'common/types/games/redSeven';
 
-import { checkRule } from 'common/utilities/redSeven/rules';
+import { checkRule } from 'common/utilities/games/redSeven/rules';
 
 export interface GetPlayCombinationsOptions {
   playerPalettes: Card[][];

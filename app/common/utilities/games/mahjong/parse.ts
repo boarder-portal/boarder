@@ -18,8 +18,8 @@ import {
   TileType,
 } from 'common/types/games/mahjong';
 
-import { isPlayable } from 'common/utilities/mahjong/tiles';
-import { chow, dragon, flower, isSuited, kong, pung, suited, wind } from 'common/utilities/mahjong/tilesBase';
+import { isPlayable } from 'common/utilities/games/mahjong/tiles';
+import { chow, dragon, flower, isSuited, kong, pung, suited, wind } from 'common/utilities/games/mahjong/tilesBase';
 
 export function parseTiles(tilesString: string): Tile[] {
   return tilesString.replace(/\s/g, '').match(/../g)?.map(parseTile) ?? [];

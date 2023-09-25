@@ -11,8 +11,15 @@ import {
   TurnPlayerData,
 } from 'common/types/games/mahjong';
 
-import { getPossibleMeldedSets, isChow, isConcealed, isKong, isMelded, isPung } from 'common/utilities/mahjong/sets';
-import { isEqualTilesCallback, isPlayable } from 'common/utilities/mahjong/tiles';
+import {
+  getPossibleMeldedSets,
+  isChow,
+  isConcealed,
+  isKong,
+  isMelded,
+  isPung,
+} from 'common/utilities/games/mahjong/sets';
+import { isEqualTilesCallback, isPlayable } from 'common/utilities/games/mahjong/tiles';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

@@ -19,9 +19,8 @@ import {
 import { Card, CardType } from 'common/types/games/sevenWonders/cards';
 import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
-import rotateObjects from 'common/utilities/rotateObjects';
-import getPlayerHandCards from 'common/utilities/sevenWonders/getPlayerHandCards';
-import { getWaitingBuildEffect } from 'common/utilities/sevenWonders/getWaitingBuildEffect';
+import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
+import { getWaitingBuildEffect } from 'common/utilities/games/sevenWonders/getWaitingBuildEffect';
 import {
   isBuildCardEffect,
   isCommercialCardsPassiveEffect,
@@ -29,7 +28,8 @@ import {
   isReturnDefeatsEffect,
   isStructureInheritancePassiveEffect,
   isVictoryTokensCoinPassiveEffect,
-} from 'common/utilities/sevenWonders/isEffect';
+} from 'common/utilities/games/sevenWonders/isEffect';
+import rotateObjects from 'common/utilities/rotateObjects';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

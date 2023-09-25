@@ -1,6 +1,6 @@
 import { Card, Suit } from 'common/types/game/cards';
 
-import { isHeart, isQueenOfSpades } from 'common/utilities/hearts/common';
+import { isHeart, isQueenOfSpades } from 'common/utilities/games/hearts/common';
 
 export interface AllowedCardOptions {
   card: Card;

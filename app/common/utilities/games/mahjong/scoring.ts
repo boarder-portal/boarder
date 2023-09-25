@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy';
 
-import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../constants/games/mahjong/tiles';
+import { KNITTED_SEQUENCES, STANDARD_TILES } from '../../../constants/games/mahjong/tiles';
 import { MIN_SCORE } from 'common/constants/games/mahjong';
 import { ALL_FANS, NO_SETS_FANS } from 'common/constants/games/mahjong/fans';
 
@@ -27,15 +27,15 @@ import {
   getSpecialSetsFans,
   getWholeHandFans,
   getWholeHandSetsFans,
-} from 'common/utilities/mahjong/fans';
-import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/mahjong/sets';
+} from 'common/utilities/games/mahjong/fans';
+import { getAllSetsCombinations, getSetsVariations } from 'common/utilities/games/mahjong/sets';
 import {
   getSupposedHandTileCount,
   getTileCount,
   isHonor,
   isPlayable,
   isTileSubset,
-} from 'common/utilities/mahjong/tiles';
+} from 'common/utilities/games/mahjong/tiles';
 
 export interface HandScoreOptions {
   hand: Tile[];

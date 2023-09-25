@@ -17,17 +17,17 @@ import {
 } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/pages/Game/components/MahjongGame/utilities/tile';
-import { HandScoreOptions, getAllWaits, getHandMahjong } from 'common/utilities/mahjong/scoring';
-import { isDeclaredMeldedSet, isKong, isMelded } from 'common/utilities/mahjong/sets';
-import { getWindHumanName } from 'common/utilities/mahjong/stringify';
+import { HandScoreOptions, getAllWaits, getHandMahjong } from 'common/utilities/games/mahjong/scoring';
+import { isDeclaredMeldedSet, isKong, isMelded } from 'common/utilities/games/mahjong/sets';
+import { getWindHumanName } from 'common/utilities/games/mahjong/stringify';
 import {
   getLastTileCandidatesFromTiles,
   getSupposedHandTileCount,
   getTileCount,
   isEqualTiles,
   tilesContainTile,
-} from 'common/utilities/mahjong/tiles';
-import { chow, isSuited, kong, pung } from 'common/utilities/mahjong/tilesBase';
+} from 'common/utilities/games/mahjong/tiles';
+import { chow, isSuited, kong, pung } from 'common/utilities/games/mahjong/tilesBase';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import usePrevious from 'client/hooks/usePrevious';

@@ -12,7 +12,7 @@ import {
 } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
-import getNeighbor from 'common/utilities/sevenWonders/getNeighbor';
+import getNeighbor from 'common/utilities/games/sevenWonders/getNeighbor';
 
 import usePlayer from 'client/hooks/usePlayer';
 
