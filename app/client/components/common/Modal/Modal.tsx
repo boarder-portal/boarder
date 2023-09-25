@@ -8,7 +8,7 @@ import useGlobalListener from 'client/hooks/useGlobalListener';
 import Flex from 'client/components/common/Flex/Flex';
 import Overlay from 'client/components/common/Overlay/Overlay';
 import Text from 'client/components/common/Text/Text';
-import CrossIcon from 'client/components/icons/CrossIcon/CrossIcon';
+import CrossIcon from 'client/components/common/icons/CrossIcon/CrossIcon';
 
 import styles from './Modal.module.scss';
 

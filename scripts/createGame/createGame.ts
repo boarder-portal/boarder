@@ -52,9 +52,11 @@ export interface GenerateOptions {
     typesFilename: path.resolve(`./app/common/types/games/${camelCased}/index.ts`),
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
     lobbyFilename: path.resolve(`./app/client/pages/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`),
-    gameComponentFilename: path.resolve(`./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.tsx`),
+    gameComponentFilename: path.resolve(
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.tsx`,
+    ),
     gameStylesFilename: path.resolve(
-      `./app/client/pages/Game/components/${pascalCased}Game/${pascalCased}Game.module.scss`,
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.module.scss`,
     ),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
   };

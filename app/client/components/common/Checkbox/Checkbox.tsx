@@ -4,7 +4,7 @@ import { FC } from 'react';
 import { WithClassName } from 'client/types/react';
 
 import Flex from 'client/components/common/Flex/Flex';
-import CheckIcon from 'client/components/icons/CheckIcon/CheckIcon';
+import CheckIcon from 'client/components/common/icons/CheckIcon/CheckIcon';
 
 import styles from './Checkbox.module.scss';
 

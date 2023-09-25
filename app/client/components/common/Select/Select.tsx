@@ -7,7 +7,7 @@ import useBoolean from 'client/hooks/useBoolean';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
-import ArrowDropDownIcon from 'client/components/icons/ArrowDropDownIcon/ArrowDropDownIcon';
+import ArrowDropDownIcon from 'client/components/common/icons/ArrowDropDownIcon/ArrowDropDownIcon';
 
 import styles from './Select.module.scss';
 
