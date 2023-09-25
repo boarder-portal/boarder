@@ -1,12 +1,12 @@
 import { FC, memo } from 'react';
 
-import { CardType, Player } from 'common/types/games/onitama';
+import { CardType, Player as PlayerModel } from 'common/types/games/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Card from 'client/components/games/onitama/OnitamaGame/components/GameContent/components/Card/Card';
 
 interface PlayerProps {
-  player: Player;
+  player: PlayerModel;
   fifthCard: CardType;
   isActive: boolean;
   isFlipped: boolean;
