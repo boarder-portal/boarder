@@ -7,7 +7,6 @@ import { HandsCount } from 'common/types/games/mahjong';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
-import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
 
 import { CreateGameOptionsProps } from 'client/pages/Lobby/Lobby';
@@ -22,7 +21,7 @@ const MahjongCreateGameOptions: FC<CreateGameOptionsProps<GameType.MAHJONG>> = (
   });
 
   return (
-    <Flex direction="column" between={3}>
+    <>
       <Select
         label="Количество раздач"
         value={options.handsCount}
@@ -32,7 +31,7 @@ const MahjongCreateGameOptions: FC<CreateGameOptionsProps<GameType.MAHJONG>> = (
         }))}
         onChange={handleHandsCountChange}
       />
-    </Flex>
+    </>
   );
 };
 

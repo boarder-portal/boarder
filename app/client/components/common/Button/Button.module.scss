@@ -4,11 +4,13 @@
 @layer component {
   .size {
     &_m {
-      padding: 12px 24px;
+      height: 40px;
+      padding: 0 24px;
     }
 
     &_s {
-      padding: 6px 12px;
+      height: 32px;
+      padding: 0 12px;
     }
   }
 

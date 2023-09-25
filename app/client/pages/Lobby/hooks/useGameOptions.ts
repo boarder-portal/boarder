@@ -7,9 +7,13 @@ import useLocalStorageAtom from 'client/hooks/useLocalStorageAtom';
 
 import { gameOptionsAtoms } from 'client/atoms/gameOptionsAtoms';
 
+export type SetOptions<Game extends GameType> = (
+  options: GameOptions<Game> | ((options: GameOptions<Game>) => GameOptions<Game>),
+) => void;
+
 export interface UseGameOptions<Game extends GameType> {
   options: GameOptions<Game>;
-  setOptions(options: GameOptions<Game> | ((options: GameOptions<Game>) => GameOptions<Game>)): void;
+  setOptions: SetOptions<Game>;
   refreshDefaultOptions(): void;
 }
 

@@ -7,7 +7,6 @@ import { MapType } from 'common/types/games/bombers';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
-import Flex from 'client/components/common/Flex/Flex';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Select from 'client/components/common/Select/Select';
 
@@ -33,7 +32,7 @@ const BombersCreateGameOptions: FC<CreateGameOptionsProps<GameType.BOMBERS>> = (
   });
 
   return (
-    <Flex direction="column" between={3}>
+    <>
       <Select
         label="Карта"
         value={options.mapType ?? 'random'}
@@ -49,7 +48,7 @@ const BombersCreateGameOptions: FC<CreateGameOptionsProps<GameType.BOMBERS>> = (
         options={[true, false].map((value) => ({ text: value ? 'Со способностями' : 'Без способностей', value }))}
         onChange={handleWithAbilitiesChange}
       />
-    </Flex>
+    </>
   );
 };
 

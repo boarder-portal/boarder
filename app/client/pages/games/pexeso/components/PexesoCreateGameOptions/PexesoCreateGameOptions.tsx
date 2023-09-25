@@ -14,7 +14,6 @@ import { FieldLayoutType, GameOptions, SetType, ShuffleOptions, ShuffleType } fr
 import { arePexesoOptionsValid } from 'common/utilities/pexeso';
 
 import Checkbox from 'client/components/common/Checkbox/Checkbox';
-import Flex from 'client/components/common/Flex/Flex';
 import RadioGroup from 'client/components/common/RadioGroup/RadioGroup';
 import Select from 'client/components/common/Select/Select';
 
@@ -164,7 +163,7 @@ const PexesoCreateGameOptions: FC<CreateGameOptionsProps<GameType.PEXESO>> = (pr
   );
 
   return (
-    <Flex direction="column" between={3}>
+    <>
       <Select
         label="Сет"
         value={options.set}
@@ -270,7 +269,7 @@ const PexesoCreateGameOptions: FC<CreateGameOptionsProps<GameType.PEXESO>> = (pr
           </div>
         </div>
       )}
-    </Flex>
+    </>
   );
 };
 
