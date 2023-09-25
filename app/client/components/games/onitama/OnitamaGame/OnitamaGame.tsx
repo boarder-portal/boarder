@@ -14,7 +14,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import Flex from 'client/components/common/Flex/Flex';
 import { GameProps } from 'client/components/game/Game/Game';
 import GameEnd from 'client/components/game/Game/components/GameEnd/GameEnd';
-import OnitamaPlayer from 'client/components/games/onitama/OnitamaGame/OnitamaPlayer';
+import OnitamaPlayer from 'client/components/games/onitama/OnitamaGame/components/OnitamaPlayer/OnitamaPlayer';
 
 import styles from './OnitamaGame.module.scss';
 

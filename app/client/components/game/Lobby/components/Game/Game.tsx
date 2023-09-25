@@ -1,22 +1,22 @@
 import classNames from 'classnames';
-import { FC, ReactNode, memo } from 'react';
+import { ComponentType, useCallback, useMemo } from 'react';
 
 import { WithClassName } from 'client/types/react';
-import { GameStatus } from 'common/types/game';
+import typedReactMemo from 'client/types/typedReactMemo';
+import { GameStatus, GameType } from 'common/types/game';
+import { LobbyGame } from 'common/types/game/lobby';
 
 import DotSeparator from 'client/components/common/DotSeparator/DotSeparator';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
+import { GameOptionsProps } from 'client/components/game/Lobby/Lobby';
 
 import styles from './Game.module.scss';
 
-interface GameProps extends WithClassName {
-  title: string;
-  options: ReactNode;
-  players: number;
-  maxPlayers: number;
-  status: GameStatus;
-  onClick?(): void;
+interface GameProps<Game extends GameType> extends WithClassName {
+  game: LobbyGame<Game>;
+  onClick(game: LobbyGame<Game>): void;
+  renderOptions?: ComponentType<GameOptionsProps<Game>>;
 }
 
 const STATUS_CAPTION: Record<GameStatus, string> = {
@@ -25,26 +25,38 @@ const STATUS_CAPTION: Record<GameStatus, string> = {
   [GameStatus.GAME_ENDED]: 'игра окончена',
 };
 
-const Game: FC<GameProps> = (props) => {
-  const { className, title, options, players, maxPlayers, status, onClick } = props;
+const Game = <Game extends GameType>(props: GameProps<Game>) => {
+  const { className, game, renderOptions: Options, onClick } = props;
+
+  const handleClick = useCallback(() => {
+    onClick(game);
+  }, [game, onClick]);
+
+  const options = useMemo(() => {
+    if (!Options) {
+      return null;
+    }
+
+    return <Options options={game.options} />;
+  }, [Options, game.options]);
 
   return (
-    <Flex className={classNames(styles.root, className)} alignItems="center" onClick={onClick}>
+    <Flex className={classNames(styles.root, className)} alignItems="center" onClick={handleClick}>
       <Flex direction="column" between={2}>
         <Text size="l">
-          {title}
+          {game.name}
 
           <DotSeparator />
 
-          {STATUS_CAPTION[status]}
+          {STATUS_CAPTION[game.status]}
         </Text>
 
         {options}
       </Flex>
 
-      <Text className={styles.playersCount} size="xxl">{`${players}/${maxPlayers}`}</Text>
+      <Text className={styles.playersCount} size="xxl">{`${game.players.length}/${game.options.maxPlayersCount}`}</Text>
     </Flex>
   );
 };
 
-export default memo(Game);
+export default typedReactMemo(Game);

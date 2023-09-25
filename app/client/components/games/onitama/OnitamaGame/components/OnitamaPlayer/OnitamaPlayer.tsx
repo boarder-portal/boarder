@@ -3,7 +3,7 @@ import { FC, memo } from 'react';
 import { CardType, Player } from 'common/types/games/onitama';
 
 import Flex from 'client/components/common/Flex/Flex';
-import OnitamaCard from 'client/components/games/onitama/OnitamaGame/OnitamaCard';
+import OnitamaCard from 'client/components/games/onitama/OnitamaGame/components/OnitamaCard/OnitamaCard';
 
 interface OnitamaPlayerProps {
   player: Player;

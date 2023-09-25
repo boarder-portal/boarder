@@ -21,8 +21,9 @@
 
 .desktopOptionsBlock {
   width: 300px;
-  height: 100%;
-  overflow: auto;
+  // TODO: get back when after adding Popover
+  //height: 100%;
+  //overflow: auto;
 
   @include mobile {
     display: none;

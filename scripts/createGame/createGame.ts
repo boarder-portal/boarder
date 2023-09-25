@@ -15,6 +15,8 @@ import addGameEnumField from './utilities/addGameEnumField';
 import addGameNameAndPlayerSettings from './utilities/addGameNameAndPlayerSettings';
 import addGameStyles from './utilities/addGameStyles';
 import addGameTypes from './utilities/addGameTypes';
+import addLobby from './utilities/addLobby';
+import addLobbyComponent from './utilities/addLobbyComponent';
 import addLocalStorageOptionsAndSettingsKeys from './utilities/addLocalStorageOptionsAndSettingsKeys';
 
 const [gameName] = process.argv.slice(2);
@@ -36,9 +38,9 @@ export interface GenerateOptions {
 
   typesFilename: string;
   constantsFilename: string;
-  lobbyFilename: string;
+  lobbyComponentFilename: string;
   gameComponentFilename: string;
-  gameStylesFilename: string;
+  gameComponentStylesFilename: string;
   gameEntityFilename: string;
 }
 
@@ -51,11 +53,13 @@ export interface GenerateOptions {
 
     typesFilename: path.resolve(`./app/common/types/games/${camelCased}/index.ts`),
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
-    lobbyFilename: path.resolve(`./app/client/pages/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`),
+    lobbyComponentFilename: path.resolve(
+      `./app/client/components/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`,
+    ),
     gameComponentFilename: path.resolve(
       `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.tsx`,
     ),
-    gameStylesFilename: path.resolve(
+    gameComponentStylesFilename: path.resolve(
       `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.module.scss`,
     ),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
@@ -73,6 +77,8 @@ export interface GenerateOptions {
     addGameEntityClass(options),
     addGameStyles(options),
     addGameTypes(options),
+    addLobby(options),
+    addLobbyComponent(options),
   ]);
 })().catch((err) => {
   console.log(err);

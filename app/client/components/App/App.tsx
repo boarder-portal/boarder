@@ -8,9 +8,9 @@ import { GameType } from 'common/types/game';
 
 import Header from 'client/components/App/components/Header/Header';
 import Game from 'client/components/game/Game/Game';
-import Lobby from 'client/components/game/Lobby/Lobby';
 
 import Home from 'client/pages/Home/Home';
+import Lobby from 'client/pages/Lobby/Lobby';
 import Login from 'client/pages/Login/Login';
 import Registration from 'client/pages/Registration/Registration';
 

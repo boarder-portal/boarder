@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import times from 'lodash/times';
-import { ComponentType, useCallback } from 'react';
+import { ComponentType, useCallback, useMemo } from 'react';
 
 import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, TEST_CASES } from 'common/constants/game';
 
@@ -17,11 +17,7 @@ import Checkbox from 'client/components/common/Checkbox/Checkbox';
 import Flex from 'client/components/common/Flex/Flex';
 import Select from 'client/components/common/Select/Select';
 import Text from 'client/components/common/Text/Text';
-import BombersCreateGameOptions from 'client/components/games/bombers/BombersCreateGameOptions/BombersCreateGameOptions';
-import CarcassonneCreateGameOptions from 'client/components/games/carcassonne/CarcassonneCreateGameOptions/CarcassonneCreateGameOptions';
-import MahjongCreateGameOptions from 'client/components/games/mahjong/MahjongCreateGameOptions/MahjongCreateGameOptions';
-import PexesoCreateGameOptions from 'client/components/games/pexeso/PexesoCreateGameOptions/PexesoCreateGameOptions';
-import SevenWondersCreateGameOptions from 'client/components/games/sevenWonders/SevenWondersCreateGameOptions/SevenWondersCreateGameOptions';
+import { CreateGameOptionsProps } from 'client/components/game/Lobby/Lobby';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
@@ -32,34 +28,18 @@ interface NewGameOptionsProps<Game extends GameType> extends WithClassName {
   options: GameOptions<Game>;
   setOptions: SetOptions<Game>;
   createGame(): void;
+  renderCreateGameOptions?: ComponentType<CreateGameOptionsProps<Game>>;
 }
 
 export type ChangeOptions<Game extends GameType> = <K extends keyof GameOptions<Game>>(
   optionsChange: Pick<GameOptions<Game>, K>,
 ) => void;
 
-export interface CreateGameOptionsProps<Game extends GameType> {
-  options: GameOptions<Game>;
-  changeOptions: ChangeOptions<Game>;
-}
-
-const CREATE_GAME_OPTIONS_MAP: Partial<{
-  [Game in GameType]: ComponentType<CreateGameOptionsProps<Game>>;
-}> = {
-  [GameType.PEXESO]: PexesoCreateGameOptions,
-  [GameType.CARCASSONNE]: CarcassonneCreateGameOptions,
-  [GameType.SEVEN_WONDERS]: SevenWondersCreateGameOptions,
-  [GameType.BOMBERS]: BombersCreateGameOptions,
-  [GameType.MAHJONG]: MahjongCreateGameOptions,
-};
-
 const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>) => {
-  const { className, game, options, setOptions, createGame } = props;
+  const { className, game, options, setOptions, createGame, renderCreateGameOptions: CreateGameOptions } = props;
 
   const { minPlayersCount, maxPlayersCount } = DEFAULT_OPTIONS[game];
   const testCases = TEST_CASES[game];
-
-  const CreateGameOptions = CREATE_GAME_OPTIONS_MAP[game] as ComponentType<CreateGameOptionsProps<Game>> | undefined;
 
   const changeOptions: ChangeOptions<Game> = useCallback(
     (optionsChange) => {
@@ -115,6 +95,14 @@ const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>)
     },
     [changeOptions],
   );
+
+  const createGameOptions = useMemo(() => {
+    if (!CreateGameOptions) {
+      return null;
+    }
+
+    return <CreateGameOptions options={options} changeOptions={changeOptions} />;
+  }, [CreateGameOptions, changeOptions, options]);
 
   return (
     <Flex className={className} direction="column" between={3}>
@@ -184,12 +172,12 @@ const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>)
         </Flex>
       </Flex>
 
-      {CreateGameOptions && (
+      {createGameOptions && (
         <Flex className={styles.optionsBlock} direction="column" between={6}>
           <Text size="l">Настройки игры</Text>
 
           <Flex direction="column" between={3}>
-            <CreateGameOptions options={options} changeOptions={changeOptions} />
+            {createGameOptions}
           </Flex>
         </Flex>
       )}

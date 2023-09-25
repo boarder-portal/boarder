@@ -1,11 +1,17 @@
 import { ComponentType, useCallback, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/game';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameOptions, GameType } from 'common/types/game';
-import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap, LobbyUpdateEvent } from 'common/types/game/lobby';
+import {
+  LobbyClientEventMap,
+  LobbyEventType,
+  LobbyGame,
+  LobbyServerEventMap,
+  LobbyUpdateEvent,
+} from 'common/types/game/lobby';
 
 import useGameOptions from 'client/components/game/Lobby/hooks/useGameOptions';
 import useBoolean from 'client/hooks/useBoolean';
@@ -16,15 +22,16 @@ import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
 import Modal from 'client/components/common/Modal/Modal';
 import Text from 'client/components/common/Text/Text';
-import LobbyGame from 'client/components/game/Lobby/components/Game/Game';
+import Game from 'client/components/game/Lobby/components/Game/Game';
 import NewGameOptions from 'client/components/game/Lobby/components/NewGameOptions/NewGameOptions';
-import BombersGameOptions from 'client/components/games/bombers/BombersGameOptions/BombersGameOptions';
-import CarcassonneGameOptions from 'client/components/games/carcassonne/CarcassonneGameOptions/CarcassonneGameOptions';
-import MahjongGameOptions from 'client/components/games/mahjong/MahjongGameOptions/MahjongGameOptions';
-import PexesoGameOptions from 'client/components/games/pexeso/PexesoGameOptions/PexesoGameOptions';
-import SevenWondersGameOptions from 'client/components/games/sevenWonders/SevenWondersGameOptions/SevenWondersGameOptions';
 
 import styles from './Lobby.module.scss';
+
+export interface LobbyProps<Game extends GameType> {
+  game: Game;
+  renderGameOptions?: ComponentType<GameOptionsProps<Game>>;
+  renderCreateGameOptions?: ComponentType<CreateGameOptionsProps<Game>>;
+}
 
 export type ChangeOptions<Game extends GameType> = <K extends keyof GameOptions<Game>>(
   optionsChange: Pick<GameOptions<Game>, K>,
@@ -39,18 +46,8 @@ export interface GameOptionsProps<Game extends GameType> {
   options: GameOptions<Game>;
 }
 
-const GAME_OPTIONS_MAP: Partial<{
-  [Game in GameType]: ComponentType<GameOptionsProps<Game>>;
-}> = {
-  [GameType.PEXESO]: PexesoGameOptions,
-  [GameType.CARCASSONNE]: CarcassonneGameOptions,
-  [GameType.SEVEN_WONDERS]: SevenWondersGameOptions,
-  [GameType.BOMBERS]: BombersGameOptions,
-  [GameType.MAHJONG]: MahjongGameOptions,
-};
-
-const Lobby = <Game extends GameType>() => {
-  const { game } = useParams<{ game: Game }>();
+const Lobby = <Game extends GameType>(props: LobbyProps<Game>) => {
+  const { game, renderGameOptions, renderCreateGameOptions } = props;
 
   const [lobby, setLobby] = useState<LobbyUpdateEvent<Game> | null>(null);
   const {
@@ -65,6 +62,13 @@ const Lobby = <Game extends GameType>() => {
   const navigateToGame = useImmutableCallback((gameId: string) => {
     history.push(`/${game}/game/${gameId}`);
   });
+
+  const handleGameClick = useCallback(
+    (game: LobbyGame<Game>) => {
+      navigateToGame(game.id);
+    },
+    [navigateToGame],
+  );
 
   const socket = useSocket<LobbyClientEventMap<Game>, LobbyServerEventMap<Game>>(`/${game}/lobby`, {
     [LobbyEventType.UPDATE]: (lobbyData) => {
@@ -82,8 +86,6 @@ const Lobby = <Game extends GameType>() => {
     refreshDefaultOptions();
   }, [closeMobileCreateGameModal, options, refreshDefaultOptions, socket]);
 
-  const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<GameOptionsProps<Game>>;
-
   return (
     <Flex className={styles.root} direction="column" between={5}>
       <Text size="xxl" weight="bold">
@@ -96,15 +98,7 @@ const Lobby = <Game extends GameType>() => {
             <Flex className={styles.games} direction="column" between={3}>
               {lobby.games.length ? (
                 lobby.games.map((game) => (
-                  <LobbyGame
-                    key={game.id}
-                    title={game.name}
-                    options={GameOptions && <GameOptions options={game.options} />}
-                    players={game.players.length}
-                    maxPlayers={game.options.maxPlayersCount}
-                    status={game.status}
-                    onClick={() => navigateToGame(game.id)}
-                  />
+                  <Game key={game.id} game={game} onClick={handleGameClick} renderOptions={renderGameOptions} />
                 ))
               ) : (
                 <Flex alignItems="center" justifyContent="center">
@@ -116,7 +110,13 @@ const Lobby = <Game extends GameType>() => {
             <Flex className={styles.desktopOptionsBlock} direction="column" between={3}>
               <Text size="xxl">Настройки</Text>
 
-              <NewGameOptions game={game} options={options} setOptions={setOptions} createGame={createGame} />
+              <NewGameOptions
+                game={game}
+                options={options}
+                setOptions={setOptions}
+                createGame={createGame}
+                renderCreateGameOptions={renderCreateGameOptions}
+              />
             </Flex>
           </Flex>
 
@@ -136,6 +136,7 @@ const Lobby = <Game extends GameType>() => {
               options={options}
               setOptions={setOptions}
               createGame={createGame}
+              renderCreateGameOptions={renderCreateGameOptions}
             />
           </Modal>
         </>
