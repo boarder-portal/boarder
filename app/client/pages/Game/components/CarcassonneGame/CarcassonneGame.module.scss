@@ -1,5 +1,5 @@
 .boardWrapper {
-  height: calc(100vh - 48px);
+  height: 100%;
   overflow: hidden;
   background-color: #faefe0;
 }
@@ -171,8 +171,9 @@
   --meeple-size: 20px;
 
   position: absolute;
-  top: 48px;
+  top: var(--contentIdealTop);
   left: 0;
   right: 0;
+  height: var(--contentIdealHeight);
 }
 

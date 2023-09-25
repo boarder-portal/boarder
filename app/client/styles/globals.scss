@@ -1,0 +1,45 @@
+@layer base, component, override;
+
+:root {
+  --headerHeight: 48px;
+  --contentIdealTop: var(--headerHeight);
+  --contentIdealHeight: calc(100vh - var(--headerHeight));
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eee;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+
+  &:hover {
+    background: #ccc;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: #333;
+  font-size: 15px;
+}
+
+#root {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  font-family: Verdana, sans-serif;
+}

@@ -30,11 +30,11 @@
 
 .root {
   position: absolute;
+  top: var(--contentIdealTop);
   left: 0;
   right: 0;
-  bottom: 0;
-  top: 48px;
   width: 100%;
+  height: var(--contentIdealHeight);
   background: beige;
   padding: 12px;
 }

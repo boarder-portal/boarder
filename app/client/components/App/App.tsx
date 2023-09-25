@@ -1,4 +1,5 @@
 import '../../styles/reset.scss';
+import '../../styles/globals.scss';
 
 import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
