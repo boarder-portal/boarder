@@ -82,10 +82,6 @@ const Lobby = <Game extends GameType>() => {
     refreshDefaultOptions();
   }, [closeMobileCreateGameModal, options, refreshDefaultOptions, socket]);
 
-  if (!lobby) {
-    return null;
-  }
-
   const GameOptions = GAME_OPTIONS_MAP[game] as ComponentType<GameOptionsProps<Game>>;
 
   return (
@@ -94,47 +90,56 @@ const Lobby = <Game extends GameType>() => {
         {GAME_NAMES[game]}
       </Text>
 
-      <Flex className={styles.content} between={10} alignItems="flexStart">
-        <Flex className={styles.games} direction="column" between={3}>
-          {lobby.games.length ? (
-            lobby.games.map((game) => (
-              <LobbyGame
-                key={game.id}
-                title={game.name}
-                options={GameOptions && <GameOptions options={game.options} />}
-                players={game.players.length}
-                maxPlayers={game.options.maxPlayersCount}
-                status={game.status}
-                onClick={() => navigateToGame(game.id)}
-              />
-            ))
-          ) : (
-            <Flex alignItems="center" justifyContent="center">
-              <Text size="xl">Игр пока нет</Text>
+      {lobby && (
+        <>
+          <Flex className={styles.content} between={10} alignItems="flexStart">
+            <Flex className={styles.games} direction="column" between={3}>
+              {lobby.games.length ? (
+                lobby.games.map((game) => (
+                  <LobbyGame
+                    key={game.id}
+                    title={game.name}
+                    options={GameOptions && <GameOptions options={game.options} />}
+                    players={game.players.length}
+                    maxPlayers={game.options.maxPlayersCount}
+                    status={game.status}
+                    onClick={() => navigateToGame(game.id)}
+                  />
+                ))
+              ) : (
+                <Flex alignItems="center" justifyContent="center">
+                  <Text size="xl">Игр пока нет</Text>
+                </Flex>
+              )}
             </Flex>
-          )}
-        </Flex>
 
-        <Flex className={styles.desktopOptionsBlock} direction="column" between={3}>
-          <Text size="xxl">Настройки</Text>
+            <Flex className={styles.desktopOptionsBlock} direction="column" between={3}>
+              <Text size="xxl">Настройки</Text>
 
-          <NewGameOptions game={game} options={options} setOptions={setOptions} createGame={createGame} />
-        </Flex>
-      </Flex>
+              <NewGameOptions game={game} options={options} setOptions={setOptions} createGame={createGame} />
+            </Flex>
+          </Flex>
 
-      <Flex className={styles.mobileCreateGameBlock} direction="column" justifyContent="center">
-        <Button onClick={openMobileCreateGameModal}>Создать игру</Button>
-      </Flex>
+          <Flex className={styles.mobileCreateGameBlock} direction="column" justifyContent="center">
+            <Button onClick={openMobileCreateGameModal}>Создать игру</Button>
+          </Flex>
 
-      <Modal open={mobileCreateGameModalOpen} title="Настройки" mobileFullHeight onClose={closeMobileCreateGameModal}>
-        <NewGameOptions
-          className={styles.mobileOptionsBlock}
-          game={game}
-          options={options}
-          setOptions={setOptions}
-          createGame={createGame}
-        />
-      </Modal>
+          <Modal
+            open={mobileCreateGameModalOpen}
+            title="Настройки"
+            mobileFullHeight
+            onClose={closeMobileCreateGameModal}
+          >
+            <NewGameOptions
+              className={styles.mobileOptionsBlock}
+              game={game}
+              options={options}
+              setOptions={setOptions}
+              createGame={createGame}
+            />
+          </Modal>
+        </>
+      )}
     </Flex>
   );
 };

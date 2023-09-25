@@ -4,6 +4,8 @@ import '../../styles/globals.scss';
 import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
+import { GameType } from 'common/types/game';
+
 import Header from 'client/components/Header/Header';
 
 import Game from 'client/pages/Game/Game';
@@ -13,6 +15,8 @@ import Login from 'client/pages/Login/Login';
 import Registration from 'client/pages/Registration/Registration';
 
 import styles from './App.module.scss';
+
+const gamesValues = Object.values(GameType).join('|');
 
 const App: FC = () => {
   return (
@@ -32,11 +36,11 @@ const App: FC = () => {
           <Login />
         </Route>
 
-        <Route exact path="/:game/lobby">
+        <Route exact path={`/:game(${gamesValues})/lobby`}>
           <Lobby />
         </Route>
 
-        <Route exact path="/:game/game/:gameId">
+        <Route exact path={`/:game(${gamesValues})/game/:gameId`}>
           <Game />
         </Route>
       </Switch>
