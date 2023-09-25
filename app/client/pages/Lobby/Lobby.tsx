@@ -1,4 +1,4 @@
-import { ComponentType, useCallback, useMemo, useState } from 'react';
+import { ComponentType, useCallback, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/game';
@@ -82,10 +82,6 @@ const Lobby = <Game extends GameType>() => {
     refreshDefaultOptions();
   }, [closeMobileCreateGameModal, options, refreshDefaultOptions, socket]);
 
-  const newGameOptions = useMemo(() => {
-    return <NewGameOptions game={game} options={options} setOptions={setOptions} createGame={createGame} />;
-  }, [createGame, game, options, setOptions]);
-
   if (!lobby) {
     return null;
   }
@@ -122,7 +118,7 @@ const Lobby = <Game extends GameType>() => {
         <Flex className={styles.desktopOptionsBlock} direction="column" between={3}>
           <Text size="xxl">Настройки</Text>
 
-          {newGameOptions}
+          <NewGameOptions game={game} options={options} setOptions={setOptions} createGame={createGame} />
         </Flex>
       </Flex>
 
@@ -131,7 +127,13 @@ const Lobby = <Game extends GameType>() => {
       </Flex>
 
       <Modal open={mobileCreateGameModalOpen} title="Настройки" mobileFullHeight onClose={closeMobileCreateGameModal}>
-        {newGameOptions}
+        <NewGameOptions
+          className={styles.mobileOptionsBlock}
+          game={game}
+          options={options}
+          setOptions={setOptions}
+          createGame={createGame}
+        />
       </Modal>
     </Flex>
   );

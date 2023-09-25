@@ -4,6 +4,7 @@ import { ComponentType, useCallback } from 'react';
 
 import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, TEST_CASES } from 'common/constants/game';
 
+import { WithClassName } from 'client/types/react';
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameOptions, GameType, TestCaseType } from 'common/types/game';
 
@@ -26,7 +27,7 @@ import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './NewGameOptions.module.scss';
 
-interface NewGameOptionsProps<Game extends GameType> {
+interface NewGameOptionsProps<Game extends GameType> extends WithClassName {
   game: Game;
   options: GameOptions<Game>;
   setOptions: SetOptions<Game>;
@@ -53,7 +54,7 @@ const CREATE_GAME_OPTIONS_MAP: Partial<{
 };
 
 const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>) => {
-  const { game, options, setOptions, createGame } = props;
+  const { className, game, options, setOptions, createGame } = props;
 
   const { minPlayersCount, maxPlayersCount } = DEFAULT_OPTIONS[game];
   const testCases = TEST_CASES[game];
@@ -116,7 +117,7 @@ const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>)
   );
 
   return (
-    <Flex direction="column" between={3}>
+    <Flex className={className} direction="column" between={3}>
       <Flex className={styles.optionsBlock} direction="column" between={6}>
         <Text size="l">Общие настройки</Text>
 
@@ -193,7 +194,9 @@ const NewGameOptions = <Game extends GameType>(props: NewGameOptionsProps<Game>)
         </Flex>
       )}
 
-      <Button onClick={createGame}>Создать игру</Button>
+      <Button className={styles.createGameButton} onClick={createGame}>
+        Создать игру
+      </Button>
     </Flex>
   );
 };

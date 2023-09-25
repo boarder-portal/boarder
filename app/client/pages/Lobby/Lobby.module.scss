@@ -7,23 +7,15 @@
 .games {
   flex-grow: 1;
   height: 100%;
-  padding: 8px;
   overflow: auto;
 
   @include mobile {
     margin: 0 calc(-1 * var(--appSidePadding));
+    padding: 12px;
   }
-}
-
-.mobileCreateGameBlock {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 8px;
 
   @include desktop {
-    display: none;
+    padding: 8px;
   }
 }
 
@@ -43,6 +35,22 @@
   @include desktop {
     padding: 8px;
   }
+}
+
+.mobileCreateGameBlock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px;
+
+  @include desktop {
+    display: none;
+  }
+}
+
+.mobileOptionsBlock {
+  height: 100%;
 }
 
 .root {
