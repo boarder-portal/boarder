@@ -32,17 +32,17 @@ import {
   PlayerSettingsContexts,
   TimeDiffContext,
 } from 'client/components/game/Game/contexts';
-import BombersGame from 'client/components/games/bombers/BombersGame/BombersGame';
-import CarcassonneGame from 'client/components/games/carcassonne/CarcassonneGame/CarcassonneGame';
-import HeartsGame from 'client/components/games/hearts/HeartsGame/HeartsGame';
-import MachiKoroGame from 'client/components/games/machiKoro/MachiKoroGame/MachiKoroGame';
-import MahjongGame from 'client/components/games/mahjong/MahjongGame/MahjongGame';
-import OnitamaGame from 'client/components/games/onitama/OnitamaGame/OnitamaGame';
-import PexesoGame from 'client/components/games/pexeso/PexesoGame/PexesoGame';
-import RedSevenGame from 'client/components/games/redSeven/RedSevenGame/RedSevenGame';
-import SetGame from 'client/components/games/set/SetGame/SetGame';
-import SevenWondersGame from 'client/components/games/sevenWonders/SevenWondersGame/SevenWondersGame';
-import SurvivalOnlineGame from 'client/components/games/survivalOnline/SurvivalOnlineGame/SurvivalOnlineGame';
+import BombersGame from 'client/components/games/bombers/BombersGame/components/GameContent/GameContent';
+import CarcassonneGame from 'client/components/games/carcassonne/CarcassonneGame/components/GameContent/GameContent';
+import HeartsGame from 'client/components/games/hearts/HeartsGame/components/GameContent/GameContent';
+import MachiKoroGame from 'client/components/games/machiKoro/MachiKoroGame/components/GameContent/GameContent';
+import MahjongGame from 'client/components/games/mahjong/MahjongGame/components/GameContent/GameContent';
+import OnitamaGame from 'client/components/games/onitama/OnitamaGame/components/GameContent/GameContent';
+import PexesoGame from 'client/components/games/pexeso/PexesoGame/components/GameContent/GameContent';
+import RedSevenGame from 'client/components/games/redSeven/RedSevenGame/components/GameContent/GameContent';
+import SetGame from 'client/components/games/set/SetGame/components/GameContent/GameContent';
+import SevenWondersGame from 'client/components/games/sevenWonders/SevenWondersGame/components/GameContent/GameContent';
+import SurvivalOnlineGame from 'client/components/games/survivalOnline/SurvivalOnlineGame/components/GameContent/GameContent';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 

@@ -3,17 +3,11 @@ import { FC, memo } from 'react';
 import { GameType } from 'common/types/game';
 
 import Lobby from 'client/components/game/Lobby/Lobby';
-import BombersCreateGameOptions from 'client/components/games/bombers/BombersCreateGameOptions/BombersCreateGameOptions';
-import BombersGameOptions from 'client/components/games/bombers/BombersGameOptions/BombersGameOptions';
+import CreateGameOptions from 'client/components/games/bombers/BombersLobby/components/CreateGameOptions/CreateGameOptions';
+import GameOptions from 'client/components/games/bombers/BombersLobby/components/GameOptions/GameOptions';
 
 const BombersLobby: FC = () => {
-  return (
-    <Lobby
-      game={GameType.BOMBERS}
-      renderGameOptions={BombersGameOptions}
-      renderCreateGameOptions={BombersCreateGameOptions}
-    />
-  );
+  return <Lobby game={GameType.BOMBERS} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(BombersLobby);

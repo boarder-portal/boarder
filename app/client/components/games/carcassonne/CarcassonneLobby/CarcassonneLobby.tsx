@@ -3,16 +3,12 @@ import { FC, memo } from 'react';
 import { GameType } from 'common/types/game';
 
 import Lobby from 'client/components/game/Lobby/Lobby';
-import CarcassonneCreateGameOptions from 'client/components/games/carcassonne/CarcassonneCreateGameOptions/CarcassonneCreateGameOptions';
-import CarcassonneGameOptions from 'client/components/games/carcassonne/CarcassonneGameOptions/CarcassonneGameOptions';
+import CreateGameOptions from 'client/components/games/carcassonne/CarcassonneLobby/components/CreateGameOptions/CreateGameOptions';
+import GameOptions from 'client/components/games/carcassonne/CarcassonneLobby/components/GameOptions/GameOptions';
 
 const CarcassonneLobby: FC = () => {
   return (
-    <Lobby
-      game={GameType.CARCASSONNE}
-      renderGameOptions={CarcassonneGameOptions}
-      renderCreateGameOptions={CarcassonneCreateGameOptions}
-    />
+    <Lobby game={GameType.CARCASSONNE} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />
   );
 };
 
