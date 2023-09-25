@@ -14,7 +14,7 @@ import addImport from './addImport';
 import modifyFile from './modifyFile';
 import shortenImport from './shortenImport';
 
-const FILE_PATH = path.resolve('./app/client/pages/Game/Game.tsx');
+const FILE_PATH = path.resolve('./app/client/components/game/Game/Game.tsx');
 
 export default async function addGame(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {

@@ -16,7 +16,7 @@ export interface GameOptions extends BaseGameOptions<GameType.{{constCased}}> {}
 
 export interface PlayerData {}
 
-export interface Player extends GamePlayer<GameType.{{constCased}}> {
+export interface Player extends BaseGamePlayer<GameType.{{constCased}}> {
   data: PlayerData;
 }
 

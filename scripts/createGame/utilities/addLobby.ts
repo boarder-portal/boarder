@@ -33,7 +33,7 @@ export default async function addLobby(options: GenerateOptions): Promise<void> 
         init.properties.push(
           objectProperty(
             memberExpression(identifier('GameType'), identifier(options.constCased)),
-            identifier(`${options.pascalCased}Game`),
+            identifier(`${options.pascalCased}Lobby`),
             true,
           ),
         );

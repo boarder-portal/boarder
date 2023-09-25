@@ -4,7 +4,7 @@ import { GameType } from 'common/types/game';
 
 import useSocket from 'client/hooks/useSocket';
 
-import { GameProps } from 'client/pages/Game/Game';
+import { GameProps } from 'client/components/game/Game/Game';
 
 import styles from './{{pascalCased}}Game.module.scss';
 
