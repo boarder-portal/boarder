@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import typedReactMemo from 'client/types/typedReactMemo';
@@ -53,8 +53,6 @@ const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
   const [inFullscreen, setInFullscreen] = useState(false);
   const { value: settingsModalOpen, setTrue: openSettingsModal, setFalse: closeSettingsModal } = useBoolean(false);
 
-  const rootRef = useRef<HTMLDivElement | null>(null);
-
   const history = useHistory();
 
   const settingsContext = usePlayerSettings(game);
@@ -66,7 +64,7 @@ const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
     if (inFullscreen) {
       await document.exitFullscreen();
     } else {
-      await rootRef.current?.requestFullscreen();
+      await document.documentElement.requestFullscreen();
     }
   }, [inFullscreen]);
 
@@ -119,7 +117,7 @@ const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
       return;
     }
 
-    screen.orientation.lock(fullscreenOrientation);
+    screen.orientation.lock(fullscreenOrientation).catch(() => {});
 
     return () => {
       screen.orientation.unlock();
@@ -127,7 +125,7 @@ const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
   }, [fullscreenOrientation, inFullscreen, screenOrientationSupported]);
 
   return (
-    <div className={styles.root} ref={rootRef}>
+    <div className={styles.root}>
       <Flex className={styles.content} direction="column">
         <Content io={io} gameOptions={gameOptions} gameInfo={gameInfo} gameResult={gameResult} gameState={gameState} />
       </Flex>
