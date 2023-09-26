@@ -23,7 +23,7 @@ export default async function addLobby(options: GenerateOptions): Promise<void> 
         path.node,
         importDeclaration(
           [importDefaultSpecifier(identifier(`${options.pascalCased}Lobby`))],
-          stringLiteral(shortenImport(options.lobbyComponentFilename)),
+          stringLiteral(shortenImport(options.lobbyFilename)),
         ),
       );
     } else if (path.isVariableDeclaration() && path.node.declarations.length > 0) {

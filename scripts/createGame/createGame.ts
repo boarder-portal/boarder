@@ -9,11 +9,12 @@ import addConstants from './utilities/addConstants';
 import addDefaultOptions from './utilities/addDefaultOptions';
 import addGame from './utilities/addGame';
 import addGameComponent from './utilities/addGameComponent';
+import addGameContent from './utilities/addGameContent';
+import addGameContentStyles from './utilities/addGameContentStyles';
 import addGameEntity from './utilities/addGameEntity';
 import addGameEntityClass from './utilities/addGameEntityClass';
 import addGameEnumField from './utilities/addGameEnumField';
 import addGameNameAndPlayerSettings from './utilities/addGameNameAndPlayerSettings';
-import addGameStyles from './utilities/addGameStyles';
 import addGameTypes from './utilities/addGameTypes';
 import addLobby from './utilities/addLobby';
 import addLobbyComponent from './utilities/addLobbyComponent';
@@ -38,9 +39,10 @@ export interface GenerateOptions {
 
   typesFilename: string;
   constantsFilename: string;
-  lobbyComponentFilename: string;
-  gameComponentFilename: string;
-  gameComponentStylesFilename: string;
+  lobbyFilename: string;
+  gameFilename: string;
+  gameContentFilename: string;
+  gameContentStylesFilename: string;
   gameEntityFilename: string;
 }
 
@@ -53,14 +55,15 @@ export interface GenerateOptions {
 
     typesFilename: path.resolve(`./app/common/types/games/${camelCased}/index.ts`),
     constantsFilename: path.resolve(`./app/common/constants/games/${camelCased}/index.ts`),
-    lobbyComponentFilename: path.resolve(
+    lobbyFilename: path.resolve(
       `./app/client/components/games/${camelCased}/${pascalCased}Lobby/${pascalCased}Lobby.tsx`,
     ),
-    gameComponentFilename: path.resolve(
-      `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.tsx`,
+    gameFilename: path.resolve(`./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.tsx`),
+    gameContentFilename: path.resolve(
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/GameContent/GameContent.tsx`,
     ),
-    gameComponentStylesFilename: path.resolve(
-      `./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.module.scss`,
+    gameContentStylesFilename: path.resolve(
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/GameContent/GameContent.module.scss`,
     ),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
   };
@@ -71,11 +74,12 @@ export interface GenerateOptions {
     addGameNameAndPlayerSettings(options),
     addDefaultOptions(options),
     addGame(options),
+    addGameComponent(options),
     addGameEntity(options),
     addConstants(options),
-    addGameComponent(options),
+    addGameContent(options),
     addGameEntityClass(options),
-    addGameStyles(options),
+    addGameContentStyles(options),
     addGameTypes(options),
     addLobby(options),
     addLobbyComponent(options),

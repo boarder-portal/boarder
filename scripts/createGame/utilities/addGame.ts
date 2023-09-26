@@ -14,7 +14,7 @@ import addImport from './addImport';
 import modifyFile from './modifyFile';
 import shortenImport from './shortenImport';
 
-const FILE_PATH = path.resolve('./app/client/components/game/Game/Game.tsx');
+const FILE_PATH = path.resolve('./app/client/pages/Game/Game.tsx');
 
 export default async function addGame(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {
@@ -23,7 +23,7 @@ export default async function addGame(options: GenerateOptions): Promise<void> {
         path.node,
         importDeclaration(
           [importDefaultSpecifier(identifier(`${options.pascalCased}Game`))],
-          stringLiteral(shortenImport(options.gameComponentFilename)),
+          stringLiteral(shortenImport(options.gameFilename)),
         ),
       );
     } else if (path.isVariableDeclaration() && path.node.declarations.length > 0) {
