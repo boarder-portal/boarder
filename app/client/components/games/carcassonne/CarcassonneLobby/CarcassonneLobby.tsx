@@ -7,9 +7,7 @@ import CreateGameOptions from 'client/components/games/carcassonne/CarcassonneLo
 import GameOptions from 'client/components/games/carcassonne/CarcassonneLobby/components/GameOptions/GameOptions';
 
 const CarcassonneLobby: FC = () => {
-  return (
-    <Lobby game={GameType.CARCASSONNE} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />
-  );
+  return <Lobby<GameType.CARCASSONNE> renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(CarcassonneLobby);

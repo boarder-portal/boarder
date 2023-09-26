@@ -1,4 +1,5 @@
 import { FC, memo } from 'react';
+import { Link } from 'react-router-dom';
 
 import { GAMES_IN_DEVELOPMENT, GAME_NAMES } from 'common/constants/game';
 
@@ -20,10 +21,10 @@ const Home: FC = () => {
         {Object.values(GameType)
           .filter((game) => process.env.NODE_ENV !== 'production' || !GAMES_IN_DEVELOPMENT.includes(game))
           .map((game) => (
-            <a
+            <Link
               key={game}
               className={styles.game}
-              href={`/${game}/lobby`}
+              to={`/${game}/lobby`}
               style={{
                 backgroundImage: `url("/games/backgrounds/${game}.png")`,
               }}
@@ -31,7 +32,7 @@ const Home: FC = () => {
               <Text className={styles.caption} size="xl">
                 {GAME_NAMES[game]}
               </Text>
-            </a>
+            </Link>
           ))}
       </div>
     </Flex>

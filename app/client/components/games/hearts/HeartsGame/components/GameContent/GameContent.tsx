@@ -13,12 +13,12 @@ import usePlayer from 'client/hooks/usePlayer';
 
 import ArrowLeftIcon from 'client/components/common/icons/ArrowLeftIcon/ArrowLeftIcon';
 import ArrowRightIcon from 'client/components/common/icons/ArrowRightIcon/ArrowRightIcon';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import Player from 'client/components/games/hearts/HeartsGame/components/GameContent/components/Player/Player';
 
 import styles from './GameContent.module.scss';
 
-const GameContent: FC<GameProps<GameType.HEARTS>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.HEARTS>> = (props) => {
   const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<PlayerModel[]>([]);

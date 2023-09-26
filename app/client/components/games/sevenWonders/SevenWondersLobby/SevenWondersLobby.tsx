@@ -7,9 +7,7 @@ import CreateGameOptions from 'client/components/games/sevenWonders/SevenWonders
 import GameOptions from 'client/components/games/sevenWonders/SevenWondersLobby/components/GameOptions/GameOptions';
 
 const SevenWondersLobby: FC = () => {
-  return (
-    <Lobby game={GameType.SEVEN_WONDERS} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />
-  );
+  return <Lobby<GameType.SEVEN_WONDERS> renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(SevenWondersLobby);

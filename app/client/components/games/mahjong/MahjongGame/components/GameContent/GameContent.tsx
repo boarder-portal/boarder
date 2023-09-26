@@ -28,7 +28,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import CalculatorModal from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/CalculatorModal/CalculatorModal';
 import ControlPanel from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/ControlPanel/ControlPanel';
 import Discard from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/Discard/Discard';
@@ -54,7 +54,7 @@ const GRID_GAP = 12;
 const RIGHT_PANEL_SIZE = 350;
 const BOTTOM_PANEL_SIZE = 200;
 
-const GameContent: FC<GameProps<GameType.MAHJONG>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
   const { io, gameOptions, gameInfo } = props;
 
   const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);

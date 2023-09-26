@@ -16,7 +16,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import Board from 'client/components/games/machiKoro/MachiKoroGame/components/GameContent/components/Board/Board';
 import Player from 'client/components/games/machiKoro/MachiKoroGame/components/GameContent/components/Player/Player';
 import StatusAndActions from 'client/components/games/machiKoro/MachiKoroGame/components/GameContent/components/StatusAndActions/StatusAndActions';
@@ -35,7 +35,7 @@ interface CardsToSwap {
   toCardId: CardId | null;
 }
 
-const GameContent: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.MACHI_KORO>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [board, setBoard] = useState(gameInfo.board);

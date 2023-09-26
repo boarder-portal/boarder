@@ -21,7 +21,7 @@ import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Image from 'client/components/common/Image/Image';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import GameEnd from 'client/components/game/Game/components/GameEnd/GameEnd';
 
 import styles from './GameContent.module.scss';
@@ -51,7 +51,7 @@ const shuffleCards = (cards: PexesoClientCard[], shuffleIndexes: ShuffleCardsInd
 
 const getOrthogonalFieldCardCoord = (coord: number): number => (CARD_SIZE + CARDS_MARGIN) * coord;
 
-const GameContent: FC<GameProps<GameType.PEXESO>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.PEXESO>> = (props) => {
   const { io, gameOptions, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<PexesoClientCard[]>(

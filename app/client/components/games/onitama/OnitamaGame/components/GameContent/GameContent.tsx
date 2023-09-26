@@ -19,7 +19,7 @@ import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 import usePlayer from 'client/hooks/usePlayer';
 
 import Flex from 'client/components/common/Flex/Flex';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import GameEnd from 'client/components/game/Game/components/GameEnd/GameEnd';
 import Player from 'client/components/games/onitama/OnitamaGame/components/GameContent/components/Player/Player';
 
@@ -49,7 +49,7 @@ const getLegalMoves = (from: Coords, card: CardType, board: Board, player: Playe
   return cells;
 };
 
-const GameContent: FC<GameProps<GameType.ONITAMA>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [board, setBoard] = useState<Board>([]);

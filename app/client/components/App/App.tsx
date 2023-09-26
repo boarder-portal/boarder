@@ -7,8 +7,8 @@ import { Route, Switch } from 'react-router-dom';
 import { GameType } from 'common/types/game';
 
 import Header from 'client/components/App/components/Header/Header';
-import Game from 'client/components/game/Game/Game';
 
+import Game from 'client/pages/Game/Game';
 import Home from 'client/pages/Home/Home';
 import Lobby from 'client/pages/Lobby/Lobby';
 import Login from 'client/pages/Login/Login';

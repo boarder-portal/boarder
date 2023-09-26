@@ -7,7 +7,7 @@ import CreateGameOptions from 'client/components/games/pexeso/PexesoLobby/compon
 import GameOptions from 'client/components/games/pexeso/PexesoLobby/components/GameOptions/GameOptions';
 
 const PexesoLobby: FC = () => {
-  return <Lobby game={GameType.PEXESO} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
+  return <Lobby<GameType.PEXESO> renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(PexesoLobby);

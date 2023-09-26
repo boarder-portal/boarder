@@ -43,7 +43,7 @@ import usePlayer from 'client/hooks/usePlayer';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Image from 'client/components/common/Image/Image';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import Meeple from 'client/components/games/carcassonne/CarcassonneGame/components/GameContent/components/Meeple/Meeple';
 import Players from 'client/components/games/carcassonne/CarcassonneGame/components/GameContent/components/Player/Players';
 
@@ -51,7 +51,7 @@ import { POP_SOUND, playSound } from 'client/sounds';
 
 import styles from './GameContent.module.scss';
 
-const GameContent: FC<GameProps<GameType.CARCASSONNE>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (props) => {
   const { io, gameOptions, gameInfo } = props;
 
   const createTimestamp = useCreateTimestamp();

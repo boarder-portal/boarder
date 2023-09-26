@@ -33,7 +33,7 @@ import useRaf from 'client/hooks/useRaf';
 import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import Player from 'client/components/games/bombers/BombersGame/components/GameContent/components/Player/Player';
 import Stat from 'client/components/games/bombers/BombersGame/components/GameContent/components/Stat/Stat';
 
@@ -57,7 +57,7 @@ const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
   KeyA: Direction.LEFT,
 };
 
-const GameContent: FC<GameProps<GameType.BOMBERS>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
   const { io, gameInfo, gameOptions } = props;
 
   const createTimestamp = useCreateTimestamp();

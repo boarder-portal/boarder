@@ -2,6 +2,8 @@ import { FC, memo } from 'react';
 
 import { ALL_FANS, FAN_DESCRIPTIONS, FAN_EXAMPLES, FAN_NAMES, FAN_SCORES } from 'common/constants/games/mahjong/fans';
 
+import useIsMobile from 'client/hooks/useIsMobile';
+
 import Flex from 'client/components/common/Flex/Flex';
 import Modal, { BaseModalProps } from 'client/components/common/Modal/Modal';
 import Table from 'client/components/common/Table/Table';
@@ -16,8 +18,10 @@ interface FansModalProps extends BaseModalProps {}
 const FansModal: FC<FansModalProps> = (props) => {
   const { open, onClose } = props;
 
+  const isMobile = useIsMobile();
+
   return (
-    <Modal contentClassName={styles.modalContent} open={open} title="Фаны" fillViewport onClose={onClose}>
+    <Modal contentClassName={styles.modalContent} open={open} title="Фаны" fillViewport={isMobile} onClose={onClose}>
       <Table
         className={styles.table}
         bordered

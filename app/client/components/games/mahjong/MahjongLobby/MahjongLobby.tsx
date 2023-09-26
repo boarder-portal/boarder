@@ -7,7 +7,7 @@ import CreateGameOptions from 'client/components/games/mahjong/MahjongLobby/comp
 import GameOptions from 'client/components/games/mahjong/MahjongLobby/components/GameOptions/GameOptions';
 
 const MahjongLobby: FC = () => {
-  return <Lobby game={GameType.MAHJONG} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
+  return <Lobby<GameType.MAHJONG> renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(MahjongLobby);

@@ -1,5 +1,5 @@
 import { ComponentType, useCallback, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { GAME_NAMES } from 'common/constants/game';
 
@@ -28,7 +28,6 @@ import NewGameOptions from 'client/components/game/Lobby/components/NewGameOptio
 import styles from './Lobby.module.scss';
 
 export interface LobbyProps<Game extends GameType> {
-  game: Game;
   renderGameOptions?: ComponentType<GameOptionsProps<Game>>;
   renderCreateGameOptions?: ComponentType<CreateGameOptionsProps<Game>>;
 }
@@ -47,7 +46,9 @@ export interface GameOptionsProps<Game extends GameType> {
 }
 
 const Lobby = <Game extends GameType>(props: LobbyProps<Game>) => {
-  const { game, renderGameOptions, renderCreateGameOptions } = props;
+  const { renderGameOptions, renderCreateGameOptions } = props;
+
+  const { game } = useParams<{ game: Game }>();
 
   const [lobby, setLobby] = useState<LobbyUpdateEvent<Game> | null>(null);
   const {

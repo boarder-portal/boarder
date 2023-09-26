@@ -17,13 +17,13 @@ import usePlayer from 'client/hooks/usePlayer';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Image from 'client/components/common/Image/Image';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import MainBoard from 'client/components/games/sevenWonders/SevenWondersGame/components/GameContent/components/MainBoard/MainBoard';
 import Wonder from 'client/components/games/sevenWonders/SevenWondersGame/components/GameContent/components/Wonder/Wonder';
 
 import styles from './GameContent.module.scss';
 
-const GameContent: FC<GameProps<GameType.SEVEN_WONDERS>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.SEVEN_WONDERS>> = (props) => {
   const { io, gameOptions, gameInfo } = props;
 
   const [players, setPlayers] = useState<Player[]>([]);

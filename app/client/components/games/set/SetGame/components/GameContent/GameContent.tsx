@@ -9,12 +9,12 @@ import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
 import Text from 'client/components/common/Text/Text';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 import Card from 'client/components/games/set/SetGame/components/GameContent/components/Card/Card';
 
 import styles from './GameContent.module.scss';
 
-const GameContent: FC<GameProps<GameType.SET>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.SET>> = (props) => {
   const { io, gameInfo, gameResult } = props;
 
   const [cards, setCards] = useState<CardModel[]>([]);

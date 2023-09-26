@@ -1,6 +1,7 @@
-import { ComponentType, memo, useCallback, useMemo, useRef, useState } from 'react';
+import { ComponentType, useCallback, useMemo, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
+import typedReactMemo from 'client/types/typedReactMemo';
 import {
   BaseGamePlayer,
   CommonClientEventMap,
@@ -31,23 +32,16 @@ import {
   PlayerSettingsContexts,
   TimeDiffContext,
 } from 'client/components/game/Game/contexts';
-import BombersGame from 'client/components/games/bombers/BombersGame/components/GameContent/GameContent';
-import CarcassonneGame from 'client/components/games/carcassonne/CarcassonneGame/components/GameContent/GameContent';
-import HeartsGame from 'client/components/games/hearts/HeartsGame/components/GameContent/GameContent';
-import MachiKoroGame from 'client/components/games/machiKoro/MachiKoroGame/components/GameContent/GameContent';
-import MahjongGame from 'client/components/games/mahjong/MahjongGame/components/GameContent/GameContent';
-import OnitamaGame from 'client/components/games/onitama/OnitamaGame/components/GameContent/GameContent';
-import PexesoGame from 'client/components/games/pexeso/PexesoGame/components/GameContent/GameContent';
-import RedSevenGame from 'client/components/games/redSeven/RedSevenGame/components/GameContent/GameContent';
-import SetGame from 'client/components/games/set/SetGame/components/GameContent/GameContent';
-import SevenWondersGame from 'client/components/games/sevenWonders/SevenWondersGame/components/GameContent/GameContent';
-import SurvivalOnlineGame from 'client/components/games/survivalOnline/SurvivalOnlineGame/components/GameContent/GameContent';
 
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 import styles from './Game.module.scss';
 
 export interface GameProps<Game extends GameType> {
+  renderGameContent: ComponentType<GameContentProps<Game>>;
+}
+
+export interface GameContentProps<Game extends GameType> {
   io: GameClientSocket<Game>;
   gameOptions: GameOptions<Game>;
   gameInfo: GameInfo<Game>;
@@ -56,30 +50,16 @@ export interface GameProps<Game extends GameType> {
   getTimeDiff(): number;
 }
 
-const GAMES_MAP: {
-  [Game in GameType]: ComponentType<GameProps<Game>>;
-} = {
-  [GameType.PEXESO]: PexesoGame,
-  [GameType.SURVIVAL_ONLINE]: SurvivalOnlineGame,
-  [GameType.SET]: SetGame,
-  [GameType.ONITAMA]: OnitamaGame,
-  [GameType.CARCASSONNE]: CarcassonneGame,
-  [GameType.SEVEN_WONDERS]: SevenWondersGame,
-  [GameType.HEARTS]: HeartsGame,
-  [GameType.BOMBERS]: BombersGame,
-  [GameType.MACHI_KORO]: MachiKoroGame,
-  [GameType.MAHJONG]: MahjongGame,
-  [GameType.RED_SEVEN]: RedSevenGame,
-};
+const Game = <Game extends GameType>(props: GameProps<Game>) => {
+  const { renderGameContent: GameContent } = props;
 
-const Game = <G extends GameType>() => {
-  const { game, gameId } = useParams<{ game: G; gameId: string }>();
+  const { game, gameId } = useParams<{ game: Game; gameId: string }>();
 
   const [gameName, setGameName] = useState<string | null>(null);
-  const [gameOptions, setGameOptions] = useState<GameOptions<G>>(DEFAULT_OPTIONS[game]);
-  const [gameInfo, setGameInfo] = useState<GameInfo<G> | null>(null);
-  const [gameResult, setGameResult] = useState<GameResult<G> | null>(null);
-  const [players, setPlayers] = useState<BaseGamePlayer<G>[]>([]);
+  const [gameOptions, setGameOptions] = useState<GameOptions<Game>>(DEFAULT_OPTIONS[game]);
+  const [gameInfo, setGameInfo] = useState<GameInfo<Game> | null>(null);
+  const [gameResult, setGameResult] = useState<GameResult<Game> | null>(null);
+  const [players, setPlayers] = useState<BaseGamePlayer<Game>[]>([]);
   const [timeDiff, setTimeDiff] = useState(0);
   const [gameState, setGameState] = useState<GameState>({
     type: 'active',
@@ -93,7 +73,7 @@ const Game = <G extends GameType>() => {
 
   const socketPathRef = useRef(`/${game}/game/${gameId}?settings=${JSON.stringify(localPlayerSettings)}`);
 
-  const socket = useSocket<CommonClientEventMap<G>, CommonServerEventMap<G>>(socketPathRef.current, {
+  const socket = useSocket<CommonClientEventMap<Game>, CommonServerEventMap<Game>>(socketPathRef.current, {
     [CommonGameServerEvent.GET_DATA]: (data) => {
       const timeDiff = data.timestamp - now();
 
@@ -147,18 +127,16 @@ const Game = <G extends GameType>() => {
     socket?.emit(CommonGameClientEvent.TOGGLE_READY);
   }, [socket]);
 
-  const changeSetting: PlayerSettingsContext<G>['changeSetting'] = useImmutableCallback((key, value) => {
+  const changeSetting: PlayerSettingsContext<Game>['changeSetting'] = useImmutableCallback((key, value) => {
     onChangeSetting(key, value);
 
     // @ts-ignore
     socket?.emit(CommonGameClientEvent.CHANGE_SETTING, { key, value });
   });
 
-  const getTimeDiff = useImmutableCallback(() => {
-    return timeDiff;
-  });
+  const getTimeDiff = useImmutableCallback(() => timeDiff);
 
-  const playerSettingsContext = useMemo<PlayerSettingsContext<G>>(() => {
+  const playerSettingsContext = useMemo<PlayerSettingsContext<Game>>(() => {
     return {
       settings: player?.settings ?? localPlayerSettings,
       changeSetting,
@@ -204,14 +182,13 @@ const Game = <G extends GameType>() => {
     );
   }
 
-  const Game: ComponentType<GameProps<G>> = GAMES_MAP[game];
   const PlayerSettingsContext = PlayerSettingsContexts[game];
 
   return (
     <PlayerSettingsContext.Provider value={playerSettingsContext}>
       <TimeDiffContext.Provider value={getTimeDiff}>
         <GameStateContext.Provider value={gameState}>
-          <Game
+          <GameContent
             io={socket}
             gameOptions={gameOptions}
             gameInfo={gameInfo}
@@ -229,4 +206,4 @@ const Game = <G extends GameType>() => {
   );
 };
 
-export default memo(Game);
+export default typedReactMemo(Game);

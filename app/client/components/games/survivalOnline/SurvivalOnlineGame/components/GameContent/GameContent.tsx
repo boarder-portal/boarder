@@ -14,7 +14,7 @@ import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
-import { GameProps } from 'client/components/game/Game/Game';
+import { GameContentProps } from 'client/components/game/Game/Game';
 
 import styles from './GameContent.module.scss';
 
@@ -25,7 +25,7 @@ const DIRECTIONS_MAP: Partial<Record<string, Direction>> = {
   ArrowLeft: Direction.LEFT,
 };
 
-const GameContent: FC<GameProps<GameType.SURVIVAL_ONLINE>> = (props) => {
+const GameContent: FC<GameContentProps<GameType.SURVIVAL_ONLINE>> = (props) => {
   const { io, gameInfo } = props;
 
   const [players, setPlayers] = useState<Player[]>(gameInfo.players);
