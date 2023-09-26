@@ -14,6 +14,7 @@ interface DropdownProps extends WithClassName {
   disabled?: boolean;
   popup: ReactNode;
   popupPosition?: 'bottomLeft' | 'bottomCenter' | 'bottomRight';
+  children: ReactNode;
   onChangeVisibility?(visible: boolean): void;
 }
 

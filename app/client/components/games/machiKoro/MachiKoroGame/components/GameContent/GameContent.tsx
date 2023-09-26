@@ -1,5 +1,4 @@
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
 import {
@@ -165,10 +164,8 @@ const GameContent: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
     [GameServerEventType.DICES_ROLL]: (data) => {
       console.log(GameServerEventType.DICES_ROLL, data);
 
-      batchedUpdates(() => {
-        setDices(data);
-        setWithHarborEffect(false);
-      });
+      setDices(data);
+      setWithHarborEffect(false);
     },
     [GameServerEventType.CARDS_EFFECTS_RESULTS]: (data) => {
       console.log(GameServerEventType.CARDS_EFFECTS_RESULTS, data);
@@ -177,10 +174,8 @@ const GameContent: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
     [GameServerEventType.BUILD_CARD]: (data) => {
       console.log(GameServerEventType.BUILD_CARD, data);
 
-      batchedUpdates(() => {
-        setPlayers(data.players);
-        setBoard(data.board);
-      });
+      setPlayers(data.players);
+      setBoard(data.board);
     },
     [GameServerEventType.BUILD_LANDMARK]: (data) => {
       console.log(GameServerEventType.BUILD_LANDMARK, data);
@@ -190,10 +185,8 @@ const GameContent: FC<GameProps<GameType.MACHI_KORO>> = (props) => {
     [GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX]: (data) => {
       console.log(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, data);
 
-      batchedUpdates(() => {
-        setActivePlayerIndex(data.index);
-        setDices([]);
-      });
+      setActivePlayerIndex(data.index);
+      setDices([]);
     },
     [GameServerEventType.WAIT_ACTION]: (waitingAction) => {
       console.log(GameServerEventType.WAIT_ACTION, waitingAction);

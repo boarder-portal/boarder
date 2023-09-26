@@ -102,7 +102,7 @@ const CreateGameOptions: FC<CreateGameOptionsProps<GameType.PEXESO>> = (props) =
   );
 
   const handleShuffleAfterMovesCountChange = useCallback(
-    (afterMovesCount) => {
+    (afterMovesCount: number) => {
       if (!options.shuffleOptions) {
         return;
       }

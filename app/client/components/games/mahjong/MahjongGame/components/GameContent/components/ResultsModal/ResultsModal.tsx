@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import times from 'lodash/times';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { HAND_COUNTS } from 'common/constants/games/mahjong';
 
@@ -48,12 +47,10 @@ const ResultsModal: FC<ResultsModalProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    batchedUpdates(() => {
-      if (open) {
-        setViewMode(openedResult ? ViewMode.MAHJONG : ViewMode.TABLE);
-        setChosenResult(openedResult);
-      }
-    });
+    if (open) {
+      setViewMode(openedResult ? ViewMode.MAHJONG : ViewMode.TABLE);
+      setChosenResult(openedResult);
+    }
   }, [open, openedResult]);
 
   return (

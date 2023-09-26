@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 import { DragEvent, FC, memo, useCallback, useEffect, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { Tile as TileModel } from 'common/types/games/mahjong';
 
@@ -72,10 +71,8 @@ const Discard: FC<DiscardProps> = (props) => {
   );
 
   const handleDragLeave = useCallback(() => {
-    batchedUpdates(() => {
-      dragLeave();
-      setLocalTiles(tiles);
-    });
+    dragLeave();
+    setLocalTiles(tiles);
   }, [dragLeave, tiles]);
 
   useGlobalListener('dragend', document, () => {

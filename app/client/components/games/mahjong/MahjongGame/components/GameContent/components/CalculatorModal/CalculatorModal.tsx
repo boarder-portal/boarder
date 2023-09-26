@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { ALL_WINDS } from 'common/constants/games/mahjong';
 import { STANDARD_TILES } from 'common/constants/games/mahjong/tiles';
@@ -282,39 +281,37 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
 
   const reset = useCallback(
     (gameTakenIntoAccount: boolean) => {
-      batchedUpdates(() => {
-        setGameTakenIntoAccount(gameTakenIntoAccount);
+      setGameTakenIntoAccount(gameTakenIntoAccount);
 
-        if (gameTakenIntoAccount) {
-          if (realHand.length > getSupposedHandTileCount(realDeclaredSets.length)) {
-            setHand(realHand.slice(0, -1));
-            setWinningTile(realHand.at(-1) ?? null);
-          } else {
-            setHand(realHand);
-            setWinningTile(realWinningTile);
-          }
-
-          setDeclaredSets(realDeclaredSets);
-          setRoundWind(realRoundWind);
-          setSeatWind(realSeatWind);
-          setIsSelfDraw(player?.index === activePlayerIndex);
-          setIsRobbingKong(realIsRobbingKong);
-          setIsReplacementTile(realIsReplacementTile);
-          setIsLastWallTile(realIsLastWallTile);
-          setIsLastOfKind(realWinningTile ? tilesContainTile(lastTileCandidates, realWinningTile) : false);
+      if (gameTakenIntoAccount) {
+        if (realHand.length > getSupposedHandTileCount(realDeclaredSets.length)) {
+          setHand(realHand.slice(0, -1));
+          setWinningTile(realHand.at(-1) ?? null);
         } else {
-          setDeclaredSets([]);
-          setHand([]);
-          setWinningTile(null);
-          setRoundWind(WindSide.EAST);
-          setSeatWind(WindSide.EAST);
-          setIsSelfDraw(false);
-          setIsRobbingKong(false);
-          setIsReplacementTile(false);
-          setIsLastWallTile(false);
-          setIsLastOfKind(false);
+          setHand(realHand);
+          setWinningTile(realWinningTile);
         }
-      });
+
+        setDeclaredSets(realDeclaredSets);
+        setRoundWind(realRoundWind);
+        setSeatWind(realSeatWind);
+        setIsSelfDraw(player?.index === activePlayerIndex);
+        setIsRobbingKong(realIsRobbingKong);
+        setIsReplacementTile(realIsReplacementTile);
+        setIsLastWallTile(realIsLastWallTile);
+        setIsLastOfKind(realWinningTile ? tilesContainTile(lastTileCandidates, realWinningTile) : false);
+      } else {
+        setDeclaredSets([]);
+        setHand([]);
+        setWinningTile(null);
+        setRoundWind(WindSide.EAST);
+        setSeatWind(WindSide.EAST);
+        setIsSelfDraw(false);
+        setIsRobbingKong(false);
+        setIsReplacementTile(false);
+        setIsLastWallTile(false);
+        setIsLastOfKind(false);
+      }
     },
     [
       activePlayerIndex,
@@ -376,7 +373,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
     setDeclaredSets((declaredSets) => declaredSets.toSpliced(setIndex, 1));
   }, []);
 
-  const removeTileFromHand = useCallback((tileIndex) => {
+  const removeTileFromHand = useCallback((tileIndex: number) => {
     setHand((hand) => hand.toSpliced(tileIndex, 1));
   }, []);
 
@@ -389,18 +386,14 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [getMahjong]);
 
   const clear = useCallback(() => {
-    batchedUpdates(() => {
-      reset(gameTakenIntoAccount);
-      setShownMahjong(null);
-    });
+    reset(gameTakenIntoAccount);
+    setShownMahjong(null);
   }, [gameTakenIntoAccount, reset]);
 
   const onWaitClick = useCallback(
     (wait: TileModel) => {
-      batchedUpdates(() => {
-        setWinningTile(wait);
-        setShownMahjong(getMahjong(wait));
-      });
+      setWinningTile(wait);
+      setShownMahjong(getMahjong(wait));
     },
     [getMahjong],
   );

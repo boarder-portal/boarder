@@ -1,5 +1,4 @@
 import { ComponentType, memo, useCallback, useMemo, useRef, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 import { useHistory, useParams } from 'react-router-dom';
 
 import {
@@ -96,19 +95,17 @@ const Game = <G extends GameType>() => {
 
   const socket = useSocket<CommonClientEventMap<G>, CommonServerEventMap<G>>(socketPathRef.current, {
     [CommonGameServerEvent.GET_DATA]: (data) => {
-      batchedUpdates(() => {
-        const timeDiff = data.timestamp - now();
+      const timeDiff = data.timestamp - now();
 
-        setGameOptions(data.options);
-        setGameInfo(data.info);
-        setGameResult(data.result);
-        setPlayers(data.players);
-        setGameName(data.name);
-        setTimeDiff(timeDiff);
-        setGameState({
-          type: data.state.type,
-          changeTimestamp: data.state.changeTimestamp - timeDiff,
-        });
+      setGameOptions(data.options);
+      setGameInfo(data.info);
+      setGameResult(data.result);
+      setPlayers(data.players);
+      setGameName(data.name);
+      setTimeDiff(timeDiff);
+      setGameState({
+        type: data.state.type,
+        changeTimestamp: data.state.changeTimestamp - timeDiff,
       });
     },
     [CommonGameServerEvent.GET_INFO]: (info) => {

@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { FC, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
 import {
@@ -135,38 +134,34 @@ const GameContent: FC<GameProps<GameType.MAHJONG>> = (props) => {
     const fieldLayout = fieldWidth > fieldHeight ? 'HORIZONTAL' : 'VERTICAL';
     const availableTilesWidth = fieldLayout === 'HORIZONTAL' ? fieldHeight : fieldWidth;
 
-    batchedUpdates(() => {
-      setLayoutType(LayoutType[`${fieldLayout}_${panelLayout}`]);
-      setTileWidth(availableTilesWidth / 16);
-    });
+    setLayoutType(LayoutType[`${fieldLayout}_${panelLayout}`]);
+    setTileWidth(availableTilesWidth / 16);
   });
 
   const changeTileIndex = useImmutableCallback((from, to) => {
-    batchedUpdates(() => {
-      if (!player?.data.hand) {
-        return;
-      }
+    if (!player?.data.hand) {
+      return;
+    }
 
-      const { hand } = player.data.hand;
-      const newHand = [...hand];
+    const { hand } = player.data.hand;
+    const newHand = [...hand];
 
-      moveElement(newHand, from, to);
+    moveElement(newHand, from, to);
 
-      setPlayers(
-        players.with(player.index, {
-          ...player,
-          data: {
-            ...player.data,
-            hand: {
-              ...player.data.hand,
-              hand: newHand,
-            },
+    setPlayers(
+      players.with(player.index, {
+        ...player,
+        data: {
+          ...player.data,
+          hand: {
+            ...player.data.hand,
+            hand: newHand,
           },
-        }),
-      );
+        },
+      }),
+    );
 
-      setCurrentTileIndex(getNewCurrentTileIndex(currentTileIndex, from, to));
-    });
+    setCurrentTileIndex(getNewCurrentTileIndex(currentTileIndex, from, to));
 
     io.emit(GameClientEventType.CHANGE_TILE_INDEX, {
       from,
@@ -211,10 +206,8 @@ const GameContent: FC<GameProps<GameType.MAHJONG>> = (props) => {
   });
 
   const handleCloseResultsModal = useImmutableCallback(() => {
-    batchedUpdates(() => {
-      closeResultsModal();
-      setOpenedResult(null);
-    });
+    closeResultsModal();
+    setOpenedResult(null);
   });
 
   const handleTileHover = useImmutableCallback((tile: Tile) => {
@@ -240,28 +233,24 @@ const GameContent: FC<GameProps<GameType.MAHJONG>> = (props) => {
   useEffect(() => {
     console.log(gameInfo);
 
-    batchedUpdates(() => {
-      setPlayers(gameInfo.players);
-      setHandPhase(gameInfo.round?.hand?.phase ?? null);
-      setResultsByHand(gameInfo.resultsByHand);
-      setRoundWind(gameInfo.round?.wind ?? null);
-      setRoundHandIndex(gameInfo.round?.handIndex ?? -1);
-      setIsLastHandInGame(Boolean(gameInfo.round?.hand?.isLastInGame));
-      setActivePlayerIndex(gameInfo.round?.hand?.activePlayerIndex ?? -1);
-      setWallTilesLeft(gameInfo.round?.hand?.tilesLeft ?? null);
-      setCurrentTile(gameInfo.round?.hand?.turn?.currentTile ?? null);
-      setCurrentTileIndex(gameInfo.round?.hand?.turn?.currentTileIndex ?? -1);
-      setDeclareInfo(gameInfo.round?.hand?.turn?.declareInfo ?? null);
-      setIsReplacementTile(gameInfo.round?.hand?.turn?.isReplacementTile ?? false);
-    });
+    setPlayers(gameInfo.players);
+    setHandPhase(gameInfo.round?.hand?.phase ?? null);
+    setResultsByHand(gameInfo.resultsByHand);
+    setRoundWind(gameInfo.round?.wind ?? null);
+    setRoundHandIndex(gameInfo.round?.handIndex ?? -1);
+    setIsLastHandInGame(Boolean(gameInfo.round?.hand?.isLastInGame));
+    setActivePlayerIndex(gameInfo.round?.hand?.activePlayerIndex ?? -1);
+    setWallTilesLeft(gameInfo.round?.hand?.tilesLeft ?? null);
+    setCurrentTile(gameInfo.round?.hand?.turn?.currentTile ?? null);
+    setCurrentTileIndex(gameInfo.round?.hand?.turn?.currentTileIndex ?? -1);
+    setDeclareInfo(gameInfo.round?.hand?.turn?.declareInfo ?? null);
+    setIsReplacementTile(gameInfo.round?.hand?.turn?.isReplacementTile ?? false);
   }, [gameInfo]);
 
   useEffect(() => {
     if (wasHandInProcess && !handInProcess && currentHandResult?.mahjong) {
-      batchedUpdates(() => {
-        openResultsModal();
-        setOpenedResult(currentHandResult);
-      });
+      openResultsModal();
+      setOpenedResult(currentHandResult);
     }
   }, [currentHandResult, handInProcess, openResultsModal, wasHandInProcess]);
 

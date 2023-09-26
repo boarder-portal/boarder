@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
 import {
@@ -64,19 +63,17 @@ const GameContent: FC<GameProps<GameType.SEVEN_WONDERS>> = (props) => {
   useEffect(() => {
     console.log(gameInfo);
 
-    batchedUpdates(() => {
-      setPlayers(gameInfo.players);
-      setDiscard(gameInfo.discard);
-      setGamePhase(gameInfo.phase?.type ?? null);
+    setPlayers(gameInfo.players);
+    setDiscard(gameInfo.discard);
+    setGamePhase(gameInfo.phase?.type ?? null);
 
-      if (gameInfo.phase?.type === GamePhaseType.AGE) {
-        setAge(gameInfo.phase.age);
-        setAgePhase(gameInfo.phase.phase);
-      } else {
-        setAge(null);
-        setAgePhase(null);
-      }
-    });
+    if (gameInfo.phase?.type === GamePhaseType.AGE) {
+      setAge(gameInfo.phase.age);
+      setAgePhase(gameInfo.phase.phase);
+    } else {
+      setAge(null);
+      setAgePhase(null);
+    }
   }, [gameInfo]);
 
   if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {

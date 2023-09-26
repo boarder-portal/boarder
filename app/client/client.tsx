@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime';
 import { loadableReady } from '@loadable/component';
-import { hydrate } from 'react-dom';
+import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
 import createStore, { StoreContext } from 'client/utilities/store';
@@ -11,13 +11,20 @@ import App from 'client/components/App/App';
   await loadableReady();
 
   const store = createStore(window.initialState);
+  const root = document.getElementById('root');
 
-  hydrate(
+  if (!root) {
+    console.log('No root element');
+
+    return;
+  }
+
+  hydrateRoot(
+    root,
     <BrowserRouter>
       <StoreContext.Provider value={store}>
         <App />
       </StoreContext.Provider>
     </BrowserRouter>,
-    document.querySelector('#root'),
   );
 })();

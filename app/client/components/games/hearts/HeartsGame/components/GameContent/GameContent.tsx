@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import { GameType } from 'common/types/game';
 import { Suit } from 'common/types/game/cards';
@@ -60,15 +59,13 @@ const GameContent: FC<GameProps<GameType.HEARTS>> = (props) => {
   useEffect(() => {
     console.log(gameInfo);
 
-    batchedUpdates(() => {
-      setPlayers(gameInfo.players);
-      setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
-      setStage(gameInfo.hand?.stage ?? HandStage.PASS);
-      setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
-      setPlayedSuit(getPlayedSuit(gameInfo));
-      setIsFirstTurn(getIsFirstTurn(gameInfo));
-      setPassDirection(gameInfo.passDirection);
-    });
+    setPlayers(gameInfo.players);
+    setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
+    setStage(gameInfo.hand?.stage ?? HandStage.PASS);
+    setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
+    setPlayedSuit(getPlayedSuit(gameInfo));
+    setIsFirstTurn(getIsFirstTurn(gameInfo));
+    setPassDirection(gameInfo.passDirection);
   }, [gameInfo]);
 
   if (!player) {
