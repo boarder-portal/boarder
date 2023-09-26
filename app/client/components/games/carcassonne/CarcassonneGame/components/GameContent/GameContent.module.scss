@@ -60,7 +60,11 @@
   position: absolute;
   right: 10px;
   bottom: 10px;
+  width: 40px;
+  height: 40px;
   padding: 4px;
+  border-radius: 50%;
+  border: 1px solid #333;
   background-color: #fff;
 }
 
@@ -168,5 +172,7 @@
 .root {
   --base-card-size: 100px;
   --meeple-size: 20px;
+
+  position: relative;
 }
 

@@ -565,7 +565,9 @@ const GameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (props) => {
         turnEndsAt={serverTurnEndsAt}
       />
 
-      <div className={styles.cardsLeft}>{cardsLeft}</div>
+      <Flex className={styles.cardsLeft} alignItems="center" justifyContent="center">
+        {cardsLeft}
+      </Flex>
 
       <div className={styles.draggingCard} ref={draggingCardRef}>
         {selectedCard && (

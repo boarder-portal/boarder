@@ -1,0 +1,11 @@
+@layer component {
+  .root {
+    width: var(--buttonSize);
+  }
+}
+
+@layer override {
+  .root {
+    padding: 0;
+  }
+}
