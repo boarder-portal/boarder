@@ -35,7 +35,6 @@ import Discard from 'client/components/games/mahjong/MahjongGame/components/Game
 import FansModal from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/FansModal/FansModal';
 import Hand from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/Hand/Hand';
 import ResultsModal from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/ResultsModal/ResultsModal';
-import SettingsModal from 'client/components/games/mahjong/MahjongGame/components/GameContent/components/SettingsModal/SettingsModal';
 
 import { NEW_TURN, playSound } from 'client/sounds';
 
@@ -51,7 +50,7 @@ enum LayoutType {
 const SIDES = ['bottom', 'right', 'top', 'left'];
 
 const GRID_GAP = 12;
-const RIGHT_PANEL_SIZE = 350;
+const RIGHT_PANEL_SIZE = 250;
 const BOTTOM_PANEL_SIZE = 200;
 
 const GameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
@@ -66,7 +65,6 @@ const GameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     setTrue: openCalculatorModal,
     setFalse: closeCalculatorModal,
   } = useBoolean(false);
-  const { value: settingsModalOpen, setTrue: openSettingsModal, setFalse: closeSettingsModal } = useBoolean(false);
   const [openedResult, setOpenedResult] = useState<HandResult | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [handPhase, setHandPhase] = useState<HandPhase | null>(null);
@@ -350,7 +348,6 @@ const GameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
         openFansModal={openFansModal}
         openResultsModal={openResultsModal}
         openCalculatorModal={openCalculatorModal}
-        openSettingsModal={openSettingsModal}
       />
 
       <FansModal open={fansModalOpen} onClose={closeFansModal} />
@@ -378,8 +375,6 @@ const GameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
         openedResult={openedResult}
         onClose={handleCloseResultsModal}
       />
-
-      <SettingsModal open={settingsModalOpen} player={player} onClose={closeSettingsModal} />
     </div>
   );
 };

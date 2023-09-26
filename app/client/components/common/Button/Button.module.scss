@@ -65,6 +65,7 @@
 
     --buttonBorderColor: #333;
 
+    flex-shrink: 0;
     height: var(--buttonSize);
     display: inline-flex;
     align-items: center;

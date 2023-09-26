@@ -27,12 +27,6 @@
   height: 50px;
 }
 
-.buttons {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
-}
-
 .button {
   flex-grow: 1;
 }

@@ -49,7 +49,6 @@ interface ControlPanelProps extends WithClassName {
   openFansModal(): void;
   openResultsModal(): void;
   openCalculatorModal(): void;
-  openSettingsModal(): void;
 }
 
 type DeclareDecisionButton =
@@ -96,7 +95,6 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
     openFansModal,
     openResultsModal,
     openCalculatorModal,
-    openSettingsModal,
   } = props;
 
   const { settings } = usePlayerSettings(GameType.MAHJONG);
@@ -300,7 +298,7 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
         )}
       </Flex>
 
-      <div className={styles.buttons}>
+      <Flex direction="column" between={1}>
         <Button className={styles.button} size="s" onClick={openResultsModal}>
           Результаты
         </Button>
@@ -312,11 +310,7 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
         <Button className={styles.button} size="s" onClick={openCalculatorModal}>
           Калькулятор
         </Button>
-
-        <Button className={styles.button} size="s" onClick={openSettingsModal}>
-          Настройки
-        </Button>
-      </div>
+      </Flex>
     </Flex>
   );
 };

@@ -29,6 +29,7 @@ import {
 import { chow, isSuited, kong, pung } from 'common/utilities/games/mahjong/tilesBase';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
+import useIsMobile from 'client/hooks/useIsMobile';
 import usePrevious from 'client/hooks/usePrevious';
 
 import Button from 'client/components/common/Button/Button';
@@ -101,6 +102,8 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   const [isLastOfKind, setIsLastOfKind] = useState(false);
   const [gameTakenIntoAccount, setGameTakenIntoAccount] = useState(true);
   const [shownMahjong, setShownMahjong] = useState<HandMahjong | null>(null);
+
+  const isMobile = useIsMobile();
 
   const wasGameTakenIntoAccount = usePrevious(gameTakenIntoAccount);
 
@@ -454,7 +457,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [isNotLastOfKindAllowed]);
 
   return (
-    <Modal open={open} title="Калькулятор" fillViewport onClose={onClose}>
+    <Modal open={open} title="Калькулятор" fillViewport={isMobile} onClose={onClose}>
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>
