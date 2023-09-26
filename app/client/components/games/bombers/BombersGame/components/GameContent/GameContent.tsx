@@ -401,7 +401,7 @@ const GameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
   }, [changeCellSize]);
 
   return (
-    <Flex className={styles.root} justifyContent="center" alignItems="stretch" ref={containerRef}>
+    <Flex className={styles.root} between={4} justifyContent="center" alignItems="stretch" ref={containerRef}>
       <canvas
         style={{ width: canvasSize.width, height: canvasSize.height }}
         width={viewSize.width * CELL_SIZE}

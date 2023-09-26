@@ -207,6 +207,23 @@ const GameContent: FC<GameContentProps<GameType.MACHI_KORO>> = (props) => {
   return (
     <>
       <Flex direction="column" between={5}>
+        {player && (
+          <StatusAndActions
+            className={styles.statusAndActions}
+            activePlayer={players[activePlayerIndex]}
+            isPlayerActive={isActive}
+            dices={dices}
+            withHarborEffect={withHarborEffect}
+            waitingAction={waitingAction}
+            winner={gameResult === null ? null : players[gameResult].login}
+            onEndTurn={endTurn}
+            onSelectDicesCount={chooseDicesCount}
+            onSelectNeedToReroll={chooseNeedToReroll}
+            onSelectNeedToUseHarbor={chooseNeedToUseHarbor}
+            onSelectPublisherTarget={choosePublisherTarget}
+          />
+        )}
+
         <Flex className={styles.players}>
           {otherPlayers.map((player) => (
             <Player
@@ -248,23 +265,6 @@ const GameContent: FC<GameContentProps<GameType.MACHI_KORO>> = (props) => {
           onSelect={buildCard}
         />
       </Flex>
-
-      {player && (
-        <StatusAndActions
-          className={styles.statusAndActions}
-          activePlayer={players[activePlayerIndex]}
-          isPlayerActive={isActive}
-          dices={dices}
-          withHarborEffect={withHarborEffect}
-          waitingAction={waitingAction}
-          winner={gameResult === null ? null : players[gameResult].login}
-          onEndTurn={endTurn}
-          onSelectDicesCount={chooseDicesCount}
-          onSelectNeedToReroll={chooseNeedToReroll}
-          onSelectNeedToUseHarbor={chooseNeedToUseHarbor}
-          onSelectPublisherTarget={choosePublisherTarget}
-        />
-      )}
     </>
   );
 };

@@ -354,10 +354,14 @@ const GameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (props) => {
   useBoundTimestamps(() => [serverTurnEndsAt]);
 
   useGlobalListener('mousemove', document, (e) => {
+    handleBoardMouseMove(e);
+
     if (selectedCard && !placedCardCoords) {
       transformDraggingCard(e, boardZoomRef.current);
     }
   });
+
+  useGlobalListener('mouseup', document, handleBoardMouseUp);
 
   useEffect(() => {
     console.log(gameInfo);
@@ -386,8 +390,6 @@ const GameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (props) => {
         className={styles.boardWrapper}
         ref={boardWrapperRef}
         onMouseDown={handleBoardMouseDown}
-        onMouseMove={handleBoardMouseMove}
-        onMouseUp={handleBoardMouseUp}
         onWheel={handleBoardMouseWheel}
         onContextMenu={handleContextMenu}
       >

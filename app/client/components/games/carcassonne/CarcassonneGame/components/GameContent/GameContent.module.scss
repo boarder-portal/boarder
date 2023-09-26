@@ -1,7 +1,6 @@
 .boardWrapper {
   height: 100%;
   overflow: hidden;
-  background-color: #faefe0;
 }
 
 .board {
@@ -169,11 +168,5 @@
 .root {
   --base-card-size: 100px;
   --meeple-size: 20px;
-
-  position: absolute;
-  top: var(--contentIdealTop);
-  left: 0;
-  right: 0;
-  height: var(--contentIdealHeight);
 }
 

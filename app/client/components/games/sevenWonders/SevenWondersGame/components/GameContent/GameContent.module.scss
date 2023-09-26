@@ -29,12 +29,6 @@
 }
 
 .root {
-  position: absolute;
-  top: var(--contentIdealTop);
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: var(--contentIdealHeight);
-  background: beige;
+  height: 100%;
   padding: 12px;
 }

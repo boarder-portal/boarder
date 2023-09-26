@@ -1,4 +1,12 @@
-import { MouseEvent, MutableRefObject, WheelEvent, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  MouseEvent as ReactMouseEvent,
+  WheelEvent as ReactWheelEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { BASE_CARD_SIZE } from 'client/components/games/carcassonne/CarcassonneGame/components/GameContent/constants';
 
@@ -14,16 +22,16 @@ interface UseBoardControl {
   zoomRef: MutableRefObject<number>;
   isAbleToPlaceCard: boolean;
 
-  handleMouseDown(e: MouseEvent): void;
-  handleMouseUp(e: MouseEvent): void;
-  handleMouseMove(e: MouseEvent): void;
-  handleMouseWheel(e: WheelEvent): void;
+  handleMouseDown(e: ReactMouseEvent | MouseEvent): void;
+  handleMouseUp(e: ReactMouseEvent | MouseEvent): void;
+  handleMouseMove(e: ReactMouseEvent | MouseEvent): void;
+  handleMouseWheel(e: ReactWheelEvent | WheelEvent): void;
 }
 
 export default function useBoardControl(options: UseBoardControlOptions): UseBoardControl {
   const { onZoom } = options;
 
-  const [isAbleToPlaceCard, setIsInteractable] = useState(true);
+  const [isAbleToPlaceCard, setIsAbleToPlaceCard] = useState(true);
 
   const boardWrapperRef = useRef<HTMLDivElement | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -59,6 +67,8 @@ export default function useBoardControl(options: UseBoardControlOptions): UseBoa
         return;
       }
 
+      e.preventDefault();
+
       const dx = e.clientX - lastDragPointRef.current.x;
       const dy = e.clientY - lastDragPointRef.current.y;
 
@@ -76,7 +86,7 @@ export default function useBoardControl(options: UseBoardControlOptions): UseBoa
       };
 
       transformBoard();
-      setIsInteractable(false);
+      setIsAbleToPlaceCard(false);
     },
     [transformBoard],
   );
@@ -85,7 +95,7 @@ export default function useBoardControl(options: UseBoardControlOptions): UseBoa
     isDraggingRef.current = false;
     lastDragPointRef.current = null;
 
-    setTimeout(() => setIsInteractable(true), 200);
+    setTimeout(() => setIsAbleToPlaceCard(true), 200);
   }, []);
 
   const handleMouseWheel = useCallback(
