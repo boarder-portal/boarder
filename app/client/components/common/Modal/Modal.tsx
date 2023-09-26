@@ -20,12 +20,12 @@ export interface BaseModalProps {
 export interface ModalProps extends WithClassName, BaseModalProps {
   contentClassName?: string;
   title?: ReactNode;
-  mobileFullHeight?: boolean;
+  fillViewport?: boolean;
   children: ReactNode;
 }
 
 const Modal: FC<ModalProps> = (props) => {
-  const { className, contentClassName, open, title, mobileFullHeight, children, onClose } = props;
+  const { className, contentClassName, open, title, fillViewport, children, onClose } = props;
 
   const withHeader = Boolean(title || onClose);
 
@@ -39,10 +39,10 @@ const Modal: FC<ModalProps> = (props) => {
 
   return (
     <Overlay
-      className={styles.overlay}
+      className={classNames(styles.overlay, { [styles.fillViewport]: fillViewport })}
       contentClassName={classNames(
         styles.modal,
-        { [styles.withHeader]: withHeader, [styles.mobileFullHeight]: mobileFullHeight },
+        { [styles.withHeader]: withHeader, [styles.fillViewport]: fillViewport },
         className,
       )}
       open={open}

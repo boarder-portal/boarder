@@ -32,11 +32,18 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap);
+    border-radius: 12px;
     background-color: var(--modalBackground);
 
     &.withHeader {
       --headerHeight: 40px;
       --gap: 20px;
+    }
+
+    &.fillViewport {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
     }
 
     @include mobile {
@@ -48,27 +55,27 @@
     }
   }
 
-  @include desktop {
-    .modal {
-      border-radius: 12px;
-    }
-  }
-
   @include mobile {
     .modal {
       width: 100vw;
-
-      &.mobileFullHeight {
-        height: 100vh;
-      }
     }
   }
 }
 
 @layer override {
+  .overlay {
+    &.fillViewport {
+      --overlayPaddingX: 0px;
+      --overlayPaddingY: 0px;
+    }
+  }
+
   @include mobile {
     .overlay {
-      --overlayPadding: 0px;
+      &:not(.fillViewport) {
+        --overlayPaddingX: 8px;
+        --overlayPaddingY: 24px;
+      }
     }
   }
 }

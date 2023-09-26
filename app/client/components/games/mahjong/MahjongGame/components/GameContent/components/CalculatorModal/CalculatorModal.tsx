@@ -454,7 +454,7 @@ const CalculatorModal: FC<CalculatorModalProps> = (props) => {
   }, [isNotLastOfKindAllowed]);
 
   return (
-    <Modal open={open} title="Калькулятор" mobileFullHeight onClose={onClose}>
+    <Modal open={open} title="Калькулятор" fillViewport onClose={onClose}>
       <Flex direction="column" between={4}>
         <Flex justifyContent="spaceBetween" between={6}>
           <div className={styles.tilesGrid} style={{ gridTemplateColumns: `repeat(9, ${TILE_WIDTH}px)` }}>

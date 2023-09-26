@@ -124,12 +124,7 @@ const Lobby = <Game extends GameType>(props: LobbyProps<Game>) => {
             <Button onClick={openMobileCreateGameModal}>Создать игру</Button>
           </Flex>
 
-          <Modal
-            open={mobileCreateGameModalOpen}
-            title="Настройки"
-            mobileFullHeight
-            onClose={closeMobileCreateGameModal}
-          >
+          <Modal open={mobileCreateGameModalOpen} title="Настройки" fillViewport onClose={closeMobileCreateGameModal}>
             <NewGameOptions
               className={styles.mobileOptionsBlock}
               game={game}

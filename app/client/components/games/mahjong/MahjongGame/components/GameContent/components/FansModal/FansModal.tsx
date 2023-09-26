@@ -17,7 +17,7 @@ const FansModal: FC<FansModalProps> = (props) => {
   const { open, onClose } = props;
 
   return (
-    <Modal contentClassName={styles.modalContent} open={open} title="Фаны" onClose={onClose}>
+    <Modal contentClassName={styles.modalContent} open={open} title="Фаны" fillViewport onClose={onClose}>
       <Table
         className={styles.table}
         bordered
