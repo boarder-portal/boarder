@@ -1,4 +1,4 @@
-import { BuildKind } from 'client/components/games/sevenWonders/SevenWondersGame/components/GameContent/components/MainBoard/components/HandCard/types';
+import { BuildKind } from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/components/HandCard/types';
 import {
   BaseGameOptions,
   BaseGamePlayer,

@@ -3,10 +3,10 @@ import { FC, memo } from 'react';
 import { GameType } from 'common/types/game';
 
 import Game from 'client/components/game/Game/Game';
-import GameContent from 'client/components/games/hearts/HeartsGame/components/GameContent/GameContent';
+import HeartsGameContent from 'client/components/games/hearts/HeartsGame/components/HeartsGameContent/HeartsGameContent';
 
 const HeartsGame: FC = () => {
-  return <Game<GameType.HEARTS> renderGameContent={GameContent} />;
+  return <Game<GameType.HEARTS> renderGameContent={HeartsGameContent} />;
 };
 
 export default memo(HeartsGame);

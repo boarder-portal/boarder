@@ -60,10 +60,10 @@ export interface GenerateOptions {
     ),
     gameFilename: path.resolve(`./app/client/components/games/${camelCased}/${pascalCased}Game/${pascalCased}Game.tsx`),
     gameContentFilename: path.resolve(
-      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/GameContent/GameContent.tsx`,
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/${pascalCased}GameContent/${pascalCased}GameContent.tsx`,
     ),
     gameContentStylesFilename: path.resolve(
-      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/GameContent/GameContent.module.scss`,
+      `./app/client/components/games/${camelCased}/${pascalCased}Game/components/${pascalCased}GameContent/${pascalCased}GameContent.module.scss`,
     ),
     gameEntityFilename: path.resolve(`./app/server/gamesData/Game/${pascalCased}Game/${pascalCased}Game.ts`),
   };

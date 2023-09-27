@@ -20,8 +20,6 @@ import useLocalPlayerSettings from 'client/hooks/useLocalPlayerSettings';
 import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';
 
-import { BaseIconProps } from 'client/components/common/icons/BaseIcon/BaseIcon';
-import GameContent from 'client/components/game/Game/components/GameContent/GameContent';
 import WaitingRoom from 'client/components/game/Game/components/WaitingRoom/WaitingRoom';
 import {
   GameStateContext,
@@ -33,15 +31,7 @@ import {
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 export interface GameProps<Game extends GameType> {
-  fullscreenOrientation?: OrientationType | 'landscape' | 'primary';
-  toolbarButtons?: (ToolbarButton | null | undefined | false)[];
   renderGameContent: ComponentType<GameContentProps<Game>>;
-  renderSettings?: ComponentType<SettingsProps<Game>>;
-}
-
-export interface ToolbarButton {
-  icon: ComponentType<BaseIconProps>;
-  onClick(): void;
 }
 
 export interface GameContentProps<Game extends GameType> {
@@ -52,12 +42,8 @@ export interface GameContentProps<Game extends GameType> {
   gameState: GameState;
 }
 
-export interface SettingsProps<Game extends GameType> extends PlayerSettingsContext<Game> {
-  gameInfo: GameInfo<Game>;
-}
-
 const Game = <Game extends GameType>(props: GameProps<Game>) => {
-  const { fullscreenOrientation, renderGameContent, renderSettings } = props;
+  const { renderGameContent: GameContent } = props;
 
   const { game, gameId } = useParams<{ game: Game; gameId: string }>();
 
@@ -169,15 +155,11 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
       <TimeDiffContext.Provider value={getTimeDiff}>
         <GameStateContext.Provider value={gameState}>
           <GameContent
-            game={game}
             io={socket}
             gameOptions={gameOptions}
             gameInfo={gameInfo}
             gameResult={gameResult}
             gameState={gameState}
-            fullscreenOrientation={fullscreenOrientation}
-            renderContent={renderGameContent}
-            renderSettings={renderSettings}
           />
         </GameStateContext.Provider>
       </TimeDiffContext.Provider>

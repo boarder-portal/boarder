@@ -5,10 +5,11 @@ import { GameType } from 'common/types/game';
 import useSocket from 'client/hooks/useSocket';
 
 import { GameContentProps } from 'client/components/game/Game/Game';
+import GameContent from 'client/components/game/GameContent/GameContent';
 
 import styles from './{{pascalCased}}Game.module.scss';
 
-const GameContent: FC<GameContentProps<GameType.{{constCased}}>> = (props) => {
+const {{pascalCased}}GameContent: FC<GameContentProps<GameType.{{constCased}}>> = (props) => {
   const { io, gameInfo } = props;
 
   useSocket(io, {});
@@ -17,7 +18,7 @@ const GameContent: FC<GameContentProps<GameType.{{constCased}}>> = (props) => {
     console.log(gameInfo);
   }, [gameInfo]);
 
-  return null;
+  return <GameContent></GameContent>;
 };
 
-export default memo(GameContent);
+export default memo({{pascalCased}}GameContent);

@@ -3,11 +3,10 @@ import { FC, memo } from 'react';
 import { GameType } from 'common/types/game';
 
 import Game from 'client/components/game/Game/Game';
-import GameContent from 'client/components/games/mahjong/MahjongGame/components/GameContent/GameContent';
-import Settings from 'client/components/games/mahjong/MahjongGame/components/Settings/Settings';
+import MahjongGameContent from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/MahjongGameContent';
 
 const MahjongGame: FC = () => {
-  return <Game<GameType.MAHJONG> renderGameContent={GameContent} renderSettings={Settings} />;
+  return <Game<GameType.MAHJONG> renderGameContent={MahjongGameContent} />;
 };
 
 export default memo(MahjongGame);
