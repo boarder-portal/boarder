@@ -28,8 +28,10 @@ import usePlayer from 'client/hooks/usePlayer';
 import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
+import CalculateIcon from 'client/components/common/icons/CalculateIcon/CalculateIcon';
+import GroupIcon from 'client/components/common/icons/GroupIcon/GroupIcon';
 import { GameContentProps } from 'client/components/game/Game/Game';
-import GameContent from 'client/components/game/GameContent/GameContent';
+import GameContent, { ToolbarButton } from 'client/components/game/GameContent/GameContent';
 import CalculatorModal from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/CalculatorModal/CalculatorModal';
 import ControlPanel from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/ControlPanel/ControlPanel';
 import Discard from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Discard/Discard';
@@ -37,6 +39,7 @@ import FansModal from 'client/components/games/mahjong/MahjongGame/components/Ma
 import Hand from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Hand/Hand';
 import ResultsModal from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/ResultsModal/ResultsModal';
 import Settings from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Settings/Settings';
+import TileIcon from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/TileIcon/TileIcon';
 
 import { NEW_TURN, playSound } from 'client/sounds';
 
@@ -222,6 +225,23 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     return <Settings player={player} />;
   }, [player]);
 
+  const toolbarButtons = useMemo<ToolbarButton[]>(() => {
+    return [
+      {
+        icon: GroupIcon,
+        onClick: openResultsModal,
+      },
+      {
+        icon: TileIcon,
+        onClick: openFansModal,
+      },
+      {
+        icon: CalculateIcon,
+        onClick: openCalculatorModal,
+      },
+    ];
+  }, [openCalculatorModal, openFansModal, openResultsModal]);
+
   useGlobalListener('resize', window, calculateTileSizeAndLayout);
 
   useGlobalListener('dragend', document, () => {
@@ -267,7 +287,7 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
   return (
-    <GameContent settings={settings}>
+    <GameContent toolbarButtons={toolbarButtons} settings={settings}>
       <div
         ref={rootRef}
         className={classNames(styles.root, styles[layoutType])}
@@ -352,9 +372,6 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
           players={sortedPlayers}
           onDeclareDecision={declareDecision}
           startNewHand={startNewHand}
-          openFansModal={openFansModal}
-          openResultsModal={openResultsModal}
-          openCalculatorModal={openCalculatorModal}
         />
 
         <FansModal open={fansModalOpen} onClose={closeFansModal} />

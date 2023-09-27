@@ -24,7 +24,6 @@ import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
 
 import usePlayerSettings from 'client/components/game/Game/hooks/usePlayerSettings';
 
-import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
 import Tile from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Tile/Tile';
 import Tiles from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Tiles/Tiles';
@@ -46,9 +45,6 @@ interface ControlPanelProps extends WithClassName {
   players: Player[];
   onDeclareDecision(decision: DeclareDecision): void;
   startNewHand(ready: boolean): void;
-  openFansModal(): void;
-  openResultsModal(): void;
-  openCalculatorModal(): void;
 }
 
 type DeclareDecisionButton =
@@ -92,9 +88,6 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
     players,
     onDeclareDecision,
     startNewHand,
-    openFansModal,
-    openResultsModal,
-    openCalculatorModal,
   } = props;
 
   const { settings } = usePlayerSettings(GameType.MAHJONG);
@@ -296,20 +289,6 @@ const ControlPanel: FC<ControlPanelProps> = (props) => {
             Новая раздача
           </Flex>
         )}
-      </Flex>
-
-      <Flex direction="column" between={1}>
-        <Button className={styles.button} size="s" onClick={openResultsModal}>
-          Результаты
-        </Button>
-
-        <Button className={styles.button} size="s" onClick={openFansModal}>
-          Фаны
-        </Button>
-
-        <Button className={styles.button} size="s" onClick={openCalculatorModal}>
-          Калькулятор
-        </Button>
       </Flex>
     </Flex>
   );
