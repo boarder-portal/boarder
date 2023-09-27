@@ -81,7 +81,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
       setGameName(data.name);
       setTimeDiff(timeDiff);
       setGameState({
-        type: data.state.type,
+        ...data.state,
         changeTimestamp: data.state.changeTimestamp - timeDiff,
       });
       setGameStatus(data.status);
@@ -95,16 +95,10 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
     [CommonGameServerEvent.PING]: (serverTimestamp) => {
       setTimeDiff(serverTimestamp - now());
     },
-    [CommonGameServerEvent.PAUSE]: (pausedAt) => {
+    [CommonGameServerEvent.UPDATE_STATE]: (gameState) => {
       setGameState({
-        type: 'paused',
-        changeTimestamp: pausedAt - timeDiff,
-      });
-    },
-    [CommonGameServerEvent.UNPAUSE]: (pausedAt) => {
-      setGameState({
-        type: 'active',
-        changeTimestamp: pausedAt - timeDiff,
+        ...gameState,
+        changeTimestamp: gameState.changeTimestamp - timeDiff,
       });
     },
     [CommonGameServerEvent.END]: (result) => {
@@ -151,7 +145,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
 
   useGlobalListener('keyup', typeof document === 'undefined' ? null : document, (e) => {
     if (e.code === 'KeyP') {
-      socket?.emit(CommonGameClientEvent.TOGGLE_PAUSE);
+      socket?.emit(gameState.type === 'paused' ? CommonGameClientEvent.UNPAUSE : CommonGameClientEvent.PAUSE);
     }
   });
 

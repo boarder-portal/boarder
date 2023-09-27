@@ -21,10 +21,22 @@ export enum GameStatus {
   GAME_ENDED = 'GAME_ENDED',
 }
 
-export interface GameState {
-  type: 'paused' | 'active';
+export interface BaseGameState {
   changeTimestamp: number;
 }
+
+export interface ActiveGameState extends BaseGameState {
+  type: 'active';
+}
+
+export interface PausedGameState extends BaseGameState {
+  type: 'paused';
+  pauseReason: PauseReason;
+}
+
+export type PauseReason = 'user' | 'noActivity';
+
+export type GameState = ActiveGameState | PausedGameState;
 
 export interface GameData<Game extends GameType> {
   name: string;

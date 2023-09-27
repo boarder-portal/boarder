@@ -1,4 +1,4 @@
-import { GameData, GameInfo, GameResult, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
+import { GameData, GameInfo, GameResult, GameState, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
 
 export interface User {
   login: string;
@@ -55,16 +55,16 @@ export interface Timestamp {
 export enum CommonGameClientEvent {
   TOGGLE_READY = '$$TOGGLE_READY',
   CHANGE_SETTING = '$$CHANGE_SETTING',
-  TOGGLE_PAUSE = '$$TOGGLE_PAUSE',
+  PAUSE = '$$PAUSE',
+  UNPAUSE = '$$UNPAUSE',
 }
 
 export enum CommonGameServerEvent {
   UPDATE_PLAYERS = '$$UPDATE_PLAYERS',
+  UPDATE_STATE = '$$UPDATE_STATE',
   GET_DATA = '$$GET_DATA',
   GET_INFO = '$$GET_INFO',
   PING = '$$PING',
-  PAUSE = '$$PAUSE',
-  UNPAUSE = '$$UNPAUSE',
   END = '$$END',
 }
 
@@ -76,14 +76,14 @@ export type ChangeSettingEvent<Game extends GameType> = {
 }[keyof PlayerSettings<Game>];
 
 export interface CommonClientEventMap<Game extends GameType> {
-  [CommonGameClientEvent.TOGGLE_PAUSE]: undefined;
+  [CommonGameClientEvent.PAUSE]: undefined;
+  [CommonGameClientEvent.UNPAUSE]: undefined;
   [CommonGameClientEvent.TOGGLE_READY]: undefined;
   [CommonGameClientEvent.CHANGE_SETTING]: ChangeSettingEvent<Game>;
 }
 
 export interface CommonServerEventMap<Game extends GameType> {
-  [CommonGameServerEvent.PAUSE]: number;
-  [CommonGameServerEvent.UNPAUSE]: number;
+  [CommonGameServerEvent.UPDATE_STATE]: GameState;
   [CommonGameServerEvent.GET_DATA]: GameData<Game>;
   [CommonGameServerEvent.GET_INFO]: GameInfo<Game>;
   [CommonGameServerEvent.UPDATE_PLAYERS]: BaseGamePlayer<Game>[];

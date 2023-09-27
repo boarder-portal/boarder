@@ -25,6 +25,7 @@ import {
   GameState,
   GameStatus,
   GameType,
+  PauseReason,
   TestCaseType,
 } from 'common/types/game';
 import { GameNamespace, GameServerSocket } from 'common/types/socket';
@@ -126,7 +127,7 @@ class Game<Game extends GameType> {
   result: GameResult<Game> | null = null;
   state: GameState = {
     type: 'active',
-    changeTimestamp: 0,
+    changeTimestamp: now(),
   };
   deleted = false;
   batchedActions: BatchedAction<Game, GameServerEvent<Game>>[] = [];
@@ -164,7 +165,7 @@ class Game<Game extends GameType> {
       let player = this.getSocketPlayer(socket);
 
       if (user) {
-        if (!this.hasStarted() && !player && this.players.length < this.options.maxPlayersCount) {
+        if (this.status === GameStatus.WAITING && !player && this.players.length < this.options.maxPlayersCount) {
           player = this.addPlayer({
             ...user,
             name: user.login,
@@ -179,6 +180,10 @@ class Game<Game extends GameType> {
 
         if (player) {
           this.clearDeleteTimeout();
+
+          if (this.state.type === 'paused' && this.state.pauseReason === 'noActivity') {
+            this.unpause();
+          }
         }
       }
 
@@ -190,29 +195,24 @@ class Game<Game extends GameType> {
         });
       });
 
-      (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.TOGGLE_PAUSE, () => {
-        if (!player || !this.hasStarted() || !this.gameEntity?.isPauseAvailable()) {
+      (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.PAUSE, () => {
+        if (!player) {
           return;
         }
 
-        const timestamp = now();
+        this.pause('user');
+      });
 
-        this.state = {
-          type: this.state.type === 'active' ? 'paused' : 'active',
-          changeTimestamp: timestamp,
-        };
-
-        if (this.state.type === 'paused') {
-          this.gameEntity.pause(timestamp);
-          this.sendSocketEvent(CommonGameServerEvent.PAUSE, timestamp);
-        } else {
-          this.gameEntity.unpause(timestamp);
-          this.sendSocketEvent(CommonGameServerEvent.UNPAUSE, timestamp);
+      (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.UNPAUSE, () => {
+        if (!player) {
+          return;
         }
+
+        this.unpause();
       });
 
       (socket as GameServerSocket<GameType>).on(CommonGameClientEvent.TOGGLE_READY, () => {
-        if (!player || this.hasStarted()) {
+        if (!player || this.status !== GameStatus.WAITING) {
           return;
         }
 
@@ -269,6 +269,10 @@ class Game<Game extends GameType> {
 
         if (this.players.every(({ status, isBot }) => status === PlayerStatus.DISCONNECTED || isBot)) {
           this.setDeleteTimeout();
+
+          if (this.state.type === 'active') {
+            this.pause('noActivity');
+          }
         }
       });
 
@@ -398,6 +402,24 @@ class Game<Game extends GameType> {
     };
   }
 
+  pause(pauseReason: PauseReason): void {
+    if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.gameEntity?.isPauseAvailable()) {
+      return;
+    }
+
+    const pausedAt = now();
+
+    this.state = {
+      type: 'paused',
+      pauseReason,
+      changeTimestamp: pausedAt,
+    };
+
+    this.gameEntity?.pause(pausedAt);
+
+    this.sendUpdateStateEvent();
+  }
+
   sendGameData(socket?: GameServerSocket<Game>): void {
     const gameData: GameData<Game> = {
       name: this.name,
@@ -461,6 +483,10 @@ class Game<Game extends GameType> {
     this.sendSocketEvent(CommonGameServerEvent.UPDATE_PLAYERS, this.getClientPlayers() as any);
   }
 
+  sendUpdateStateEvent(): void {
+    this.sendSocketEvent(CommonGameServerEvent.UPDATE_STATE, this.state);
+  }
+
   setDeleteTimeout(): void {
     const { destroyOnLeave = DEFAULT_DESTROY_ON_LEAVE } = this.options;
 
@@ -482,6 +508,19 @@ class Game<Game extends GameType> {
 
     this.onUpdateGame(this.id);
     this.sendGameData();
+  }
+
+  unpause(): void {
+    const unpausedAt = now();
+
+    this.state = {
+      type: 'active',
+      changeTimestamp: unpausedAt,
+    };
+
+    this.gameEntity?.unpause(unpausedAt);
+
+    this.sendUpdateStateEvent();
   }
 }
 
