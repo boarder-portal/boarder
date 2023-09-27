@@ -58,7 +58,6 @@ export type Board = (Piece | null)[][];
 export interface Game {
   board: Board;
   players: Player[];
-  fifthCard: CardType;
   activePlayerIndex: number;
 }
 

@@ -7,7 +7,6 @@ import Card from 'client/components/games/onitama/OnitamaGame/components/Onitama
 
 interface PlayerProps {
   player: PlayerModel;
-  fifthCard: CardType;
   isActive: boolean;
   isFlipped: boolean;
   selectedCardIndex: number;
@@ -15,7 +14,7 @@ interface PlayerProps {
 }
 
 const Player: FC<PlayerProps> = (props) => {
-  const { player, fifthCard, isActive, isFlipped, selectedCardIndex, onCardClick } = props;
+  const { player, isActive, isFlipped, selectedCardIndex, onCardClick } = props;
 
   return (
     <div>
@@ -26,20 +25,10 @@ const Player: FC<PlayerProps> = (props) => {
             card={card}
             isFlipped={isFlipped}
             isSelected={selectedCardIndex === index}
+            isDisabled={isActive && index === player.data.cards.length - 1}
             onClick={onCardClick}
           />
         ))}
-
-        {isActive && (
-          <div
-            style={{
-              opacity: 0.25,
-              transform: 'scale(0.75)',
-            }}
-          >
-            <Card card={fifthCard} isFlipped={isFlipped} isSelected={false} />
-          </div>
-        )}
       </Flex>
     </div>
   );

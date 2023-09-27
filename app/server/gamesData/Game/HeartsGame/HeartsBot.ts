@@ -33,7 +33,7 @@ export default class HeartsBot extends BotEntity<GameType.HEARTS> {
       yield* this.waitForPlayStage();
 
       while (this.getPlayer().data.hand?.hand.length) {
-        yield* this.waitForTurn();
+        yield* this.waitForOwnTurn();
 
         const gameInfo = this.getGameInfo();
         const hand = this.getPlayer().data.hand?.hand;
@@ -75,9 +75,9 @@ export default class HeartsBot extends BotEntity<GameType.HEARTS> {
     }
   }
 
-  *waitForPlayStage(): EntityGenerator {
+  *waitForOwnTurn(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo().hand?.stage === HandStage.PLAY) {
+      if (this.getGameInfo().hand?.turn?.activePlayerIndex === this.playerIndex) {
         return;
       }
 
@@ -85,9 +85,9 @@ export default class HeartsBot extends BotEntity<GameType.HEARTS> {
     }
   }
 
-  *waitForTurn(): EntityGenerator {
+  *waitForPlayStage(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo().hand?.turn?.activePlayerIndex === this.playerIndex) {
+      if (this.getGameInfo().hand?.stage === HandStage.PLAY) {
         return;
       }
 

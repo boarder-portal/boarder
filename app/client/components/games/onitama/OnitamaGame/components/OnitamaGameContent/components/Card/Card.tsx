@@ -14,11 +14,12 @@ interface CardProps {
   card: CardType;
   isFlipped: boolean;
   isSelected: boolean;
+  isDisabled: boolean;
   onClick?(card: CardType): void;
 }
 
 const Card: FC<CardProps> = (props) => {
-  const { card, isFlipped, isSelected, onClick } = props;
+  const { card, isFlipped, isSelected, isDisabled, onClick } = props;
   const legalMoves = ALL_CARDS[card];
 
   const handleClick = useCallback(() => {
@@ -29,11 +30,11 @@ const Card: FC<CardProps> = (props) => {
 
   return (
     <Flex
-      className={classNames(styles.root, { [styles.selected]: isSelected })}
+      className={classNames(styles.root, { [styles.selected]: isSelected, [styles.disabled]: isDisabled })}
       direction="column"
       alignItems="center"
       between={1}
-      onClick={onClick && handleClick}
+      onClick={handleClick}
     >
       <Flex
         className={classNames(styles.cells, {

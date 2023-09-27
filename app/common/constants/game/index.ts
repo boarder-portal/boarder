@@ -42,6 +42,11 @@ export const TEST_CASES: {
   [GameType.MAHJONG]: MahjongTestCaseType,
 };
 
-export const BOTS_SUPPORTED_GAMES = [GameType.SEVEN_WONDERS, GameType.HEARTS, GameType.MAHJONG] as const;
+export const BOTS_SUPPORTED_GAMES = [
+  GameType.SEVEN_WONDERS,
+  GameType.HEARTS,
+  GameType.MAHJONG,
+  GameType.ONITAMA,
+] as const;
 
 export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN];

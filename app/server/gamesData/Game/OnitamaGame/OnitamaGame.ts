@@ -31,7 +31,6 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
     times(5, () => null),
     times(5, (index) => ({ color: PlayerColor.RED, isMaster: index === 2 })),
   ];
-  fifthCard = CardType.TIGER;
 
   *lifecycle(): EntityGenerator<GameResult> {
     let index = 0;
@@ -44,7 +43,7 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
       }
     }
 
-    this.fifthCard = getCard();
+    this.playersData[this.activePlayerIndex].cards.push(getCard());
 
     let result: GameResult;
 
@@ -54,15 +53,14 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
       });
 
       const { cards } = this.playersData[this.activePlayerIndex];
-      const [playedCard] = cards.splice(cardIndex, 1, this.fifthCard);
       const toPiece = this.board[to.y][to.x];
 
       this.board[to.y][to.x] = this.board[from.y][from.x];
       this.board[from.y][from.x] = null;
 
-      this.fifthCard = playedCard;
+      this.playersData[this.getNextActivePlayerIndex()].cards.push(...cards.splice(cardIndex, 1));
 
-      const isWayOfStoneWin = !!toPiece?.isMaster;
+      const isWayOfStoneWin = Boolean(toPiece?.isMaster);
       const isWayOfStreamWin = equalsCoords(to, {
         x: 2,
         y: this.activePlayerIndex === 0 ? 4 : 0,
@@ -94,7 +92,6 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
     return {
       board: this.board,
       players: this.getGamePlayers(),
-      fifthCard: this.fifthCard,
       activePlayerIndex: this.activePlayerIndex,
     };
   }

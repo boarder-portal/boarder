@@ -42,6 +42,7 @@ import mahjongTestCases from 'server/gamesData/Game/MahjongGame/testCases';
 
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
+import OnitamaBot from 'server/gamesData/Game/OnitamaGame/OnitamaBot';
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
@@ -102,6 +103,7 @@ const GAME_ENTITIES_MAP = {
 };
 
 export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstructor<Game> } = {
+  [GameType.ONITAMA]: OnitamaBot,
   [GameType.SEVEN_WONDERS]: SevenWondersBot,
   [GameType.HEARTS]: HeartsBot,
   [GameType.MAHJONG]: MahjongBot,

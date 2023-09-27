@@ -1,20 +1,12 @@
 import classNames from 'classnames';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
 
-import { ALL_CARDS } from 'common/constants/games/onitama';
-
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
-import {
-  Board,
-  CardType,
-  GameClientEventType,
-  MovePieceEvent,
-  PlayerColor,
-  Player as PlayerModel,
-} from 'common/types/games/onitama';
+import { CardType, GameClientEventType, MovePieceEvent, PlayerColor } from 'common/types/games/onitama';
 
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
+import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 
 import usePlayer from 'client/hooks/usePlayer';
 
@@ -25,35 +17,11 @@ import Player from 'client/components/games/onitama/OnitamaGame/components/Onita
 
 import styles from './OnitamaGameContent.module.scss';
 
-const getLegalMoves = (from: Coords, card: CardType, board: Board, player: PlayerModel): Coords[] => {
-  const cells: Coords[] = [];
-  const isFlipped = player.data.color === PlayerColor.RED;
-
-  ALL_CARDS[card].forEach(([y, x]) => {
-    const toCell: Coords = {
-      x: from.x + x * (isFlipped ? -1 : +1),
-      y: from.y + y * (isFlipped ? -1 : +1),
-    };
-
-    if (
-      toCell.x > -1 &&
-      toCell.x < 5 &&
-      toCell.y > -1 &&
-      toCell.y < 5 &&
-      board[toCell.y][toCell.x]?.color !== player.data.color
-    ) {
-      cells.push(toCell);
-    }
-  });
-
-  return cells;
-};
-
 const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
   const {
     io,
     gameInfo,
-    gameInfo: { board, players, fifthCard, activePlayerIndex },
+    gameInfo: { board, players, activePlayerIndex },
   } = props;
 
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
@@ -75,7 +43,14 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
       setSelectedFrom(cell);
 
       if (selectedCardIndex !== -1) {
-        setLegalMoves(getLegalMoves(cell, player.data.cards[selectedCardIndex], board, player));
+        setLegalMoves(
+          getLegalMoves({
+            from: cell,
+            card: player.data.cards[selectedCardIndex],
+            board,
+            player,
+          }),
+        );
       }
     } else if (selectedFrom && legalMoves.some(equalsCoordsCb(cell))) {
       const movePieceEvent: MovePieceEvent = {
@@ -100,7 +75,14 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
         setSelectedCardIndex(selectedCardIndex);
 
         if (selectedFrom) {
-          setLegalMoves(getLegalMoves(selectedFrom, player.data.cards[selectedCardIndex], board, player));
+          setLegalMoves(
+            getLegalMoves({
+              from: selectedFrom,
+              card: player.data.cards[selectedCardIndex],
+              board,
+              player,
+            }),
+          );
         }
       }
     },
@@ -117,13 +99,7 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
   return (
     <GameContent>
       <Flex className={styles.root} direction="column" between={2} alignItems="flexStart">
-        <Player
-          player={topPlayer}
-          fifthCard={fifthCard}
-          isActive={topPlayer.index === activePlayerIndex}
-          isFlipped
-          selectedCardIndex={-1}
-        />
+        <Player player={topPlayer} isActive={topPlayer.index === activePlayerIndex} isFlipped selectedCardIndex={-1} />
 
         <Flex
           className={classNames(styles.board, {
@@ -161,7 +137,6 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
 
         <Player
           player={bottomPlayer}
-          fifthCard={fifthCard}
           isActive={bottomPlayer.index === activePlayerIndex}
           isFlipped={false}
           selectedCardIndex={selectedCardIndex}

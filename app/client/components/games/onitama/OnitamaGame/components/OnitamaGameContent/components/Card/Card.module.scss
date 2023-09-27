@@ -15,4 +15,9 @@
   &.selected {
     background: #7f7;
   }
+
+  &.disabled {
+    opacity: 0.25;
+    pointer-events: none;
+  }
 }
