@@ -40,9 +40,9 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
   *beforeLifecycle(): EntityGenerator {
     yield* super.beforeLifecycle();
 
-    this.spawnTask(this.spawnBots());
-    this.spawnTask(this.spawnTestCase());
-    this.spawnTask(this.watchSettingChange());
+    this.spawnTask(this.#spawnBots());
+    this.spawnTask(this.#spawnTestCase());
+    this.spawnTask(this.#watchSettingChange());
   }
 
   dispatchGameEvent<GameEvent extends GameEventType<Game>>(
@@ -71,10 +71,12 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     return false;
   }
 
-  *listenForSettingsChange(callback: (event: SettingsChangeEvent<Game>) => unknown): EntityGenerator {
-    yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
-      callback(this.getSettingChangeEvent(playerIndex, data as any));
-    });
+  *listenForSettingsChange<Result = void>(
+    callback: (event: SettingsChangeEvent<Game>) => Result,
+  ): EntityGenerator<Result> {
+    return yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) =>
+      callback(this.getSettingChangeEvent(playerIndex, data as any)),
+    );
   }
 
   ping(): void {
@@ -97,7 +99,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     this.context.game.sendUpdatePlayersEvent();
   }
 
-  *spawnBot(Bot: BotConstructor<Game>, playerIndex: number): EntityGenerator {
+  *#spawnBot(Bot: BotConstructor<Game>, playerIndex: number): EntityGenerator {
     try {
       yield* this.spawnEntity(new Bot(this, { playerIndex }));
     } catch (err) {
@@ -107,7 +109,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     }
   }
 
-  *spawnBots(): EntityGenerator {
+  *#spawnBots(): EntityGenerator {
     const bot = areBotsAvailable(this.context.game.game)
       ? (BOTS[this.context.game.game] as BotConstructor<Game>)
       : null;
@@ -119,11 +121,11 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     yield* this.all(
       this.getPlayers()
         .filter(({ isBot }) => isBot)
-        .map(({ index }) => this.spawnBot(bot, index)),
+        .map(({ index }) => this.#spawnBot(bot, index)),
     );
   }
 
-  *spawnTestCase(): EntityGenerator {
+  *#spawnTestCase(): EntityGenerator {
     const caseType = this.options.testCaseType;
 
     if (process.env.NODE_ENV === 'production' || !caseType) {
@@ -163,7 +165,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     return this.getSettingChangeEvent(playerIndex, data as any);
   }
 
-  *watchSettingChange(): EntityGenerator {
+  *#watchSettingChange(): EntityGenerator {
     yield* this.listenForEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
       const player = this.getPlayer(playerIndex);
 
