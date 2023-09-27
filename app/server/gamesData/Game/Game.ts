@@ -407,6 +407,7 @@ class Game<Game extends GameType> {
       players: this.getClientPlayers(),
       timestamp: now(),
       state: this.state,
+      status: this.status,
     };
 
     this.sendSocketEvent(CommonGameServerEvent.GET_DATA, gameData as any, {

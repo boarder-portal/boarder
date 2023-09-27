@@ -2,7 +2,7 @@ import chunk from 'lodash/chunk';
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GameType } from 'common/types/game';
-import { Card as CardModel, GameClientEventType, Player, SendSetEvent } from 'common/types/games/set';
+import { Card as CardModel, GameClientEventType, SendSetEvent } from 'common/types/games/set';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
@@ -16,10 +16,13 @@ import Card from 'client/components/games/set/SetGame/components/SetGameContent/
 import styles from './SetGameContent.module.scss';
 
 const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
-  const { io, gameInfo, gameResult } = props;
+  const {
+    io,
+    gameInfo,
+    gameInfo: { cards, players },
+    gameResult,
+  } = props;
 
-  const [cards, setCards] = useState<CardModel[]>([]);
-  const [players, setPlayers] = useState<Player[]>([]);
   const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
 
   const handleCardClick = useImmutableCallback((card: CardModel) => {
@@ -60,11 +63,10 @@ const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
     io.emit(GameClientEventType.SEND_NO_SET);
   }, [io]);
 
+  // TODO: clear when board differs
   useEffect(() => {
-    setCards(gameInfo.cards);
-    setPlayers(gameInfo.players);
     setSelectedCardsIds(new Set());
-  }, [gameInfo.cards, gameInfo.players]);
+  }, [gameInfo]);
 
   const playersBlock = useMemo(() => {
     return (

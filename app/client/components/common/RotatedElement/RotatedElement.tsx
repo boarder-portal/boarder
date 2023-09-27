@@ -37,8 +37,6 @@ const RotatedElement: FC<RotatedElementProps> = (props) => {
       inner.style.transform = `${rotateTransform} translate(${rotationRemainder === 1 ? offset : -offset}px, ${
         rotationRemainder === 1 ? offset : -offset
       }px)`;
-      inner.style.width = `${realWidth}px`;
-      inner.style.height = `${realHeight}px`;
       root.style.width = `${realHeight}px`;
       root.style.height = `${realWidth}px`;
     };

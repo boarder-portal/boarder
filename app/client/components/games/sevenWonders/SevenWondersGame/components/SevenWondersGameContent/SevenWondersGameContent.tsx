@@ -1,15 +1,8 @@
 import classNames from 'classnames';
-import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { GameType } from 'common/types/game';
-import {
-  AgePhaseType,
-  GameClientEventType,
-  GamePhaseType,
-  NeighborSide,
-  Player,
-} from 'common/types/games/sevenWonders';
-import { Card } from 'common/types/games/sevenWonders/cards';
+import { GameClientEventType, GamePhaseType, NeighborSide } from 'common/types/games/sevenWonders';
 
 import getNeighbor from 'common/utilities/games/sevenWonders/getNeighbor';
 
@@ -25,15 +18,18 @@ import Wonder from 'client/components/games/sevenWonders/SevenWondersGame/compon
 import styles from './SevenWondersGameContent.module.scss';
 
 const SevenWondersGameContent: FC<GameContentProps<GameType.SEVEN_WONDERS>> = (props) => {
-  const { io, gameOptions, gameInfo } = props;
-
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [discard, setDiscard] = useState<Card[]>([]);
-  const [age, setAge] = useState<number | null>(null);
-  const [gamePhase, setGamePhase] = useState<GamePhaseType | null>(null);
-  const [agePhase, setAgePhase] = useState<AgePhaseType | null>(null);
+  const {
+    io,
+    gameOptions,
+    gameInfo,
+    gameInfo: { players, discard, phase },
+  } = props;
 
   const player = usePlayer(players);
+
+  const gamePhase = phase?.type ?? null;
+  const age = phase?.type === GamePhaseType.AGE ? phase.age : null;
+  const agePhase = phase?.type === GamePhaseType.AGE ? phase.phase : null;
 
   const otherPlayers = useMemo(() => {
     if (!player) {
@@ -63,18 +59,6 @@ const SevenWondersGameContent: FC<GameContentProps<GameType.SEVEN_WONDERS>> = (p
 
   useEffect(() => {
     console.log(gameInfo);
-
-    setPlayers(gameInfo.players);
-    setDiscard(gameInfo.discard);
-    setGamePhase(gameInfo.phase?.type ?? null);
-
-    if (gameInfo.phase?.type === GamePhaseType.AGE) {
-      setAge(gameInfo.phase.age);
-      setAgePhase(gameInfo.phase.phase);
-    } else {
-      setAge(null);
-      setAgePhase(null);
-    }
   }, [gameInfo]);
 
   if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {

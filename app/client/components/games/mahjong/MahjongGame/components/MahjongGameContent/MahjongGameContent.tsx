@@ -2,16 +2,7 @@ import classNames from 'classnames';
 import { FC, memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { GameType } from 'common/types/game';
-import {
-  DeclareDecision,
-  DeclareInfo,
-  GameClientEventType,
-  HandPhase,
-  HandResult,
-  Player,
-  Tile,
-  WindSide,
-} from 'common/types/games/mahjong';
+import { DeclareDecision, GameClientEventType, HandResult, Player, Tile } from 'common/types/games/mahjong';
 
 import { getTileHeight } from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/utilities/tile';
 import { moveElement } from 'common/utilities/array';
@@ -59,7 +50,12 @@ const RIGHT_PANEL_SIZE = 250;
 const BOTTOM_PANEL_SIZE = 200;
 
 const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
-  const { io, gameOptions, gameInfo } = props;
+  const {
+    io,
+    gameOptions,
+    gameInfo,
+    gameInfo: { resultsByHand, round },
+  } = props;
 
   const [layoutType, setLayoutType] = useState<LayoutType>(LayoutType.HORIZONTAL_RIGHT);
   const [tileWidth, setTileWidth] = useState(0);
@@ -71,18 +67,8 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     setFalse: closeCalculatorModal,
   } = useBoolean(false);
   const [openedResult, setOpenedResult] = useState<HandResult | null>(null);
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [handPhase, setHandPhase] = useState<HandPhase | null>(null);
-  const [resultsByHand, setResultsByHand] = useState<HandResult[]>([]);
-  const [roundWind, setRoundWind] = useState<WindSide | null>(null);
-  const [roundHandIndex, setRoundHandIndex] = useState(-1);
-  const [isLastHandInGame, setIsLastHandInGame] = useState(false);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [wallTilesLeft, setWallTilesLeft] = useState<number | null>(null);
-  const [currentTile, setCurrentTile] = useState<Tile | null>(null);
-  const [currentTileIndex, setCurrentTileIndex] = useState(-1);
-  const [declareInfo, setDeclareInfo] = useState<DeclareInfo | null>(null);
-  const [isReplacementTile, setIsReplacementTile] = useState(false);
+  const [players, setPlayers] = useState<Player[]>(gameInfo.players);
+  const [currentTileIndex, setCurrentTileIndex] = useState(round?.hand?.turn?.currentTileIndex ?? -1);
   const [highlightedTile, setHighlightedTile] = useState<Tile | null>(null);
   const [draggingTileIndex, setDraggingTileIndex] = useState(-1);
 
@@ -94,6 +80,15 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     settings: { sortHand, showCurrentTile, highlightSameTile },
   } = usePlayerSettings(GameType.MAHJONG);
 
+  const handPhase = round?.hand?.phase ?? null;
+  const roundWind = round?.wind ?? null;
+  const roundHandIndex = round?.handIndex ?? -1;
+  const isLastHandInGame = Boolean(round?.hand?.isLastInGame);
+  const activePlayerIndex = round?.hand?.activePlayerIndex ?? -1;
+  const wallTilesLeft = round?.hand?.tilesLeft ?? null;
+  const currentTile = round?.hand?.turn?.currentTile ?? null;
+  const declareInfo = round?.hand?.turn?.declareInfo ?? null;
+  const isReplacementTile = round?.hand?.turn?.isReplacementTile ?? false;
   const tileHeight = getTileHeight(tileWidth);
   const handInProcess = activePlayerIndex !== -1;
   const isActive = player?.index === activePlayerIndex;
@@ -138,7 +133,7 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     const availableTilesWidth = fieldLayout === 'HORIZONTAL' ? fieldHeight : fieldWidth;
 
     setLayoutType(LayoutType[`${fieldLayout}_${panelLayout}`]);
-    setTileWidth(availableTilesWidth / 16);
+    setTileWidth(availableTilesWidth / 20);
   });
 
   const changeTileIndex = useImmutableCallback((from, to) => {
@@ -258,17 +253,7 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
     console.log(gameInfo);
 
     setPlayers(gameInfo.players);
-    setHandPhase(gameInfo.round?.hand?.phase ?? null);
-    setResultsByHand(gameInfo.resultsByHand);
-    setRoundWind(gameInfo.round?.wind ?? null);
-    setRoundHandIndex(gameInfo.round?.handIndex ?? -1);
-    setIsLastHandInGame(Boolean(gameInfo.round?.hand?.isLastInGame));
-    setActivePlayerIndex(gameInfo.round?.hand?.activePlayerIndex ?? -1);
-    setWallTilesLeft(gameInfo.round?.hand?.tilesLeft ?? null);
-    setCurrentTile(gameInfo.round?.hand?.turn?.currentTile ?? null);
     setCurrentTileIndex(gameInfo.round?.hand?.turn?.currentTileIndex ?? -1);
-    setDeclareInfo(gameInfo.round?.hand?.turn?.declareInfo ?? null);
-    setIsReplacementTile(gameInfo.round?.hand?.turn?.isReplacementTile ?? false);
   }, [gameInfo]);
 
   useEffect(() => {

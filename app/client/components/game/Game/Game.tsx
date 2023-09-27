@@ -9,7 +9,7 @@ import {
   CommonGameServerEvent,
   CommonServerEventMap,
 } from 'common/types';
-import { GameInfo, GameOptions, GameResult, GameState, GameType } from 'common/types/game';
+import { GameInfo, GameOptions, GameResult, GameState, GameStatus, GameType } from 'common/types/game';
 import { GameClientSocket } from 'common/types/socket';
 
 import { now } from 'client/utilities/time';
@@ -32,6 +32,7 @@ import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 export interface GameProps<Game extends GameType> {
   renderGameContent: ComponentType<GameContentProps<Game>>;
+  renderGameEnd?: ComponentType<GameEndProps<Game>>;
 }
 
 export interface GameContentProps<Game extends GameType> {
@@ -42,8 +43,12 @@ export interface GameContentProps<Game extends GameType> {
   gameState: GameState;
 }
 
+export interface GameEndProps<Game extends GameType> {
+  gameResult: GameResult<Game> | null;
+}
+
 const Game = <Game extends GameType>(props: GameProps<Game>) => {
-  const { renderGameContent: GameContent } = props;
+  const { renderGameContent: GameContent, renderGameEnd: GameEnd } = props;
 
   const { game, gameId } = useParams<{ game: Game; gameId: string }>();
 
@@ -57,6 +62,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
     type: 'active',
     changeTimestamp: 0,
   });
+  const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.WAITING);
 
   const history = useHistory();
   const player = usePlayer(players);
@@ -78,6 +84,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
         type: data.state.type,
         changeTimestamp: data.state.changeTimestamp - timeDiff,
       });
+      setGameStatus(data.status);
     },
     [CommonGameServerEvent.GET_INFO]: (info) => {
       setGameInfo(info);
@@ -134,6 +141,14 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
     };
   }, [changeSetting, localPlayerSettings, player?.settings]);
 
+  const gameEnd = useMemo(() => {
+    if (!GameEnd || !gameInfo) {
+      return null;
+    }
+
+    return <GameEnd gameResult={gameResult} />;
+  }, [GameEnd, gameInfo, gameResult]);
+
   useGlobalListener('keyup', typeof document === 'undefined' ? null : document, (e) => {
     if (e.code === 'KeyP') {
       socket?.emit(CommonGameClientEvent.TOGGLE_PAUSE);
@@ -144,23 +159,26 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
     return null;
   }
 
-  if (!gameInfo) {
-    return <WaitingRoom gameName={gameName} players={players} toggleReady={toggleReady} />;
-  }
-
   const PlayerSettingsContext = PlayerSettingsContexts[game];
 
   return (
     <PlayerSettingsContext.Provider value={playerSettingsContext}>
       <TimeDiffContext.Provider value={getTimeDiff}>
         <GameStateContext.Provider value={gameState}>
-          <GameContent
-            io={socket}
-            gameOptions={gameOptions}
-            gameInfo={gameInfo}
-            gameResult={gameResult}
-            gameState={gameState}
-          />
+          {gameStatus === GameStatus.WAITING ? (
+            <WaitingRoom gameName={gameName} players={players} toggleReady={toggleReady} />
+          ) : (
+            (gameStatus === GameStatus.GAME_ENDED && gameEnd) ||
+            (gameInfo && (
+              <GameContent
+                io={socket}
+                gameOptions={gameOptions}
+                gameInfo={gameInfo}
+                gameResult={gameResult}
+                gameState={gameState}
+              />
+            ))
+          )}
         </GameStateContext.Provider>
       </TimeDiffContext.Provider>
     </PlayerSettingsContext.Provider>

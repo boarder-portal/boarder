@@ -8,6 +8,7 @@ import { getWindHumanName } from 'common/utilities/games/mahjong/stringify';
 
 import Flex from 'client/components/common/Flex/Flex';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
+import Text from 'client/components/common/Text/Text';
 import Tiles, {
   OpenType,
 } from 'client/components/games/mahjong/MahjongGame/components/MahjongGameContent/components/Tiles/Tiles';
@@ -54,9 +55,11 @@ const Hand: FC<HandProps> = (props) => {
   return (
     <RotatedElement className={styles.root} rotation={rotation}>
       <RotatedElement rotation={rotation === -2 ? 2 : 0}>
-        <span className={classNames(styles.name, { [styles.active]: isActive })}>{name}</span>
-        {data.hand?.flowers && `, ${data.hand.flowers.length}🌼`}
-        {data.round?.wind && `, ${getWindHumanName(data.round.wind)}`} ({score})
+        <Text withEllipsis>
+          <span className={classNames(styles.name, { [styles.active]: isActive })}>{name}</span>
+          {data.hand?.flowers && `, ${data.hand.flowers.length}🌼`}
+          {data.round?.wind && `, ${getWindHumanName(data.round.wind)}`} ({score})
+        </Text>
       </RotatedElement>
 
       <Flex alignItems="center" between={2}>

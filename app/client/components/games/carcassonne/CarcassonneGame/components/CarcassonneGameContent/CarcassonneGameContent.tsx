@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
-import { FC, MouseEvent as ReactMouseEvent, memo, useCallback, useEffect, useRef, useState } from 'react';
+import reduce from 'lodash/reduce';
+import { FC, MouseEvent as ReactMouseEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   BASE_CARD_SIZE,
@@ -11,19 +12,9 @@ import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
-import {
-  AttachCardEvent,
-  Board,
-  Card,
-  GameClientEventType,
-  MeepleType,
-  Objects,
-  PlacedMeeple,
-  Player,
-} from 'common/types/games/carcassonne';
+import { AttachCardEvent, Card, GameClientEventType, MeepleType, PlacedMeeple } from 'common/types/games/carcassonne';
 
 import { getRotatedCoords } from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/utilities/coords';
-import Timestamp from 'common/utilities/Timestamp';
 import {
   getAttachedObjectId,
   getNeighborCoords,
@@ -40,6 +31,7 @@ import useCreateTimestamp from 'client/components/game/Game/hooks/useCreateTimes
 import useBoardControl from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/hooks/useBoardControl';
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import usePlayer from 'client/hooks/usePlayer';
+import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Image from 'client/components/common/Image/Image';
@@ -53,16 +45,15 @@ import { POP_SOUND, playSound } from 'client/sounds';
 import styles from './CarcassonneGameContent.module.scss';
 
 const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (props) => {
-  const { io, gameOptions, gameInfo } = props;
+  const {
+    io,
+    gameOptions,
+    gameInfo,
+    gameInfo: { players, activePlayerIndex, board, objects, cardsLeft },
+  } = props;
 
   const createTimestamp = useCreateTimestamp();
 
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [board, setBoard] = useState<Board>({});
-  const [objects, setObjects] = useState<Objects>({});
-  const [cardsLeft, setCardsLeft] = useState<number>(0);
-  const [serverTurnEndsAt, setServerTurnEndsAt] = useState<Timestamp | null>(null);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [placedCardCoords, setPlacedCardCoords] = useState<Coords | null>(null);
   const [allowedMoves, setAllowedMoves] = useState<Coords[]>([]);
@@ -70,13 +61,26 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
 
   const draggingCardRef = useRef<HTMLDivElement | null>(null);
   const selectedCardRef = useRef<HTMLDivElement | null>(null);
-  const boardCardsCountRef = useRef<number | null>(null);
+  const selectedCardRotationRef = useRef<number>(0);
 
   const player = usePlayer(players);
 
-  const selectedCardRotationRef = useRef<number>(0);
-
   const selectedCard = player?.data.cards[selectedCardIndex];
+
+  const serverTurnEndsAt = useMemo(() => {
+    return createTimestamp(gameInfo.turn?.endsAt);
+  }, [createTimestamp, gameInfo.turn?.endsAt]);
+
+  const boardCardsCount = useMemo(() => {
+    return reduce(
+      board,
+      (boardCardsCount, row) =>
+        reduce(row, (boardCardsCount, card) => boardCardsCount + (card ? 1 : 0), boardCardsCount),
+      0,
+    );
+  }, [board]);
+
+  const previousBoardCardsCount = usePrevious(boardCardsCount);
 
   const calculateAllowedMoves = useCallback(
     (selectedCard: Card | undefined) => {
@@ -366,24 +370,13 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
 
   useEffect(() => {
     console.log(gameInfo);
+  }, [gameInfo]);
 
-    setPlayers(gameInfo.players);
-    setActivePlayerIndex(gameInfo.activePlayerIndex);
-    setBoard(gameInfo.board);
-    setObjects(gameInfo.objects);
-    setCardsLeft(gameInfo.cardsLeft);
-    setServerTurnEndsAt(gameInfo.turn?.endsAt ? createTimestamp(gameInfo.turn.endsAt) : null);
-
-    const boardCardsCount =
-      gameInfo.cardsLeft +
-      gameInfo.players.reduce((playersCardsCount, player) => playersCardsCount + player.data.cards.length, 0);
-
-    if (boardCardsCountRef.current && boardCardsCountRef.current !== boardCardsCount) {
+  useEffect(() => {
+    if (boardCardsCount > previousBoardCardsCount) {
       playSound(POP_SOUND);
     }
-
-    boardCardsCountRef.current = boardCardsCount;
-  }, [createTimestamp, gameInfo]);
+  }, [boardCardsCount, previousBoardCardsCount]);
 
   return (
     <GameContent>

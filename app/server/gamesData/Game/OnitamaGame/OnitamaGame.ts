@@ -46,6 +46,8 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
 
     this.fifthCard = getCard();
 
+    let result: GameResult;
+
     while (true) {
       const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
@@ -67,6 +69,10 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
       });
 
       if (isWayOfStoneWin || isWayOfStreamWin) {
+        result = this.activePlayerIndex;
+
+        this.activePlayerIndex = -1;
+
         this.sendGameInfo();
 
         break;
@@ -77,7 +83,7 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
       this.sendGameInfo();
     }
 
-    return this.activePlayerIndex;
+    return result;
   }
 
   getGamePlayers(): Player[] {

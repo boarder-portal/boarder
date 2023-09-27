@@ -20,7 +20,6 @@ import usePlayer from 'client/hooks/usePlayer';
 
 import Flex from 'client/components/common/Flex/Flex';
 import { GameContentProps } from 'client/components/game/Game/Game';
-import GameEnd from 'client/components/game/Game/components/GameEnd/GameEnd';
 import GameContent from 'client/components/game/GameContent/GameContent';
 import Player from 'client/components/games/onitama/OnitamaGame/components/OnitamaGameContent/components/Player/Player';
 
@@ -51,12 +50,12 @@ const getLegalMoves = (from: Coords, card: CardType, board: Board, player: Playe
 };
 
 const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
-  const { io, gameInfo, gameResult } = props;
+  const {
+    io,
+    gameInfo,
+    gameInfo: { board, players, fifthCard, activePlayerIndex },
+  } = props;
 
-  const [board, setBoard] = useState<Board>([]);
-  const [players, setPlayers] = useState<PlayerModel[]>([]);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [fifthCard, setFifthCard] = useState<CardType>(CardType.TIGER);
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   const [selectedFrom, setSelectedFrom] = useState<Coords | null>(null);
   const [legalMoves, setLegalMoves] = useState<Coords[]>([]);
@@ -86,6 +85,10 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
       };
 
       io.emit(GameClientEventType.MOVE_PIECE, movePieceEvent);
+
+      setSelectedCardIndex(-1);
+      setSelectedFrom(null);
+      setLegalMoves([]);
     }
   };
 
@@ -106,23 +109,7 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
 
   useEffect(() => {
     console.log(gameInfo);
-
-    setBoard(gameInfo.board);
-    setPlayers(gameInfo.players);
-    setActivePlayerIndex(gameInfo.activePlayerIndex);
-    setFifthCard(gameInfo.fifthCard);
-    setSelectedCardIndex(-1);
-    setSelectedFrom(null);
-    setLegalMoves([]);
   }, [gameInfo]);
-
-  if (gameResult !== null) {
-    return <GameEnd />;
-  }
-
-  if (!board.length || !players.length) {
-    return null;
-  }
 
   const topPlayer = players[isFlipped ? 0 : 1];
   const bottomPlayer = players[isFlipped ? 1 : 0];
@@ -154,7 +141,6 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
                     [styles.isSelected]: selectedFrom && equalsCoords({ x, y }, selectedFrom),
                     [styles.isLegalMove]: legalMoves.some(equalsCoordsCb({ x, y })),
                   })}
-                  data-cell={JSON.stringify({ x, y })}
                   onClick={() => handleCellClick({ x, y })}
                 >
                   {piece && (

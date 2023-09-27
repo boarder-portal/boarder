@@ -34,6 +34,7 @@ export interface GameData<Game extends GameType> {
   players: BaseGamePlayer<Game>[];
   timestamp: number;
   state: GameState;
+  status: GameStatus;
 }
 
 export type GameInfo<Game extends GameType> = GamesParams[Game]['info'];

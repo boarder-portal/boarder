@@ -1,9 +1,8 @@
 import classNames from 'classnames';
-import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { GameType } from 'common/types/game';
-import { Suit } from 'common/types/game/cards';
-import { GameClientEventType, HandStage, PassDirection, Player as PlayerModel } from 'common/types/games/hearts';
+import { GameClientEventType, HandStage, PassDirection } from 'common/types/games/hearts';
 
 import getPlayerPosition from 'client/components/games/hearts/HeartsGame/components/HeartsGameContent/utilities/getPlayerPosition';
 import getPlayedSuit from 'common/utilities/games/hearts/getPlayedSuit';
@@ -20,17 +19,19 @@ import Player from 'client/components/games/hearts/HeartsGame/components/HeartsG
 import styles from './HeartsGameContent.module.scss';
 
 const HeartsGameContent: FC<GameContentProps<GameType.HEARTS>> = (props) => {
-  const { io, gameInfo } = props;
-
-  const [players, setPlayers] = useState<PlayerModel[]>([]);
-  const [activePlayerIndex, setActivePlayerIndex] = useState(-1);
-  const [stage, setStage] = useState<HandStage>(HandStage.PASS);
-  const [heartsEnteredPlay, setHeartsEnteredPlay] = useState(false);
-  const [playedSuit, setPlayedSuit] = useState<Suit | null>(null);
-  const [isFirstTurn, setIsFirstTurn] = useState(true);
-  const [passDirection, setPassDirection] = useState<PassDirection>(PassDirection.NONE);
+  const {
+    io,
+    gameInfo,
+    gameInfo: { players, hand, passDirection },
+  } = props;
 
   const player = usePlayer(players);
+
+  const activePlayerIndex = hand?.turn?.activePlayerIndex ?? -1;
+  const stage = hand?.stage ?? HandStage.PASS;
+  const heartsEnteredPlay = hand?.heartsEnteredPlay ?? false;
+  const playedSuit = getPlayedSuit(gameInfo);
+  const isFirstTurn = getIsFirstTurn(gameInfo);
 
   const sortedPlayers = useMemo(() => {
     if (!player) {
@@ -59,14 +60,6 @@ const HeartsGameContent: FC<GameContentProps<GameType.HEARTS>> = (props) => {
 
   useEffect(() => {
     console.log(gameInfo);
-
-    setPlayers(gameInfo.players);
-    setActivePlayerIndex(gameInfo.hand?.turn?.activePlayerIndex ?? -1);
-    setStage(gameInfo.hand?.stage ?? HandStage.PASS);
-    setHeartsEnteredPlay(gameInfo.hand?.heartsEnteredPlay ?? false);
-    setPlayedSuit(getPlayedSuit(gameInfo));
-    setIsFirstTurn(getIsFirstTurn(gameInfo));
-    setPassDirection(gameInfo.passDirection);
   }, [gameInfo]);
 
   return (
