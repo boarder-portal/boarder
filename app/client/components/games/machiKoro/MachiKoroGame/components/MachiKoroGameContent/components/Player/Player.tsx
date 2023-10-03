@@ -6,7 +6,7 @@ import { WithClassName } from 'client/types/react';
 import { CardId, CardType, LandmarkId, Player as PlayerModel } from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/games/machiKoro/getCard';
-import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isDefined } from 'common/utilities/is';
 
 import usePrevious from 'client/hooks/usePrevious';
 
@@ -48,12 +48,12 @@ const Player: FC<PlayerProps> = (props) => {
           const card = getCard(cardId);
 
           if (!onCardClick) {
-            return undefined;
+            return;
           }
 
           return forbiddenToClickCardTypes.includes(card.type) ? cardId : undefined;
         })
-        .filter(isNotUndefined),
+        .filter(isDefined),
     [forbiddenToClickCardTypes, onCardClick, player.data.cardsIds],
   );
 

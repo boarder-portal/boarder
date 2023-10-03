@@ -25,7 +25,7 @@ import {
 import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
-import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isDefined } from 'common/utilities/is';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { PlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 
@@ -178,7 +178,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
       occupiedCells.push(this.game.getCellBehind(bomberCell, Direction.UP));
     }
 
-    return occupiedCells.filter(isNotUndefined);
+    return occupiedCells.filter(isDefined);
   }
 
   heal = (): void => {

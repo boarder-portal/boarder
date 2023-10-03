@@ -3,7 +3,7 @@ import { FC, memo, useMemo } from 'react';
 import { CardId } from 'common/types/games/machiKoro';
 
 import getCard from 'common/utilities/games/machiKoro/getCard';
-import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isDefined } from 'common/utilities/is';
 
 import CardLine from 'client/components/games/machiKoro/MachiKoroGame/components/MachiKoroGameContent/components/CardLine/CardLine';
 
@@ -32,7 +32,7 @@ const Board: FC<BoardProps> = (props) => {
 
         return hasAlreadyBuiltUniqCard || availableCoins < card.cost ? cardId : undefined;
       })
-      .filter(isNotUndefined);
+      .filter(isDefined);
   }, [availableCoins, board, builtMajors, withActions]);
 
   return <CardLine className={styles.root} cardsIds={board} disabledIds={disabledIds} onClick={onSelect} />;

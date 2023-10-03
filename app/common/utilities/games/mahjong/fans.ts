@@ -52,7 +52,7 @@ import {
   tilesContainTile,
 } from 'common/utilities/games/mahjong/tiles';
 import { isDragon, isSuited, isWind, wind } from 'common/utilities/games/mahjong/tilesBase';
-import isDefined from 'common/utilities/isDefined';
+import { isDefined } from 'common/utilities/is';
 
 export function isHandFan(fan: Fan): fan is HandFan {
   return fan.type === FanType.HAND;

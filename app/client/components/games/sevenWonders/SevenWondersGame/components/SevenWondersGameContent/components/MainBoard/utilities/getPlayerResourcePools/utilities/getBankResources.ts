@@ -10,7 +10,7 @@ import { CardType } from 'common/types/games/sevenWonders/cards';
 import getOwnerResources from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/utilities/getOwnerResources';
 import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
 import { isTradeEffect } from 'common/utilities/games/sevenWonders/isEffect';
-import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isDefined } from 'common/utilities/is';
 
 export default function getBankResources(player: Player): OwnerResource[][] {
   const tradeEffects = getAllPlayerEffects(player.data).filter(isTradeEffect);
@@ -18,7 +18,7 @@ export default function getBankResources(player: Player): OwnerResource[][] {
   const bankTradeResources = tradeEffects
     .map((effect): Resource[] | undefined => {
       if (!effect.sources.includes('bank')) {
-        return undefined;
+        return;
       }
 
       const resourceVariant: Resource[] = [];
@@ -33,7 +33,7 @@ export default function getBankResources(player: Player): OwnerResource[][] {
 
       return resourceVariant;
     })
-    .filter(isNotUndefined);
+    .filter(isDefined);
 
   return getOwnerResources(bankTradeResources, 'bank');
 }

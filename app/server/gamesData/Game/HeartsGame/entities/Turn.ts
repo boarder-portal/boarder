@@ -3,7 +3,7 @@ import { Card } from 'common/types/game/cards';
 import { GameClientEventType, Turn as TurnModel, TurnPlayerData } from 'common/types/games/hearts';
 
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
-import isDefined from 'common/utilities/isDefined';
+import { isDefined } from 'common/utilities/is';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
 

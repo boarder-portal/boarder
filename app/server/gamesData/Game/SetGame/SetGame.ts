@@ -26,8 +26,7 @@ import {
 } from 'common/types/games/set';
 
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
-import isArray from 'common/utilities/isArray';
-import isNotUndefined from 'common/utilities/isNotUndefined';
+import { isArray, isDefined } from 'common/utilities/is';
 import isAnySet from 'server/gamesData/Game/SetGame/utilities/isAnySet';
 import isSet from 'server/gamesData/Game/SetGame/utilities/isSet';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
@@ -78,9 +77,7 @@ export default class SetGame extends GameEntity<GameType.SET> {
       if (event === GameClientEventType.SEND_SET) {
         const { cardsIds } = data;
 
-        const cards = cardsIds
-          .map((cardId) => this.cardsStack.find((card) => card.id === cardId))
-          .filter(isNotUndefined);
+        const cards = cardsIds.map((cardId) => this.cardsStack.find((card) => card.id === cardId)).filter(isDefined);
 
         if (isSet(cards)) {
           const isAnyHiddenCard = this.cardsStack.length > this.maxCardsToShow;

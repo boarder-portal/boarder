@@ -10,7 +10,7 @@ import { FanKind, HandMahjong, SetConcealedType } from 'common/types/games/mahjo
 
 import { isHandFan, isSetsFan, isSpecialFan } from 'common/utilities/games/mahjong/fans';
 import { getPureFansScore } from 'common/utilities/games/mahjong/scoring';
-import isDefined from 'common/utilities/isDefined';
+import { isDefined } from 'common/utilities/is';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Table from 'client/components/common/Table/Table';
