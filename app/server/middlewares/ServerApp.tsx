@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { StaticRouter } from 'react-router-dom';
 
-import { Store, StoreContext } from 'client/utilities/store';
+import SharedStore, { SharedStoreContext } from 'common/utilities/SharedStore';
 
 import App from 'client/components/App/App';
 
 interface ServerAppProps {
   url: string;
-  store: Store;
+  store: SharedStore;
 }
 
 const ServerApp: FC<ServerAppProps> = (props) => {
@@ -15,9 +15,9 @@ const ServerApp: FC<ServerAppProps> = (props) => {
 
   return (
     <StaticRouter location={url}>
-      <StoreContext.Provider value={store}>
+      <SharedStoreContext.Provider value={store}>
         <App />
-      </StoreContext.Provider>
+      </SharedStoreContext.Provider>
     </StaticRouter>
   );
 };

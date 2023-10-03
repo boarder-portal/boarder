@@ -2,7 +2,7 @@ import typedReactMemo from 'client/types/typedReactMemo';
 import { BaseGamePlayer, PlayerStatus } from 'common/types';
 import { GameType } from 'common/types/game';
 
-import useAtom from 'client/hooks/useAtom';
+import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
@@ -19,7 +19,7 @@ interface WaitingRoomProps<Game extends GameType> {
 const WaitingRoom = <Game extends GameType>(props: WaitingRoomProps<Game>) => {
   const { gameName, players, toggleReady } = props;
 
-  const [user] = useAtom('user');
+  const [user] = useSharedStoreValue('user');
 
   return (
     <div>

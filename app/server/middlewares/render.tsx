@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import path from 'path';
 import { renderToString } from 'react-dom/server';
 
-import createStore, { Store, getInitialState } from 'client/utilities/store';
+import SharedStore from 'common/utilities/SharedStore';
 
 import ServerApp from 'server/middlewares/ServerApp';
 
@@ -36,9 +36,9 @@ export default async function render(req: Request, res: Response): Promise<Respo
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
     const { default: App } = nodeExtractor.requireEntrypoint() as { default: typeof ServerApp };
 
-    const store: Store = createStore(getInitialState());
+    const store = new SharedStore();
 
-    store.value.user = req.session.user ?? null;
+    store.setValue('user', req.session.user ?? null);
 
     const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
@@ -58,7 +58,7 @@ export default async function render(req: Request, res: Response): Promise<Respo
       `
         ${linkTags}
         ${styleTags}
-        <script>window.initialState=${JSON.stringify(store.value).replace(/</g, '\\u003c')}</script>
+        <script>window.__STORE_VALUES__=${JSON.stringify(store.toJSON()).replace(/</g, '\\u003c')};</script>
       `,
     );
   } catch (err) {

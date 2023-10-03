@@ -1,8 +1,8 @@
-import { State } from 'client/utilities/store';
+import { SharedStoreValues } from 'common/utilities/SharedStore';
 
 declare global {
   interface Window {
-    initialState: State;
+    __STORE_VALUES__?: SharedStoreValues;
   }
 
   interface ScreenOrientation {

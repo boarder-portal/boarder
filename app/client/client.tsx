@@ -3,14 +3,15 @@ import { loadableReady } from '@loadable/component';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
-import createStore, { StoreContext } from 'client/utilities/store';
+import sharedStore from 'client/constants/sharedStore';
+
+import { SharedStoreContext } from 'common/utilities/SharedStore';
 
 import App from 'client/components/App/App';
 
 (async () => {
   await loadableReady();
 
-  const store = createStore(window.initialState);
   const root = document.getElementById('root');
 
   if (!root) {
@@ -22,9 +23,9 @@ import App from 'client/components/App/App';
   hydrateRoot(
     root,
     <BrowserRouter>
-      <StoreContext.Provider value={store}>
+      <SharedStoreContext.Provider value={sharedStore}>
         <App />
-      </StoreContext.Provider>
+      </SharedStoreContext.Provider>
     </BrowserRouter>,
   );
 })();

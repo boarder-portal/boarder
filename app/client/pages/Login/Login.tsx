@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import useAtom from 'client/hooks/useAtom';
+import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Button from 'client/components/common/Button/Button';
 import Flex from 'client/components/common/Flex/Flex';
@@ -14,7 +14,7 @@ import styles from './Login.module.scss';
 
 const Login: FC = () => {
   const history = useHistory();
-  const [, setUser] = useAtom('user');
+  const [, setUser] = useSharedStoreValue('user');
 
   const [userLogin, setUserLogin] = useState('');
   const [password, setPassword] = useState('');

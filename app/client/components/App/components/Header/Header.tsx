@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import httpClient from 'client/utilities/HttpClient/HttpClient';
 
-import useAtom from 'client/hooks/useAtom';
+import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
 import Flex from 'client/components/common/Flex/Flex';
@@ -14,7 +14,7 @@ import styles from './Header.module.scss';
 interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
-  const [user, setUser] = useAtom('user');
+  const [user, setUser] = useSharedStoreValue('user');
 
   const logout = useCallback(async () => {
     await httpClient.logout();
