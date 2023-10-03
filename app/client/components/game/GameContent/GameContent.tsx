@@ -1,5 +1,7 @@
 import { ComponentType, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+import urls from 'client/constants/urls';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameType } from 'common/types/game';
@@ -22,7 +24,8 @@ import { GameStateContext } from 'client/components/game/Game/contexts';
 
 import styles from './GameContent.module.scss';
 
-interface GameContentProps {
+interface GameContentProps<Game extends GameType> {
+  game: Game;
   fullscreenOrientation?: OrientationType | 'landscape' | 'primary';
   toolbarButtons?: (ToolbarButton | null | undefined | false)[];
   children?: ReactNode;
@@ -34,16 +37,14 @@ export interface ToolbarButton {
   onClick(): void;
 }
 
-const GameContent = <Game extends GameType>(props: GameContentProps) => {
-  const { fullscreenOrientation, toolbarButtons, children, settings } = props;
-
-  const { game } = useParams<{ game: Game; gameId: string }>();
+const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
+  const { game, fullscreenOrientation, toolbarButtons, children, settings } = props;
 
   const [inFullscreen, setInFullscreen] = useState(false);
   const { value: settingsModalOpen, setTrue: openSettingsModal, setFalse: closeSettingsModal } = useBoolean(false);
 
   const gameState = useContext(GameStateContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const fullscreenSupported = useMemo(() => isFullscreenSupported(), []);
   const screenOrientationSupported = useMemo(() => isScreenOrientationSupported(), []);
@@ -57,8 +58,8 @@ const GameContent = <Game extends GameType>(props: GameContentProps) => {
   }, [inFullscreen]);
 
   const navigateToLobby = useCallback(() => {
-    history.push(`/${game}/lobby`);
-  }, [game, history]);
+    navigate(urls.getLobbyUrl(game));
+  }, [game, navigate]);
 
   const hasSettings = Boolean(settings);
 

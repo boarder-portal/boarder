@@ -97,7 +97,7 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
   const bottomPlayer = players[isFlipped ? 1 : 0];
 
   return (
-    <GameContent>
+    <GameContent game={GameType.ONITAMA}>
       <Flex className={styles.root} direction="column" between={2} alignItems="flexStart">
         <Player player={topPlayer} isActive={topPlayer.index === activePlayerIndex} isFlipped selectedCardIndex={-1} />
 

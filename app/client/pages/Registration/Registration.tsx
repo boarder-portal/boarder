@@ -1,5 +1,7 @@
 import { FC, FormEvent, memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+import urls from 'client/constants/urls';
 
 import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
 
@@ -21,7 +23,7 @@ const Registration: FC = () => {
 
   const loginRef = useRef<HTMLInputElement | null>(null);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const {
     run: register,
@@ -44,9 +46,9 @@ const Registration: FC = () => {
       const { user } = await register();
 
       setUser(user);
-      history.push('/');
+      navigate(urls.home);
     },
-    [history, register, setUser],
+    [navigate, register, setUser],
   );
 
   useLayoutEffect(() => {

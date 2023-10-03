@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { StaticRouter } from 'react-router-dom';
+import { StaticRouter } from 'react-router-dom/server';
 
 import SharedStore, { SharedStoreContext } from 'common/utilities/SharedStore';
 

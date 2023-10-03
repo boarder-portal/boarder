@@ -1,6 +1,7 @@
 import { FC, memo } from 'react';
 import { Link } from 'react-router-dom';
 
+import urls from 'client/constants/urls';
 import { GAMES_IN_DEVELOPMENT, GAME_NAMES } from 'common/constants/game';
 
 import { GameType } from 'common/types/game';
@@ -24,7 +25,7 @@ const Home: FC = () => {
             <Link
               key={game}
               className={styles.game}
-              to={`/${game}/lobby`}
+              to={urls.getLobbyUrl(game)}
               style={{
                 backgroundImage: `url("/public/game/images/backgrounds/${game}.png")`,
               }}

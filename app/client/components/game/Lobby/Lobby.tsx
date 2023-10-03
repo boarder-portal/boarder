@@ -1,6 +1,7 @@
 import { ComponentType, useCallback, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
+import urls from 'client/constants/urls';
 import { GAME_NAMES } from 'common/constants/game';
 
 import typedReactMemo from 'client/types/typedReactMemo';
@@ -28,6 +29,7 @@ import NewGameOptions from 'client/components/game/Lobby/components/NewGameOptio
 import styles from './Lobby.module.scss';
 
 export interface LobbyProps<Game extends GameType> {
+  game: Game;
   renderGameOptions?: ComponentType<GameOptionsProps<Game>>;
   renderCreateGameOptions?: ComponentType<CreateGameOptionsProps<Game>>;
 }
@@ -46,9 +48,7 @@ export interface GameOptionsProps<Game extends GameType> {
 }
 
 const Lobby = <Game extends GameType>(props: LobbyProps<Game>) => {
-  const { renderGameOptions, renderCreateGameOptions } = props;
-
-  const { game } = useParams<{ game: Game }>();
+  const { game, renderGameOptions, renderCreateGameOptions } = props;
 
   const [lobby, setLobby] = useState<LobbyUpdateEvent<Game> | null>(null);
   const {
@@ -57,11 +57,11 @@ const Lobby = <Game extends GameType>(props: LobbyProps<Game>) => {
     setFalse: closeMobileCreateGameModal,
   } = useBoolean(false);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { options, setOptions, refreshDefaultOptions } = useGameOptions(game);
 
   const navigateToGame = useImmutableCallback((gameId: string) => {
-    history.push(`/${game}/game/${gameId}`);
+    navigate(urls.getGameUrl(game, gameId));
   });
 
   const handleGameClick = useCallback(

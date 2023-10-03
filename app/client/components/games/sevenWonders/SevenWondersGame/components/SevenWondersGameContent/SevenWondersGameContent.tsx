@@ -61,60 +61,58 @@ const SevenWondersGameContent: FC<GameContentProps<GameType.SEVEN_WONDERS>> = (p
     console.log(gameInfo);
   }, [gameInfo]);
 
-  if (!player || !otherPlayers || !leftNeighbor || !rightNeighbor) {
-    return null;
-  }
-
   return (
-    <GameContent>
-      <Flex className={styles.root} direction="column" justifyContent="center">
-        {gamePhase === GamePhaseType.PICK_CITY_SIDE ? (
-          <Flex justifyContent="center" between={4}>
-            {[0, 1].map((citySide) => {
-              const isPicked = citySide === player?.data.pickCitySide?.pickedSide;
+    <GameContent game={GameType.SEVEN_WONDERS}>
+      {player && otherPlayers && leftNeighbor && rightNeighbor && (
+        <Flex className={styles.root} direction="column" justifyContent="center">
+          {gamePhase === GamePhaseType.PICK_CITY_SIDE ? (
+            <Flex justifyContent="center" between={4}>
+              {[0, 1].map((citySide) => {
+                const isPicked = citySide === player?.data.pickCitySide?.pickedSide;
 
-              return (
-                <GameImage
-                  key={citySide}
-                  className={classNames(styles.pickCitySide, {
-                    [styles.picked]: isPicked,
-                  })}
-                  game={GameType.SEVEN_WONDERS}
-                  src={`/cities/${player.data.pickCitySide?.city ?? player.data.city}/${citySide}.png`}
-                  onClick={() => pickCitySide(isPicked ? null : citySide)}
-                />
-              );
-            })}
-          </Flex>
-        ) : (
-          <>
-            <Flex className={styles.otherPlayers} justifyContent="center" between={5}>
-              {otherPlayers.map((otherPlayer) => (
-                <Wonder
-                  key={otherPlayer.login}
-                  className={styles.otherPlayerWonder}
-                  player={otherPlayer}
-                  copiedLeaderId={player.data.copiedCard?.id}
-                  isOtherPlayer
-                />
-              ))}
+                return (
+                  <GameImage
+                    key={citySide}
+                    className={classNames(styles.pickCitySide, {
+                      [styles.picked]: isPicked,
+                    })}
+                    game={GameType.SEVEN_WONDERS}
+                    src={`/cities/${player.data.pickCitySide?.city ?? player.data.city}/${citySide}.png`}
+                    onClick={() => pickCitySide(isPicked ? null : citySide)}
+                  />
+                );
+              })}
             </Flex>
+          ) : (
+            <>
+              <Flex className={styles.otherPlayers} justifyContent="center" between={5}>
+                {otherPlayers.map((otherPlayer) => (
+                  <Wonder
+                    key={otherPlayer.login}
+                    className={styles.otherPlayerWonder}
+                    player={otherPlayer}
+                    copiedLeaderId={player.data.copiedCard?.id}
+                    isOtherPlayer
+                  />
+                ))}
+              </Flex>
 
-            <MainBoard
-              className={styles.mainBoard}
-              io={io}
-              gameOptions={gameOptions}
-              player={player}
-              discard={discard}
-              age={age}
-              gamePhase={gamePhase}
-              agePhase={agePhase}
-              leftNeighbor={leftNeighbor}
-              rightNeighbor={rightNeighbor}
-            />
-          </>
-        )}
-      </Flex>
+              <MainBoard
+                className={styles.mainBoard}
+                io={io}
+                gameOptions={gameOptions}
+                player={player}
+                discard={discard}
+                age={age}
+                gamePhase={gamePhase}
+                agePhase={agePhase}
+                leftNeighbor={leftNeighbor}
+                rightNeighbor={rightNeighbor}
+              />
+            </>
+          )}
+        </Flex>
+      )}
     </GameContent>
   );
 };

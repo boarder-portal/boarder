@@ -1,5 +1,7 @@
 import { FC, FormEvent, memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import urls from 'client/constants/urls';
 
 import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
 
@@ -20,8 +22,8 @@ const Login: FC = () => {
 
   const loginRef = useRef<HTMLInputElement | null>(null);
 
-  const history = useHistory();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     run: login,
@@ -46,9 +48,9 @@ const Login: FC = () => {
       const searchParams = new URLSearchParams(location.search);
 
       setUser(user);
-      history.push(searchParams.get('from') ?? '/');
+      navigate(searchParams.get('from') ?? urls.home);
     },
-    [login, location.search, setUser, history],
+    [login, location.search, setUser, navigate],
   );
 
   useLayoutEffect(() => {

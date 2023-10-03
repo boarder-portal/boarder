@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 
 import { GameType } from 'common/types/game';
 
+import { isGame } from 'client/utilities/game';
+
 import BombersGame from 'client/components/games/bombers/BombersGame/BombersGame';
 import CarcassonneGame from 'client/components/games/carcassonne/CarcassonneGame/CarcassonneGame';
 import HeartsGame from 'client/components/games/hearts/HeartsGame/HeartsGame';
@@ -30,7 +32,11 @@ const GAMES_MAP: Record<GameType, ComponentType> = {
 };
 
 const Game: FC = () => {
-  const { game } = useParams<{ game: GameType }>();
+  const { game } = useParams();
+
+  if (!isGame(game)) {
+    return null;
+  }
 
   const Game = GAMES_MAP[game];
 

@@ -6,7 +6,7 @@ import Game from 'client/components/game/Game/Game';
 import OnitamaGameContent from 'client/components/games/onitama/OnitamaGame/components/OnitamaGameContent/OnitamaGameContent';
 
 const OnitamaGame: FC = () => {
-  return <Game<GameType.ONITAMA> renderGameContent={OnitamaGameContent} />;
+  return <Game game={GameType.ONITAMA} renderGameContent={OnitamaGameContent} />;
 };
 
 export default memo(OnitamaGame);

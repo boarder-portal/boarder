@@ -385,7 +385,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
   }, [boardCardsCount, previousBoardCardsCount]);
 
   return (
-    <GameContent>
+    <GameContent game={GameType.CARCASSONNE}>
       <div className={styles.root}>
         <div
           className={styles.boardWrapper}

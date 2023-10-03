@@ -85,7 +85,7 @@ const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
   }, [players]);
 
   return (
-    <GameContent>
+    <GameContent game={GameType.SET}>
       <div className={styles.root}>
         <Flex direction="column" between={5}>
           {chunk(cards, cards.length / 3).map((cardsRow, index) => (

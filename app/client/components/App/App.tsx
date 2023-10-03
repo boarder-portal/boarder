@@ -2,9 +2,9 @@ import '../../styles/reset.scss';
 import '../../styles/globals.scss';
 
 import { FC } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
-import { GameType } from 'common/types/game';
+import urls from 'client/constants/urls';
 
 import Header from 'client/components/App/components/Header/Header';
 
@@ -16,34 +16,20 @@ import Registration from 'client/pages/Registration/Registration';
 
 import styles from './App.module.scss';
 
-const gamesValues = Object.values(GameType).join('|');
-
 const App: FC = () => {
   return (
     <div className={styles.app}>
       <Header />
 
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
+      <Routes>
+        <Route path={urls.home} element={<Home />} />
 
-        <Route exact path="/registration">
-          <Registration />
-        </Route>
+        <Route path={urls.register} element={<Registration />} />
+        <Route path={urls.login} element={<Login />} />
 
-        <Route exact path="/login">
-          <Login />
-        </Route>
-
-        <Route exact path={`/:game(${gamesValues})/lobby`}>
-          <Lobby />
-        </Route>
-
-        <Route exact path={`/:game(${gamesValues})/game/:gameId`}>
-          <Game />
-        </Route>
-      </Switch>
+        <Route path={urls.lobby} element={<Lobby />} />
+        <Route path={urls.game} element={<Game />} />
+      </Routes>
     </div>
   );
 };

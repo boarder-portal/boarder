@@ -405,7 +405,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
   }, [changeCellSize]);
 
   return (
-    <GameContent fullscreenOrientation="landscape">
+    <GameContent game={GameType.BOMBERS} fullscreenOrientation="landscape">
       <Flex className={styles.root} between={4} justifyContent="center" alignItems="stretch" ref={containerRef}>
         <canvas
           style={{ width: canvasSize.width, height: canvasSize.height }}

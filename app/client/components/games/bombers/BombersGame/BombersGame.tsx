@@ -6,7 +6,7 @@ import Game from 'client/components/game/Game/Game';
 import BombersGameContent from 'client/components/games/bombers/BombersGame/components/BombersGameContent/BombersGameContent';
 
 const BombersGame: FC = () => {
-  return <Game<GameType.BOMBERS> renderGameContent={BombersGameContent} />;
+  return <Game game={GameType.BOMBERS} renderGameContent={BombersGameContent} />;
 };
 
 export default memo(BombersGame);

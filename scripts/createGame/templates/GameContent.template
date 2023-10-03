@@ -18,7 +18,7 @@ const {{pascalCased}}GameContent: FC<GameContentProps<GameType.{{constCased}}>> 
     console.log(gameInfo);
   }, [gameInfo]);
 
-  return <GameContent></GameContent>;
+  return <GameContent game={GameType.{{constCased}}}></GameContent>;
 };
 
 export default memo({{pascalCased}}GameContent);

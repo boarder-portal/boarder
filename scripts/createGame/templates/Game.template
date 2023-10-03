@@ -6,7 +6,7 @@ import Game from 'client/components/game/Game/Game';
 import {{pascalCased}}GameContent from '{{gameContentFilename}}';
 
 const {{pascalCased}}Game: FC = () => {
-  return <Game<GameType.{{constCased}}> renderGameContent={{{pascalCased}}GameContent} />;
+  return <Game game={GameType.{{constCased}}} renderGameContent={{{pascalCased}}GameContent} />;
 };
 
 export default memo({{pascalCased}}Game);

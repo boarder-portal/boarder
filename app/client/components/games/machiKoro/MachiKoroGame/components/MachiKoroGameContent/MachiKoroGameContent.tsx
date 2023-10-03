@@ -206,7 +206,7 @@ const MachiKoroGameContent: FC<GameContentProps<GameType.MACHI_KORO>> = (props) 
   }, [gameInfo]);
 
   return (
-    <GameContent>
+    <GameContent game={GameType.MACHI_KORO}>
       <Flex direction="column" between={5}>
         {player && (
           <StatusAndActions

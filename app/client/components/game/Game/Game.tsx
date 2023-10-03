@@ -1,5 +1,5 @@
 import { ComponentType, useCallback, useMemo, useRef, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import typedReactMemo from 'client/types/typedReactMemo';
 import {
@@ -31,6 +31,7 @@ import {
 import { DEFAULT_OPTIONS } from 'client/atoms/gameOptionsAtoms';
 
 export interface GameProps<Game extends GameType> {
+  game: Game;
   renderGameContent: ComponentType<GameContentProps<Game>>;
   renderGameEnd?: ComponentType<GameEndProps<Game>>;
 }
@@ -48,9 +49,9 @@ export interface GameEndProps<Game extends GameType> {
 }
 
 const Game = <Game extends GameType>(props: GameProps<Game>) => {
-  const { renderGameContent: GameContent, renderGameEnd: GameEnd } = props;
+  const { game, renderGameContent: GameContent, renderGameEnd: GameEnd } = props;
 
-  const { game, gameId } = useParams<{ game: Game; gameId: string }>();
+  const { gameId } = useParams();
 
   const [gameName, setGameName] = useState<string | null>(null);
   const [gameOptions, setGameOptions] = useState<GameOptions<Game>>(DEFAULT_OPTIONS[game]);
@@ -64,7 +65,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
   });
   const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.WAITING);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const player = usePlayer(players);
   const { settings: localPlayerSettings, changeSetting: onChangeSetting } = useLocalPlayerSettings(game);
 
@@ -110,7 +111,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
     // eslint-disable-next-line camelcase
     connect_error: (err: Error) => {
       if (err.message === 'Invalid namespace') {
-        history.replace(`/${game}/lobby`);
+        navigate(`/${game}/lobby`, { replace: true });
       }
     },
   });

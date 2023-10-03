@@ -1,6 +1,8 @@
 import { FC, memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
+import urls from 'client/constants/urls';
+
 import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
 
 import useLoginLink from 'client/hooks/useLoginLink';
@@ -38,7 +40,7 @@ const Header: FC<HeaderProps> = () => {
 
   return (
     <Flex className={styles.root} alignItems="center">
-      <Link to="/">
+      <Link to={urls.home}>
         <Text size="l" weight="bold">
           Boarder
         </Text>
@@ -54,7 +56,7 @@ const Header: FC<HeaderProps> = () => {
             Вход
           </Link>
 
-          <Link to="/registration" className={styles.registration}>
+          <Link to={urls.register} className={styles.registration}>
             Регистрация
           </Link>
         </>

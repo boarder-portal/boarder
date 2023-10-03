@@ -272,7 +272,7 @@ const MahjongGameContent: FC<GameContentProps<GameType.MAHJONG>> = (props) => {
   const panelSize = layoutType.includes('right') ? RIGHT_PANEL_SIZE : BOTTOM_PANEL_SIZE;
 
   return (
-    <GameContent toolbarButtons={toolbarButtons} settings={settings}>
+    <GameContent game={GameType.MAHJONG} toolbarButtons={toolbarButtons} settings={settings}>
       <div
         ref={rootRef}
         className={classNames(styles.root, styles[layoutType])}

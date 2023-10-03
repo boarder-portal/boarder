@@ -63,7 +63,7 @@ const HeartsGameContent: FC<GameContentProps<GameType.HEARTS>> = (props) => {
   }, [gameInfo]);
 
   return (
-    <GameContent>
+    <GameContent game={GameType.HEARTS}>
       <div className={styles.root}>
         {sortedPlayers.map((localPlayer, index) => {
           const position = getPlayerPosition(index, players.length);

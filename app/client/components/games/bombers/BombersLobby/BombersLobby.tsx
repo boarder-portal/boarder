@@ -7,7 +7,7 @@ import CreateGameOptions from 'client/components/games/bombers/BombersLobby/comp
 import GameOptions from 'client/components/games/bombers/BombersLobby/components/GameOptions/GameOptions';
 
 const BombersLobby: FC = () => {
-  return <Lobby<GameType.BOMBERS> renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
+  return <Lobby game={GameType.BOMBERS} renderGameOptions={GameOptions} renderCreateGameOptions={CreateGameOptions} />;
 };
 
 export default memo(BombersLobby);

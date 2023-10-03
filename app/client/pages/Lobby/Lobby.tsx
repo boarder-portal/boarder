@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 
 import { GameType } from 'common/types/game';
 
+import { isGame } from 'client/utilities/game';
+
 import BombersLobby from 'client/components/games/bombers/BombersLobby/BombersLobby';
 import CarcassonneLobby from 'client/components/games/carcassonne/CarcassonneLobby/CarcassonneLobby';
 import HeartsLobby from 'client/components/games/hearts/HeartsLobby/HeartsLobby';
@@ -30,7 +32,11 @@ const LOBBIES_MAP: Record<GameType, ComponentType> = {
 };
 
 const Lobby: FC = () => {
-  const { game } = useParams<{ game: GameType }>();
+  const { game } = useParams();
+
+  if (!isGame(game)) {
+    return null;
+  }
 
   const Lobby = LOBBIES_MAP[game];
 

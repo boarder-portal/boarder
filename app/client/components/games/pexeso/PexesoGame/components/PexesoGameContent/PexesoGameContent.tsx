@@ -257,7 +257,7 @@ const PexesoGameContent: FC<GameContentProps<GameType.PEXESO>> = (props) => {
   }
 
   return (
-    <GameContent>
+    <GameContent game={GameType.PEXESO}>
       <Flex
         between={5}
         style={{

@@ -6,7 +6,7 @@ import Game from 'client/components/game/Game/Game';
 import CarcassonneGameContent from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/CarcassonneGameContent';
 
 const CarcassonneGame: FC = () => {
-  return <Game<GameType.CARCASSONNE> renderGameContent={CarcassonneGameContent} />;
+  return <Game game={GameType.CARCASSONNE} renderGameContent={CarcassonneGameContent} />;
 };
 
 export default memo(CarcassonneGame);

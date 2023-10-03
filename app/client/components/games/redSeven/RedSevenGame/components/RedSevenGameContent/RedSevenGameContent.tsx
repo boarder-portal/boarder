@@ -18,7 +18,7 @@ const RedSevenGameContent: FC<GameContentProps<GameType.RED_SEVEN>> = (props) =>
     console.log(gameInfo);
   }, [gameInfo]);
 
-  return <GameContent></GameContent>;
+  return <GameContent game={GameType.RED_SEVEN}></GameContent>;
 };
 
 export default memo(RedSevenGameContent);

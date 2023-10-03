@@ -105,7 +105,7 @@ const SurvivalOnlineGameContent: FC<GameContentProps<GameType.SURVIVAL_ONLINE>> 
   }, [player, render]);
 
   return (
-    <GameContent fullscreenOrientation="landscape">
+    <GameContent game={GameType.SURVIVAL_ONLINE} fullscreenOrientation="landscape">
       <Flex className={styles.root} justifyContent="center" alignItems="center" direction="column" ref={containerRef}>
         <canvas
           style={{ width: canvasSize.width, height: canvasSize.height }}
