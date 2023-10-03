@@ -20,7 +20,7 @@ function getConfig(target: TargetType): Configuration {
     name: target,
     mode: IS_PRODUCTION ? 'production' : 'development',
     target,
-    entry: isWeb ? path.resolve('./app/client/client.tsx') : path.resolve('./app/server/middlewares/ServerApp.tsx'),
+    entry: isWeb ? path.resolve('./app/client/client.tsx') : path.resolve('./app/server/components/ServerApp.tsx'),
     module: {
       rules: [
         {

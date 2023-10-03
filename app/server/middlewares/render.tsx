@@ -1,11 +1,12 @@
 import { ChunkExtractor } from '@loadable/server';
-import { Request, Response } from 'express';
 import path from 'path';
 import { renderToString } from 'react-dom/server';
 
+import { Middleware } from 'server/types/koa';
+
 import SharedStore from 'common/utilities/SharedStore';
 
-import ServerApp from 'server/middlewares/ServerApp';
+import ServerApp from 'server/components/ServerApp';
 
 const nodeStats = path.resolve('./build/node/loadable-stats.json');
 const webStats = path.resolve('./build/web/loadable-stats.json');
@@ -29,8 +30,9 @@ function renderHtml(bodyContent: string, headContent?: string): string {
   `;
 }
 
-export default async function render(req: Request, res: Response): Promise<Response> {
+const render: Middleware<string> = async (ctx) => {
   let htmlString: string;
+  let status = 200;
 
   try {
     const nodeExtractor = new ChunkExtractor({ statsFile: nodeStats });
@@ -38,11 +40,11 @@ export default async function render(req: Request, res: Response): Promise<Respo
 
     const store = new SharedStore();
 
-    store.setValue('user', req.session.user ?? null);
+    store.setValue('user', ctx.state.user);
 
     const webExtractor = new ChunkExtractor({ statsFile: webStats });
 
-    const jsx = webExtractor.collectChunks(<App url={req.url} store={store} />);
+    const jsx = webExtractor.collectChunks(<App url={ctx.url} store={store} />);
     const html = renderToString(jsx);
 
     const linkTags = webExtractor.getLinkTags();
@@ -67,7 +69,12 @@ export default async function render(req: Request, res: Response): Promise<Respo
     htmlString = renderHtml(`
       ${err instanceof Error ? `<pre>${err.stack}</pre>` : String(err)}
     `);
+    status = 500;
   }
 
-  return res.send(htmlString);
-}
+  ctx.status = status;
+  ctx.type = 'text/html';
+  ctx.body = htmlString;
+};
+
+export default render;

@@ -25,8 +25,8 @@ import SharedDataManager from 'common/utilities/games/bombers/SharedDataManager'
 
 import useBoundTimestamps from 'client/components/game/Game/hooks/useBoundTimetamps';
 import useCreateTimestamp from 'client/components/game/Game/hooks/useCreateTimestamp';
+import useGameImages from 'client/hooks/useGameImages';
 import useGlobalListener from 'client/hooks/useGlobalListener';
-import useImages from 'client/hooks/useImages';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 import usePlayer from 'client/hooks/usePlayer';
 import useRaf from 'client/hooks/useRaf';
@@ -104,15 +104,18 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
     };
   }, [gameInfo.map]);
 
-  const images = useImages<BomberImage>({
-    grass: '/bombers/grass.jpg',
-    wall: '/bombers/wall.png',
-    box: '/bombers/box.png',
-    bomb: '/bombers/bomb.png',
-    bonusBomb: '/bombers/bonusBomb.png',
-    bonusRange: '/bombers/bonusRange.png',
-    bonusSpeed: '/bombers/bonusSpeed.png',
-    bonusHp: '/bombers/bonusHp.png',
+  const images = useGameImages<BomberImage>({
+    game: GameType.BOMBERS,
+    sources: {
+      grass: '/grass.jpg',
+      wall: '/wall.png',
+      box: '/box.png',
+      bomb: '/bomb.png',
+      bonusBomb: '/bonusBomb.png',
+      bonusRange: '/bonusRange.png',
+      bonusSpeed: '/bonusSpeed.png',
+      bonusHp: '/bonusHp.png',
+    },
   });
 
   const changeCellSize = useImmutableCallback(() => {

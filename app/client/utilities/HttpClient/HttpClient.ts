@@ -1,43 +1,53 @@
-import { User } from 'common/types';
-import { LoginParams, RegisterParams } from 'common/types/requestParams';
+import { apiUrls } from 'common/constants/api';
 
-class HttpClient {
-  async get(url: string, params?: any) {
-    const rawResponse = await fetch(`${url}?${new URLSearchParams(params)}`);
+import { ApiType, ApiUrl } from 'common/types/api';
+
+abstract class HttpClient<Type extends ApiType> {
+  abstract apiType: Type;
+
+  private getUrl(url: ApiUrl<Type>): string {
+    return `${apiUrls.root}${apiUrls[this.apiType].root}${apiUrls[this.apiType][url]}`;
+  }
+
+  protected getOptions(): RequestInit {
+    return {
+      credentials: 'include',
+    };
+  }
+
+  protected async fetch(input: RequestInfo | URL, init?: RequestInit) {
+    const rawResponse = await fetch(input, init);
+
+    if (rawResponse.status !== 200) {
+      throw new Error('Request error');
+    }
 
     return rawResponse.json();
   }
 
-  async post(url: string, params?: any) {
-    const rawResponse = await fetch(url, {
+  protected async get(url: ApiUrl<Type>, params?: any, signal?: AbortSignal) {
+    return this.fetch(`${this.getUrl(url)}?${new URLSearchParams(params)}`, {
+      ...this.getOptions(),
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      signal,
+    });
+  }
+
+  protected async post(url: ApiUrl<Type>, data?: any, signal?: AbortSignal) {
+    return this.fetch(this.getUrl(url), {
+      ...this.getOptions(),
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(params),
+      body: JSON.stringify(data),
+      signal,
     });
-
-    return rawResponse.json();
-  }
-
-  async getUser(): Promise<User | null> {
-    return this.get('/api/user');
-  }
-
-  async register(params: RegisterParams): Promise<User> {
-    return this.post('/api/register', params);
-  }
-
-  async login(params: LoginParams): Promise<User | null> {
-    return this.post('/api/login', params);
-  }
-
-  async logout(): Promise<undefined> {
-    return this.post('/api/logout');
   }
 }
 
-const httpClient = new HttpClient();
-
-export default httpClient;
+export default HttpClient;

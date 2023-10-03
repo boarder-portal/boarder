@@ -1,8 +1,9 @@
-import { FC, FormEvent, memo, useCallback, useState } from 'react';
+import { FC, FormEvent, memo, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import httpClient from 'client/utilities/HttpClient/HttpClient';
+import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
 
+import usePromise from 'client/hooks/usePromise';
 import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Button from 'client/components/common/Button/Button';
@@ -13,29 +14,44 @@ import Text from 'client/components/common/Text/Text';
 import styles from './Registration.module.scss';
 
 const Registration: FC = () => {
-  const history = useHistory();
-  const [, setUser] = useSharedStoreValue('user');
-
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [passwordForCheck, setPasswordForCheck] = useState('');
+  const [, setUser] = useSharedStoreValue('user');
+
+  const loginRef = useRef<HTMLInputElement | null>(null);
+
+  const history = useHistory();
+
+  const {
+    run: register,
+    isLoading,
+    isError,
+  } = usePromise((signal) =>
+    authHttpClient.register(
+      {
+        login,
+        password,
+      },
+      signal,
+    ),
+  );
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
 
-      const user = await httpClient.register({
-        user: {
-          login,
-          password,
-        },
-      });
+      const { user } = await register();
 
       setUser(user);
       history.push('/');
     },
-    [history, login, password, setUser],
+    [history, register, setUser],
   );
+
+  useLayoutEffect(() => {
+    loginRef.current?.focus();
+  }, []);
 
   return (
     <Flex className={styles.root} direction="column">
@@ -44,15 +60,17 @@ const Registration: FC = () => {
       </Text>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <Input label="Логин" value={login} onChange={setLogin} />
+        <Input label="Логин" value={login} inputRef={loginRef} onChange={setLogin} />
 
         <Input label="Пароль" value={password} type="password" onChange={setPassword} />
 
         <Input label="Повторный пароль" value={passwordForCheck} type="password" onChange={setPasswordForCheck} />
 
-        <Button className={styles.submit} type="submit">
+        <Button className={styles.submit} type="submit" disabled={isLoading}>
           Регистрация
         </Button>
+
+        <Text className={styles.error}>{isError ? 'Ошибка регистрации' : '\u00a0'}</Text>
       </form>
     </Flex>
   );

@@ -1,5 +1,5 @@
+import { Price } from 'common/types/games/sevenWonders';
 import { Effect } from 'common/types/games/sevenWonders/effects';
-import { Price } from 'common/types/games/sevenWonders/index';
 
 export enum CardId {
   // leaders

@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 
-import httpServer from 'server/httpServer';
+import { server } from 'server/server';
 
-const io = new Server(httpServer, { serveClient: false });
+const io = new Server(server, { serveClient: false });
 
 export default io;

@@ -11,7 +11,7 @@ import { isSuited, isWind } from 'common/utilities/games/mahjong/tilesBase';
 import usePlayerSettings from 'client/components/game/Game/hooks/usePlayerSettings';
 import useLeaveOnUnmount from 'client/hooks/useLeaveOnUnmount';
 
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 import RotatedElement from 'client/components/common/RotatedElement/RotatedElement';
 
 import styles from './Tile.module.scss';
@@ -78,7 +78,9 @@ const Tile: FC<TileProps> = (props) => {
       rotation={rotation}
       {...rest}
     >
-      {tile && <Image className={styles.content} src={`/mahjong/${stringifyTile(tile)}.svg`} />}
+      {tile && (
+        <GameImage className={styles.content} game={GameType.MAHJONG} src={`/tiles/${stringifyTile(tile)}.svg`} />
+      )}
 
       {showTileHints && (
         <div className={styles.hint} style={{ fontSize: height / 6 }}>

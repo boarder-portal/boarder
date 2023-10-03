@@ -3,9 +3,10 @@ import { CSSProperties, useCallback } from 'react';
 
 import { WithClassName } from 'client/types/react';
 import typedReactMemo from 'client/types/typedReactMemo';
+import { GameType } from 'common/types/game';
 import { CardId, LandmarkId } from 'common/types/games/machiKoro';
 
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 
 import { HOVER_SOUND, playSound } from 'client/sounds';
 
@@ -29,7 +30,7 @@ const Card = <ID extends CardId | LandmarkId>(props: CardProps<ID>) => {
   }, [onClick]);
 
   return (
-    <Image
+    <GameImage
       className={classNames(
         styles.root,
         {
@@ -39,8 +40,9 @@ const Card = <ID extends CardId | LandmarkId>(props: CardProps<ID>) => {
         },
         className,
       )}
+      game={GameType.MACHI_KORO}
       style={style}
-      src={`/machiKoro/${id}.jpg`}
+      src={`/${id}.jpg`}
       onClick={() => onClick?.(id)}
       onMouseEnter={handleHover}
     />

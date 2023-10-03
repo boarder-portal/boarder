@@ -1,5 +1,5 @@
-import { ImagesDictionary } from 'client/hooks/useImages';
+import { Images } from 'client/hooks/useImages';
 
 export type BomberImage = 'grass' | 'wall' | 'box' | 'bomb' | 'bonusBomb' | 'bonusRange' | 'bonusSpeed' | 'bonusHp';
 
-export type BombersImages = ImagesDictionary<BomberImage>;
+export type BombersImages = Images<BomberImage>;

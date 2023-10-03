@@ -9,7 +9,7 @@ import getNeighbor from 'common/utilities/games/sevenWonders/getNeighbor';
 import usePlayer from 'client/hooks/usePlayer';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 import { GameContentProps } from 'client/components/game/Game/Game';
 import GameContent from 'client/components/game/GameContent/GameContent';
 import MainBoard from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/MainBoard';
@@ -74,12 +74,13 @@ const SevenWondersGameContent: FC<GameContentProps<GameType.SEVEN_WONDERS>> = (p
               const isPicked = citySide === player?.data.pickCitySide?.pickedSide;
 
               return (
-                <Image
+                <GameImage
                   key={citySide}
                   className={classNames(styles.pickCitySide, {
                     [styles.picked]: isPicked,
                   })}
-                  src={`/sevenWonders/cities/${player.data.pickCitySide?.city ?? player.data.city}/${citySide}.png`}
+                  game={GameType.SEVEN_WONDERS}
+                  src={`/cities/${player.data.pickCitySide?.city ?? player.data.city}/${citySide}.png`}
                   onClick={() => pickCitySide(isPicked ? null : citySide)}
                 />
               );

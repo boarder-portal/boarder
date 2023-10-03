@@ -26,7 +26,7 @@ const Home: FC = () => {
               className={styles.game}
               to={`/${game}/lobby`}
               style={{
-                backgroundImage: `url("/games/backgrounds/${game}.png")`,
+                backgroundImage: `url("/public/game/images/backgrounds/${game}.png")`,
               }}
             >
               <Text className={styles.caption} size="xl">

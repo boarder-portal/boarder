@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import { CSSProperties, FC, memo } from 'react';
 
 import { WithClassName } from 'client/types/react';
+import { GameType } from 'common/types/game';
 import { Card as CardModel } from 'common/types/games/sevenWonders/cards';
 
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 
 import styles from './Card.module.scss';
 
@@ -21,7 +22,7 @@ const Card: FC<CardProps> = (props) => {
   const { className, style, card, flip, width = 110, isCopiedLeader, zoomOnHover } = props;
 
   return (
-    <Image
+    <GameImage
       className={classNames(
         styles.root,
         {
@@ -31,9 +32,10 @@ const Card: FC<CardProps> = (props) => {
         },
         className,
       )}
+      game={GameType.SEVEN_WONDERS}
       style={style}
       width={width}
-      src={`/sevenWonders/cards/${card.id}.jpg`}
+      src={`/cards/${card.id}.jpg`}
     />
   );
 };

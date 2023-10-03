@@ -12,7 +12,13 @@ import { ALL_CARDS } from 'common/constants/games/carcassonne';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
-import { AttachCardEvent, Card, GameClientEventType, MeepleType, PlacedMeeple } from 'common/types/games/carcassonne';
+import {
+  AttachCardEvent,
+  Card as CardModel,
+  GameClientEventType,
+  MeepleType,
+  PlacedMeeple,
+} from 'common/types/games/carcassonne';
 
 import { getRotatedCoords } from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/utilities/coords';
 import {
@@ -34,9 +40,9 @@ import usePlayer from 'client/hooks/usePlayer';
 import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
 import { GameContentProps } from 'client/components/game/Game/Game';
 import GameContent from 'client/components/game/GameContent/GameContent';
+import Card from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/components/Card/Card';
 import Meeple from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/components/Meeple/Meeple';
 import Players from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/components/Player/Players';
 
@@ -83,7 +89,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
   const previousBoardCardsCount = usePrevious(boardCardsCount);
 
   const calculateAllowedMoves = useCallback(
-    (selectedCard: Card | undefined) => {
+    (selectedCard: CardModel | undefined) => {
       if (!selectedCard) {
         return;
       }
@@ -403,7 +409,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
                     `,
                       }}
                     >
-                      <Image className={styles.cardImage} src={`/carcassonne/tiles/${card.id}.jpg`} />
+                      <Card className={styles.cardImage} card={card} />
                     </div>
                   )
                 );
@@ -482,7 +488,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
             >
               {selectedCard && (
                 <>
-                  <Image className={styles.selectedCardImage} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
+                  <Card className={styles.selectedCardImage} card={selectedCard} />
 
                   {placedCardCoords &&
                     selectedCard.objects.map(({ meepleCoords }, objectId) => {
@@ -546,7 +552,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
                 className={classNames(styles.handCard, { [styles.selected]: index === selectedCardIndex })}
                 onClick={(e) => onHandCardClick(e, index)}
               >
-                <Image className={styles.handCardImage} src={`/carcassonne/tiles/${card.id}.jpg`} />
+                <Card className={styles.handCardImage} card={card} />
               </div>
             );
           })}
@@ -565,9 +571,7 @@ const CarcassonneGameContent: FC<GameContentProps<GameType.CARCASSONNE>> = (prop
         </Flex>
 
         <div className={styles.draggingCard} ref={draggingCardRef}>
-          {selectedCard && (
-            <Image className={styles.draggingCardImage} src={`/carcassonne/tiles/${selectedCard.id}.jpg`} />
-          )}
+          {selectedCard && <Card className={styles.draggingCardImage} card={selectedCard} />}
         </div>
       </div>
     </GameContent>

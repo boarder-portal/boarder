@@ -1,8 +1,10 @@
 import { FC, memo, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
-import httpClient from 'client/utilities/HttpClient/HttpClient';
+import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
 
+import useLoginLink from 'client/hooks/useLoginLink';
+import usePromise from 'client/hooks/usePromise';
 import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
@@ -16,19 +18,23 @@ interface HeaderProps {}
 const Header: FC<HeaderProps> = () => {
   const [user, setUser] = useSharedStoreValue('user');
 
-  const logout = useCallback(async () => {
-    await httpClient.logout();
+  const loginLink = useLoginLink();
+
+  const { run: logout } = usePromise((signal) => authHttpClient.logout(signal));
+
+  const handleLogoutClick = useCallback(async () => {
+    await logout();
 
     setUser(null);
-  }, [setUser]);
+  }, [logout, setUser]);
 
   const userPopup = useMemo(() => {
     return (
-      <div className={styles.userPopup} onClick={logout}>
+      <div className={styles.userPopup} onClick={handleLogoutClick}>
         Выйти
       </div>
     );
-  }, [logout]);
+  }, [handleLogoutClick]);
 
   return (
     <Flex className={styles.root} alignItems="center">
@@ -44,7 +50,7 @@ const Header: FC<HeaderProps> = () => {
         </Dropdown>
       ) : (
         <>
-          <Link to="/login" className={styles.login}>
+          <Link to={loginLink} className={styles.login}>
             Вход
           </Link>
 

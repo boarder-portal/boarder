@@ -1,9 +1,10 @@
 import { FC, memo } from 'react';
 
 import { OwnerResource } from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/types';
+import { GameType } from 'common/types/game';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 
 import styles from './ResourceAndPrice.module.scss';
 
@@ -27,7 +28,12 @@ const ResourcesAndPrice: FC<ResourcesAndPriceProps> = (props) => {
       {Boolean(resources.length) && (
         <Flex alignItems="center" between={1}>
           {resources.map((resource, index) => (
-            <Image key={index} className={styles.resource} src={`/sevenWonders/resources/${resource.type}.png`} />
+            <GameImage
+              key={index}
+              className={styles.resource}
+              game={GameType.SEVEN_WONDERS}
+              src={`/resources/${resource.type}.png`}
+            />
           ))}
         </Flex>
       )}

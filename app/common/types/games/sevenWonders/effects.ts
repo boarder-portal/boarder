@@ -1,4 +1,3 @@
-import { CardType } from 'common/types/games/sevenWonders/cards';
 import {
   CardActionType,
   NeighborSide,
@@ -6,7 +5,8 @@ import {
   Resource,
   ResourceOwner,
   ScientificSymbolType,
-} from 'common/types/games/sevenWonders/index';
+} from 'common/types/games/sevenWonders';
+import { CardType } from 'common/types/games/sevenWonders/cards';
 
 export interface Gain {
   points?: number;

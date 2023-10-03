@@ -1,7 +1,11 @@
+.error {
+  color: red;
+  text-align: center;
+}
+
 .form {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 8px;
 }
 

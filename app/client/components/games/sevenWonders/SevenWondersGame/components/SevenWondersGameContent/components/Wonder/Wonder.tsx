@@ -3,6 +3,7 @@ import { FC, memo, useMemo } from 'react';
 import CITIES from 'common/constants/games/sevenWonders/cities';
 
 import { WithClassName } from 'client/types/react';
+import { GameType } from 'common/types/game';
 import { Player, WaitingActionType } from 'common/types/games/sevenWonders';
 import { CardId } from 'common/types/games/sevenWonders/cards';
 import { FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
@@ -12,7 +13,7 @@ import { isTradeEffect } from 'common/utilities/games/sevenWonders/isEffect';
 import useCardGroups from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/Wonder/hooks/useCardGroups';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 import Card from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/Card/Card';
 import BackCard from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/components/BackCard/BackCard';
 
@@ -97,9 +98,10 @@ const Wonder: FC<WonderProps> = (props) => {
       </Flex>
 
       <div className={styles.wonderImageWrapper}>
-        <Image
+        <GameImage
           className={styles.wonderCard}
-          src={`/sevenWonders/cities/${player.data.city}/${player.data.citySide}.png`}
+          game={GameType.SEVEN_WONDERS}
+          src={`/cities/${player.data.city}/${player.data.citySide}.png`}
         />
 
         {player.data.builtStages.map(({ index, cardType }) => {

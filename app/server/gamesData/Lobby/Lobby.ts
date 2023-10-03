@@ -2,10 +2,9 @@ import { GameType } from 'common/types/game';
 import { LobbyClientEventMap, LobbyEventType, LobbyServerEventMap } from 'common/types/game/lobby';
 import { Namespace, ServerSocket } from 'common/types/socket';
 
-import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-
 import Game from 'server/gamesData/Game/Game';
 import ioInstance from 'server/io';
+import { ioSessionMiddleware } from 'server/middlewares/session';
 
 class Lobby<G extends GameType> {
   games: Game<G>[] = [];

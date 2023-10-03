@@ -34,8 +34,7 @@ import { areBotsAvailable } from 'common/utilities/bots';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import BaseGameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
-import ioSessionMiddleware from 'server/utilities/ioSessionMiddleware';
-import removeNamespace from 'server/utilities/removeNamespace';
+import { removeNamespace } from 'server/utilities/io';
 import { now } from 'server/utilities/time';
 
 import mahjongTestCases from 'server/gamesData/Game/MahjongGame/testCases';
@@ -57,6 +56,7 @@ import SetGame from 'server/gamesData/Game/SetGame/SetGame';
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 import ioInstance from 'server/io';
+import { ioSessionMiddleware } from 'server/middlewares/session';
 
 export interface ServerGamePlayer<Game extends GameType> extends BaseGamePlayer<Game> {
   sockets: Set<GameServerSocket<Game>>;

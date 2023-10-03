@@ -11,7 +11,7 @@ import { isDefined } from 'common/utilities/is';
 import usePrevious from 'client/hooks/usePrevious';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 import Text from 'client/components/common/Text/Text';
 import Card from 'client/components/games/machiKoro/MachiKoroGame/components/MachiKoroGameContent/components/Card/Card';
 import CardLine from 'client/components/games/machiKoro/MachiKoroGame/components/MachiKoroGameContent/components/CardLine/CardLine';
@@ -65,7 +65,7 @@ const Player: FC<PlayerProps> = (props) => {
         </Text>
 
         <Flex between={2} alignItems="center">
-          <Image className={styles.coin} src="/coin.png" />
+          <GameImage className={styles.coin} src="/coin.png" />
 
           <div className={styles.coinsCount}>{`${coins}${
             coinsChange === 0 ? '' : `(${coinsChange > 0 ? '+' : ''}${coinsChange})`

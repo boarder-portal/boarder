@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import sortBy from 'lodash/sortBy';
 import times from 'lodash/times';
-import { FC, MouseEvent, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FC, MouseEvent, memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { CARD_ANIMATION_DURATION, FIELD_OPTIONS, SETS } from 'common/constants/games/pexeso';
 
@@ -16,11 +16,13 @@ import {
   ShuffleCardsIndexes,
 } from 'common/types/games/pexeso';
 
+import useGameImages from 'client/hooks/useGameImages';
+import { ImagesSources } from 'client/hooks/useImages';
 import usePlayer from 'client/hooks/usePlayer';
 import useSocket from 'client/hooks/useSocket';
 
 import Flex from 'client/components/common/Flex/Flex';
-import Image from 'client/components/common/Image/Image';
+import GameImage from 'client/components/common/GameImage/GameImage';
 import { GameContentProps } from 'client/components/game/Game/Game';
 import GameContent from 'client/components/game/GameContent/GameContent';
 
@@ -68,7 +70,6 @@ const PexesoGameContent: FC<GameContentProps<GameType.PEXESO>> = (props) => {
   const [players, setPlayers] = useState<Player[]>(gameInfo.players);
   const [activePlayerIndex, setActivePlayerIndex] = useState(gameInfo.activePlayerIndex);
 
-  const imagesRef = useRef<HTMLImageElement[]>([]);
   const cardsLayoutContainerRef = useRef<HTMLDivElement | null>(null);
   const cardsLayoutRef = useRef<HTMLDivElement | null>(null);
 
@@ -140,19 +141,23 @@ const PexesoGameContent: FC<GameContentProps<GameType.PEXESO>> = (props) => {
     });
   }, []);
 
-  useEffect(() => {
+  const imagesSources = useMemo<ImagesSources>(() => {
     const { imagesCount, imageVariantsCount } = SETS[gameOptions.set];
+    const sources: ImagesSources = {};
 
     times(imagesCount, (id) => {
       times(imageVariantsCount, (variant) => {
-        const image = new window.Image();
-
-        image.src = `/pexeso/sets/${gameOptions.set}/${id}/${variant}.jpg`;
-
-        imagesRef.current.push(image);
+        sources[`${id}/${variant}`] = `/sets/${gameOptions.set}/${id}/${variant}.jpg`;
       });
     });
-  }, [gameOptions]);
+
+    return sources;
+  }, [gameOptions.set]);
+
+  useGameImages({
+    game: GameType.PEXESO,
+    sources: imagesSources,
+  });
 
   useLayoutEffect(() => {
     const cardsLayoutContainer = cardsLayoutContainerRef.current;
@@ -284,18 +289,20 @@ const PexesoGameContent: FC<GameContentProps<GameType.PEXESO>> = (props) => {
                       zIndex: card.isInGame ? cardIndex : cardIndex - 1e4,
                     }}
                   >
-                    <Image
+                    <GameImage
                       className={styles.cardBack}
+                      game={GameType.PEXESO}
                       alt="card"
-                      src={'/pexeso/backs/default/2.jpg'}
+                      src="/backs/default/2.jpg"
                       onClick={() => handleCardClick(cardIndex)}
                       onContextMenu={(e) => handleCardRightClick(e, cardIndex)}
                     />
 
-                    <Image
+                    <GameImage
                       className={styles.cardContent}
+                      game={GameType.PEXESO}
                       alt="back"
-                      src={`/pexeso/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
+                      src={`/sets/${set}/${card.imageId}/${card.imageVariant}.jpg`}
                     />
                   </div>
                 );
