@@ -3,10 +3,8 @@ import { Link } from 'react-router-dom';
 
 import urls from 'client/constants/urls';
 
-import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
-
 import useLoginLink from 'client/hooks/useLoginLink';
-import usePromise from 'client/hooks/usePromise';
+import useRequest from 'client/hooks/useRequest';
 import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Dropdown from 'client/components/common/Dropdown/Dropdown';
@@ -22,7 +20,7 @@ const Header: FC<HeaderProps> = () => {
 
   const loginLink = useLoginLink();
 
-  const { run: logout } = usePromise((signal) => authHttpClient.logout(signal));
+  const { request: logout } = useRequest('auth.logout');
 
   const handleLogoutClick = useCallback(async () => {
     await logout();

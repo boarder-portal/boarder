@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { AnyAsyncValue } from 'client/types/async';
+import { MaybePromise } from 'common/types/common';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
@@ -9,7 +10,7 @@ export type UsePromise<Result, Args extends unknown[]> = AnyAsyncValue<Result> &
 };
 
 export default function usePromise<Result, Args extends unknown[]>(
-  getPromise: (signal: AbortSignal, ...args: Args) => Promise<Result>,
+  getPromise: (signal: AbortSignal, ...args: Args) => MaybePromise<Result>,
 ): UsePromise<Result, Args> {
   const [promiseValue, setPromiseValue] = useState<AnyAsyncValue<Result>>({
     value: null,

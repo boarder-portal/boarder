@@ -28,7 +28,7 @@
           "/^node:/",
           "module",
           "/constants/",
-          "/queries/",
+          "/api/",
           "/(/|^)types?(/|$)/",
           "/utilities\\//",
           "/hooks\\//",

@@ -1724,7 +1724,7 @@ describe('mahjong', () => {
         ).toMatchSnapshot();
       });
 
-      test("shouldn't be included when for multiple sets", () => {
+      test('shouldn\'t be included when for multiple sets', () => {
         expect(
           stringifyMahjong(
             getHandMahjong({

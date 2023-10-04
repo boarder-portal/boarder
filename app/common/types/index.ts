@@ -1,12 +1,10 @@
+import { z } from 'zod';
+
+import { userSchema } from 'common/api/auth';
+
 import { GameData, GameInfo, GameResult, GameState, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
 
-export interface User {
-  login: string;
-}
-
-export interface DBUser extends User {
-  password: string;
-}
+export type User = z.infer<typeof userSchema>;
 
 export enum PlayerStatus {
   READY = 'READY',

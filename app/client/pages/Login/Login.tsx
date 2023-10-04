@@ -3,9 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import urls from 'client/constants/urls';
 
-import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
-
-import usePromise from 'client/hooks/usePromise';
+import useRequest from 'client/hooks/useRequest';
 import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Button from 'client/components/common/Button/Button';
@@ -25,32 +23,23 @@ const Login: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const {
-    run: login,
-    isLoading,
-    isError,
-  } = usePromise((signal) =>
-    authHttpClient.login(
-      {
-        login: userLogin,
-        password,
-      },
-      signal,
-    ),
-  );
+  const { request: login, isLoading, isError } = useRequest('auth.login');
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
 
-      const { user } = await login();
+      const { user } = await login({
+        login: userLogin,
+        password,
+      });
 
       const searchParams = new URLSearchParams(location.search);
 
       setUser(user);
       navigate(searchParams.get('from') ?? urls.home);
     },
-    [login, location.search, setUser, navigate],
+    [login, userLogin, password, location.search, setUser, navigate],
   );
 
   useLayoutEffect(() => {

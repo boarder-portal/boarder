@@ -3,9 +3,9 @@ import bodyParser from 'koa-bodyparser';
 
 import { apiUrls } from 'common/constants/api';
 
-import { Context, State } from 'server/types/koa';
-
 import authRouter from 'server/api/auth';
+
+import { Context, State } from 'server/types/koa';
 
 const apiRouter = new Router<State, Context>({
   prefix: apiUrls.root,
@@ -13,6 +13,8 @@ const apiRouter = new Router<State, Context>({
 
 apiRouter.use(bodyParser());
 
-apiRouter.use(apiUrls.auth.root, authRouter.routes(), authRouter.allowedMethods());
+[authRouter].forEach((router) => {
+  apiRouter.use(`/${router.apiType}`, router.koaRouter.routes(), router.koaRouter.allowedMethods());
+});
 
 export default apiRouter;

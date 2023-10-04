@@ -19,7 +19,7 @@ function renderHtml(bodyContent: string, headContent?: string): string {
         <meta charset="UTF-8">
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, maximum-scale=1, user-scalable=0">
         <meta name="theme-color" content="#ffffff">
-        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+        <link rel="icon" type="image/x-icon" href="/public/favicon.ico?v=1">
         ${headContent ?? ''}
     </head>
 

@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import urls from 'client/constants/urls';
 
-import authHttpClient from 'client/utilities/HttpClient/AuthHttpClient';
-
-import usePromise from 'client/hooks/usePromise';
+import useRequest from 'client/hooks/useRequest';
 import useSharedStoreValue from 'client/hooks/useSharedStoreValue';
 
 import Button from 'client/components/common/Button/Button';
@@ -25,30 +23,21 @@ const Registration: FC = () => {
 
   const navigate = useNavigate();
 
-  const {
-    run: register,
-    isLoading,
-    isError,
-  } = usePromise((signal) =>
-    authHttpClient.register(
-      {
-        login,
-        password,
-      },
-      signal,
-    ),
-  );
+  const { request: register, isLoading, isError } = useRequest('auth.register');
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
 
-      const { user } = await register();
+      const { user } = await register({
+        login,
+        password,
+      });
 
       setUser(user);
       navigate(urls.home);
     },
-    [navigate, register, setUser],
+    [login, navigate, password, register, setUser],
   );
 
   useLayoutEffect(() => {
