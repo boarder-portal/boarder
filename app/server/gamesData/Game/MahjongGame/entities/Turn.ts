@@ -1,5 +1,3 @@
-import findLastIndex from 'lodash/findLastIndex';
-
 import { GameType } from 'common/types/game';
 import {
   DeclareInfo,
@@ -220,7 +218,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
   adjustCurrentTileIndex(): void {
     if (this.currentTile) {
       this.changeCurrentTileIndex(
-        findLastIndex(this.hand.playersData[this.activePlayerIndex].hand, isEqualTilesCallback(this.currentTile)),
+        this.hand.playersData[this.activePlayerIndex].hand.findLastIndex(isEqualTilesCallback(this.currentTile)),
       );
     }
   }

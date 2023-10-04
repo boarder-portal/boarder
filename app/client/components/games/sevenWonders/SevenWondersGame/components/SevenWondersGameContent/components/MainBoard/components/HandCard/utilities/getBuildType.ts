@@ -1,5 +1,3 @@
-import first from 'lodash/first';
-
 import { BuildKind } from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/components/HandCard/types';
 import { Player, Price } from 'common/types/games/sevenWonders';
 
@@ -22,7 +20,7 @@ export default function getBuildType(
     return BuildKind.OWN_RESOURCES_AND_COINS;
   }
 
-  const cheapestTradeVariant = first(tradeVariants);
+  const cheapestTradeVariant = tradeVariants.at(0);
 
   if (!cheapestTradeVariant) {
     return BuildKind.NOT_ENOUGH_RESOURCES_OR_COINS;

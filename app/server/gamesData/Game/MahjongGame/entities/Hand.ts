@@ -1,4 +1,3 @@
-import findLastIndex from 'lodash/findLastIndex';
 import shuffle from 'lodash/shuffle';
 import sortBy from 'lodash/sortBy';
 import sum from 'lodash/sum';
@@ -165,7 +164,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
         }
 
         addedTile = lastAddedTile;
-        addedTileIndex = findLastIndex(this.playersData[this.activePlayerIndex].hand, isEqualTilesCallback(addedTile));
+        addedTileIndex = this.playersData[this.activePlayerIndex].hand.findLastIndex(isEqualTilesCallback(addedTile));
       }
 
       this.turn = this.spawnEntity(
