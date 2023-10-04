@@ -1,14 +1,13 @@
 import Router from '@koa/router';
 import bodyParser from 'koa-bodyparser';
 
-import { apiUrls } from 'common/constants/api';
-
+import { API_ROOT } from 'common/api';
 import authRouter from 'server/api/auth';
 
 import { Context, State } from 'server/types/koa';
 
 const apiRouter = new Router<State, Context>({
-  prefix: apiUrls.root,
+  prefix: API_ROOT,
 });
 
 apiRouter.use(bodyParser());

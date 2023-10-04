@@ -1,12 +1,8 @@
 import 'regenerator-runtime/runtime';
 import 'server/utilities/importEnv';
 
-import path from 'node:path';
-
 import { Middleware } from 'koa';
 import connect from 'koa-connect';
-import mount from 'koa-mount';
-import serve from 'koa-static';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 
@@ -17,6 +13,7 @@ import { client as redisClient } from 'server/utilities/redis';
 import { migrate } from 'server/db/migrations/migrator';
 import UserModel from 'server/db/models/user';
 import render from 'server/middlewares/render';
+import serve from 'server/middlewares/serve';
 import { session } from 'server/middlewares/session';
 import { app, server } from 'server/server';
 
@@ -26,22 +23,8 @@ import './gamesData';
 
 const PORT = Number(process.env.PORT);
 
-app.use(
-  mount(
-    '/public',
-    serve(path.resolve('./public'), {
-      gzip: true,
-    }),
-  ),
-);
-app.use(
-  mount(
-    '/build/web',
-    serve(path.resolve('./build/web'), {
-      gzip: true,
-    }),
-  ),
-);
+app.use(serve('/public'));
+app.use(serve('/build/web'));
 
 if (process.env.NODE_ENV !== 'production') {
   const compiler = webpack(webpackConfig);
