@@ -61,16 +61,10 @@ export default class SetGame extends GameEntity<GameType.SET> {
     this.cardsStack = shuffle(notShuffledCardsStack);
 
     while (true) {
-      const { event, data, playerIndex } = yield* this.waitForSocketEvents(
-        [GameClientEventType.SEND_SET, GameClientEventType.SEND_NO_SET],
-        {
-          validate: (event, data) => {
-            if (event === GameClientEventType.SEND_SET) {
-              this.validateSendSetEvent(data);
-            }
-          },
-        },
-      );
+      const { event, data, playerIndex } = yield* this.waitForSocketEvents([
+        GameClientEventType.SEND_SET,
+        GameClientEventType.SEND_NO_SET,
+      ]);
 
       const playerData = this.playersData[playerIndex];
 
@@ -139,21 +133,5 @@ export default class SetGame extends GameEntity<GameType.SET> {
       players: this.getGamePlayers(),
       cards: this.cardsStack.slice(0, this.maxCardsToShow),
     };
-  }
-
-  validateSendSetEvent(event: unknown): asserts event is SendSetEvent {
-    if (!event || typeof event !== 'object') {
-      throw new Error('Wrong event object');
-    }
-
-    if (!hasOwnProperty(event, 'cardsIds')) {
-      throw new Error('No cardIds');
-    }
-
-    const { cardsIds } = event;
-
-    if (!isArray(cardsIds) || !cardsIds.every(isNumber)) {
-      throw new Error('Wrong cardIds property');
-    }
   }
 }

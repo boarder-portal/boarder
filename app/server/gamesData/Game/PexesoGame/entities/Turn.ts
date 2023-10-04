@@ -27,7 +27,7 @@ export default class Turn extends ServerEntity<GameType.PEXESO, number[]> {
     while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
       const cardIndex = yield* this.waitForPlayerSocketEvent(GameClientEventType.OPEN_CARD, {
         playerIndex: this.activePlayerIndex,
-        validate: this.validateOpenCardEvent,
+        validate: (cardIndex) => this.game.isCardInGame(cardIndex) && !this.openedCardsIndexes.includes(cardIndex),
       });
 
       this.openedCardsIndexes.push(cardIndex);
@@ -43,18 +43,4 @@ export default class Turn extends ServerEntity<GameType.PEXESO, number[]> {
       openedCardsIndexes: this.openedCardsIndexes,
     };
   }
-
-  validateOpenCardEvent = (cardIndex: unknown): asserts cardIndex is number => {
-    if (typeof cardIndex !== 'number') {
-      throw new Error('Invalid number');
-    }
-
-    if (!this.game.isCardInGame(cardIndex)) {
-      throw new Error('Card is not in game');
-    }
-
-    if (this.openedCardsIndexes.includes(cardIndex)) {
-      throw new Error('Already opened');
-    }
-  };
 }

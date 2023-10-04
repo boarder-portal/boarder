@@ -16,11 +16,11 @@ import Entity, { EffectGenerator, EntityGenerator } from 'server/gamesData/Game/
 import { SendSocketEventOptions } from 'server/gamesData/Game/Game';
 
 export interface WaitForSocketEventOptions<Game extends GameType, Event extends GameClientEvent<Game>> {
-  validate?(data: unknown): asserts data is GameClientEventData<Game, Event>;
+  validate?(data: GameClientEventData<Game, Event>): boolean;
 }
 
 export interface WaitForSocketEventsOptions<Game extends GameType, Event extends GameClientEvent<Game>> {
-  validate?(event: Event, data: unknown): asserts data is GameClientEventData<Game, Event>;
+  validate?(event: Event, data: GameClientEventData<Game, Event>): boolean;
 }
 
 export interface WaitForSocketEventResult<Game extends GameType, Event extends GameClientEvent<Game>> {
@@ -52,7 +52,7 @@ export type WaitForPlayerSocketEventsResult<Game extends GameType, Event extends
 }[Event];
 
 export default abstract class ServerEntity<Game extends GameType, Result = unknown> extends Entity<Game, Result> {
-  static validate(data: unknown, validator?: (data: unknown) => unknown): boolean {
+  static validate<Data>(data: Data, validator?: (data: Data) => unknown): boolean {
     try {
       validator?.(data);
 
@@ -207,9 +207,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           event,
           data: yield* entity.waitForPlayerSocketEvent<Event>(event, {
             ...options,
-            validate: (data) => {
-              options?.validate?.(event, data);
-            },
+            validate: (data) => options?.validate?.(event, data) ?? true,
           }),
         };
       }),
@@ -248,9 +246,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           event,
           ...(yield* entity.waitForSocketEvent<Event>(event, {
             ...options,
-            validate: (data) => {
-              options?.validate?.(event, data);
-            },
+            validate: (data) => options?.validate?.(event, data) ?? true,
           })),
         };
       }),
