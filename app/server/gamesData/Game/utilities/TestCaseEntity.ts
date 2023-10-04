@@ -22,7 +22,7 @@ export default abstract class TestCaseEntity<Game extends GameType> extends Serv
     event: GameEvent,
   ): EntityGenerator<GameEventData<Game, GameEvent>> {
     while (true) {
-      const { event: triggeredEvent, data } = yield* this.game.eventTrigger;
+      const { event: triggeredEvent, data } = yield* this.waitForTrigger(this.game.eventTrigger);
 
       if (triggeredEvent === event) {
         return data as GameEventData<Game, GameEvent>;

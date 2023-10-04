@@ -265,7 +265,7 @@ export default class BombersGame extends GameEntity<GameType.BOMBERS> {
     });
 
     destroyedWalls.forEach((explodedWall) => {
-      explodedWall.destroy();
+      explodedWall.destroyWall();
 
       destroyedWallsInfo.push({
         id: explodedWall.id,

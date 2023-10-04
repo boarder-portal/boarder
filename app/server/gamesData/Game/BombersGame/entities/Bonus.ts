@@ -15,7 +15,7 @@ export default class Bonus extends ServerEntity<GameType.BOMBERS> {
   id: number;
   type: BonusType;
 
-  consume = this.createTrigger();
+  consumeTrigger = this.createTrigger();
 
   constructor(game: BombersGame, options: BonusOptions) {
     super(game);
@@ -25,7 +25,11 @@ export default class Bonus extends ServerEntity<GameType.BOMBERS> {
   }
 
   *lifecycle(): EntityGenerator {
-    yield* this.consume;
+    yield* this.waitForTrigger(this.consumeTrigger);
+  }
+
+  consume(): void {
+    this.consumeTrigger.activate();
   }
 
   toJSON(): BonusModel {

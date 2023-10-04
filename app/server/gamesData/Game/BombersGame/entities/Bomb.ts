@@ -64,11 +64,11 @@ export default class Bomb extends ServerEntity<GameType.BOMBERS> {
   }
 
   *lifecycle(): EntityGenerator {
-    yield* this.explodeTrigger;
+    yield* this.waitForTrigger(this.explodeTrigger);
   }
 
   explode(): ExplosionResult {
-    this.explodeTrigger();
+    this.explodeTrigger.activate();
 
     const hitPlayers: HitPlayer[] = [];
     const explodedBoxes: Box[] = [];

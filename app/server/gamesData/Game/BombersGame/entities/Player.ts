@@ -57,10 +57,10 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   buffs: Buff[] = [];
   placedBombs = new Set<Bomb>();
 
-  disable = this.createTrigger();
-  grantControls = this.createTrigger();
-  cancelBuffTimeout = this.createTrigger<BuffType>();
-  hit = this.createTrigger<number>();
+  disableTrigger = this.createTrigger();
+  grantControlsTrigger = this.createTrigger();
+  cancelBuffTimeoutTrigger = this.createTrigger<BuffType>();
+  hitTrigger = this.createTrigger<number>();
 
   constructor(game: BombersGame, options: PlayerOptions) {
     super(game, options);
@@ -75,7 +75,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     this.spawnTask(this.waitForDisable());
 
     while (true) {
-      const damage = yield* this.hit;
+      const damage = yield* this.waitForTrigger(this.hitTrigger);
 
       this.hp = Math.max(0, this.hp - damage);
 
@@ -95,7 +95,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     const endsAt = this.createTimestamp(BUFF_DURATIONS[type]);
     const buff = this.game.sharedDataManager.activatePlayerBuff(this.index, type, endsAt);
 
-    this.cancelBuffTimeout(type);
+    this.cancelBuffTimeoutTrigger.activate(type);
 
     this.sendSocketEvent(GameServerEventType.BUFF_ACTIVATED, {
       playerIndex: this.index,
@@ -130,7 +130,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   consumeBonus(bonus: Bonus, coords: Coords): void {
-    bonus.consume();
+    bonus.consumeTrigger.activate();
 
     this.game.sharedDataManager.consumePlayerBonus(this.index, bonus);
 
@@ -139,6 +139,10 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
       playerIndex: this.index,
       coords,
     });
+  }
+
+  disable(): void {
+    this.disableTrigger.activate();
   }
 
   getCurrentCell(): ServerCell {
@@ -181,11 +185,19 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     return occupiedCells.filter(isDefined);
   }
 
+  grantControls(): void {
+    this.grantControlsTrigger.activate();
+  }
+
   heal = (): void => {
     if (this.game.sharedDataManager.healPlayer(this.index)) {
       this.sendSocketEvent(GameServerEventType.PLAYER_HEALED, this.index);
     }
   };
+
+  hit(hp: number): void {
+    this.hitTrigger.activate(hp);
+  }
 
   isAlive(): boolean {
     return this.hp > 0;
@@ -197,7 +209,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   *listenForEvents(): EntityGenerator {
     yield* this.race([
-      this.disable,
+      this.waitForTrigger(this.disableTrigger),
       this.all([
         this.listenForOwnEvent(GameClientEventType.START_MOVING, this.startMoving),
         this.listenForOwnEvent(GameClientEventType.STOP_MOVING, this.stopMoving),
@@ -317,7 +329,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   *waitForBuffCancel(type: BuffType): EntityGenerator<true> {
     while (true) {
-      const buffType = yield* this.cancelBuffTimeout;
+      const buffType = yield* this.waitForTrigger(this.cancelBuffTimeoutTrigger);
 
       if (buffType === type) {
         return true;
@@ -326,12 +338,12 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   *waitForControls(): EntityGenerator {
-    yield* this.grantControls;
+    yield* this.waitForTrigger(this.grantControlsTrigger);
     yield* this.listenForEvents();
   }
 
   *waitForDisable(): EntityGenerator {
-    yield* this.disable;
+    yield* this.waitForTrigger(this.disableTrigger);
 
     this.isDisabled = true;
 

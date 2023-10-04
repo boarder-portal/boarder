@@ -74,7 +74,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
 
   turn: Turn | null = null;
 
-  finish = this.createTrigger();
+  finishTrigger = this.createTrigger();
 
   constructor(round: Round, options: HandOptions) {
     super(round, {
@@ -216,7 +216,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     this.activePlayerIndex = -1;
     this.turn = null;
 
-    this.finish();
+    this.finishTrigger.activate();
 
     this.game.addHandResult(handResult);
     this.game.sendGameInfo();
@@ -377,7 +377,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
 
   *listenForEvents(): EntityGenerator {
     yield* this.race([
-      this.finish,
+      this.waitForTrigger(this.finishTrigger),
       this.all([
         this.listenForEvent(GameClientEventType.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
           this.changePlayerTileIndex(playerIndex, from, to);

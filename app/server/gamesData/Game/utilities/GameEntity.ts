@@ -49,7 +49,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     event: GameEvent,
     data: GameEventData<Game, GameEvent>,
   ): void {
-    this.eventTrigger({
+    this.eventTrigger.activate({
       event,
       data,
     });

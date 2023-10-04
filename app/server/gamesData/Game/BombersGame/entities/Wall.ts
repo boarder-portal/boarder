@@ -20,7 +20,7 @@ export default class Wall extends ServerEntity<GameType.BOMBERS> {
   cell: ServerCell;
   isArtificial: boolean;
 
-  destroy = this.createTrigger();
+  destroyTrigger = this.createTrigger();
 
   constructor(game: BombersGame, options: WallOptions) {
     super(game);
@@ -29,6 +29,10 @@ export default class Wall extends ServerEntity<GameType.BOMBERS> {
     this.id = options.id;
     this.cell = options.cell;
     this.isArtificial = options.isArtificial;
+  }
+
+  destroyWall(): void {
+    this.destroyTrigger.activate();
   }
 
   *lifecycle(): EntityGenerator {
@@ -56,7 +60,7 @@ export default class Wall extends ServerEntity<GameType.BOMBERS> {
       });
     }
 
-    yield* this.destroy;
+    yield* this.waitForTrigger(this.destroyTrigger);
   }
 
   toJSON(): WallModel {

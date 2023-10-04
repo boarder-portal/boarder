@@ -5,6 +5,7 @@ import { GameOptions, GameType } from 'common/types/game';
 
 import Timestamp from 'common/utilities/Timestamp';
 import AbortError from 'server/gamesData/Game/utilities/AbortError';
+import Trigger from 'server/gamesData/Game/utilities/Trigger';
 import { now } from 'server/utilities/time';
 
 import Game from 'server/gamesData/Game/Game';
@@ -75,11 +76,6 @@ type RaceObjectReturnValue<T> = {
     value: T extends Record<string, IterableOrGenerator<unknown>> ? GeneratorReturnValue<T[P]> : never;
   };
 }[keyof T];
-
-export interface Trigger<Value = void> {
-  (value: Value): void;
-  [Symbol.iterator](): EffectGenerator<Value>;
-}
 
 export default abstract class Entity<Game extends GameType, Result = unknown> {
   #children = new Set<Entity<Game>>();
@@ -302,28 +298,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   }
 
   createTrigger<Value = void>(): Trigger<Value> {
-    const callbacks = new Set<(value: Value) => unknown>();
-    const trigger = ((value) => {
-      const startingCallbacks = new Set(callbacks);
-
-      for (const callback of callbacks) {
-        if (startingCallbacks.has(callback)) {
-          callback(value);
-        }
-      }
-    }) as Trigger<Value>;
-
-    trigger[Symbol.iterator] = function* () {
-      return yield (resolve) => {
-        callbacks.add(resolve);
-
-        return () => {
-          callbacks.delete(resolve);
-        };
-      };
-    };
-
-    return trigger;
+    return new Trigger();
   }
 
   *delay(ms: number): EffectGenerator<void> {
@@ -597,6 +572,12 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   *waitForTimestamp(timestamp: Timestamp): EffectGenerator<void> {
     return yield (resolve) => {
       return timestamp.subscribe(resolve);
+    };
+  }
+
+  *waitForTrigger<Value>(trigger: Trigger<Value>): EffectGenerator<Value> {
+    return yield (resolve) => {
+      return trigger.subscribe(resolve);
     };
   }
 }

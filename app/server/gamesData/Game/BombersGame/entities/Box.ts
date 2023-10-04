@@ -28,11 +28,11 @@ export default class Box extends ServerEntity<GameType.BOMBERS, BonusType | null
   }
 
   *lifecycle(): EntityGenerator<BonusType | null> {
-    return yield* this.explodeTrigger;
+    return yield* this.waitForTrigger(this.explodeTrigger);
   }
 
   explode(): void {
-    this.explodeTrigger(Math.random() < BONUS_PROBABILITY ? getWeightedRandomKey(BONUSES_WEIGHTS) : null);
+    this.explodeTrigger.activate(Math.random() < BONUS_PROBABILITY ? getWeightedRandomKey(BONUSES_WEIGHTS) : null);
   }
 
   toJSON(): BoxModel {

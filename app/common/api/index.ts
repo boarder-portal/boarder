@@ -23,14 +23,14 @@ export type ApiMethodRequest<Type extends ApiType, MethodType extends ApiMethodT
   MethodType
 > extends { request: z.ZodObject<any> }
   ? z.infer<ApiMethodDescription<Type, MethodType>['request']>
-  : null | undefined | void;
+  : void;
 
 export type ApiMethodResponse<Type extends ApiType, MethodType extends ApiMethodType<Type>> = ApiMethodDescription<
   Type,
   MethodType
 > extends { response: z.ZodObject<any> }
   ? z.infer<ApiMethodDescription<Type, MethodType>['response']>
-  : null | undefined | void;
+  : void;
 
 export const API_ROOT = '/api';
 
