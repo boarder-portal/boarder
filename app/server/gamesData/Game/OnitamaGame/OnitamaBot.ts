@@ -32,7 +32,7 @@ export default class OnitamaBot extends BotEntity<GameType.ONITAMA> {
                   from,
                   card,
                   board,
-                  player,
+                  playerColor: player.data.color,
                 }).map((to) => ({
                   from,
                   to,

@@ -48,7 +48,7 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
             from: cell,
             card: player.data.cards[selectedCardIndex],
             board,
-            player,
+            playerColor: player.data.color,
           }),
         );
       }
@@ -80,7 +80,7 @@ const OnitamaGameContent: FC<GameContentProps<GameType.ONITAMA>> = (props) => {
               from: selectedFrom,
               card: player.data.cards[selectedCardIndex],
               board,
-              player,
+              playerColor: player.data.color,
             }),
           );
         }

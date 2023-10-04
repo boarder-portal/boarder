@@ -1,20 +1,20 @@
 import { ALL_CARDS } from 'common/constants/games/onitama';
 
 import { Coords } from 'common/types';
-import { Board, CardType, Player, PlayerColor } from 'common/types/games/onitama';
+import { Board, CardType, PlayerColor } from 'common/types/games/onitama';
 
 export interface GetLegalMovesOptions {
   from: Coords;
   card: CardType;
   board: Board;
-  player: Player;
+  playerColor: PlayerColor;
 }
 
 export function getLegalMoves(options: GetLegalMovesOptions): Coords[] {
-  const { from, card, board, player } = options;
+  const { from, card, board, playerColor } = options;
 
   const cells: Coords[] = [];
-  const isFlipped = player.data.color === PlayerColor.RED;
+  const isFlipped = playerColor === PlayerColor.RED;
 
   ALL_CARDS[card].forEach(([y, x]) => {
     const toCell: Coords = {
@@ -27,7 +27,7 @@ export function getLegalMoves(options: GetLegalMovesOptions): Coords[] {
       toCell.x < 5 &&
       toCell.y > -1 &&
       toCell.y < 5 &&
-      board[toCell.y][toCell.x]?.color !== player.data.color
+      board[toCell.y][toCell.x]?.color !== playerColor
     ) {
       cells.push(toCell);
     }

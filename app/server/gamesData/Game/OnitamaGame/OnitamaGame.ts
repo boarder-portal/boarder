@@ -13,7 +13,8 @@ import {
   PlayerData,
 } from 'common/types/games/onitama';
 
-import { equalsCoords } from 'common/utilities/coords';
+import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
+import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
 
@@ -50,6 +51,22 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
     while (true) {
       const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
         playerIndex: this.activePlayerIndex,
+        validate: ({ from, to, cardIndex }) => {
+          const playerData = this.playersData[this.activePlayerIndex];
+          const fromPiece = this.board.at(from.y)?.at(from.x);
+          const card = playerData.cards.at(cardIndex);
+
+          return Boolean(
+            fromPiece?.color === playerData.color &&
+              card &&
+              getLegalMoves({
+                from,
+                card,
+                board: this.board,
+                playerColor: playerData.color,
+              }).some(equalsCoordsCb(to)),
+          );
+        },
       });
 
       const { cards } = this.playersData[this.activePlayerIndex];
