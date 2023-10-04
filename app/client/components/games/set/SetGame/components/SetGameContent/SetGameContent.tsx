@@ -3,7 +3,7 @@ import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameType } from 'common/types/game';
 import { GameClientEventType } from 'common/types/games/set';
 
-import { findSet } from 'common/utilities/games/set';
+import { findSet } from 'common/utilities/games/set/set';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
