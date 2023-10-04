@@ -11,21 +11,24 @@ import styles from './Card.module.scss';
 
 interface CardProps {
   card: CardModel;
+  cardIndex: number;
   isSelected: boolean;
-  onClick(card: CardModel): void;
+  isHinted: boolean;
+  onClick(cardIndex: number): void;
 }
 
 const Card: FC<CardProps> = (props) => {
-  const { card, isSelected, onClick } = props;
+  const { card, cardIndex, isSelected, isHinted, onClick } = props;
 
   const handleClick = useCallback(() => {
-    onClick(card);
-  }, [card, onClick]);
+    onClick(cardIndex);
+  }, [cardIndex, onClick]);
 
   return (
     <Flex
       className={classNames(styles.root, {
         [styles.selected]: isSelected,
+        [styles.hinted]: isHinted,
       })}
       direction="column"
       alignItems="center"

@@ -1,5 +1,11 @@
 @import "client/styles/mixins";
 
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columnsCount), min-content);
+  gap: 20px;
+}
+
 .root {
   display: flex;
   gap: 40px;

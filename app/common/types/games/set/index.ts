@@ -42,7 +42,6 @@ export enum CardShape {
 }
 
 export interface Card {
-  id: number;
   count: number;
   color: CardColor;
   fill: CardFill;
@@ -65,7 +64,7 @@ export enum GameEventType {}
 export interface GameEventMap extends CommonGameEventMap<GameType.SET> {}
 
 export interface SendSetEvent {
-  cardsIds: number[];
+  cardsIndexes: number[];
 }
 
 export interface ClientEventMap extends CommonClientEventMap<GameType.SET> {

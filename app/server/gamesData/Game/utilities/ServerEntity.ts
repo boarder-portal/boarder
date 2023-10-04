@@ -20,7 +20,9 @@ export interface WaitForSocketEventOptions<Game extends GameType, Event extends 
 }
 
 export interface WaitForSocketEventsOptions<Game extends GameType, Event extends GameClientEvent<Game>> {
-  validate?(event: Event, data: GameClientEventData<Game, Event>): boolean;
+  validate?: {
+    [E in Event]?: (data: GameClientEventData<Game, E>) => boolean;
+  };
 }
 
 export interface WaitForSocketEventResult<Game extends GameType, Event extends GameClientEvent<Game>> {
@@ -207,7 +209,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           event,
           data: yield* entity.waitForPlayerSocketEvent<Event>(event, {
             ...options,
-            validate: (data) => options?.validate?.(event, data) ?? true,
+            validate: (data) => options?.validate?.[event]?.(data) ?? true,
           }),
         };
       }),
@@ -246,7 +248,7 @@ export default abstract class ServerEntity<Game extends GameType, Result = unkno
           event,
           ...(yield* entity.waitForSocketEvent<Event>(event, {
             ...options,
-            validate: (data) => options?.validate?.(event, data) ?? true,
+            validate: (data) => options?.validate?.[event]?.(data) ?? true,
           })),
         };
       }),

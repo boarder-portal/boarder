@@ -1,8 +1,9 @@
-import chunk from 'lodash/chunk';
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GameType } from 'common/types/game';
-import { Card as CardModel, GameClientEventType, SendSetEvent } from 'common/types/games/set';
+import { GameClientEventType } from 'common/types/games/set';
+
+import { findSet } from 'common/utilities/games/set';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
@@ -18,43 +19,42 @@ import styles from './SetGameContent.module.scss';
 const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
   const {
     io,
-    gameInfo,
     gameInfo: { cards, players },
     gameResult,
   } = props;
 
-  const [selectedCardsIds, setSelectedCardsIds] = useState<Set<number>>(new Set());
+  const [selectedCardsIndexes, setSelectedCardsIndexes] = useState<Set<number>>(new Set());
 
-  const handleCardClick = useImmutableCallback((card: CardModel) => {
+  const hintedSet = useMemo(() => {
+    return findSet(cards);
+  }, [cards]);
+
+  const handleCardClick = useImmutableCallback((cardIndex: number) => {
     if (gameResult) {
       return;
     }
 
-    const updatedSelectedCardsIds = new Set(selectedCardsIds);
+    const updatedSelectedCardsIndexes = new Set(selectedCardsIndexes);
 
-    const isSelected = selectedCardsIds.has(card.id);
+    const isSelected = selectedCardsIndexes.has(cardIndex);
 
     if (isSelected) {
-      updatedSelectedCardsIds.delete(card.id);
+      updatedSelectedCardsIndexes.delete(cardIndex);
 
-      setSelectedCardsIds(updatedSelectedCardsIds);
+      setSelectedCardsIndexes(updatedSelectedCardsIndexes);
     } else {
-      if (selectedCardsIds.size === 3) {
+      if (selectedCardsIndexes.size === 3) {
         return;
       }
 
-      updatedSelectedCardsIds.add(card.id);
+      updatedSelectedCardsIndexes.add(cardIndex);
 
-      setSelectedCardsIds(updatedSelectedCardsIds);
+      setSelectedCardsIndexes(updatedSelectedCardsIndexes);
 
-      if (updatedSelectedCardsIds.size === 3) {
-        const data: SendSetEvent = {
-          cardsIds: [...updatedSelectedCardsIds],
-        };
-
-        console.log('SEND_SET', data);
-
-        io.emit(GameClientEventType.SEND_SET, data);
+      if (updatedSelectedCardsIndexes.size === 3) {
+        io.emit(GameClientEventType.SEND_SET, {
+          cardsIndexes: [...updatedSelectedCardsIndexes],
+        });
       }
     }
   });
@@ -65,8 +65,8 @@ const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
 
   // TODO: clear when board differs
   useEffect(() => {
-    setSelectedCardsIds(new Set());
-  }, [gameInfo]);
+    setSelectedCardsIndexes(new Set());
+  }, [cards]);
 
   const playersBlock = useMemo(() => {
     return (
@@ -87,20 +87,18 @@ const SetGameContent: FC<GameContentProps<GameType.SET>> = (props) => {
   return (
     <GameContent game={GameType.SET}>
       <div className={styles.root}>
-        <Flex direction="column" between={5}>
-          {chunk(cards, cards.length / 3).map((cardsRow, index) => (
-            <Flex key={index} between={5}>
-              {cardsRow.map((card, cardRowIndex) => (
-                <Card
-                  key={cardRowIndex}
-                  card={card}
-                  isSelected={selectedCardsIds.has(card.id)}
-                  onClick={handleCardClick}
-                />
-              ))}
-            </Flex>
+        <div className={styles.grid} style={{ '--columnsCount': Math.ceil(cards.length / 3) }}>
+          {cards.map((card, cardIndex) => (
+            <Card
+              key={cardIndex}
+              card={card}
+              cardIndex={cardIndex}
+              isSelected={selectedCardsIndexes.has(cardIndex)}
+              isHinted={Boolean(process.env.NODE_ENV !== 'production' && hintedSet?.includes(cardIndex))}
+              onClick={handleCardClick}
+            />
           ))}
-        </Flex>
+        </div>
 
         <Flex direction="column" between={5}>
           {playersBlock}

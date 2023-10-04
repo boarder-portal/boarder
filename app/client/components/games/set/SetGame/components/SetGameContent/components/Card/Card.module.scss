@@ -5,6 +5,10 @@
   border-radius: 8px;
   cursor: pointer;
 
+  &.hinted {
+    background-color: bisque;
+  }
+
   &.selected {
     background-color: lavender;
   }
