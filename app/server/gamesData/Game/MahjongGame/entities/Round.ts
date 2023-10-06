@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { Round as RoundModel, RoundPlayerData, WindSide } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';

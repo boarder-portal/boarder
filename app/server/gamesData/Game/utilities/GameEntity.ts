@@ -9,8 +9,8 @@ import {
   TestCaseType,
 } from 'common/types/game';
 
-import AbortError from 'common/utilities/AbortError';
-import { EntityGenerator } from 'common/utilities/Entity';
+import AbortError from 'common/utilities/Entity/AbortError';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { areBotsAvailable } from 'common/utilities/bots';
 import { now } from 'common/utilities/time';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';

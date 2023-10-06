@@ -23,7 +23,7 @@ import {
   Tile,
 } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { moveElement } from 'common/utilities/array';
 import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
 import { getHandMahjong } from 'common/utilities/games/mahjong/scoring';

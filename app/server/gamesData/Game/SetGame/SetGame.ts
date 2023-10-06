@@ -23,7 +23,7 @@ import {
   PlayerData,
 } from 'common/types/games/set';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { findSet, isSet } from 'common/utilities/games/set/set';
 import { isDefined } from 'common/utilities/is';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';

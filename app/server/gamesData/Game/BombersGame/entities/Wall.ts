@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { GameServerEventType, ObjectType, Wall as WallModel } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

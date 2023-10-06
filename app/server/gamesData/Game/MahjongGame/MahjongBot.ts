@@ -3,7 +3,7 @@ import random from 'lodash/random';
 import { GameType } from 'common/types/game';
 import { GameClientEventType, Player } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getRandomIndex } from 'common/utilities/random';
 import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
 

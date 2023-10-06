@@ -3,7 +3,7 @@ import { BONUSES_WEIGHTS, BONUS_PROBABILITY } from 'common/constants/games/bombe
 import { GameType } from 'common/types/game';
 import { BonusType, Box as BoxModel, ObjectType } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getWeightedRandomKey } from 'common/utilities/random';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

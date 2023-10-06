@@ -1,6 +1,6 @@
 import { GameInfo, GameType } from 'common/types/game';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import ClientEntity from 'server/gamesData/Game/utilities/ClientEntity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 

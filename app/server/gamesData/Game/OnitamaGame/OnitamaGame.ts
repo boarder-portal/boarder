@@ -13,7 +13,7 @@ import {
   PlayerData,
 } from 'common/types/games/onitama';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';

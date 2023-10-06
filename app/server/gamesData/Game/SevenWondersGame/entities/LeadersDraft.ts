@@ -2,7 +2,7 @@ import { GameType } from 'common/types/game';
 import { LeadersDraftPlayerData, WaitingActionType } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

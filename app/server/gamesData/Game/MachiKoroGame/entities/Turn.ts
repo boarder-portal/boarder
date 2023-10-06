@@ -17,7 +17,7 @@ import {
   Turn as TurnModel,
 } from 'common/types/games/machiKoro';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getCard from 'common/utilities/games/machiKoro/getCard';
 import getLandmark from 'common/utilities/games/machiKoro/getLandmark';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

@@ -16,7 +16,7 @@ import {
 } from 'common/types/game';
 import { GameClientSocket } from 'common/types/socket';
 
-import { EffectGenerator, EntityGenerator } from 'common/utilities/Entity';
+import { EffectGenerator, EntityGenerator } from 'common/utilities/Entity/Entity';
 import AbstractGameEntity from 'server/gamesData/Game/utilities/AbstractGameEntity';
 
 export default abstract class ClientEntity<Game extends GameType, Result = unknown> extends AbstractGameEntity<

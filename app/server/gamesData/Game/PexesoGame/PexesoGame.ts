@@ -17,7 +17,7 @@ import {
   ShuffleType,
 } from 'common/types/games/pexeso';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getRandomElement } from 'common/utilities/random';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import TurnController from 'server/gamesData/Game/utilities/TurnController';

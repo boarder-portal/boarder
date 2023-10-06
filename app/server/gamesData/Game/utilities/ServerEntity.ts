@@ -7,7 +7,7 @@ import {
   GameType,
 } from 'common/types/game';
 
-import { EffectGenerator, EntityGenerator } from 'common/utilities/Entity';
+import { EffectGenerator, EntityGenerator } from 'common/utilities/Entity/Entity';
 import AbstractGameEntity from 'server/gamesData/Game/utilities/AbstractGameEntity';
 import TurnController from 'server/gamesData/Game/utilities/TurnController';
 

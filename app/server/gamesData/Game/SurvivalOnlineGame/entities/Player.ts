@@ -7,7 +7,7 @@ import {
   PlayerObject,
 } from 'common/types/games/survivalOnline';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import PlayerEntity, { PlayerOptions as CommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 
 import SurvivalOnlineGame, {

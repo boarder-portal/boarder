@@ -1,9 +1,9 @@
 import map from 'lodash/map';
 import noop from 'lodash/noop';
 
-import AbortError from 'common/utilities/AbortError';
+import AbortError from 'common/utilities/Entity/AbortError';
+import Trigger from 'common/utilities/Entity/Trigger';
 import Timestamp from 'common/utilities/Timestamp';
-import Trigger from 'common/utilities/Trigger';
 
 interface GeneratorResult<Result> {
   run(resolve: Resolve<Result>, reject: Reject): void;

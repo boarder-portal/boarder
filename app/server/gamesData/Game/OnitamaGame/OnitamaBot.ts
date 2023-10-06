@@ -4,7 +4,7 @@ import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
 import { GameClientEventType, MovePieceEvent, Player } from 'common/types/games/onitama';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import { getRandomElement } from 'common/utilities/random';
 import BotEntity from 'server/gamesData/Game/utilities/BotEntity';

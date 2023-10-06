@@ -3,7 +3,7 @@ import shuffle from 'lodash/shuffle';
 import { GameType } from 'common/types/game';
 import { CityName, GameClientEventType, PickCitySidePlayerData } from 'common/types/games/sevenWonders';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';

@@ -1,6 +1,6 @@
 import { GameEventData, GameEventType, GameType } from 'common/types/game';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { GameEntity } from 'server/gamesData/Game/utilities/RootEntity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

@@ -31,7 +31,7 @@ import {
   Player as PlayerModel,
 } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import SharedDataManager from 'common/utilities/games/bombers/SharedDataManager';
 import { isBombInvincibility, isInvincibility, isSuperBomb, isSuperRange } from 'common/utilities/games/bombers/buffs';

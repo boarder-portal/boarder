@@ -3,7 +3,7 @@ import { ALL_WINDS } from 'common/constants/games/mahjong';
 import { GameType } from 'common/types/game';
 import { Game, GamePlayerData, GameResult, HandResult, HandsCount, Player, WindSide } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';

@@ -27,7 +27,7 @@ import {
   Score,
 } from 'common/types/games/carcassonne';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,

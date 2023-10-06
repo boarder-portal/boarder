@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { GameEventType, Suit } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { suited } from 'common/utilities/games/mahjong/tilesBase';
 import TestCaseEntity from 'server/gamesData/Game/utilities/TestCaseEntity';
 

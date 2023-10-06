@@ -10,7 +10,7 @@ import {
   TurnPlayerData,
 } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import {
   getPossibleMeldedSets,
   isChow,

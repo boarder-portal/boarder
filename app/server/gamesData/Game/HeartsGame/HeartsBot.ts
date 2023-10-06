@@ -4,7 +4,7 @@ import shuffle from 'lodash/shuffle';
 import { GameType } from 'common/types/game';
 import { GameClientEventType, HandStage, Player } from 'common/types/games/hearts';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getPlayedSuit from 'common/utilities/games/hearts/getPlayedSuit';
 import isCardAllowed from 'common/utilities/games/hearts/isCardAllowed';
 import isFirstTurn from 'common/utilities/games/hearts/isFirstTurn';

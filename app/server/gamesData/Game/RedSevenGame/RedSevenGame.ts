@@ -5,7 +5,7 @@ import { WIN_SCORE_BY_PLAYER_COUNT } from 'common/constants/games/redSeven';
 import { GameType } from 'common/types/game';
 import { Card, CardColor, Game, GamePlayerData, GameResult, Player } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getCardsScoreValue, isEqualCards } from 'common/utilities/games/redSeven/cards';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 

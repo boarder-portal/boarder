@@ -3,7 +3,7 @@ import pick from 'lodash/pick';
 import { GameType } from 'common/types/game';
 import { Buff as BuffModel, BuffType } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 

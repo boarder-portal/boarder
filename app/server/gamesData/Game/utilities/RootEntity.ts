@@ -1,6 +1,6 @@
 import { GameResult, GameType } from 'common/types/game';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { GameEntityContext } from 'server/gamesData/Game/utilities/AbstractGameEntity';
 import BaseGameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

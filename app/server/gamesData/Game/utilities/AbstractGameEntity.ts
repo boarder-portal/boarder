@@ -3,7 +3,7 @@ import pick from 'lodash/pick';
 import { BaseGamePlayer } from 'common/types';
 import { GameOptions, GameType, PlayerSettings } from 'common/types/game';
 
-import Entity, { ParentEntity } from 'common/utilities/Entity';
+import Entity, { ParentEntity } from 'common/utilities/Entity/Entity';
 
 import Game from 'server/gamesData/Game/Game';
 

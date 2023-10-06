@@ -16,7 +16,7 @@ import {
   PlayerData,
 } from 'common/types/games/machiKoro';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import TurnController from 'server/gamesData/Game/utilities/TurnController';
 

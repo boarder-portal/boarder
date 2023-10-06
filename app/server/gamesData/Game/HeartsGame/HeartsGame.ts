@@ -4,7 +4,7 @@ import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 import { GameType } from 'common/types/game';
 import { Game, GamePlayerData, GameResult, HandStage, PassDirection, Player } from 'common/types/games/hearts';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';

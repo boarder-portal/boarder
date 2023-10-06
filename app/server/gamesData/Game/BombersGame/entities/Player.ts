@@ -22,7 +22,7 @@ import {
   PlayerProperties,
 } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';

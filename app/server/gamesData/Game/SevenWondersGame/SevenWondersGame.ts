@@ -25,7 +25,7 @@ import {
   ScientificSymbolsEffect,
 } from 'common/types/games/sevenWonders/effects';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getSetsCombinations } from 'common/utilities/combinations';
 import getAgeDirection from 'common/utilities/games/sevenWonders/getAgeDirection';
 import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';

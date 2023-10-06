@@ -12,7 +12,7 @@ import {
   ObjectType,
 } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import getDirectionLine from 'common/utilities/games/bombers/getDirectionLine';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';

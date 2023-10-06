@@ -19,7 +19,7 @@ import {
 import { Card, CardType } from 'common/types/games/sevenWonders/cards';
 import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/games/sevenWonders/getWaitingBuildEffect';
 import {

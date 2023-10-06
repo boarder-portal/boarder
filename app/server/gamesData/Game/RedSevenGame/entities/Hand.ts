@@ -3,7 +3,7 @@ import shuffle from 'lodash/shuffle';
 import { GameType } from 'common/types/game';
 import { Card, Hand as HandModel, HandPlayerData, Move, MoveType } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'common/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getCanvasRule, getRuleCards } from 'common/utilities/games/redSeven/rules';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import TurnController from 'server/gamesData/Game/utilities/TurnController';
