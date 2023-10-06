@@ -13,18 +13,22 @@ import {
   PlayerData,
 } from 'common/types/games/onitama';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 const ALL_CARDS = Object.values(CardType);
 
-export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
+export default class OnitamaGame extends GameEntity<GameType.ONITAMA> {
   playersData: PlayerData[] = this.getPlayersData((playerIndex) => ({
     color: playerIndex === 0 ? PlayerColor.BLUE : PlayerColor.RED,
     cards: [],
   }));
+  turnController = new TurnController({
+    players: this.playersData,
+  });
   board: Board = [
     times(5, (index) => ({ color: PlayerColor.BLUE, isMaster: index === 2 })),
     times(5, () => null),
@@ -44,15 +48,15 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
       }
     }
 
-    this.playersData[this.activePlayerIndex].cards.push(getCard());
+    this.turnController.getActivePlayer().cards.push(getCard());
 
     let result: GameResult;
 
     while (true) {
-      const { from, to, cardIndex } = yield* this.waitForPlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
-        playerIndex: this.activePlayerIndex,
+      const { from, to, cardIndex } = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
+        turnController: this.turnController,
         validate: ({ from, to, cardIndex }) => {
-          const playerData = this.playersData[this.activePlayerIndex];
+          const playerData = this.turnController.getActivePlayer();
           const fromPiece = this.board.at(from.y)?.at(from.x);
           const card = playerData.cards.at(cardIndex);
 
@@ -69,31 +73,32 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
         },
       });
 
-      const { cards } = this.playersData[this.activePlayerIndex];
+      const { cards } = this.turnController.getActivePlayer();
       const toPiece = this.board[to.y][to.x];
 
       this.board[to.y][to.x] = this.board[from.y][from.x];
       this.board[from.y][from.x] = null;
 
-      this.playersData[this.getNextActivePlayerIndex()].cards.push(...cards.splice(cardIndex, 1));
+      this.turnController.getNextActivePlayer().cards.push(...cards.splice(cardIndex, 1));
 
+      const { activePlayerIndex } = this.turnController;
       const isWayOfStoneWin = Boolean(toPiece?.isMaster);
       const isWayOfStreamWin = equalsCoords(to, {
         x: 2,
-        y: this.activePlayerIndex === 0 ? 4 : 0,
+        y: activePlayerIndex === 0 ? 4 : 0,
       });
 
       if (isWayOfStoneWin || isWayOfStreamWin) {
-        result = this.activePlayerIndex;
+        result = activePlayerIndex;
 
-        this.activePlayerIndex = -1;
+        this.turnController.turnOff();
 
         this.sendGameInfo();
 
         break;
       }
 
-      this.passTurn();
+      this.turnController.passTurn();
 
       this.sendGameInfo();
     }
@@ -109,7 +114,7 @@ export default class OnitamaGame extends TurnGameEntity<GameType.ONITAMA> {
     return {
       board: this.board,
       players: this.getGamePlayers(),
-      activePlayerIndex: this.activePlayerIndex,
+      activePlayerIndex: this.turnController.activePlayerIndex,
     };
   }
 }

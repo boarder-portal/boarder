@@ -1,24 +1,23 @@
 import { Timestamp as TimestampModel } from 'common/types';
 
+import { now } from 'common/utilities/time';
+
 export type Subscriber = () => unknown;
 
 export interface TimestampOptions {
-  addMs: number | null;
+  addMs?: number;
   pausedAt?: number | null;
-  now: () => number;
 }
 
 export default class Timestamp implements TimestampModel {
   #value: number;
   #pausedAt: number | null;
-  #now: () => number;
   #runTimer: NodeJS.Timeout | undefined;
   #subscribers = new Set<Subscriber>();
 
   constructor(options: TimestampOptions) {
-    this.#value = options.now() + (options.addMs ?? 0);
+    this.#value = now() + (options.addMs ?? 0);
     this.#pausedAt = options.pausedAt ?? null;
-    this.#now = options.now;
 
     this.#setTimer();
   }
@@ -40,7 +39,7 @@ export default class Timestamp implements TimestampModel {
   }
 
   get timeLeft(): number {
-    return this.#value - (this.#pausedAt ?? this.#now());
+    return this.#value - (this.#pausedAt ?? now());
   }
 
   get timePassed(): number {
@@ -71,8 +70,6 @@ export default class Timestamp implements TimestampModel {
     return {
       value: this.value,
       pausedAt: this.pausedAt,
-      timeLeft: this.timeLeft,
-      timePassed: this.timePassed,
     };
   }
 

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 
-import { Timestamp } from 'common/types';
+import Timestamp from 'common/utilities/Timestamp';
 
 import useImmutableCallback from 'client/hooks/useImmutableCallback';
 
@@ -13,9 +13,9 @@ export default function useBoundTimestamps(getTimestamps: () => (Timestamp | nul
   useEffect(() => {
     immutableGetTimestamps().forEach((timestamp) => {
       if (gameState.type === 'paused') {
-        timestamp?.pause?.(gameState.changeTimestamp);
+        timestamp?.pause(gameState.changeTimestamp);
       } else {
-        timestamp?.unpause?.(gameState.changeTimestamp);
+        timestamp?.unpause(gameState.changeTimestamp);
       }
     });
   }, [gameState.changeTimestamp, gameState.type, immutableGetTimestamps]);

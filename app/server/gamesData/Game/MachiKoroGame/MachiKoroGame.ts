@@ -16,17 +16,21 @@ import {
   PlayerData,
 } from 'common/types/games/machiKoro';
 
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
+import { EntityGenerator } from 'common/utilities/Entity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 import Turn from 'server/gamesData/Game/MachiKoroGame/entities/Turn';
 
-export default class MachiKoroGame extends TurnGameEntity<GameType.MACHI_KORO> {
+export default class MachiKoroGame extends GameEntity<GameType.MACHI_KORO> {
   playersData: PlayerData[] = this.getPlayersData(() => ({
     coins: 3,
     cardsIds: [CardId.WHEAT_FIELD, CardId.BAKERY],
     landmarksIds: [LandmarkId.CITY_HALL],
   }));
+  turnController = new TurnController({
+    players: this.playersData,
+  });
   deck: Card[] = shuffle(cloneDeep(ALL_CARDS).flatMap((card) => times(card.count, () => card)));
   board: CardId[] = [];
 
@@ -40,13 +44,15 @@ export default class MachiKoroGame extends TurnGameEntity<GameType.MACHI_KORO> {
     let winnerIndex = -1;
 
     while (winnerIndex === -1) {
-      this.turn = this.spawnEntity(new Turn(this));
+      this.turn = new Turn(this);
 
-      yield* this.turn;
+      yield* this.waitForEntity(this.turn);
 
-      this.passTurn();
+      this.turnController.passTurn();
 
-      this.sendSocketEvent(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, { index: this.activePlayerIndex });
+      this.sendSocketEvent(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, {
+        index: this.turnController.activePlayerIndex,
+      });
 
       winnerIndex = this.getWinnerIndex();
     }
@@ -85,7 +91,7 @@ export default class MachiKoroGame extends TurnGameEntity<GameType.MACHI_KORO> {
 
   toJSON(): Game {
     return {
-      activePlayerIndex: this.activePlayerIndex,
+      activePlayerIndex: this.turnController.activePlayerIndex,
       players: this.getGamePlayers(),
       board: this.board,
       turn: this.turn?.toJSON() ?? null,

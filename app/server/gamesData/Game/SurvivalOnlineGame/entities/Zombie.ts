@@ -1,8 +1,8 @@
 import { GameType } from 'common/types/game';
 import { Direction, ObjectType, ZombieObject } from 'common/types/games/survivalOnline';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getRandomElement } from 'common/utilities/random';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {

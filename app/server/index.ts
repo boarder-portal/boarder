@@ -1,4 +1,5 @@
 import 'regenerator-runtime/runtime';
+import 'server/plugins/inject';
 import 'server/utilities/importEnv';
 
 import { Middleware } from 'koa';

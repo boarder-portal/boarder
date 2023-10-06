@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { Move, Turn as TurnModel } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import Hand from 'server/gamesData/Game/RedSevenGame/entities/Hand';

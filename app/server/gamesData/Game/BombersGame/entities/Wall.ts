@@ -1,8 +1,8 @@
 import { GameType } from 'common/types/game';
 import { GameServerEventType, ObjectType, Wall as WallModel } from 'common/types/games/bombers';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
@@ -40,7 +40,7 @@ export default class Wall extends ServerEntity<GameType.BOMBERS> {
       const deadPlayers: number[] = [];
 
       this.game.players.forEach((player) => {
-        if (player.buffs.some((buff) => isSuperSpeed(buff) || isInvincibility(buff))) {
+        if ([...player.buffs].some((buff) => isSuperSpeed(buff) || isInvincibility(buff))) {
           return;
         }
 

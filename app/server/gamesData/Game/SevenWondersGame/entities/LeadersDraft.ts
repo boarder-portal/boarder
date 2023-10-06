@@ -2,8 +2,8 @@ import { GameType } from 'common/types/game';
 import { LeadersDraftPlayerData, WaitingActionType } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
@@ -31,24 +31,22 @@ export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, C
     });
 
     while (this.playersData.every(({ leadersPool }) => leadersPool.length !== 1)) {
-      this.turn = this.spawnEntity(
-        new Turn(this.game, {
-          startingWaitingAction: WaitingActionType.PICK_LEADER,
-          executeActions: (actions) => {
-            actions.forEach(({ chosenActionEvent }, playerIndex) => {
-              if (chosenActionEvent) {
-                const { leadersPool, pickedLeaders } = this.playersData[playerIndex];
+      this.turn = new Turn(this.game, {
+        startingWaitingAction: WaitingActionType.PICK_LEADER,
+        executeActions: (actions) => {
+          actions.forEach(({ chosenActionEvent }, playerIndex) => {
+            if (chosenActionEvent) {
+              const { leadersPool, pickedLeaders } = this.playersData[playerIndex];
 
-                pickedLeaders.push(...leadersPool.splice(chosenActionEvent.cardIndex, 1));
-              }
-            });
-          },
-        }),
-      );
+              pickedLeaders.push(...leadersPool.splice(chosenActionEvent.cardIndex, 1));
+            }
+          });
+        },
+      });
 
       this.game.sendGameInfo();
 
-      yield* this.turn;
+      yield* this.waitForEntity(this.turn);
 
       const newLeadersPools = rotateObjects(
         this.playersData.map(({ leadersPool }) => leadersPool),

@@ -2,10 +2,11 @@ import { GameType } from 'common/types/game';
 import { Card } from 'common/types/game/cards';
 import { GameClientEventType, Turn as TurnModel, TurnPlayerData } from 'common/types/games/hearts';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import { isDefined } from 'common/utilities/is';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
@@ -19,42 +20,45 @@ export interface TurnOptions {
   startPlayerIndex: number;
 }
 
-export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
+export default class Turn extends ServerEntity<GameType.HEARTS, TurnResult> {
   game: HeartsGame;
   hand: Hand;
 
-  playersData: TurnPlayerData[];
+  playersData: TurnPlayerData[] = this.getPlayersData(() => ({
+    playedCard: null,
+  }));
+  turnController: TurnController<TurnPlayerData>;
   startPlayerIndex: number;
 
   constructor(hand: Hand, options: TurnOptions) {
-    super(hand, {
-      activePlayerIndex: options.startPlayerIndex,
-    });
+    super(hand);
 
     this.game = hand.game;
     this.hand = hand;
-    this.playersData = this.getPlayersData(() => ({
-      playedCard: null,
-    }));
+    this.turnController = new TurnController({
+      players: this.playersData,
+      startPlayerIndex: options.startPlayerIndex,
+      isPlayerInPlay: (playerIndex) => !this.playersData[playerIndex].playedCard,
+    });
     this.startPlayerIndex = options.startPlayerIndex;
   }
 
   *lifecycle(): EntityGenerator<TurnResult> {
-    while (this.hasActivePlayer()) {
-      let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.activePlayerIndex);
+    while (this.turnController.hasActivePlayer()) {
+      let chosenCardIndex = this.hand.getDeuceOfClubsIndex(this.turnController.activePlayerIndex);
 
       if (chosenCardIndex === -1) {
-        chosenCardIndex = yield* this.waitForPlayerSocketEvent(GameClientEventType.CHOOSE_CARD, {
-          playerIndex: this.activePlayerIndex,
+        chosenCardIndex = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.CHOOSE_CARD, {
+          turnController: this.turnController,
         });
       }
 
-      this.playersData[this.activePlayerIndex].playedCard = this.hand.takePlayerCard(
-        this.activePlayerIndex,
+      this.turnController.getActivePlayer().playedCard = this.hand.takePlayerCard(
+        this.turnController.activePlayerIndex,
         chosenCardIndex,
       );
 
-      this.passTurn();
+      this.turnController.passTurn();
 
       this.game.sendGameInfo();
     }
@@ -71,14 +75,10 @@ export default class Turn extends TurnEntity<GameType.HEARTS, TurnResult> {
     };
   }
 
-  isPlayerInPlay(playerIndex: number): boolean {
-    return !this.playersData[playerIndex].playedCard;
-  }
-
   toJSON(): TurnModel {
     return {
       startPlayerIndex: this.startPlayerIndex,
-      activePlayerIndex: this.activePlayerIndex,
+      activePlayerIndex: this.turnController.activePlayerIndex,
     };
   }
 }

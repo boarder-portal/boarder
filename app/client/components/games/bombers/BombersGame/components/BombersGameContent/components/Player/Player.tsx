@@ -15,7 +15,7 @@ const Player: FC<PlayerProps> = (props) => {
   const { player } = props;
 
   return (
-    <Flex className={classNames(styles.root, { [styles.dead]: player.data.hp === 0 })} between={1}>
+    <Flex className={classNames(styles.root, { [styles.dead]: player.data.properties.hp === 0 })} between={1}>
       <div className={styles.color} style={{ backgroundColor: player.data.color }} />
       <div className={styles.login}>{player.name}</div>
     </Flex>

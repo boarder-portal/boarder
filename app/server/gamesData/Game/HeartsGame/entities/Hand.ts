@@ -17,8 +17,8 @@ import {
   PassDirection,
 } from 'common/types/games/hearts';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/games/hearts/common';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
@@ -75,15 +75,13 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
     let startPlayerIndex = this.playersData.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
 
     while (this.playersData.some(({ hand }) => hand.length !== 0)) {
-      this.turn = this.spawnEntity(
-        new Turn(this, {
-          startPlayerIndex,
-        }),
-      );
+      this.turn = new Turn(this, {
+        startPlayerIndex,
+      });
 
       this.game.sendGameInfo();
 
-      const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.turn;
+      const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.waitForEntity(this.turn);
 
       yield* this.delay(SHOW_CARDS_TIMEOUT);
 
@@ -170,7 +168,7 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
   }
 
   takePlayerCard(playerIndex: number, cardIndex: number): Card | null {
-    return this.playersData[playerIndex]?.hand.splice(cardIndex, 1)[0] ?? null;
+    return this.playersData[playerIndex]?.hand.splice(cardIndex, 1).at(0) ?? null;
   }
 
   toJSON(): HandModel {

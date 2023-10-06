@@ -13,8 +13,8 @@ import {
   Player as PlayerModel,
 } from 'common/types/games/survivalOnline';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getRandomElement } from 'common/utilities/random';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Base from 'server/gamesData/Game/SurvivalOnlineGame/entities/Base';
@@ -22,20 +22,20 @@ import Player from 'server/gamesData/Game/SurvivalOnlineGame/entities/Player';
 import Tree from 'server/gamesData/Game/SurvivalOnlineGame/entities/Tree';
 import Zombie from 'server/gamesData/Game/SurvivalOnlineGame/entities/Zombie';
 
-export type Entity = Base | Player | Tree | Zombie;
+export type GameObject = Base | Player | Tree | Zombie;
 
-export type MapEntity = Base | Player | Tree | Zombie;
+export type MapObject = Base | Player | Tree | Zombie;
 
-export type MovingEntity = Player | Zombie;
+export type MovingObject = Player | Zombie;
 
-export interface ServerCell<Entity extends MapEntity = MapEntity> {
+export interface ServerCell<Obj extends MapObject = MapObject> {
   x: number;
   y: number;
   biome: BiomeType;
-  entity: Entity | null;
+  entity: Obj | null;
 }
 
-export interface ServerCellWithEntity<Entity extends MapEntity> extends ServerCell<Entity> {
+export interface ServerCellWithEntity<Entity extends MapObject> extends ServerCell<Entity> {
   entity: Entity;
 }
 
@@ -156,7 +156,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     return true;
   }
 
-  moveEntityInDirection<Entity extends MovingEntity>(
+  moveEntityInDirection<Entity extends MovingObject>(
     entity: Entity,
     direction: Direction,
   ): [] | [ServerCellWithEntity<Entity>] | [ServerCell, ServerCellWithEntity<Entity>] {
@@ -195,11 +195,11 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     this.sendGameUpdate([...new Set(cellsToUpdate)], false);
   }
 
-  placeEntity<Entity extends MapEntity>(entity: Entity, cell: ServerCell): void {
+  placeEntity<Entity extends MapObject>(entity: Entity, cell: ServerCell): void {
     cell.entity = entity;
   }
 
-  removeEntity(cell: ServerCellWithEntity<Entity>): void {
+  removeEntity(cell: ServerCellWithEntity<GameObject>): void {
     (cell as ServerCell).entity = null;
   }
 
@@ -212,8 +212,9 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     }
   }
 
-  spawnMapEntity<Entity extends MapEntity>(entity: Entity, cell: ServerCell): Entity {
-    this.spawnEntity(entity);
+  spawnMapEntity<Entity extends MapObject>(entity: Entity, cell: ServerCell): Entity {
+    entity.run();
+
     this.placeEntity(entity, cell);
 
     return entity;
@@ -224,7 +225,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
 
     this.zombies.add(zombie);
 
-    yield* zombie;
+    yield* this.waitForEntity(zombie);
 
     this.zombies.delete(zombie);
   }

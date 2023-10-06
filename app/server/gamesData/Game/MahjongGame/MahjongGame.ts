@@ -3,7 +3,7 @@ import { ALL_WINDS } from 'common/constants/games/mahjong';
 import { GameType } from 'common/types/game';
 import { Game, GamePlayerData, GameResult, HandResult, HandsCount, Player, WindSide } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
@@ -22,25 +22,26 @@ export default class MahjongGame extends GameEntity<GameType.MAHJONG> {
   round: Round | null = null;
 
   *lifecycle(): EntityGenerator<GameResult> {
-    const roundsCount = this.options.handsCount === HandsCount.ONE ? 1 : 4;
-    const handsInRoundCount = this.options.handsCount === HandsCount.SIXTEEN ? 4 : 1;
+    const { handsCount } = this.options;
+    const roundsCount = handsCount === HandsCount.ONE ? 1 : 4;
+    const handsInRoundCount = handsCount === HandsCount.SIXTEEN ? 4 : 1;
 
     for (let round = 0; round < roundsCount; round++) {
-      this.round = this.spawnEntity(
-        new Round(this, {
-          wind: roundsCount === 1 ? null : ALL_WINDS[round],
-          handsCount: handsInRoundCount,
-          isLastInGame: round === roundsCount - 1,
-          playersWinds: ROTATED_WINDS[round],
-        }),
-      );
+      this.round = new Round(this, {
+        wind: roundsCount === 1 ? null : ALL_WINDS[round],
+        handsCount: handsInRoundCount,
+        isLastInGame: round === roundsCount - 1,
+        playersWinds: ROTATED_WINDS[round],
+      });
 
       this.sendGameInfo();
 
-      yield* this.round;
-    }
+      yield* this.waitForEntity(this.round);
 
-    this.round = null;
+      if (round !== roundsCount - 1) {
+        this.round = null;
+      }
+    }
   }
 
   addHandResult(result: HandResult): void {

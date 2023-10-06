@@ -10,28 +10,29 @@ import {
   SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
-import { Coords, Timestamp as TimestampModel } from 'common/types';
+import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
 import {
-  Buff,
   BuffType,
   Direction,
   GameClientEventType,
   GameServerEventType,
   PlayerColor,
   PlayerData,
+  PlayerProperties,
 } from 'common/types/games/bombers';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
 import { isDefined } from 'common/utilities/is';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import PlayerEntity, { PlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
 
 import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
+import Buff from 'server/gamesData/Game/BombersGame/entities/Buff';
 
 export interface PlayerOptions extends ICommonPlayerOptions {
   color: PlayerColor;
@@ -46,20 +47,21 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   direction = Direction.DOWN;
   isDisabled = false;
   startMovingTimestamp: Timestamp | null = null;
-  speed = 1;
-  speedReserve = 0;
-  maxBombCount = 1;
-  maxBombCountReserve = 0;
-  bombRange = 1;
-  bombRangeReserve = 0;
-  hp = MAX_HP;
-  hpReserve = 0;
-  buffs: Buff[] = [];
+  properties: PlayerProperties = {
+    speed: 1,
+    speedReserve: 0,
+    maxBombCount: 1,
+    maxBombCountReserve: 0,
+    bombRange: 1,
+    bombRangeReserve: 0,
+    hp: MAX_HP,
+    hpReserve: 0,
+  };
+  buffs = new Set<Buff>();
   placedBombs = new Set<Bomb>();
 
   disableTrigger = this.createTrigger();
   grantControlsTrigger = this.createTrigger();
-  cancelBuffTimeoutTrigger = this.createTrigger<BuffType>();
   hitTrigger = this.createTrigger<number>();
 
   constructor(game: BombersGame, options: PlayerOptions) {
@@ -77,7 +79,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     while (true) {
       const damage = yield* this.waitForTrigger(this.hitTrigger);
 
-      this.hp = Math.max(0, this.hp - damage);
+      this.properties.hp = Math.max(0, this.properties.hp - damage);
 
       if (!this.isAlive()) {
         break;
@@ -93,30 +95,32 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   *activateBuff(type: BuffType): EntityGenerator {
     const endsAt = this.createTimestamp(BUFF_DURATIONS[type]);
-    const buff = this.game.sharedDataManager.activatePlayerBuff(this.index, type, endsAt);
+    const oldBuff = this.game.sharedDataManager.activatePlayerBuff(this.index, type);
+    const buff =
+      oldBuff ??
+      new Buff(this, {
+        type,
+        endsAt,
+      });
 
-    this.cancelBuffTimeoutTrigger.activate(type);
+    if (oldBuff) {
+      oldBuff.postpone(endsAt);
+    }
 
     this.sendSocketEvent(GameServerEventType.BUFF_ACTIVATED, {
       playerIndex: this.index,
       buff,
     });
 
-    const { type: raceEventType } = yield* this.race({
-      timeout: this.waitForTimestamp(endsAt),
-      cancelTimeout: this.waitForBuffCancel(type),
-    });
-
-    if (raceEventType === 'cancelTimeout') {
+    if (oldBuff) {
       return;
     }
 
-    this.game.sharedDataManager.deactivatePlayerBuff(this.index, type);
+    this.buffs.add(buff);
 
-    this.sendSocketEvent(GameServerEventType.BUFF_DEACTIVATED, {
-      playerIndex: this.index,
-      type,
-    });
+    yield* this.waitForEntity(buff);
+
+    this.game.sharedDataManager.deactivatePlayerBuff(this.index, type);
   }
 
   afterPause(): void {
@@ -126,7 +130,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   canPlaceBombs(): boolean {
-    return this.placedBombs.size < this.maxBombCount;
+    return this.placedBombs.size < this.properties.maxBombCount;
   }
 
   consumeBonus(bonus: Bonus, coords: Coords): void {
@@ -158,8 +162,8 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     return cell;
   }
 
-  getCurrentTimestamps(): (TimestampModel | null | undefined)[] {
-    return [this.startMovingTimestamp, ...this.buffs.map(({ endsAt }) => endsAt)];
+  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
+    return [this.startMovingTimestamp];
   }
 
   getOccupiedCells(): ServerCell[] {
@@ -200,7 +204,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   isAlive(): boolean {
-    return this.hp > 0;
+    return this.properties.hp > 0;
   }
 
   kill(): void {
@@ -230,13 +234,10 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     if (this.startMovingTimestamp) {
       const newMoveTimestamp = this.createTimestamp();
 
-      const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(
-        this.index,
-        this.startMovingTimestamp.timePassed,
-      );
+      const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(this.index);
 
       // got stuck just now
-      if (!isFloatZero(distanceLeft) && !isFloatZero(distanceWalked)) {
+      if (isFloatZero(distanceLeft) && !isFloatZero(distanceWalked)) {
         this.syncCoords();
       }
 
@@ -251,7 +252,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
     if (
       this.getOccupiedCells().some(({ objects }) => objects.some(BombersGame.isWall)) &&
-      this.buffs.every((buff) => !isSuperSpeed(buff) && !isInvincibility(buff))
+      [...this.buffs].every((buff) => !isSuperSpeed(buff) && !isInvincibility(buff))
     ) {
       this.kill();
 
@@ -292,21 +293,10 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   toJSON(): PlayerData {
-    return pick(this, [
-      'color',
-      'coords',
-      'direction',
-      'startMovingTimestamp',
-      'speed',
-      'speedReserve',
-      'maxBombCount',
-      'maxBombCountReserve',
-      'bombRange',
-      'bombRangeReserve',
-      'hp',
-      'hpReserve',
-      'buffs',
-    ]);
+    return {
+      ...pick(this, ['color', 'coords', 'direction', 'startMovingTimestamp', 'properties']),
+      buffs: [...this.buffs],
+    };
   }
 
   tryToActivateBuff = (type: BuffType): void => {
@@ -315,10 +305,12 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     }
 
     if (
-      (type === BuffType.SUPER_SPEED && this.speed + this.speedReserve <= SUPER_SPEED_COST) ||
-      (type === BuffType.SUPER_BOMB && this.maxBombCount + this.maxBombCountReserve <= SUPER_BOMB_COST) ||
-      (type === BuffType.SUPER_RANGE && this.bombRange + this.bombRangeReserve <= SUPER_RANGE_COST) ||
-      (type === BuffType.INVINCIBILITY && this.hp + this.hpReserve <= INVINCIBILITY_COST) ||
+      (type === BuffType.SUPER_SPEED && this.properties.speed + this.properties.speedReserve <= SUPER_SPEED_COST) ||
+      (type === BuffType.SUPER_BOMB &&
+        this.properties.maxBombCount + this.properties.maxBombCountReserve <= SUPER_BOMB_COST) ||
+      (type === BuffType.SUPER_RANGE &&
+        this.properties.bombRange + this.properties.bombRangeReserve <= SUPER_RANGE_COST) ||
+      (type === BuffType.INVINCIBILITY && this.properties.hp + this.properties.hpReserve <= INVINCIBILITY_COST) ||
       type === BuffType.BOMB_INVINCIBILITY
     ) {
       return;
@@ -326,16 +318,6 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
     this.spawnTask(this.activateBuff(type));
   };
-
-  *waitForBuffCancel(type: BuffType): EntityGenerator<true> {
-    while (true) {
-      const buffType = yield* this.waitForTrigger(this.cancelBuffTimeoutTrigger);
-
-      if (buffType === type) {
-        return true;
-      }
-    }
-  }
 
   *waitForControls(): EntityGenerator {
     yield* this.waitForTrigger(this.grantControlsTrigger);

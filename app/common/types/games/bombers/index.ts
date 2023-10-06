@@ -56,11 +56,7 @@ export enum PlayerColor {
   MAGENTA = 'MAGENTA',
 }
 
-export interface PlayerData {
-  color: PlayerColor;
-  coords: Coords;
-  direction: Direction;
-  startMovingTimestamp: Timestamp | null;
+export interface PlayerProperties {
   speed: number;
   speedReserve: number;
   maxBombCount: number;
@@ -69,6 +65,14 @@ export interface PlayerData {
   bombRangeReserve: number;
   hp: number;
   hpReserve: number;
+}
+
+export interface PlayerData {
+  color: PlayerColor;
+  coords: Coords;
+  direction: Direction;
+  startMovingTimestamp: Timestamp | null;
+  properties: PlayerProperties;
   buffs: Buff[];
 }
 
@@ -98,8 +102,11 @@ export enum BuffType {
   BOMB_INVINCIBILITY = 'BOMB_INVINCIBILITY',
 }
 
-export interface Buff {
+export interface BaseBuff {
   type: BuffType;
+}
+
+export interface Buff extends BaseBuff {
   endsAt: Timestamp;
 }
 

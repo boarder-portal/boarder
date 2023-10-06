@@ -4,7 +4,7 @@ import { PASS_DIRECTIONS } from 'server/gamesData/Game/HeartsGame/constants';
 import { GameType } from 'common/types/game';
 import { Game, GamePlayerData, GameResult, HandStage, PassDirection, Player } from 'common/types/games/hearts';
 
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
@@ -23,15 +23,13 @@ export default class HeartsGame extends GameEntity<GameType.HEARTS> {
       this.handIndex++;
       this.passDirection = PASS_DIRECTIONS[this.playersCount][this.handIndex % this.playersCount];
 
-      this.hand = this.spawnEntity(
-        new Hand(this, {
-          startStage: this.passDirection === PassDirection.NONE ? HandStage.PLAY : HandStage.PASS,
-        }),
-      );
+      this.hand = new Hand(this, {
+        startStage: this.passDirection === PassDirection.NONE ? HandStage.PLAY : HandStage.PASS,
+      });
 
       this.sendGameInfo();
 
-      const scoreIncrements = yield* this.hand;
+      const scoreIncrements = yield* this.waitForEntity(this.hand);
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.playersData[playerIndex].score += scoreIncrement;

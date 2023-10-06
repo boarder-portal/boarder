@@ -1,20 +1,9 @@
 import map from 'lodash/map';
+import noop from 'lodash/noop';
 
-import { Timestamp as TimestampModel } from 'common/types';
-import { GameOptions, GameType } from 'common/types/game';
-
+import AbortError from 'common/utilities/AbortError';
 import Timestamp from 'common/utilities/Timestamp';
-import AbortError from 'server/gamesData/Game/utilities/AbortError';
-import Trigger from 'server/gamesData/Game/utilities/Trigger';
-import { now } from 'server/utilities/time';
-
-import Game from 'server/gamesData/Game/Game';
-
-export interface EntityContext<G extends GameType> {
-  game: Game<G>;
-}
-
-export type ParentOrContext<Game extends GameType> = EntityContext<Game> | Entity<Game, any>;
+import Trigger from 'common/utilities/Trigger';
 
 interface GeneratorResult<Result> {
   run(resolve: Resolve<Result>, reject: Reject): void;
@@ -77,9 +66,12 @@ type RaceObjectReturnValue<T> = {
   };
 }[keyof T];
 
-export default abstract class Entity<Game extends GameType, Result = unknown> {
-  #children = new Set<Entity<Game>>();
-  #parent: Entity<Game, any> | null = null;
+export type AnyEntity<Context> = Entity<Context, any>;
+
+export type ParentEntity<Context> = AnyEntity<Context> | null;
+
+export default abstract class Entity<Context, Result = unknown> {
+  #children = new Set<AnyEntity<Context>>();
   #abortCallbacks = new Set<AbortCallback>();
   #successCallbacks = new Set<Resolve<Result>>();
   #errorCallbacks = new Set<Reject>();
@@ -87,17 +79,13 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   #started = false;
   #destroyed = false;
   #result: EffectResult<Result> | undefined;
-  spawned = false;
   paused = false;
+  context: Context | undefined;
 
-  readonly context: EntityContext<Game>;
-  readonly options: GameOptions<Game>;
+  readonly #parent: ParentEntity<Context> = null;
 
-  constructor(parentOrContext: ParentOrContext<Game>) {
-    const context = parentOrContext instanceof Entity ? parentOrContext.context : parentOrContext;
-
-    this.context = context;
-    this.options = context.game.options;
+  constructor(parent: ParentEntity<Context>) {
+    this.#parent = parent;
   }
 
   protected abstract lifecycle(): EntityGenerator<Result>;
@@ -110,7 +98,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     };
   }
 
-  #getAllTimestamps(): (TimestampModel | null | undefined)[] {
+  #getAllTimestamps(): (Timestamp | null | undefined)[] {
     return [...this.#timestamps, ...(this.getCurrentTimestamps?.() ?? [])];
   }
 
@@ -242,7 +230,9 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   }
 
   *afterLifecycle(): EntityGenerator {
-    // empty
+    if (this.#parent) {
+      this.#parent.#children.delete(this);
+    }
   }
 
   afterPause(): void {
@@ -287,13 +277,14 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
   }
 
   *beforeLifecycle(): EntityGenerator {
-    // empty
+    if (this.#parent) {
+      this.#parent.#children.add(this);
+    }
   }
 
   createTimestamp(addMs = 0): Timestamp {
     return new Timestamp({
       addMs,
-      now,
     });
   }
 
@@ -334,7 +325,17 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     }
   }
 
-  getCurrentTimestamps?(): (TimestampModel | null | undefined)[];
+  getContext(): Context {
+    const context = this.context ?? this.#parent?.getContext();
+
+    if (!context) {
+      throw new Error('No context');
+    }
+
+    return context;
+  }
+
+  getCurrentTimestamps?(): (Timestamp | null | undefined)[];
 
   pause(pausedAt: number): void {
     if (this.paused) {
@@ -344,7 +345,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     this.paused = true;
 
     this.#getAllTimestamps().forEach((timestamp) => {
-      timestamp?.pause?.(pausedAt);
+      timestamp?.pause(pausedAt);
     });
 
     for (const child of this.#children) {
@@ -408,7 +409,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     }
   }
 
-  run(resolve: Resolve<Result>, reject: Reject): () => void {
+  run(resolve: Resolve<Result> = noop, reject: Reject = noop): () => void {
     const unsubscribe = () => {
       this.#successCallbacks.delete(resolve);
       this.#errorCallbacks.delete(reject);
@@ -429,10 +430,6 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
 
     if (this.#started) {
       return unsubscribe;
-    }
-
-    if (!this.spawned) {
-      throw new Error('You need to spawn the entity first');
     }
 
     this.#started = true;
@@ -472,22 +469,6 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     );
 
     return unsubscribe;
-  }
-
-  // TODO: remove
-  spawnEntity<E extends Entity<Game, any>>(entity: E): E {
-    entity.spawned = true;
-    entity.#parent = this;
-
-    this.#children.add(entity);
-
-    const removeFromChildren = () => {
-      this.#children.delete(entity);
-    };
-
-    entity.run(removeFromChildren, removeFromChildren);
-
-    return entity;
   }
 
   spawnTask<Result>(action: EntityGenerator<Result>): EntityGenerator<Result> {
@@ -541,12 +522,6 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     })();
   }
 
-  *[Symbol.iterator](): EffectGenerator<Result> {
-    return yield (resolve, reject) => {
-      return this.run(resolve, reject);
-    };
-  }
-
   toJSON(): unknown {
     throw new Error('Provide custom toJSON');
   }
@@ -559,7 +534,7 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     this.paused = false;
 
     this.#getAllTimestamps().forEach((timestamp) => {
-      timestamp?.unpause?.(unpausedAt);
+      timestamp?.unpause(unpausedAt);
     });
 
     for (const child of this.#children) {
@@ -567,6 +542,12 @@ export default abstract class Entity<Game extends GameType, Result = unknown> {
     }
 
     this.afterUnpause();
+  }
+
+  *waitForEntity<Result>(entity: Entity<Context, Result>): EffectGenerator<Result> {
+    return yield (resolve, reject) => {
+      return entity.run(resolve, reject);
+    };
   }
 
   *waitForTimestamp(timestamp: Timestamp): EffectGenerator<void> {

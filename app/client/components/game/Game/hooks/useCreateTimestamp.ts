@@ -2,8 +2,8 @@ import { useCallback, useContext } from 'react';
 
 import { Timestamp as TimestampModel } from 'common/types';
 
-import { now } from 'client/utilities/time';
 import Timestamp from 'common/utilities/Timestamp';
+import { now } from 'common/utilities/time';
 
 import { TimeDiffContext } from 'client/components/game/Game/contexts';
 
@@ -19,22 +19,21 @@ export default function useCreateTimestamp(): (
 
   return useCallback(
     (serverTimestampOrOptions) => {
-      let addMs: number | null;
-      let pausedAt: number | null | undefined;
+      let addMs: number | undefined;
+      let pausedAt: number | undefined;
 
       if (!serverTimestampOrOptions || 'addMs' in serverTimestampOrOptions) {
-        addMs = serverTimestampOrOptions?.addMs ?? null;
-        pausedAt = serverTimestampOrOptions?.pausedAt ?? null;
+        addMs = serverTimestampOrOptions?.addMs ?? undefined;
+        pausedAt = serverTimestampOrOptions?.pausedAt ?? undefined;
       } else {
         addMs = serverTimestampOrOptions.value - getTimeDiff() - now();
         pausedAt =
-          serverTimestampOrOptions.pausedAt === null ? null : serverTimestampOrOptions.pausedAt - getTimeDiff();
+          serverTimestampOrOptions.pausedAt === null ? undefined : serverTimestampOrOptions.pausedAt - getTimeDiff();
       }
 
       return new Timestamp({
         addMs,
         pausedAt,
-        now,
       });
     },
     [getTimeDiff],

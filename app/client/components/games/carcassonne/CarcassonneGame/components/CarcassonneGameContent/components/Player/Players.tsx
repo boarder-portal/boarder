@@ -7,8 +7,9 @@ import { FC, memo, useEffect, useState } from 'react';
 import { SECOND } from 'common/constants/date';
 
 import { WithClassName } from 'client/types/react';
-import { Timestamp } from 'common/types';
 import { CityGoodsType, GameOptions, MeepleType, Player } from 'common/types/games/carcassonne';
+
+import Timestamp from 'common/utilities/Timestamp';
 
 import Flex from 'client/components/common/Flex/Flex';
 import Meeple from 'client/components/games/carcassonne/CarcassonneGame/components/CarcassonneGameContent/components/Meeple/Meeple';

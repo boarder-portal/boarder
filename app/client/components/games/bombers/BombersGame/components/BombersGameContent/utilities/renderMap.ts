@@ -3,17 +3,19 @@ import { SECOND } from 'common/constants/date';
 import { TIME_TO_START } from 'common/constants/games/bombers';
 
 import { BombersImages } from 'client/components/games/bombers/BombersGame/components/BombersGameContent/types';
-import { Timestamp } from 'common/types';
-import { ExplodedDirection, Map, Player, PlayerData } from 'common/types/games/bombers';
+import { ExplodedDirection, Map, Player } from 'common/types/games/bombers';
 
 import renderCell from 'client/components/games/bombers/BombersGame/components/BombersGameContent/utilities/renderCell';
 import renderExplodedDirection from 'client/components/games/bombers/BombersGame/components/BombersGameContent/utilities/renderExplodedDirection';
 import renderPlayer from 'client/components/games/bombers/BombersGame/components/BombersGameContent/utilities/renderPlayer';
+import Timestamp from 'common/utilities/Timestamp';
+
+import { ClientPlayerData } from 'client/components/games/bombers/BombersGame/components/BombersGameContent/BombersGameContent';
 
 export interface RenderMapOptions {
   ctx: CanvasRenderingContext2D;
   map: Map;
-  playersData: PlayerData[];
+  playersData: ClientPlayerData[];
   explodedDirections: Set<ExplodedDirection>;
   startsAt: Timestamp;
   player: Player | null;
@@ -30,7 +32,7 @@ export default function renderMap(options: RenderMapOptions): void {
   });
 
   playersData.forEach((playerData) => {
-    if (playerData.hp > 0) {
+    if (playerData.properties.hp > 0) {
       renderPlayer({ ctx, playerData });
     }
   });

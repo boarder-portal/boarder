@@ -3,9 +3,10 @@ import shuffle from 'lodash/shuffle';
 import { GameType } from 'common/types/game';
 import { Card, Hand as HandModel, HandPlayerData, Move, MoveType } from 'common/types/games/redSeven';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getCanvasRule, getRuleCards } from 'common/utilities/games/redSeven/rules';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 import RedSevenGame from 'server/gamesData/Game/RedSevenGame/RedSevenGame';
 import Turn from 'server/gamesData/Game/RedSevenGame/entities/Turn';
@@ -19,7 +20,7 @@ export interface HandResult {
   scoreCards: Card[];
 }
 
-export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
+export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
   game: RedSevenGame;
 
   playersData: HandPlayerData[] = this.getPlayersData(() => ({
@@ -27,6 +28,10 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     hand: [],
     palette: [],
   }));
+  turnController = new TurnController({
+    players: this.playersData,
+    isPlayerInPlay: (playerIndex) => this.playersData[playerIndex].inPlay,
+  });
   canvas: Card[] = [];
   deck: Card[];
 
@@ -52,18 +57,18 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     let winnerIndex = -1;
 
     while ((winnerIndex = this.getWinnerIndex()) === -1) {
-      this.turn = this.spawnEntity(new Turn(this));
+      this.turn = new Turn(this);
 
-      const inPlay = yield* this.turn;
+      const inPlay = yield* this.waitForEntity(this.turn);
 
       if (!inPlay) {
         // TODO: show modal
         // TODO: special modal if last player
       }
 
-      this.playersData[this.activePlayerIndex].inPlay = inPlay;
+      this.turnController.getActivePlayer().inPlay = inPlay;
 
-      this.passTurn();
+      this.turnController.passTurn();
     }
 
     this.turn = null;
@@ -92,13 +97,9 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     return winnerIndex;
   }
 
-  isPlayerInPlay(playerIndex: number): boolean {
-    return this.playersData[playerIndex].inPlay;
-  }
-
   playMove(move: Move): void {
     if (move.type === MoveType.ADD_CARD_TO_PALETTE) {
-      const { hand, palette } = this.playersData[this.activePlayerIndex];
+      const { hand, palette } = this.turnController.getActivePlayer();
 
       palette.push(...hand.splice(move.cardIndex, 1));
 
@@ -106,7 +107,7 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_HAND_TO_CANVAS) {
-      const { hand } = this.playersData[this.activePlayerIndex];
+      const { hand } = this.turnController.getActivePlayer();
 
       this.canvas.push(...hand.splice(move.cardIndex, 1));
 
@@ -114,7 +115,7 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_PALETTE_TO_CANVAS) {
-      const { palette } = this.playersData[this.activePlayerIndex];
+      const { palette } = this.turnController.getActivePlayer();
 
       this.canvas.push(...palette.splice(move.cardIndex, 1));
 
@@ -134,7 +135,7 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_TO_PALETTE) {
-      const { hand, palette } = this.playersData[this.activePlayerIndex];
+      const { hand, palette } = this.turnController.getActivePlayer();
 
       hand.splice(move.cardIndex, 0, ...palette.splice(-1));
 
@@ -142,7 +143,7 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_HAND_TO_CANVAS) {
-      const { hand } = this.playersData[this.activePlayerIndex];
+      const { hand } = this.turnController.getActivePlayer();
 
       hand.splice(move.cardIndex, 0, ...this.canvas.splice(-1));
 
@@ -150,7 +151,7 @@ export default class Hand extends TurnEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_PALETTE_TO_CANVAS) {
-      const { palette } = this.playersData[this.activePlayerIndex];
+      const { palette } = this.turnController.getActivePlayer();
 
       palette.splice(move.cardIndex, 0, ...this.canvas.splice(-1));
 

@@ -5,8 +5,8 @@ import { WIN_SCORE_BY_PLAYER_COUNT } from 'common/constants/games/redSeven';
 import { GameType } from 'common/types/game';
 import { Card, CardColor, Game, GamePlayerData, GameResult, Player } from 'common/types/games/redSeven';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getCardsScoreValue, isEqualCards } from 'common/utilities/games/redSeven/cards';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Hand from 'server/gamesData/Game/RedSevenGame/entities/Hand';
@@ -31,13 +31,11 @@ export default class RedSevenGame extends GameEntity<GameType.RED_SEVEN> {
     this.winScore = WIN_SCORE_BY_PLAYER_COUNT[this.playersCount] ?? Infinity;
 
     while (this.nextHandNeeded()) {
-      this.hand = this.spawnEntity(
-        new Hand(this, {
-          deck: this.deck,
-        }),
-      );
+      this.hand = new Hand(this, {
+        deck: this.deck,
+      });
 
-      const { winnerIndex, scoreCards } = yield* this.hand;
+      const { winnerIndex, scoreCards } = yield* this.waitForEntity(this.hand);
 
       this.playersData[winnerIndex].scoreCards.push(...scoreCards);
 

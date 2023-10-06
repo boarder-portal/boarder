@@ -12,7 +12,7 @@ import {
 import { GameInfo, GameOptions, GameResult, GameState, GameStatus, GameType } from 'common/types/game';
 import { GameClientSocket } from 'common/types/socket';
 
-import { now } from 'client/utilities/time';
+import { now } from 'common/utilities/time';
 
 import useGlobalListener from 'client/hooks/useGlobalListener';
 import useImmutableCallback from 'client/hooks/useImmutableCallback';

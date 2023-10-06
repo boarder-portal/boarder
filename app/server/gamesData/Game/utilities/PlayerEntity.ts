@@ -1,6 +1,7 @@
 import { GameClientEvent, GameClientEventData, GameType } from 'common/types/game';
 
-import { EntityGenerator, ParentOrContext } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity';
+import { ParentGameEntity } from 'server/gamesData/Game/utilities/AbstractGameEntity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 export interface PlayerOptions {
@@ -10,8 +11,8 @@ export interface PlayerOptions {
 export default abstract class PlayerEntity<Game extends GameType, Result = unknown> extends ServerEntity<Game, Result> {
   index: number;
 
-  protected constructor(parentOrContext: ParentOrContext<Game>, options: PlayerOptions) {
-    super(parentOrContext);
+  protected constructor(parent: ParentGameEntity<Game>, options: PlayerOptions) {
+    super(parent);
 
     this.index = options.index;
   }

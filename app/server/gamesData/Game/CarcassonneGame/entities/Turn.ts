@@ -1,21 +1,19 @@
 import { GameType } from 'common/types/game';
 import { GameClientEventType, Turn as TurnModel } from 'common/types/games/carcassonne';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import Timestamp from 'common/utilities/Timestamp';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
 export interface TurnOptions {
-  activePlayerIndex: number;
   duration: number;
 }
 
 export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
   game: CarcassonneGame;
 
-  activePlayerIndex: number;
   endsAt: Timestamp;
   placedAnyCards = false;
 
@@ -23,12 +21,11 @@ export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
     super(game);
 
     this.game = game;
-    this.activePlayerIndex = options.activePlayerIndex;
     this.endsAt = this.createTimestamp(options.duration);
   }
 
   *lifecycle(): EntityGenerator<boolean> {
-    yield* this.race([this.game.options.withTimer ? this.waitForTimestamp(this.endsAt) : null, this.makeMoves()]);
+    yield* this.race([this.options.withTimer ? this.waitForTimestamp(this.endsAt) : null, this.makeMoves()]);
 
     return this.placedAnyCards;
   }
@@ -41,10 +38,10 @@ export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
     let isBuilderMove = false;
 
     while (true) {
-      const { cardIndex, coords, rotation, meeple } = yield* this.waitForPlayerSocketEvent(
+      const { cardIndex, coords, rotation, meeple } = yield* this.waitForActivePlayerSocketEvent(
         GameClientEventType.ATTACH_CARD,
         {
-          playerIndex: this.activePlayerIndex,
+          turnController: this.game.turnController,
         },
       );
 
@@ -53,13 +50,16 @@ export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
         coords,
         rotation,
         meeple,
-        playerIndex: this.activePlayerIndex,
         isFirstTurnCard: !isBuilderMove,
       });
 
       this.placedAnyCards = true;
 
-      if (isBuilderMove || !attachedToBuilder || !this.game.canPlayAnyCards(this.activePlayerIndex)) {
+      if (
+        isBuilderMove ||
+        !attachedToBuilder ||
+        !this.game.canPlayAnyCards(this.game.turnController.activePlayerIndex)
+      ) {
         break;
       }
 

@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { ObjectType, TreeObject } from 'common/types/games/survivalOnline';
 
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EntityGenerator } from 'common/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SurvivalOnlineGame, {

@@ -9,13 +9,13 @@ import {
   TestCaseType,
 } from 'common/types/game';
 
+import AbortError from 'common/utilities/AbortError';
+import { EntityGenerator } from 'common/utilities/Entity';
 import { areBotsAvailable } from 'common/utilities/bots';
-import AbortError from 'server/gamesData/Game/utilities/AbortError';
+import { now } from 'common/utilities/time';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
-import { now } from 'server/utilities/time';
 
 import { BOTS, TEST_CASES } from 'server/gamesData/Game/Game';
 
@@ -32,7 +32,6 @@ type GameEventTriggerValue<Game extends GameType> = {
 }[GameEventType<Game>];
 
 export default abstract class GameEntity<Game extends GameType> extends ServerEntity<Game, GameResult<Game>> {
-  spawned = true;
   eventTrigger = this.createTrigger<GameEventTriggerValue<Game>>();
 
   abstract toJSON(): GameInfo<Game>;
@@ -96,12 +95,12 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
   }
 
   sendUpdatePlayersEvent(): void {
-    this.context.game.sendUpdatePlayersEvent();
+    this.getGame().sendUpdatePlayersEvent();
   }
 
   *#spawnBot(Bot: BotConstructor<Game>, playerIndex: number): EntityGenerator {
     try {
-      yield* this.spawnEntity(new Bot(this, { playerIndex }));
+      yield* this.waitForEntity(new Bot(this, { playerIndex }));
     } catch (err) {
       if (!(err instanceof AbortError)) {
         console.log(`Bot #${playerIndex} error`, err);
@@ -110,9 +109,8 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
   }
 
   *#spawnBots(): EntityGenerator {
-    const bot = areBotsAvailable(this.context.game.game)
-      ? (BOTS[this.context.game.game] as BotConstructor<Game>)
-      : null;
+    const { game } = this.getGame();
+    const bot = areBotsAvailable(game) ? (BOTS[game] as BotConstructor<Game>) : null;
 
     if (!bot) {
       return;
@@ -133,7 +131,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     }
 
     const TestCase = (
-      TEST_CASES[this.context.game.game] as Partial<{
+      TEST_CASES[this.getGame().game] as Partial<{
         [TestCase in TestCaseType<Game>]: TestCaseConstructor<Game>;
       }>
     )?.[caseType as TestCaseType<Game>];
@@ -143,7 +141,7 @@ export default abstract class GameEntity<Game extends GameType> extends ServerEn
     }
 
     try {
-      yield* this.spawnEntity(new TestCase(this as any));
+      yield* this.waitForEntity(new TestCase(this as any));
     } catch (err) {
       if (!(err instanceof AbortError)) {
         console.log('TestCase error', err);

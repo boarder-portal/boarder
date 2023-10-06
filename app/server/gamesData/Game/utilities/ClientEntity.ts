@@ -16,9 +16,13 @@ import {
 } from 'common/types/game';
 import { GameClientSocket } from 'common/types/socket';
 
-import Entity, { EffectGenerator, EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
+import { EffectGenerator, EntityGenerator } from 'common/utilities/Entity';
+import AbstractGameEntity from 'server/gamesData/Game/utilities/AbstractGameEntity';
 
-export default abstract class ClientEntity<Game extends GameType, Result = unknown> extends Entity<Game, Result> {
+export default abstract class ClientEntity<Game extends GameType, Result = unknown> extends AbstractGameEntity<
+  Game,
+  Result
+> {
   #socket: GameClientSocket<Game> | null = null;
 
   #getSocket(): GameClientSocket<Game> {
@@ -57,7 +61,7 @@ export default abstract class ClientEntity<Game extends GameType, Result = unkno
   }
 
   getSocketAddress(): string {
-    return `http://localhost:${PORT}${this.context.game.io.name}`;
+    return `http://localhost:${PORT}${this.getGame().io.name}`;
   }
 
   sendSocketEvent<Event extends GameClientDatalessEvent<Game>>(event: Event, data?: undefined): void;

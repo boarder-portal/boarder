@@ -7,6 +7,7 @@ import { BomberImage } from 'client/components/games/bombers/BombersGame/compone
 import { Size } from 'common/types';
 import { GameType } from 'common/types/game';
 import {
+  BaseBuff,
   BuffType,
   Direction,
   ExplodedDirection,
@@ -21,6 +22,7 @@ import {
 
 import renderMap from 'client/components/games/bombers/BombersGame/components/BombersGameContent/utilities/renderMap';
 import getCellScreenSize from 'client/utilities/getCellScreenSize';
+import Timestamp from 'common/utilities/Timestamp';
 import SharedDataManager from 'common/utilities/games/bombers/SharedDataManager';
 
 import useBoundTimestamps from 'client/components/game/Game/hooks/useBoundTimetamps';
@@ -39,6 +41,15 @@ import Player from 'client/components/games/bombers/BombersGame/components/Bombe
 import Stat from 'client/components/games/bombers/BombersGame/components/BombersGameContent/components/Stat/Stat';
 
 import styles from './BombersGameContent.module.scss';
+
+export type ClientPlayerData = Omit<PlayerData, 'startMovingTimestamp' | 'buffs'> & {
+  startMovingTimestamp: Timestamp | null;
+  buffs: Set<
+    BaseBuff & {
+      endsAt: Timestamp;
+    }
+  >;
+};
 
 const BUFFS_MAP: Partial<Record<string, BuffType>> = {
   Digit1: BuffType.SUPER_SPEED,
@@ -71,14 +82,16 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const mapRef = useRef<Map>(gameInfo.map);
   const canControlRef = useRef<boolean>(gameInfo.canControl);
-  const playersDataRef = useRef<PlayerData[]>(
+  const playersDataRef = useRef<ClientPlayerData[]>(
     players.map((player) => ({
       ...player.data,
       startMovingTimestamp: player.data.startMovingTimestamp && createTimestamp(player.data.startMovingTimestamp),
-      buffs: player.data.buffs.map((buff) => ({
-        ...buff,
-        endsAt: createTimestamp(buff.endsAt),
-      })),
+      buffs: new Set(
+        player.data.buffs.map((buff) => ({
+          ...buff,
+          endsAt: createTimestamp(buff.endsAt),
+        })),
+      ),
     })),
   );
   const explodedDirectionsRef = useRef(new Set<ExplodedDirection>());
@@ -94,6 +107,9 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       map: mapRef.current,
       players: playersDataRef.current,
       isPassableObject: (object) => object.type === ObjectType.BONUS,
+      deactivatePlayerBuff: (buff, playerIndex) => {
+        playersDataRef.current[playerIndex].buffs.delete(buff);
+      },
     });
   }, []);
 
@@ -135,11 +151,14 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
     });
   });
 
-  const refreshPlayersData = useImmutableCallback(() => {
+  const refreshPlayersProperties = useImmutableCallback(() => {
     setPlayers(
       players.map((player) => ({
         ...player,
-        data: { ...playersDataRef.current[player.index] },
+        data: {
+          ...player.data,
+          properties: playersDataRef.current[player.index].properties,
+        },
       })),
     );
   });
@@ -171,7 +190,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       hitPlayers.forEach(({ index, damage }) => {
         const playerData = playersDataRef.current[index];
 
-        playerData.hp -= damage;
+        playerData.properties.hp -= damage;
       });
 
       explodedBoxes.forEach(({ id, coords, bonuses }) => {
@@ -185,7 +204,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       });
 
       if (hitPlayers.length > 0) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
 
       setTimeout(() => {
@@ -219,12 +238,12 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       deadPlayers.forEach((playerIndex) => {
         const playerData = playersDataRef.current[playerIndex];
 
-        playerData.hp = 0;
+        playerData.properties.hp = 0;
         playerData.startMovingTimestamp = null;
       });
 
       if (deadPlayers.length > 0) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.BONUS_CONSUMED]: ({ id, coords, playerIndex }) => {
@@ -239,38 +258,48 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       }
 
       if (playerIndex === player?.index) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.PLAYER_HEALED]: (playerIndex) => {
       sharedDataManager.healPlayer(playerIndex);
 
       if (playerIndex === player?.index) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.PLAYER_DIED]: (playerIndex) => {
       const playerData = playersDataRef.current[playerIndex];
 
-      playerData.hp = 0;
+      playerData.properties.hp = 0;
       playerData.startMovingTimestamp = null;
 
       if (playerIndex === player?.index) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.BUFF_ACTIVATED]: ({ playerIndex, buff }) => {
-      sharedDataManager.activatePlayerBuff(playerIndex, buff.type, createTimestamp(buff.endsAt));
+      const endsAt = createTimestamp(buff.endsAt);
+      const oldBuff = sharedDataManager.activatePlayerBuff(playerIndex, buff.type);
+
+      if (oldBuff) {
+        oldBuff.endsAt = createTimestamp(buff.endsAt);
+      } else {
+        playersDataRef.current[playerIndex].buffs.add({
+          type: buff.type,
+          endsAt,
+        });
+      }
 
       if (playerIndex === player?.index) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.BUFF_DEACTIVATED]: ({ playerIndex, type }) => {
       sharedDataManager.deactivatePlayerBuff(playerIndex, type);
 
       if (playerIndex === player?.index) {
-        refreshPlayersData();
+        refreshPlayersProperties();
       }
     },
     [GameServerEventType.WALLS_DESTROYED]: (destroyedWalls) => {
@@ -350,7 +379,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
     startsAtTimestamp,
     ...playersDataRef.current.flatMap(({ buffs, startMovingTimestamp }) => [
       startMovingTimestamp,
-      ...buffs.map(({ endsAt }) => endsAt),
+      ...[...buffs].map(({ endsAt }) => endsAt),
     ]),
   ]);
 
@@ -364,7 +393,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
     playersDataRef.current.forEach((playerData, playerIndex) => {
       if (
         !playerData.startMovingTimestamp ||
-        playerData.hp === 0 ||
+        playerData.properties.hp === 0 ||
         playerData.startMovingTimestamp.pausedAt !== null
       ) {
         return;
@@ -372,7 +401,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
 
       const newMoveTimestamp = createTimestamp();
 
-      sharedDataManager.movePlayer(playerIndex, playerData.startMovingTimestamp.timePassed);
+      sharedDataManager.movePlayer(playerIndex);
 
       playerData.startMovingTimestamp = newMoveTimestamp;
     });
@@ -427,23 +456,28 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
             <Flex direction="column" between={2}>
               <Stat
                 label="Скорость"
-                value={player.data.speed}
+                value={player.data.properties.speed}
                 maxValue={MAX_SPEED}
-                overflow={player.data.speedReserve}
+                overflow={player.data.properties.speedReserve}
               />
               <Stat
                 label="Количество бомб"
-                value={player.data.maxBombCount}
+                value={player.data.properties.maxBombCount}
                 maxValue={MAX_BOMB_COUNT}
-                overflow={player.data.maxBombCountReserve}
+                overflow={player.data.properties.maxBombCountReserve}
               />
               <Stat
                 label="Радиус взрыва"
-                value={player.data.bombRange}
+                value={player.data.properties.bombRange}
                 maxValue={MAX_BOMB_RANGE}
-                overflow={player.data.bombRangeReserve}
+                overflow={player.data.properties.bombRangeReserve}
               />
-              <Stat label="HP" value={player.data.hp} maxValue={MAX_HP} overflow={player.data.hpReserve} />
+              <Stat
+                label="HP"
+                value={player.data.properties.hp}
+                maxValue={MAX_HP}
+                overflow={player.data.properties.hpReserve}
+              />
             </Flex>
           )}
         </Flex>

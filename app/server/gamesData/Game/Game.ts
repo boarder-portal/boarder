@@ -31,11 +31,12 @@ import {
 import { GameNamespace, GameServerSocket } from 'common/types/socket';
 
 import { areBotsAvailable } from 'common/utilities/bots';
+import { now } from 'common/utilities/time';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
 import BaseGameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import RootEntity from 'server/gamesData/Game/utilities/RootEntity';
 import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
 import { removeNamespace } from 'server/utilities/io';
-import { now } from 'server/utilities/time';
 
 import mahjongTestCases from 'server/gamesData/Game/MahjongGame/testCases';
 
@@ -125,7 +126,7 @@ class Game<Game extends GameType> {
   status: GameStatus = GameStatus.WAITING;
   players: ServerGamePlayer<Game>[];
   options: GameOptions<Game>;
-  gameEntity: GameEntity<Game> | null = null;
+  rootEntity: RootEntity<Game> | null = null;
   result: GameResult<Game> | null = null;
   state: GameState = {
     type: 'active',
@@ -317,7 +318,7 @@ class Game<Game extends GameType> {
 
     this.deleted = true;
 
-    this.gameEntity?.destroy();
+    this.rootEntity?.destroy();
   }
 
   end(result: GameResult<Game>): void {
@@ -346,13 +347,13 @@ class Game<Game extends GameType> {
   }
 
   hasStarted(): boolean {
-    return Boolean(this.gameEntity);
+    return Boolean(this.rootEntity);
   }
 
-  initMainGameEntity(): GameEntity<Game> {
-    const entity = new GAME_ENTITIES_MAP[this.game]({
-      game: this as never,
-    }) as GameEntity<Game>;
+  initRootEntity(): RootEntity<Game> {
+    const entity = new RootEntity({
+      game: this,
+    });
 
     entity.run(
       (result) => this.end(result),
@@ -405,7 +406,7 @@ class Game<Game extends GameType> {
   }
 
   pause(pauseReason: PauseReason): void {
-    if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.gameEntity?.isPauseAvailable()) {
+    if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.rootEntity?.gameEntity?.isPauseAvailable()) {
       return;
     }
 
@@ -417,7 +418,7 @@ class Game<Game extends GameType> {
       changeTimestamp: pausedAt,
     };
 
-    this.gameEntity?.pause(pausedAt);
+    this.rootEntity?.pause(pausedAt);
 
     this.sendUpdateStateEvent();
   }
@@ -426,7 +427,7 @@ class Game<Game extends GameType> {
     const gameData: GameData<Game> = {
       name: this.name,
       options: this.options,
-      info: this.gameEntity?.getGameInfo() ?? null,
+      info: this.rootEntity?.gameEntity?.getGameInfo() ?? null,
       result: this.result,
       players: this.getClientPlayers(),
       timestamp: now(),
@@ -506,7 +507,7 @@ class Game<Game extends GameType> {
       player.status = PlayerStatus.PLAYING;
     });
 
-    this.gameEntity = this.initMainGameEntity();
+    this.rootEntity = this.initRootEntity();
 
     this.onUpdateGame(this.id);
     this.sendGameData();
@@ -520,7 +521,7 @@ class Game<Game extends GameType> {
       changeTimestamp: unpausedAt,
     };
 
-    this.gameEntity?.unpause(unpausedAt);
+    this.rootEntity?.unpause(unpausedAt);
 
     this.sendUpdateStateEvent();
   }

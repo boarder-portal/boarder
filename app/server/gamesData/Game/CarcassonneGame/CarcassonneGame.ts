@@ -27,6 +27,7 @@ import {
   Score,
 } from 'common/types/games/carcassonne';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -39,8 +40,8 @@ import {
   isGameRoad,
   isSideObject,
 } from 'common/utilities/games/carcassonne';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnGameEntity from 'server/gamesData/Game/utilities/TurnGameEntity';
+import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 import Turn from 'server/gamesData/Game/CarcassonneGame/entities/Turn';
 
@@ -57,13 +58,12 @@ interface AttachPlayerCardOptions {
   coords: Coords;
   rotation: number;
   meeple: PlacedMeeple | null;
-  playerIndex: number;
   isFirstTurnCard: boolean;
 }
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE> {
+export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
   playersData: PlayerData[] = this.getPlayersData(() => ({
     color: PlayerColor.RED,
     score: [],
@@ -81,6 +81,10 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
     },
     lastMoves: [],
   }));
+  turnController = new TurnController({
+    players: this.playersData,
+    isPlayerInPlay: (playerIndex) => this.canPlayAnyCards(playerIndex),
+  });
   deck: Card[] = shuffle(
     cloneDeep(ALL_CARDS)
       .map((card) => times(card.count, () => card))
@@ -111,25 +115,20 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
       playerData.cards.push(...this.deck.splice(-CARDS_IN_HAND));
     });
 
-    while (this.hasActivePlayer()) {
-      const activePlayerData = this.playersData[this.activePlayerIndex];
-
-      this.turn = this.spawnEntity(
-        new Turn(this, {
-          activePlayerIndex: this.activePlayerIndex,
-          duration: BASE_TIME + this.getPlacedCardsCount() * TURN_INCREMENT,
-        }),
-      );
+    while (this.turnController.hasActivePlayer()) {
+      this.turn = new Turn(this, {
+        duration: BASE_TIME + this.getPlacedCardsCount() * TURN_INCREMENT,
+      });
 
       this.sendGameInfo();
 
-      const placedAnyCards = yield* this.turn;
+      const placedAnyCards = yield* this.waitForEntity(this.turn);
 
       if (!placedAnyCards) {
-        activePlayerData.lastMoves = [];
+        this.turnController.getActivePlayer().lastMoves = [];
       }
 
-      this.passTurn();
+      this.turnController.passTurn();
     }
 
     this.turn = null;
@@ -411,15 +410,16 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
   }
 
   attachPlayerCard(options: AttachPlayerCardOptions): boolean {
-    const { cardIndex, coords, rotation, meeple, playerIndex, isFirstTurnCard } = options;
-    const playerData = this.playersData[playerIndex];
+    const { activePlayerIndex } = this.turnController;
+    const { cardIndex, coords, rotation, meeple, isFirstTurnCard } = options;
+    const playerData = this.turnController.getActivePlayer();
 
     const gameCard = this.attachCard({
       card: playerData.cards[cardIndex],
       coords,
       rotation,
       meeple,
-      playerIndex,
+      playerIndex: activePlayerIndex,
     });
 
     playerData.cards.splice(cardIndex, 1, ...this.deck.splice(-1));
@@ -491,7 +491,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
       }
 
       if (
-        getObjectPlayerMeeples(object, playerIndex).some(({ type }) => type === MeepleType.BUILDER) &&
+        getObjectPlayerMeeples(object, activePlayerIndex).some(({ type }) => type === MeepleType.BUILDER) &&
         meeple?.type !== MeepleType.BUILDER
       ) {
         attachedToBuilder = true;
@@ -529,10 +529,6 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
 
   isPauseAvailable(): boolean {
     return this.options.withTimer;
-  }
-
-  isPlayerInPlay(playerIndex: number): boolean {
-    return this.canPlayAnyCards(playerIndex);
   }
 
   mergeCardObject(targetObject: GameObject, mergedObject: CardObject): void {
@@ -642,7 +638,7 @@ export default class CarcassonneGame extends TurnGameEntity<GameType.CARCASSONNE
   toJSON(): Game {
     return {
       players: this.getGamePlayers(),
-      activePlayerIndex: this.activePlayerIndex,
+      activePlayerIndex: this.turnController.activePlayerIndex,
       board: this.board,
       objects: this.objects,
       cardsLeft: this.deck.length,

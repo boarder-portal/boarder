@@ -44,10 +44,6 @@ export interface BasePlayerSettings {}
 export interface Timestamp {
   value: number;
   pausedAt: number | null;
-  timeLeft: number;
-  timePassed: number;
-  pause?(pausedAt: number): void;
-  unpause?(unpausedAt: number): void;
 }
 
 export enum CommonGameClientEvent {

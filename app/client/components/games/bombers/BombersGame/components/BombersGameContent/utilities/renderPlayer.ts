@@ -1,11 +1,13 @@
 import { CELL_SIZE } from 'client/components/games/bombers/BombersGame/components/BombersGameContent/constants';
 import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games/bombers';
 
-import { BuffType, Direction, PlayerData } from 'common/types/games/bombers';
+import { BuffType, Direction } from 'common/types/games/bombers';
+
+import { ClientPlayerData } from 'client/components/games/bombers/BombersGame/components/BombersGameContent/BombersGameContent';
 
 export interface RenderPlayerOptions {
   ctx: CanvasRenderingContext2D;
-  playerData: PlayerData;
+  playerData: ClientPlayerData;
 }
 
 const HP_VERTICAL_PROPORTION = 0.15;
@@ -67,16 +69,21 @@ export default function renderPlayer(options: RenderPlayerOptions): void {
     const barStartX = startX + ((HP_BAR_WIDTH + HP_BAR_MARGIN) * i + HP_EDGE_MARGIN) * BOMBER_SIZE;
     const barStartY = startY + (1 - HP_VERTICAL_PROPORTION - HP_EDGE_MARGIN) * BOMBER_SIZE;
 
-    ctx.fillStyle = i < playerData.hp ? 'lime' : 'black';
+    ctx.fillStyle = i < playerData.properties.hp ? 'lime' : 'black';
 
     ctx.strokeRect(barStartX, barStartY, hpBarWidth, hpBarHeight);
     ctx.fillRect(barStartX, barStartY, hpBarWidth, hpBarHeight);
   }
 
-  const buffsWidth = playerData.buffs.length * BUFF_SIZE + (playerData.buffs.length - 1) * BUFF_BETWEEN_MARGIN;
+  const buffsWidth = playerData.buffs.size * BUFF_SIZE + (playerData.buffs.size - 1) * BUFF_BETWEEN_MARGIN;
 
-  playerData.buffs.forEach(({ type, endsAt }, index) => {
+  [...playerData.buffs].forEach(({ type, endsAt }, index) => {
     const timeLeftProportion = Math.max(0, endsAt.timeLeft / BUFF_DURATIONS[type]);
+
+    if (timeLeftProportion === 0) {
+      return;
+    }
+
     const centerX = startX + BOMBER_SIZE / 2 - buffsWidth / 2 + BUFF_RADIUS + index * (BUFF_SIZE + BUFF_BETWEEN_MARGIN);
     const centerY = startY - BUFF_TOP_MARGIN - BUFF_RADIUS;
 

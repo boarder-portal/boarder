@@ -25,6 +25,7 @@ import {
   ScientificSymbolsEffect,
 } from 'common/types/games/sevenWonders/effects';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getSetsCombinations } from 'common/utilities/combinations';
 import getAgeDirection from 'common/utilities/games/sevenWonders/getAgeDirection';
 import getAllPlayerEffects from 'common/utilities/games/sevenWonders/getAllPlayerEffects';
@@ -36,7 +37,6 @@ import {
   isScientificSymbolsEffect,
   isShieldsEffect,
 } from 'common/utilities/games/sevenWonders/isEffect';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 import Age from 'server/gamesData/Game/SevenWondersGame/entities/Age';
@@ -76,18 +76,20 @@ export default class SevenWondersGame extends GameEntity<GameType.SEVEN_WONDERS>
   leadersDeck: Card[] = [];
 
   *lifecycle(): EntityGenerator<GameResult> {
-    if (this.options.includeLeaders) {
+    const { includeLeaders } = this.options;
+
+    if (includeLeaders) {
       this.leadersDeck = shuffle(ALL_LEADERS);
     }
 
     this.phase = {
       type: GamePhaseType.PICK_CITY_SIDE,
-      pickCitySide: this.spawnEntity(new PickCitySide(this)),
+      pickCitySide: new PickCitySide(this),
     };
 
     this.sendGameInfo();
 
-    const citiesInfo = yield* this.phase.pickCitySide;
+    const citiesInfo = yield* this.waitForEntity(this.phase.pickCitySide);
 
     this.playersData.forEach((playerData, playerIndex) => {
       const { city, pickedSide } = citiesInfo[playerIndex];
@@ -123,15 +125,15 @@ export default class SevenWondersGame extends GameEntity<GameType.SEVEN_WONDERS>
       // }
     });
 
-    if (this.options.includeLeaders) {
+    if (includeLeaders) {
       this.phase = {
         type: GamePhaseType.DRAFT_LEADERS,
-        leadersDraft: this.spawnEntity(new LeadersDraft(this)),
+        leadersDraft: new LeadersDraft(this),
       };
 
       this.sendGameInfo();
 
-      const pickedLeaders = yield* this.phase.leadersDraft;
+      const pickedLeaders = yield* this.waitForEntity(this.phase.leadersDraft);
 
       this.playersData.forEach((playerData, index) => {
         playerData.leadersHand.push(...pickedLeaders[index]);
@@ -141,16 +143,14 @@ export default class SevenWondersGame extends GameEntity<GameType.SEVEN_WONDERS>
     for (let age = 0; age < 3; age++) {
       this.phase = {
         type: GamePhaseType.AGE,
-        age: this.spawnEntity(
-          new Age(this, {
-            age,
-          }),
-        ),
+        age: new Age(this, {
+          age,
+        }),
       };
 
       this.sendGameInfo();
 
-      yield* this.phase.age;
+      yield* this.waitForEntity(this.phase.age);
 
       this.sendGameInfo();
     }

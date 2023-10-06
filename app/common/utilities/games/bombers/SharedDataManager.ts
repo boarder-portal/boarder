@@ -15,9 +15,10 @@ import {
   SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
-import { Coords, Timestamp } from 'common/types';
-import { BonusType, Buff, BuffType, Direction, Line } from 'common/types/games/bombers';
+import { Coords } from 'common/types';
+import { BaseBuff, BonusType, BuffType, Direction, Line, PlayerProperties } from 'common/types/games/bombers';
 
+import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
 import { isSuperSpeed } from 'common/utilities/games/bombers/buffs';
 import getCoordsBehind from 'common/utilities/games/bombers/getCoordsBehind';
@@ -35,29 +36,23 @@ export interface SharedCell<MapObject extends MapObjectWithId> {
 
 export type SharedMap<MapObject extends MapObjectWithId> = SharedCell<MapObject>[][];
 
-export interface SharedPlayer {
+export interface SharedPlayer<Buff extends BaseBuff> {
   coords: Coords;
   direction: Direction;
   startMovingTimestamp: Timestamp | null;
-  speed: number;
-  speedReserve: number;
-  maxBombCount: number;
-  maxBombCountReserve: number;
-  bombRange: number;
-  bombRangeReserve: number;
-  hp: number;
-  hpReserve: number;
-  buffs: Buff[];
+  properties: PlayerProperties;
+  buffs: Set<Buff>;
 }
 
 export interface SharedBonus {
   type: BonusType;
 }
 
-export interface SharedDataManagerOptions<MapObject extends MapObjectWithId> {
+export interface SharedDataManagerOptions<MapObject extends MapObjectWithId, Buff extends BaseBuff> {
   map: SharedMap<MapObject>;
-  players: SharedPlayer[];
+  players: SharedPlayer<Buff>[];
   isPassableObject(object: MapObject): boolean;
+  deactivatePlayerBuff(buff: Buff, playerIndex: number): unknown;
 }
 
 interface ClosestCellInfo<MapObject extends MapObjectWithId> {
@@ -75,100 +70,94 @@ interface MovePlayerResult {
   distanceWalked: number;
 }
 
-export default class SharedDataManager<MapObject extends MapObjectWithId> {
+export default class SharedDataManager<MapObject extends MapObjectWithId, Buff extends BaseBuff> {
   map: SharedMap<MapObject>;
-  players: SharedPlayer[];
-  isPassableObject: SharedDataManagerOptions<MapObject>['isPassableObject'];
+  players: SharedPlayer<Buff>[];
+  isPassableObject: SharedDataManagerOptions<MapObject, Buff>['isPassableObject'];
+  deactivatePlayerBuffCallback: SharedDataManagerOptions<MapObject, Buff>['deactivatePlayerBuff'];
 
-  constructor(options: SharedDataManagerOptions<MapObject>) {
+  constructor(options: SharedDataManagerOptions<MapObject, Buff>) {
     this.map = options.map;
     this.players = options.players;
     this.isPassableObject = options.isPassableObject;
+    this.deactivatePlayerBuffCallback = options.deactivatePlayerBuff;
   }
 
-  activatePlayerBuff(playerIndex: number, type: BuffType, endsAt: Timestamp): Buff {
+  activatePlayerBuff(playerIndex: number, type: BuffType): Buff | null {
     const player = this.players[playerIndex];
+    const { properties } = player;
 
     if (type === BuffType.SUPER_SPEED) {
-      const amountFromReserve = Math.min(player.speedReserve, SUPER_SPEED_COST);
+      const amountFromReserve = Math.min(properties.speedReserve, SUPER_SPEED_COST);
 
-      player.speedReserve -= amountFromReserve;
-      player.speed -= SUPER_SPEED_COST - amountFromReserve;
+      properties.speedReserve -= amountFromReserve;
+      properties.speed -= SUPER_SPEED_COST - amountFromReserve;
     } else if (type === BuffType.SUPER_BOMB) {
-      const amountFromReserve = Math.min(player.maxBombCountReserve, SUPER_BOMB_COST);
+      const amountFromReserve = Math.min(properties.maxBombCountReserve, SUPER_BOMB_COST);
 
-      player.maxBombCountReserve -= amountFromReserve;
-      player.maxBombCount -= SUPER_BOMB_COST - amountFromReserve;
+      properties.maxBombCountReserve -= amountFromReserve;
+      properties.maxBombCount -= SUPER_BOMB_COST - amountFromReserve;
     } else if (type === BuffType.SUPER_RANGE) {
-      const amountFromReserve = Math.min(player.bombRangeReserve, SUPER_RANGE_COST);
+      const amountFromReserve = Math.min(properties.bombRangeReserve, SUPER_RANGE_COST);
 
-      player.bombRangeReserve -= amountFromReserve;
-      player.bombRange -= SUPER_RANGE_COST - amountFromReserve;
+      properties.bombRangeReserve -= amountFromReserve;
+      properties.bombRange -= SUPER_RANGE_COST - amountFromReserve;
     } else if (type === BuffType.INVINCIBILITY) {
       this.deactivatePlayerBuff(playerIndex, BuffType.BOMB_INVINCIBILITY);
 
-      const amountFromReserve = Math.min(player.hpReserve, INVINCIBILITY_COST);
+      const amountFromReserve = Math.min(properties.hpReserve, INVINCIBILITY_COST);
 
-      player.hpReserve -= amountFromReserve;
-      player.hp -= INVINCIBILITY_COST - amountFromReserve;
+      properties.hpReserve -= amountFromReserve;
+      properties.hp -= INVINCIBILITY_COST - amountFromReserve;
     }
 
-    const activeBuff = player.buffs.find((buff) => buff.type === type);
-
-    if (activeBuff) {
-      activeBuff.endsAt = endsAt;
-
-      return activeBuff;
-    }
-
-    const newBuff: Buff = {
-      type,
-      endsAt,
-    };
-
-    player.buffs.push(newBuff);
-
-    return newBuff;
+    return [...player.buffs].find((buff) => buff.type === type) ?? null;
   }
 
-  canPlayerPassCell(player: SharedPlayer, cell: SharedCell<MapObject> | undefined): boolean {
-    return Boolean(cell?.objects.every((object) => player.buffs.some(isSuperSpeed) || this.isPassableObject(object)));
+  canPlayerPassCell(player: SharedPlayer<Buff>, cell: SharedCell<MapObject> | undefined): boolean {
+    return Boolean(
+      cell?.objects.every((object) => [...player.buffs].some(isSuperSpeed) || this.isPassableObject(object)),
+    );
   }
 
   consumePlayerBonus(playerIndex: number, bonus: SharedBonus): void {
     const player = this.players[playerIndex];
+    const { properties } = player;
 
     if (bonus.type === BonusType.SPEED) {
-      if (player.speed >= MAX_SPEED) {
-        player.speedReserve++;
+      if (properties.speed >= MAX_SPEED) {
+        properties.speedReserve++;
       } else {
-        player.speed++;
+        properties.speed++;
       }
     } else if (bonus.type === BonusType.BOMB_COUNT) {
-      if (player.maxBombCount >= MAX_BOMB_COUNT) {
-        player.maxBombCountReserve++;
+      if (properties.maxBombCount >= MAX_BOMB_COUNT) {
+        properties.maxBombCountReserve++;
       } else {
-        player.maxBombCount++;
+        properties.maxBombCount++;
       }
     } else if (bonus.type === BonusType.BOMB_RANGE) {
-      if (player.bombRange >= MAX_BOMB_RANGE) {
-        player.bombRangeReserve++;
+      if (properties.bombRange >= MAX_BOMB_RANGE) {
+        properties.bombRangeReserve++;
       } else {
-        player.bombRange++;
+        properties.bombRange++;
       }
     } else if (bonus.type === BonusType.HP) {
-      if (player.hp >= MAX_HP) {
-        player.hpReserve++;
+      if (properties.hp >= MAX_HP) {
+        properties.hpReserve++;
       } else {
-        player.hp++;
+        properties.hp++;
       }
     }
   }
 
   deactivatePlayerBuff(playerIndex: number, type: BuffType): void {
     const player = this.players[playerIndex];
+    const buff = [...player.buffs].find((buff) => buff.type === type);
 
-    player.buffs = player.buffs.filter((buff) => buff.type !== type);
+    if (buff) {
+      this.deactivatePlayerBuffCallback(buff, playerIndex);
+    }
   }
 
   getCell(coords: Coords): SharedCell<MapObject> | undefined {
@@ -179,7 +168,7 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     return this.map.at(coords.y)?.at(coords.x);
   }
 
-  getClosestCell(player: SharedPlayer, direction: Direction): ClosestCellInfo<MapObject> {
+  getClosestCell(player: SharedPlayer<Buff>, direction: Direction): ClosestCellInfo<MapObject> {
     if (direction === Direction.DOWN) {
       const bottom = player.coords.y + BOMBER_CELL_SIZE / 2;
 
@@ -215,7 +204,7 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     };
   }
 
-  getClosestOrBehindCell(player: SharedPlayer, direction: Direction): ClosestCellInfo<MapObject> {
+  getClosestOrBehindCell(player: SharedPlayer<Buff>, direction: Direction): ClosestCellInfo<MapObject> {
     const closestCellInfo = this.getClosestCell(player, direction);
     const canPass = this.canPlayerPassCell(player, closestCellInfo.cell);
 
@@ -229,7 +218,7 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     };
   }
 
-  getClosestPlayerLine(player: SharedPlayer, line: Line): ClosestLineInfo | null {
+  getClosestPlayerLine(player: SharedPlayer<Buff>, line: Line): ClosestLineInfo | null {
     const coord = line === Line.VERTICAL ? player.coords.x : player.coords.y;
     const closestLine = Math.floor(coord) + 0.5;
     const distance = Math.abs(coord - closestLine);
@@ -240,11 +229,11 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     };
   }
 
-  getDesiredPlayerLine(player: SharedPlayer): Line {
+  getDesiredPlayerLine(player: SharedPlayer<Buff>): Line {
     return getDirectionLine(player.direction);
   }
 
-  getPlayerLine(player: SharedPlayer): Line {
+  getPlayerLine(player: SharedPlayer<Buff>): Line {
     const isOnVertical = isFloatZero(player.coords.x % 0.5);
     const isOnHorizontal = isFloatZero(player.coords.y % 0.5);
 
@@ -259,32 +248,35 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     return isOnVertical ? Line.VERTICAL : Line.HORIZONTAL;
   }
 
-  getPlayerSpeed(player: SharedPlayer): number {
-    return player.buffs.some(isSuperSpeed) ? SUPER_SPEED : player.speed;
+  getPlayerSpeed(player: SharedPlayer<Buff>): number {
+    return [...player.buffs].some(isSuperSpeed) ? SUPER_SPEED : player.properties.speed;
   }
 
   healPlayer(playerIndex: number): boolean {
     const player = this.players[playerIndex];
+    const { properties } = player;
 
-    if (!player.hpReserve || player.hp === MAX_HP) {
+    if (!properties.hpReserve || properties.hp === MAX_HP) {
       return false;
     }
 
-    player.hpReserve = 0;
-    player.hp++;
+    properties.hpReserve = 0;
+    properties.hp++;
 
     return true;
   }
 
-  movePlayer(playerIndex: number, timePassed: number): MovePlayerResult {
-    if (timePassed <= 0) {
+  movePlayer(playerIndex: number): MovePlayerResult {
+    const player = this.players[playerIndex];
+    const { startMovingTimestamp } = player;
+
+    if (!startMovingTimestamp || startMovingTimestamp.timePassed <= 0) {
       return { distanceLeft: 0, distanceWalked: 0 };
     }
 
-    const player = this.players[playerIndex];
-
     const desiredLine = this.getDesiredPlayerLine(player);
-    let distanceLeft = ((CELLS_PER_SECOND + this.getPlayerSpeed(player) * SPEED_INCREMENT) * timePassed) / SECOND;
+    let distanceLeft =
+      ((CELLS_PER_SECOND + this.getPlayerSpeed(player) * SPEED_INCREMENT) * startMovingTimestamp.timePassed) / SECOND;
     let distanceWalked = 0;
     let movingDirection = player.direction;
 
@@ -349,7 +341,7 @@ export default class SharedDataManager<MapObject extends MapObjectWithId> {
     };
   }
 
-  movePlayerDistance(player: SharedPlayer, distance: number, direction: Direction): void {
+  movePlayerDistance(player: SharedPlayer<Buff>, distance: number, direction: Direction): void {
     if (direction === Direction.UP) {
       player.coords.y -= distance;
     } else if (direction === Direction.DOWN) {

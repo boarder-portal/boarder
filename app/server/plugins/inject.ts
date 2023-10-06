@@ -1,0 +1,1 @@
+globalThis.SERVER = true;

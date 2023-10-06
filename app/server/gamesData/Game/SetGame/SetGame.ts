@@ -23,9 +23,9 @@ import {
   PlayerData,
 } from 'common/types/games/set';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { findSet, isSet } from 'common/utilities/games/set/set';
 import { isDefined } from 'common/utilities/is';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 export default class SetGame extends GameEntity<GameType.SET> {

@@ -19,6 +19,7 @@ import {
 import { Card, CardType } from 'common/types/games/sevenWonders/cards';
 import { Effect, FreeCardPeriodType, FreeCardSourceType } from 'common/types/games/sevenWonders/effects';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
 import { getWaitingBuildEffect } from 'common/utilities/games/sevenWonders/getWaitingBuildEffect';
 import {
@@ -30,7 +31,6 @@ import {
   isVictoryTokensCoinPassiveEffect,
 } from 'common/utilities/games/sevenWonders/isEffect';
 import rotateObjects from 'common/utilities/rotateObjects';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
@@ -45,7 +45,10 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
 
   age: number;
   phase = AgePhaseType.RECRUIT_LEADERS;
-  playersData: AgePlayerData[];
+  playersData: AgePlayerData[] = this.getPlayersData(() => ({
+    hand: [],
+    buildEffects: [],
+  }));
 
   turn: Turn | null = null;
 
@@ -54,13 +57,11 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
 
     this.game = game;
     this.age = options.age;
-    this.playersData = this.getPlayersData(() => ({
-      hand: [],
-      buildEffects: [],
-    }));
   }
 
   *lifecycle(): EntityGenerator {
+    const { includeLeaders } = this.options;
+
     this.forEachPlayer((playerIndex) => {
       this.playersData[playerIndex].buildEffects = this.game
         .getAllPlayerEffects(playerIndex)
@@ -68,18 +69,16 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
         .filter((effect) => effect.period !== FreeCardPeriodType.NOW);
     });
 
-    if (this.options.includeLeaders) {
-      this.turn = this.spawnEntity(
-        new Turn(this.game, {
-          startingWaitingAction: WaitingActionType.RECRUIT_LEADER,
-          executeActions: this.executePlayersActions,
-          getWaitingActions: this.getWaitingActions,
-        }),
-      );
+    if (includeLeaders) {
+      this.turn = new Turn(this.game, {
+        startingWaitingAction: WaitingActionType.RECRUIT_LEADER,
+        executeActions: this.executePlayersActions,
+        getWaitingActions: this.getWaitingActions,
+      });
 
       this.game.sendGameInfo();
 
-      this.withdrawPlayersCoins(yield* this.turn);
+      this.withdrawPlayersCoins(yield* this.waitForEntity(this.turn));
     }
 
     this.game.sendGameInfo();
@@ -94,7 +93,7 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
 
     let ageCards = CARDS_BY_AGE[this.age];
 
-    if (!this.options.includeLeaders) {
+    if (!includeLeaders) {
       ageCards = ageCards.filter(({ fromLeadersExtension }) => !fromLeadersExtension);
     }
 
@@ -119,17 +118,15 @@ export default class Age extends ServerEntity<GameType.SEVEN_WONDERS> {
     });
 
     while (!this.isLastTurn()) {
-      this.turn = this.spawnEntity(
-        new Turn(this.game, {
-          startingWaitingAction: WaitingActionType.BUILD_CARD,
-          executeActions: this.executePlayersActions,
-          getWaitingActions: this.getWaitingActions,
-        }),
-      );
+      this.turn = new Turn(this.game, {
+        startingWaitingAction: WaitingActionType.BUILD_CARD,
+        executeActions: this.executePlayersActions,
+        getWaitingActions: this.getWaitingActions,
+      });
 
       this.game.sendGameInfo();
 
-      this.withdrawPlayersCoins(yield* this.turn);
+      this.withdrawPlayersCoins(yield* this.waitForEntity(this.turn));
 
       const newHands = rotateObjects(
         this.playersData.map(({ hand }) => hand),

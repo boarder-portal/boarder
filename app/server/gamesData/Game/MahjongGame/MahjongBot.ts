@@ -3,9 +3,9 @@ import random from 'lodash/random';
 import { GameType } from 'common/types/game';
 import { GameClientEventType, Player } from 'common/types/games/mahjong';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { getRandomIndex } from 'common/utilities/random';
 import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 
 export default class MahjongBot extends BotEntity<GameType.MAHJONG> {
   *lifecycle(): EntityGenerator {

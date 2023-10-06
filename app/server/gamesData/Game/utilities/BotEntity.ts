@@ -1,7 +1,7 @@
 import { GameInfo, GameType } from 'common/types/game';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import ClientEntity from 'server/gamesData/Game/utilities/ClientEntity';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
 import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
 
 export interface BotOptions {

@@ -23,6 +23,7 @@ import {
   Tile,
 } from 'common/types/games/mahjong';
 
+import { EntityGenerator } from 'common/utilities/Entity';
 import { moveElement } from 'common/utilities/array';
 import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
 import { getHandMahjong } from 'common/utilities/games/mahjong/scoring';
@@ -36,8 +37,8 @@ import {
   isEqualTilesCallback,
 } from 'common/utilities/games/mahjong/tiles';
 import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
-import { EntityGenerator } from 'server/gamesData/Game/utilities/Entity';
-import TurnEntity from 'server/gamesData/Game/utilities/TurnEntity';
+import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import TurnController from 'server/gamesData/Game/utilities/TurnController';
 
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
@@ -55,7 +56,7 @@ export interface HandMahjongOptions {
   isRobbingKong: boolean;
 }
 
-export default class Hand extends TurnEntity<GameType.MAHJONG> {
+export default class Hand extends ServerEntity<GameType.MAHJONG> {
   game: MahjongGame;
   round: Round;
 
@@ -68,6 +69,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     discard: [],
     readyForNewHand: false,
   }));
+  turnController: TurnController<HandPlayerData>;
   wall: Tile[] = [];
   needToDrawTile = true;
   isReplacementTile = false;
@@ -77,13 +79,21 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
   finishTrigger = this.createTrigger();
 
   constructor(round: Round, options: HandOptions) {
-    super(round, {
-      activePlayerIndex: options.startPlayerIndex,
-    });
+    super(round);
 
     this.game = round.game;
     this.round = round;
     this.isLastInGame = options.isLastInGame;
+    this.turnController = new TurnController({
+      players: this.playersData,
+      startPlayerIndex: options.startPlayerIndex,
+      getNextPlayerIndex: (playerIndex): number => {
+        const playerWindIndex = ALL_WINDS.indexOf(this.round.playersData[playerIndex].wind);
+        const nextPlayerWind = ALL_WINDS.at(playerWindIndex + 1 - ALL_WINDS.length);
+
+        return this.round.playersData.findIndex(({ wind }) => wind === nextPlayerWind);
+      },
+    });
   }
 
   *lifecycle(): EntityGenerator {
@@ -101,21 +111,22 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     this.spawnTask(this.listenForEvents());
 
     for (let i = 0; i < this.playersCount; i++) {
-      const playerSettings = this.getPlayerSettings(this.activePlayerIndex);
-      const { hand } = this.playersData[this.activePlayerIndex];
+      const { activePlayerIndex } = this.turnController;
+      const playerSettings = this.getPlayerSettings(activePlayerIndex);
+      const { hand } = this.turnController.getActivePlayer();
 
       if (!playerSettings.autoReplaceFlowers) {
         while (hand.some(isFlower)) {
           const { type, value } = yield* this.race({
-            declare: this.waitForPlayerSocketEvent(GameClientEventType.DECLARE, {
-              playerIndex: this.activePlayerIndex,
+            declare: this.waitForActivePlayerSocketEvent(GameClientEventType.DECLARE, {
+              turnController: this.turnController,
             }),
-            settingsChange: this.game.waitForPlayerSettingChange(this.activePlayerIndex),
+            settingsChange: this.game.waitForPlayerSettingChange(activePlayerIndex),
           });
 
           if (type === 'settingsChange') {
             if (value.key === 'autoReplaceFlowers' && value.value) {
-              this.replaceFlowers(this.activePlayerIndex);
+              this.replaceFlowers();
 
               this.game.sendGameInfo();
 
@@ -135,13 +146,13 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
             continue;
           }
 
-          this.replaceFlower(this.activePlayerIndex, declared.flower);
+          this.replaceFlower(declared.flower);
 
           this.game.sendGameInfo();
         }
       }
 
-      this.passTurn();
+      this.turnController.passTurn();
     }
 
     this.phase = HandPhase.PLAY;
@@ -157,40 +168,37 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
       let addedTileIndex = -1;
 
       if (this.needToDrawTile) {
-        const { lastAddedTile } = this.addTilesToPlayerHand(this.activePlayerIndex);
+        const { lastAddedTile } = this.addTilesToPlayerHand(this.turnController.activePlayerIndex);
 
         if (!lastAddedTile) {
           break;
         }
 
         addedTile = lastAddedTile;
-        addedTileIndex = this.playersData[this.activePlayerIndex].hand.findLastIndex(isEqualTilesCallback(addedTile));
+        addedTileIndex = this.turnController.getActivePlayer().hand.findLastIndex(isEqualTilesCallback(addedTile));
       }
 
-      this.turn = this.spawnEntity(
-        new Turn(this, {
-          activePlayerIndex: this.activePlayerIndex,
-          currentTile: addedTile,
-          currentTileIndex: addedTileIndex,
-          isReplacementTile: this.isReplacementTile,
-        }),
-      );
+      this.turn = new Turn(this, {
+        currentTile: addedTile,
+        currentTileIndex: addedTileIndex,
+        isReplacementTile: this.isReplacementTile,
+      });
 
       this.game.sendGameInfo();
 
-      const result = yield* this.turn;
+      const result = yield* this.waitForEntity(this.turn);
 
       if (!result) {
         this.needToDrawTile = true;
 
-        this.passTurn();
+        this.turnController.passTurn();
 
         continue;
       }
 
       if (result.type === 'steal') {
         this.needToDrawTile = false;
-        this.activePlayerIndex = result.nextTurn;
+        this.turnController.activePlayerIndex = result.nextTurn;
         this.isReplacementTile = result.isReplacementTile;
 
         continue;
@@ -213,7 +221,8 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
       break;
     }
 
-    this.activePlayerIndex = -1;
+    this.turnController.turnOff();
+
     this.turn = null;
 
     this.finishTrigger.activate();
@@ -232,20 +241,20 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     }
   }
 
-  addConcealedKong(playerIndex: number, set: ConcealedSet<KongSet>): void {
-    const { hand, declaredSets } = this.playersData[playerIndex];
+  addConcealedKong(set: ConcealedSet<KongSet>): void {
+    const activePlayer = this.turnController.getActivePlayer();
     const kongTile = getSetTile(set);
 
-    this.playersData[playerIndex].hand = hand.filter((tile) => !isEqualTiles(tile, kongTile));
+    activePlayer.hand = activePlayer.hand.filter((tile) => !isEqualTiles(tile, kongTile));
 
-    declaredSets.push({
+    activePlayer.declaredSets.push({
       set,
       stolenFrom: null,
       stolenTileIndex: -1,
     });
   }
 
-  addMeldedSet(playerIndex: number, set: MeldedSet, stolenFrom: number, stolenTile: PlayableTile): void {
+  addMeldedSet(playerIndex: number, set: MeldedSet, stolenTile: PlayableTile): void {
     const { hand, declaredSets } = this.playersData[playerIndex];
     const stolenTileIndex = set.tiles.findIndex(isEqualTilesCallback(stolenTile));
 
@@ -265,7 +274,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
 
     declaredSets.push({
       set,
-      stolenFrom,
+      stolenFrom: this.turnController.activePlayerIndex,
       stolenTileIndex: set.tiles.findIndex(isEqualTilesCallback(stolenTile)),
     });
   }
@@ -319,12 +328,12 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     this.game.sendGameInfo();
   }
 
-  discardTile(playerIndex: number, tile: Tile): void {
-    this.playersData[playerIndex].discard.push(tile);
+  discardTile(tile: Tile): void {
+    this.turnController.getActivePlayer().discard.push(tile);
   }
 
-  downgradeToPung(playerIndex: number, kong: MeldedSet<KongSet>): void {
-    const { declaredSets } = this.playersData[playerIndex];
+  downgradeToPung(kong: MeldedSet<KongSet>): void {
+    const { declaredSets } = this.turnController.getActivePlayer();
 
     const meldedKongIndex = declaredSets.findIndex(({ set }) => isEqualSets(set, kong));
 
@@ -353,19 +362,15 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     return this.wall.pop() ?? null;
   }
 
-  getNextPlayerIndex(playerIndex = this.activePlayerIndex): number {
-    const playerWindIndex = ALL_WINDS.indexOf(this.round.playersData[playerIndex].wind);
-    const nextPlayerWind = ALL_WINDS.at(playerWindIndex + 1 - ALL_WINDS.length);
-
-    return this.round.playersData.findIndex(({ wind }) => wind === nextPlayerWind);
-  }
-
   getPlayerMahjong(playerIndex: number, options: HandMahjongOptions): HandMahjong | null {
     const { hand, declaredSets, flowers } = this.playersData[playerIndex];
 
     return getHandMahjong({
       ...options,
-      hand: playerIndex === this.activePlayerIndex ? getHandWithoutTile(hand, options.winningTile) : [...hand],
+      hand:
+        playerIndex === this.turnController.activePlayerIndex
+          ? getHandWithoutTile(hand, options.winningTile)
+          : [...hand],
       declaredSets: declaredSets.map(({ set }) => set),
       flowers,
       seatWind: this.round.playersData[playerIndex].wind,
@@ -393,17 +398,18 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     ]);
   }
 
-  removeTileFromDiscard(playerIndex: number): void {
-    this.playersData[playerIndex].discard.pop();
+  removeTileFromDiscard(): void {
+    this.turnController.getActivePlayer().discard.pop();
   }
 
-  removeTileFromHand(playerIndex: number, index: number): Tile | null {
-    return this.playersData[playerIndex].hand.splice(index, 1).at(0) ?? null;
+  removeTileFromHand(index: number): Tile | null {
+    return this.turnController.getActivePlayer().hand.splice(index, 1).at(0) ?? null;
   }
 
-  replaceFlower(playerIndex: number, flower: FlowerTile): Tile | null {
-    const playerSettings = this.getPlayerSettings(playerIndex);
-    const { hand, flowers } = this.playersData[playerIndex];
+  replaceFlower(flower: FlowerTile): Tile | null {
+    const { activePlayerIndex } = this.turnController;
+    const playerSettings = this.getPlayerSettings(activePlayerIndex);
+    const { hand, flowers } = this.turnController.getActivePlayer();
     let tile: Tile | null = null;
     let currentFlower = flower;
 
@@ -414,7 +420,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
         return null;
       }
 
-      this.removeTileFromHand(playerIndex, tileIndex);
+      this.removeTileFromHand(tileIndex);
 
       flowers.push(currentFlower);
 
@@ -424,7 +430,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
         break;
       }
 
-      this.addTileToPlayerHand(playerIndex, tile);
+      this.addTileToPlayerHand(activePlayerIndex, tile);
 
       if (!isFlower(tile) || !playerSettings.autoReplaceFlowers) {
         break;
@@ -436,8 +442,8 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     return tile;
   }
 
-  replaceFlowers(playerIndex: number): { replaced: boolean; tile: Tile | null } {
-    const flowers = this.playersData[playerIndex].hand.filter(isFlower);
+  replaceFlowers(): { replaced: boolean; tile: Tile | null } {
+    const flowers = this.turnController.getActivePlayer().hand.filter(isFlower);
 
     if (!flowers.length) {
       return {
@@ -450,7 +456,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     let replaced = false;
 
     for (const flower of flowers) {
-      tile = this.replaceFlower(playerIndex, flower);
+      tile = this.replaceFlower(flower);
       replaced = replaced || Boolean(tile);
     }
 
@@ -468,7 +474,7 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
 
   toJSON(): HandModel {
     return {
-      activePlayerIndex: this.activePlayerIndex,
+      activePlayerIndex: this.turnController.activePlayerIndex,
       tilesLeft: this.wall.length,
       isLastInGame: this.isLastInGame,
       phase: this.phase,
@@ -476,8 +482,8 @@ export default class Hand extends TurnEntity<GameType.MAHJONG> {
     };
   }
 
-  upgradeToKong(playerIndex: number, kong: MeldedSet<KongSet>): PlayableTile | null {
-    const { hand, declaredSets } = this.playersData[playerIndex];
+  upgradeToKong(kong: MeldedSet<KongSet>): PlayableTile | null {
+    const { hand, declaredSets } = this.turnController.getActivePlayer();
     const kongTile = getSetTile(kong);
 
     const meldedPungIndex = declaredSets.findIndex(({ set }) => isPung(set) && isEqualTiles(kongTile, getSetTile(set)));
