@@ -14,7 +14,7 @@ import addImport from './addImport';
 import modifyFile from './modifyFile';
 import shortenImport from './shortenImport';
 
-const FILE_PATH = path.resolve('./app/server/gamesData/Game/Game.ts');
+const FILE_PATH = path.resolve('./app/server/gamesData/Game/utilities/RootEntity.ts');
 
 export default async function addGameEntity(options: GenerateOptions): Promise<void> {
   await modifyFile(FILE_PATH, (path) => {

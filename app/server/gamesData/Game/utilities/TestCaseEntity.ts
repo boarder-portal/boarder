@@ -1,9 +1,8 @@
 import { GameEventData, GameEventType, GameType } from 'common/types/game';
 
 import { EntityGenerator } from 'common/utilities/Entity';
+import { GameEntity } from 'server/gamesData/Game/utilities/RootEntity';
 import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-
-import { GameEntity } from 'server/gamesData/Game/Game';
 
 export interface TestCaseConstructor<Game extends GameType> {
   new (game: GameEntity<Game>): TestCaseEntity<Game>;

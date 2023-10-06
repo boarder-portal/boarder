@@ -33,7 +33,6 @@ import { GameNamespace, GameServerSocket } from 'common/types/socket';
 import { areBotsAvailable } from 'common/utilities/bots';
 import { now } from 'common/utilities/time';
 import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import BaseGameEntity from 'server/gamesData/Game/utilities/GameEntity';
 import RootEntity from 'server/gamesData/Game/utilities/RootEntity';
 import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
 import { removeNamespace } from 'server/utilities/io';
@@ -45,17 +44,6 @@ import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
 import OnitamaBot from 'server/gamesData/Game/OnitamaGame/OnitamaBot';
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
-import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
-import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
-import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
-import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
-import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
-import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
-import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
-import RedSevenGame from 'server/gamesData/Game/RedSevenGame/RedSevenGame';
-import SetGame from 'server/gamesData/Game/SetGame/SetGame';
-import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
-import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 import ioInstance from 'server/io';
 import { ioSessionMiddleware } from 'server/middlewares/session';
 
@@ -86,22 +74,6 @@ export interface SendSocketEventOptions<Game extends GameType> {
   socket?: GameServerSocket<Game>;
   batch?: boolean;
 }
-
-export type GameEntity<Game extends GameType> = InstanceType<typeof GAME_ENTITIES_MAP[Game]> & BaseGameEntity<Game>;
-
-const GAME_ENTITIES_MAP = {
-  [GameType.PEXESO]: PexesoGame,
-  [GameType.SURVIVAL_ONLINE]: SurvivalOnlineGame,
-  [GameType.SET]: SetGame,
-  [GameType.ONITAMA]: OnitamaGame,
-  [GameType.CARCASSONNE]: CarcassonneGame,
-  [GameType.SEVEN_WONDERS]: SevenWondersGame,
-  [GameType.HEARTS]: HeartsGame,
-  [GameType.BOMBERS]: BombersGame,
-  [GameType.MACHI_KORO]: MachiKoroGame,
-  [GameType.MAHJONG]: MahjongGame,
-  [GameType.RED_SEVEN]: RedSevenGame,
-};
 
 export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstructor<Game> } = {
   [GameType.ONITAMA]: OnitamaBot,
