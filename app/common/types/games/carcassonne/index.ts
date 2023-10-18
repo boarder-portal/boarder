@@ -10,6 +10,8 @@ import {
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
+import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
+
 export enum GameClientEventType {
   ATTACH_CARD = 'ATTACH_CARD',
 }
@@ -180,11 +182,17 @@ export type GameResult = void;
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
-export enum TestCaseType {}
+export enum TestCaseType {
+  SHORT_DECK = 'SHORT_DECK',
+}
 
-export enum GameEventType {}
+export enum GameEventType {
+  GAME_STARTED = 'GAME_STARTED',
+}
 
-export interface GameEventMap extends CommonGameEventMap<GameType.CARCASSONNE> {}
+export interface GameEventMap extends CommonGameEventMap<GameType.CARCASSONNE> {
+  [GameEventType.GAME_STARTED]: CarcassonneGame;
+}
 
 export interface Turn {
   endsAt: Timestamp;

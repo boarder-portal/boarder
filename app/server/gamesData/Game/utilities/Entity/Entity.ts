@@ -495,18 +495,18 @@ export default abstract class Entity<Result = unknown> {
     }
   }
 
-  getClosestComponent<Constructor extends EntityComponentConstructor<this>>(
+  getClosestComponent<Constructor extends EntityComponentConstructor>(
     constructor: Constructor,
   ): InstanceType<Constructor>;
-  getClosestComponent<Constructor extends EntityComponentConstructor<this>>(
+  getClosestComponent<Constructor extends EntityComponentConstructor>(
     constructor: Constructor,
     options: { throwOnNone: true },
   ): InstanceType<Constructor>;
-  getClosestComponent<Constructor extends EntityComponentConstructor<this>>(
+  getClosestComponent<Constructor extends EntityComponentConstructor>(
     constructor: Constructor,
     options: GetClosestComponentOptions,
   ): InstanceType<Constructor> | null;
-  getClosestComponent<Constructor extends EntityComponentConstructor<this>>(
+  getClosestComponent<Constructor extends EntityComponentConstructor>(
     constructor: Constructor,
     options: GetClosestComponentOptions = {},
   ): InstanceType<Constructor> | null {

@@ -69,7 +69,7 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
 
     this.context = options.context;
 
-    this.addComponent(TestCase);
+    this.addComponent(TestCase<Game, this>);
   }
 
   *lifecycle(): EntityGenerator<GameResult<Game>> {

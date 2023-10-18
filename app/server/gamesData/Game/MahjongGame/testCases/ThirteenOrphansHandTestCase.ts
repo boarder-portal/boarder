@@ -7,7 +7,7 @@ import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo
 import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 
 export default class ThirteenOrphansHandTestCase extends Entity {
-  testCase = this.getClosestComponent(TestCase<GameType.MAHJONG, this>);
+  testCase = this.getClosestComponent(TestCase<GameType.MAHJONG>);
 
   gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
 

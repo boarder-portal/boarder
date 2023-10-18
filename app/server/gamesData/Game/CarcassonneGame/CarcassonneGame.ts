@@ -16,6 +16,7 @@ import {
   CityGoodsType,
   Game,
   GameCard,
+  GameEventType,
   GameObject,
   GameResult,
   MeepleType,
@@ -42,6 +43,7 @@ import {
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
@@ -66,11 +68,13 @@ interface AttachPlayerCardOptions {
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
 export default class CarcassonneGame extends Entity<GameResult> {
+  testCase = this.getClosestComponent(TestCase<GameType.CARCASSONNE>);
+
   turnController = this.addComponent(TurnController, {
     isPlayerInPlay: this.canPlayAnyCards,
   });
   time = this.addComponent(Time, {
-    isPauseAvailable: () => this.gameInfo.options.withTimer,
+    isPauseAvailable: this.isTimerGame,
   });
   gameInfo = this.obtainComponent(GameInfo<GameType.CARCASSONNE, this>);
   server = this.obtainComponent(Server<GameType.CARCASSONNE, this>);
@@ -106,7 +110,11 @@ export default class CarcassonneGame extends Entity<GameResult> {
   turn: Turn | null = null;
 
   *lifecycle(): EntityGenerator<GameResult> {
-    this.spawnTask(this.server.pingIndefinitely(15 * SECOND));
+    this.testCase.dispatchGameEvent(GameEventType.GAME_STARTED, this);
+
+    if (this.isTimerGame()) {
+      this.spawnTask(this.server.pingIndefinitely(15 * SECOND));
+    }
 
     this.attachCard({
       card: ALL_CARDS[0],
@@ -534,6 +542,10 @@ export default class CarcassonneGame extends Entity<GameResult> {
       (count, { type }) => count + (type === MeepleType.COMMON ? 1 : type === MeepleType.FAT ? 2 : 0),
       0,
     );
+  }
+
+  isTimerGame(): boolean {
+    return this.gameInfo.options.withTimer;
   }
 
   mergeCardObject(targetObject: GameObject, mergedObject: CardObject): void {

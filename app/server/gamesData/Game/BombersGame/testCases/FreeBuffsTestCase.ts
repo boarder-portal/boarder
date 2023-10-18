@@ -2,13 +2,10 @@ import { GameType } from 'common/types/game';
 import { BuffType, GameEventType } from 'common/types/games/bombers';
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
-import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 
 export default class FreeBuffsTestCase extends Entity {
-  testCase = this.getClosestComponent(TestCase<GameType.BOMBERS, this>);
-
-  gameInfo = this.obtainComponent(GameInfo<GameType.BOMBERS, this>);
+  testCase = this.getClosestComponent(TestCase<GameType.BOMBERS>);
 
   *lifecycle(): EntityGenerator {
     const game = yield* this.testCase.waitForGameEvent(GameEventType.GAME_STARTED);

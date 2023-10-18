@@ -88,7 +88,7 @@ export default class BombersGame extends Entity<GameResult> {
     return object instanceof Wall;
   }
 
-  testCase = this.getClosestComponent(TestCase<GameType.BOMBERS, this>);
+  testCase = this.getClosestComponent(TestCase<GameType.BOMBERS>);
 
   time = this.addComponent(Time<this>, {
     getBoundTimestamps: (): Timestamp[] => [this.startsAt, this.lastExplosionTickTimestamp],

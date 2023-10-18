@@ -62,7 +62,7 @@ export interface HandMahjongOptions {
 export default class Hand extends Entity {
   game = this.getClosestEntity(MahjongGame);
   round = this.getClosestEntity(Round);
-  testCase = this.getClosestComponent(TestCase<GameType.MAHJONG, this>);
+  testCase = this.getClosestComponent(TestCase<GameType.MAHJONG>);
 
   turnController: TurnController;
   gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
