@@ -13,9 +13,11 @@ import {
   Player as PlayerModel,
 } from 'common/types/games/survivalOnline';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getRandomElement } from 'common/utilities/random';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { EntityConstructor, EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import Base from 'server/gamesData/Game/SurvivalOnlineGame/entities/Base';
 import Player from 'server/gamesData/Game/SurvivalOnlineGame/entities/Player';
@@ -65,7 +67,13 @@ const NEW_ZOMBIES_COUNT = Math.round(START_ZOMBIE_COUNT * 0.25);
 const ZOMBIES_MOVE_INTERVAL = 500;
 const ZOMBIES_GENERATE_INTERVAL = 30 * SECOND;
 
-export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONLINE> {
+export default class SurvivalOnlineGame extends Entity<GameResult> {
+  time = this.addComponent(Time<this>, {
+    isPauseAvailable: () => true,
+  });
+  gameInfo = this.obtainComponent(GameInfo<GameType.SURVIVAL_ONLINE, this>);
+  server = this.obtainComponent(Server<GameType.SURVIVAL_ONLINE, this>);
+
   players: Player[] = [];
   map: ServerCell[][] = [];
   base: Base | null = null;
@@ -75,8 +83,8 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     this.generateWorld();
 
     yield* this.all([
-      this.repeatTask(ZOMBIES_MOVE_INTERVAL, this.moveZombies),
-      this.repeatTask(ZOMBIES_GENERATE_INTERVAL, function* () {
+      this.time.repeatTask(ZOMBIES_MOVE_INTERVAL, this.moveZombies),
+      this.time.repeatTask(ZOMBIES_GENERATE_INTERVAL, function* () {
         this.spawnZombies(NEW_ZOMBIES_COUNT);
       }),
     ]);
@@ -98,7 +106,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
 
     const baseCell = this.map[Math.floor(MAP_HEIGHT / 2)][Math.floor(MAP_WIDTH / 2)];
 
-    this.base = this.spawnMapEntity(new Base(this, { cell: baseCell }), baseCell);
+    this.base = this.spawnMapEntity(Base, baseCell, { cell: baseCell });
 
     const cellsAroundBase = [
       this.map[baseCell.y][baseCell.x - 1],
@@ -107,22 +115,19 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
       this.map[baseCell.y + 1][baseCell.x],
     ];
 
-    this.players = this.getPlayersData((playerIndex) => {
+    this.players = this.gameInfo.getPlayersData((playerIndex) => {
       const cell = cellsAroundBase[playerIndex];
 
-      return this.spawnMapEntity(
-        new Player(this, {
-          cell,
-          index: playerIndex,
-        }),
+      return this.spawnMapEntity(Player, cell, {
         cell,
-      );
+        index: playerIndex,
+      });
     });
 
     for (let i = 0; i < START_TREE_COUNT; i++) {
       const cell = this.getRandomFreeCell();
 
-      this.spawnMapEntity(new Tree(this, { cell }), cell);
+      this.spawnMapEntity(Tree, cell, { cell });
     }
 
     this.spawnZombies(START_ZOMBIE_COUNT);
@@ -135,7 +140,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
   }
 
   getGamePlayers(): PlayerModel[] {
-    return this.getPlayersWithData((playerIndex) => this.players[playerIndex].toPlayerData());
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.players[playerIndex].toPlayerData());
   }
 
   getRandomFreeCell(): ServerCell {
@@ -150,10 +155,6 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
     } while (cell.entity);
 
     return cell;
-  }
-
-  isPauseAvailable(): boolean {
-    return true;
   }
 
   moveEntityInDirection<Entity extends MovingObject>(
@@ -205,15 +206,19 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
 
   sendGameUpdate(cells: ServerCell[], withPlayers: boolean): void {
     if (cells.length) {
-      this.sendSocketEvent(GameServerEventType.UPDATE_GAME, {
+      this.server.sendSocketEvent(GameServerEventType.UPDATE_GAME, {
         cells: cells.map(this.transformCell),
         players: withPlayers ? this.getGamePlayers() : null,
       });
     }
   }
 
-  spawnMapEntity<Entity extends MapObject>(entity: Entity, cell: ServerCell): Entity {
-    entity.run();
+  spawnMapEntity<Constructor extends EntityConstructor<MapObject>>(
+    constructor: Constructor,
+    cell: ServerCell,
+    ...args: ConstructorParameters<Constructor>
+  ): InstanceType<Constructor> {
+    const entity = this.spawnEntity(constructor, ...args);
 
     this.placeEntity(entity, cell);
 
@@ -221,7 +226,7 @@ export default class SurvivalOnlineGame extends GameEntity<GameType.SURVIVAL_ONL
   }
 
   *spawnZombie(cell: ServerCellWithEntity<Zombie>): EntityGenerator {
-    const zombie = this.spawnMapEntity(new Zombie(this, { cell }), cell);
+    const zombie = this.spawnMapEntity(Zombie, cell, { cell });
 
     this.zombies.add(zombie);
 

@@ -1,11 +1,11 @@
 import pick from 'lodash/pick';
 
-import { GameType } from 'common/types/game';
 import { Buff as BuffModel, BuffType } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import Player from 'server/gamesData/Game/BombersGame/entities/Player';
 
@@ -14,18 +14,21 @@ export interface BuffOptions {
   endsAt: Timestamp;
 }
 
-export default class Buff extends ServerEntity<GameType.BOMBERS> {
-  player: Player;
+export default class Buff extends Entity {
+  player = this.getClosestEntity(Player);
+
+  time = this.addComponent(Time, {
+    getBoundTimestamps: () => [this.endsAt],
+  });
+  events = this.obtainComponent(Events);
 
   type: BuffType;
   endsAt: Timestamp;
+  postponeEvent = this.events.createEvent<Timestamp>();
 
-  postponeTrigger = this.createTrigger<Timestamp>();
+  constructor(options: BuffOptions) {
+    super();
 
-  constructor(player: Player, options: BuffOptions) {
-    super(player);
-
-    this.player = player;
     this.type = options.type;
     this.endsAt = options.endsAt;
   }
@@ -33,8 +36,8 @@ export default class Buff extends ServerEntity<GameType.BOMBERS> {
   *lifecycle(): EntityGenerator {
     while (true) {
       const { type, value } = yield* this.race({
-        timeout: this.waitForTimestamp(this.endsAt),
-        postpone: this.waitForTrigger(this.postponeTrigger),
+        timeout: this.time.waitForTimestamp(this.endsAt),
+        postpone: this.events.waitForEvent(this.postponeEvent),
       });
 
       if (type === 'timeout') {
@@ -46,7 +49,7 @@ export default class Buff extends ServerEntity<GameType.BOMBERS> {
   }
 
   postpone(endsAt: Timestamp): void {
-    this.postponeTrigger.activate(endsAt);
+    this.postponeEvent.dispatch(endsAt);
   }
 
   toJSON(): BuffModel {

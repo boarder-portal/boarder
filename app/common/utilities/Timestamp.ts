@@ -68,8 +68,8 @@ export default class Timestamp implements TimestampModel {
 
   toJSON(): TimestampModel {
     return {
-      value: this.value,
-      pausedAt: this.pausedAt,
+      value: this.#value,
+      pausedAt: this.#pausedAt,
     };
   }
 

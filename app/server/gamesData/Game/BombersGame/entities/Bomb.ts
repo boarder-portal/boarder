@@ -2,7 +2,6 @@ import mapValues from 'lodash/mapValues';
 
 import { SUPER_BOMB_DAMAGE, SUPER_BOMB_MAX_PIERCED_OBJECTS_COUNT } from 'common/constants/games/bombers';
 
-import { GameType } from 'common/types/game';
 import {
   Bomb as BombModel,
   Direction,
@@ -12,10 +11,11 @@ import {
   ObjectType,
 } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import getDirectionLine from 'common/utilities/games/bombers/getDirectionLine';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Box from 'server/gamesData/Game/BombersGame/entities/Box';
@@ -39,8 +39,13 @@ export interface ExplosionResult {
 
 const ALL_DIRECTIONS = Object.values(Direction);
 
-export default class Bomb extends ServerEntity<GameType.BOMBERS> {
-  game: BombersGame;
+export default class Bomb extends Entity {
+  game = this.getClosestEntity(BombersGame);
+
+  time = this.addComponent(Time, {
+    getBoundTimestamps: () => [this.explodesAt],
+  });
+  events = this.obtainComponent(Events);
 
   id: number;
   cell: ServerCell;
@@ -48,13 +53,11 @@ export default class Bomb extends ServerEntity<GameType.BOMBERS> {
   explodesAt: Timestamp;
   isSuperBomb: boolean;
   isSuperRange: boolean;
+  explodeEvent = this.events.createEvent();
 
-  explodeTrigger = this.createTrigger();
+  constructor(options: BombOptions) {
+    super();
 
-  constructor(game: BombersGame, options: BombOptions) {
-    super(game);
-
-    this.game = game;
     this.id = options.id;
     this.cell = options.cell;
     this.range = options.range;
@@ -64,11 +67,11 @@ export default class Bomb extends ServerEntity<GameType.BOMBERS> {
   }
 
   *lifecycle(): EntityGenerator {
-    yield* this.waitForTrigger(this.explodeTrigger);
+    yield* this.events.waitForEvent(this.explodeEvent);
   }
 
   explode(): ExplosionResult {
-    this.explodeTrigger.activate();
+    this.explodeEvent.dispatch();
 
     const hitPlayers: HitPlayer[] = [];
     const explodedBoxes: Box[] = [];
@@ -153,10 +156,6 @@ export default class Bomb extends ServerEntity<GameType.BOMBERS> {
         end: this.game.getCellCoords(end),
       })),
     };
-  }
-
-  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
-    return [this.explodesAt];
   }
 
   toJSON(): BombModel {

@@ -3,12 +3,11 @@ import shuffle from 'lodash/shuffle';
 import { GameType } from 'common/types/game';
 import { Card, Hand as HandModel, HandPlayerData, Move, MoveType } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getCanvasRule, getRuleCards } from 'common/utilities/games/redSeven/rules';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
-import RedSevenGame from 'server/gamesData/Game/RedSevenGame/RedSevenGame';
 import Turn from 'server/gamesData/Game/RedSevenGame/entities/Turn';
 
 export interface HandOptions {
@@ -20,35 +19,36 @@ export interface HandResult {
   scoreCards: Card[];
 }
 
-export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
-  game: RedSevenGame;
+export default class Hand extends Entity<HandResult> {
+  turnController = this.addComponent(TurnController, {
+    // TODO: pass valid start index
+    isPlayerInPlay: (playerIndex) => this.playersData.get(playerIndex).inPlay,
+  });
+  gameInfo = this.obtainComponent(GameInfo<GameType.RED_SEVEN, this>);
 
-  playersData: HandPlayerData[] = this.getPlayersData(() => ({
-    inPlay: true,
-    hand: [],
-    palette: [],
-  }));
-  turnController = new TurnController({
-    players: this.playersData,
-    isPlayerInPlay: (playerIndex) => this.playersData[playerIndex].inPlay,
+  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+    init: () => ({
+      inPlay: true,
+      hand: [],
+      palette: [],
+    }),
   });
   canvas: Card[] = [];
   deck: Card[];
 
   turn: Turn | null = null;
 
-  constructor(game: RedSevenGame, options: HandOptions) {
-    super(game);
+  constructor(options: HandOptions) {
+    super();
 
-    this.game = game;
     this.deck = options.deck;
   }
 
   *lifecycle(): EntityGenerator<HandResult> {
     this.deck = shuffle(this.deck);
 
-    this.forEachPlayer((playerIndex) => {
-      const playerData = this.playersData[playerIndex];
+    this.gameInfo.forEachPlayer((playerIndex) => {
+      const playerData = this.playersData.get(playerIndex);
 
       playerData.hand = this.deck.splice(-7);
       playerData.palette = this.deck.splice(-1);
@@ -57,7 +57,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     let winnerIndex = -1;
 
     while ((winnerIndex = this.getWinnerIndex()) === -1) {
-      this.turn = new Turn(this);
+      this.turn = this.spawnEntity(Turn);
 
       const inPlay = yield* this.waitForEntity(this.turn);
 
@@ -66,7 +66,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
         // TODO: special modal if last player
       }
 
-      this.turnController.getActivePlayer().inPlay = inPlay;
+      this.playersData.getActive().inPlay = inPlay;
 
       this.turnController.passTurn();
     }
@@ -75,7 +75,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
 
     return {
       winnerIndex,
-      scoreCards: getRuleCards(this.playersData[winnerIndex].palette, getCanvasRule(this.canvas)),
+      scoreCards: getRuleCards(this.playersData.get(winnerIndex).palette, getCanvasRule(this.canvas)),
     };
   }
 
@@ -99,7 +99,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
 
   playMove(move: Move): void {
     if (move.type === MoveType.ADD_CARD_TO_PALETTE) {
-      const { hand, palette } = this.turnController.getActivePlayer();
+      const { hand, palette } = this.playersData.getActive();
 
       palette.push(...hand.splice(move.cardIndex, 1));
 
@@ -107,7 +107,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_HAND_TO_CANVAS) {
-      const { hand } = this.turnController.getActivePlayer();
+      const { hand } = this.playersData.getActive();
 
       this.canvas.push(...hand.splice(move.cardIndex, 1));
 
@@ -115,7 +115,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_PALETTE_TO_CANVAS) {
-      const { palette } = this.turnController.getActivePlayer();
+      const { palette } = this.playersData.getActive();
 
       this.canvas.push(...palette.splice(move.cardIndex, 1));
 
@@ -123,7 +123,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_TO_DECK) {
-      const { palette } = this.playersData[move.playerIndex];
+      const { palette } = this.playersData.get(move.playerIndex);
 
       this.deck.push(...palette.splice(move.cardIndex, 1));
     }
@@ -135,7 +135,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_TO_PALETTE) {
-      const { hand, palette } = this.turnController.getActivePlayer();
+      const { hand, palette } = this.playersData.getActive();
 
       hand.splice(move.cardIndex, 0, ...palette.splice(-1));
 
@@ -143,7 +143,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_HAND_TO_CANVAS) {
-      const { hand } = this.turnController.getActivePlayer();
+      const { hand } = this.playersData.getActive();
 
       hand.splice(move.cardIndex, 0, ...this.canvas.splice(-1));
 
@@ -151,7 +151,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_FROM_PALETTE_TO_CANVAS) {
-      const { palette } = this.turnController.getActivePlayer();
+      const { palette } = this.playersData.getActive();
 
       palette.splice(move.cardIndex, 0, ...this.canvas.splice(-1));
 
@@ -159,7 +159,7 @@ export default class Hand extends ServerEntity<GameType.RED_SEVEN, HandResult> {
     }
 
     if (move.type === MoveType.ADD_CARD_TO_DECK) {
-      const { palette } = this.playersData[move.playerIndex];
+      const { palette } = this.playersData.get(move.playerIndex);
 
       palette.splice(move.cardIndex, 0, ...this.deck.splice(-1));
 

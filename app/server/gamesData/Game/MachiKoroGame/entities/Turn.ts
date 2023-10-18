@@ -17,10 +17,11 @@ import {
   Turn as TurnModel,
 } from 'common/types/games/machiKoro';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getCard from 'common/utilities/games/machiKoro/getCard';
 import getLandmark from 'common/utilities/games/machiKoro/getLandmark';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
 
@@ -56,21 +57,20 @@ function getShopsAndRestaurantIncreasedIncome(player: PlayerData): number {
   return withShoppingMall ? 1 : 0;
 }
 
-export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
-  game: MachiKoroGame;
+export default class Turn extends Entity {
+  game = this.getClosestEntity(MachiKoroGame);
+
+  gameInfo = this.obtainComponent(GameInfo<GameType.MACHI_KORO, this>);
+  server = this.obtainComponent(Server<GameType.MACHI_KORO, this>);
 
   dices: number[] = [];
   withHarborEffect = false;
   waitingAction: PlayerWaitingActionType | null = null;
-
-  constructor(game: MachiKoroGame) {
-    super(game);
-
-    this.game = game;
-  }
+  turnController = this.game.turnController;
+  gamePlayersData = this.game.playersData;
 
   *lifecycle(): EntityGenerator {
-    const activePlayer = this.game.turnController.getActivePlayer();
+    const activePlayer = this.gamePlayersData.getActive();
     const withCityHall = activePlayer.landmarksIds.includes(LandmarkId.CITY_HALL);
     const withHarbor = activePlayer.landmarksIds.includes(LandmarkId.HARBOR);
     const withAmusementPark = activePlayer.landmarksIds.includes(LandmarkId.AMUSEMENT_PARK);
@@ -89,16 +89,14 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
         if (withTrainStation) {
           this.setWaitingAction(PlayerWaitingActionType.CHOOSE_DICES_COUNT);
 
-          dicesCount = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.DICES_COUNT, {
-            turnController: this.game.turnController,
-          });
+          dicesCount = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.DICES_COUNT);
 
           this.clearWaitingAction();
         }
 
         this.dices = times(dicesCount, () => random(1, 6));
 
-        this.sendSocketEvent(GameServerEventType.DICES_ROLL, this.dices);
+        this.server.sendSocketEvent(GameServerEventType.DICES_ROLL, this.dices);
 
         if (!canRerollDices) {
           break;
@@ -106,9 +104,7 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
 
         this.setWaitingAction(PlayerWaitingActionType.CHOOSE_NEED_TO_REROLL);
 
-        const needToReroll = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.NEED_TO_REROLL, {
-          turnController: this.game.turnController,
-        });
+        const needToReroll = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.NEED_TO_REROLL);
 
         this.clearWaitingAction();
 
@@ -124,9 +120,9 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
       if (withHarbor && dicesSum >= 10) {
         this.setWaitingAction(PlayerWaitingActionType.CHOOSE_NEED_TO_USE_HARBOR);
 
-        this.withHarborEffect = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.NEED_TO_USE_HARBOR, {
-          turnController: this.game.turnController,
-        });
+        this.withHarborEffect = yield* this.server.waitForActivePlayerSocketEvent(
+          GameClientEventType.NEED_TO_USE_HARBOR,
+        );
 
         this.clearWaitingAction();
 
@@ -134,19 +130,19 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
           dicesSum += 2;
         }
 
-        this.sendSocketEvent(GameServerEventType.HARBOR_EFFECT, this.withHarborEffect);
+        this.server.sendSocketEvent(GameServerEventType.HARBOR_EFFECT, this.withHarborEffect);
       }
 
-      for (let i = 0; i < this.playersCount; i++) {
-        const tempPlayerIndex = this.game.turnController.activePlayerIndex - i - 1;
-        const playerIndex = tempPlayerIndex < 0 ? this.playersCount + tempPlayerIndex : tempPlayerIndex;
-        const player = this.game.playersData[playerIndex];
+      for (let i = 0; i < this.gameInfo.playersCount; i++) {
+        const tempPlayerIndex = this.turnController.activePlayerIndex - i - 1;
+        const playerIndex = tempPlayerIndex < 0 ? this.gameInfo.playersCount + tempPlayerIndex : tempPlayerIndex;
+        const player = this.gamePlayersData.get(playerIndex);
         const cards = getCards(player.cardsIds);
 
         const activatedCards = getActivatedCardsByPriority(
           dicesSum,
           cards,
-          playerIndex === this.game.turnController.activePlayerIndex,
+          playerIndex === this.turnController.activePlayerIndex,
         );
 
         yield* this.runCardsEffects(activatedCards, playerIndex);
@@ -156,20 +152,21 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
         activePlayer.coins = 1;
       }
 
-      this.sendSocketEvent(GameServerEventType.CARDS_EFFECTS_RESULTS, { players: this.game.getGamePlayers() });
+      this.server.sendSocketEvent(GameServerEventType.CARDS_EFFECTS_RESULTS, {
+        players: this.game.getGamePlayers(),
+      });
 
-      const { event, data } = yield* this.waitForActivePlayerSocketEvents(
-        [GameClientEventType.BUILD_CARD, GameClientEventType.BUILD_LANDMARK, GameClientEventType.END_TURN],
-        {
-          turnController: this.game.turnController,
-        },
-      );
+      const { event, data } = yield* this.server.waitForActivePlayerSocketEvents([
+        GameClientEventType.BUILD_CARD,
+        GameClientEventType.BUILD_LANDMARK,
+        GameClientEventType.END_TURN,
+      ]);
 
       if (event === GameClientEventType.END_TURN) {
         if (withAirport) {
           activePlayer.coins += 10;
 
-          this.sendSocketEvent(GameServerEventType.UPDATE_PLAYERS, this.game.getGamePlayers());
+          this.server.sendSocketEvent(GameServerEventType.UPDATE_PLAYERS, this.game.getGamePlayers());
         }
 
         continue;
@@ -183,7 +180,7 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
         activePlayer.coins -= landmark.cost;
         activePlayer.landmarksIds.push(landmarkId);
 
-        this.sendSocketEvent(GameServerEventType.BUILD_LANDMARK, {
+        this.server.sendSocketEvent(GameServerEventType.BUILD_LANDMARK, {
           players: this.game.getGamePlayers(),
         });
 
@@ -203,7 +200,7 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
       activePlayer.coins -= card.cost;
       activePlayer.cardsIds.push(cardId);
 
-      this.sendSocketEvent(GameServerEventType.BUILD_CARD, {
+      this.server.sendSocketEvent(GameServerEventType.BUILD_CARD, {
         players: this.game.getGamePlayers(),
         board: this.game.board,
       });
@@ -215,8 +212,8 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
   }
 
   *runCardsEffects(cards: Card[], playerIndex: number): EntityGenerator {
-    const player = this.game.playersData[playerIndex];
-    const activePlayer = this.game.turnController.getActivePlayer();
+    const player = this.gamePlayersData.get(playerIndex);
+    const activePlayer = this.gamePlayersData.getActive();
 
     const withHarbor = player.landmarksIds.includes(LandmarkId.HARBOR);
     const shopsAndRestaurantIncreasedIncome = getShopsAndRestaurantIncreasedIncome(player);
@@ -289,8 +286,8 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
 
         player.coins += sum([random(1, 6), random(1, 6)]);
       } else if (card.id === CardId.STADIUM) {
-        this.game.playersData.forEach((localPlayer, localPlayerIndex) => {
-          if (localPlayerIndex === this.game.turnController.activePlayerIndex) {
+        this.gamePlayersData.forEach((localPlayer, localPlayerIndex) => {
+          if (localPlayerIndex === this.turnController.activePlayerIndex) {
             return;
           }
 
@@ -302,13 +299,13 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
       } else if (card.id === CardId.TV_STATION) {
         this.setWaitingAction(PlayerWaitingActionType.CHOOSE_PLAYER);
 
-        const selectedPlayerIndex = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.CHOOSE_PLAYER, {
-          turnController: this.game.turnController,
-        });
+        const selectedPlayerIndex = yield* this.server.waitForActivePlayerSocketEvent(
+          GameClientEventType.CHOOSE_PLAYER,
+        );
 
         this.clearWaitingAction();
 
-        const selectedPlayer = this.game.playersData[selectedPlayerIndex];
+        const selectedPlayer = this.gamePlayersData.get(selectedPlayerIndex);
         const coins = Math.min(selectedPlayer.coins, 5);
 
         selectedPlayer.coins -= coins;
@@ -316,13 +313,11 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
       } else if (card.id === CardId.BUSINESS_COMPLEX) {
         this.setWaitingAction(PlayerWaitingActionType.CHOOSE_CARDS_TO_SWAP);
 
-        const { from, toCardId } = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.CARDS_TO_SWAP, {
-          turnController: this.game.turnController,
-        });
+        const { from, toCardId } = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.CARDS_TO_SWAP);
 
         this.clearWaitingAction();
 
-        const fromPlayer = this.game.playersData[from.playerIndex];
+        const fromPlayer = this.gamePlayersData.get(from.playerIndex);
 
         activePlayer.cardsIds.splice(activePlayer.cardsIds.indexOf(toCardId), 1);
         fromPlayer.cardsIds.splice(fromPlayer.cardsIds.indexOf(from.cardId), 1);
@@ -332,14 +327,12 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
       } else if (card.id === CardId.PUBLISHER) {
         this.setWaitingAction(PlayerWaitingActionType.CHOOSE_PUBLISHER_TARGET);
 
-        const publisherTarget = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.PUBLISHER_TARGET, {
-          turnController: this.game.turnController,
-        });
+        const publisherTarget = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.PUBLISHER_TARGET);
 
         this.clearWaitingAction();
 
-        this.game.playersData.forEach((localPlayer, localPlayerIndex) => {
-          if (localPlayerIndex === this.game.turnController.activePlayerIndex) {
+        this.gamePlayersData.forEach((localPlayer, localPlayerIndex) => {
+          if (localPlayerIndex === this.turnController.activePlayerIndex) {
             return;
           }
 
@@ -351,8 +344,8 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
           activePlayer.coins += coins;
         });
       } else if (card.id === CardId.TAX_OFFICE) {
-        this.game.playersData.forEach((localPlayer, localPlayerIndex) => {
-          if (localPlayerIndex === this.game.turnController.activePlayerIndex) {
+        this.gamePlayersData.forEach((localPlayer, localPlayerIndex) => {
+          if (localPlayerIndex === this.turnController.activePlayerIndex) {
             return;
           }
 
@@ -368,7 +361,7 @@ export default class Turn extends ServerEntity<GameType.MACHI_KORO> {
   setWaitingAction(waitingAction: PlayerWaitingActionType | null): void {
     this.waitingAction = waitingAction;
 
-    this.sendSocketEvent(GameServerEventType.WAIT_ACTION, waitingAction);
+    this.server.sendSocketEvent(GameServerEventType.WAIT_ACTION, waitingAction);
   }
 
   toJSON(): TurnModel {

@@ -5,12 +5,7 @@ import times from 'lodash/times';
 import uuid from 'uuid/v4';
 
 import { SECOND } from 'common/constants/date';
-import {
-  BOTS_SUPPORTED_GAMES,
-  DEFAULT_DESTROY_ON_LEAVE,
-  DEFAULT_USE_BOTS,
-  PLAYER_SETTINGS,
-} from 'common/constants/game';
+import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, PLAYER_SETTINGS } from 'common/constants/game';
 
 import { BaseGamePlayer, CommonGameClientEvent, CommonGameServerEvent, PlayerStatus } from 'common/types';
 import {
@@ -26,23 +21,14 @@ import {
   GameStatus,
   GameType,
   PauseReason,
-  TestCaseType,
 } from 'common/types/game';
 import { GameNamespace, GameServerSocket } from 'common/types/socket';
 
 import { areBotsAvailable } from 'common/utilities/bots';
 import { now } from 'common/utilities/time';
-import { BotConstructor } from 'server/gamesData/Game/utilities/BotEntity';
-import RootEntity from 'server/gamesData/Game/utilities/RootEntity';
-import { TestCaseConstructor } from 'server/gamesData/Game/utilities/TestCaseEntity';
+import Entity from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameRoot from 'server/gamesData/Game/utilities/Entity/entities/GameRoot';
 import { removeNamespace } from 'server/utilities/io';
-
-import mahjongTestCases from 'server/gamesData/Game/MahjongGame/testCases';
-
-import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
-import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
-import OnitamaBot from 'server/gamesData/Game/OnitamaGame/OnitamaBot';
-import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
 import ioInstance from 'server/io';
 import { ioSessionMiddleware } from 'server/middlewares/session';
@@ -75,19 +61,6 @@ export interface SendSocketEventOptions<Game extends GameType> {
   batch?: boolean;
 }
 
-export const BOTS: { [Game in typeof BOTS_SUPPORTED_GAMES[number]]: BotConstructor<Game> } = {
-  [GameType.ONITAMA]: OnitamaBot,
-  [GameType.SEVEN_WONDERS]: SevenWondersBot,
-  [GameType.HEARTS]: HeartsBot,
-  [GameType.MAHJONG]: MahjongBot,
-};
-
-export const TEST_CASES: Partial<{
-  [Game in GameType]: Partial<{ [TestCase in TestCaseType<Game>]: TestCaseConstructor<Game> }>;
-}> = {
-  [GameType.MAHJONG]: mahjongTestCases,
-};
-
 const BOT_NAMES = ['Jack', 'Jane', 'Bob', 'Mary', 'David', 'Sue', 'Greg', 'Rachel'];
 
 class Game<Game extends GameType> {
@@ -98,7 +71,7 @@ class Game<Game extends GameType> {
   status: GameStatus = GameStatus.WAITING;
   players: ServerGamePlayer<Game>[];
   options: GameOptions<Game>;
-  rootEntity: RootEntity<Game> | null = null;
+  rootEntity: GameRoot<Game> | null = null;
   result: GameResult<Game> | null = null;
   state: GameState = {
     type: 'active',
@@ -322,16 +295,22 @@ class Game<Game extends GameType> {
     return Boolean(this.rootEntity);
   }
 
-  initRootEntity(): RootEntity<Game> {
-    const entity = new RootEntity({
-      game: this,
+  initRootEntity(): GameRoot<Game> {
+    const entity = Entity.spawnRoot(GameRoot<Game>, {
+      context: {
+        game: this,
+      },
     });
 
-    entity.run(
+    entity.subscribe(
       (result) => this.end(result),
       (err) => {
         if (!this.deleted) {
-          console.log('Error in game', err);
+          console.log(
+            new Error(`Error in ${this.game} game`, {
+              cause: err,
+            }),
+          );
 
           this.delete();
         }
@@ -378,7 +357,7 @@ class Game<Game extends GameType> {
   }
 
   pause(pauseReason: PauseReason): void {
-    if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.rootEntity?.gameEntity?.isPauseAvailable()) {
+    if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.rootEntity?.isPauseAvailable()) {
       return;
     }
 
@@ -399,7 +378,7 @@ class Game<Game extends GameType> {
     const gameData: GameData<Game> = {
       name: this.name,
       options: this.options,
-      info: this.rootEntity?.gameEntity?.getGameInfo() ?? null,
+      info: this.rootEntity?.getGameInfo() ?? null,
       result: this.result,
       players: this.getClientPlayers(),
       timestamp: now(),

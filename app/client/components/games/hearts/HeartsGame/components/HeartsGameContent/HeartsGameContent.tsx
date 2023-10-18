@@ -50,6 +50,7 @@ const HeartsGameContent: FC<GameContentProps<GameType.HEARTS>> = (props) => {
     [io],
   );
 
+  // TODO: across -> arrow up, none -> no arrow
   const directionBlock = useMemo(() => {
     return passDirection === PassDirection.LEFT ? (
       <ArrowLeftIcon className={styles.direction} />

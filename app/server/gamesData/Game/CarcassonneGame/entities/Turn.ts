@@ -1,9 +1,11 @@
 import { GameType } from 'common/types/game';
 import { GameClientEventType, Turn as TurnModel } from 'common/types/games/carcassonne';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
 
@@ -11,38 +13,39 @@ export interface TurnOptions {
   duration: number;
 }
 
-export default class Turn extends ServerEntity<GameType.CARCASSONNE, boolean> {
-  game: CarcassonneGame;
+export default class Turn extends Entity<boolean> {
+  game = this.getClosestEntity(CarcassonneGame);
+
+  time = this.addComponent(Time, {
+    getBoundTimestamps: () => [this.endsAt],
+  });
+  server = this.obtainComponent(Server<GameType.CARCASSONNE, this>);
+  gameInfo = this.obtainComponent(GameInfo<GameType.CARCASSONNE, this>);
 
   endsAt: Timestamp;
   placedAnyCards = false;
 
-  constructor(game: CarcassonneGame, options: TurnOptions) {
-    super(game);
+  constructor(options: TurnOptions) {
+    super();
 
-    this.game = game;
-    this.endsAt = this.createTimestamp(options.duration);
+    this.endsAt = this.time.createTimestamp(options.duration);
   }
 
   *lifecycle(): EntityGenerator<boolean> {
-    yield* this.race([this.options.withTimer ? this.waitForTimestamp(this.endsAt) : null, this.makeMoves()]);
+    yield* this.race([
+      this.gameInfo.options.withTimer ? this.time.waitForTimestamp(this.endsAt) : null,
+      this.makeMoves(),
+    ]);
 
     return this.placedAnyCards;
-  }
-
-  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
-    return [this.endsAt];
   }
 
   *makeMoves(): EntityGenerator {
     let isBuilderMove = false;
 
     while (true) {
-      const { cardIndex, coords, rotation, meeple } = yield* this.waitForActivePlayerSocketEvent(
+      const { cardIndex, coords, rotation, meeple } = yield* this.server.waitForActivePlayerSocketEvent(
         GameClientEventType.ATTACH_CARD,
-        {
-          turnController: this.game.turnController,
-        },
       );
 
       const attachedToBuilder = this.game.attachPlayerCard({

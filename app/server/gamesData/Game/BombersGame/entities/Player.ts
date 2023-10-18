@@ -22,28 +22,44 @@ import {
   PlayerProperties,
 } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
 import { isDefined } from 'common/utilities/is';
-import PlayerEntity, { PlayerOptions as ICommonPlayerOptions } from 'server/gamesData/Game/utilities/PlayerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayerComponent from 'server/gamesData/Game/utilities/Entity/components/Player';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 import Bomb from 'server/gamesData/Game/BombersGame/entities/Bomb';
 import Bonus from 'server/gamesData/Game/BombersGame/entities/Bonus';
 import Buff from 'server/gamesData/Game/BombersGame/entities/Buff';
 
-export interface PlayerOptions extends ICommonPlayerOptions {
+export interface PlayerOptions {
   color: PlayerColor;
   coords: Coords;
+  index: number;
 }
 
-export default class Player extends PlayerEntity<GameType.BOMBERS> {
-  game: BombersGame;
+export default class Player extends Entity {
+  game = this.getClosestEntity(BombersGame);
+
+  time = this.addComponent(Time, {
+    getBoundTimestamps: () => [this.startMovingTimestamp],
+    afterPause: () => {
+      this.stopMoving();
+    },
+  });
+  gameInfo = this.obtainComponent(GameInfo<GameType.BOMBERS, this>);
+  server = this.obtainComponent(Server<GameType.BOMBERS, this>);
+  events = this.obtainComponent(Events);
 
   color: PlayerColor;
   coords: Coords;
+  index: number;
   direction = Direction.DOWN;
   isDisabled = false;
   startMovingTimestamp: Timestamp | null = null;
@@ -59,17 +75,20 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   };
   buffs = new Set<Buff>();
   placedBombs = new Set<Bomb>();
+  disableEvent = this.events.createEvent();
+  grantControlsEvent = this.events.createEvent();
+  hitEvent = this.events.createEvent<number>();
 
-  disableTrigger = this.createTrigger();
-  grantControlsTrigger = this.createTrigger();
-  hitTrigger = this.createTrigger<number>();
+  constructor(options: PlayerOptions) {
+    super();
 
-  constructor(game: BombersGame, options: PlayerOptions) {
-    super(game, options);
-
-    this.game = game;
     this.color = options.color;
     this.coords = options.coords;
+    this.index = options.index;
+
+    this.addComponent(PlayerComponent, {
+      index: this.index,
+    });
   }
 
   *lifecycle(): EntityGenerator {
@@ -77,7 +96,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     this.spawnTask(this.waitForDisable());
 
     while (true) {
-      const damage = yield* this.waitForTrigger(this.hitTrigger);
+      const damage = yield* this.events.waitForEvent(this.hitEvent);
 
       this.properties.hp = Math.max(0, this.properties.hp - damage);
 
@@ -88,17 +107,17 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
       this.spawnTask(this.activateBuff(BuffType.BOMB_INVINCIBILITY));
     }
 
-    this.sendSocketEvent(GameServerEventType.PLAYER_DIED, this.index);
+    this.server.sendSocketEvent(GameServerEventType.PLAYER_DIED, this.index);
 
     this.disable();
   }
 
   *activateBuff(type: BuffType): EntityGenerator {
-    const endsAt = this.createTimestamp(BUFF_DURATIONS[type]);
+    const endsAt = this.time.createTimestamp(BUFF_DURATIONS[type]);
     const oldBuff = this.game.sharedDataManager.activatePlayerBuff(this.index, type);
     const buff =
       oldBuff ??
-      new Buff(this, {
+      this.spawnEntity(Buff, {
         type,
         endsAt,
       });
@@ -107,7 +126,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
       oldBuff.postpone(endsAt);
     }
 
-    this.sendSocketEvent(GameServerEventType.BUFF_ACTIVATED, {
+    this.server.sendSocketEvent(GameServerEventType.BUFF_ACTIVATED, {
       playerIndex: this.index,
       buff,
     });
@@ -123,22 +142,16 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     this.game.sharedDataManager.deactivatePlayerBuff(this.index, type);
   }
 
-  afterPause(): void {
-    this.stopMoving();
-
-    super.afterPause();
-  }
-
   canPlaceBombs(): boolean {
     return this.placedBombs.size < this.properties.maxBombCount;
   }
 
   consumeBonus(bonus: Bonus, coords: Coords): void {
-    bonus.consumeTrigger.activate();
+    bonus.consumeEvent.dispatch();
 
     this.game.sharedDataManager.consumePlayerBonus(this.index, bonus);
 
-    this.sendSocketEvent(GameServerEventType.BONUS_CONSUMED, {
+    this.server.sendSocketEvent(GameServerEventType.BONUS_CONSUMED, {
       id: bonus.id,
       playerIndex: this.index,
       coords,
@@ -146,7 +159,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   disable(): void {
-    this.disableTrigger.activate();
+    this.disableEvent.dispatch();
   }
 
   getCurrentCell(): ServerCell {
@@ -160,10 +173,6 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     }
 
     return cell;
-  }
-
-  getCurrentTimestamps(): (Timestamp | null | undefined)[] {
-    return [this.startMovingTimestamp];
   }
 
   getOccupiedCells(): ServerCell[] {
@@ -190,17 +199,17 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   grantControls(): void {
-    this.grantControlsTrigger.activate();
+    this.grantControlsEvent.dispatch();
   }
 
   heal = (): void => {
     if (this.game.sharedDataManager.healPlayer(this.index)) {
-      this.sendSocketEvent(GameServerEventType.PLAYER_HEALED, this.index);
+      this.server.sendSocketEvent(GameServerEventType.PLAYER_HEALED, this.index);
     }
   };
 
   hit(hp: number): void {
-    this.hitTrigger.activate(hp);
+    this.hitEvent.dispatch(hp);
   }
 
   isAlive(): boolean {
@@ -213,15 +222,15 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   *listenForEvents(): EntityGenerator {
     yield* this.race([
-      this.waitForTrigger(this.disableTrigger),
+      this.events.waitForEvent(this.disableEvent),
       this.all([
-        this.listenForOwnEvent(GameClientEventType.START_MOVING, this.startMoving),
-        this.listenForOwnEvent(GameClientEventType.STOP_MOVING, this.stopMoving),
-        this.listenForOwnEvent(GameClientEventType.PLACE_BOMB, () => {
+        this.server.listenForOwnSocketEvent(GameClientEventType.START_MOVING, this.startMoving),
+        this.server.listenForOwnSocketEvent(GameClientEventType.STOP_MOVING, this.stopMoving),
+        this.server.listenForOwnSocketEvent(GameClientEventType.PLACE_BOMB, () => {
           this.game.placeBomb(this, this.getCurrentCell());
         }),
-        this.listenForOwnEvent(GameClientEventType.HEAL, this.heal),
-        this.listenForOwnEvent(GameClientEventType.ACTIVATE_BUFF, this.tryToActivateBuff),
+        this.server.listenForOwnSocketEvent(GameClientEventType.HEAL, this.heal),
+        this.server.listenForOwnSocketEvent(GameClientEventType.ACTIVATE_BUFF, this.tryToActivateBuff),
       ]),
     ]);
   }
@@ -232,7 +241,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
     }
 
     if (this.startMovingTimestamp) {
-      const newMoveTimestamp = this.createTimestamp();
+      const newMoveTimestamp = this.time.createTimestamp();
 
       const { distanceLeft, distanceWalked } = this.game.sharedDataManager.movePlayer(this.index);
 
@@ -270,7 +279,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
 
   startMoving = (direction: Direction): void => {
     this.direction = direction;
-    this.startMovingTimestamp = this.createTimestamp();
+    this.startMovingTimestamp = this.time.createTimestamp();
 
     this.syncCoords();
   };
@@ -284,7 +293,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   };
 
   syncCoords(): void {
-    this.sendSocketEvent(GameServerEventType.SYNC_COORDS, {
+    this.server.sendSocketEvent(GameServerEventType.SYNC_COORDS, {
       playerIndex: this.index,
       direction: this.direction,
       startMovingTimestamp: this.startMovingTimestamp,
@@ -300,7 +309,7 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   }
 
   tryToActivateBuff = (type: BuffType): void => {
-    if (!this.game.options.withAbilities) {
+    if (!this.gameInfo.options.withAbilities) {
       return;
     }
 
@@ -320,12 +329,12 @@ export default class Player extends PlayerEntity<GameType.BOMBERS> {
   };
 
   *waitForControls(): EntityGenerator {
-    yield* this.waitForTrigger(this.grantControlsTrigger);
+    yield* this.events.waitForEvent(this.grantControlsEvent);
     yield* this.listenForEvents();
   }
 
   *waitForDisable(): EntityGenerator {
-    yield* this.waitForTrigger(this.disableTrigger);
+    yield* this.events.waitForEvent(this.disableEvent);
 
     this.isDisabled = true;
 

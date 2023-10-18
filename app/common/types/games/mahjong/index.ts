@@ -23,9 +23,7 @@ export interface GameOptions extends BaseGameOptions<GameType.MAHJONG> {
   handsCount: HandsCount;
 }
 
-export interface GamePlayerData {}
-
-export interface PlayerData extends GamePlayerData {
+export interface PlayerData {
   round: RoundPlayerData | null;
   hand: HandPlayerData | null;
   turn: TurnPlayerData | null;

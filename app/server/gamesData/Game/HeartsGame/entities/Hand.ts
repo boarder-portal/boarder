@@ -17,9 +17,11 @@ import {
   PassDirection,
 } from 'common/types/games/hearts';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/games/hearts/common';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import Turn from 'server/gamesData/Game/HeartsGame/entities/Turn';
@@ -37,33 +39,37 @@ export interface HandOptions {
   startStage: HandStage;
 }
 
-export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
-  game: HeartsGame;
+export default class Hand extends Entity<number[]> {
+  game = this.getClosestEntity(HeartsGame);
+
+  gameInfo = this.obtainComponent(GameInfo<GameType.HEARTS, this>);
+  server = this.obtainComponent(Server<GameType.HEARTS, this>);
+  time = this.obtainComponent(Time);
 
   stage: HandStage;
-  playersData: HandPlayerData[];
+  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+    init: () => ({
+      hand: [],
+      chosenCardsIndexes: [],
+      takenCards: [],
+    }),
+  });
   heartsEnteredPlay = false;
 
   turn: Turn | null = null;
 
-  constructor(game: HeartsGame, options: HandOptions) {
-    super(game);
+  constructor(options: HandOptions) {
+    super();
 
-    this.game = game;
     this.stage = options.startStage;
-    this.playersData = this.getPlayersData(() => ({
-      hand: [],
-      chosenCardsIndexes: [],
-      takenCards: [],
-    }));
   }
 
   *lifecycle(): EntityGenerator<number[]> {
-    const deck = shuffle(DECKS[this.playersCount]);
-    const shuffledDeck = chunk(deck, deck.length / this.playersCount);
+    const deck = shuffle(DECKS[this.gameInfo.playersCount]);
+    const shuffledDeck = chunk(deck, deck.length / this.gameInfo.playersCount);
 
-    this.forEachPlayer((playerIndex) => {
-      this.playersData[playerIndex].hand = shuffledDeck[playerIndex];
+    this.playersData.forEach((playerData, playerIndex) => {
+      playerData.hand = shuffledDeck[playerIndex];
     });
 
     this.sortHands();
@@ -75,20 +81,20 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
     let startPlayerIndex = this.playersData.findIndex(({ hand }) => hand.some(isDeuceOfClubs));
 
     while (this.playersData.some(({ hand }) => hand.length !== 0)) {
-      this.turn = new Turn(this, {
+      this.turn = this.spawnEntity(Turn, {
         startPlayerIndex,
       });
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
 
       const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.waitForEntity(this.turn);
 
-      yield* this.delay(SHOW_CARDS_TIMEOUT);
+      yield* this.time.delay(SHOW_CARDS_TIMEOUT);
 
       startPlayerIndex = highestCardPlayerIndex;
       this.heartsEnteredPlay ||= playerTakenCards.some(isHeart);
 
-      this.playersData[highestCardPlayerIndex].takenCards.push(...playerTakenCards);
+      this.playersData.get(highestCardPlayerIndex).takenCards.push(...playerTakenCards);
     }
 
     this.turn = null;
@@ -104,7 +110,7 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
   }
 
   getDeuceOfClubsIndex(playerIndex: number): number {
-    return this.playersData[playerIndex].hand.findIndex(isDeuceOfClubs);
+    return this.playersData.get(playerIndex).hand.findIndex(isDeuceOfClubs);
   }
 
   getTargetPlayerIndex(playerIndex: number): number {
@@ -115,31 +121,31 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
     }
 
     if (passDirection === PassDirection.LEFT) {
-      return (playerIndex + 1) % this.playersCount;
+      return (playerIndex + 1) % this.gameInfo.playersCount;
     }
 
     if (passDirection === PassDirection.RIGHT) {
-      return (playerIndex - 1 + this.playersCount) % this.playersCount;
+      return (playerIndex - 1 + this.gameInfo.playersCount) % this.gameInfo.playersCount;
     }
 
-    return (playerIndex + 2) % this.playersCount;
+    return (playerIndex + 2) % this.gameInfo.playersCount;
   }
 
   *passPhase(): EntityGenerator {
     while (this.playersData.some(({ chosenCardsIndexes }) => chosenCardsIndexes.length !== PASS_CARDS_COUNT)) {
-      const { data: cardIndex, playerIndex } = yield* this.waitForSocketEvent(GameClientEventType.CHOOSE_CARD);
+      const { data: cardIndex, playerIndex } = yield* this.server.waitForSocketEvent(GameClientEventType.CHOOSE_CARD);
 
-      const playerChosenCardsIndexes = this.playersData[playerIndex].chosenCardsIndexes;
+      const playerChosenCardsIndexes = this.playersData.get(playerIndex).chosenCardsIndexes;
 
       if (playerChosenCardsIndexes.includes(cardIndex)) {
-        this.playersData[playerIndex].chosenCardsIndexes = playerChosenCardsIndexes.filter(
+        this.playersData.get(playerIndex).chosenCardsIndexes = playerChosenCardsIndexes.filter(
           (index) => index !== cardIndex,
         );
       } else {
         playerChosenCardsIndexes.push(cardIndex);
       }
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
     }
 
     const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>
@@ -147,7 +153,7 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
     );
 
     this.playersData.forEach((playerData, playerIndex) => {
-      this.playersData[this.getTargetPlayerIndex(playerIndex)].hand.push(...passedCards[playerIndex]);
+      this.playersData.get(this.getTargetPlayerIndex(playerIndex)).hand.push(...passedCards[playerIndex]);
 
       playerData.hand = playerData.hand.filter(
         (_card, cardIndex) => !playerData.chosenCardsIndexes.includes(cardIndex),
@@ -168,7 +174,7 @@ export default class Hand extends ServerEntity<GameType.HEARTS, number[]> {
   }
 
   takePlayerCard(playerIndex: number, cardIndex: number): Card | null {
-    return this.playersData[playerIndex]?.hand.splice(cardIndex, 1).at(0) ?? null;
+    return this.playersData.get(playerIndex)?.hand.splice(cardIndex, 1).at(0) ?? null;
   }
 
   toJSON(): HandModel {

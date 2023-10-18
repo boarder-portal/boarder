@@ -1,6 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react-hooks", "eslint-plugin-import-helpers"],
+  "plugins": ["@typescript-eslint", "react-hooks", "import-helpers", "prettier"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",

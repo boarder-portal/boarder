@@ -16,20 +16,26 @@ import {
   PlayerData,
 } from 'common/types/games/machiKoro';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
+import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 import Turn from 'server/gamesData/Game/MachiKoroGame/entities/Turn';
 
-export default class MachiKoroGame extends GameEntity<GameType.MACHI_KORO> {
-  playersData: PlayerData[] = this.getPlayersData(() => ({
-    coins: 3,
-    cardsIds: [CardId.WHEAT_FIELD, CardId.BAKERY],
-    landmarksIds: [LandmarkId.CITY_HALL],
-  }));
-  turnController = new TurnController({
-    players: this.playersData,
+export default class MachiKoroGame extends Entity<GameResult> {
+  turnController = this.addComponent(TurnController);
+  gameInfo = this.obtainComponent(GameInfo<GameType.MACHI_KORO, this>);
+  time = this.obtainComponent(Time);
+  server = this.obtainComponent(Server<GameType.MACHI_KORO, this>);
+
+  playersData = this.gameInfo.createPlayersData<PlayerData>({
+    init: () => ({
+      coins: 3,
+      cardsIds: [CardId.WHEAT_FIELD, CardId.BAKERY],
+      landmarksIds: [LandmarkId.CITY_HALL],
+    }),
   });
   deck: Card[] = shuffle(cloneDeep(ALL_CARDS).flatMap((card) => times(card.count, () => card)));
   board: CardId[] = [];
@@ -39,18 +45,18 @@ export default class MachiKoroGame extends GameEntity<GameType.MACHI_KORO> {
   *lifecycle(): EntityGenerator<GameResult> {
     this.fillBoard();
 
-    yield* this.delay(500);
+    yield* this.time.delay(500);
 
     let winnerIndex = -1;
 
     while (winnerIndex === -1) {
-      this.turn = new Turn(this);
+      this.turn = this.spawnEntity(Turn);
 
       yield* this.waitForEntity(this.turn);
 
       this.turnController.passTurn();
 
-      this.sendSocketEvent(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, {
+      this.server.sendSocketEvent(GameServerEventType.CHANGE_ACTIVE_PLAYER_INDEX, {
         index: this.turnController.activePlayerIndex,
       });
 
@@ -76,7 +82,7 @@ export default class MachiKoroGame extends GameEntity<GameType.MACHI_KORO> {
   }
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
   }
 
   getWinnerIndex(): number {

@@ -1,27 +1,19 @@
-import { GameType } from 'common/types/game';
 import { BaseObject, ObjectType } from 'common/types/games/survivalOnline';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 
-import SurvivalOnlineGame, {
-  ServerCell,
-  ServerCellWithEntity,
-} from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
+import { ServerCell, ServerCellWithEntity } from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
 export interface BaseOptions {
   cell: ServerCell;
 }
 
-export default class Base extends ServerEntity<GameType.SURVIVAL_ONLINE> {
-  game: SurvivalOnlineGame;
-
+export default class Base extends Entity {
   cell: ServerCellWithEntity<Base>;
 
-  constructor(game: SurvivalOnlineGame, options: BaseOptions) {
-    super(game);
+  constructor(options: BaseOptions) {
+    super();
 
-    this.game = game;
     this.cell = options.cell as ServerCellWithEntity<Base>;
   }
 

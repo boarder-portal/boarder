@@ -1,32 +1,29 @@
 import { GameType } from 'common/types/game';
 import { GameClientEventType, GameServerEventType, Turn as TurnModel } from 'common/types/games/pexeso';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 
-export default class Turn extends ServerEntity<GameType.PEXESO, number[]> {
-  game: PexesoGame;
+export default class Turn extends Entity<number[]> {
+  game = this.getClosestEntity(PexesoGame);
+
+  server = this.obtainComponent(Server<GameType.PEXESO, this>);
+  gameInfo = this.obtainComponent(GameInfo<GameType.PEXESO, this>);
 
   openedCardsIndexes: number[] = [];
 
-  constructor(game: PexesoGame) {
-    super(game);
-
-    this.game = game;
-  }
-
   *lifecycle(): EntityGenerator<number[]> {
-    while (this.openedCardsIndexes.length < this.options.matchingCardsCount) {
-      const cardIndex = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.OPEN_CARD, {
-        turnController: this.game.turnController,
+    while (this.openedCardsIndexes.length < this.gameInfo.options.matchingCardsCount) {
+      const cardIndex = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.OPEN_CARD, {
         validate: (cardIndex) => this.game.isCardInGame(cardIndex) && !this.openedCardsIndexes.includes(cardIndex),
       });
 
       this.openedCardsIndexes.push(cardIndex);
 
-      this.sendSocketEvent(GameServerEventType.OPEN_CARD, cardIndex);
+      this.server.sendSocketEvent(GameServerEventType.OPEN_CARD, cardIndex);
     }
 
     return this.openedCardsIndexes;

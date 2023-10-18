@@ -1,9 +1,10 @@
 import { GameType } from 'common/types/game';
 import { GameServerEventType, ObjectType, Wall as WallModel } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { isInvincibility, isSuperSpeed } from 'common/utilities/games/bombers/buffs';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import BombersGame, { ServerCell } from 'server/gamesData/Game/BombersGame/BombersGame';
 
@@ -13,26 +14,27 @@ export interface WallOptions {
   isArtificial: boolean;
 }
 
-export default class Wall extends ServerEntity<GameType.BOMBERS> {
-  game: BombersGame;
+export default class Wall extends Entity {
+  game = this.getClosestEntity(BombersGame);
+
+  server = this.obtainComponent(Server<GameType.BOMBERS, this>);
+  events = this.obtainComponent(Events);
 
   id: number;
   cell: ServerCell;
   isArtificial: boolean;
+  breakEvent = this.events.createEvent();
 
-  destroyTrigger = this.createTrigger();
+  constructor(options: WallOptions) {
+    super();
 
-  constructor(game: BombersGame, options: WallOptions) {
-    super(game);
-
-    this.game = game;
     this.id = options.id;
     this.cell = options.cell;
     this.isArtificial = options.isArtificial;
   }
 
-  destroyWall(): void {
-    this.destroyTrigger.activate();
+  break(): void {
+    this.breakEvent.dispatch();
   }
 
   *lifecycle(): EntityGenerator {
@@ -53,14 +55,14 @@ export default class Wall extends ServerEntity<GameType.BOMBERS> {
         }
       });
 
-      this.sendSocketEvent(GameServerEventType.WALL_CREATED, {
+      this.server.sendSocketEvent(GameServerEventType.WALL_CREATED, {
         coords: this.game.getCellCoords(this.cell),
         wall: this.toJSON(),
         deadPlayers,
       });
     }
 
-    yield* this.waitForTrigger(this.destroyTrigger);
+    yield* this.events.waitForEvent(this.breakEvent);
   }
 
   toJSON(): WallModel {

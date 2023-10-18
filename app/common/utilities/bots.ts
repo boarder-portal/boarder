@@ -1,5 +1,7 @@
 import { BOTS_SUPPORTED_GAMES } from 'common/constants/game';
 
-export function areBotsAvailable(game: unknown): game is typeof BOTS_SUPPORTED_GAMES[number] {
+import { BotSupportedGameType } from 'common/types/game';
+
+export function areBotsAvailable(game: unknown): game is BotSupportedGameType {
   return BOTS_SUPPORTED_GAMES.some((g) => g === game);
 }

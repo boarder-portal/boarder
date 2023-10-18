@@ -2,41 +2,41 @@ import { GameType } from 'common/types/game';
 import { LeadersDraftPlayerData, WaitingActionType } from 'common/types/games/sevenWonders';
 import { Card } from 'common/types/games/sevenWonders/cards';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import rotateObjects from 'common/utilities/rotateObjects';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
 
-export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, Card[][]> {
-  game: SevenWondersGame;
+export default class LeadersDraft extends Entity<Card[][]> {
+  game = this.getClosestEntity(SevenWondersGame);
 
-  playersData: LeadersDraftPlayerData[] = this.getPlayersData(() => ({
-    leadersPool: [],
-    pickedLeaders: [],
-  }));
+  gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
+  server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
+
+  playersData = this.gameInfo.createPlayersData<LeadersDraftPlayerData>({
+    init: () => ({
+      leadersPool: [],
+      pickedLeaders: [],
+    }),
+  });
 
   turn: Turn | null = null;
 
-  constructor(game: SevenWondersGame) {
-    super(game);
-
-    this.game = game;
-  }
-
   *lifecycle(): EntityGenerator<Card[][]> {
-    this.forEachPlayer((playerIndex) => {
-      this.playersData[playerIndex].leadersPool = this.game.extractFromLeadersDeck(4);
+    this.playersData.forEach((playerData) => {
+      playerData.leadersPool = this.game.extractFromLeadersDeck(4);
     });
 
     while (this.playersData.every(({ leadersPool }) => leadersPool.length !== 1)) {
-      this.turn = new Turn(this.game, {
+      this.turn = this.spawnEntity(Turn, {
         startingWaitingAction: WaitingActionType.PICK_LEADER,
         executeActions: (actions) => {
           actions.forEach(({ chosenActionEvent }, playerIndex) => {
             if (chosenActionEvent) {
-              const { leadersPool, pickedLeaders } = this.playersData[playerIndex];
+              const { leadersPool, pickedLeaders } = this.playersData.get(playerIndex);
 
               pickedLeaders.push(...leadersPool.splice(chosenActionEvent.cardIndex, 1));
             }
@@ -44,7 +44,7 @@ export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, C
         },
       });
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
 
       yield* this.waitForEntity(this.turn);
 
@@ -57,7 +57,7 @@ export default class LeadersDraft extends ServerEntity<GameType.SEVEN_WONDERS, C
         playerData.leadersPool = newLeadersPools[index];
       });
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
     }
 
     this.turn = null;

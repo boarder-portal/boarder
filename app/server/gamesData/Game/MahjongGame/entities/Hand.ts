@@ -23,7 +23,6 @@ import {
   Tile,
 } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { moveElement } from 'common/utilities/array';
 import { getHandWithoutTile } from 'common/utilities/games/mahjong/hand';
 import { getHandMahjong } from 'common/utilities/games/mahjong/scoring';
@@ -37,8 +36,12 @@ import {
   isEqualTilesCallback,
 } from 'common/utilities/games/mahjong/tiles';
 import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
+import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
@@ -56,39 +59,42 @@ export interface HandMahjongOptions {
   isRobbingKong: boolean;
 }
 
-export default class Hand extends ServerEntity<GameType.MAHJONG> {
-  game: MahjongGame;
-  round: Round;
+export default class Hand extends Entity {
+  game = this.getClosestEntity(MahjongGame);
+  round = this.getClosestEntity(Round);
+  testCase = this.getClosestComponent(TestCase<GameType.MAHJONG, this>);
+
+  turnController: TurnController;
+  gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
+  server = this.obtainComponent(Server<GameType.MAHJONG, this>);
+  events = this.obtainComponent(Events);
 
   isLastInGame: boolean;
   phase = HandPhase.REPLACE_FLOWERS;
-  playersData: HandPlayerData[] = this.getPlayersData(() => ({
-    hand: [],
-    declaredSets: [],
-    flowers: [],
-    discard: [],
-    readyForNewHand: false,
-  }));
-  turnController: TurnController<HandPlayerData>;
+  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+    init: () => ({
+      hand: [],
+      declaredSets: [],
+      flowers: [],
+      discard: [],
+      readyForNewHand: false,
+    }),
+  });
   wall: Tile[] = [];
   needToDrawTile = true;
   isReplacementTile = false;
+  finishEvent = this.events.createEvent();
 
   turn: Turn | null = null;
 
-  finishTrigger = this.createTrigger();
+  constructor(options: HandOptions) {
+    super();
 
-  constructor(round: Round, options: HandOptions) {
-    super(round);
-
-    this.game = round.game;
-    this.round = round;
     this.isLastInGame = options.isLastInGame;
-    this.turnController = new TurnController({
-      players: this.playersData,
+    this.turnController = this.addComponent(TurnController, {
       startPlayerIndex: options.startPlayerIndex,
       getNextPlayerIndex: (playerIndex): number => {
-        const playerWindIndex = ALL_WINDS.indexOf(this.round.playersData[playerIndex].wind);
+        const playerWindIndex = ALL_WINDS.indexOf(this.round.playersData.get(playerIndex).wind);
         const nextPlayerWind = ALL_WINDS.at(playerWindIndex + 1 - ALL_WINDS.length);
 
         return this.round.playersData.findIndex(({ wind }) => wind === nextPlayerWind);
@@ -97,38 +103,36 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   *lifecycle(): EntityGenerator {
-    this.game.dispatchGameEvent(GameEventType.HAND_STARTED, this);
+    this.testCase.dispatchGameEvent(GameEventType.HAND_STARTED, this);
 
     if (this.wall.length === 0) {
       this.wall = shuffle(DECK);
     }
 
-    this.forEachPlayer((playerIndex) => {
+    this.gameInfo.forEachPlayer((playerIndex) => {
       this.addTilesToPlayerHand(playerIndex, false);
       this.sortPlayerTiles(playerIndex);
     });
 
     this.spawnTask(this.listenForEvents());
 
-    for (let i = 0; i < this.playersCount; i++) {
+    for (let i = 0; i < this.gameInfo.playersCount; i++) {
       const { activePlayerIndex } = this.turnController;
-      const playerSettings = this.getPlayerSettings(activePlayerIndex);
-      const { hand } = this.turnController.getActivePlayer();
+      const playerSettings = this.gameInfo.getPlayerSettings(activePlayerIndex);
+      const { hand } = this.playersData.getActive();
 
       if (!playerSettings.autoReplaceFlowers) {
         while (hand.some(isFlower)) {
           const { type, value } = yield* this.race({
-            declare: this.waitForActivePlayerSocketEvent(GameClientEventType.DECLARE, {
-              turnController: this.turnController,
-            }),
-            settingsChange: this.game.waitForPlayerSettingChange(activePlayerIndex),
+            declare: this.server.waitForActivePlayerSocketEvent(GameClientEventType.DECLARE),
+            settingsChange: this.server.waitForPlayerSettingChange(activePlayerIndex),
           });
 
           if (type === 'settingsChange') {
             if (value.key === 'autoReplaceFlowers' && value.value) {
               this.replaceFlowers();
 
-              this.game.sendGameInfo();
+              this.server.sendGameInfo();
 
               break;
             }
@@ -148,7 +152,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
 
           this.replaceFlower(declared.flower);
 
-          this.game.sendGameInfo();
+          this.server.sendGameInfo();
         }
       }
 
@@ -160,7 +164,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
     const handResult: HandResult = {
       mahjong: null,
       winnerIndex: -1,
-      scores: this.getPlayersData(() => 0),
+      scores: this.gameInfo.getPlayersData(() => 0),
     };
 
     while (true) {
@@ -175,16 +179,16 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
         }
 
         addedTile = lastAddedTile;
-        addedTileIndex = this.turnController.getActivePlayer().hand.findLastIndex(isEqualTilesCallback(addedTile));
+        addedTileIndex = this.playersData.getActive().hand.findLastIndex(isEqualTilesCallback(addedTile));
       }
 
-      this.turn = new Turn(this, {
+      this.turn = this.spawnEntity(Turn, {
         currentTile: addedTile,
         currentTileIndex: addedTileIndex,
         isReplacementTile: this.isReplacementTile,
       });
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
 
       const result = yield* this.waitForEntity(this.turn);
 
@@ -208,7 +212,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
 
       handResult.mahjong = mahjong;
       handResult.winnerIndex = winnerIndex;
-      handResult.scores = this.getPlayersData((playerIndex) => {
+      handResult.scores = this.gameInfo.getPlayersData((playerIndex) => {
         if (playerIndex === winnerIndex) {
           return 0;
         }
@@ -225,24 +229,24 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
 
     this.turn = null;
 
-    this.finishTrigger.activate();
+    this.finishEvent.dispatch();
 
     this.game.addHandResult(handResult);
-    this.game.sendGameInfo();
+    this.server.sendGameInfo();
 
     if (!this.isLastInGame) {
       while (this.playersData.some(({ readyForNewHand }) => !readyForNewHand)) {
-        const { data, playerIndex } = yield* this.waitForSocketEvent(GameClientEventType.READY_FOR_NEW_HAND);
+        const { data, playerIndex } = yield* this.server.waitForSocketEvent(GameClientEventType.READY_FOR_NEW_HAND);
 
-        this.playersData[playerIndex].readyForNewHand = data;
+        this.playersData.get(playerIndex).readyForNewHand = data;
 
-        this.game.sendGameInfo();
+        this.server.sendGameInfo();
       }
     }
   }
 
   addConcealedKong(set: ConcealedSet<KongSet>): void {
-    const activePlayer = this.turnController.getActivePlayer();
+    const activePlayer = this.playersData.getActive();
     const kongTile = getSetTile(set);
 
     activePlayer.hand = activePlayer.hand.filter((tile) => !isEqualTiles(tile, kongTile));
@@ -255,7 +259,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   addMeldedSet(playerIndex: number, set: MeldedSet, stolenTile: PlayableTile): void {
-    const { hand, declaredSets } = this.playersData[playerIndex];
+    const { hand, declaredSets } = this.playersData.get(playerIndex);
     const stolenTileIndex = set.tiles.findIndex(isEqualTilesCallback(stolenTile));
 
     if (stolenTileIndex === -1) {
@@ -280,9 +284,9 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   addTileToPlayerHand(playerIndex: number, tile: Tile): void {
-    this.playersData[playerIndex].hand.push(tile);
+    this.playersData.get(playerIndex).hand.push(tile);
 
-    if (this.getPlayerSettings(playerIndex).sortHand) {
+    if (this.gameInfo.getPlayerSettings(playerIndex).sortHand) {
       this.sortPlayerTiles(playerIndex);
     }
   }
@@ -291,15 +295,12 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
     playerIndex: number,
     withAdditional = true,
   ): { replacedFlowers: boolean; lastAddedTile: Tile | null } {
-    const playerSettings = this.getPlayerSettings(playerIndex);
-    const { declaredSets, flowers } = this.playersData[playerIndex];
+    const playerSettings = this.gameInfo.getPlayerSettings(playerIndex);
+    const { hand, declaredSets, flowers } = this.playersData.get(playerIndex);
     const addedTiles: Tile[] = [];
     let replacedFlowers = false;
 
-    while (
-      this.playersData[playerIndex].hand.length <
-      getSupposedHandTileCount(declaredSets.length) + (withAdditional ? 1 : 0)
-    ) {
+    while (hand.length < getSupposedHandTileCount(declaredSets.length) + (withAdditional ? 1 : 0)) {
       const tile = this.getNewTile();
 
       if (!tile) {
@@ -321,19 +322,19 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   changePlayerTileIndex(playerIndex: number, from: number, to: number): void {
-    moveElement(this.playersData[playerIndex].hand, from, to);
+    moveElement(this.playersData.get(playerIndex).hand, from, to);
 
     this.turn?.changeCurrentTileIndex(getNewCurrentTileIndex(this.turn.currentTileIndex, from, to));
 
-    this.game.sendGameInfo();
+    this.server.sendGameInfo();
   }
 
   discardTile(tile: Tile): void {
-    this.turnController.getActivePlayer().discard.push(tile);
+    this.playersData.getActive().discard.push(tile);
   }
 
   downgradeToPung(kong: MeldedSet<KongSet>): void {
-    const { declaredSets } = this.turnController.getActivePlayer();
+    const { declaredSets } = this.playersData.getActive();
 
     const meldedKongIndex = declaredSets.findIndex(({ set }) => isEqualSets(set, kong));
 
@@ -363,7 +364,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   getPlayerMahjong(playerIndex: number, options: HandMahjongOptions): HandMahjong | null {
-    const { hand, declaredSets, flowers } = this.playersData[playerIndex];
+    const { hand, declaredSets, flowers } = this.playersData.get(playerIndex);
 
     return getHandMahjong({
       ...options,
@@ -373,21 +374,24 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
           : [...hand],
       declaredSets: declaredSets.map(({ set }) => set),
       flowers,
-      seatWind: this.round.playersData[playerIndex].wind,
+      seatWind: this.round.playersData.get(playerIndex).wind,
       roundWind: this.round.wind,
       isLastWallTile: this.wall.length === 0,
-      lastTileCandidates: getLastTileCandidates(this.playersData, options.isSelfDraw),
+      lastTileCandidates: getLastTileCandidates(this.playersData.toArray(), options.isSelfDraw),
     });
   }
 
   *listenForEvents(): EntityGenerator {
     yield* this.race([
-      this.waitForTrigger(this.finishTrigger),
+      this.events.waitForEvent(this.finishEvent),
       this.all([
-        this.listenForEvent(GameClientEventType.CHANGE_TILE_INDEX, ({ playerIndex, data: { from, to } }) => {
-          this.changePlayerTileIndex(playerIndex, from, to);
-        }),
-        this.game.listenForSettingsChange(({ playerIndex, key, value }) => {
+        this.server.listenForSocketEvent(
+          GameClientEventType.CHANGE_TILE_INDEX,
+          ({ playerIndex, data: { from, to } }) => {
+            this.changePlayerTileIndex(playerIndex, from, to);
+          },
+        ),
+        this.server.listenForSettingsChange(({ playerIndex, key, value }) => {
           if (key === 'sortHand' && value) {
             this.sortPlayerTiles(playerIndex);
 
@@ -399,17 +403,17 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   removeTileFromDiscard(): void {
-    this.turnController.getActivePlayer().discard.pop();
+    this.playersData.getActive().discard.pop();
   }
 
   removeTileFromHand(index: number): Tile | null {
-    return this.turnController.getActivePlayer().hand.splice(index, 1).at(0) ?? null;
+    return this.playersData.getActive().hand.splice(index, 1).at(0) ?? null;
   }
 
   replaceFlower(flower: FlowerTile): Tile | null {
     const { activePlayerIndex } = this.turnController;
-    const playerSettings = this.getPlayerSettings(activePlayerIndex);
-    const { hand, flowers } = this.turnController.getActivePlayer();
+    const playerSettings = this.gameInfo.getPlayerSettings(activePlayerIndex);
+    const { hand, flowers } = this.playersData.getActive();
     let tile: Tile | null = null;
     let currentFlower = flower;
 
@@ -443,7 +447,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   replaceFlowers(): { replaced: boolean; tile: Tile | null } {
-    const flowers = this.turnController.getActivePlayer().hand.filter(isFlower);
+    const flowers = this.playersData.getActive().hand.filter(isFlower);
 
     if (!flowers.length) {
       return {
@@ -467,9 +471,9 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   sortPlayerTiles(playerIndex: number): void {
-    this.playersData[playerIndex].hand = sortBy(this.playersData[playerIndex].hand, getTileSortValue);
+    this.playersData.get(playerIndex).hand = sortBy(this.playersData.get(playerIndex).hand, getTileSortValue);
 
-    this.game.sendGameInfo();
+    this.server.sendGameInfo();
   }
 
   toJSON(): HandModel {
@@ -483,7 +487,7 @@ export default class Hand extends ServerEntity<GameType.MAHJONG> {
   }
 
   upgradeToKong(kong: MeldedSet<KongSet>): PlayableTile | null {
-    const { hand, declaredSets } = this.turnController.getActivePlayer();
+    const { hand, declaredSets } = this.playersData.getActive();
     const kongTile = getSetTile(kong);
 
     const meldedPungIndex = declaredSets.findIndex(({ set }) => isPung(set) && isEqualTiles(kongTile, getSetTile(set)));

@@ -13,21 +13,25 @@ import {
   PlayerData,
 } from 'common/types/games/onitama';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 const ALL_CARDS = Object.values(CardType);
 
-export default class OnitamaGame extends GameEntity<GameType.ONITAMA> {
-  playersData: PlayerData[] = this.getPlayersData((playerIndex) => ({
-    color: playerIndex === 0 ? PlayerColor.BLUE : PlayerColor.RED,
-    cards: [],
-  }));
-  turnController = new TurnController({
-    players: this.playersData,
+export default class OnitamaGame extends Entity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.ONITAMA, this>);
+  server = this.obtainComponent(Server<GameType.ONITAMA, this>);
+  turnController = this.obtainComponent(TurnController<this>);
+
+  playersData = this.gameInfo.createPlayersData<PlayerData>({
+    init: (playerIndex) => ({
+      color: playerIndex === 0 ? PlayerColor.BLUE : PlayerColor.RED,
+      cards: [],
+    }),
   });
   board: Board = [
     times(5, (index) => ({ color: PlayerColor.BLUE, isMaster: index === 2 })),
@@ -48,38 +52,40 @@ export default class OnitamaGame extends GameEntity<GameType.ONITAMA> {
       }
     }
 
-    this.turnController.getActivePlayer().cards.push(getCard());
+    this.playersData.getActive().cards.push(getCard());
 
     let result: GameResult;
 
     while (true) {
-      const { from, to, cardIndex } = yield* this.waitForActivePlayerSocketEvent(GameClientEventType.MOVE_PIECE, {
-        turnController: this.turnController,
-        validate: ({ from, to, cardIndex }) => {
-          const playerData = this.turnController.getActivePlayer();
-          const fromPiece = this.board.at(from.y)?.at(from.x);
-          const card = playerData.cards.at(cardIndex);
+      const { from, to, cardIndex } = yield* this.server.waitForActivePlayerSocketEvent(
+        GameClientEventType.MOVE_PIECE,
+        {
+          validate: ({ from, to, cardIndex }) => {
+            const playerData = this.playersData.getActive();
+            const fromPiece = this.board.at(from.y)?.at(from.x);
+            const card = playerData.cards.at(cardIndex);
 
-          return Boolean(
-            fromPiece?.color === playerData.color &&
-              card &&
-              getLegalMoves({
-                from,
-                card,
-                board: this.board,
-                playerColor: playerData.color,
-              }).some(equalsCoordsCb(to)),
-          );
+            return Boolean(
+              fromPiece?.color === playerData.color &&
+                card &&
+                getLegalMoves({
+                  from,
+                  card,
+                  board: this.board,
+                  playerColor: playerData.color,
+                }).some(equalsCoordsCb(to)),
+            );
+          },
         },
-      });
+      );
 
-      const { cards } = this.turnController.getActivePlayer();
+      const { cards } = this.playersData.getActive();
       const toPiece = this.board[to.y][to.x];
 
       this.board[to.y][to.x] = this.board[from.y][from.x];
       this.board[from.y][from.x] = null;
 
-      this.turnController.getNextActivePlayer().cards.push(...cards.splice(cardIndex, 1));
+      this.playersData.getNextActive().cards.push(...cards.splice(cardIndex, 1));
 
       const { activePlayerIndex } = this.turnController;
       const isWayOfStoneWin = Boolean(toPiece?.isMaster);
@@ -93,21 +99,21 @@ export default class OnitamaGame extends GameEntity<GameType.ONITAMA> {
 
         this.turnController.turnOff();
 
-        this.sendGameInfo();
+        this.server.sendGameInfo();
 
         break;
       }
 
       this.turnController.passTurn();
 
-      this.sendGameInfo();
+      this.server.sendGameInfo();
     }
 
     return result;
   }
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
   }
 
   toJSON(): Game {

@@ -23,15 +23,21 @@ import {
   PlayerData,
 } from 'common/types/games/set';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { findSet, isSet } from 'common/utilities/games/set/set';
 import { isDefined } from 'common/utilities/is';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
-export default class SetGame extends GameEntity<GameType.SET> {
-  playersData: PlayerData[] = this.getPlayersData(() => ({
-    score: 0,
-  }));
+export default class SetGame extends Entity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.SET, this>);
+  server = this.obtainComponent(Server<GameType.SET, this>);
+
+  playersData = this.gameInfo.createPlayersData<PlayerData>({
+    init: () => ({
+      score: 0,
+    }),
+  });
   cards: Card[] = [];
   deck: Card[] = [];
 
@@ -61,12 +67,12 @@ export default class SetGame extends GameEntity<GameType.SET> {
         break;
       }
 
-      const { event, data, playerIndex } = yield* this.waitForSocketEvents([
+      const { event, data, playerIndex } = yield* this.server.waitForSocketEvents([
         GameClientEventType.SEND_SET,
         GameClientEventType.SEND_NO_SET,
       ]);
 
-      const playerData = this.playersData[playerIndex];
+      const playerData = this.playersData.get(playerIndex);
 
       if (event === GameClientEventType.SEND_SET) {
         const { cardsIndexes } = data;
@@ -85,7 +91,7 @@ export default class SetGame extends GameEntity<GameType.SET> {
           playerData.score += WRONG_SET_POINTS;
         }
 
-        this.sendGameInfo();
+        this.server.sendGameInfo();
       } else if (findSet(this.cards)) {
         playerData.score += WRONG_NO_SET_POINTS;
       } else {
@@ -100,7 +106,7 @@ export default class SetGame extends GameEntity<GameType.SET> {
         });
       }
 
-      this.sendGameInfo();
+      this.server.sendGameInfo();
     }
 
     return this.playersData.map(({ score }) => score);
@@ -111,7 +117,7 @@ export default class SetGame extends GameEntity<GameType.SET> {
   }
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
   }
 
   toJSON(): Game {

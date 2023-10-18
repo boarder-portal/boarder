@@ -1,21 +1,9 @@
-import { GameType } from 'common/types/game';
 import { Move, Turn as TurnModel } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 
-import Hand from 'server/gamesData/Game/RedSevenGame/entities/Hand';
-
-export default class Turn extends ServerEntity<GameType.RED_SEVEN, boolean> {
-  hand: Hand;
-
+export default class Turn extends Entity<boolean> {
   playedMoves: Move[] = [];
-
-  constructor(hand: Hand) {
-    super(hand);
-
-    this.hand = hand;
-  }
 
   *lifecycle(): EntityGenerator<boolean> {
     return true;

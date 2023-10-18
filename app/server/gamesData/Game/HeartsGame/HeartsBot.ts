@@ -2,41 +2,46 @@ import random from 'lodash/random';
 import shuffle from 'lodash/shuffle';
 
 import { GameType } from 'common/types/game';
-import { GameClientEventType, HandStage, Player } from 'common/types/games/hearts';
+import { GameClientEventType, HandStage } from 'common/types/games/hearts';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getPlayedSuit from 'common/utilities/games/hearts/getPlayedSuit';
 import isCardAllowed from 'common/utilities/games/hearts/isCardAllowed';
 import isFirstTurn from 'common/utilities/games/hearts/isFirstTurn';
 import { getRandomElement } from 'common/utilities/random';
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
+import Bot from 'server/gamesData/Game/utilities/Entity/entities/Bot';
 
-export default class HeartsBot extends BotEntity<GameType.HEARTS> {
+export default class HeartsBot extends Entity {
+  bot = this.getClosestEntity(Bot<GameType.HEARTS>);
+
+  time = this.obtainComponent(Time);
+
   *lifecycle(): EntityGenerator {
     while (true) {
       yield* this.waitForNewHand();
 
-      if (this.getGameInfo().hand?.stage === HandStage.PASS) {
-        const hand = this.getPlayer().data.hand?.hand;
+      if (this.bot.getGameInfo().hand?.stage === HandStage.PASS) {
+        const hand = this.bot.getPlayer().data.hand?.hand;
 
         if (hand) {
           const indexes = shuffle(hand.map((_, index) => index)).slice(0, 3);
 
-          yield* this.delay(random(200, 300));
+          yield* this.time.delay(random(200, 300));
 
           for (const index of indexes) {
-            this.sendSocketEvent(GameClientEventType.CHOOSE_CARD, index);
+            this.bot.client.sendSocketEvent(GameClientEventType.CHOOSE_CARD, index);
           }
         }
       }
 
       yield* this.waitForPlayStage();
 
-      while (this.getPlayer().data.hand?.hand.length) {
+      while (this.bot.getPlayer().data.hand?.hand.length) {
         yield* this.waitForOwnTurn();
 
-        const gameInfo = this.getGameInfo();
-        const hand = this.getPlayer().data.hand?.hand;
+        const gameInfo = this.bot.getGameInfo();
+        const hand = this.bot.getPlayer().data.hand?.hand;
 
         if (hand) {
           const indexes = hand
@@ -51,47 +56,43 @@ export default class HeartsBot extends BotEntity<GameType.HEARTS> {
               }),
             );
 
-          yield* this.delay(random(200, 700));
+          yield* this.time.delay(random(200, 700));
 
-          this.sendSocketEvent(GameClientEventType.CHOOSE_CARD, getRandomElement(indexes));
+          this.bot.client.sendSocketEvent(GameClientEventType.CHOOSE_CARD, getRandomElement(indexes));
         }
 
-        yield* this.refreshGameInfo();
+        yield* this.bot.refreshGameInfo();
       }
     }
   }
 
-  getPlayer(): Player {
-    return this.getGameInfo().players[this.playerIndex];
-  }
-
   *waitForNewHand(): EntityGenerator {
     while (true) {
-      if (this.getPlayer().data.hand?.hand.length) {
+      if (this.bot.getPlayer().data.hand?.hand.length) {
         return;
       }
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 
   *waitForOwnTurn(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo().hand?.turn?.activePlayerIndex === this.playerIndex) {
+      if (this.bot.getGameInfo().hand?.turn?.activePlayerIndex === this.bot.playerIndex) {
         return;
       }
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 
   *waitForPlayStage(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo().hand?.stage === HandStage.PLAY) {
+      if (this.bot.getGameInfo().hand?.stage === HandStage.PLAY) {
         return;
       }
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 }

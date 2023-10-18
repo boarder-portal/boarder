@@ -1,11 +1,11 @@
-export type TriggerCallback<Value> = (value: Value) => unknown;
+export type EventCallback<Value> = (value: Value) => unknown;
 
 export type Unsubscribe = () => void;
 
-export default class Trigger<Value = void> {
-  #callbacks = new Set<TriggerCallback<Value>>();
+export default class Event<Value = void> {
+  readonly #callbacks = new Set<EventCallback<Value>>();
 
-  activate(value: Value): void {
+  dispatch(value: Value): void {
     const startingCallbacks = new Set(this.#callbacks);
 
     for (const callback of this.#callbacks) {
@@ -15,7 +15,7 @@ export default class Trigger<Value = void> {
     }
   }
 
-  subscribe(callback: TriggerCallback<Value>): Unsubscribe {
+  subscribe(callback: EventCallback<Value>): Unsubscribe {
     this.#callbacks.add(callback);
 
     return () => {

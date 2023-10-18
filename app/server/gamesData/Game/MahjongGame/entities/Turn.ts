@@ -3,14 +3,12 @@ import {
   DeclareInfo,
   GameClientEventType,
   HandMahjong,
-  HandPlayerData,
   PlayableTile,
   Tile,
   Turn as TurnModel,
   TurnPlayerData,
 } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import {
   getPossibleMeldedSets,
   isChow,
@@ -20,10 +18,10 @@ import {
   isPung,
 } from 'common/utilities/games/mahjong/sets';
 import { isEqualTilesCallback, isPlayable } from 'common/utilities/games/mahjong/tiles';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
-import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
 export interface TurnOptions {
@@ -37,25 +35,26 @@ export type TurnResult =
   | { type: 'mahjong'; mahjong: HandMahjong; playerIndex: number; stolenFrom: number | null }
   | null;
 
-export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
-  game: MahjongGame;
-  hand: Hand;
+export default class Turn extends Entity<TurnResult> {
+  hand = this.getClosestEntity(Hand);
 
-  turnController: TurnController<HandPlayerData>;
+  gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
+  server = this.obtainComponent(Server<GameType.MAHJONG, this>);
+
+  turnController = this.hand.turnController;
   currentTile: Tile | null;
   currentTileIndex: number;
   isReplacementTile: boolean;
   declareInfo: DeclareInfo | null = null;
-  playersData: TurnPlayerData[] = this.getPlayersData(() => ({
-    declareDecision: null,
-  }));
+  playersData = this.gameInfo.createPlayersData<TurnPlayerData>({
+    init: () => ({
+      declareDecision: null,
+    }),
+  });
 
-  constructor(hand: Hand, options: TurnOptions) {
-    super(hand);
+  constructor(options: TurnOptions) {
+    super();
 
-    this.game = hand.game;
-    this.hand = hand;
-    this.turnController = this.hand.turnController;
     this.currentTile = options.currentTile;
     this.currentTileIndex = options.currentTileIndex;
     this.isReplacementTile = options.isReplacementTile;
@@ -64,10 +63,11 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
   *lifecycle(): EntityGenerator<TurnResult> {
     while (true) {
       const { type, value } = yield* this.race({
-        declare: this.waitForActivePlayerSocketEvents([GameClientEventType.DISCARD_TILE, GameClientEventType.DECLARE], {
-          turnController: this.turnController,
-        }),
-        settingChange: this.game.waitForPlayerSettingChange(this.turnController.activePlayerIndex),
+        declare: this.server.waitForActivePlayerSocketEvents([
+          GameClientEventType.DISCARD_TILE,
+          GameClientEventType.DECLARE,
+        ]),
+        settingChange: this.server.waitForPlayerSettingChange(this.turnController.activePlayerIndex),
       });
 
       if (type === 'settingChange') {
@@ -81,14 +81,14 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
 
             this.adjustCurrentTileIndex();
 
-            this.game.sendGameInfo();
+            this.server.sendGameInfo();
 
             if (!tile) {
               break;
             }
           }
 
-          this.game.sendGameInfo();
+          this.server.sendGameInfo();
         }
 
         continue;
@@ -133,7 +133,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
 
           this.adjustCurrentTileIndex();
 
-          this.game.sendGameInfo();
+          this.server.sendGameInfo();
 
           if (!this.currentTile) {
             break;
@@ -157,14 +157,14 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
             continue;
           }
 
-          this.game.sendGameInfo();
+          this.server.sendGameInfo();
 
           const otherDeclared = yield* this.waitForDeclare(kongTile, true);
 
           if (otherDeclared !== null) {
             this.hand.downgradeToPung(declaredSet);
 
-            this.game.sendGameInfo();
+            this.server.sendGameInfo();
 
             return otherDeclared;
           }
@@ -179,7 +179,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
 
         this.adjustCurrentTileIndex();
 
-        this.game.sendGameInfo();
+        this.server.sendGameInfo();
 
         if (!lastAddedTile) {
           break;
@@ -207,7 +207,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
       if (declared !== null) {
         this.hand.removeTileFromDiscard();
 
-        this.game.sendGameInfo();
+        this.server.sendGameInfo();
 
         return declared;
       }
@@ -221,7 +221,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
   adjustCurrentTileIndex(): void {
     if (this.currentTile) {
       this.changeCurrentTileIndex(
-        this.turnController.getActivePlayer().hand.findLastIndex(isEqualTilesCallback(this.currentTile)),
+        this.hand.playersData.getActive().hand.findLastIndex(isEqualTilesCallback(this.currentTile)),
       );
     }
   }
@@ -229,7 +229,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
   changeCurrentTileIndex(newCurrentTileIndex: number): void {
     this.currentTileIndex = newCurrentTileIndex;
 
-    this.game.sendGameInfo();
+    this.server.sendGameInfo();
   }
 
   toJSON(): TurnModel {
@@ -247,7 +247,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
       isRobbingKong,
     };
 
-    const canAutoPass = this.getPlayersData((playerIndex) => {
+    const canAutoPass = this.gameInfo.getPlayersData((playerIndex) => {
       if (playerIndex === this.turnController.activePlayerIndex) {
         return true;
       }
@@ -255,9 +255,9 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
       const possibleMeldedSets = isRobbingKong
         ? []
         : getPossibleMeldedSets(
-            this.hand.playersData[playerIndex].hand,
+            this.hand.playersData.get(playerIndex).hand,
             tile,
-            playerIndex === this.turnController.getNextPlayerIndex(),
+            playerIndex === this.turnController.getNextActivePlayerIndex(),
           );
 
       if (possibleMeldedSets.length !== 0) {
@@ -274,27 +274,27 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
       return !mahjong;
     });
 
-    this.forEachPlayer((playerIndex) => {
-      this.playersData[playerIndex].declareDecision =
+    this.gameInfo.forEachPlayer((playerIndex) => {
+      this.playersData.get(playerIndex).declareDecision =
         playerIndex === this.turnController.activePlayerIndex ? 'pass' : null;
 
       if (playerIndex !== this.turnController.activePlayerIndex) {
-        const playerSettings = this.getPlayerSettings(playerIndex);
+        const playerSettings = this.gameInfo.getPlayerSettings(playerIndex);
 
         if (playerSettings.autoPass && canAutoPass[playerIndex]) {
-          this.playersData[playerIndex].declareDecision = 'pass';
+          this.playersData.get(playerIndex).declareDecision = 'pass';
         }
       }
     });
 
-    this.game.sendGameInfo();
+    this.server.sendGameInfo();
 
     while (this.playersData.some(({ declareDecision }) => declareDecision === null)) {
       const { type, value } = yield* this.race({
-        declare: this.waitForSocketEvent(GameClientEventType.DECLARE),
-        settingChange: this.game.waitForSettingChange(),
+        declare: this.server.waitForSocketEvent(GameClientEventType.DECLARE),
+        settingChange: this.server.waitForSettingChange(),
       });
-      const playerData = this.playersData[value.playerIndex];
+      const playerData = this.playersData.get(value.playerIndex);
 
       if (type === 'settingChange') {
         const { key, value: newValue } = value;
@@ -318,7 +318,7 @@ export default class Turn extends ServerEntity<GameType.MAHJONG, TurnResult> {
         playerData.declareDecision = declared;
       }
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
     }
 
     const declareDecisions = this.playersData.map(({ declareDecision }, playerIndex) => {

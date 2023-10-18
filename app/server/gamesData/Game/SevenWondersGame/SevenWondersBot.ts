@@ -6,19 +6,24 @@ import { BuildKind } from 'client/components/games/sevenWonders/SevenWondersGame
 import { GameType } from 'common/types/game';
 import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/games/sevenWonders';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'common/utilities/random';
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
+import Bot from 'server/gamesData/Game/utilities/Entity/entities/Bot';
 
-export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
+export default class SevenWondersBot extends Entity {
+  bot = this.getClosestEntity(Bot<GameType.SEVEN_WONDERS>);
+
+  time = this.obtainComponent(Time);
+
   *lifecycle(): EntityGenerator {
-    this.sendSocketEvent(GameClientEventType.PICK_CITY_SIDE, random(0, 1));
+    this.bot.client.sendSocketEvent(GameClientEventType.PICK_CITY_SIDE, random(0, 1));
 
     while (true) {
       yield* this.waitForWaitingAction();
 
-      const { discard, phase } = this.getGameInfo();
+      const { discard, phase } = this.bot.getGameInfo();
       const player = this.getPlayer();
 
       const hand = getPlayerHandCards({
@@ -32,9 +37,9 @@ export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
         agePhase: phase?.type === GamePhaseType.AGE ? phase.phase : null,
       });
 
-      yield* this.delay(random(0.2 * SECOND, SECOND, true));
+      yield* this.time.delay(random(0.2 * SECOND, SECOND, true));
 
-      this.sendSocketEvent(GameClientEventType.EXECUTE_ACTION, {
+      this.bot.client.sendSocketEvent(GameClientEventType.EXECUTE_ACTION, {
         cardIndex: getRandomIndex(hand.length),
         action:
           phase?.type === GamePhaseType.DRAFT_LEADERS
@@ -49,12 +54,12 @@ export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
               },
       });
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 
   getPlayer(): Player {
-    return this.getGameInfo().players[this.playerIndex];
+    return this.bot.getGameInfo().players[this.bot.playerIndex];
   }
 
   *waitForWaitingAction(): EntityGenerator {
@@ -65,7 +70,7 @@ export default class SevenWondersBot extends BotEntity<GameType.SEVEN_WONDERS> {
         return;
       }
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 }

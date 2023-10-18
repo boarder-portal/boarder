@@ -1,10 +1,11 @@
 import { GameType } from 'common/types/game';
 import { Round as RoundModel, RoundPlayerData, WindSide } from 'common/types/games/mahjong';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/utilities/PlayersData';
 
-import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
 export interface RoundOptions {
@@ -14,27 +15,29 @@ export interface RoundOptions {
   isLastInGame: boolean;
 }
 
-export default class Round extends ServerEntity<GameType.MAHJONG> {
-  game: MahjongGame;
+export default class Round extends Entity {
+  gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
+  server = this.obtainComponent(Server<GameType.MAHJONG, this>);
 
   wind: WindSide | null;
   handIndex = -1;
   handsCount: number;
   isLastInGame: boolean;
-  playersData: RoundPlayerData[];
+  playersData: PlayersData<RoundPlayerData>;
 
   hand: Hand | null = null;
 
-  constructor(game: MahjongGame, options: RoundOptions) {
-    super(game);
+  constructor(options: RoundOptions) {
+    super();
 
-    this.game = game;
     this.wind = options.wind;
     this.handsCount = options.handsCount;
     this.isLastInGame = options.isLastInGame;
-    this.playersData = this.getPlayersData((playerIndex) => ({
-      wind: options.playersWinds[playerIndex],
-    }));
+    this.playersData = this.gameInfo.createPlayersData({
+      init: (playerIndex) => ({
+        wind: options.playersWinds[playerIndex],
+      }),
+    });
   }
 
   *lifecycle(): EntityGenerator {
@@ -42,16 +45,16 @@ export default class Round extends ServerEntity<GameType.MAHJONG> {
       const isLastHand = this.isLastInGame && hand === this.handsCount - 1;
 
       this.handIndex = hand;
-      this.hand = new Hand(this, {
+      this.hand = this.spawnEntity(Hand, {
         startPlayerIndex: this.playersData.findIndex(({ wind }) => wind === WindSide.EAST),
         isLastInGame: isLastHand,
       });
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
 
       yield* this.waitForEntity(this.hand);
 
-      this.game.sendGameInfo();
+      this.server.sendGameInfo();
     }
   }
 

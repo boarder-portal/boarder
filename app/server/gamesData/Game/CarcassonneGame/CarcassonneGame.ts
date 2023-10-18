@@ -27,7 +27,6 @@ import {
   Score,
 } from 'common/types/games/carcassonne';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import {
   getAttachedObjectId,
   getObjectPlayerMeeples,
@@ -40,8 +39,11 @@ import {
   isGameRoad,
   isSideObject,
 } from 'common/utilities/games/carcassonne';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
-import TurnController from 'server/gamesData/Game/utilities/TurnController';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
+import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 import Turn from 'server/gamesData/Game/CarcassonneGame/entities/Turn';
 
@@ -63,27 +65,34 @@ interface AttachPlayerCardOptions {
 
 // console.log(ALL_CARDS.filter((card) => !isValidCard(card)).map(({ id }) => id));
 
-export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
-  playersData: PlayerData[] = this.getPlayersData(() => ({
-    color: PlayerColor.RED,
-    score: [],
-    cards: [],
-    meeples: {
-      [MeepleType.COMMON]: 7,
-      [MeepleType.FAT]: 1,
-      [MeepleType.BUILDER]: 1,
-      [MeepleType.PIG]: 1,
-    },
-    goods: {
-      [CityGoodsType.WHEAT]: 0,
-      [CityGoodsType.FABRIC]: 0,
-      [CityGoodsType.WINE]: 0,
-    },
-    lastMoves: [],
-  }));
-  turnController = new TurnController({
-    players: this.playersData,
-    isPlayerInPlay: (playerIndex) => this.canPlayAnyCards(playerIndex),
+export default class CarcassonneGame extends Entity<GameResult> {
+  turnController = this.addComponent(TurnController, {
+    isPlayerInPlay: this.canPlayAnyCards,
+  });
+  time = this.addComponent(Time, {
+    isPauseAvailable: () => this.gameInfo.options.withTimer,
+  });
+  gameInfo = this.obtainComponent(GameInfo<GameType.CARCASSONNE, this>);
+  server = this.obtainComponent(Server<GameType.CARCASSONNE, this>);
+
+  playersData = this.gameInfo.createPlayersData<PlayerData>({
+    init: () => ({
+      color: PlayerColor.RED,
+      score: [],
+      cards: [],
+      meeples: {
+        [MeepleType.COMMON]: 7,
+        [MeepleType.FAT]: 1,
+        [MeepleType.BUILDER]: 1,
+        [MeepleType.PIG]: 1,
+      },
+      goods: {
+        [CityGoodsType.WHEAT]: 0,
+        [CityGoodsType.FABRIC]: 0,
+        [CityGoodsType.WINE]: 0,
+      },
+      lastMoves: [],
+    }),
   });
   deck: Card[] = shuffle(
     cloneDeep(ALL_CARDS)
@@ -97,7 +106,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
   turn: Turn | null = null;
 
   *lifecycle(): EntityGenerator<GameResult> {
-    this.spawnTask(this.pingIndefinitely(15 * SECOND));
+    this.spawnTask(this.server.pingIndefinitely(15 * SECOND));
 
     this.attachCard({
       card: ALL_CARDS[0],
@@ -115,17 +124,17 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
       playerData.cards.push(...this.deck.splice(-CARDS_IN_HAND));
     });
 
-    while (this.turnController.hasActivePlayer()) {
-      this.turn = new Turn(this, {
+    while (this.turnController.hasActivePlayer) {
+      this.turn = this.spawnEntity(Turn, {
         duration: BASE_TIME + this.getPlacedCardsCount() * TURN_INCREMENT,
       });
 
-      this.sendGameInfo();
+      this.server.sendGameInfo();
 
       const placedAnyCards = yield* this.waitForEntity(this.turn);
 
       if (!placedAnyCards) {
-        this.turnController.getActivePlayer().lastMoves = [];
+        this.playersData.getActive().lastMoves = [];
       }
 
       this.turnController.passTurn();
@@ -167,7 +176,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
       });
     });
 
-    this.sendGameInfo();
+    this.server.sendGameInfo();
   }
 
   addObjectScore(object: GameObject): void {
@@ -181,7 +190,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
     let owners: number[] = [];
     let maxMeeples = 1;
 
-    this.forEachPlayer((playerIndex) => {
+    this.gameInfo.forEachPlayer((playerIndex) => {
       const meeplesCount = this.getPlayerObjectMeeples(object, playerIndex);
 
       if (meeplesCount > maxMeeples) {
@@ -224,7 +233,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
 
   addPlayerScore(playerIndex: number, score: Score): void {
     if (score.score) {
-      this.playersData[playerIndex].score.push(score);
+      this.playersData.get(playerIndex).score.push(score);
     }
   }
 
@@ -412,7 +421,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
   attachPlayerCard(options: AttachPlayerCardOptions): boolean {
     const { activePlayerIndex } = this.turnController;
     const { cardIndex, coords, rotation, meeple, isFirstTurnCard } = options;
-    const playerData = this.turnController.getActivePlayer();
+    const playerData = this.playersData.getActive();
 
     const gameCard = this.attachCard({
       card: playerData.cards[cardIndex],
@@ -498,7 +507,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
       }
     }
 
-    this.sendGameInfo();
+    this.server.sendGameInfo();
 
     return attachedToBuilder;
   }
@@ -506,11 +515,11 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
   canPlayAnyCards(playerIndex: number): boolean {
     // TODO: check for impossible cards
 
-    return this.playersData[playerIndex].cards.length !== 0;
+    return this.playersData.get(playerIndex).cards.length !== 0;
   }
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
   }
 
   getPlacedCardsCount(): number {
@@ -525,10 +534,6 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
       (count, { type }) => count + (type === MeepleType.COMMON ? 1 : type === MeepleType.FAT ? 2 : 0),
       0,
     );
-  }
-
-  isPauseAvailable(): boolean {
-    return this.options.withTimer;
   }
 
   mergeCardObject(targetObject: GameObject, mergedObject: CardObject): void {
@@ -610,7 +615,7 @@ export default class CarcassonneGame extends GameEntity<GameType.CARCASSONNE> {
 
   returnMeeples(object: GameObject): void {
     object.meeples.forEach(({ playerIndex, type }) => {
-      this.playersData[playerIndex].meeples[type]++;
+      this.playersData.get(playerIndex).meeples[type]++;
     });
 
     object.cards.forEach((coords) => {

@@ -2,20 +2,25 @@ import random from 'lodash/random';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
-import { GameClientEventType, MovePieceEvent, Player } from 'common/types/games/onitama';
+import { GameClientEventType, MovePieceEvent } from 'common/types/games/onitama';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import { getRandomElement } from 'common/utilities/random';
-import BotEntity from 'server/gamesData/Game/utilities/BotEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
+import Bot from 'server/gamesData/Game/utilities/Entity/entities/Bot';
 
-export default class OnitamaBot extends BotEntity<GameType.ONITAMA> {
+export default class OnitamaBot extends Entity {
+  bot = this.getClosestEntity(Bot<GameType.ONITAMA>);
+
+  time = this.obtainComponent(Time);
+
   *lifecycle(): EntityGenerator {
     while (true) {
       yield* this.waitForOwnTurn();
 
-      const { board } = this.getGameInfo();
-      const player = this.getPlayer();
+      const { board } = this.bot.getGameInfo();
+      const player = this.bot.getPlayer();
       const moves = board.reduce<MovePieceEvent[]>(
         (moves, row, y) =>
           row.reduce((moves, piece, x) => {
@@ -45,25 +50,21 @@ export default class OnitamaBot extends BotEntity<GameType.ONITAMA> {
         [],
       );
 
-      yield* this.delay(random(200, 700));
+      yield* this.time.delay(random(200, 700));
 
-      this.sendSocketEvent(GameClientEventType.MOVE_PIECE, getRandomElement(moves));
+      this.bot.client.sendSocketEvent(GameClientEventType.MOVE_PIECE, getRandomElement(moves));
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
-  }
-
-  getPlayer(): Player {
-    return this.getGameInfo().players[this.playerIndex];
   }
 
   *waitForOwnTurn(): EntityGenerator {
     while (true) {
-      if (this.getGameInfo()?.activePlayerIndex === this.playerIndex) {
+      if (this.bot.getGameInfo()?.activePlayerIndex === this.bot.playerIndex) {
         return;
       }
 
-      yield* this.refreshGameInfo();
+      yield* this.bot.refreshGameInfo();
     }
   }
 }

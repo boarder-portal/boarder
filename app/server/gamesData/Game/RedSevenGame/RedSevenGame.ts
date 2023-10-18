@@ -5,16 +5,20 @@ import { WIN_SCORE_BY_PLAYER_COUNT } from 'common/constants/games/redSeven';
 import { GameType } from 'common/types/game';
 import { Card, CardColor, Game, GamePlayerData, GameResult, Player } from 'common/types/games/redSeven';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getCardsScoreValue, isEqualCards } from 'common/utilities/games/redSeven/cards';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 
 import Hand from 'server/gamesData/Game/RedSevenGame/entities/Hand';
 
-export default class RedSevenGame extends GameEntity<GameType.RED_SEVEN> {
-  playersData: GamePlayerData[] = this.getPlayersData(() => ({
-    scoreCards: [],
-  }));
+export default class RedSevenGame extends Entity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.RED_SEVEN, this>);
+
+  playersData = this.gameInfo.createPlayersData<GamePlayerData>({
+    init: () => ({
+      scoreCards: [],
+    }),
+  });
   deck: Card[] = [];
   winScore = Infinity;
   prevHandsCount = 0;
@@ -28,16 +32,16 @@ export default class RedSevenGame extends GameEntity<GameType.RED_SEVEN> {
         color,
       })),
     ).flat();
-    this.winScore = WIN_SCORE_BY_PLAYER_COUNT[this.playersCount] ?? Infinity;
+    this.winScore = WIN_SCORE_BY_PLAYER_COUNT[this.gameInfo.playersCount] ?? Infinity;
 
     while (this.nextHandNeeded()) {
-      this.hand = new Hand(this, {
+      this.hand = this.spawnEntity(Hand, {
         deck: this.deck,
       });
 
       const { winnerIndex, scoreCards } = yield* this.waitForEntity(this.hand);
 
-      this.playersData[winnerIndex].scoreCards.push(...scoreCards);
+      this.playersData.get(winnerIndex).scoreCards.push(...scoreCards);
 
       this.deck = this.deck.filter((card) => scoreCards.every((scoreCard) => !isEqualCards(card, scoreCard)));
       this.prevHandsCount++;
@@ -47,17 +51,17 @@ export default class RedSevenGame extends GameEntity<GameType.RED_SEVEN> {
   }
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => ({
-      ...this.playersData[playerIndex],
-      hand: this.hand?.playersData[playerIndex] ?? null,
+    return this.gameInfo.getPlayersWithData((playerIndex) => ({
+      ...this.playersData.get(playerIndex),
+      hand: this.hand?.playersData.get(playerIndex) ?? null,
     }));
   }
 
   nextHandNeeded(): boolean {
     return (
-      (this.options.advancedRules || this.prevHandsCount === 0) &&
+      (this.gameInfo.options.advancedRules || this.prevHandsCount === 0) &&
       this.playersData.every(({ scoreCards }) => getCardsScoreValue(scoreCards) < this.winScore) &&
-      this.deck.length >= this.playersCount * 8
+      this.deck.length >= this.gameInfo.playersCount * 8
     );
   }
 

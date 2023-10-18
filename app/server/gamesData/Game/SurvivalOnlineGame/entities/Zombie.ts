@@ -1,9 +1,7 @@
-import { GameType } from 'common/types/game';
 import { Direction, ObjectType, ZombieObject } from 'common/types/games/survivalOnline';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
 import { getRandomElement } from 'common/utilities/random';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 
 import SurvivalOnlineGame, {
   ServerCell,
@@ -14,16 +12,15 @@ export interface ZombieOptions {
   cell: ServerCell;
 }
 
-export default class Zombie extends ServerEntity<GameType.SURVIVAL_ONLINE> {
-  game: SurvivalOnlineGame;
+export default class Zombie extends Entity {
+  game = this.getClosestEntity(SurvivalOnlineGame);
 
   cell: ServerCellWithEntity<Zombie>;
   direction = Direction.DOWN;
 
-  constructor(game: SurvivalOnlineGame, options: ZombieOptions) {
-    super(game);
+  constructor(options: ZombieOptions) {
+    super();
 
-    this.game = game;
     this.cell = options.cell as ServerCellWithEntity<Zombie>;
   }
 

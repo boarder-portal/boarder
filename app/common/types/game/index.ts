@@ -1,3 +1,5 @@
+import { BOTS_SUPPORTED_GAMES } from 'common/constants/game';
+
 import { BaseGamePlayer } from 'common/types';
 import { GamesParams } from 'common/types/game/params';
 
@@ -14,6 +16,8 @@ export enum GameType {
   MAHJONG = 'mahjong',
   RED_SEVEN = 'redSeven',
 }
+
+export type BotSupportedGameType = (typeof BOTS_SUPPORTED_GAMES)[number];
 
 export enum GameStatus {
   WAITING = 'WAITING',

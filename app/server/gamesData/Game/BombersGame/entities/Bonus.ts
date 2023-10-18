@@ -1,35 +1,33 @@
-import { GameType } from 'common/types/game';
 import { Bonus as BonusModel, BonusType, ObjectType } from 'common/types/games/bombers';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import ServerEntity from 'server/gamesData/Game/utilities/ServerEntity';
-
-import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
 
 export interface BonusOptions {
   id: number;
   type: BonusType;
 }
 
-export default class Bonus extends ServerEntity<GameType.BOMBERS> {
+export default class Bonus extends Entity {
+  events = this.obtainComponent(Events);
+
   id: number;
   type: BonusType;
+  consumeEvent = this.events.createEvent();
 
-  consumeTrigger = this.createTrigger();
-
-  constructor(game: BombersGame, options: BonusOptions) {
-    super(game);
+  constructor(options: BonusOptions) {
+    super();
 
     this.id = options.id;
     this.type = options.type;
   }
 
   *lifecycle(): EntityGenerator {
-    yield* this.waitForTrigger(this.consumeTrigger);
+    yield* this.events.waitForEvent(this.consumeEvent);
   }
 
   consume(): void {
-    this.consumeTrigger.activate();
+    this.consumeEvent.dispatch();
   }
 
   toJSON(): BonusModel {
