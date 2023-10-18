@@ -6,7 +6,7 @@ import urls from 'client/constants/urls';
 import typedReactMemo from 'client/types/typedReactMemo';
 import { GameType } from 'common/types/game';
 
-import { isFullscreenSupported, isScreenOrientationSupported } from 'client/utilities/browser';
+import { isFullscreenSupported, isInFullscreen, isScreenOrientationSupported } from 'client/utilities/browser';
 
 import useBoolean from 'client/hooks/useBoolean';
 import useGlobalListener from 'client/hooks/useGlobalListener';
@@ -40,7 +40,7 @@ export interface ToolbarButton {
 const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
   const { game, fullscreenOrientation, toolbarButtons, children, settings } = props;
 
-  const [inFullscreen, setInFullscreen] = useState(false);
+  const [inFullscreen, setInFullscreen] = useState(isInFullscreen());
   const { value: settingsModalOpen, setTrue: openSettingsModal, setFalse: closeSettingsModal } = useBoolean(false);
 
   const gameState = useContext(GameStateContext);
@@ -90,7 +90,7 @@ const GameContent = <Game extends GameType>(props: GameContentProps<Game>) => {
   ]);
 
   useGlobalListener('fullscreenchange', document, () => {
-    setInFullscreen(Boolean(document.fullscreenElement));
+    setInFullscreen(isInFullscreen());
   });
 
   useEffect(() => {

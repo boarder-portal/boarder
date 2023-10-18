@@ -6,6 +6,10 @@ export function isFullscreenSupported(): boolean {
   }
 }
 
+export function isInFullscreen(): boolean {
+  return Boolean(document.fullscreenElement);
+}
+
 export function isScreenOrientationSupported(): boolean {
   try {
     return typeof screen.orientation.lock === 'function';
