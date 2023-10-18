@@ -3,6 +3,7 @@ import times from 'lodash/times';
 
 import { SECOND } from 'common/constants/date';
 import {
+  DEFAULT_BUFF_COSTS,
   EXPLOSION_TICKS_COUNT,
   EXPLOSION_TICK_DURATION,
   MAPS,
@@ -17,11 +18,13 @@ import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
 import {
   BonusType,
+  BuffCosts,
   DestroyedWall,
   Direction,
   ExplodedBomb,
   ExplodedBox,
   Game,
+  GameEventType,
   GameResult,
   GameServerEventType,
   Map as MapModel,
@@ -39,6 +42,7 @@ import { getRandomElement } from 'common/utilities/random';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
 import Bomb, { BombOptions } from 'server/gamesData/Game/BombersGame/entities/Bomb';
@@ -84,6 +88,8 @@ export default class BombersGame extends Entity<GameResult> {
     return object instanceof Wall;
   }
 
+  testCase = this.getClosestComponent(TestCase<GameType.BOMBERS, this>);
+
   time = this.addComponent(Time<this>, {
     getBoundTimestamps: (): Timestamp[] => [this.startsAt, this.lastExplosionTickTimestamp],
     isPauseAvailable: () => true,
@@ -106,9 +112,13 @@ export default class BombersGame extends Entity<GameResult> {
   isDamagingBombs = true;
   mapType = this.gameInfo.options.mapType ?? getRandomElement(ALL_MAPS);
   mapLayout = this.getMapLayout();
+  buffCosts: BuffCosts = {
+    ...DEFAULT_BUFF_COSTS,
+  };
   sharedDataManager = new SharedDataManager({
     map: this.map,
     players: this.players,
+    buffCosts: this.buffCosts,
     isPassableObject: BombersGame.isPassableObject,
     deactivatePlayerBuff: (buff) => {
       buff.player.buffs.delete(buff);
@@ -129,6 +139,8 @@ export default class BombersGame extends Entity<GameResult> {
   artificialWallsSpawnInterval = START_SPAWN_WALL_TIMEOUT;
 
   *lifecycle(): EntityGenerator<GameResult> {
+    this.testCase.dispatchGameEvent(GameEventType.GAME_STARTED, this);
+
     this.spawnTask(this.server.pingIndefinitely(SECOND));
 
     this.map = this.sharedDataManager.map = this.mapLayout.map((row, y) =>
@@ -577,6 +589,7 @@ export default class BombersGame extends Entity<GameResult> {
       mapType: this.mapType,
       startsAt: this.startsAt,
       canControl: this.canControl,
+      buffCosts: this.buffCosts,
     };
   }
 

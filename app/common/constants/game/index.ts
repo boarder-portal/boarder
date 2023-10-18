@@ -1,6 +1,7 @@
 import { DEFAULT_PLAYER_SETTINGS as MAHJONG_PLAYER_SETTINGS } from 'common/constants/games/mahjong';
 
 import { GameType, PlayerSettings, TestCaseType } from 'common/types/game';
+import { TestCaseType as BombersTestCaseType } from 'common/types/games/bombers';
 import { TestCaseType as MahjongTestCaseType } from 'common/types/games/mahjong';
 
 export const DEFAULT_USE_BOTS = false;
@@ -39,6 +40,7 @@ export const PLAYER_SETTINGS: {
 export const TEST_CASES: {
   [Game in GameType]?: Record<string, TestCaseType<Game>>;
 } = {
+  [GameType.BOMBERS]: BombersTestCaseType,
   [GameType.MAHJONG]: MahjongTestCaseType,
 };
 

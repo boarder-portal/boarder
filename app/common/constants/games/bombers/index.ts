@@ -1,6 +1,6 @@
 import { SECOND } from 'common/constants/date';
 
-import { BonusType, BuffType, GameOptions, MapType } from 'common/types/games/bombers';
+import { BonusType, BuffCosts, BuffType, GameOptions, MapType } from 'common/types/games/bombers';
 
 export { default as MAPS } from './maps';
 
@@ -30,14 +30,18 @@ export const MAX_BOMB_COUNT = 10;
 export const MAX_BOMB_RANGE = 10;
 export const MAX_HP = 3;
 
-export const SUPER_SPEED_COST = 5;
 export const SUPER_SPEED = 15;
-export const SUPER_BOMB_COST = 5;
 export const SUPER_BOMB_DAMAGE = 2;
 export const SUPER_BOMB_MAX_PIERCED_OBJECTS_COUNT = 1;
-export const SUPER_RANGE_COST = 5;
 export const SUPER_RANGE = 15;
-export const INVINCIBILITY_COST = 2;
+
+export const DEFAULT_BUFF_COSTS: BuffCosts = {
+  [BuffType.SUPER_SPEED]: 5,
+  [BuffType.SUPER_BOMB]: 5,
+  [BuffType.SUPER_RANGE]: 5,
+  [BuffType.INVINCIBILITY]: 2,
+  [BuffType.BOMB_INVINCIBILITY]: 0,
+};
 
 export const START_SPAWN_WALLS_TIMEOUT = 5 * SECOND;
 export const START_SPAWN_WALL_TIMEOUT = SECOND;

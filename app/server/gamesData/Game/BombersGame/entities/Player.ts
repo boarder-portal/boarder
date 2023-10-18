@@ -1,14 +1,6 @@
 import pick from 'lodash/pick';
 
-import {
-  BOMBER_CELL_SIZE,
-  BUFF_DURATIONS,
-  INVINCIBILITY_COST,
-  MAX_HP,
-  SUPER_BOMB_COST,
-  SUPER_RANGE_COST,
-  SUPER_SPEED_COST,
-} from 'common/constants/games/bombers';
+import { BOMBER_CELL_SIZE, BUFF_DURATIONS, MAX_HP } from 'common/constants/games/bombers';
 
 import { Coords } from 'common/types';
 import { GameType } from 'common/types/game';
@@ -313,13 +305,14 @@ export default class Player extends Entity {
       return;
     }
 
+    const buffCost = this.game.buffCosts[type];
+
     if (
-      (type === BuffType.SUPER_SPEED && this.properties.speed + this.properties.speedReserve <= SUPER_SPEED_COST) ||
+      (type === BuffType.SUPER_SPEED && this.properties.speed + this.properties.speedReserve <= buffCost) ||
       (type === BuffType.SUPER_BOMB &&
-        this.properties.maxBombCount + this.properties.maxBombCountReserve <= SUPER_BOMB_COST) ||
-      (type === BuffType.SUPER_RANGE &&
-        this.properties.bombRange + this.properties.bombRangeReserve <= SUPER_RANGE_COST) ||
-      (type === BuffType.INVINCIBILITY && this.properties.hp + this.properties.hpReserve <= INVINCIBILITY_COST) ||
+        this.properties.maxBombCount + this.properties.maxBombCountReserve <= buffCost) ||
+      (type === BuffType.SUPER_RANGE && this.properties.bombRange + this.properties.bombRangeReserve <= buffCost) ||
+      (type === BuffType.INVINCIBILITY && this.properties.hp + this.properties.hpReserve <= buffCost) ||
       type === BuffType.BOMB_INVINCIBILITY
     ) {
       return;

@@ -3,20 +3,24 @@ import {
   BOMBER_CELL_MARGIN,
   BOMBER_CELL_SIZE,
   CELLS_PER_SECOND,
-  INVINCIBILITY_COST,
   MAX_BOMB_COUNT,
   MAX_BOMB_RANGE,
   MAX_HP,
   MAX_SPEED,
   SPEED_INCREMENT,
-  SUPER_BOMB_COST,
-  SUPER_RANGE_COST,
   SUPER_SPEED,
-  SUPER_SPEED_COST,
 } from 'common/constants/games/bombers';
 
 import { Coords } from 'common/types';
-import { BaseBuff, BonusType, BuffType, Direction, Line, PlayerProperties } from 'common/types/games/bombers';
+import {
+  BaseBuff,
+  BonusType,
+  BuffCosts,
+  BuffType,
+  Direction,
+  Line,
+  PlayerProperties,
+} from 'common/types/games/bombers';
 
 import Timestamp from 'common/utilities/Timestamp';
 import { isFloatZero } from 'common/utilities/float';
@@ -51,6 +55,7 @@ export interface SharedBonus {
 export interface SharedDataManagerOptions<MapObject extends MapObjectWithId, Buff extends BaseBuff> {
   map: SharedMap<MapObject>;
   players: SharedPlayer<Buff>[];
+  buffCosts: BuffCosts;
   isPassableObject(object: MapObject): boolean;
   deactivatePlayerBuff(buff: Buff, playerIndex: number): unknown;
 }
@@ -73,42 +78,45 @@ interface MovePlayerResult {
 export default class SharedDataManager<MapObject extends MapObjectWithId, Buff extends BaseBuff> {
   map: SharedMap<MapObject>;
   players: SharedPlayer<Buff>[];
+  buffCosts: BuffCosts;
   isPassableObject: SharedDataManagerOptions<MapObject, Buff>['isPassableObject'];
   deactivatePlayerBuffCallback: SharedDataManagerOptions<MapObject, Buff>['deactivatePlayerBuff'];
 
   constructor(options: SharedDataManagerOptions<MapObject, Buff>) {
     this.map = options.map;
     this.players = options.players;
+    this.buffCosts = options.buffCosts;
     this.isPassableObject = options.isPassableObject;
     this.deactivatePlayerBuffCallback = options.deactivatePlayerBuff;
   }
 
   activatePlayerBuff(playerIndex: number, type: BuffType): Buff | null {
     const player = this.players[playerIndex];
+    const buffCost = this.buffCosts[type];
     const { properties } = player;
 
     if (type === BuffType.SUPER_SPEED) {
-      const amountFromReserve = Math.min(properties.speedReserve, SUPER_SPEED_COST);
+      const amountFromReserve = Math.min(properties.speedReserve, buffCost);
 
       properties.speedReserve -= amountFromReserve;
-      properties.speed -= SUPER_SPEED_COST - amountFromReserve;
+      properties.speed -= buffCost - amountFromReserve;
     } else if (type === BuffType.SUPER_BOMB) {
-      const amountFromReserve = Math.min(properties.maxBombCountReserve, SUPER_BOMB_COST);
+      const amountFromReserve = Math.min(properties.maxBombCountReserve, buffCost);
 
       properties.maxBombCountReserve -= amountFromReserve;
-      properties.maxBombCount -= SUPER_BOMB_COST - amountFromReserve;
+      properties.maxBombCount -= buffCost - amountFromReserve;
     } else if (type === BuffType.SUPER_RANGE) {
-      const amountFromReserve = Math.min(properties.bombRangeReserve, SUPER_RANGE_COST);
+      const amountFromReserve = Math.min(properties.bombRangeReserve, buffCost);
 
       properties.bombRangeReserve -= amountFromReserve;
-      properties.bombRange -= SUPER_RANGE_COST - amountFromReserve;
+      properties.bombRange -= buffCost - amountFromReserve;
     } else if (type === BuffType.INVINCIBILITY) {
       this.deactivatePlayerBuff(playerIndex, BuffType.BOMB_INVINCIBILITY);
 
-      const amountFromReserve = Math.min(properties.hpReserve, INVINCIBILITY_COST);
+      const amountFromReserve = Math.min(properties.hpReserve, buffCost);
 
       properties.hpReserve -= amountFromReserve;
-      properties.hp -= INVINCIBILITY_COST - amountFromReserve;
+      properties.hp -= buffCost - amountFromReserve;
     }
 
     return [...player.buffs].find((buff) => buff.type === type) ?? null;

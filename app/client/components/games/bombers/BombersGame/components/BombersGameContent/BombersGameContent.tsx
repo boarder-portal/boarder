@@ -106,6 +106,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
     return new SharedDataManager({
       map: mapRef.current,
       players: playersDataRef.current,
+      buffCosts: gameInfo.buffCosts,
       isPassableObject: (object) => object.type === ObjectType.BONUS,
       deactivatePlayerBuff: (buff, playerIndex) => {
         playersDataRef.current[playerIndex].buffs.delete(buff);

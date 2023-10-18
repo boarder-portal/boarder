@@ -10,6 +10,8 @@ import {
 } from 'common/types';
 import { GameType } from 'common/types/game';
 
+import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
+
 export enum GameClientEventType {
   START_MOVING = 'START_MOVING',
   STOP_MOVING = 'STOP_MOVING',
@@ -163,12 +165,15 @@ export enum MapType {
   CRAB = 'CRAB',
 }
 
+export type BuffCosts = Record<BuffType, number>;
+
 export interface Game {
   players: Player[];
   map: Map;
   mapType: MapType;
   startsAt: Timestamp;
   canControl: boolean;
+  buffCosts: BuffCosts;
 }
 
 export interface GameResult {
@@ -177,11 +182,17 @@ export interface GameResult {
 
 export interface PlayerSettings extends BasePlayerSettings {}
 
-export enum TestCaseType {}
+export enum TestCaseType {
+  FREE_BUFFS = 'FREE_BUFFS',
+}
 
-export enum GameEventType {}
+export enum GameEventType {
+  GAME_STARTED = 'GAME_STARTED',
+}
 
-export interface GameEventMap extends CommonGameEventMap<GameType.BOMBERS> {}
+export interface GameEventMap extends CommonGameEventMap<GameType.BOMBERS> {
+  [GameEventType.GAME_STARTED]: BombersGame;
+}
 
 export interface SyncCoordsEvent {
   playerIndex: number;
