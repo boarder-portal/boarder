@@ -112,7 +112,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
         playersDataRef.current[playerIndex].buffs.delete(buff);
       },
     });
-  }, []);
+  }, [gameInfo.buffCosts]);
 
   const viewSize = useMemo<Size>(() => {
     return {
