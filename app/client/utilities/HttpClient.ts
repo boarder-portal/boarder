@@ -1,6 +1,16 @@
 import api, { API_ROOT, ApiMethodRequest, ApiMethodResponse, ApiMethodType, ApiType } from 'common/api';
 
-class HttpClient {
+export class HttpClientError extends Error {
+  response: Response;
+
+  constructor(response: Response) {
+    super(`Wrong response status ${response.status}`);
+
+    this.response = response;
+  }
+}
+
+export class HttpClient {
   private getUrl(method: string): string {
     return `${API_ROOT}/${method.replace(/\./, '/')}`;
   }
@@ -14,8 +24,8 @@ class HttpClient {
   private async fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const rawResponse = await fetch(input, init);
 
-    if (rawResponse.status !== 200) {
-      throw new Error('Request error');
+    if (rawResponse.status !== 304 && (rawResponse.status < 200 || rawResponse.status >= 300)) {
+      throw new HttpClientError(rawResponse);
     }
 
     return rawResponse;

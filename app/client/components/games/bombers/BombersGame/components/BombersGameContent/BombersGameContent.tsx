@@ -284,7 +284,7 @@ const BombersGameContent: FC<GameContentProps<GameType.BOMBERS>> = (props) => {
       const oldBuff = sharedDataManager.activatePlayerBuff(playerIndex, buff.type);
 
       if (oldBuff) {
-        oldBuff.endsAt = createTimestamp(buff.endsAt);
+        oldBuff.endsAt = endsAt;
       } else {
         playersDataRef.current[playerIndex].buffs.add({
           type: buff.type,

@@ -33,7 +33,7 @@ export default class GameInfo<Game extends GameType, E extends AnyEntity = Entit
     return `http://localhost:${PORT}${this.#gameRoot.context.game.io.name}`;
   }
 
-  createPlayersData<Data>(options: Omit<PlayersDataOptions<Data, E>, 'entity'>): PlayersData<Data> {
+  createPlayersData<Data>(options: Omit<PlayersDataOptions<Data, E>, 'entity'>): PlayersData<Data, E> {
     return new PlayersData({
       ...options,
       entity: this.entity,

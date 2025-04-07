@@ -18,6 +18,7 @@ import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import Sync from 'server/gamesData/Game/utilities/Entity/components/Sync';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 const ALL_CARDS = Object.values(CardType);
@@ -26,6 +27,7 @@ export default class OnitamaGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.ONITAMA, this>);
   server = this.obtainComponent(Server<GameType.ONITAMA, this>);
   turnController = this.obtainComponent(TurnController<this>);
+  sync = this.obtainComponent(Sync<this>);
 
   playersData = this.gameInfo.createPlayersData<PlayerData>({
     init: (playerIndex) => ({
@@ -40,6 +42,12 @@ export default class OnitamaGame extends Entity<GameResult> {
     times(5, () => null),
     times(5, (index) => ({ color: PlayerColor.RED, isMaster: index === 2 })),
   ];
+
+  syncedData = this.sync.createData<Game>(() => ({
+    board: this.board,
+    players: this.getGamePlayers(),
+    activePlayerIndex: this.turnController.activePlayerIndex,
+  }));
 
   *lifecycle(): EntityGenerator<GameResult> {
     let index = 0;

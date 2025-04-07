@@ -9,6 +9,7 @@ import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 import Bot from 'server/gamesData/Game/utilities/Entity/entities/Bot';
 import AbortError from 'server/gamesData/Game/utilities/Entity/utilities/AbortError';
+import SyncedData from 'server/gamesData/Game/utilities/Entity/utilities/SyncedData';
 
 import BombersGame from 'server/gamesData/Game/BombersGame/BombersGame';
 import CarcassonneGame from 'server/gamesData/Game/CarcassonneGame/CarcassonneGame';
@@ -24,7 +25,8 @@ import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWonder
 import SurvivalOnlineGame from 'server/gamesData/Game/SurvivalOnlineGame/SurvivalOnlineGame';
 
 export type GameEntity<Game extends GameType> = Entity<GameResult<Game>> & {
-  toJSON(): GameInfo<Game>;
+  syncedData?: SyncedData<GameInfo<Game>, GameEntity<Game>>;
+  toJSON?(): GameInfo<Game>;
 };
 
 export type GameEntityConstructor<Game extends GameType> = new () => GameEntity<Game>;
@@ -130,7 +132,7 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
       throw new Error('No game entity');
     }
 
-    return this.#gameEntity.toJSON() as GameInfo<Game>;
+    return this.#gameEntity.syncedData?.getValue() ?? (this.#gameEntity.toJSON() as GameInfo<Game>);
   }
 
   isPauseAvailable(): boolean {
