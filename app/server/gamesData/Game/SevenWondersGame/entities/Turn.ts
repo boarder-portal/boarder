@@ -3,8 +3,8 @@ import { GameClientEventType, TurnPlayerData, WaitingAction, WaitingActionType }
 
 import Entity, { AnyEntity, EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
-import PlayersData from 'server/gamesData/Game/utilities/Entity/utilities/PlayersData';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 
@@ -27,7 +27,7 @@ export default class Turn extends Entity<number[]> {
   constructor(options: TurnOptions) {
     super();
 
-    this.playersData = this.gameInfo.createPlayersData<TurnPlayerData>({
+    this.playersData = this.addComponent(PlayersData<TurnPlayerData, this>, {
       init: () => ({
         receivedCoins: 0,
         chosenActionEvent: null,
@@ -49,8 +49,6 @@ export default class Turn extends Entity<number[]> {
         ]);
 
         this.playersData.get(playerIndex).chosenActionEvent = event ?? null;
-
-        this.server.sendGameInfo();
       }
 
       const receivedCoins = this.executeActions(this.playersData);
@@ -61,8 +59,6 @@ export default class Turn extends Entity<number[]> {
         playerData.chosenActionEvent = null;
         playerData.waitingForAction = waitingActions?.[index] ?? null;
       });
-
-      this.server.sendGameInfo();
     }
 
     return this.playersData.map(({ receivedCoins }) => receivedCoins);

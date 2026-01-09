@@ -1,10 +1,12 @@
 import map from 'lodash/map';
 
+import Timestamp from 'common/utilities/Timestamp';
 import EntityComponent, {
   EntityComponentConstructor,
   SimpleEntityComponentConstructor,
 } from 'server/gamesData/Game/utilities/Entity/EntityComponent';
 import AbortError from 'server/gamesData/Game/utilities/Entity/utilities/AbortError';
+import ValueProxy, { ValueProxyWrapOptions } from 'server/gamesData/Game/utilities/Entity/utilities/ValueProxy';
 
 interface GeneratorResult<Result> {
   run(resolve: Resolve<Result>, reject: Reject): void;
@@ -76,6 +78,7 @@ export interface EntityInternalApi {
     component: EntityComponent<E>,
     constructor: EntityComponentConstructor<E>,
   ): void;
+  wrapTimestamp(entity: AnyEntity, timestamp: Timestamp): Timestamp;
 }
 
 export type AnyEntity = Entity<any>;
@@ -100,6 +103,7 @@ export interface GetComponentOptions {
 }
 
 let currentEntityParent: ParentEntity | undefined;
+let currentEntityWrapOptions: ValueProxyWrapOptions | undefined;
 let currentComponentEntity: AnyEntity | undefined;
 
 export default abstract class Entity<Result = unknown> {
@@ -108,54 +112,77 @@ export default abstract class Entity<Result = unknown> {
       return currentComponentEntity;
     },
     onAddComponentCallback(entity, component, constructor) {
-      const typeComponents = entity.#components.get(constructor);
+      const typeComponents = entity._components.get(constructor);
 
       if (typeComponents) {
         typeComponents.add(component);
       } else {
-        entity.#components.set(constructor, new Set([component]));
+        entity._components.set(constructor, new Set([component]));
       }
+    },
+    wrapTimestamp(entity, timestamp): Timestamp {
+      const wrapOptions = entity._wrapOptions;
+
+      return wrapOptions ? ValueProxy.wrap(timestamp, wrapOptions) : timestamp;
     },
   };
 
-  static #spawnEntity<Constructor extends EntityConstructor>(
+  private static _spawnEntity<Constructor extends EntityConstructor>(
     parent: ParentEntity,
     constructor: Constructor,
-    ...args: ConstructorParameters<Constructor>
+    options: {
+      wrapOptions?: ValueProxyWrapOptions | null;
+      args: ConstructorParameters<Constructor>;
+    },
   ): InstanceType<Constructor> {
-    currentEntityParent = parent;
+    const wrapOptions = options.wrapOptions ?? parent?._wrapOptions;
 
-    const entity = new constructor(...args) as InstanceType<Constructor>;
+    currentEntityParent = parent;
+    currentEntityWrapOptions = wrapOptions ?? undefined;
+
+    let entity = new constructor(...options.args) as InstanceType<Constructor>;
+
+    if (wrapOptions) {
+      entity = ValueProxy.wrap(entity, wrapOptions);
+    }
 
     currentEntityParent = undefined;
+    currentEntityWrapOptions = undefined;
 
-    entity.#run();
+    entity._run();
 
     return entity;
   }
 
   static spawnRoot<Constructor extends EntityConstructor>(
     constructor: Constructor,
+    options?: {
+      wrapOptions?: ValueProxyWrapOptions | null;
+    } | null,
     ...args: ConstructorParameters<Constructor>
   ): InstanceType<Constructor> {
-    return this.#spawnEntity(null, constructor, ...args);
+    return this._spawnEntity(null, constructor, {
+      wrapOptions: options?.wrapOptions,
+      args,
+    });
   }
 
-  readonly #parent: ParentEntity;
-  readonly #children = new Set<AnyEntity>();
-  readonly #getClosestComponentCache = new Map<EntityComponentConstructor, EntityComponent<AnyEntity> | null>();
-  readonly #getClosestEntityCache = new Map<EntityConstructor, AnyEntity | null>();
-  readonly #components = new Map<EntityComponentConstructor<this>, Set<EntityComponent<this>>>();
-  readonly #getComponentCache = new Map<EntityComponentConstructor<this>, EntityComponent<this> | null>();
-  readonly #abortCallbacks = new Set<AbortCallback>();
-  readonly #successCallbacks = new Set<Resolve<Result>>();
-  readonly #errorCallbacks = new Set<Reject>();
+  private readonly _parent: ParentEntity;
+  private readonly _wrapOptions: ValueProxyWrapOptions | null;
+  private readonly _children = new Set<AnyEntity>();
+  private readonly _getClosestComponentCache = new Map<EntityComponentConstructor, EntityComponent<AnyEntity> | null>();
+  private readonly _getClosestEntityCache = new Map<EntityConstructor, AnyEntity | null>();
+  private readonly _components = new Map<EntityComponentConstructor<this>, Set<EntityComponent<this>>>();
+  private readonly _getComponentCache = new Map<EntityComponentConstructor<this>, EntityComponent<this> | null>();
+  private readonly _abortCallbacks = new Set<AbortCallback>();
+  private readonly _successCallbacks = new Set<Resolve<Result>>();
+  private readonly _errorCallbacks = new Set<Reject>();
 
-  #started = false;
-  #initialized = false;
-  #ended = false;
-  #destroyed = false;
-  #result: EffectResult<Result> | undefined;
+  private _started = false;
+  private _initialized = false;
+  private _ended = false;
+  private _destroyed = false;
+  private _result: EffectResult<Result> | undefined;
 
   constructor() {
     if (currentEntityParent === undefined) {
@@ -164,10 +191,11 @@ export default abstract class Entity<Result = unknown> {
       );
     }
 
-    this.#parent = currentEntityParent;
+    this._parent = currentEntityParent;
+    this._wrapOptions = currentEntityWrapOptions ?? currentEntityParent?._wrapOptions ?? null;
 
-    if (this.#parent) {
-      this.#parent.#children.add(this);
+    if (this._parent) {
+      this._parent._children.add(this);
     }
   }
 
@@ -176,7 +204,7 @@ export default abstract class Entity<Result = unknown> {
       component.onInit();
     }
 
-    this.#initialized = true;
+    this._initialized = true;
   }
 
   protected abstract lifecycle(): EntityGenerator<Result>;
@@ -186,22 +214,22 @@ export default abstract class Entity<Result = unknown> {
       component.onDestroy();
     }
 
-    if (this.#parent) {
-      this.#parent.#children.delete(this);
+    if (this._parent) {
+      this._parent._children.delete(this);
     }
 
-    this.#ended = true;
+    this._ended = true;
   }
 
-  #addAbortCallback(abortCallback: AbortCallback): Unsubscribe {
-    this.#abortCallbacks.add(abortCallback);
+  private _addAbortCallback(abortCallback: AbortCallback): Unsubscribe {
+    this._abortCallbacks.add(abortCallback);
 
     return () => {
-      this.#abortCallbacks.delete(abortCallback);
+      this._abortCallbacks.delete(abortCallback);
     };
   }
 
-  #getGeneratorResult<Result>(generatorOrIterable: IterableOrGenerator<Result>): GeneratorResult<Result> {
+  private _getGeneratorResult<Result>(generatorOrIterable: IterableOrGenerator<Result>): GeneratorResult<Result> {
     const generator: EntityGenerator<Result> = generatorOrIterable[Symbol.iterator]();
     let cancel: CancelTask;
 
@@ -226,7 +254,7 @@ export default abstract class Entity<Result = unknown> {
             return resolve(iteratorResult.value);
           }
 
-          const effectResult: GeneratorResult<unknown> = this.#handleAnyEffect(iteratorResult.value);
+          const effectResult: GeneratorResult<unknown> = this._handleAnyEffect(iteratorResult.value);
 
           cancel = effectResult.cancel;
 
@@ -258,7 +286,7 @@ export default abstract class Entity<Result = unknown> {
     };
   }
 
-  #handleAnyEffect<Result>(callback: EffectCallback<Result>): GeneratorResult<Result> {
+  private _handleAnyEffect<Result>(callback: EffectCallback<Result>): GeneratorResult<Result> {
     let unregisterEffect: CancelTask;
 
     return {
@@ -304,7 +332,7 @@ export default abstract class Entity<Result = unknown> {
           },
         );
 
-        const removeUnsubscriber = this.#addAbortCallback(() => {
+        const removeUnsubscriber = this._addAbortCallback(() => {
           cleanup?.();
           reject(new AbortError('Effect aborted'));
         });
@@ -328,65 +356,65 @@ export default abstract class Entity<Result = unknown> {
     };
   }
 
-  #run(resolve?: Resolve<Result>, reject?: Reject): Unsubscribe {
+  private _run(resolve?: Resolve<Result>, reject?: Reject): Unsubscribe {
     const unsubscribe = () => {
       if (resolve) {
-        this.#successCallbacks.delete(resolve);
+        this._successCallbacks.delete(resolve);
       }
 
       if (reject) {
-        this.#errorCallbacks.delete(reject);
+        this._errorCallbacks.delete(reject);
       }
     };
 
-    if (this.#result) {
-      if (this.#result.type === 'success') {
-        resolve?.(this.#result.value);
+    if (this._result) {
+      if (this._result.type === 'success') {
+        resolve?.(this._result.value);
       } else {
-        reject?.(this.#result.error);
+        reject?.(this._result.error);
       }
 
       return unsubscribe;
     }
 
     if (resolve) {
-      this.#successCallbacks.add(resolve);
+      this._successCallbacks.add(resolve);
     }
 
     if (reject) {
-      this.#errorCallbacks.add(reject);
+      this._errorCallbacks.add(reject);
     }
 
-    if (this.#started) {
+    if (this._started) {
       return unsubscribe;
     }
 
-    this.#started = true;
+    this._started = true;
 
     this.beforeLifecycle();
 
-    if (!this.#initialized) {
+    if (!this._initialized) {
       throw new Error(`${this.constructor.name}#beforeLifecycle not called`);
     }
 
-    this.#getGeneratorResult(this.lifecycle()).run(
+    this._getGeneratorResult(this.lifecycle()).run(
       (result) => {
-        this.#setResult({
+        this._setResult({
           type: 'success',
           value: result,
         });
 
-        this.#successCallbacks.forEach((successCallback) => successCallback(result));
+        this._successCallbacks.forEach((successCallback) => successCallback(result));
       },
       (err) => {
-        this.#setResult({
+        this._setResult({
           type: 'error',
           error: err,
         });
 
-        if (this.#errorCallbacks.size > 0) {
-          this.#errorCallbacks.forEach((errorCallback) => errorCallback(err));
-        } else if (!this.#destroyed) {
+        if (this._errorCallbacks.size > 0) {
+          this._errorCallbacks.forEach((errorCallback) => errorCallback(err));
+        } else if (!this._destroyed) {
           console.log(
             new Error(`Unhandled ${this.constructor.name} run error`, {
               cause: err,
@@ -399,14 +427,14 @@ export default abstract class Entity<Result = unknown> {
     return unsubscribe;
   }
 
-  #setResult(result: EffectResult<Result>): void {
+  private _setResult(result: EffectResult<Result>): void {
     this.afterLifecycle();
 
-    if (!this.#ended) {
+    if (!this._ended) {
       throw new Error(`${this.constructor.name}#afterLifecycle not called`);
     }
 
-    this.#result = result;
+    this._result = result;
   }
 
   addComponent<Constructor extends EntityComponentConstructor<this>>(
@@ -415,11 +443,15 @@ export default abstract class Entity<Result = unknown> {
   ): InstanceType<Constructor> {
     currentComponentEntity = this;
 
-    const component = new constructor(...args) as InstanceType<Constructor>;
+    let component = new constructor(...args) as InstanceType<Constructor>;
+
+    if (this._wrapOptions) {
+      component = ValueProxy.wrap(component, this._wrapOptions);
+    }
 
     currentComponentEntity = undefined;
 
-    if (this.#initialized) {
+    if (this._initialized) {
       component.onInit();
     }
 
@@ -432,7 +464,7 @@ export default abstract class Entity<Result = unknown> {
       let resultsLeft = generators.length;
 
       const cancels = generators.map((generator, index) => {
-        const { run, cancel } = this.#getGeneratorResult(generator);
+        const { run, cancel } = this._getGeneratorResult(generator);
 
         run((result) => {
           results[index] = result;
@@ -460,13 +492,13 @@ export default abstract class Entity<Result = unknown> {
   }
 
   destroy(): void {
-    this.#destroyed = true;
+    this._destroyed = true;
 
-    for (const child of this.#children) {
+    for (const child of this._children) {
       child.destroy();
     }
 
-    for (const unsubscriber of this.#abortCallbacks) {
+    for (const unsubscriber of this._abortCallbacks) {
       unsubscriber();
     }
   }
@@ -478,7 +510,7 @@ export default abstract class Entity<Result = unknown> {
   }
 
   *getChildren<E extends AnyEntity, Constructor extends EntityConstructor<E>>(constructor?: Constructor): Generator<E> {
-    for (const child of this.#children) {
+    for (const child of this._children) {
       if (!constructor || child instanceof constructor) {
         yield child as E;
       }
@@ -488,7 +520,7 @@ export default abstract class Entity<Result = unknown> {
   *getChildrenComponents<Constructor extends EntityComponentConstructor>(
     constructor?: Constructor,
   ): Generator<InstanceType<Constructor>> {
-    for (const child of this.#children) {
+    for (const child of this._children) {
       for (const component of child.getComponents(constructor)) {
         yield component;
       }
@@ -513,7 +545,7 @@ export default abstract class Entity<Result = unknown> {
     const { cached = true, throwOnNone = true } = options;
 
     if (cached) {
-      let component = this.#getClosestComponentCache.get(constructor);
+      let component = this._getClosestComponentCache.get(constructor);
 
       if (component === undefined) {
         component = this.getClosestComponent(constructor, {
@@ -521,7 +553,7 @@ export default abstract class Entity<Result = unknown> {
           cached: false,
         });
 
-        this.#getClosestComponentCache.set(constructor, component);
+        this._getClosestComponentCache.set(constructor, component);
       }
 
       if (!component && throwOnNone) {
@@ -539,7 +571,7 @@ export default abstract class Entity<Result = unknown> {
         cached: false,
         throwOnNone: false,
       });
-      entity = entity.#parent;
+      entity = entity._parent;
     }
 
     if (!component && throwOnNone) {
@@ -565,7 +597,7 @@ export default abstract class Entity<Result = unknown> {
     const { cached = true, throwOnNone = true } = options;
 
     if (cached) {
-      let closestEntity = this.#getClosestEntityCache.get(constructor);
+      let closestEntity = this._getClosestEntityCache.get(constructor);
 
       if (closestEntity === undefined) {
         closestEntity = this.getClosestEntity(constructor, {
@@ -573,7 +605,7 @@ export default abstract class Entity<Result = unknown> {
           cached: false,
         });
 
-        this.#getClosestEntityCache.set(constructor, closestEntity);
+        this._getClosestEntityCache.set(constructor, closestEntity);
       }
 
       if (!closestEntity && throwOnNone) {
@@ -590,7 +622,7 @@ export default abstract class Entity<Result = unknown> {
         return entity as InstanceType<Constructor>;
       }
 
-      entity = (entity as AnyEntity).#parent;
+      entity = (entity as AnyEntity)._parent;
     }
 
     if (throwOnNone) {
@@ -618,7 +650,7 @@ export default abstract class Entity<Result = unknown> {
     const { cached = true, throwOnNone = true } = options;
 
     if (cached) {
-      let component = this.#getComponentCache.get(constructor);
+      let component = this._getComponentCache.get(constructor);
 
       if (component === undefined) {
         component = this.getComponent(constructor, {
@@ -626,7 +658,7 @@ export default abstract class Entity<Result = unknown> {
           cached: false,
         });
 
-        this.#getComponentCache.set(constructor, component);
+        this._getComponentCache.set(constructor, component);
       }
 
       if (!component && throwOnNone) {
@@ -636,7 +668,7 @@ export default abstract class Entity<Result = unknown> {
       return component as InstanceType<Constructor> | null;
     }
 
-    const typeComponents = this.#components.get(constructor);
+    const typeComponents = this._components.get(constructor);
     let component: InstanceType<Constructor> | null = null;
 
     if (typeComponents) {
@@ -658,7 +690,7 @@ export default abstract class Entity<Result = unknown> {
     constructor?: Constructor,
   ): Generator<InstanceType<Constructor>> {
     if (constructor) {
-      const typeComponents = this.#components.get(constructor);
+      const typeComponents = this._components.get(constructor);
 
       if (typeComponents) {
         for (const component of typeComponents) {
@@ -669,7 +701,7 @@ export default abstract class Entity<Result = unknown> {
       return;
     }
 
-    for (const components of this.#components.values()) {
+    for (const components of this._components.values()) {
       for (const component of components) {
         yield component as InstanceType<Constructor>;
       }
@@ -679,7 +711,7 @@ export default abstract class Entity<Result = unknown> {
   *getNestedChildrenComponents<Constructor extends EntityComponentConstructor>(
     constructor?: Constructor,
   ): Generator<InstanceType<Constructor>> {
-    for (const child of this.#children) {
+    for (const child of this._children) {
       for (const component of child.getComponents(constructor)) {
         yield component;
       }
@@ -717,7 +749,7 @@ export default abstract class Entity<Result = unknown> {
           return;
         }
 
-        const { run, cancel } = this.#getGeneratorResult(generator as any as EntityGenerator<Result>);
+        const { run, cancel } = this._getGeneratorResult(generator as any as EntityGenerator<Result>);
 
         run((result) => {
           resolve(Array.isArray(generators) ? result : ({ type: key, value: result } as any));
@@ -736,13 +768,13 @@ export default abstract class Entity<Result = unknown> {
 
   removeComponent<C extends EntityComponent<this>>(component: C): C {
     const { constructor } = Object.getPrototypeOf(component);
-    const typeComponents = this.#components.get(constructor);
+    const typeComponents = this._components.get(constructor);
 
     if (typeComponents) {
       typeComponents.delete(component);
 
       if (typeComponents.size === 0) {
-        this.#components.delete(constructor);
+        this._components.delete(constructor);
       }
     }
 
@@ -753,11 +785,13 @@ export default abstract class Entity<Result = unknown> {
     constructor: Constructor,
     ...args: ConstructorParameters<Constructor>
   ): InstanceType<Constructor> {
-    return Entity.#spawnEntity(this, constructor, ...args);
+    return Entity._spawnEntity(this, constructor, {
+      args,
+    });
   }
 
   spawnTask<Result>(action: EntityGenerator<Result>): EntityGenerator<Result> {
-    const { run } = this.#getGeneratorResult(action);
+    const { run } = this._getGeneratorResult(action);
 
     let taskResult: EffectResult<Result> | undefined;
     let taskResolve: Resolve<Result> | undefined;
@@ -785,7 +819,7 @@ export default abstract class Entity<Result = unknown> {
 
         if (taskReject) {
           taskReject(error);
-        } else if (!this.#destroyed) {
+        } else if (!this._destroyed) {
           console.log(
             new Error(`Unhandled ${this.constructor.name}#spawnTask error`, {
               cause: error,
@@ -812,7 +846,7 @@ export default abstract class Entity<Result = unknown> {
   }
 
   subscribe(resolve?: Resolve<Result>, reject?: Reject): Unsubscribe {
-    return this.#run(resolve, reject);
+    return this._run(resolve, reject);
   }
 
   toJSON(): unknown {
@@ -821,7 +855,7 @@ export default abstract class Entity<Result = unknown> {
 
   *waitForEntity<Result>(entity: Entity<Result>): EffectGenerator<Result> {
     return yield (resolve, reject) => {
-      return entity.#run(resolve, reject);
+      return entity._run(resolve, reject);
     };
   }
 }

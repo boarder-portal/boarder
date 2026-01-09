@@ -10,29 +10,30 @@ export interface TimeOptions<E extends AnyEntity> {
 }
 
 export default class Time<E extends AnyEntity = Entity> extends EntityComponent<E> {
-  readonly #getBoundTimestampsCallback: TimeOptions<E>['getBoundTimestamps'];
-  readonly #isPauseAvailableCallback: TimeOptions<E>['isPauseAvailable'];
-  readonly #afterPauseCallback: TimeOptions<E>['afterPause'];
-  readonly #afterUnpauseCallback: TimeOptions<E>['afterUnpause'];
+  private readonly _getBoundTimestampsCallback: TimeOptions<E>['getBoundTimestamps'];
+  private readonly _isPauseAvailableCallback: TimeOptions<E>['isPauseAvailable'];
+  private readonly _afterPauseCallback: TimeOptions<E>['afterPause'];
+  private readonly _afterUnpauseCallback: TimeOptions<E>['afterUnpause'];
 
-  readonly #timestamps = new Set<Timestamp>();
-  #paused = false;
+  private readonly _timestamps = new Set<Timestamp>();
+
+  private _paused = false;
 
   constructor(options?: TimeOptions<E>) {
     super();
 
-    this.#getBoundTimestampsCallback = options?.getBoundTimestamps;
-    this.#isPauseAvailableCallback = options?.isPauseAvailable;
-    this.#afterPauseCallback = options?.afterPause;
-    this.#afterUnpauseCallback = options?.afterUnpause;
+    this._getBoundTimestampsCallback = options?.getBoundTimestamps;
+    this._isPauseAvailableCallback = options?.isPauseAvailable;
+    this._afterPauseCallback = options?.afterPause;
+    this._afterUnpauseCallback = options?.afterUnpause;
   }
 
-  *#getBoundTimestamps(): Generator<Timestamp> {
-    for (const timestamp of this.#timestamps) {
+  private *_getBoundTimestamps(): Generator<Timestamp> {
+    for (const timestamp of this._timestamps) {
       yield timestamp;
     }
 
-    const boundTimestamps = this.#getBoundTimestampsCallback?.call(this.entity);
+    const boundTimestamps = this._getBoundTimestampsCallback?.call(this.entity);
 
     if (boundTimestamps) {
       for (const timestamp of boundTimestamps) {
@@ -43,62 +44,65 @@ export default class Time<E extends AnyEntity = Entity> extends EntityComponent<
     }
   }
 
-  #isPauseAvailable(defaultValue: boolean = false): boolean {
-    return this.#isPauseAvailableCallback?.call(this.entity) ?? defaultValue;
+  private _isPauseAvailable(defaultValue: boolean = false): boolean {
+    return this._isPauseAvailableCallback?.call(this.entity) ?? defaultValue;
   }
 
-  #pause(pausedAt: number, withChildren: boolean): void {
-    if (this.#paused || !this.#isPauseAvailable(!withChildren)) {
+  private _pause(pausedAt: number, withChildren: boolean): void {
+    if (this._paused || !this._isPauseAvailable(!withChildren)) {
       return;
     }
 
-    this.#paused = true;
+    this._paused = true;
 
-    for (const timestamp of this.#getBoundTimestamps()) {
+    for (const timestamp of this._getBoundTimestamps()) {
       timestamp.pause(pausedAt);
     }
 
     if (withChildren) {
       for (const timeComponent of this.entity.getNestedChildrenComponents(Time)) {
-        timeComponent.#pause(pausedAt, false);
+        timeComponent._pause(pausedAt, false);
       }
     }
 
-    this.#afterPauseCallback?.call(this.entity);
+    this._afterPauseCallback?.call(this.entity);
   }
 
-  #unpause(unpausedAt: number, withChildren: boolean): void {
-    if (!this.#paused || !this.#isPauseAvailable(!withChildren)) {
+  private _unpause(unpausedAt: number, withChildren: boolean): void {
+    if (!this._paused || !this._isPauseAvailable(!withChildren)) {
       return;
     }
 
-    this.#paused = false;
+    this._paused = false;
 
-    for (const timestamp of this.#getBoundTimestamps()) {
+    for (const timestamp of this._getBoundTimestamps()) {
       timestamp.unpause(unpausedAt);
     }
 
     if (withChildren) {
       for (const timeComponent of this.entity.getNestedChildrenComponents(Time)) {
-        timeComponent.#unpause(unpausedAt, false);
+        timeComponent._unpause(unpausedAt, false);
       }
     }
 
-    this.#afterUnpauseCallback?.call(this.entity);
+    this._afterUnpauseCallback?.call(this.entity);
   }
 
   get pauseAvailable(): boolean {
-    return this.#isPauseAvailable();
+    return this._isPauseAvailable();
   }
 
   get paused(): boolean {
-    return this.#paused;
+    return this._paused;
   }
 
   createTimestamp(addMs = 0): Timestamp {
-    return new Timestamp({
-      addMs,
-    });
+    return Entity.internalApi.wrapTimestamp(
+      this.entity,
+      new Timestamp({
+        addMs,
+      }),
+    );
   }
 
   *delay(ms: number): EffectGenerator<void> {
@@ -106,10 +110,10 @@ export default class Time<E extends AnyEntity = Entity> extends EntityComponent<
       const timestamp = this.createTimestamp(ms);
       const unsubscribe = timestamp.subscribe(resolve);
 
-      this.#timestamps.add(timestamp);
+      this._timestamps.add(timestamp);
 
       return () => {
-        this.#timestamps.delete(timestamp);
+        this._timestamps.delete(timestamp);
 
         unsubscribe();
       };
@@ -117,7 +121,7 @@ export default class Time<E extends AnyEntity = Entity> extends EntityComponent<
   }
 
   pause(pausedAt: number): void {
-    this.#pause(pausedAt, true);
+    this._pause(pausedAt, true);
   }
 
   *repeatTask<Result = void>(ms: number, task: (this: E) => EntityGenerator<Result | void>): EntityGenerator<Result> {
@@ -138,7 +142,7 @@ export default class Time<E extends AnyEntity = Entity> extends EntityComponent<
   }
 
   unpause(unpausedAt: number): void {
-    this.#unpause(unpausedAt, true);
+    this._unpause(unpausedAt, true);
   }
 
   *waitForTimestamp(timestamp: Timestamp): EffectGenerator<void> {

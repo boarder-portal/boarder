@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { userSchema } from 'common/api/auth';
 
-import { GameData, GameInfo, GameResult, GameState, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
+import { GameData, GameResult, GameState, GameType, PlayerSettings, TestCaseType } from 'common/types/game';
 
 export type User = z.infer<typeof userSchema>;
 
@@ -79,7 +79,7 @@ export interface CommonClientEventMap<Game extends GameType> {
 export interface CommonServerEventMap<Game extends GameType> {
   [CommonGameServerEvent.UPDATE_STATE]: GameState;
   [CommonGameServerEvent.GET_DATA]: GameData<Game>;
-  [CommonGameServerEvent.GET_INFO]: GameInfo<Game>;
+  [CommonGameServerEvent.GET_INFO]: string;
   [CommonGameServerEvent.UPDATE_PLAYERS]: BaseGamePlayer<Game>[];
   [CommonGameServerEvent.PING]: number;
   [CommonGameServerEvent.END]: GameResult<Game>;

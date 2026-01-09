@@ -10,36 +10,36 @@ export interface TimestampOptions {
 }
 
 export default class Timestamp implements TimestampModel {
-  #value: number;
-  #pausedAt: number | null;
-  #runTimer: NodeJS.Timeout | undefined;
-  #subscribers = new Set<Subscriber>();
+  private _value: number;
+  private _pausedAt: number | null;
+  private _runTimer: NodeJS.Timeout | undefined;
+  private _subscribers = new Set<Subscriber>();
 
   constructor(options: TimestampOptions) {
-    this.#value = now() + (options.addMs ?? 0);
-    this.#pausedAt = options.pausedAt ?? null;
+    this._value = now() + (options.addMs ?? 0);
+    this._pausedAt = options.pausedAt ?? null;
 
-    this.#setTimer();
+    this._setTimer();
   }
 
-  #setTimer(): void {
-    this.#runTimer = setTimeout(() => {
-      for (const subscriber of this.#subscribers) {
+  private _setTimer(): void {
+    this._runTimer = setTimeout(() => {
+      for (const subscriber of this._subscribers) {
         subscriber();
       }
     }, this.timeLeft);
   }
 
   get value(): number {
-    return this.#value;
+    return this._value;
   }
 
   get pausedAt(): number | null {
-    return this.#pausedAt;
+    return this._pausedAt;
   }
 
   get timeLeft(): number {
-    return this.#value - (this.#pausedAt ?? now());
+    return this._value - (this._pausedAt ?? now());
   }
 
   get timePassed(): number {
@@ -47,40 +47,40 @@ export default class Timestamp implements TimestampModel {
   }
 
   pause(pausedAt: number): void {
-    if (this.#pausedAt !== null) {
+    if (this._pausedAt !== null) {
       return;
     }
 
-    this.#pausedAt = pausedAt;
+    this._pausedAt = pausedAt;
 
-    if (this.#runTimer) {
-      clearTimeout(this.#runTimer);
+    if (this._runTimer) {
+      clearTimeout(this._runTimer);
     }
   }
 
   subscribe(callback: Subscriber): () => void {
-    this.#subscribers.add(callback);
+    this._subscribers.add(callback);
 
     return () => {
-      this.#subscribers.delete(callback);
+      this._subscribers.delete(callback);
     };
   }
 
   toJSON(): TimestampModel {
     return {
-      value: this.#value,
-      pausedAt: this.#pausedAt,
+      value: this._value,
+      pausedAt: this._pausedAt,
     };
   }
 
   unpause(unpausedAt: number): void {
-    if (this.#pausedAt === null) {
+    if (this._pausedAt === null) {
       return;
     }
 
-    this.#value += unpausedAt - this.#pausedAt;
-    this.#pausedAt = null;
+    this._value += unpausedAt - this._pausedAt;
+    this._pausedAt = null;
 
-    this.#setTimer();
+    this._setTimer();
   }
 }

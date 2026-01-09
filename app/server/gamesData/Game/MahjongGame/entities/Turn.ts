@@ -20,6 +20,7 @@ import {
 import { isEqualTilesCallback, isPlayable } from 'common/utilities/games/mahjong/tiles';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
@@ -46,7 +47,7 @@ export default class Turn extends Entity<TurnResult> {
   currentTileIndex: number;
   isReplacementTile: boolean;
   declareInfo: DeclareInfo | null = null;
-  playersData = this.gameInfo.createPlayersData<TurnPlayerData>({
+  playersData = this.addComponent(PlayersData<TurnPlayerData, this>, {
     init: () => ({
       declareDecision: null,
     }),
@@ -81,14 +82,10 @@ export default class Turn extends Entity<TurnResult> {
 
             this.adjustCurrentTileIndex();
 
-            this.server.sendGameInfo();
-
             if (!tile) {
               break;
             }
           }
-
-          this.server.sendGameInfo();
         }
 
         continue;
@@ -133,8 +130,6 @@ export default class Turn extends Entity<TurnResult> {
 
           this.adjustCurrentTileIndex();
 
-          this.server.sendGameInfo();
-
           if (!this.currentTile) {
             break;
           }
@@ -157,14 +152,10 @@ export default class Turn extends Entity<TurnResult> {
             continue;
           }
 
-          this.server.sendGameInfo();
-
           const otherDeclared = yield* this.waitForDeclare(kongTile, true);
 
           if (otherDeclared !== null) {
             this.hand.downgradeToPung(declaredSet);
-
-            this.server.sendGameInfo();
 
             return otherDeclared;
           }
@@ -178,8 +169,6 @@ export default class Turn extends Entity<TurnResult> {
         this.currentTile = lastAddedTile;
 
         this.adjustCurrentTileIndex();
-
-        this.server.sendGameInfo();
 
         if (!lastAddedTile) {
           break;
@@ -204,10 +193,8 @@ export default class Turn extends Entity<TurnResult> {
 
       const declared = yield* this.waitForDeclare(tile, false);
 
-      if (declared !== null) {
+      if (declared) {
         this.hand.removeTileFromDiscard();
-
-        this.server.sendGameInfo();
 
         return declared;
       }
@@ -228,8 +215,6 @@ export default class Turn extends Entity<TurnResult> {
 
   changeCurrentTileIndex(newCurrentTileIndex: number): void {
     this.currentTileIndex = newCurrentTileIndex;
-
-    this.server.sendGameInfo();
   }
 
   toJSON(): TurnModel {
@@ -287,8 +272,6 @@ export default class Turn extends Entity<TurnResult> {
       }
     });
 
-    this.server.sendGameInfo();
-
     while (this.playersData.some(({ declareDecision }) => declareDecision === null)) {
       const { type, value } = yield* this.race({
         declare: this.server.waitForSocketEvent(GameClientEventType.DECLARE),
@@ -317,8 +300,6 @@ export default class Turn extends Entity<TurnResult> {
 
         playerData.declareDecision = declared;
       }
-
-      this.server.sendGameInfo();
     }
 
     const declareDecisions = this.playersData.map(({ declareDecision }, playerIndex) => {

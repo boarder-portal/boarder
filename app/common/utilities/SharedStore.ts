@@ -14,48 +14,48 @@ export type SharedStoreValue<Key extends SharedStoreKey> = SharedStoreValues[Key
 export type SharedStoreSubscriber = <Key extends SharedStoreKey>(key: Key, value: SharedStoreValue<Key>) => unknown;
 
 export default class SharedStore {
-  #values: SharedStoreValues = {
+  private _values: SharedStoreValues = {
     user: null,
   };
-  #subscribers = new Set<SharedStoreSubscriber>();
+  private _subscribers = new Set<SharedStoreSubscriber>();
 
   constructor(json?: Partial<SharedStoreValues>) {
     if (json) {
       forEach(json, (value, key) => {
         if (value !== undefined) {
-          this.#values[key as SharedStoreKey] = value;
+          this._values[key as SharedStoreKey] = value;
         }
       });
     }
   }
 
   getValue<Key extends SharedStoreKey>(key: Key): SharedStoreValue<Key> {
-    return this.#values[key];
+    return this._values[key];
   }
 
   setValue<Key extends SharedStoreKey>(
     key: Key,
     value: SharedStoreValue<Key> | ((value: SharedStoreValue<Key>) => SharedStoreValue<Key>),
   ): void {
-    const newValue = typeof value === 'function' ? value(this.#values[key]) : value;
+    const newValue = typeof value === 'function' ? value(this._values[key]) : value;
 
-    this.#values[key] = newValue;
+    this._values[key] = newValue;
 
-    for (const subscriber of this.#subscribers) {
+    for (const subscriber of this._subscribers) {
       subscriber(key, newValue);
     }
   }
 
   subscribe(subscriber: SharedStoreSubscriber): () => void {
-    this.#subscribers.add(subscriber);
+    this._subscribers.add(subscriber);
 
     return () => {
-      this.#subscribers.delete(subscriber);
+      this._subscribers.delete(subscriber);
     };
   }
 
   toJSON(): SharedStoreValues {
-    return this.#values;
+    return this._values;
   }
 }
 

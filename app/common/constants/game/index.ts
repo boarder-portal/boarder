@@ -54,3 +54,10 @@ export const BOTS_SUPPORTED_GAMES = [
 ] as const;
 
 export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN];
+
+export const NO_SYNC_GAMES: GameType[] = [
+  GameType.PEXESO,
+  GameType.SURVIVAL_ONLINE,
+  GameType.BOMBERS,
+  GameType.MACHI_KORO,
+];

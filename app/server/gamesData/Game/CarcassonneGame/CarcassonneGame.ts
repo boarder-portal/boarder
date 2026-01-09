@@ -42,6 +42,7 @@ import {
 } from 'common/utilities/games/carcassonne';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
@@ -79,7 +80,7 @@ export default class CarcassonneGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.CARCASSONNE, this>);
   server = this.obtainComponent(Server<GameType.CARCASSONNE, this>);
 
-  playersData = this.gameInfo.createPlayersData<PlayerData>({
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
     init: () => ({
       color: PlayerColor.RED,
       score: [],
@@ -137,8 +138,6 @@ export default class CarcassonneGame extends Entity<GameResult> {
         duration: BASE_TIME + this.getPlacedCardsCount() * TURN_INCREMENT,
       });
 
-      this.server.sendGameInfo();
-
       const placedAnyCards = yield* this.waitForEntity(this.turn);
 
       if (!placedAnyCards) {
@@ -183,8 +182,6 @@ export default class CarcassonneGame extends Entity<GameResult> {
         }
       });
     });
-
-    this.server.sendGameInfo();
   }
 
   addObjectScore(object: GameObject): void {
@@ -514,8 +511,6 @@ export default class CarcassonneGame extends Entity<GameResult> {
         attachedToBuilder = true;
       }
     }
-
-    this.server.sendGameInfo();
 
     return attachedToBuilder;
   }

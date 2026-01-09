@@ -17,6 +17,7 @@ import { equalsCoords, equalsCoordsCb } from 'common/utilities/coords';
 import { getLegalMoves } from 'common/utilities/games/onitama/moves';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
@@ -27,7 +28,7 @@ export default class OnitamaGame extends Entity<GameResult> {
   server = this.obtainComponent(Server<GameType.ONITAMA, this>);
   turnController = this.obtainComponent(TurnController<this>);
 
-  playersData = this.gameInfo.createPlayersData<PlayerData>({
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
     init: (playerIndex) => ({
       color: playerIndex === 0 ? PlayerColor.BLUE : PlayerColor.RED,
       cards: [],
@@ -99,14 +100,10 @@ export default class OnitamaGame extends Entity<GameResult> {
 
         this.turnController.turnOff();
 
-        this.server.sendGameInfo();
-
         break;
       }
 
       this.turnController.passTurn();
-
-      this.server.sendGameInfo();
     }
 
     return result;

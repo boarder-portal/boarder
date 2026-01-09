@@ -18,6 +18,7 @@ import {
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
@@ -30,7 +31,7 @@ export default class MachiKoroGame extends Entity<GameResult> {
   time = this.obtainComponent(Time);
   server = this.obtainComponent(Server<GameType.MACHI_KORO, this>);
 
-  playersData = this.gameInfo.createPlayersData<PlayerData>({
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
     init: () => ({
       coins: 3,
       cardsIds: [CardId.WHEAT_FIELD, CardId.BAKERY],

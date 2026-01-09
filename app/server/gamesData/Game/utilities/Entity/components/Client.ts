@@ -23,16 +23,16 @@ export interface ClientOptions {
 }
 
 export default class Client<Game extends GameType, E extends AnyEntity = Entity> extends EntityComponent<E> {
-  readonly #getSocketAddressCallback?: ClientOptions['getSocketAddress'];
+  private readonly _getSocketAddressCallback?: ClientOptions['getSocketAddress'];
 
-  readonly #gameInfo = this.entity.obtainComponent(GameInfo<Game, E>);
+  private readonly _gameInfo = this.entity.obtainComponent(GameInfo<Game, E>);
 
-  #socket: GameClientSocket<Game> | null = null;
+  private _socket: GameClientSocket<Game> | null = null;
 
   constructor(options?: ClientOptions) {
     super();
 
-    this.#getSocketAddressCallback = options?.getSocketAddress;
+    this._getSocketAddressCallback = options?.getSocketAddress;
   }
 
   onInit(): void {
@@ -40,7 +40,7 @@ export default class Client<Game extends GameType, E extends AnyEntity = Entity>
 
     this.entity.obtainComponent(GameInfo);
 
-    this.#socket = io(this.#getSocketAddress(), {
+    this._socket = io(this._getSocketAddress(), {
       forceNew: true,
     });
   }
@@ -48,26 +48,26 @@ export default class Client<Game extends GameType, E extends AnyEntity = Entity>
   onDestroy(): void {
     super.onDestroy();
 
-    this.#socket?.disconnect();
+    this._socket?.disconnect();
   }
 
-  #getSocket(): GameClientSocket<Game> {
-    if (!this.#socket) {
+  private _getSocket(): GameClientSocket<Game> {
+    if (!this._socket) {
       throw new Error('No connected socket');
     }
 
-    return this.#socket;
+    return this._socket;
   }
 
-  #getSocketAddress(): string {
-    return this.#getSocketAddressCallback?.() ?? this.#gameInfo.serverAddress;
+  private _getSocketAddress(): string {
+    return this._getSocketAddressCallback?.() ?? this._gameInfo.serverAddress;
   }
 
-  #listenSocketEvent<Event extends GameServerEvent<Game>>(
+  private _listenSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
     listener: GameServerEventListener<Game, Event>,
   ): () => void {
-    const socket = this.#getSocket();
+    const socket = this._getSocket();
 
     socket.on(event, listener as any);
 
@@ -80,7 +80,7 @@ export default class Client<Game extends GameType, E extends AnyEntity = Entity>
   sendSocketEvent<Event extends GameClientEvent<Game>>(event: Event, data: GameClientEventData<Game, Event>): void;
   sendSocketEvent<Event extends GameClientEvent<Game>>(event: Event, data: GameClientEventData<Game, Event>): void {
     // @ts-ignore
-    this.#getSocket().emit(event, data);
+    this._getSocket().emit(event, data);
   }
 
   *waitForGameData(): EntityGenerator<GameData<Game>> {
@@ -88,14 +88,14 @@ export default class Client<Game extends GameType, E extends AnyEntity = Entity>
   }
 
   *waitForGameInfo(): EntityGenerator<GameInfoModel<Game>> {
-    return yield* this.waitForSocketEvent(CommonGameServerEvent.GET_INFO);
+    return JSON.parse(yield* this.waitForSocketEvent(CommonGameServerEvent.GET_INFO));
   }
 
   *waitForSocketEvent<Event extends GameServerEvent<Game>>(
     event: Event,
   ): EffectGenerator<GameServerEventData<Game, Event>> {
     return yield (resolve) => {
-      return this.#listenSocketEvent(event, resolve);
+      return this._listenSocketEvent(event, resolve);
     };
   }
 }

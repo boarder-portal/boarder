@@ -38,7 +38,7 @@ import {
 } from 'common/utilities/games/sevenWonders/isEffect';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import Age from 'server/gamesData/Game/SevenWondersGame/entities/Age';
 import LeadersDraft from 'server/gamesData/Game/SevenWondersGame/entities/LeadersDraft';
@@ -61,9 +61,8 @@ interface AgePhase {
 
 export default class SevenWondersGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
-  server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
 
-  playersData = this.gameInfo.createPlayersData<GamePlayerData>({
+  playersData = this.addComponent(PlayersData<GamePlayerData, this>, {
     init: () => ({
       points: 0,
       builtCards: [],
@@ -92,8 +91,6 @@ export default class SevenWondersGame extends Entity<GameResult> {
       type: GamePhaseType.PICK_CITY_SIDE,
       pickCitySide: this.spawnEntity(PickCitySide),
     };
-
-    this.server.sendGameInfo();
 
     const citiesInfo = yield* this.waitForEntity(this.phase.pickCitySide);
 
@@ -137,8 +134,6 @@ export default class SevenWondersGame extends Entity<GameResult> {
         leadersDraft: this.spawnEntity(LeadersDraft),
       };
 
-      this.server.sendGameInfo();
-
       const pickedLeaders = yield* this.waitForEntity(this.phase.leadersDraft);
 
       this.playersData.forEach((playerData, index) => {
@@ -154,11 +149,7 @@ export default class SevenWondersGame extends Entity<GameResult> {
         }),
       };
 
-      this.server.sendGameInfo();
-
       yield* this.waitForEntity(this.phase.age);
-
-      this.server.sendGameInfo();
     }
 
     this.playersData.forEach((playerData, playerIndex) => {
@@ -166,8 +157,6 @@ export default class SevenWondersGame extends Entity<GameResult> {
     });
 
     this.phase = null;
-
-    this.server.sendGameInfo();
   }
 
   addDefeatToken(playerIndex: number): void {

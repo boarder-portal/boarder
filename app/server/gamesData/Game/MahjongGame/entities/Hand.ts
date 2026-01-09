@@ -39,6 +39,7 @@ import { isFlower } from 'common/utilities/games/mahjong/tilesBase';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import Events from 'server/gamesData/Game/utilities/Entity/components/Events';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
@@ -71,7 +72,7 @@ export default class Hand extends Entity {
 
   isLastInGame: boolean;
   phase = HandPhase.REPLACE_FLOWERS;
-  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+  playersData = this.addComponent(PlayersData<HandPlayerData, this>, {
     init: () => ({
       hand: [],
       declaredSets: [],
@@ -132,8 +133,6 @@ export default class Hand extends Entity {
             if (value.key === 'autoReplaceFlowers' && value.value) {
               this.replaceFlowers();
 
-              this.server.sendGameInfo();
-
               break;
             }
 
@@ -151,8 +150,6 @@ export default class Hand extends Entity {
           }
 
           this.replaceFlower(declared.flower);
-
-          this.server.sendGameInfo();
         }
       }
 
@@ -187,8 +184,6 @@ export default class Hand extends Entity {
         currentTileIndex: addedTileIndex,
         isReplacementTile: this.isReplacementTile,
       });
-
-      this.server.sendGameInfo();
 
       const result = yield* this.waitForEntity(this.turn);
 
@@ -232,15 +227,12 @@ export default class Hand extends Entity {
     this.finishEvent.dispatch();
 
     this.game.addHandResult(handResult);
-    this.server.sendGameInfo();
 
     if (!this.isLastInGame) {
       while (this.playersData.some(({ readyForNewHand }) => !readyForNewHand)) {
         const { data, playerIndex } = yield* this.server.waitForSocketEvent(GameClientEventType.READY_FOR_NEW_HAND);
 
         this.playersData.get(playerIndex).readyForNewHand = data;
-
-        this.server.sendGameInfo();
       }
     }
   }
@@ -325,8 +317,6 @@ export default class Hand extends Entity {
     moveElement(this.playersData.get(playerIndex).hand, from, to);
 
     this.turn?.changeCurrentTileIndex(getNewCurrentTileIndex(this.turn.currentTileIndex, from, to));
-
-    this.server.sendGameInfo();
   }
 
   discardTile(tile: Tile): void {
@@ -472,8 +462,6 @@ export default class Hand extends Entity {
 
   sortPlayerTiles(playerIndex: number): void {
     this.playersData.get(playerIndex).hand = sortBy(this.playersData.get(playerIndex).hand, getTileSortValue);
-
-    this.server.sendGameInfo();
   }
 
   toJSON(): HandModel {

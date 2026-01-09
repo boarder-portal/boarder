@@ -3,12 +3,12 @@ export type EventCallback<Value> = (value: Value) => unknown;
 export type Unsubscribe = () => void;
 
 export default class Event<Value = void> {
-  readonly #callbacks = new Set<EventCallback<Value>>();
+  private readonly _callbacks = new Set<EventCallback<Value>>();
 
   dispatch(value: Value): void {
-    const startingCallbacks = new Set(this.#callbacks);
+    const startingCallbacks = new Set(this._callbacks);
 
-    for (const callback of this.#callbacks) {
+    for (const callback of this._callbacks) {
       if (startingCallbacks.has(callback)) {
         callback(value);
       }
@@ -16,10 +16,10 @@ export default class Event<Value = void> {
   }
 
   subscribe(callback: EventCallback<Value>): Unsubscribe {
-    this.#callbacks.add(callback);
+    this._callbacks.add(callback);
 
     return () => {
-      this.#callbacks.delete(callback);
+      this._callbacks.delete(callback);
     };
   }
 }

@@ -9,19 +9,19 @@ export interface TurnControllerOptions<E extends AnyEntity> {
 }
 
 export default class TurnController<E extends AnyEntity = Entity> extends EntityComponent<E> {
-  readonly #getNextPlayerIndexCallback: TurnControllerOptions<E>['getNextPlayerIndex'];
-  readonly #isPlayerInPlayCallback: TurnControllerOptions<E>['isPlayerInPlay'];
+  private readonly _gameInfo = this.entity.obtainComponent(GameInfo);
 
-  readonly #gameInfo = this.entity.obtainComponent(GameInfo);
+  private readonly _getNextPlayerIndexCallback: TurnControllerOptions<E>['getNextPlayerIndex'];
+  private readonly _isPlayerInPlayCallback: TurnControllerOptions<E>['isPlayerInPlay'];
 
   activePlayerIndex: number;
 
   constructor(options?: TurnControllerOptions<E>) {
     super();
 
+    this._getNextPlayerIndexCallback = options?.getNextPlayerIndex;
+    this._isPlayerInPlayCallback = options?.isPlayerInPlay;
     this.activePlayerIndex = options?.startPlayerIndex ?? 0;
-    this.#getNextPlayerIndexCallback = options?.getNextPlayerIndex;
-    this.#isPlayerInPlayCallback = options?.isPlayerInPlay;
   }
 
   get hasActivePlayer(): boolean {
@@ -45,13 +45,13 @@ export default class TurnController<E extends AnyEntity = Entity> extends Entity
 
   getNextPlayerIndex(playerIndex: number): number {
     return (
-      this.#getNextPlayerIndexCallback?.call(this.entity, playerIndex) ??
-      (playerIndex + 1) % this.#gameInfo.playersCount
+      this._getNextPlayerIndexCallback?.call(this.entity, playerIndex) ??
+      (playerIndex + 1) % this._gameInfo.playersCount
     );
   }
 
   isPlayerInPlay(playerIndex: number): boolean {
-    return this.#isPlayerInPlayCallback?.call(this.entity, playerIndex) ?? true;
+    return this._isPlayerInPlayCallback?.call(this.entity, playerIndex) ?? true;
   }
 
   passTurn(): void {

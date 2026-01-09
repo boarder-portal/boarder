@@ -8,13 +8,14 @@ import { Card, CardColor, Game, GamePlayerData, GameResult, Player } from 'commo
 import { getCardsScoreValue, isEqualCards } from 'common/utilities/games/redSeven/cards';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import Hand from 'server/gamesData/Game/RedSevenGame/entities/Hand';
 
 export default class RedSevenGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.RED_SEVEN, this>);
 
-  playersData = this.gameInfo.createPlayersData<GamePlayerData>({
+  playersData = this.addComponent(PlayersData<GamePlayerData, this>, {
     init: () => ({
       scoreCards: [],
     }),

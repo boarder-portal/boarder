@@ -27,13 +27,14 @@ import { findSet, isSet } from 'common/utilities/games/set/set';
 import { isDefined } from 'common/utilities/is';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 export default class SetGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.SET, this>);
   server = this.obtainComponent(Server<GameType.SET, this>);
 
-  playersData = this.gameInfo.createPlayersData<PlayerData>({
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
     init: () => ({
       score: 0,
     }),
@@ -90,8 +91,6 @@ export default class SetGame extends Entity<GameResult> {
         } else {
           playerData.score += WRONG_SET_POINTS;
         }
-
-        this.server.sendGameInfo();
       } else if (findSet(this.cards)) {
         playerData.score += WRONG_NO_SET_POINTS;
       } else {
@@ -105,8 +104,6 @@ export default class SetGame extends Entity<GameResult> {
           }
         });
       }
-
-      this.server.sendGameInfo();
     }
 
     return this.playersData.map(({ score }) => score);

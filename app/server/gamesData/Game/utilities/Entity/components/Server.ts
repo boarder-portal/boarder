@@ -16,7 +16,6 @@ import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo
 import Player from 'server/gamesData/Game/utilities/Entity/components/Player';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
-import GameRoot from 'server/gamesData/Game/utilities/Entity/entities/GameRoot';
 
 import { SendSocketEventOptions } from 'server/gamesData/Game/Game';
 
@@ -69,41 +68,40 @@ export interface ServerOptions {
 }
 
 export default class Server<Game extends GameType, E extends AnyEntity = Entity> extends EntityComponent<E> {
-  readonly #gameRoot = this.entity.getClosestEntity(GameRoot<Game>);
+  private readonly _gameInfo = this.entity.obtainComponent(GameInfo<Game, E>);
+  private readonly _time = this.entity.obtainComponent(Time);
 
-  readonly #gameInfo = this.entity.obtainComponent(GameInfo<Game, E>);
-  readonly #time = this.entity.obtainComponent(Time);
-
-  readonly #optionsPlayer?: Player;
-  readonly #optionsTurnController?: TurnController;
+  private readonly _optionsPlayer?: Player;
+  private readonly _optionsTurnController?: TurnController;
 
   constructor(options?: ServerOptions) {
     super();
 
-    this.#optionsTurnController = options?.turnController;
+    this._optionsPlayer = options?.player;
+    this._optionsTurnController = options?.turnController;
   }
 
-  get #player(): Player {
-    return this.#optionsPlayer ?? this.entity.getClosestComponent(Player);
+  private get _player(): Player {
+    return this._optionsPlayer ?? this.entity.getClosestComponent(Player);
   }
 
-  get #turnController(): TurnController {
-    return this.#optionsTurnController ?? this.entity.getClosestComponent(TurnController);
+  private get _turnController(): TurnController {
+    return this._optionsTurnController ?? this.entity.getClosestComponent(TurnController);
   }
 
-  #getSettingChangeEvent(playerIndex: number, event: ChangeSettingEvent<Game>): SettingsChangeEvent<Game> {
+  private _getSettingChangeEvent(playerIndex: number, event: ChangeSettingEvent<Game>): SettingsChangeEvent<Game> {
     return {
       playerIndex,
-      settings: this.#gameInfo.getPlayerSettings(playerIndex),
+      settings: this._gameInfo.getPlayerSettings(playerIndex),
       ...event,
     };
   }
 
-  #isTimePaused(): boolean {
-    return this.#time.paused;
+  private _isTimePaused(): boolean {
+    return this._time.paused;
   }
 
-  #validate<Data>(data: Data, validator?: (data: Data) => unknown): boolean {
+  private _validate<Data>(data: Data, validator?: (data: Data) => unknown): boolean {
     try {
       validator?.(data);
 
@@ -120,7 +118,7 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
   ): EntityGenerator<Result> {
     return yield* this.listenForPlayerSocketEvent(event, callback, {
       ...options,
-      playerIndex: this.#player.index,
+      playerIndex: this._player.index,
     });
   }
 
@@ -130,15 +128,15 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     options: WaitForPlayerSocketEventOptions<Game, Event>,
   ): EffectGenerator<Result> {
     return yield (resolve, reject) => {
-      return this.#gameInfo.game.listenSocketEvent(
+      return this._gameInfo.game.listenSocketEvent(
         event,
         (data) => {
-          if (this.#isTimePaused()) {
+          if (this._isTimePaused()) {
             return;
           }
 
           try {
-            if (this.#validate(data, options?.validate)) {
+            if (this._validate(data, options?.validate)) {
               const result = callback(data);
 
               if (result !== undefined) {
@@ -160,13 +158,13 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     options?: WaitForSocketEventOptions<Game, Event>,
   ): EffectGenerator<Result> {
     return yield (resolve, reject) => {
-      return this.#gameInfo.game.listenSocketEvent(event, (data, playerIndex) => {
-        if (this.#isTimePaused()) {
+      return this._gameInfo.game.listenSocketEvent(event, (data, playerIndex) => {
+        if (this._isTimePaused()) {
           return;
         }
 
         try {
-          if (this.#validate(data, options?.validate)) {
+          if (this._validate(data, options?.validate)) {
             const result = callback({
               data,
               playerIndex,
@@ -187,7 +185,7 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     callback: (event: SettingsChangeEvent<Game>) => Result,
   ): EntityGenerator<Result> {
     return yield* this.listenForSocketEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) =>
-      callback(this.#getSettingChangeEvent(playerIndex, data as any)),
+      callback(this._getSettingChangeEvent(playerIndex, data as any)),
     );
   }
 
@@ -198,19 +196,9 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
   *pingIndefinitely(interval: number): EntityGenerator {
     const server = this;
 
-    yield* this.#time.repeatTask(interval, function* () {
+    yield* this._time.repeatTask(interval, function* () {
       server.ping();
     });
-  }
-
-  sendGameInfo(): void {
-    try {
-      this.sendSocketEvent(CommonGameServerEvent.GET_INFO, this.#gameRoot.getGameInfo(), {
-        batch: true,
-      });
-    } catch {
-      // empty
-    }
   }
 
   sendSocketEvent<Event extends GameServerDatalessEvent<Game>>(
@@ -228,11 +216,11 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     data: GameServerEventData<Game, Event>,
     options?: SendSocketEventOptions<Game>,
   ): void {
-    this.#gameInfo.game.sendSocketEvent(event, data, options);
+    this._gameInfo.game.sendSocketEvent(event, data, options);
   }
 
   sendUpdatePlayersEvent(): void {
-    this.#gameInfo.game.sendUpdatePlayersEvent();
+    this._gameInfo.game.sendUpdatePlayersEvent();
   }
 
   *waitForActivePlayerSocketEvent<Event extends GameClientEvent<Game>>(
@@ -240,18 +228,18 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     options?: WaitForSocketEventOptions<Game, Event>,
   ): EffectGenerator<GameClientEventData<Game, Event>> {
     return yield (resolve) => {
-      return this.#gameInfo.game.listenSocketEvent(
+      return this._gameInfo.game.listenSocketEvent(
         event,
         (data) => {
-          if (this.#isTimePaused()) {
+          if (this._isTimePaused()) {
             return;
           }
 
-          if (this.#validate(data, options?.validate)) {
+          if (this._validate(data, options?.validate)) {
             resolve(data);
           }
         },
-        this.#turnController.activePlayerIndex,
+        this._turnController.activePlayerIndex,
       );
     };
   }
@@ -281,7 +269,7 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
   ): EntityGenerator<GameClientEventData<Game, Event>> {
     return yield* this.waitForPlayerSocketEvent(event, {
       ...options,
-      playerIndex: this.#player.index,
+      playerIndex: this._player.index,
     });
   }
 
@@ -290,7 +278,7 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
       playerIndex,
     });
 
-    return this.#getSettingChangeEvent(playerIndex, data as any);
+    return this._getSettingChangeEvent(playerIndex, data as any);
   }
 
   *waitForPlayerSocketEvent<Event extends GameClientEvent<Game>>(
@@ -298,14 +286,14 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     options: WaitForPlayerSocketEventOptions<Game, Event>,
   ): EffectGenerator<GameClientEventData<Game, Event>> {
     return yield (resolve) => {
-      return this.#gameInfo.game.listenSocketEvent(
+      return this._gameInfo.game.listenSocketEvent(
         event,
         (data) => {
-          if (this.#isTimePaused()) {
+          if (this._isTimePaused()) {
             return;
           }
 
-          if (this.#validate(data, options?.validate)) {
+          if (this._validate(data, options?.validate)) {
             resolve(data);
           }
         },
@@ -336,7 +324,7 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
   *waitForSettingChange(): EntityGenerator<SettingsChangeEvent<Game>> {
     const { data, playerIndex } = yield* this.waitForSocketEvent(CommonGameClientEvent.CHANGE_SETTING);
 
-    return this.#getSettingChangeEvent(playerIndex, data as any);
+    return this._getSettingChangeEvent(playerIndex, data as any);
   }
 
   *waitForSocketEvent<Event extends GameClientEvent<Game>>(
@@ -344,12 +332,12 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     options?: WaitForSocketEventOptions<Game, Event>,
   ): EffectGenerator<WaitForSocketEventResult<Game, Event>> {
     return yield (resolve) => {
-      return this.#gameInfo.game.listenSocketEvent(event, (data, playerIndex) => {
-        if (this.#isTimePaused()) {
+      return this._gameInfo.game.listenSocketEvent(event, (data, playerIndex) => {
+        if (this._isTimePaused()) {
           return;
         }
 
-        if (this.#validate(data, options?.validate)) {
+        if (this._validate(data, options?.validate)) {
           resolve({
             data,
             playerIndex,

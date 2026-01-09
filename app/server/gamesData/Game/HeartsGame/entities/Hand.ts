@@ -20,6 +20,7 @@ import {
 import { isDeuceOfClubs, isHeart, isQueenOfSpades } from 'common/utilities/games/hearts/common';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 
@@ -47,7 +48,7 @@ export default class Hand extends Entity<number[]> {
   time = this.obtainComponent(Time);
 
   stage: HandStage;
-  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+  playersData = this.addComponent(PlayersData<HandPlayerData, this>, {
     init: () => ({
       hand: [],
       chosenCardsIndexes: [],
@@ -84,8 +85,6 @@ export default class Hand extends Entity<number[]> {
       this.turn = this.spawnEntity(Turn, {
         startPlayerIndex,
       });
-
-      this.server.sendGameInfo();
 
       const { highestCardPlayerIndex, takenCards: playerTakenCards } = yield* this.waitForEntity(this.turn);
 
@@ -144,8 +143,6 @@ export default class Hand extends Entity<number[]> {
       } else {
         playerChosenCardsIndexes.push(cardIndex);
       }
-
-      this.server.sendGameInfo();
     }
 
     const passedCards = this.playersData.map(({ chosenCardsIndexes, hand }) =>

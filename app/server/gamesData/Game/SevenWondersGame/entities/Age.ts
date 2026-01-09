@@ -32,8 +32,7 @@ import {
 import rotateObjects from 'common/utilities/rotateObjects';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
-import PlayersData from 'server/gamesData/Game/utilities/Entity/utilities/PlayersData';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
@@ -46,11 +45,10 @@ export default class Age extends Entity {
   game = this.getClosestEntity(SevenWondersGame);
 
   gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
-  server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
 
   age: number;
   phase = AgePhaseType.RECRUIT_LEADERS;
-  playersData = this.gameInfo.createPlayersData<AgePlayerData>({
+  playersData = this.addComponent(PlayersData<AgePlayerData, this>, {
     init: () => ({
       hand: [],
       buildEffects: [],
@@ -82,12 +80,8 @@ export default class Age extends Entity {
         getWaitingActions: this.getWaitingActions,
       });
 
-      this.server.sendGameInfo();
-
       this.withdrawPlayersCoins(yield* this.waitForEntity(this.turn));
     }
-
-    this.server.sendGameInfo();
 
     this.phase = AgePhaseType.BUILD_STRUCTURES;
 
@@ -130,8 +124,6 @@ export default class Age extends Entity {
         getWaitingActions: this.getWaitingActions,
       });
 
-      this.server.sendGameInfo();
-
       this.withdrawPlayersCoins(yield* this.waitForEntity(this.turn));
 
       const newHands = rotateObjects(
@@ -142,8 +134,6 @@ export default class Age extends Entity {
       this.playersData.forEach((playerData, index) => {
         playerData.hand = newHands[index];
       });
-
-      this.server.sendGameInfo();
     }
 
     const ageVictoryPoints = 2 * this.age + 1;

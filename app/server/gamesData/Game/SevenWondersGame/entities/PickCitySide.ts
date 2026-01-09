@@ -5,6 +5,7 @@ import { CityName, GameClientEventType, PickCitySidePlayerData } from 'common/ty
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
@@ -26,7 +27,7 @@ export default class PickCitySide extends Entity<PickedCitySideInfo[]> {
   gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
   server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
 
-  playersData = this.gameInfo.createPlayersData<PickCitySidePlayerData>({
+  playersData = this.addComponent(PlayersData<PickCitySidePlayerData, this>, {
     init: () => ({
       city: CityName.RHODOS,
       pickedSide: null,
@@ -52,8 +53,6 @@ export default class PickCitySide extends Entity<PickedCitySideInfo[]> {
       );
 
       this.playersData.get(playerIndex).pickedSide = pickedSide;
-
-      this.server.sendGameInfo();
     }
 
     return this.playersData.toArray();

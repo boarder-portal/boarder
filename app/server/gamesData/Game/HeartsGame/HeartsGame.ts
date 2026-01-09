@@ -6,15 +6,14 @@ import { Game, GamePlayerData, GameResult, HandStage, PassDirection, Player } fr
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import Hand from 'server/gamesData/Game/HeartsGame/entities/Hand';
 
 export default class HeartsGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.HEARTS, this>);
-  server = this.obtainComponent(Server<GameType.HEARTS, this>);
 
-  playersData = this.gameInfo.createPlayersData<GamePlayerData>({
+  playersData = this.addComponent(PlayersData<GamePlayerData, this>, {
     init: () => ({
       score: 0,
     }),
@@ -34,15 +33,11 @@ export default class HeartsGame extends Entity<GameResult> {
         startStage: this.passDirection === PassDirection.NONE ? HandStage.PLAY : HandStage.PASS,
       });
 
-      this.server.sendGameInfo();
-
       const scoreIncrements = yield* this.waitForEntity(this.hand);
 
       scoreIncrements.forEach((scoreIncrement, playerIndex) => {
         this.playersData.get(playerIndex).score += scoreIncrement;
       });
-
-      this.server.sendGameInfo();
     }
 
     this.hand = null;

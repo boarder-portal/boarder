@@ -6,6 +6,7 @@ import { Card, Hand as HandModel, HandPlayerData, Move, MoveType } from 'common/
 import { getCanvasRule, getRuleCards } from 'common/utilities/games/redSeven/rules';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
 import Turn from 'server/gamesData/Game/RedSevenGame/entities/Turn';
@@ -26,7 +27,7 @@ export default class Hand extends Entity<HandResult> {
   });
   gameInfo = this.obtainComponent(GameInfo<GameType.RED_SEVEN, this>);
 
-  playersData = this.gameInfo.createPlayersData<HandPlayerData>({
+  playersData = this.addComponent(PlayersData<HandPlayerData, this>, {
     init: () => ({
       inPlay: true,
       hand: [],

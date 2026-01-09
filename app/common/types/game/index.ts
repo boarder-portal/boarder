@@ -45,7 +45,7 @@ export type GameState = ActiveGameState | PausedGameState;
 export interface GameData<Game extends GameType> {
   name: string;
   options: GameOptions<Game>;
-  info: GameInfo<Game> | null;
+  infoString: string;
   result: GameResult<Game> | null;
   players: BaseGamePlayer<Game>[];
   timestamp: number;

@@ -29,10 +29,10 @@ export default class TestCase<
   Game extends GameType,
   E extends GameRoot<Game> = GameRoot<Game>,
 > extends EntityComponent<E> {
-  #gameInfo = this.entity.obtainComponent(GameInfoComponent<Game, E>);
-  #events = this.entity.obtainComponent(Events);
+  private _gameInfo = this.entity.obtainComponent(GameInfoComponent<Game, E>);
+  private _events = this.entity.obtainComponent(Events);
 
-  #gameEvent = this.#events.createEvent<GameEventValue<Game>>();
+  private _gameEvent = this._events.createEvent<GameEventValue<Game>>();
 
   onInit(): void {
     super.onInit();
@@ -45,8 +45,8 @@ export default class TestCase<
       return;
     }
 
-    const game: Game = this.#gameInfo.game.game;
-    const caseType: TestCaseType<Game> | undefined = this.#gameInfo.options.testCaseType;
+    const game: Game = this._gameInfo.game.game;
+    const caseType: TestCaseType<Game> | undefined = this._gameInfo.options.testCaseType;
 
     if (!caseType) {
       return;
@@ -65,7 +65,7 @@ export default class TestCase<
     event: GameEvent,
     data: GameEventData<Game, GameEvent>,
   ): void {
-    this.#gameEvent.dispatch({
+    this._gameEvent.dispatch({
       event,
       data,
     });
@@ -75,7 +75,7 @@ export default class TestCase<
     event: GameEvent,
   ): EntityGenerator<GameEventData<Game, GameEvent>> {
     while (true) {
-      const { event: triggeredEvent, data } = yield* this.#events.waitForEvent(this.#gameEvent);
+      const { event: triggeredEvent, data } = yield* this._events.waitForEvent(this._gameEvent);
 
       if (triggeredEvent === event) {
         return data as GameEventData<Game, GameEvent>;

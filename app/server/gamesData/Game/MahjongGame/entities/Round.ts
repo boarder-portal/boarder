@@ -3,8 +3,7 @@ import { Round as RoundModel, RoundPlayerData, WindSide } from 'common/types/gam
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
-import PlayersData from 'server/gamesData/Game/utilities/Entity/utilities/PlayersData';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import Hand from 'server/gamesData/Game/MahjongGame/entities/Hand';
 
@@ -17,7 +16,6 @@ export interface RoundOptions {
 
 export default class Round extends Entity {
   gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
-  server = this.obtainComponent(Server<GameType.MAHJONG, this>);
 
   wind: WindSide | null;
   handIndex = -1;
@@ -33,7 +31,7 @@ export default class Round extends Entity {
     this.wind = options.wind;
     this.handsCount = options.handsCount;
     this.isLastInGame = options.isLastInGame;
-    this.playersData = this.gameInfo.createPlayersData({
+    this.playersData = this.addComponent(PlayersData<RoundPlayerData, this>, {
       init: (playerIndex) => ({
         wind: options.playersWinds[playerIndex],
       }),
@@ -50,11 +48,7 @@ export default class Round extends Entity {
         isLastInGame: isLastHand,
       });
 
-      this.server.sendGameInfo();
-
       yield* this.waitForEntity(this.hand);
-
-      this.server.sendGameInfo();
     }
   }
 

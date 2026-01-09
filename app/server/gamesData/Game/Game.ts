@@ -5,7 +5,7 @@ import times from 'lodash/times';
 import uuid from 'uuid/v4';
 
 import { SECOND } from 'common/constants/date';
-import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, PLAYER_SETTINGS } from 'common/constants/game';
+import { DEFAULT_DESTROY_ON_LEAVE, DEFAULT_USE_BOTS, NO_SYNC_GAMES, PLAYER_SETTINGS } from 'common/constants/game';
 
 import { BaseGamePlayer, CommonGameClientEvent, CommonGameServerEvent, PlayerStatus } from 'common/types';
 import {
@@ -79,8 +79,17 @@ class Game<Game extends GameType> {
   };
   deleted = false;
   batchedActions: BatchedAction<Game, GameServerEvent<Game>>[] = [];
-  batchedActionsTimeout: NodeJS.Timeout | null = null;
+  batchedActionsImmediate: NodeJS.Immediate | null = null;
   deleteGameTimeout: NodeJS.Timeout | null = null;
+  gameInfoDependencies: {
+    state: 'read' | 'record';
+    changeImmediate: NodeJS.Immediate | null;
+    map: Map<unknown, Set<string | symbol>>;
+  } = {
+    state: 'read',
+    changeImmediate: null,
+    map: new Map(),
+  };
   onDeleteGame: (gameId: string) => void;
   onUpdateGame: (gameId: string) => void;
 
@@ -128,6 +137,10 @@ class Game<Game extends GameType> {
 
         if (player) {
           this.clearDeleteTimeout();
+
+          if (this.hasStarted()) {
+            player.status = PlayerStatus.PLAYING;
+          }
 
           if (this.state.type === 'paused' && this.state.pauseReason === 'noActivity') {
             this.unpause();
@@ -279,6 +292,22 @@ class Game<Game extends GameType> {
     return this.players.map((player) => pick(player, ['login', 'name', 'status', 'index', 'isBot', 'settings']));
   }
 
+  getGameInfoString(): string {
+    if (!this.rootEntity) {
+      return JSON.stringify(null);
+    }
+
+    if (this.gameInfoDependencies.state === 'record') {
+      this.gameInfoDependencies.map.clear();
+    }
+
+    const infoString = JSON.stringify(this.rootEntity.getGameInfo());
+
+    this.gameInfoDependencies.state = 'read';
+
+    return infoString;
+  }
+
   getSocketPlayer(socket: GameServerSocket<Game>): ServerGamePlayer<Game> | undefined {
     const user = socket.user;
 
@@ -296,11 +325,55 @@ class Game<Game extends GameType> {
   }
 
   initRootEntity(): GameRoot<Game> {
-    const entity = Entity.spawnRoot(GameRoot<Game>, {
-      context: {
-        game: this,
+    const entity = Entity.spawnRoot(
+      GameRoot<Game>,
+      {
+        wrapOptions: {
+          onAccessProperty: (proxy, property) => {
+            if (!this.needToSyncGameInfo()) {
+              return;
+            }
+
+            const { gameInfoDependencies } = this;
+
+            if (gameInfoDependencies.state !== 'record') {
+              return;
+            }
+
+            const keys = gameInfoDependencies.map.get(proxy);
+
+            if (keys) {
+              keys.add(property);
+            } else {
+              gameInfoDependencies.map.set(proxy, new Set([property]));
+            }
+          },
+          onChangeProperty: (proxy, property) => {
+            if (!this.needToSyncGameInfo()) {
+              return;
+            }
+
+            const { gameInfoDependencies } = this;
+
+            if (gameInfoDependencies.changeImmediate || !gameInfoDependencies.map.get(proxy)?.has(property)) {
+              return;
+            }
+
+            gameInfoDependencies.changeImmediate = setImmediate(() => {
+              gameInfoDependencies.state = 'record';
+              gameInfoDependencies.changeImmediate = null;
+
+              this.sendSocketEvent(CommonGameServerEvent.GET_INFO, this.getGameInfoString());
+            });
+          },
+        },
       },
-    });
+      {
+        context: {
+          game: this,
+        },
+      },
+    );
 
     entity.subscribe(
       (result) => this.end(result),
@@ -356,6 +429,10 @@ class Game<Game extends GameType> {
     };
   }
 
+  needToSyncGameInfo(): boolean {
+    return !NO_SYNC_GAMES.includes(this.game);
+  }
+
   pause(pauseReason: PauseReason): void {
     if (this.status !== GameStatus.GAME_IN_PROGRESS || !this.rootEntity?.isPauseAvailable()) {
       return;
@@ -378,7 +455,7 @@ class Game<Game extends GameType> {
     const gameData: GameData<Game> = {
       name: this.name,
       options: this.options,
-      info: this.rootEntity?.getGameInfo() ?? null,
+      infoString: this.getGameInfoString(),
       result: this.result,
       players: this.getClientPlayers(),
       timestamp: now(),
@@ -420,16 +497,16 @@ class Game<Game extends GameType> {
       this.batchedActions[existingEventIndex] = batchedAction;
     }
 
-    if (!this.batchedActionsTimeout) {
-      this.batchedActionsTimeout = setTimeout(() => {
+    if (!this.batchedActionsImmediate) {
+      this.batchedActionsImmediate = setImmediate(() => {
         this.batchedActions.forEach(({ event, data, socket }) => {
           // @ts-ignore
           (socket ?? this.io).emit(event, data);
         });
 
         this.batchedActions = [];
-        this.batchedActionsTimeout = null;
-      }, 0);
+        this.batchedActionsImmediate = null;
+      });
     }
   }
 
@@ -461,6 +538,9 @@ class Game<Game extends GameType> {
     this.rootEntity = this.initRootEntity();
 
     this.onUpdateGame(this.id);
+
+    this.gameInfoDependencies.state = 'record';
+
     this.sendGameData();
   }
 

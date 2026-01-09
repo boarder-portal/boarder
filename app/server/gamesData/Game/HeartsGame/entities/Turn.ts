@@ -6,6 +6,7 @@ import { getHighestCardIndex } from 'common/utilities/cards/compareCards';
 import { isDefined } from 'common/utilities/is';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
@@ -25,7 +26,7 @@ export default class Turn extends Entity<TurnResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.HEARTS, this>);
   server = this.obtainComponent(Server<GameType.HEARTS, this>);
 
-  playersData = this.gameInfo.createPlayersData<TurnPlayerData>({
+  playersData = this.addComponent(PlayersData<TurnPlayerData, this>, {
     init: () => ({
       playedCard: null,
     }),
@@ -60,8 +61,6 @@ export default class Turn extends Entity<TurnResult> {
       );
 
       this.turnController.passTurn();
-
-      this.server.sendGameInfo();
     }
 
     return {

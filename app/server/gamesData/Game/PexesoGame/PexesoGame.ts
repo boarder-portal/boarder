@@ -19,6 +19,7 @@ import {
 import { getRandomElement } from 'common/utilities/random';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import Time from 'server/gamesData/Game/utilities/Entity/components/Time';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
@@ -32,7 +33,7 @@ export default class PexesoGame extends Entity<GameResult> {
   server = this.obtainComponent(Server<GameType.PEXESO, this>);
 
   cards: Card[] = [];
-  playersData = this.gameInfo.createPlayersData<PlayerData>({
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
     init: () => ({
       score: 0,
     }),

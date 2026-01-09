@@ -5,10 +5,10 @@ export type EntityComponentConstructor<E extends AnyEntity = AnyEntity> = new (.
 export type SimpleEntityComponentConstructor<E extends AnyEntity = AnyEntity> = new () => EntityComponent<E>;
 
 export default class EntityComponent<E extends AnyEntity> {
-  readonly #entity: E;
+  private readonly _entity: E;
 
   get entity(): E {
-    return this.#entity;
+    return this._entity;
   }
 
   constructor() {
@@ -18,7 +18,7 @@ export default class EntityComponent<E extends AnyEntity> {
       );
     }
 
-    this.#entity = Entity.internalApi.currentComponentEntity as E;
+    this._entity = Entity.internalApi.currentComponentEntity as E;
 
     Entity.internalApi.onAddComponentCallback?.(
       Entity.internalApi.currentComponentEntity,

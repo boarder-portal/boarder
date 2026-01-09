@@ -5,7 +5,6 @@ import { Game, GameResult, HandResult, HandsCount, Player, WindSide } from 'comm
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 
 import Round from 'server/gamesData/Game/MahjongGame/entities/Round';
 
@@ -18,7 +17,6 @@ const ROTATED_WINDS = [
 
 export default class MahjongGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
-  server = this.obtainComponent(Server<GameType.MAHJONG, this>);
 
   resultsByHand: HandResult[] = [];
 
@@ -36,8 +34,6 @@ export default class MahjongGame extends Entity<GameResult> {
         isLastInGame: round === roundsCount - 1,
         playersWinds: ROTATED_WINDS[round],
       });
-
-      this.server.sendGameInfo();
 
       yield* this.waitForEntity(this.round);
 

@@ -54,13 +54,13 @@ const GAME_ENTITIES_MAP: {
 };
 
 export default class GameRoot<Game extends GameType> extends Entity<GameResult<Game>> {
-  #time = this.addComponent(Time, {
+  private _time = this.addComponent(Time, {
     isPauseAvailable: () => true,
   });
-  #gameInfo = this.obtainComponent(GameInfoComponent<Game, this>);
-  #server = this.obtainComponent(Server<Game, this>);
+  private _gameInfo = this.obtainComponent(GameInfoComponent<Game, this>);
+  private _server = this.obtainComponent(Server<Game, this>);
 
-  #gameEntity: GameEntity<Game> | null = null;
+  private _gameEntity: GameEntity<Game> | null = null;
 
   readonly context: GameEntityContext<Game>;
 
@@ -75,15 +75,15 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
   *lifecycle(): EntityGenerator<GameResult<Game>> {
     const GameEntityConstructor: GameEntityConstructor<Game> = GAME_ENTITIES_MAP[this.context.game.game];
 
-    this.spawnTask(this.#spawnBots());
-    this.spawnTask(this.#watchSettingChange());
+    this.spawnTask(this._spawnBots());
+    this.spawnTask(this._watchSettingChange());
 
-    this.#gameEntity = this.spawnEntity(GameEntityConstructor);
+    this._gameEntity = this.spawnEntity(GameEntityConstructor);
 
-    return yield* this.waitForEntity(this.#gameEntity);
+    return yield* this.waitForEntity(this._gameEntity);
   }
 
-  *#spawnBot(game: BotSupportedGameType, playerIndex: number): EntityGenerator {
+  private *_spawnBot(game: BotSupportedGameType, playerIndex: number): EntityGenerator {
     try {
       yield* this.waitForEntity(
         this.spawnEntity(Bot, {
@@ -102,7 +102,7 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
     }
   }
 
-  *#spawnBots(): EntityGenerator {
+  private *_spawnBots(): EntityGenerator {
     const { game } = this.context.game;
 
     if (!areBotsAvailable(game)) {
@@ -110,35 +110,34 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
     }
 
     yield* this.all(
-      this.#gameInfo.players.filter(({ isBot }) => isBot).map(({ index }) => this.#spawnBot(game, index)),
+      this._gameInfo.players.filter(({ isBot }) => isBot).map(({ index }) => this._spawnBot(game, index)),
     );
   }
 
-  *#watchSettingChange(): EntityGenerator {
-    yield* this.#server.listenForSocketEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
-      const player = this.#gameInfo.getPlayer(playerIndex);
+  private *_watchSettingChange(): EntityGenerator {
+    yield* this._server.listenForSocketEvent(CommonGameClientEvent.CHANGE_SETTING, ({ data, playerIndex }) => {
+      const player = this._gameInfo.getPlayer(playerIndex);
 
       player.settings[data.key as keyof PlayerSettings<Game>] = data.value as any;
 
-      this.#server.sendGameInfo();
-      this.#server.sendUpdatePlayersEvent();
+      this._server.sendUpdatePlayersEvent();
     });
   }
 
   getGameInfo(): GameInfo<Game> {
-    if (!this.#gameEntity) {
+    if (!this._gameEntity) {
       throw new Error('No game entity');
     }
 
-    return this.#gameEntity.toJSON() as GameInfo<Game>;
+    return this._gameEntity.toJSON() as GameInfo<Game>;
   }
 
   isPauseAvailable(): boolean {
-    if (!this.#gameEntity) {
+    if (!this._gameEntity) {
       return false;
     }
 
-    for (const time of this.#gameEntity.getComponents<typeof Time>(Time)) {
+    for (const time of this._gameEntity.getComponents<typeof Time>(Time)) {
       if (time.pauseAvailable) {
         return true;
       }
@@ -148,10 +147,10 @@ export default class GameRoot<Game extends GameType> extends Entity<GameResult<G
   }
 
   pause(pausedAt: number): void {
-    this.#time.pause(pausedAt);
+    this._time.pause(pausedAt);
   }
 
   unpause(unpausedAt: number): void {
-    this.#time.unpause(unpausedAt);
+    this._time.unpause(unpausedAt);
   }
 }

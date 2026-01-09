@@ -76,7 +76,7 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
       const timeDiff = data.timestamp - now();
 
       setGameOptions(data.options);
-      setGameInfo(data.info);
+      setGameInfo(JSON.parse(data.infoString));
       setGameResult(data.result);
       setPlayers(data.players);
       setGameName(data.name);
@@ -87,8 +87,8 @@ const Game = <Game extends GameType>(props: GameProps<Game>) => {
       });
       setGameStatus(data.status);
     },
-    [CommonGameServerEvent.GET_INFO]: (info) => {
-      setGameInfo(info);
+    [CommonGameServerEvent.GET_INFO]: (infoString) => {
+      setGameInfo(JSON.parse(infoString));
     },
     [CommonGameServerEvent.UPDATE_PLAYERS]: (players) => {
       setPlayers(players);

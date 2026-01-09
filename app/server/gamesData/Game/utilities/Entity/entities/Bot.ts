@@ -24,37 +24,40 @@ const BOTS_MAP: { [Game in (typeof BOTS_SUPPORTED_GAMES)[number]]: EntityConstru
 };
 
 export default class Bot<Game extends BotSupportedGameType> extends Entity {
-  readonly client: Client<Game, this>;
-  readonly #gameInfoComponent = this.obtainComponent(GameInfoComponent<Game, this>);
+  private readonly _gameInfoComponent = this.obtainComponent(GameInfoComponent<Game, this>);
 
-  readonly #game: Game;
+  private readonly _game: Game;
+  private _gameInfo: GameInfo<Game> | null = null;
+
+  readonly client: Client<Game, this>;
   readonly playerIndex: number;
-  #gameInfo: GameInfo<Game> | null = null;
 
   constructor(options: BotOptions<Game>) {
     super();
 
-    this.#game = options.game;
+    this._game = options.game;
     this.playerIndex = options.playerIndex;
     this.client = this.addComponent(Client<Game, this>, {
-      getSocketAddress: () => `${this.#gameInfoComponent.serverAddress}?botIndex=${this.playerIndex}&settings={}`,
+      getSocketAddress: () => `${this._gameInfoComponent.serverAddress}?botIndex=${this.playerIndex}&settings={}`,
     });
   }
 
   *lifecycle(): EntityGenerator {
-    ({ info: this.#gameInfo } = yield* this.client.waitForGameData());
+    const { infoString } = yield* this.client.waitForGameData();
 
-    const BotConstructor: EntityConstructor = BOTS_MAP[this.#game];
+    this._gameInfo = JSON.parse(infoString);
+
+    const BotConstructor: EntityConstructor = BOTS_MAP[this._game];
 
     yield* this.waitForEntity(this.spawnEntity(BotConstructor));
   }
 
   getGameInfo(): GameInfo<Game> {
-    if (!this.#gameInfo) {
+    if (!this._gameInfo) {
       throw new Error('No game info');
     }
 
-    return this.#gameInfo;
+    return this._gameInfo;
   }
 
   getPlayer(): GameInfo<Game>['players'][number] {
@@ -62,6 +65,6 @@ export default class Bot<Game extends BotSupportedGameType> extends Entity {
   }
 
   *refreshGameInfo(): EntityGenerator<GameInfo<Game>> {
-    return (this.#gameInfo = yield* this.client.waitForGameInfo());
+    return (this._gameInfo = yield* this.client.waitForGameInfo());
   }
 }

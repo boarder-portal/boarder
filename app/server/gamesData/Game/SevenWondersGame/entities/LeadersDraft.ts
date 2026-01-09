@@ -5,7 +5,7 @@ import { Card } from 'common/types/games/sevenWonders/cards';
 import rotateObjects from 'common/utilities/rotateObjects';
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
-import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
 import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWondersGame';
 import Turn from 'server/gamesData/Game/SevenWondersGame/entities/Turn';
@@ -14,9 +14,8 @@ export default class LeadersDraft extends Entity<Card[][]> {
   game = this.getClosestEntity(SevenWondersGame);
 
   gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
-  server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
 
-  playersData = this.gameInfo.createPlayersData<LeadersDraftPlayerData>({
+  playersData = this.addComponent(PlayersData<LeadersDraftPlayerData, this>, {
     init: () => ({
       leadersPool: [],
       pickedLeaders: [],
@@ -44,8 +43,6 @@ export default class LeadersDraft extends Entity<Card[][]> {
         },
       });
 
-      this.server.sendGameInfo();
-
       yield* this.waitForEntity(this.turn);
 
       const newLeadersPools = rotateObjects(
@@ -56,8 +53,6 @@ export default class LeadersDraft extends Entity<Card[][]> {
       this.playersData.forEach((playerData, index) => {
         playerData.leadersPool = newLeadersPools[index];
       });
-
-      this.server.sendGameInfo();
     }
 
     this.turn = null;
