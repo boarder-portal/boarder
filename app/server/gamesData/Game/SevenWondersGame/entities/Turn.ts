@@ -1,7 +1,7 @@
 import { GameType } from 'common/types/game';
 import { GameClientEventType, TurnPlayerData, WaitingAction, WaitingActionType } from 'common/types/games/sevenWonders';
 
-import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import Entity, { AnyEntity, EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import Server from 'server/gamesData/Game/utilities/Entity/components/Server';
 import PlayersData from 'server/gamesData/Game/utilities/Entity/utilities/PlayersData';
@@ -10,7 +10,7 @@ import SevenWondersGame from 'server/gamesData/Game/SevenWondersGame/SevenWonder
 
 export interface TurnOptions {
   startingWaitingAction: Exclude<WaitingActionType, WaitingActionType.EFFECT_BUILD_CARD>;
-  executeActions(playersData: PlayersData<TurnPlayerData>): number[] | void;
+  executeActions(playersData: PlayersData<TurnPlayerData, AnyEntity>): number[] | void;
   getWaitingActions?(): (WaitingAction | null)[];
 }
 
@@ -20,7 +20,7 @@ export default class Turn extends Entity<number[]> {
   gameInfo = this.obtainComponent(GameInfo<GameType.SEVEN_WONDERS, this>);
   server = this.obtainComponent(Server<GameType.SEVEN_WONDERS, this>);
 
-  playersData: PlayersData<TurnPlayerData>;
+  playersData: PlayersData<TurnPlayerData, this>;
   getWaitingActions: TurnOptions['getWaitingActions'];
   executeActions: TurnOptions['executeActions'];
 

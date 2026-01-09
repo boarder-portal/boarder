@@ -4,7 +4,7 @@ import { SECOND } from 'common/constants/date';
 
 import { BuildKind } from 'client/components/games/sevenWonders/SevenWondersGame/components/SevenWondersGameContent/components/MainBoard/components/HandCard/types';
 import { GameType } from 'common/types/game';
-import { CardActionType, GameClientEventType, GamePhaseType, Player } from 'common/types/games/sevenWonders';
+import { CardActionType, GameClientEventType, GamePhaseType } from 'common/types/games/sevenWonders';
 
 import getPlayerHandCards from 'common/utilities/games/sevenWonders/getPlayerHandCards';
 import { getRandomIndex } from 'common/utilities/random';
@@ -24,7 +24,7 @@ export default class SevenWondersBot extends Entity {
       yield* this.waitForWaitingAction();
 
       const { discard, phase } = this.bot.getGameInfo();
-      const player = this.getPlayer();
+      const player = this.bot.getPlayer();
 
       const hand = getPlayerHandCards({
         waitingForAction: player.data.turn?.waitingForAction,
@@ -58,13 +58,9 @@ export default class SevenWondersBot extends Entity {
     }
   }
 
-  getPlayer(): Player {
-    return this.bot.getGameInfo().players[this.bot.playerIndex];
-  }
-
   *waitForWaitingAction(): EntityGenerator {
     while (true) {
-      const turnData = this.getPlayer().data.turn;
+      const turnData = this.bot.getPlayer().data.turn;
 
       if (turnData?.waitingForAction && !turnData.chosenActionEvent) {
         return;
