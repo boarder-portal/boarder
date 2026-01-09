@@ -10,7 +10,7 @@ import TestCase from 'server/gamesData/Game/utilities/Entity/components/TestCase
 export default class ShortDeckTestCase extends Entity {
   testCase = this.getClosestComponent(TestCase<GameType.CARCASSONNE>);
 
-  gameInfo = this.obtainComponent(GameInfo<GameType.MAHJONG, this>);
+  gameInfo = this.obtainComponent(GameInfo<GameType.CARCASSONNE, this>);
 
   *lifecycle(): EntityGenerator {
     while (true) {
