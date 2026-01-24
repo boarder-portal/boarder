@@ -22,9 +22,7 @@ export const GAME_NAMES: Record<GameType, string> = {
   [GameType.RED_SEVEN]: 'Red 7',
 };
 
-export const PLAYER_SETTINGS: {
-  [Game in GameType]: PlayerSettings<Game>;
-} = {
+export const PLAYER_SETTINGS: { [Game in GameType]: PlayerSettings<Game> } = {
   [GameType.PEXESO]: {},
   [GameType.SURVIVAL_ONLINE]: {},
   [GameType.SET]: {},
@@ -38,9 +36,7 @@ export const PLAYER_SETTINGS: {
   [GameType.RED_SEVEN]: {},
 };
 
-export const TEST_CASES: {
-  [Game in GameType]?: Record<string, TestCaseType<Game>>;
-} = {
+export const TEST_CASES: { [Game in GameType]?: Record<string, TestCaseType<Game>> } = {
   [GameType.CARCASSONNE]: CarcassonneTestCaseType,
   [GameType.BOMBERS]: BombersTestCaseType,
   [GameType.MAHJONG]: MahjongTestCaseType,

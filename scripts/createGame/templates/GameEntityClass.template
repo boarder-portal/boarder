@@ -1,16 +1,21 @@
 import { GameType } from 'common/types/game';
 import { Game, GameResult, Player, PlayerData } from '{{typesFilename}}';
 
-import { EntityGenerator } from 'common/utilities/Entity/Entity';
-import GameEntity from 'server/gamesData/Game/utilities/GameEntity';
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
-export default class {{pascalCased}}Game extends GameEntity<GameType.{{constCased}}> {
-  playersData: PlayerData[] = this.getPlayersData(() => ({}));
+export default class {{pascalCased}}Game extends GameEntity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.{{constCased}}, this>);
+
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
+   init: () => ({}),
+ });
 
   *lifecycle(): EntityGenerator<GameResult> {}
 
   getGamePlayers(): Player[] {
-    return this.getPlayersWithData((playerIndex) => this.playersData[playerIndex]);
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
   }
 
   toJSON(): Game {

@@ -37,9 +37,7 @@ export interface GameEntityOptions<Game extends GameType> {
   context: GameEntityContext<Game>;
 }
 
-const GAME_ENTITIES_MAP: {
-  [Game in GameType]: GameEntityConstructor<Game>;
-} = {
+const GAME_ENTITIES_MAP: { [Game in GameType]: GameEntityConstructor<Game> } = {
   [GameType.PEXESO]: PexesoGame,
   [GameType.SURVIVAL_ONLINE]: SurvivalOnlineGame,
   [GameType.SET]: SetGame,

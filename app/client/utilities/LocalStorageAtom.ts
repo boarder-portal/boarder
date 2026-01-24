@@ -1,9 +1,7 @@
 import { GameOptions, GameType, PlayerSettings } from 'common/types/game';
 
-type GameOptionsValues = {
-  [Game in GameType as typeof GAME_OPTIONS_KEYS[Game]]: GameOptions<Game>;
-} & {
-  [Game in GameType as typeof PLAYER_SETTINGS_KEYS[Game]]: PlayerSettings<Game>;
+type GameOptionsValues = { [Game in GameType as (typeof GAME_OPTIONS_KEYS)[Game]]: GameOptions<Game> } & {
+  [Game in GameType as (typeof PLAYER_SETTINGS_KEYS)[Game]]: PlayerSettings<Game>;
 };
 
 interface LocalStorageValues extends GameOptionsValues {}

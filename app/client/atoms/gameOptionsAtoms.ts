@@ -17,9 +17,7 @@ import { GameOptions, GameType } from 'common/types/game';
 
 import LocalStorageAtom, { GAME_OPTIONS_KEYS } from 'client/utilities/LocalStorageAtom';
 
-export const DEFAULT_OPTIONS: {
-  [Game in GameType]: GameOptions<Game>;
-} = {
+export const DEFAULT_OPTIONS: { [Game in GameType]: GameOptions<Game> } = {
   [GameType.PEXESO]: PEXESO_OPTIONS,
   [GameType.SURVIVAL_ONLINE]: SURVIVAL_ONLINE_OPTIONS,
   [GameType.SET]: SET_OPTIONS,
