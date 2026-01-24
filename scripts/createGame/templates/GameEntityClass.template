@@ -5,7 +5,7 @@ import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
-export default class {{pascalCased}}Game extends GameEntity<GameResult> {
+export default class {{pascalCased}}Game extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.{{constCased}}, this>);
 
   playersData = this.addComponent(PlayersData<PlayerData, this>, {
