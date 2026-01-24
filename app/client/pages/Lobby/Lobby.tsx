@@ -11,6 +11,7 @@ import HeartsLobby from 'client/components/games/hearts/HeartsLobby/HeartsLobby'
 import MachiKoroLobby from 'client/components/games/machiKoro/MachiKoroLobby/MachiKoroLobby';
 import MahjongLobby from 'client/components/games/mahjong/MahjongLobby/MahjongLobby';
 import OnitamaLobby from 'client/components/games/onitama/OnitamaLobby/OnitamaLobby';
+import OutsideMindLobby from 'client/components/games/outsideMind/OutsideMindLobby/OutsideMindLobby';
 import PexesoLobby from 'client/components/games/pexeso/PexesoLobby/PexesoLobby';
 import RedSevenLobby from 'client/components/games/redSeven/RedSevenLobby/RedSevenLobby';
 import SetLobby from 'client/components/games/set/SetLobby/SetLobby';
@@ -29,6 +30,7 @@ const LOBBIES_MAP: Record<GameType, ComponentType> = {
   [GameType.MACHI_KORO]: MachiKoroLobby,
   [GameType.MAHJONG]: MahjongLobby,
   [GameType.RED_SEVEN]: RedSevenLobby,
+  [GameType.OUTSIDE_MIND]: OutsideMindLobby,
 };
 
 const Lobby: FC = () => {

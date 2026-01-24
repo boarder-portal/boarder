@@ -20,6 +20,7 @@ export const GAME_NAMES: Record<GameType, string> = {
   [GameType.MACHI_KORO]: 'Machi Koro',
   [GameType.MAHJONG]: 'Маджонг',
   [GameType.RED_SEVEN]: 'Red 7',
+  [GameType.OUTSIDE_MIND]: 'Outside Mind',
 };
 
 export const PLAYER_SETTINGS: { [Game in GameType]: PlayerSettings<Game> } = {
@@ -34,6 +35,7 @@ export const PLAYER_SETTINGS: { [Game in GameType]: PlayerSettings<Game> } = {
   [GameType.MACHI_KORO]: {},
   [GameType.MAHJONG]: MAHJONG_PLAYER_SETTINGS,
   [GameType.RED_SEVEN]: {},
+  [GameType.OUTSIDE_MIND]: {},
 };
 
 export const TEST_CASES: { [Game in GameType]?: Record<string, TestCaseType<Game>> } = {
@@ -49,7 +51,7 @@ export const BOTS_SUPPORTED_GAMES = [
   GameType.ONITAMA,
 ] as const;
 
-export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN];
+export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN, GameType.OUTSIDE_MIND];
 
 export const NO_SYNC_GAMES: GameType[] = [
   GameType.PEXESO,

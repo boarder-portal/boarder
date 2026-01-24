@@ -1,0 +1,26 @@
+import { GameType } from 'common/types/game';
+import { Game, GameResult, Player, PlayerData } from 'common/types/games/outsideMind';
+
+import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
+import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
+import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
+
+export default class OutsideMindGame extends Entity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.OUTSIDE_MIND, this>);
+
+  playersData = this.addComponent(PlayersData<PlayerData, this>, {
+   init: () => ({}),
+ });
+
+  *lifecycle(): EntityGenerator<GameResult> {}
+
+  getGamePlayers(): Player[] {
+    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
+  }
+
+  toJSON(): Game {
+    return {
+      players: this.getGamePlayers(),
+    };
+  }
+}

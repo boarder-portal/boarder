@@ -1,0 +1,54 @@
+import {
+  BaseGameOptions,
+  BaseGamePlayer,
+  BasePlayerSettings,
+  CommonClientEventMap,
+  CommonGameEventMap,
+  CommonServerEventMap,
+} from 'common/types';
+import { GameType } from 'common/types/game';
+
+export enum GameClientEventType {}
+
+export enum GameServerEventType {}
+
+export interface GameOptions extends BaseGameOptions<GameType.OUTSIDE_MIND> {}
+
+export interface PlayerData {}
+
+export interface Player extends BaseGamePlayer<GameType.OUTSIDE_MIND> {
+  data: PlayerData;
+}
+
+export interface Game {
+  players: Player[];
+}
+
+export type GameResult = void;
+
+export interface PlayerSettings extends BasePlayerSettings {}
+
+export enum TestCaseType {}
+
+export enum GameEventType {}
+
+export interface GameEventMap extends CommonGameEventMap<GameType.OUTSIDE_MIND> {}
+
+export interface ClientEventMap extends CommonClientEventMap<GameType.OUTSIDE_MIND> {}
+
+export interface ServerEventMap extends CommonServerEventMap<GameType.OUTSIDE_MIND> {}
+
+declare module 'common/types/game/params' {
+  interface GamesParams {
+    [GameType.OUTSIDE_MIND]: {
+      clientEventMap: ClientEventMap;
+      serverEventMap: ServerEventMap;
+      options: GameOptions;
+      info: Game;
+      result: GameResult;
+      playerSettings: PlayerSettings;
+      testCaseType: TestCaseType;
+      gameEventMap: GameEventMap;
+    };
+  }
+}

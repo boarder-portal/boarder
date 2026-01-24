@@ -17,6 +17,7 @@ import HeartsGame from 'server/gamesData/Game/HeartsGame/HeartsGame';
 import MachiKoroGame from 'server/gamesData/Game/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'server/gamesData/Game/MahjongGame/MahjongGame';
 import OnitamaGame from 'server/gamesData/Game/OnitamaGame/OnitamaGame';
+import OutsideMindGame from 'server/gamesData/Game/OutsideMindGame/OutsideMindGame';
 import PexesoGame from 'server/gamesData/Game/PexesoGame/PexesoGame';
 import RedSevenGame from 'server/gamesData/Game/RedSevenGame/RedSevenGame';
 import SetGame from 'server/gamesData/Game/SetGame/SetGame';
@@ -49,6 +50,7 @@ const GAME_ENTITIES_MAP: { [Game in GameType]: GameEntityConstructor<Game> } = {
   [GameType.MACHI_KORO]: MachiKoroGame,
   [GameType.MAHJONG]: MahjongGame,
   [GameType.RED_SEVEN]: RedSevenGame,
+  [GameType.OUTSIDE_MIND]: OutsideMindGame,
 };
 
 export default class GameRoot<Game extends GameType> extends Entity<GameResult<Game>> {

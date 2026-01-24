@@ -11,6 +11,7 @@ import HeartsGame from 'client/components/games/hearts/HeartsGame/HeartsGame';
 import MachiKoroGame from 'client/components/games/machiKoro/MachiKoroGame/MachiKoroGame';
 import MahjongGame from 'client/components/games/mahjong/MahjongGame/MahjongGame';
 import OnitamaGame from 'client/components/games/onitama/OnitamaGame/OnitamaGame';
+import OutsideMindGame from 'client/components/games/outsideMind/OutsideMindGame/OutsideMindGame';
 import PexesoGame from 'client/components/games/pexeso/PexesoGame/PexesoGame';
 import RedSevenGame from 'client/components/games/redSeven/RedSevenGame/RedSevenGame';
 import SetGame from 'client/components/games/set/SetGame/SetGame';
@@ -29,6 +30,7 @@ const GAMES_MAP: Record<GameType, ComponentType> = {
   [GameType.MACHI_KORO]: MachiKoroGame,
   [GameType.MAHJONG]: MahjongGame,
   [GameType.RED_SEVEN]: RedSevenGame,
+  [GameType.OUTSIDE_MIND]: OutsideMindGame,
 };
 
 const Game: FC = () => {
