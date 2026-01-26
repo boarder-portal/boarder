@@ -7,9 +7,9 @@ import useSocket from 'client/hooks/useSocket';
 import { GameContentProps } from 'client/components/game/Game/Game';
 import GameContent from 'client/components/game/GameContent/GameContent';
 
-import styles from './OutsideMindGame.module.scss';
+import styles from './OuterMindsGameContent.module.scss';
 
-const OutsideMindGameContent: FC<GameContentProps<GameType.OUTSIDE_MIND>> = (props) => {
+const OuterMindsGameContent: FC<GameContentProps<GameType.OUTER_MINDS>> = (props) => {
   const { io, gameInfo } = props;
 
   useSocket(io, {});
@@ -18,7 +18,7 @@ const OutsideMindGameContent: FC<GameContentProps<GameType.OUTSIDE_MIND>> = (pro
     console.log(gameInfo);
   }, [gameInfo]);
 
-  return <GameContent game={GameType.OUTSIDE_MIND}></GameContent>;
+  return <GameContent game={GameType.OUTER_MINDS}></GameContent>;
 };
 
-export default memo(OutsideMindGameContent);
+export default memo(OuterMindsGameContent);

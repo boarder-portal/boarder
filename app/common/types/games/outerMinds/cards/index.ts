@@ -1,6 +1,6 @@
-import { BuildingCategory } from 'common/types/games/outsideMind/cards/builidings';
-import { CardId } from 'common/types/games/outsideMind/cards/common';
-import { Human } from 'common/types/games/outsideMind/common';
+import { BuildingCategory } from 'common/types/games/outerMinds/cards/builidings';
+import { CardId } from 'common/types/games/outerMinds/cards/common';
+import { Human } from 'common/types/games/outerMinds/common';
 
 export * from './common';
 export * from './builidings';

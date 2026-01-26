@@ -4,8 +4,8 @@ import { GameType } from 'common/types/game';
 
 import Lobby from 'client/components/game/Lobby/Lobby';
 
-const OutsideMindLobby: FC = () => {
-  return <Lobby game={GameType.OUTSIDE_MIND} />;
+const OuterMindsLobby: FC = () => {
+  return <Lobby game={GameType.OUTER_MINDS} />;
 };
 
-export default memo(OutsideMindLobby);
+export default memo(OuterMindsLobby);

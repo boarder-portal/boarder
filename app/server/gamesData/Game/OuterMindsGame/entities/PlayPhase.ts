@@ -4,22 +4,22 @@ import {
   GameResult,
   PlayPhase as PlayPhaseModel,
   PlayPhasePlayerData,
-} from 'common/types/games/outsideMind';
-import { BuildingCardId, CardId, CardWithInventory } from 'common/types/games/outsideMind/cards';
+} from 'common/types/games/outerMinds';
+import { BuildingCardId, CardId, CardWithInventory } from 'common/types/games/outerMinds/cards';
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
-import { HandDraftTurn } from 'server/gamesData/Game/OutsideMindGame/entities/HandDraftTurn';
+import { HandDraftTurn } from 'server/gamesData/Game/OuterMindsGame/entities/HandDraftTurn';
 
 export interface PlayPhaseOptions {
   hands: CardId[][];
 }
 
 export default class PlayPhase extends Entity<GameResult> {
-  gameInfo = this.obtainComponent(GameInfo<GameType.OUTSIDE_MIND, this>);
+  gameInfo = this.obtainComponent(GameInfo<GameType.OUTER_MINDS, this>);
 
   turnController = this.addComponent(TurnController);
 

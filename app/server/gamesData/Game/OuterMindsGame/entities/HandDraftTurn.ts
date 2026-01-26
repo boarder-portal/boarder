@@ -1,5 +1,5 @@
-import { HandDraftTurn as HandDraftModel } from 'common/types/games/outsideMind';
-import { CardId } from 'common/types/games/outsideMind/cards';
+import { HandDraftTurn as HandDraftModel } from 'common/types/games/outerMinds';
+import { CardId } from 'common/types/games/outerMinds/cards';
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 

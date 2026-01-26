@@ -1,15 +1,15 @@
 import { GameType } from 'common/types/game';
-import { Game, GamePlayerData, GameResult, Player } from 'common/types/games/outsideMind';
+import { Game, GamePlayerData, GameResult, Player } from 'common/types/games/outerMinds';
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
-import HandDraftPhase from 'server/gamesData/Game/OutsideMindGame/entities/HandDraftPhase';
-import PlayPhase from 'server/gamesData/Game/OutsideMindGame/entities/PlayPhase';
+import HandDraftPhase from 'server/gamesData/Game/OuterMindsGame/entities/HandDraftPhase';
+import PlayPhase from 'server/gamesData/Game/OuterMindsGame/entities/PlayPhase';
 
-export default class OutsideMindGame extends Entity<GameResult> {
-  gameInfo = this.obtainComponent(GameInfo<GameType.OUTSIDE_MIND, this>);
+export default class OuterMindsGame extends Entity<GameResult> {
+  gameInfo = this.obtainComponent(GameInfo<GameType.OUTER_MINDS, this>);
 
   playersData = this.addComponent(PlayersData<GamePlayerData, this>, {
     init: () => ({}),

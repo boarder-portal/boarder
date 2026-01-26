@@ -13,14 +13,14 @@ import {
   CardId,
   CardWithInventory,
   ObservationCardId,
-} from 'common/types/games/outsideMind/cards';
-import { Human } from 'common/types/games/outsideMind/common';
+} from 'common/types/games/outerMinds/cards';
+import { Human } from 'common/types/games/outerMinds/common';
 
 export enum GameClientEventType {}
 
 export enum GameServerEventType {}
 
-export interface GameOptions extends BaseGameOptions<GameType.OUTSIDE_MIND> {}
+export interface GameOptions extends BaseGameOptions<GameType.OUTER_MINDS> {}
 
 export interface GamePlayerData {}
 
@@ -29,7 +29,7 @@ export interface PlayerData extends GamePlayerData {
   play: PlayPhasePlayerData | null;
 }
 
-export interface Player extends BaseGamePlayer<GameType.OUTSIDE_MIND> {
+export interface Player extends BaseGamePlayer<GameType.OUTER_MINDS> {
   data: PlayerData;
 }
 
@@ -82,15 +82,15 @@ export enum TestCaseType {}
 
 export enum GameEventType {}
 
-export interface GameEventMap extends CommonGameEventMap<GameType.OUTSIDE_MIND> {}
+export interface GameEventMap extends CommonGameEventMap<GameType.OUTER_MINDS> {}
 
-export interface ClientEventMap extends CommonClientEventMap<GameType.OUTSIDE_MIND> {}
+export interface ClientEventMap extends CommonClientEventMap<GameType.OUTER_MINDS> {}
 
-export interface ServerEventMap extends CommonServerEventMap<GameType.OUTSIDE_MIND> {}
+export interface ServerEventMap extends CommonServerEventMap<GameType.OUTER_MINDS> {}
 
 declare module 'common/types/game/params' {
   interface GamesParams {
-    [GameType.OUTSIDE_MIND]: {
+    [GameType.OUTER_MINDS]: {
       clientEventMap: ClientEventMap;
       serverEventMap: ServerEventMap;
       options: GameOptions;

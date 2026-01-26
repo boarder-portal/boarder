@@ -1,4 +1,4 @@
-import { CardId, CardType } from 'common/types/games/outsideMind/cards/common';
+import { CardId, CardType } from 'common/types/games/outerMinds/cards/common';
 
 export type AbilityCardId = CardId.ALTERNATIVE_ENERGY | CardId.BIG_HAND;
 

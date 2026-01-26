@@ -15,7 +15,7 @@ export enum GameType {
   MACHI_KORO = 'machiKoro',
   MAHJONG = 'mahjong',
   RED_SEVEN = 'redSeven',
-  OUTSIDE_MIND = 'outsideMind',
+  OUTER_MINDS = 'outerMinds',
 }
 
 export type BotSupportedGameType = (typeof BOTS_SUPPORTED_GAMES)[number];

@@ -7,7 +7,7 @@ import { DEFAULT_GAME_OPTIONS as HEARTS_OPTIONS } from 'common/constants/games/h
 import { DEFAULT_GAME_OPTIONS as MACHI_KORO_OPTIONS } from 'common/constants/games/machiKoro';
 import { DEFAULT_GAME_OPTIONS as MAHJONG_OPTIONS } from 'common/constants/games/mahjong';
 import { DEFAULT_GAME_OPTIONS as ONITAMA_OPTIONS } from 'common/constants/games/onitama';
-import { DEFAULT_GAME_OPTIONS as OUTSIDE_MIND_OPTIONS } from 'common/constants/games/outsideMind';
+import { DEFAULT_GAME_OPTIONS as OUTER_MINDS_OPTIONS } from 'common/constants/games/outerMinds';
 import { DEFAULT_GAME_OPTIONS as PEXESO_OPTIONS } from 'common/constants/games/pexeso';
 import { DEFAULT_GAME_OPTIONS as RED_SEVEN_OPTIONS } from 'common/constants/games/redSeven';
 import { DEFAULT_GAME_OPTIONS as SET_OPTIONS } from 'common/constants/games/set';
@@ -30,7 +30,7 @@ export const DEFAULT_OPTIONS: { [Game in GameType]: GameOptions<Game> } = {
   [GameType.MACHI_KORO]: MACHI_KORO_OPTIONS,
   [GameType.MAHJONG]: MAHJONG_OPTIONS,
   [GameType.RED_SEVEN]: RED_SEVEN_OPTIONS,
-  [GameType.OUTSIDE_MIND]: OUTSIDE_MIND_OPTIONS,
+  [GameType.OUTER_MINDS]: OUTER_MINDS_OPTIONS,
 };
 
 export const gameOptionsAtoms = mapValues(mapKeys(GameType), (game) => {
