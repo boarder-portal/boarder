@@ -1,26 +1,37 @@
 import { GameType } from 'common/types/game';
-import { Game, GameResult, Player, PlayerData } from 'common/types/games/outsideMind';
+import { Game, GamePlayerData, GameResult, Player } from 'common/types/games/outsideMind';
 
 import Entity, { EntityGenerator } from 'server/gamesData/Game/utilities/Entity/Entity';
 import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo';
 import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 
+import HandDraftPhase from 'server/gamesData/Game/OutsideMindGame/entities/HandDraftPhase';
+import PlayPhase from 'server/gamesData/Game/OutsideMindGame/entities/PlayPhase';
+
 export default class OutsideMindGame extends Entity<GameResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.OUTSIDE_MIND, this>);
 
-  playersData = this.addComponent(PlayersData<PlayerData, this>, {
-   init: () => ({}),
- });
+  playersData = this.addComponent(PlayersData<GamePlayerData, this>, {
+    init: () => ({}),
+  });
+
+  handDraftPhase: HandDraftPhase | null = null;
+  playPhase: PlayPhase | null = null;
 
   *lifecycle(): EntityGenerator<GameResult> {}
 
   getGamePlayers(): Player[] {
-    return this.gameInfo.getPlayersWithData((playerIndex) => this.playersData.get(playerIndex));
+    return this.gameInfo.getPlayersWithData((playerIndex) => ({
+      ...this.playersData.get(playerIndex),
+      handDraft: this.handDraftPhase?.playersData.get(playerIndex) ?? null,
+      play: this.playPhase?.playersData.get(playerIndex) ?? null,
+    }));
   }
 
   toJSON(): Game {
     return {
       players: this.getGamePlayers(),
+      phase: this.handDraftPhase?.toJSON() ?? this.playPhase?.toJSON() ?? null,
     };
   }
 }

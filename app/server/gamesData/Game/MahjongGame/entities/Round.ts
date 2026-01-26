@@ -21,7 +21,7 @@ export default class Round extends Entity {
   handIndex = -1;
   handsCount: number;
   isLastInGame: boolean;
-  playersData: PlayersData<RoundPlayerData>;
+  playersData: PlayersData<RoundPlayerData, this>;
 
   hand: Hand | null = null;
 

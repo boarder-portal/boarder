@@ -7,6 +7,14 @@ import {
   CommonServerEventMap,
 } from 'common/types';
 import { GameType } from 'common/types/game';
+import {
+  AbilityCardId,
+  BuildingCardId,
+  CardId,
+  CardWithInventory,
+  ObservationCardId,
+} from 'common/types/games/outsideMind/cards';
+import { Human } from 'common/types/games/outsideMind/common';
 
 export enum GameClientEventType {}
 
@@ -14,7 +22,12 @@ export enum GameServerEventType {}
 
 export interface GameOptions extends BaseGameOptions<GameType.OUTSIDE_MIND> {}
 
-export interface PlayerData {}
+export interface GamePlayerData {}
+
+export interface PlayerData extends GamePlayerData {
+  handDraft: HandDraftPlayerData | null;
+  play: PlayPhasePlayerData | null;
+}
 
 export interface Player extends BaseGamePlayer<GameType.OUTSIDE_MIND> {
   data: PlayerData;
@@ -22,7 +35,44 @@ export interface Player extends BaseGamePlayer<GameType.OUTSIDE_MIND> {
 
 export interface Game {
   players: Player[];
+  phase: GamePhase | null;
 }
+
+export enum GamePhaseType {
+  HAND_DRAFT = 'HAND_DRAFT',
+  PLAY = 'PLAY',
+}
+
+export interface HandDraftPhase {
+  type: GamePhaseType.HAND_DRAFT;
+  deck: CardId[];
+  activePlayerIndex: number;
+  turn: HandDraftTurn | null;
+}
+
+export interface HandDraftTurn {
+  cards: CardId[];
+}
+
+export interface HandDraftPlayerData {
+  pickedCards: CardId[];
+}
+
+export interface PlayPhase {
+  type: GamePhaseType.PLAY;
+  city: CardWithInventory<BuildingCardId>[][];
+}
+
+export interface PlayPhasePlayerData {
+  hand: CardId[];
+  observations: CardWithInventory<ObservationCardId>[];
+  abilities: CardWithInventory<AbilityCardId>[];
+  humans: Human[];
+  energy: number;
+  score: number;
+}
+
+export type GamePhase = HandDraftPhase | PlayPhase;
 
 export type GameResult = void;
 
