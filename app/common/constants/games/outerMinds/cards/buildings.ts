@@ -9,7 +9,7 @@ import { Human } from 'common/types/games/outerMinds/common';
 
 import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 
-const cardDefs: Record<BuildingCardId, Omit<BuildingCardDef, 'type'>> = {
+const CARD_DEFS: Record<BuildingCardId, Omit<BuildingCardDef, 'type'>> = {
   // Residential
   [CardId.NURSING_HOME]: {
     isStarting: false,
@@ -34,4 +34,4 @@ const cardDefs: Record<BuildingCardId, Omit<BuildingCardDef, 'type'>> = {
   },
 };
 
-export const buildingCardDefs: Record<BuildingCardId, BuildingCardDef> = addCardDefType(CardType.BUILDING, cardDefs);
+export const BUILDING_CARD_DEFS: Record<BuildingCardId, BuildingCardDef> = addCardDefType(CardType.BUILDING, CARD_DEFS);

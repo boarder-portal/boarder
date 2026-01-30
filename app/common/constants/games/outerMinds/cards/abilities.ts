@@ -2,7 +2,7 @@ import { AbilityCardDef, AbilityCardId, CardId, CardType } from 'common/types/ga
 
 import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 
-const cardDefs: Record<AbilityCardId, Omit<AbilityCardDef, 'type'>> = {
+const CARD_DEFS: Record<AbilityCardId, Omit<AbilityCardDef, 'type'>> = {
   [CardId.BIG_HAND]: {
     isBonus: false,
   },
@@ -11,4 +11,4 @@ const cardDefs: Record<AbilityCardId, Omit<AbilityCardDef, 'type'>> = {
   },
 };
 
-export const abilityCardDefs: Record<AbilityCardId, AbilityCardDef> = addCardDefType(CardType.ABILITY, cardDefs);
+export const ABILITY_CARD_DEFS: Record<AbilityCardId, AbilityCardDef> = addCardDefType(CardType.ABILITY, CARD_DEFS);

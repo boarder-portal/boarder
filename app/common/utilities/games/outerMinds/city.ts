@@ -1,5 +1,4 @@
-import { City, CityBuilding } from 'common/types/games/outerMinds';
-import { BuildingCell } from 'common/types/games/outerMinds/city';
+import { BuildingCell, City, CityBuilding } from 'common/types/games/outerMinds/city';
 
 export type CityBuildingCallback<ReturnValue = unknown> = (building: CityBuilding, cell: BuildingCell) => ReturnValue;
 

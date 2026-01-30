@@ -11,7 +11,7 @@ import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 import { citySome, iterateCity } from 'common/utilities/games/outerMinds/city';
 import { addElementsToSet } from 'common/utilities/set';
 
-const cardDefs: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
+const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
   [CardId.HIGH_FIVE]: {
     isBonus: false,
     scores: [1, 2, 5],
@@ -39,7 +39,7 @@ const cardDefs: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
   },
 };
 
-export const observationCardDefs: Record<ObservationCardId, ObservationCardDef> = addCardDefType(
+export const OBSERVATION_CARD_DEFS: Record<ObservationCardId, ObservationCardDef> = addCardDefType(
   CardType.OBSERVATION,
-  cardDefs,
+  CARD_DEFS,
 );

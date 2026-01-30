@@ -2,7 +2,7 @@ import { ActionCardDef, ActionCardId, CardId, CardType } from 'common/types/game
 
 import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 
-const cardDefs: Record<ActionCardId, Omit<ActionCardDef, 'type'>> = {
+const CARD_DEFS: Record<ActionCardId, Omit<ActionCardDef, 'type'>> = {
   [CardId.ACADEMIC_LEAVE]: {
     isBonus: false,
   },
@@ -11,4 +11,4 @@ const cardDefs: Record<ActionCardId, Omit<ActionCardDef, 'type'>> = {
   },
 };
 
-export const actionCardDefs: Record<ActionCardId, ActionCardDef> = addCardDefType(CardType.ACTION, cardDefs);
+export const ACTION_CARD_DEFS: Record<ActionCardId, ActionCardDef> = addCardDefType(CardType.ACTION, CARD_DEFS);

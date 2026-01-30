@@ -1,6 +1,6 @@
 import { AbilityCardDef } from 'common/types/games/outerMinds/cards/abilities';
 import { ActionCardDef } from 'common/types/games/outerMinds/cards/actions';
-import { BuildingCardDef, BuildingCategory } from 'common/types/games/outerMinds/cards/builidings';
+import { BuildingCardDef, RealBuildingCategory } from 'common/types/games/outerMinds/cards/builidings';
 import { CardId } from 'common/types/games/outerMinds/cards/common';
 import { ObservationCardDef } from 'common/types/games/outerMinds/cards/observations';
 import { Human } from 'common/types/games/outerMinds/common';
@@ -18,7 +18,7 @@ export type CardWithInventory<Id extends CardId> = {
   gold: number;
   humans: Human[];
   decrees: number;
-  categories: BuildingCategory[];
+  categories: RealBuildingCategory[];
   supporters: number;
   cards: CardId[];
 };

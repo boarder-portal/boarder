@@ -14,6 +14,7 @@ import {
   CardWithInventory,
   ObservationCardId,
 } from 'common/types/games/outerMinds/cards';
+import { City } from 'common/types/games/outerMinds/city';
 import { Human } from 'common/types/games/outerMinds/common';
 
 export enum GameClientEventType {
@@ -38,6 +39,7 @@ export interface Player extends BaseGamePlayer<GameType.OUTER_MINDS> {
 export interface Game {
   players: Player[];
   phase: GamePhase | null;
+  city: City;
 }
 
 export enum GamePhaseType {
@@ -106,5 +108,3 @@ declare module 'common/types/game/params' {
     };
   }
 }
-export { City } from 'common/types/games/outerMinds/city';
-export { CityBuilding } from 'common/types/games/outerMinds/city';

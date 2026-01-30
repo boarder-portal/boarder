@@ -1,8 +1,8 @@
 import mapValues from 'lodash/mapValues';
 
-import { buildingCardDefs, cardDefs } from 'common/constants/games/outerMinds/cards';
+import { CARD_DEFS } from 'common/constants/games/outerMinds/cards';
 
-import { BuildingCardDef, BuildingCardId, CardDef, CardId, CardType } from 'common/types/games/outerMinds/cards';
+import { CardDef, CardId, CardType } from 'common/types/games/outerMinds/cards';
 
 export function addCardDefType<Id extends CardId, CardDefs, Type extends CardType>(
   cardType: Type,
@@ -15,9 +15,5 @@ export function addCardDefType<Id extends CardId, CardDefs, Type extends CardTyp
 }
 
 export function getCardDef(cardId: CardId): CardDef {
-  return cardDefs[cardId];
-}
-
-export function getBuildingCardDef(cardId: BuildingCardId): BuildingCardDef {
-  return buildingCardDefs[cardId];
+  return CARD_DEFS[cardId];
 }
