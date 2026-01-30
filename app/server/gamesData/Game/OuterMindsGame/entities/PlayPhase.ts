@@ -12,7 +12,7 @@ import GameInfo from 'server/gamesData/Game/utilities/Entity/components/GameInfo
 import PlayersData from 'server/gamesData/Game/utilities/Entity/components/PlayersData';
 import TurnController from 'server/gamesData/Game/utilities/Entity/components/TurnController';
 
-import { HandDraftTurn } from 'server/gamesData/Game/OuterMindsGame/entities/HandDraftTurn';
+import { PlayTurn } from 'server/gamesData/Game/OuterMindsGame/entities/PlayTurn';
 
 export interface PlayPhaseOptions {
   hands: CardId[][];
@@ -26,7 +26,7 @@ export default class PlayPhase extends Entity<GameResult> {
   playersData: PlayersData<PlayPhasePlayerData, this>;
   city: CardWithInventory<BuildingCardId>[][] = [];
 
-  turn: HandDraftTurn | null = null;
+  turn: PlayTurn | null = null;
 
   constructor(options: PlayPhaseOptions) {
     super();

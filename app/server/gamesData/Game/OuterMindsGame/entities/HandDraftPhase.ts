@@ -1,3 +1,5 @@
+import { DRAFT_PHASE_CARDS_COUNT_TARGET, DRAFT_PHASE_DRAW_CARDS_COUNT } from 'common/constants/games/outerMinds';
+
 import { GameType } from 'common/types/game';
 import {
   GamePhaseType,
@@ -13,6 +15,10 @@ import TurnController from 'server/gamesData/Game/utilities/Entity/components/Tu
 
 import { HandDraftTurn } from 'server/gamesData/Game/OuterMindsGame/entities/HandDraftTurn';
 
+export interface HandDraftPhaseOptions {
+  deck: CardId[];
+}
+
 export default class HandDraftPhase extends Entity<CardId[][]> {
   gameInfo = this.obtainComponent(GameInfo<GameType.OUTER_MINDS, this>);
 
@@ -23,13 +29,36 @@ export default class HandDraftPhase extends Entity<CardId[][]> {
       pickedCards: [],
     }),
   });
-  deck: CardId[] = [];
+  deck: CardId[];
 
   turn: HandDraftTurn | null = null;
 
+  constructor(options: HandDraftPhaseOptions) {
+    super();
+
+    this.deck = options.deck;
+  }
+
   *lifecycle(): EntityGenerator<CardId[][]> {
-    // TODO: logic
-    return [];
+    while (!this.allCardsPicked()) {
+      this.turn = this.spawnEntity(HandDraftTurn, {
+        cards: this.drawCardsFromDeck(),
+      });
+
+      const pickedCards = yield* this.waitForEntity(this.turn);
+
+      this.playersData.getActive().pickedCards.push(...pickedCards);
+    }
+
+    return this.playersData.map(({ pickedCards }) => pickedCards);
+  }
+
+  allCardsPicked(): boolean {
+    return this.playersData.every(({ pickedCards }) => pickedCards.length >= DRAFT_PHASE_CARDS_COUNT_TARGET);
+  }
+
+  drawCardsFromDeck(): CardId[] {
+    return this.deck.splice(-DRAFT_PHASE_DRAW_CARDS_COUNT);
   }
 
   toJSON(): HandDraftPhaseModel {

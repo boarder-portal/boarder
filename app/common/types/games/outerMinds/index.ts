@@ -16,7 +16,9 @@ import {
 } from 'common/types/games/outerMinds/cards';
 import { Human } from 'common/types/games/outerMinds/common';
 
-export enum GameClientEventType {}
+export enum GameClientEventType {
+  PICK_CARDS = 'PICK_CARDS',
+}
 
 export enum GameServerEventType {}
 
@@ -84,7 +86,9 @@ export enum GameEventType {}
 
 export interface GameEventMap extends CommonGameEventMap<GameType.OUTER_MINDS> {}
 
-export interface ClientEventMap extends CommonClientEventMap<GameType.OUTER_MINDS> {}
+export interface ClientEventMap extends CommonClientEventMap<GameType.OUTER_MINDS> {
+  [GameClientEventType.PICK_CARDS]: CardId[];
+}
 
 export interface ServerEventMap extends CommonServerEventMap<GameType.OUTER_MINDS> {}
 

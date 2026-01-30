@@ -101,11 +101,13 @@ export default class Server<Game extends GameType, E extends AnyEntity = Entity>
     return this._time.paused;
   }
 
-  private _validate<Data>(data: Data, validator?: (data: Data) => unknown): boolean {
-    try {
-      validator?.(data);
-
+  private _validate<Data>(data: Data, validator?: (data: Data) => boolean): boolean {
+    if (!validator) {
       return true;
+    }
+
+    try {
+      return Boolean(validator(data));
     } catch {
       return false;
     }
