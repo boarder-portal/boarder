@@ -26,3 +26,7 @@ export enum CardType {
   ACTION = 'ACTION',
   ABILITY = 'ABILITY',
 }
+
+export interface BaseCardDef {
+  isBonus: boolean;
+}

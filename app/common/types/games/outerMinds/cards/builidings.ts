@@ -1,4 +1,5 @@
-import { CardId, CardType } from 'common/types/games/outerMinds/cards/common';
+import { BaseCardDef, CardId, CardType } from 'common/types/games/outerMinds/cards/common';
+import { Human } from 'common/types/games/outerMinds/common';
 
 export enum BuildingCategory {
   RESIDENTIAL = 'RESIDENTIAL',
@@ -12,6 +13,11 @@ export enum BuildingCategory {
 
 export type BuildingCardId = CardId.NURSING_HOME | CardId.PRISON;
 
-export interface BuildingCardDef {
+export interface BuildingCardDef extends BaseCardDef {
   type: CardType.BUILDING;
+  category: BuildingCategory;
+  isStarting: boolean;
+  energy: number;
+  startingHumans: Partial<Record<Human, number>>;
+  startingGold?: number;
 }

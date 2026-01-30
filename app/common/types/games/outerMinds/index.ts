@@ -106,3 +106,5 @@ declare module 'common/types/game/params' {
     };
   }
 }
+export { City } from 'common/types/games/outerMinds/city';
+export { CityBuilding } from 'common/types/games/outerMinds/city';
