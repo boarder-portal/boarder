@@ -49,6 +49,7 @@ export const BOTS_SUPPORTED_GAMES = [
   GameType.HEARTS,
   GameType.MAHJONG,
   GameType.ONITAMA,
+  GameType.OUTER_MINDS,
 ] as const;
 
 export const GAMES_IN_DEVELOPMENT: GameType[] = [GameType.RED_SEVEN, GameType.OUTER_MINDS];

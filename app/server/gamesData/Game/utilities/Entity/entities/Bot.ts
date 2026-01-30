@@ -9,6 +9,7 @@ import GameInfoComponent from 'server/gamesData/Game/utilities/Entity/components
 import HeartsBot from 'server/gamesData/Game/HeartsGame/HeartsBot';
 import MahjongBot from 'server/gamesData/Game/MahjongGame/MahjongBot';
 import OnitamaBot from 'server/gamesData/Game/OnitamaGame/OnitamaBot';
+import OuterMindsBot from 'server/gamesData/Game/OuterMindsGame/OuterMindsBot';
 import SevenWondersBot from 'server/gamesData/Game/SevenWondersGame/SevenWondersBot';
 
 export interface BotOptions<Game extends BotSupportedGameType> {
@@ -21,6 +22,7 @@ const BOTS_MAP: { [Game in (typeof BOTS_SUPPORTED_GAMES)[number]]: EntityConstru
   [GameType.SEVEN_WONDERS]: SevenWondersBot,
   [GameType.HEARTS]: HeartsBot,
   [GameType.MAHJONG]: MahjongBot,
+  [GameType.OUTER_MINDS]: OuterMindsBot,
 };
 
 export default class Bot<Game extends BotSupportedGameType> extends Entity {
