@@ -11,7 +11,12 @@ export interface HandDraftTurnOptions {
   cards: CardId[];
 }
 
-export class HandDraftTurn extends Entity<CardId[]> {
+export interface HandDraftTurnResult {
+  pickedCards: CardId[];
+  discardedCards: CardId[];
+}
+
+export class HandDraftTurn extends Entity<HandDraftTurnResult> {
   server = this.obtainComponent(Server<GameType.OUTER_MINDS, this>);
 
   cards: CardId[];
@@ -22,11 +27,17 @@ export class HandDraftTurn extends Entity<CardId[]> {
     this.cards = options.cards;
   }
 
-  *lifecycle(): EntityGenerator<CardId[]> {
-    return yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.PICK_CARDS, {
+  *lifecycle(): EntityGenerator<HandDraftTurnResult> {
+    const pickedCards = yield* this.server.waitForActivePlayerSocketEvent(GameClientEventType.PICK_CARDS, {
       validate: (cards) =>
         cards.length === DRAFT_PHASE_PICK_CARDS_COUNT && cards.every((cardId) => this.cards.includes(cardId)),
     });
+    const discardedCards = this.cards.filter((cardId) => !pickedCards.includes(cardId));
+
+    return {
+      pickedCards,
+      discardedCards,
+    };
   }
 
   toJSON(): HandDraftModel {

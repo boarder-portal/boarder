@@ -19,7 +19,12 @@ export interface HandDraftPhaseOptions {
   deck: CardId[];
 }
 
-export default class HandDraftPhase extends Entity<CardId[][]> {
+export interface HandDraftPhaseResult {
+  pickedCards: CardId[][];
+  restCards: CardId[];
+}
+
+export default class HandDraftPhase extends Entity<HandDraftPhaseResult> {
   gameInfo = this.obtainComponent(GameInfo<GameType.OUTER_MINDS, this>);
 
   turnController = this.addComponent(TurnController);
@@ -29,7 +34,9 @@ export default class HandDraftPhase extends Entity<CardId[][]> {
       pickedCards: [],
     }),
   });
+
   deck: CardId[];
+  discard: CardId[] = [];
 
   turn: HandDraftTurn | null = null;
 
@@ -39,18 +46,22 @@ export default class HandDraftPhase extends Entity<CardId[][]> {
     this.deck = options.deck;
   }
 
-  *lifecycle(): EntityGenerator<CardId[][]> {
+  *lifecycle(): EntityGenerator<HandDraftPhaseResult> {
     while (!this.allCardsPicked()) {
       this.turn = this.spawnEntity(HandDraftTurn, {
         cards: this.drawCardsFromDeck(),
       });
 
-      const pickedCards = yield* this.waitForEntity(this.turn);
+      const { pickedCards, discardedCards } = yield* this.waitForEntity(this.turn);
 
       this.playersData.getActive().pickedCards.push(...pickedCards);
+      this.discard.push(...discardedCards);
     }
 
-    return this.playersData.map(({ pickedCards }) => pickedCards);
+    return {
+      pickedCards: this.playersData.map(({ pickedCards }) => pickedCards),
+      restCards: [...this.discard, ...this.deck],
+    };
   }
 
   allCardsPicked(): boolean {
