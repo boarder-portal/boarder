@@ -7,3 +7,5 @@ export enum Human {
   GRANDMA = 'GRANDMA',
   GRANDPA = 'GRANDPA',
 }
+
+export type RealHuman = Exclude<Human, Human.ALIEN>;

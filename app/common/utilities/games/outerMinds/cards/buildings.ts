@@ -10,7 +10,7 @@ import {
   RealBuildingCategory,
   StartingHumans,
 } from 'common/types/games/outerMinds/cards';
-import { City } from 'common/types/games/outerMinds/city';
+import { City, CityBuilding } from 'common/types/games/outerMinds/city';
 import { Human } from 'common/types/games/outerMinds/common';
 
 import { getCardDef } from 'common/utilities/games/outerMinds/cardDefs';
@@ -75,4 +75,40 @@ export function getFreshBuilding(options: GetFreshBuildingOptions): CardWithInve
     supporters: 0,
     cards: [],
   };
+}
+
+export function getBuildingCategories(building: CityBuilding): RealBuildingCategory[] {
+  if (building.cards.includes(CardId.RENOVATION)) {
+    return [];
+  }
+
+  return building.categories;
+}
+
+export function isBuildingOfCategory(building: CityBuilding, category: RealBuildingCategory): boolean {
+  return getBuildingCategories(building).includes(category);
+}
+
+export function getBuildingHumans(building: CityBuilding): Human[] {
+  if (building.cards.includes(CardId.RENOVATION)) {
+    return [];
+  }
+
+  return building.humans;
+}
+
+export function getBuildingDecrees(building: CityBuilding): number {
+  if (building.cards.includes(CardId.RENOVATION)) {
+    return 0;
+  }
+
+  return building.decrees;
+}
+
+export function getBuildingGold(building: CityBuilding): number {
+  if (building.cards.includes(CardId.RENOVATION)) {
+    return 0;
+  }
+
+  return building.gold;
 }

@@ -9,7 +9,7 @@ export interface BuildingCell {
   col: number;
 }
 
-export enum CityBlock {
+export enum CityQuadrant {
   NORTH_WEST = 'NORTH_WEST',
   NORTH_EAST = 'NORTH_EAST',
   SOUTH_WEST = 'SOUTH_WEST',

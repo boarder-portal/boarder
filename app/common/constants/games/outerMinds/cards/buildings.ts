@@ -11,6 +11,7 @@ import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 
 const CARD_DEFS: Record<BuildingCardId, Omit<BuildingCardDef, 'type'>> = {
   // Residential
+  // TODO: effects
   [CardId.NURSING_HOME]: {
     isStarting: false,
     isBonus: false,
@@ -23,6 +24,7 @@ const CARD_DEFS: Record<BuildingCardId, Omit<BuildingCardDef, 'type'>> = {
   },
 
   // State
+  // TODO: effects
   [CardId.PRISON]: {
     isStarting: false,
     isBonus: false,
