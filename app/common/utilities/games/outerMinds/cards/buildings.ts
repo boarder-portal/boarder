@@ -11,9 +11,10 @@ import {
   StartingHumans,
 } from 'common/types/games/outerMinds/cards';
 import { City, CityBuilding } from 'common/types/games/outerMinds/city';
-import { Human } from 'common/types/games/outerMinds/common';
+import { Human, RealHuman } from 'common/types/games/outerMinds/common';
 
 import { getCardDef } from 'common/utilities/games/outerMinds/cardDefs';
+import { humansIncludeRealHumans } from 'common/utilities/games/outerMinds/humans';
 import hasOwnProperty from 'common/utilities/hasOwnProperty';
 
 export function getBuildingCardDef(cardId: BuildingCardId): BuildingCardDef {
@@ -95,6 +96,10 @@ export function getBuildingHumans(building: CityBuilding): Human[] {
   }
 
   return building.humans;
+}
+
+export function buildingHasHumans(building: CityBuilding, humans: RealHuman[]): boolean {
+  return humansIncludeRealHumans(getBuildingHumans(building), humans);
 }
 
 export function getBuildingDecrees(building: CityBuilding): number {

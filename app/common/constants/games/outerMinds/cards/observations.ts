@@ -1,3 +1,5 @@
+import { ALL_REAL_HUMANS } from 'common/constants/games/outerMinds/humans';
+
 import {
   BuildingCategory,
   CardId,
@@ -10,6 +12,7 @@ import { Human } from 'common/types/games/outerMinds/common';
 
 import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
 import {
+  buildingHasHumans,
   getBuildingCategories,
   getBuildingDecrees,
   getBuildingGold,
@@ -17,6 +20,7 @@ import {
   isBuildingOfCategory,
 } from 'common/utilities/games/outerMinds/cards/buildings';
 import { citySome, iterateCity } from 'common/utilities/games/outerMinds/city';
+import { humansIncludeRealHumans } from 'common/utilities/games/outerMinds/humans';
 import { isDefined } from 'common/utilities/is';
 import { addElementsToSet } from 'common/utilities/set';
 
@@ -133,21 +137,13 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     isBonus: false,
     scores: [1, 2, 5],
     check: (city) => {
-      const humansCountMap = new Map<Human, number>();
+      const allCityHumans: Human[] = [];
 
       iterateCity(city, (building) => {
-        for (const human of getBuildingHumans(building)) {
-          humansCountMap.set(human, (humansCountMap.get(human) ?? 0) + 1);
-        }
+        allCityHumans.push(...getBuildingHumans(building));
       });
 
-      let missingHumansCount = 0;
-
-      Object.values(Human).forEach((human) => {
-        missingHumansCount += Math.min(0, 2 - (humansCountMap.get(human) ?? 0));
-      });
-
-      return missingHumansCount <= (humansCountMap.get(Human.ALIEN) ?? 0);
+      return humansIncludeRealHumans(allCityHumans, [...ALL_REAL_HUMANS, ...ALL_REAL_HUMANS]);
     },
   },
 
@@ -179,13 +175,27 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     isBonus: false,
     scores: [1, 3, 6],
     check: (city) => {
+      return citySome(
+        city,
+        (building) =>
+          buildingHasHumans(building, [Human.MAN, Human.WOMAN, Human.BOY]) ||
+          buildingHasHumans(building, [Human.MAN, Human.WOMAN, Human.GIRL]),
+      );
+    },
+  },
+
+  [CardId.GRANDPAS_FORTUNE]: {
+    isBonus: false,
+    scores: [1, 3, 7],
+    check: (city) => {
       return citySome(city, (building) => {
-        const humans = getBuildingHumans(building);
+        if (getBuildingGold(building) <= 2) {
+          return false;
+        }
 
         return (
-          humans.includes(Human.MAN) &&
-          humans.includes(Human.WOMAN) &&
-          (humans.includes(Human.BOY) || humans.includes(Human.GIRL))
+          buildingHasHumans(building, [Human.GRANDPA, Human.GIRL]) ||
+          buildingHasHumans(building, [Human.GRANDPA, Human.BOY])
         );
       });
     },

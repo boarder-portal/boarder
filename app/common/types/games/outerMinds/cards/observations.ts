@@ -10,7 +10,8 @@ export type ObservationCardId =
   | CardId.EMERALD_CITY
   | CardId.TWO_OF_EVERY_KIND
   | CardId.CATEGORICAL_BALANCE
-  | CardId.SMALL_FAMILY;
+  | CardId.SMALL_FAMILY
+  | CardId.GRANDPAS_FORTUNE;
 
 export interface ObservationCardDef extends BaseCardDef {
   type: CardType.OBSERVATION;
