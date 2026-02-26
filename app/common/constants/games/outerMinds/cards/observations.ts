@@ -1,3 +1,4 @@
+import { CITY_QUADRANT_COUNT } from 'common/constants/games/outerMinds/city';
 import { ALL_REAL_HUMANS } from 'common/constants/games/outerMinds/humans';
 
 import {
@@ -8,6 +9,7 @@ import {
   ObservationCardId,
   RealBuildingCategory,
 } from 'common/types/games/outerMinds/cards';
+import { CityQuadrant } from 'common/types/games/outerMinds/city';
 import { Human } from 'common/types/games/outerMinds/common';
 
 import { addCardDefType } from 'common/utilities/games/outerMinds/cardDefs';
@@ -19,7 +21,7 @@ import {
   getBuildingHumans,
   isBuildingOfCategory,
 } from 'common/utilities/games/outerMinds/cards/buildings';
-import { citySome, iterateCity } from 'common/utilities/games/outerMinds/city';
+import { citySome, getCellCityQuadrant, iterateCity } from 'common/utilities/games/outerMinds/city';
 import { humansIncludeRealHumans } from 'common/utilities/games/outerMinds/humans';
 import { isDefined } from 'common/utilities/is';
 import { addElementsToSet } from 'common/utilities/set';
@@ -31,7 +33,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     check: (city) => {
       const categories = new Set<BuildingCategory>();
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         addElementsToSet(categories, getBuildingCategories(building));
       });
 
@@ -45,7 +47,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     check: (city) => {
       let suitableBuildingsCount = 0;
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         if (getBuildingGold(building) === 2) {
           suitableBuildingsCount++;
         }
@@ -58,7 +60,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
   [CardId.DOMINATING_KIND]: {
     isBonus: true,
     scores: [1, 3, 7, 15],
-    check: (city, card) => {
+    check: (city, { card }) => {
       const { humans } = card;
       const dominatingHuman = humans.at(0);
 
@@ -68,7 +70,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
 
       const humansCountMap = new Map<Human, number>();
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         for (const human of getBuildingHumans(building)) {
           humansCountMap.set(human, (humansCountMap.get(human) ?? 0) + 1);
         }
@@ -97,7 +99,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
   [CardId.SINGLE_LANDMARK]: {
     isBonus: true,
     scores: [1, 2, 5, 10],
-    check: (city, card) => {
+    check: (city, { card }) => {
       const { categories } = card;
       const category = categories.at(0);
 
@@ -107,7 +109,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
 
       let decreesCount = 0;
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         if (isBuildingOfCategory(building, category)) {
           decreesCount += getBuildingDecrees(building);
         }
@@ -123,7 +125,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     check: (city) => {
       let greenBuildingsCount = 0;
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         if (isBuildingOfCategory(building, BuildingCategory.COMMUNITY)) {
           greenBuildingsCount++;
         }
@@ -139,7 +141,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     check: (city) => {
       const allCityHumans: Human[] = [];
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         allCityHumans.push(...getBuildingHumans(building));
       });
 
@@ -150,7 +152,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
   [CardId.CATEGORICAL_BALANCE]: {
     isBonus: true,
     scores: [1, 2, 6, 13],
-    check: (city, card) => {
+    check: (city, { card }) => {
       const { categories } = card;
       const category1 = categories.at(0);
       const category2 = categories.at(1);
@@ -161,7 +163,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
 
       const categoriesCountMap = new Map<RealBuildingCategory, number>();
 
-      iterateCity(city, (building) => {
+      iterateCity(city, ({ building }) => {
         getBuildingCategories(building).forEach((category) => {
           categoriesCountMap.set(category, (categoriesCountMap.get(category) ?? 0) + 1);
         });
@@ -177,10 +179,29 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     check: (city) => {
       return citySome(
         city,
-        (building) =>
+        ({ building }) =>
           buildingHasHumans(building, [Human.MAN, Human.WOMAN, Human.BOY]) ||
           buildingHasHumans(building, [Human.MAN, Human.WOMAN, Human.GIRL]),
       );
+    },
+  },
+
+  [CardId.MOBILE_CITY]: {
+    isBonus: false,
+    scores: [1, 3, 7],
+    check: (_city, { getAllPossibleCityTrips }) => {
+      const quadrants = new Set<CityQuadrant>();
+
+      for (const { from, to } of getAllPossibleCityTrips()) {
+        quadrants.add(getCellCityQuadrant(from));
+        quadrants.add(getCellCityQuadrant(to));
+
+        if (quadrants.size === CITY_QUADRANT_COUNT) {
+          return true;
+        }
+      }
+
+      return false;
     },
   },
 
@@ -188,7 +209,7 @@ const CARD_DEFS: Record<ObservationCardId, Omit<ObservationCardDef, 'type'>> = {
     isBonus: false,
     scores: [1, 3, 7],
     check: (city) => {
-      return citySome(city, (building) => {
+      return citySome(city, ({ building }) => {
         if (getBuildingGold(building) <= 2) {
           return false;
         }

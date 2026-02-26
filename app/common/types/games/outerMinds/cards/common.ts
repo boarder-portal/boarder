@@ -4,6 +4,9 @@ export enum CardId {
   // Residential
   NURSING_HOME = 'NURSING_HOME',
 
+  // Transport
+  TAXI_STATION = 'TAXI_STATION',
+
   // State
   PRISON = 'PRISON',
 
@@ -16,6 +19,7 @@ export enum CardId {
   TWO_OF_EVERY_KIND = 'TWO_OF_EVERY_KIND',
   CATEGORICAL_BALANCE = 'CATEGORICAL_BALANCE',
   SMALL_FAMILY = 'SMALL_FAMILY',
+  MOBILE_CITY = 'MOBILE_CITY',
   GRANDPAS_FORTUNE = 'GRANDPAS_FORTUNE',
 
   // Actions

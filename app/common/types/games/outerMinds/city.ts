@@ -9,6 +9,10 @@ export interface BuildingCell {
   col: number;
 }
 
+export interface BuildingCellWithBuilding extends BuildingCell {
+  building: CityBuilding;
+}
+
 export enum CityQuadrant {
   NORTH_WEST = 'NORTH_WEST',
   NORTH_EAST = 'NORTH_EAST',

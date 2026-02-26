@@ -1,18 +1,25 @@
 import { CITY_HEIGHT, CITY_WIDTH } from 'common/constants/games/outerMinds/city';
 
-import { BuildingCell, City, CityBuilding, CityQuadrant } from 'common/types/games/outerMinds/city';
+import {
+  BuildingCell,
+  BuildingCellWithBuilding,
+  City,
+  CityBuilding,
+  CityQuadrant,
+} from 'common/types/games/outerMinds/city';
 
-export type CityBuildingCallback<ReturnValue = unknown> = (building: CityBuilding, cell: BuildingCell) => ReturnValue;
+export type CityBuildingCallback<ReturnValue = unknown> = (cellWithBuilding: BuildingCellWithBuilding) => ReturnValue;
 
-type CityBuildingInternalCallback = (building: CityBuilding, cell: BuildingCell) => boolean | void;
+type CityBuildingInternalCallback = (cellWithBuilding: BuildingCellWithBuilding) => boolean | void;
 
 function cityForEach(city: City, callback: CityBuildingInternalCallback): boolean {
   for (const [rowNumber, row] of city.entries()) {
     for (const [colNumber, building] of row.entries()) {
       if (
-        callback(building, {
+        callback({
           row: rowNumber,
           col: colNumber,
+          building,
         })
       ) {
         return true;
@@ -24,8 +31,8 @@ function cityForEach(city: City, callback: CityBuildingInternalCallback): boolea
 }
 
 export function iterateCity(city: City, callback: CityBuildingCallback): void {
-  cityForEach(city, (building, cell) => {
-    callback(building, cell);
+  cityForEach(city, (cellWithBuilding) => {
+    callback(cellWithBuilding);
   });
 }
 
@@ -33,30 +40,98 @@ export function citySome(city: City, callback: CityBuildingCallback<boolean>): b
   return cityForEach(city, callback);
 }
 
-export function isBuildingInQuadrant(cell: BuildingCell, quadrant: CityQuadrant): boolean {
-  if (quadrant === CityQuadrant.NORTH_WEST) {
-    return cell.row < CITY_HEIGHT / 2 && cell.col < CITY_WIDTH / 2;
-  }
+export function getCityCellBuilding(city: City, cell: BuildingCell): CityBuilding {
+  return city[cell.row][cell.col];
+}
 
-  if (quadrant === CityQuadrant.NORTH_EAST) {
-    return cell.row < CITY_HEIGHT / 2 && cell.col >= CITY_WIDTH / 2;
-  }
+export function getCellCityQuadrant(cell: BuildingCell): CityQuadrant {
+  const isWest = cell.col < CITY_WIDTH / 2;
 
-  if (quadrant === CityQuadrant.SOUTH_WEST) {
-    return cell.row >= CITY_HEIGHT / 2 && cell.col < CITY_WIDTH / 2;
-  }
-
-  if (quadrant === CityQuadrant.SOUTH_EAST) {
-    return cell.row >= CITY_HEIGHT / 2 && cell.col >= CITY_WIDTH / 2;
-  }
-
-  return false;
+  return cell.row < CITY_HEIGHT / 2
+    ? isWest
+      ? CityQuadrant.NORTH_WEST
+      : CityQuadrant.NORTH_EAST
+    : isWest
+    ? CityQuadrant.SOUTH_WEST
+    : CityQuadrant.SOUTH_EAST;
 }
 
 export function iterateCityQuadrant(city: City, quadrant: CityQuadrant, callback: CityBuildingCallback): void {
-  cityForEach(city, (building, cell) => {
-    if (isBuildingInQuadrant(cell, quadrant)) {
-      callback(building, cell);
+  cityForEach(city, (cellWithBuilding) => {
+    if (getCellCityQuadrant(cellWithBuilding) === quadrant) {
+      callback(cellWithBuilding);
     }
   });
+}
+
+export function getCellNeighbors(cell: BuildingCell): BuildingCell[] {
+  const neighbors: BuildingCell[] = [];
+
+  if (cell.col > 0) {
+    neighbors.push({
+      row: cell.row,
+      col: cell.col - 1,
+    });
+  }
+
+  if (cell.row > 0) {
+    neighbors.push({
+      row: cell.row - 1,
+      col: cell.col,
+    });
+  }
+
+  if (cell.col < CITY_WIDTH - 1) {
+    neighbors.push({
+      row: cell.row,
+      col: cell.col + 1,
+    });
+  }
+
+  if (cell.row < CITY_HEIGHT - 1) {
+    neighbors.push({
+      row: cell.row + 1,
+      col: cell.col,
+    });
+  }
+
+  return neighbors;
+}
+
+export function getOtherRowCells(cell: BuildingCell): BuildingCell[] {
+  const rowCells: BuildingCell[] = [];
+
+  for (let col = 0; col < CITY_WIDTH; col++) {
+    if (col === cell.col) {
+      continue;
+    }
+
+    rowCells.push({
+      row: cell.row,
+      col,
+    });
+  }
+
+  return rowCells;
+}
+
+export function getOtherColCells(cell: BuildingCell): BuildingCell[] {
+  const colCells: BuildingCell[] = [];
+
+  for (let row = 0; row < CITY_HEIGHT; row++) {
+    if (row === cell.row) {
+      continue;
+    }
+
+    colCells.push({
+      row,
+      col: cell.col,
+    });
+  }
+
+  return colCells;
+}
+
+export function areCellsEqual(cell1: BuildingCell, cell2: BuildingCell): boolean {
+  return cell1.row === cell2.row && cell1.col === cell2.col;
 }
